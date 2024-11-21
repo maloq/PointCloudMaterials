@@ -6,8 +6,9 @@ import logging
 from src.cls.train_classification import get_rundir_name
 from src.cls.train_classification import train_classification
 
+
 print(os.environ.get('WANDB_API_KEY'))
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="train_cls")
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_classification")
 def main(cfg: DictConfig):    
     train_classification(cfg)
     logging.info('Train finished!')

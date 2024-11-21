@@ -180,7 +180,6 @@ class AtomicDataset(Dataset):
 
 
 if __name__ == '__main__':
-
     data = AtomicDataset(root="/home/teshbek/Work/PhD/PointCloudMaterials/datasets/Al/inherent_configurations_off",
                          data_files=["240ps.off"],
                          cube_size=16,

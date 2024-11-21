@@ -76,7 +76,7 @@ def get_cubic_samples(points: np.ndarray, n_samples: int, cube_size: float) -> L
 
 if __name__ == "__main__":
     points = read_off_file("datasets/Al/inherent_configurations_off/240ps.off")
-    samples = get_cubic_samples(points, n_samples=6000, cube_size=16.0) 
+    samples = get_cubic_samples(points, n_samples=8000, cube_size=12) 
     
     print(f"Found {len(samples)} non-empty samples")
     for i, sample in enumerate(samples):

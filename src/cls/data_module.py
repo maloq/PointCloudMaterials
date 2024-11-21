@@ -15,18 +15,18 @@ class PointCloudDataModule(pl.LightningDataModule):
         liquid_dataset = AtomicDataset(
             root="/home/teshbek/Work/PhD/PointCloudMaterials/datasets/Al/inherent_configurations_off",
             data_files=["166ps.off"],
-            cube_size=16,
-            n_samples=10000,
-            num_point=256,
+            cube_size=12,
+            n_samples=8000,
+            num_point=100,
             label=0
         )
         
         crystal_dataset = AtomicDataset(
             root="/home/teshbek/Work/PhD/PointCloudMaterials/datasets/Al/inherent_configurations_off",
             data_files=["240ps.off"],
-            cube_size=16,
-            n_samples=10000,
-            num_point=256,
+            cube_size=12,
+            n_samples=8000,
+            num_point=100,
             label=1
         )
         

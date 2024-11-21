@@ -32,7 +32,7 @@ def train_classification(cfg: DictConfig):
     start_time = time.process_time()
     logging.info(f"Starting in {os.getcwd()}")
     logging.info(f"torch version {torch.__version__ }")
-    os.environ['WANDB_MODE'] = 'online'
+    os.environ['WANDB_MODE'] = 'offline'
     os.environ['WANDB_DIR'] = 'output/wandb'
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'

@@ -30,7 +30,6 @@ def write_off_file(atoms, output_filename):
         # Write number of vertices, faces, and edges
         # Just writing vertices (no faces/edges)
         f.write(f"{len(atoms)} 0 0\n")
-        
         # Write vertex coordinates
         for x, y, z in atoms:
             f.write(f"{x:.6f} {y:.6f} {z:.6f}\n")
@@ -49,7 +48,7 @@ if __name__ == "__main__":
     output_folder = "datasets/Al/inherent_configurations_off"
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
-    input_files = ["166ps.pos", "170ps.pos", "240ps.pos"]
+    input_files = ["166ps.pos", "170ps.pos", "174ps.pos", "175ps.pos", "177ps.pos", "240ps.pos"]
 
     for in_file in input_files: 
         in_file_path = os.path.join(original_folder, in_file)
