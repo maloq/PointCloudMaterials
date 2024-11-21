@@ -12,8 +12,8 @@ class PointNetClassifier(pl.LightningModule):
     def __init__(self, num_classes=2, lr=0.006, use_normals=False, decay_rate=1e-4):
         super().__init__()
         self.save_hyperparameters()
-        self.model = PointNet2(num_classes, normal_channel=use_normals)
-        self.criterion = point_loss2()
+        self.model = PointNet(num_classes, normal_channel=use_normals)
+        self.criterion = point_loss()
         
     def forward(self, x):
         return self.model(x)

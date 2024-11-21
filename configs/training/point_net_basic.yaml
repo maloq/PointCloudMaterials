@@ -3,3 +3,4 @@ batch_size: 32
 epochs: 100
 decay_rate: 0.001
 gpu: True
+log_every_n_steps: 5
