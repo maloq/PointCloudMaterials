@@ -1,0 +1,2 @@
+defaults:
+  - training: point_net_basic

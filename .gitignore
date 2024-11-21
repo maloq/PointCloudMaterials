@@ -1,5 +1,9 @@
 datasets
 log
+lightning_logs
+checkpoints
+output
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
