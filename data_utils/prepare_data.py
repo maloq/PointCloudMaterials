@@ -2,7 +2,8 @@ import numpy as np
 from typing import List, Tuple
 from scipy.spatial import KDTree
 
-def read_off_file(filename: str) -> np.ndarray:
+
+def read_off_file(filename: str, verbose=True) -> np.ndarray:
     """Read points from OFF file and return as numpy array."""
     with open(filename, 'r') as f:
         # Skip OFF header
@@ -20,10 +21,11 @@ def read_off_file(filename: str) -> np.ndarray:
     min_coords = points.min(axis=0)
     max_coords = points.max(axis=0)
     space_size = max_coords - min_coords
-    print(f"Read {len(points)} points")
-    print(f"Size of space: {space_size}")
-    print(f"Min coords: {min_coords}")
-    print(f"Max coords: {max_coords}")
+    if verbose: 
+        print(f"Read {len(points)} points")
+        print(f"Size of space: {space_size}")
+        print(f"Min coords: {min_coords}")
+        print(f"Max coords: {max_coords}")
 
     return np.array(points)
 
@@ -41,8 +43,6 @@ def get_cubic_samples(points: np.ndarray, n_samples: int, cube_size: float) -> L
     
     samples = []
     tree = KDTree(points)
-    
-    # Get bounds of point cloud
     min_coords = points.min(axis=0)
     max_coords = points.max(axis=0)
     

@@ -1,16 +1,16 @@
-'''
-@author: Xu Yan
-@file: ModelNet.py
-@time: 2021/3/19 15:51
-'''
-import os
+
 import numpy as np
 import warnings
 import pickle
 
 from tqdm import tqdm
+import torch
 from torch.utils.data import Dataset
 
+import os, sys
+sys.path.append(os.getcwd())
+
+from data_utils.prepare_data import read_off_file, get_cubic_samples
 warnings.filterwarnings('ignore')
 
 
@@ -44,6 +44,9 @@ def farthest_point_sample(point, npoint):
         farthest = np.argmax(distance, -1)
     point = point[centroids.astype(np.int32)]
     return point
+
+
+
 
 
 class ModelNetDataLoader(Dataset):
@@ -136,10 +139,55 @@ class ModelNetDataLoader(Dataset):
         return self._get_item(index)
 
 
-if __name__ == '__main__':
-    import torch
 
-    data = ModelNetDataLoader('/data/modelnet40_normal_resampled/', split='train')
+class AtomicDataset(Dataset):
+    def __init__(self, root, data_files, cube_size=16, n_samples=1000, num_point=200, label=0):
+        """Initialize the dataset with cubic samples from OFF files.
+        
+        Args:
+            root: Path to directory containing OFF files
+            args: Arguments containing num_point, cube_size, and n_samples
+            split: 'train' or 'test' split
+        """
+        self.root = root
+        self.npoints = num_point
+        self.cube_size = cube_size
+        self.n_samples = n_samples
+        self.label = label
+
+        for off_file in data_files:
+            print(f"Reading {off_file}")
+            points = read_off_file(os.path.join(root, off_file), verbose=False)
+            self.samples = get_cubic_samples(points, self.n_samples, self.cube_size)
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+        point_set = self.samples[index]
+        
+        if len(point_set) > self.npoints:
+            idx = np.random.choice(len(point_set), self.npoints, replace=False)
+            point_set = point_set[idx]
+        elif len(point_set) < self.npoints:
+            idx = np.random.choice(len(point_set), self.npoints, replace=True)
+            point_set = point_set[idx]
+            
+        point_set = pc_normalize(point_set).astype(np.float32)
+        label = np.array(self.label).astype(np.int32)
+        
+        return point_set, label
+
+
+if __name__ == '__main__':
+
+    data = AtomicDataset(root="/home/teshbek/Work/PhD/PointCloudMaterials/datasets/Al/inherent_configurations_off",
+                         data_files=["240ps.off"],
+                         cube_size=16,
+                         n_samples=6000,
+                         num_point=200,
+                         label=0)
+    
     DataLoader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)
     for point, label in DataLoader:
         print(point.shape)

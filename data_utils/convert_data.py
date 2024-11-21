@@ -15,7 +15,7 @@ def read_xyz_file(filename):
     # Read atomic positions
     for line in lines[start_idx:]:
         parts = line.strip().split()
-        if len(parts) >= 5:  # Ensure line has enough components
+        if len(parts) >= 5:
             _, _, x, y, z = parts[:5]  # We only need x, y, z coordinates
             atoms.append([float(x), float(y), float(z)])
     
@@ -28,7 +28,7 @@ def write_off_file(atoms, output_filename):
         f.write("OFF\n")
         
         # Write number of vertices, faces, and edges
-        # For now, we're just writing vertices (no faces/edges)
+        # Just writing vertices (no faces/edges)
         f.write(f"{len(atoms)} 0 0\n")
         
         # Write vertex coordinates
