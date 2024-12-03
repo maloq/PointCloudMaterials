@@ -6,27 +6,35 @@ from src.data_utils.data_load import AtomicDataset
 
 
 class PointCloudDataModule(pl.LightningDataModule):
-    def __init__(self, batch_size=128, num_workers=10):
+    def __init__(self, cfg):
         super().__init__()
-        self.batch_size = batch_size
-        self.num_workers = num_workers
+        self.cfg = cfg
+        self.batch_size = cfg.training.batch_size
+        self.num_workers = cfg.training.num_workers
         
     def setup(self, stage=None):
+        
         liquid_dataset = AtomicDataset(
             root="/home/teshbek/Work/PhD/PointCloudMaterials/datasets/Al/inherent_configurations_off",
             data_files=["166ps.off"],
-            cube_size=12,
-            n_samples=8000,
-            num_point=100,
+            radius=self.cfg.data.radius,
+            sample_type=self.cfg.data.sample_type,
+            sample_shape=self.cfg.data.sample_shape,
+            cube_size=self.cfg.data.cube_size,
+            n_samples=self.cfg.data.n_samples,
+            num_points=self.cfg.data.num_points,
             label=0
         )
         
         crystal_dataset = AtomicDataset(
             root="/home/teshbek/Work/PhD/PointCloudMaterials/datasets/Al/inherent_configurations_off",
             data_files=["240ps.off"],
-            cube_size=12,
-            n_samples=8000,
-            num_point=100,
+            radius=self.cfg.data.radius,
+            sample_type=self.cfg.data.sample_type,
+            sample_shape=self.cfg.data.sample_shape,
+            cube_size=self.cfg.data.cube_size,
+            n_samples=self.cfg.data.n_samples,
+            num_points=self.cfg.data.num_points,
             label=1
         )
         

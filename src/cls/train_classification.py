@@ -47,7 +47,7 @@ def train_classification(cfg: DictConfig):
     checkpoint_loc = run_dir   
     lr_monitor = LearningRateMonitor(logging_interval='step', log_momentum=False) 
     
-    dm = PointCloudDataModule(batch_size=cfg.training.batch_size)
+    dm = PointCloudDataModule(cfg)
     
     model = PointNetClassifier(
         lr=cfg.training.learning_rate,
@@ -80,7 +80,7 @@ def train_classification(cfg: DictConfig):
 
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="train_cls")
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_classification")
 def main(cfg: DictConfig):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(message)s')
     train_classification(cfg)
