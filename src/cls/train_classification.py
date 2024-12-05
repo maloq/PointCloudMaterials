@@ -3,7 +3,7 @@ sys.path.append(os.getcwd())
 import torch
 import numpy as np
 import pytorch_lightning as pl
-from src.cls.lightning_module import PointNetClassifier
+from src.cls.classification_module import PointNetClassifier
 from src.cls.data_module import PointCloudDataModule
 import hydra
 from pytorch_lightning.loggers import WandbLogger

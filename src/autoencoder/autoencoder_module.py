@@ -6,6 +6,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torchmetrics import Accuracy, Precision, Recall, AUROC
 from src.models.point_net.pointnet_autoencoder import PointCloudAE
+from pytorch3d.loss import chamfer_distance 
 
 
 class PointNetAutoencoder(pl.LightningModule):
@@ -15,7 +16,7 @@ class PointNetAutoencoder(pl.LightningModule):
             super().__init__()
             self.save_hyperparameters()
             self.model = PointCloudAE(num_classes, normal_channel=use_normals)
-            self.criterion = point_loss()
+            self.criterion = chamfer_distance()
             
             # Metrics for each stage
             self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
