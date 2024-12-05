@@ -8,3 +8,5 @@ tensorboard
 torchmetrics
 wandb
 plotly
+matplotlib
+nbformat

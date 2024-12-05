@@ -68,7 +68,6 @@ def drop_points_random(points: np.ndarray, n_points: int) -> np.ndarray:
     return points
 
 
-
 def drop_points_farthest(points: np.ndarray, n_points: int) -> np.ndarray:
     """Adjust points to have exactly n_points.
 
@@ -89,225 +88,186 @@ def drop_points_farthest(points: np.ndarray, n_points: int) -> np.ndarray:
         return np.vstack((points, new_points))
   
 
-
-def get_cubic_samples(points: np.ndarray, n_samples: int, cube_size: float, n_points: int) -> List[np.ndarray]:
-    """Get N random cubic samples from point cloud using KDTree for faster querying.
-    
-    Args:
-        points: Nx3 array of points (more than 10^5 points)
-        n_samples: Number of cubic samples to extract
-        cube_size: Size of cubic sample
-    Returns:
-        List of arrays containing points within each cube
-    """
-    
-    samples = []
-    tree = KDTree(points)
+def get_min_max_coords(points: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     min_coords = points.min(axis=0)
     max_coords = points.max(axis=0)
-    n = 0  
-    dropped_points = 0
-    added_points = 0
-
-    while len(samples) < n_samples:
-        # Random center point for cube
-        center = np.random.uniform(
-            low=min_coords + cube_size/2,
-            high=max_coords - cube_size/2
-        )
-        
-        # Query points within the cube's bounding sphere
-        # Using diagonal/2 as radius ensures we cover the entire cube
-        radius = (cube_size * np.sqrt(3)) / 2
-        indices = tree.query_ball_point(center, radius)
-        
-        if indices:
-            # Filter points to exact cube shape
-            cube_points = points[indices]
-            mask = np.all(
-                (cube_points >= center - cube_size/2) & 
-                (cube_points <= center + cube_size/2),
-                axis=1
-            )
-            cube_points = cube_points[mask]
-            if len(cube_points) > n_points:
-                dropped_points += len(cube_points) - n_points
-            else:
-                added_points += n_points - len(cube_points)
-            cube_points = drop_points_random(cube_points, n_points)
-
-            if len(cube_points) > 0:
-                samples.append(cube_points)
-                n += 1
-
-    print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {dropped_points/n} points")
-    return samples
+    return min_coords, max_coords
 
 
+def calculate_stride(size: float, sample_type: str, overlap_fraction: float) -> float:
+    multiplier = 2 if sample_type == 'spheric' else 1
+    stride = size * multiplier * (1 - overlap_fraction)
+    if stride <= 0:
+        raise ValueError("overlap_fraction must be less than 1.")
+    return stride
 
-def get_spheric_samples(points: np.ndarray, n_samples: int, radius: float, n_points: int) -> List[np.ndarray]:
-    """Get N random spherical samples from point cloud using KDTree for faster querying.
-    
-    Args:
-        points: Nx3 array of points (more than 10^5 points)
-        n_samples: Number of spherical samples to extract
-        radius: Radius of the spherical sample
-    Returns:
-        List of arrays containing points within each sphere
-    """
-    
+
+def compute_dimensions(min_coords: np.ndarray, max_coords: np.ndarray, stride: float) -> np.ndarray:
+    dims = np.ceil((max_coords - min_coords) / stride).astype(int)
+    return dims
+
+
+def calculate_center(min_coords, stride, i, j, k, size, sample_type):
+    center = min_coords + np.array([i, j, k]) * stride
+    if sample_type == 'spheric':
+        center += size
+    else:
+        center += size / 2
+    return center
+
+
+def process_sample(points, tree, center, size, sample_type, n_points):
+    if sample_type == 'cubic':
+        radius = (size * np.sqrt(3)) / 2
+    else:
+        radius = size
+    indices = tree.query_ball_point(center, radius)
+    if not indices:
+        return None, 0, 0
+    sample_points = points[indices]
+    if sample_type == 'cubic':
+        min_corner = center - size / 2
+        max_corner = center + size / 2
+        mask = np.all((sample_points >= min_corner) & (sample_points <= max_corner), axis=1)
+        sample_points = sample_points[mask]
+        drop_func = drop_points_random
+    else:
+        distances = np.linalg.norm(sample_points - center, axis=1)
+        mask = distances <= size
+        sample_points = sample_points[mask]
+        drop_func = drop_points_farthest
+    if len(sample_points) > n_points:
+        dropped = len(sample_points) - n_points
+    else:
+        dropped = 0
+    added = max(n_points - len(sample_points), 0)
+    sample_points = drop_func(sample_points, n_points)
+    return sample_points, added, dropped
+
+
+def generate_samples(
+    points: np.ndarray,
+    tree: KDTree,
+    min_coords: np.ndarray,
+    stride: float,
+    size: float,
+    sample_type: str,
+    dims: np.ndarray,
+    n_points: int,
+    return_coords: bool,
+    max_samples: int
+) -> Tuple[List, int, int]:
     samples = []
-    tree = KDTree(points)
-    min_coords = points.min(axis=0)
-    max_coords = points.max(axis=0)
-    dropped_points = 0
-    added_points = 0
-
-    while len(samples) < n_samples:
-        # Random center point for sphere
-        center = np.random.uniform(
-            low=min_coords + radius,
-            high=max_coords - radius
-        )
-        # Query points within the sphere
-        indices = tree.query_ball_point(center, radius)
-        
-        if indices:
-            sphere_points = points[indices]
-            # Filter points to exact sphere shape
-            distances = np.linalg.norm(sphere_points - center, axis=1)
-            mask = distances <= radius
-            sphere_points = sphere_points[mask]
-            if len(sphere_points) > n_points:
-                dropped_points += len(sphere_points) - n_points
-            else:
-                added_points += n_points - len(sphere_points)
-
-            sphere_points = drop_points_farthest(sphere_points, n_points)
-            if len(sphere_points) > 0:
-                samples.append(sphere_points)
-
-    print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {dropped_points/len(samples)} points")
-    return samples
-
-
-def get_regular_cubic_samples(points: np.ndarray, cube_size: float, return_coords=False, n_points=100, max_samples=100000) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
-    """Divide point cloud into regular cubic samples covering the entire data space.
-    
-    Args:
-        points: Nx3 array of points
-        cube_size: Size of each cubic sample
-    Returns:
-        List of tuples containing points in cube and their center coordinates if return_coords is True
-    """
-    # Create KDTree for efficient point queries
-    tree = KDTree(points)
-    
-    # Calculate grid dimensions
-    min_coords = points.min(axis=0)
-    max_coords = points.max(axis=0)
-    
-    # Calculate number of cubes in each dimension
-    dims = np.ceil((max_coords - min_coords) / cube_size).astype(int)
-    dropped_points = 0
-    added_points = 0
-    samples = []
+    added_points = dropped_points = 0
     for i in range(dims[0]):
         for j in range(dims[1]):
             for k in range(dims[2]):
-
-                center = min_coords + np.array([i + 0.5, j + 0.5, k + 0.5]) * cube_size
-                min_corner = center - cube_size / 2
-                max_corner = center + cube_size / 2
-                
-                radius = (cube_size * np.sqrt(3)) / 2
-                indices = tree.query_ball_point(center, radius)
-                
-                if indices:
-                    cube_points = points[indices]
-                    mask = np.all(
-                        (cube_points >= min_corner) & 
-                        (cube_points <= max_corner),
-                        axis=1
-                    )
-                    cube_points = cube_points[mask]
-                    if len(cube_points) > n_points:
-                        dropped_points += len(cube_points) - n_points
+                center = calculate_center(min_coords, stride, i, j, k, size, sample_type)
+                sample_points, add, drop = process_sample(points, tree, center, size, sample_type, n_points)
+                added_points += add
+                dropped_points += drop
+                if sample_points is not None:
+                    if return_coords:
+                        samples.append((sample_points, tuple(center)))
                     else:
-                        added_points += n_points - len(cube_points)
-                    cube_points = drop_points_random(cube_points, n_points)
-
-                    if len(cube_points) > 0:
-                        if return_coords:
-                            samples.append((cube_points, (center[0], center[1], center[2])))
-                        else:
-                            samples.append(cube_points)
+                        samples.append(sample_points)
                     if len(samples) >= max_samples:
-                        break
-
-    print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {dropped_points/len(samples)} points")              
-    return samples
+                        return samples, added_points, dropped_points
+    return samples, added_points, dropped_points
 
 
-def get_regular_spheric_samples(points: np.ndarray, radius: float, return_coords=False, n_points=100, max_samples=100000) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
-    """Divide point cloud into regular spherical samples covering the entire data space.
-
+def get_random_samples(
+    points: np.ndarray,
+    n_samples: int,
+    size: float,
+    n_points: int,
+    sample_shape: str = 'cubic'
+) -> List[np.ndarray]:
+    """Get N random samples (cubic or spherical) from point cloud using KDTree for faster querying.
+    
     Args:
-        points: Nx3 array of points
-        radius: Radius of each spherical sample
+        points: Nx3 array of points (more than 10^5 points)
+        n_samples: Number of samples to extract
+        size: Size of the sample (cube_size for cubic, radius for spherical)
+        n_points: Number of points per sample
+        sample_shape: 'cubic' or 'spheric'
     Returns:
-        List of arrays containing points within each sphere, optionally with their center coordinates.
+        List of arrays containing points within each sample
     """
-    tree = KDTree(points)
-    min_coords = points.min(axis=0)
-    max_coords = points.max(axis=0)
-
-    # Calculate grid dimensions
-    dims = np.ceil((max_coords - min_coords) / (2 * radius)).astype(int)
-    added_points = 0
-    dropped_points = 0
+    
+    if sample_shape not in ['cubic', 'spheric']:
+        raise ValueError("sample_shape must be 'cubic' or 'spheric'")
+    
     samples = []
-    for i in range(dims[0]):
-        for j in range(dims[1]):
-            for k in range(dims[2]):
-                center = min_coords + np.array([i + 0.5, j + 0.5, k + 0.5]) * (2 * radius)
-                indices = tree.query_ball_point(center, radius)
-                if indices:
-                    sphere_points = points[indices]
-                    distances = np.linalg.norm(sphere_points - center, axis=1)
-                    mask = distances <= radius
-                    sphere_points = sphere_points[mask]
-                    if len(sphere_points) > n_points:
-                        dropped_points += len(sphere_points) - n_points
-                    else:
-                        added_points += n_points - len(sphere_points)
-                    sphere_points = drop_points_farthest(sphere_points, n_points)
+    tree = KDTree(points)
+    min_coords, max_coords = get_min_max_coords(points)
+    dropped_points = 0
+    added_points = 0
 
-                    if len(sphere_points) > 0:
-                        if return_coords:
-                            samples.append((sphere_points, (center[0], center[1], center[2])))
-                        else:
-                            samples.append(sphere_points)
-                        if len(samples) >= max_samples:
-                            break
+    while len(samples) < n_samples:
+        # Random center point for sample
+        center = np.random.uniform(
+            low=min_coords + (size / 2 if sample_shape == 'cubic' else size),
+            high=max_coords - (size / 2 if sample_shape == 'cubic' else size)
+        )
+        
+        sample_points, add, drop = process_sample(points, tree, center, size, sample_shape, n_points)
+        if sample_points is not None:
+            samples.append(sample_points)
+            added_points += add
+            dropped_points += drop
+
     print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
     return samples
+
+
+def get_regular_samples(
+    points: np.ndarray,
+    size: float,
+    sample_shape: str = 'cubic',
+    overlap_fraction: float = 0.0,
+    return_coords: bool = False,
+    n_points: int = 100,
+    max_samples: int = 2e32
+) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
+    """Divide point cloud into regular samples covering the entire data space with optional overlap, excluding samples that don't fit entirely."""
+    if sample_shape not in ['cubic', 'spheric']:
+        raise ValueError("sample_shape must be 'cubic' or 'spheric'")
+    
+    tree = KDTree(points)
+    min_coords, max_coords = get_min_max_coords(points)
+    stride = calculate_stride(size, sample_shape, overlap_fraction)
+    
+    padding = size / 2 if sample_shape == 'cubic' else size
+    min_center = min_coords + padding
+    max_center = max_coords - padding
+
+    dims = compute_dimensions(min_center, max_center, stride)
+    samples, added_points, dropped_points = generate_samples(
+        points, tree, min_center, stride, size, sample_shape, dims, 
+        n_points, return_coords, max_samples
+    )
+    print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
+    return samples
+
+
+
 
 if __name__ == "__main__":
     points = read_off_file("datasets/Al/inherent_configurations_off/240ps.off")
 
-    samples = get_cubic_samples(points, n_samples=8000, cube_size=10, n_points=100) 
+    samples = get_random_samples(points, sample_shape='cubic', n_samples=8000, size=10, n_points=100) 
     std = np.std([len(sample) for sample in samples])
     print(f"Found {len(samples)} cubic non-empty samples with std={std}")
 
-    samples = get_spheric_samples(points, n_samples=8000, radius=8.1, n_points=128) 
+    samples = get_random_samples(points, sample_shape='spheric', n_samples=8000, size=8.1, n_points=128) 
     std = np.std([len(sample) for sample in samples])
     print(f"Found {len(samples)} spheric non-empty samples with std={std}")
 
-    samples = get_regular_cubic_samples(points, max_samples=8000, cube_size=10, n_points=100) 
+    samples = get_regular_samples(points, sample_shape='cubic', max_samples=10000, size=10, n_points=100, overlap_fraction=0.3) 
     std = np.std([len(sample) for sample in samples])
     print(f"Found {len(samples)} regular cubic non-empty samples with std={std}")
 
-    samples = get_regular_spheric_samples(points, max_samples=8000, radius=8.0, n_points=128)
+    samples = get_regular_samples(points, sample_shape='spheric', max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3)
     std = np.std([len(sample) for sample in samples])
     print(f"Found {len(samples)} regular spheric non-empty samples with std={std}")
