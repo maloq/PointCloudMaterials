@@ -5,8 +5,8 @@ import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torchmetrics import Accuracy, Precision, Recall, AUROC
-from src.models.point_net.pointnet_cls import PointNet, point_loss
-from src.models.point_net2.pointnet2_cls_ssg import PointNet2, point_loss2
+from src.models.point_net.pointnet_cls import PointNet
+from src.loss.classification_loss import point_loss_classification
 
 
 class PointNetClassifier(pl.LightningModule):
@@ -16,9 +16,8 @@ class PointNetClassifier(pl.LightningModule):
             super().__init__()
             self.save_hyperparameters()
             self.model = PointNet(num_classes, normal_channel=use_normals)
-            self.criterion = point_loss()
+            self.criterion = point_loss_classification()
             
-            # Metrics for each stage
             self.train_accuracy = Accuracy(task="multiclass", num_classes=num_classes)
             self.train_precision = Precision(task="multiclass", num_classes=num_classes)
             self.train_recall = Recall(task="multiclass", num_classes=num_classes)
@@ -29,6 +28,7 @@ class PointNetClassifier(pl.LightningModule):
             self.val_recall = Recall(task="multiclass", num_classes=num_classes)
             self.val_auroc = AUROC(task="multiclass", num_classes=num_classes)
 
+
     def forward(self, x):
         return self.model(x)        
     
@@ -38,7 +38,6 @@ class PointNetClassifier(pl.LightningModule):
         pred, trans_feat = self(points)
         loss = self.criterion(pred, target.long(), trans_feat)
         
-        # Calculate metrics
         acc = self.train_accuracy(pred, target.long())
         prec = self.train_precision(pred, target.long())
         rec = self.train_recall(pred, target.long())
@@ -58,7 +57,6 @@ class PointNetClassifier(pl.LightningModule):
         pred, trans_feat = self(points)
         loss = self.criterion(pred, target.long(), trans_feat)
         
-        # Calculate metrics
         acc = self.val_accuracy(pred, target.long())
         prec = self.val_precision(pred, target.long())
         rec = self.val_recall(pred, target.long())

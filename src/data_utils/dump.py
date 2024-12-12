@@ -253,3 +253,56 @@ def random_point_dropout(batch_pc, max_dropout_ratio=0.875):
         if len(drop_idx)>0:
             batch_pc[b,drop_idx,:] = batch_pc[b,0,:] # set to the first point
     return batch_pc
+
+
+
+class DummyPointCloudAE(nn.Module):
+    def __init__(self, point_size, latent_size):
+        super(DummyPointCloudAE, self).__init__()
+        self.scale = 2
+        self.latent_size = latent_size
+        self.point_size = point_size
+        
+        self.conv1 = torch.nn.Conv1d(3, 64*self.scale, 1)
+        self.conv2 = torch.nn.Conv1d(64*self.scale, 128*self.scale, 1)
+        self.conv3 = torch.nn.Conv1d(128*self.scale, 128*self.scale, 1)
+        self.conv4 = torch.nn.Conv1d(128*self.scale, 64*self.scale, 1)
+        self.fc1 = torch.nn.Linear(512*self.scale, self.latent_size)
+
+        self.bn1 = nn.BatchNorm1d(64*self.scale)
+        self.bn2 = nn.BatchNorm1d(128*self.scale)
+        self.bn3 = nn.BatchNorm1d(128*self.scale)
+        self.bn4 = nn.BatchNorm1d(64*self.scale)
+        
+        self.fc2 = nn.Linear(self.latent_size, 512*self.scale)
+        self.fc3 = nn.Linear(512*self.scale,256*self.scale)
+        self.fc4 = nn.Linear(256*self.scale,self.point_size*3)
+
+
+    def encoder(self, x): 
+
+        x = F.relu(self.bn1(self.conv1(x)))
+        x = F.relu(self.bn2(self.conv2(x)))
+        x = torch.nn.MaxPool1d(2)(x)
+        x = F.relu(self.bn3(self.conv3(x)))
+        x = torch.nn.MaxPool1d(2)(x)
+        x = F.relu(self.bn4(self.conv4(x)))
+        x = torch.nn.MaxPool1d(2)(x)
+        x = x.flatten(start_dim=1)
+        x = F.relu(self.fc1(x))
+        x = torch.nn.AdaptiveMaxPool1d(self.latent_size)(x)
+        x = x.view(-1, self.latent_size)
+        return x
+    
+    def decoder(self, x):
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        x = self.fc4(x)
+        x = x.view(-1, self.point_size, 3)
+
+        return x
+    
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.decoder(x)
+        return x

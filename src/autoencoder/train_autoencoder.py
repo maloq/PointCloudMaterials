@@ -1,11 +1,12 @@
 import sys,os
 sys.path.append(os.getcwd())
+
 import torch
 import numpy as np
-import pytorch_lightning as pl
-from src.cls.lightning_module import PointNetClassifier
-from src.cls.data_module import PointCloudDataModule
 import hydra
+import pytorch_lightning as pl
+from src.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.data_utils.data_module import PointCloudDataModule
 from pytorch_lightning.loggers import WandbLogger
 from datetime import datetime
 from omegaconf import DictConfig, OmegaConf
@@ -24,7 +25,6 @@ def log_config(cfg):
 def get_rundir_name() -> str:
     now = datetime.now()
     return str(f'output/{now:%Y-%m-%d}/{now:%H-%M-%S}')
-
 
 
 def train_classification(cfg: DictConfig):
@@ -49,18 +49,18 @@ def train_classification(cfg: DictConfig):
     
     dm = PointCloudDataModule(cfg)
     
-    model = PointNetClassifier(
+    model = PointNetAutoencoder(
         lr=cfg.training.learning_rate,
-        use_normals=False,
-        decay_rate=cfg.training.decay_rate
+        decay_rate=cfg.training.decay_rate,
+        latent_size=cfg.model.latent_size
     )
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_loc,
-        monitor='val_acc',
-        filename='pointnet-{epoch:02d}-{val_acc:.2f}',
+        monitor='val_loss',
+        filename='pointnet-{epoch:02d}-{val_loss:.2f}',
         save_top_k=2,
-        mode='max',
+        mode='min',
     )
     
     trainer = pl.Trainer(
@@ -68,11 +68,12 @@ def train_classification(cfg: DictConfig):
         max_epochs=cfg.training.epochs,
         accelerator='gpu' if cfg.training.gpu else 'cpu',
         callbacks=[checkpoint_callback, lr_monitor],
-        precision='16-mixed',
+        precision='32',
         log_every_n_steps=cfg.training.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
-        profiler='simple',
+        check_val_every_n_epoch=50,
+        # profiler='simple',
     )
     log_config(cfg)
     logging.info(f"Time to start train {time.process_time() - start_time} seconds")
@@ -80,14 +81,23 @@ def train_classification(cfg: DictConfig):
 
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_classification")
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_autoencoder")
 def main(cfg: DictConfig):
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(message)s')
-    train_classification(cfg)
-    logging.info('Train finished!')
+    try:
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(message)s')
+        train_classification(cfg)
+        logging.info('Train finished!')
+    except Exception as e:
+        if isinstance(e, KeyboardInterrupt):
+            logging.info('Keyboard interrupt detected, finishing training...')
+            wandb.finish()
+        else:
+            logging.error(f"An unexpected error occurred: {e}")
+            raise e
 
 
 if __name__ == "__main__":
+    wandb.finish()
     sys.argv.append('hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}')
     main()
     wandb.finish()

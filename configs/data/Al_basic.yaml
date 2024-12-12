@@ -1,7 +1,0 @@
-cube_size: 16
-radius: 8.0
-sample_type: 'regular' # 'regular' or 'random'
-sample_shape: 'spheric' # 'spheric' or 'cubic'
-n_samples: 8000
-num_points: 128
-overlap_fraction: 0.3

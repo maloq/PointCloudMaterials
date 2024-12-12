@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import pytorch_lightning as pl
 from src.cls.classification_module import PointNetClassifier
-from src.cls.data_module import PointCloudDataModule
+from src.data_utils.data_module import PointCloudDataModule
 import hydra
 from pytorch_lightning.loggers import WandbLogger
 from datetime import datetime
@@ -32,7 +32,7 @@ def train_classification(cfg: DictConfig):
     start_time = time.process_time()
     logging.info(f"Starting in {os.getcwd()}")
     logging.info(f"torch version {torch.__version__ }")
-    os.environ['WANDB_MODE'] = 'offline'
+    os.environ['WANDB_MODE'] = 'online'
     os.environ['WANDB_DIR'] = 'output/wandb'
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
@@ -41,6 +41,8 @@ def train_classification(cfg: DictConfig):
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
                                name=cfg.experiment_name,
+                               notes=cfg.experiment_name,
+                               tags=cfg.experiment_tags,
                                log_model='all')
     
     default_root_dir = run_dir

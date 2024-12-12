@@ -1,5 +1,7 @@
 defaults:
-  - training: point_net_basic
-  - data: Al_basic
+  - training: cls_point_net
+  - data: cls_Al_basic
 project_name: pointnet
-experiment_name: setup
+experiment_name: 32_points_cls_defalut_loss
+experiment_tags:
+  - cls
