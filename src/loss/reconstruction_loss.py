@@ -35,83 +35,98 @@ def chamfer_regularized_encoder(pred, target, trans_feat_list, feature_transform
     return total_loss
 
 
-def chamfer_distance(pred, target):
+def chamfer_distance(pred, target, trans_feat_list):
     loss, _ = chamfer_distance(pred, target) 
     return loss
 
 
 
-
-
-def calculate_rdf(point_cloud, r_max, dr, density=None):
+def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2, ):
     """
-    Calculates the Radial Distribution Function (RDF) for a point cloud.
+    Calculates the Radial Distribution Function (RDF) for points within a sphere.
 
     Args:
         point_cloud (torch.Tensor): Point cloud of shape (N, 3), where N is the number of points.
-        r_max (float): Maximum radius to consider for RDF calculation.
+        sphere_radius (float): Radius of the sphere containing the points.
         dr (float): Bin width for the RDF histogram.
-        density (float, optional): Density of the point cloud. If None, it's estimated from the point cloud volume.
+        num_points (int, optional): Number of points to expect in the sphere. 
+                                  If None, uses all points in point_cloud.
 
     Returns:
         torch.Tensor: RDF values for each radial bin.
         torch.Tensor: Radial distances corresponding to the RDF bins.
     """
-    num_points = point_cloud.shape[0]
+    if num_points is None:
+        num_points = point_cloud.shape[0]
 
-    # Calculate pairwise distances (efficiently using torch.cdist)
+    # Calculate pairwise distances
     distances = torch.cdist(point_cloud, point_cloud)
-
+    
     # Create radial bins
-    r_bins = torch.arange(0, r_max + dr, dr)
-    r_mid = (r_bins[:-1] + r_bins[1:]) / 2  # Midpoint of each bin
+    r_bins = torch.arange(0, sphere_radius + dr, dr)
+    r_mid = (r_bins[:-1] + r_bins[1:]) / 2
 
-    # Histogram distances to get pair counts in each bin
-    hist = torch.histc(distances.flatten(), bins=len(r_bins) - 1, min=0, max=r_max)
+    # Get upper triangle of distance matrix to avoid double counting
+    # and remove self-interactions (diagonal elements)
+    distances_triu = distances[torch.triu_indices(num_points, num_points, offset=1)]
+
+    # Histogram distances
+    hist = torch.histc(distances_triu, bins=len(r_bins) - 1, min=0, max=sphere_radius)
+
+    # Calculate density for sphere
+    volume = (4/3) * torch.pi * (sphere_radius**3)
+    density = num_points / volume
+
+    # Calculate ideal counts for normalization
+    shell_volumes = 4 * torch.pi * r_mid**2 * dr
+    ideal_counts = shell_volumes * density * num_points
 
     # Normalize to get RDF
-    if density is None:
-        # Estimate density (assuming points are in a sphere of radius r_max - this is a simplification)
-        volume = (4/3) * torch.pi * (r_max**3)  # Volume of a sphere with radius r_max
-        density = num_points / volume
-
-    ideal_counts = (4 * torch.pi * r_mid**2 * dr * density * num_points)  # Expected counts in each shell for uniform distribution
     rdf = hist / ideal_counts
 
-    # Handle potential division by zero (if ideal_counts is zero for some bins)
+    # Handle potential division by zero
     rdf[torch.isnan(rdf)] = 0.0
+    rdf = rdf[drop_first_n_bins:]
+    r_mid = r_mid[drop_first_n_bins:]
 
     return rdf, r_mid
 
 
-class RDFLoss(nn.Module):
-    def __init__(self, target_rdf, r_mid):
-        super(RDFLoss, self).__init__()
-        self.target_rdf = target_rdf.detach() # Detach target_rdf to prevent gradients from flowing back
-        self.r_mid = r_mid.detach() # Detach r_mid as well
 
-    def forward(self, reconstructed_pc, r_max, dr, density=None):
-        """
-        Calculates the RDF loss between the RDF of the reconstructed point cloud
-        and the target RDF.
+def kl_divergence_loss(rdf1, rdf2):
+    """
+    Calculate symmetric KL divergence (Jensen-Shannon without 0.5 factor) between two RDFs
+    
+    Args:
+        rdf1, rdf2: torch tensors of RDF values
+    Returns:
+        torch.Tensor: KL divergence loss
+    """
+    epsilon = 1e-10
+    rdf1_norm = rdf1 / (torch.sum(rdf1) + epsilon)
+    rdf2_norm = rdf2 / (torch.sum(rdf2) + epsilon)
+    
+    m = 0.5 * (rdf1_norm + rdf2_norm)
+    loss = torch.sum(rdf1_norm * torch.log(rdf1_norm / (m + epsilon) + epsilon)) + \
+           torch.sum(rdf2_norm * torch.log(rdf2_norm / (m + epsilon) + epsilon))
+    return loss
 
-        Args:
-            reconstructed_pc (torch.Tensor): Reconstructed point cloud.
-            r_max (float): Maximum radius for RDF calculation.
-            dr (float): Bin width for RDF calculation.
-            density (float, optional): Density for RDF calculation.
 
-        Returns:
-            torch.Tensor: RDF loss value.
-        """
-        reconstructed_rdf, _ = calculate_rdf(reconstructed_pc, r_max, dr, density=density)
 
-        # Interpolate target_rdf to match the bins of reconstructed_rdf if needed
-        # (if r_mid from target and reconstructed RDF calculations are slightly different)
-        # In this simple example, we assume they are calculated with the same bins.
-        # If bins are different, use interpolation like torch.nn.functional.interpolate
-
-        # Ensure both RDFs have the same length (handle cases where r_max or dr might slightly differ)
-        min_len = min(len(self.target_rdf), len(reconstructed_rdf))
-        loss = nn.MSELoss()(reconstructed_rdf[:min_len], self.target_rdf[:min_len])
-        return loss
+def wasserstein_distance_loss(rdf1, rdf2):
+    """
+    Calculate approximate 1D Wasserstein distance between two RDFs using cumulative distributions
+    
+    Args:
+        rdf1, rdf2: torch tensors of RDF values
+    Returns:
+        torch.Tensor: Wasserstein distance loss
+    """
+    epsilon = 1e-10
+    rdf1_norm = rdf1 / (torch.sum(rdf1) + epsilon)
+    rdf2_norm = rdf2 / (torch.sum(rdf2) + epsilon)
+    
+    cdf1 = torch.cumsum(rdf1_norm, dim=0)
+    cdf2 = torch.cumsum(rdf2_norm, dim=0)
+    loss = torch.sum(torch.abs(cdf1 - cdf2))
+    return loss
