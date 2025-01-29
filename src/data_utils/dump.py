@@ -306,3 +306,87 @@ class DummyPointCloudAE(nn.Module):
         x = self.encoder(x)
         x = self.decoder(x)
         return x
+
+
+
+def create_line_segments(points, n_neighbors=3):
+    """Create line segments for connecting nearest points."""
+    nearest = find_n_nearest(points, n_neighbors=n_neighbors)
+    lines_x, lines_y, lines_z = [], [], []
+    
+    for i, neighbors in enumerate(nearest):
+        for neighbor_idx in neighbors:
+            lines_x.extend([points[i, 0], points[neighbor_idx, 0], None])
+            lines_y.extend([points[i, 1], points[neighbor_idx, 1], None])
+            lines_z.extend([points[i, 2], points[neighbor_idx, 2], None])
+            
+    return lines_x, lines_y, lines_z
+
+def add_point_cloud_traces(fig, points, lines, row, col, name_prefix=''):
+    """Add point cloud and connection traces to the figure."""
+    # Add points
+    fig.add_trace(
+        go.Scatter3d(
+            x=points[:, 0], y=points[:, 1], z=points[:, 2],
+            mode='markers',
+            marker=dict(size=3, opacity=0.8),
+            name=f'{name_prefix} Points'
+        ),
+        row=row, col=col
+    )
+    
+    # Add connections
+    fig.add_trace(
+        go.Scatter3d(
+            x=lines[0], y=lines[1], z=lines[2],
+            mode='lines',
+            line=dict(color='gray', width=1),
+            opacity=0.5,
+            name=f'{name_prefix} Connections'
+        ),
+        row=row, col=col
+    )
+
+def visualize_point_cloud_comparison(original_points, reconstructed_points, batch_idx=0):
+    """Visualize original and reconstructed point clouds side by side."""
+    # Extract points for the specified batch
+    orig_points = original_points[batch_idx][:, :3]
+    recon_points = reconstructed_points[batch_idx][:, :3]
+    
+    # Create subplot figure
+    fig = make_subplots(
+        rows=1, cols=2,
+        specs=[[{'type': 'scene'}, {'type': 'scene'}]],
+        subplot_titles=('Original Point Cloud', 'Reconstructed Point Cloud')
+    )
+    
+    # Create line segments
+    orig_lines = create_line_segments(orig_points)
+    recon_lines = create_line_segments(recon_points)
+    
+    # Add traces
+    add_point_cloud_traces(fig, orig_points, orig_lines, row=1, col=1, name_prefix='Original')
+    add_point_cloud_traces(fig, recon_points, recon_lines, row=1, col=2, name_prefix='Reconstructed')
+    
+    # Update layout
+    fig.update_layout(
+        width=1600,
+        height=800,
+        showlegend=False,
+        scene=dict(
+            aspectmode='data',
+            xaxis_title='X',
+            yaxis_title='Y',
+            zaxis_title='Z'
+        ),
+        scene2=dict(
+            aspectmode='data',
+            xaxis_title='X',
+            yaxis_title='Y',
+            zaxis_title='Z'
+        )
+    )
+    
+    return fig
+
+fig = visualize_point_cloud_comparison(original_points, reconstructed_points, batch_idx=12)

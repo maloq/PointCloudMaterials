@@ -5,8 +5,8 @@ import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torchmetrics import Accuracy, Precision, Recall, AUROC
-from src.models.point_net.pointnet_autoencoder import DummyPointCloudAE, PointNetAE
-from src.loss.reconstruction_loss import point_reconstruction_loss_regularized
+from src.models.point_net.pointnet_autoencoder import DummyPointCloudAE, PointNetAE, PointNetAE_MLP
+from src.loss.reconstruction_loss import point_reconstruction_loss_regularized_AE
 from src.loss.regularization_loss import feature_transform_reguliarzer
 
 
@@ -18,7 +18,7 @@ class PointNetAutoencoder(pl.LightningModule):
             self.save_hyperparameters()
             # self.model = DummyPointCloudAE(point_size=64, latent_size=latent_size)
             self.model = PointNetAE(point_size=64, latent_size=latent_size)
-            self.criterion = point_reconstruction_loss_regularized
+            self.criterion = point_reconstruction_loss_regularized_AE
             
 
     def forward(self, x):
@@ -27,16 +27,16 @@ class PointNetAutoencoder(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         points, _ = batch
-        pred, trans_feat = self(points.permute(0,2,1))
-        loss = self.criterion(points.float(), pred.float(), trans_feat)
+        pred, trans_feat_list = self(points.permute(0,2,1))
+        loss = self.criterion(points.float(), pred.float(), trans_feat_list)
         self.log('train_loss', loss, prog_bar=True)
         return loss
 
 
     def validation_step(self, batch, batch_idx):
         points, _ = batch
-        pred, trans_feat = self(points.permute(0,2,1))
-        loss = self.criterion(points.float(), pred.float(), trans_feat)
+        pred, trans_feat_list = self(points.permute(0,2,1))
+        loss = self.criterion(points.float(), pred.float(), trans_feat_list)
         self.log('val_loss', loss, prog_bar=True)
         return {'val_loss': loss}    
     

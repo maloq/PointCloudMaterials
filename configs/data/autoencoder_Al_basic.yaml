@@ -1,5 +1,5 @@
-cube_size: 8.0
-radius: 8.0
+cube_size: 7.0
+radius: 7.0
 sample_type: 'regular' # 'regular' or 'random'
 sample_shape: 'spheric' # 'spheric' or 'cubic'
 n_samples: 800000

@@ -37,6 +37,7 @@ def train_classification(cfg: DictConfig):
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
     run_dir = get_rundir_name()
+    wandb.finish()
     wandb.init()
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
@@ -72,7 +73,7 @@ def train_classification(cfg: DictConfig):
         log_every_n_steps=cfg.training.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
-        check_val_every_n_epoch=50,
+        check_val_every_n_epoch=10,
         # profiler='simple',
     )
     log_config(cfg)
