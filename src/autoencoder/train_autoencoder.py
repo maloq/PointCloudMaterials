@@ -32,7 +32,7 @@ def train_classification(cfg: DictConfig):
     start_time = time.process_time()
     logging.info(f"Starting in {os.getcwd()}")
     logging.info(f"torch version {torch.__version__ }")
-    os.environ['WANDB_MODE'] = 'offline'
+    os.environ['WANDB_MODE'] = cfg.wandb_mode
     os.environ['WANDB_DIR'] = 'output/wandb'
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
@@ -49,12 +49,7 @@ def train_classification(cfg: DictConfig):
     lr_monitor = LearningRateMonitor(logging_interval='step', log_momentum=False) 
     
     dm = PointCloudDataModule(cfg)
-    
-    model = PointNetAutoencoder(
-        lr=cfg.training.learning_rate,
-        decay_rate=cfg.training.decay_rate,
-        latent_size=cfg.model.latent_size
-    )
+    model = PointNetAutoencoder(cfg)
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_loc,
@@ -84,6 +79,10 @@ def train_classification(cfg: DictConfig):
 
 @hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_autoencoder")
 def main(cfg: DictConfig):
+    print("torch.__version__", torch.__version__)
+    print("torch.version.cuda", torch.version.cuda)
+    print("torch.cuda.is_available()", torch.cuda.is_available())
+    print("torch.cuda.device_count()", torch.cuda.device_count())
     try:
         logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(message)s')
         train_classification(cfg)

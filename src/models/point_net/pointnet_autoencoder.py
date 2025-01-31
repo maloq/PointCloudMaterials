@@ -22,9 +22,7 @@ class MLPEncoder(nn.Module):
         
     def forward(self, x):
         # desired shape: (batch_size, point_size * 3)
-        print(x.shape)
         x = x.reshape(-1, self.point_size * 3)
-        print(x.shape)
         return self.encoder(x)
 
 
@@ -37,8 +35,10 @@ class MLPDecoder(nn.Module):
         self.decoder = nn.Sequential(
             nn.Linear(latent_size, 512),
             nn.ReLU(),
+            nn.BatchNorm1d(512),
             nn.Linear(512, 256),
             nn.ReLU(),
+            nn.BatchNorm1d(256),
             nn.Linear(256, point_size * 3)
         )
         
@@ -57,7 +57,8 @@ class MLP_AE(nn.Module):
     def forward(self, x):
         x = self.encoder(x)
         x = self.decoder(x)
-        return x
+        return x, []
+
 
 
 class PointNetDecoder(nn.Module):
@@ -132,6 +133,9 @@ class PointNetAE(nn.Module):
             nn.Linear(1024, 512),
             nn.BatchNorm1d(512),
             nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
@@ -149,6 +153,7 @@ class PointNetAE(nn.Module):
         x, _, trans_feat_encoder = self.encoder(x)
         x, _, trans_feat_decoder = self.decoder(x)
         return x, [trans_feat_encoder, trans_feat_decoder]
+
 
 
 class PointNetAE_MLP(PointNetAE):

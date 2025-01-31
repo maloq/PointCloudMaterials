@@ -1,6 +1,6 @@
-learning_rate: 0.008
-batch_size: 1024
-epochs: 3000
+learning_rate: 0.01
+batch_size: 3048
+epochs: 1000
 decay_rate: 0.0002
 gpu: True
 log_every_n_steps: 5

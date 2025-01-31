@@ -4,4 +4,4 @@ defaults:
 project_name: pointnet
 experiment_name: 32_points_cls_defalut_loss
 experiment_tags:
-  - cls
+  - autoencoder
