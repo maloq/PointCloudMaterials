@@ -40,58 +40,10 @@ def chamfer(pred, target, **kwargs):
 
 
 
-# def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2, ):
-#     """
-#     Calculates the Radial Distribution Function (RDF) for points within a sphere.
-
-#     Args:
-#         point_cloud (torch.Tensor): Point cloud of shape (N, 3), where N is the number of points.
-#         sphere_radius (float): Radius of the sphere containing the points.
-#         dr (float): Bin width for the RDF histogram.
-#         num_points (int, optional): Number of points to expect in the sphere. 
-#                                   If None, uses all points in point_cloud.
-
-#     Returns:
-#         torch.Tensor: RDF values for each radial bin.
-#         torch.Tensor: Radial distances corresponding to the RDF bins.
-#     """
-#     if num_points is None:
-#         num_points = point_cloud.shape[0]
-
-#     # Calculate pairwise distances
-#     distances = torch.cdist(point_cloud, point_cloud)
-    
-#     # Create radial bins
-#     r_bins = torch.arange(0, sphere_radius + dr, dr)
-#     r_mid = (r_bins[:-1] + r_bins[1:]) / 2
-
-#     # Get upper triangle of distance matrix to avoid double counting
-#     # and remove self-interactions (diagonal elements)
-#     distances_triu = distances[torch.triu_indices(num_points, num_points, offset=1)]
-
-#     # Histogram distances
-#     hist = torch.histc(distances_triu, bins=len(r_bins) - 1, min=0, max=sphere_radius)
-
-#     # Calculate density for sphere
-#     volume = (4/3) * torch.pi * (sphere_radius**3)
-#     density = num_points / volume
-
-#     # Calculate ideal counts for normalization
-#     shell_volumes = 4 * torch.pi * r_mid**2 * dr
-#     ideal_counts = shell_volumes * density * num_points
-
-#     # Normalize to get RDF
-#     rdf = hist / ideal_counts
-
-#     # Handle potential division by zero
-#     rdf[torch.isnan(rdf)] = 0.0
-#     rdf = rdf[drop_first_n_bins:]
-#     r_mid = r_mid[drop_first_n_bins:]
-
-#     return rdf, r_mid
 
 
-def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2):
+
+def calculate_rdf_old(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2):
     """
     Calculates the Radial Distribution Function (RDF) for batched points within a sphere.
 
@@ -152,6 +104,76 @@ def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_
 
 
 
+def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2):
+    """
+    Calculates the Radial Distribution Function (RDF) for batched points within a sphere faster using vectorized operations.
+
+    Args:
+        point_cloud (torch.Tensor): Point cloud of shape (B, 3, N) or (B, N, 3), 
+                                    where B is batch size and N is number of points.
+        sphere_radius (float): Radius of the sphere containing the points.
+        dr (float): Bin width for the RDF histogram.
+        num_points (int, optional): Number of points to expect in the sphere.
+        drop_first_n_bins (int): Number of initial bins to drop.
+
+    Returns:
+        torch.Tensor: RDF values for each radial bin, shape (B, num_bins_after_drop).
+        torch.Tensor: Radial distances corresponding to the RDF bins after dropping.
+    """
+    # Ensure point cloud is in (B, N, 3) format
+    if point_cloud.shape[1] == 3:
+        point_cloud = point_cloud.transpose(1, 2)
+    
+    B, N = point_cloud.shape[0], point_cloud.shape[1]
+    if num_points is None:
+        num_points = N
+
+
+    # Create radial bins and compute r_mid
+    r_bins = torch.arange(0, sphere_radius + dr, dr, device=point_cloud.device)
+    r_mid = (r_bins[:-1] + r_bins[1:]) / 2
+    num_bins = len(r_bins) - 1
+
+    # Compute all pairwise distances in a batched manner.
+    # distances: shape (B, N, N)
+    distances = torch.cdist(point_cloud, point_cloud)
+
+    # Get the same upper triangular indices for all batches to avoid double counting
+    triu_idx = torch.triu_indices(N, N, offset=1)
+    # distances_upper: shape (B, M) where M = number of upper triangular elements per batch
+    distances_upper = distances[:, triu_idx[0], triu_idx[1]]
+
+    # Use bucketize to assign each distance to a bin
+    # Use right=True so that values exactly equal to a bin edge are handled like torch.histc.
+    bin_indices = torch.bucketize(distances_upper, r_bins, right=True) - 1
+    # Clamp bin indices to ensure they fall into the valid range [0, num_bins-1]
+    bin_indices = torch.clamp(bin_indices, 0, num_bins - 1)
+
+    # Create one-hot encoding of bin indices and sum along the M dimension per batch.
+    # shape: (B, M, num_bins)
+    one_hot = torch.nn.functional.one_hot(bin_indices, num_classes=num_bins).to(torch.float)
+    # Compute histograms for each batch; shape: (B, num_bins)
+    hist = one_hot.sum(dim=1)
+    
+    # Calculate density for sphere: assume each point counts in the density estimation
+    volume = (4/3) * torch.pi * (sphere_radius**3)
+    density = num_points / volume
+    # Calculate ideal counts per shell for normalization
+    shell_volumes = 4 * torch.pi * (r_mid ** 2) * dr
+    ideal_counts = shell_volumes * density * num_points
+
+    # Normalize histogram counts to get rdf per batch (broadcast division over bins)
+    rdf = hist / (ideal_counts.unsqueeze(0) + 1e-10)
+    rdf[rdf != rdf] = 0.0  # Replace any NaNs with 0
+
+    # Drop the first few bins if requested
+    rdf = rdf[:, drop_first_n_bins:]
+    r_mid = r_mid[drop_first_n_bins:]
+
+    return rdf, r_mid
+
+
+
 def kl_divergence_loss(rdf1, rdf2):
     """
     Calculate symmetric KL divergence (Jensen-Shannon without 0.5 factor) between two RDFs
@@ -198,7 +220,7 @@ def rdf_wasserstein_loss(pred, target):
     return loss
 
 
-def chamfer_wasserstein_loss(pred, target, reconstruction_loss_scale=0.5, feature_transform_loss_scale=0.001, trans_feat_list=None):
+def chamfer_wasserstein_loss(pred, target, reconstruction_loss_scale=0.005, feature_transform_loss_scale=0.0001, trans_feat_list=None):
     loss, _ = chamfer_distance(pred, target)
     rdf1, r_mid1 = calculate_rdf(pred, sphere_radius=5, dr=0.05)
     rdf2, r_mid2 = calculate_rdf(target, sphere_radius=5, dr=0.05)

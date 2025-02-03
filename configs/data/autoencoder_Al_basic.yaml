@@ -7,6 +7,6 @@ num_points: 32
 overlap_fraction: 0.3
 data_path: 'datasets/Al/inherent_configurations_off'
 liquid_files: 
-- '240ps.off'
+- '166ps.off'
 crystal_files: 
 - '240ps.off'

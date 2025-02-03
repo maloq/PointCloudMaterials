@@ -120,7 +120,50 @@ class PointNetDecoder(nn.Module):
         # Transpose to match expected shape (batch_size, point_size, 3)
         return x.transpose(2, 1), trans, trans_feat
 
+class TransformerDecoder(nn.Module):
+    def __init__(self, point_size, latent_size, d_model=256, nhead=8, num_layers=3, dropout=0.1):
+        super(TransformerDecoder, self).__init__()
+        self.point_size = point_size
+        self.latent_size = latent_size
+        self.d_model = d_model
+        
+        # Project latent vector to the transformer model dimension.
+        self.input_proj = nn.Linear(latent_size, d_model)
+        
+        # Learnable query embeddings for each output point.
+        # These queries will be used as input to the transformer decoder.
+        self.query_embed = nn.Parameter(torch.randn(point_size, d_model))
+        
+        # Build a stack of transformer decoder layers.
+        decoder_layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=nhead, dropout=dropout)
+        self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
+        
+        # Final projection from transformer output dimension to 3 (for x, y, z).
+        self.output_proj = nn.Linear(d_model, 3)
+    
+    def forward(self, x):
+        # x is expected to be of shape (batch_size, latent_size)
+        batch_size = x.size(0)
+        
+        # Create transformer memory from the latent vector:
+        # shape: (1, batch_size, d_model)
+        memory = self.input_proj(x).unsqueeze(0)
+        
+        # Expand the learned query embeddings to the current batch:
+        # shape: (point_size, batch_size, d_model)
+        queries = self.query_embed.unsqueeze(1).expand(self.point_size, batch_size, self.d_model)
+        
+        # Decode using the transformer decoder:
+        # output shape: (point_size, batch_size, d_model)
+        out = self.transformer_decoder(tgt=queries, memory=memory)
+        
+        # Project each token to 3D coordinates:
+        # (point_size, batch_size, 3) then transpose to (batch_size, point_size, 3)
+        out = self.output_proj(out).transpose(0, 1)
+        
+        return out
 
+        
 class PointNetAE(nn.Module):
     def __init__(self, point_size, latent_size):
         super(PointNetAE, self).__init__()
@@ -166,3 +209,19 @@ class PointNetAE_MLP(PointNetAE):
         x, _ , trans_feat_encoder = self.encoder(x)
         x = self.decoder(x)
         return x, [trans_feat_encoder,]
+
+
+
+class PointNetAE_Transformer(PointNetAE):
+
+    def __init__(self, point_size, latent_size):
+        super().__init__(point_size, latent_size)
+        self.decoder = TransformerDecoder(point_size, latent_size)
+        
+    def forward(self, x):
+        x, _ , trans_feat_encoder = self.encoder(x)
+        x = self.decoder(x)
+        return x, [trans_feat_encoder,]
+
+
+    

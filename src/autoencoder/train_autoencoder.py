@@ -64,7 +64,7 @@ def train_classification(cfg: DictConfig):
         max_epochs=cfg.training.epochs,
         accelerator='gpu' if cfg.training.gpu else 'cpu',
         callbacks=[checkpoint_callback, lr_monitor],
-        precision='32',
+        precision='16-mixed',
         log_every_n_steps=cfg.training.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
