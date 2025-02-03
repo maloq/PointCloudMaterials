@@ -38,11 +38,14 @@ def train_classification(cfg: DictConfig):
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
     run_dir = get_rundir_name()
     wandb.finish()
-    wandb.init()
+    wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
                                name=cfg.experiment_name,
-                               log_model='all')
+                               model_log_interval=None,
+                               log_dataset_dir=None,
+                               log_best_dir=None,
+                               log_latest_dir=None)
     
     default_root_dir = run_dir
     checkpoint_loc = run_dir   
@@ -65,6 +68,7 @@ def train_classification(cfg: DictConfig):
         accelerator='gpu' if cfg.training.gpu else 'cpu',
         callbacks=[checkpoint_callback, lr_monitor],
         precision='16-mixed',
+        devices=[0],
         log_every_n_steps=cfg.training.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,

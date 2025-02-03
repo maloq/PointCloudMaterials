@@ -3,6 +3,6 @@ defaults:
   - data: autoencoder_Al_basic 
   - model: autoencoder_basic
 project_name: pointnet
-experiment_name: PnAE_MLP_RDF_wasserstein_32_points_lc
+experiment_name: PnAE_Folding_RDF_32_points_hugebatch
 # wandb_mode: online
 wandb_mode: online

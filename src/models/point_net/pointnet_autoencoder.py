@@ -225,3 +225,61 @@ class PointNetAE_Transformer(PointNetAE):
 
 
     
+class FoldingDecoder(nn.Module):
+    def __init__(self, point_size, latent_size):
+        super(FoldingDecoder, self).__init__()
+        self.point_size = point_size
+        self.latent_size = latent_size
+        
+        # Build a fixed 2D grid as a prior (assuming point_size is a perfect square)
+        side = int(point_size ** 0.5)
+        xs = torch.linspace(-1, 1, steps=side)
+        ys = torch.linspace(-1, 1, steps=side)
+        grid_x, grid_y = torch.meshgrid(xs, ys, indexing='ij')
+        grid = torch.stack([grid_x.reshape(-1), grid_y.reshape(-1)], dim=-1)
+        
+        # Ensure grid has exactly point_size elements (pad or trim if necessary)
+        if grid.size(0) < point_size:
+            pad = point_size - grid.size(0)
+            grid = torch.cat([grid, grid[:pad]], dim=0)
+        elif grid.size(0) > point_size:
+            grid = grid[:point_size]
+        
+        self.register_buffer('grid', grid)
+        
+        # Shared MLP to "fold" the grid along with latent code information.
+        self.mlp1 = nn.Linear(latent_size + 2, 512)
+        self.mlp2 = nn.Linear(512, 512)
+        self.mlp3 = nn.Linear(512, 3)
+    
+    def forward(self, x):
+        # x: (batch_size, latent_size)
+        batch_size = x.size(0)
+        
+        # Expand latent vector to (batch_size, point_size, latent_size)
+        x_expanded = x.unsqueeze(1).expand(-1, self.point_size, -1)
+        # Expand grid: (batch_size, point_size, 2)
+        grid = self.grid.unsqueeze(0).expand(batch_size, -1, -1).to(x.device)
+        
+        # Concatenate latent vector with grid coordinates
+        x_in = torch.cat([x_expanded, grid], dim=-1)
+        x = F.relu(self.mlp1(x_in))
+        x = F.relu(self.mlp2(x))
+        x = self.mlp3(x)
+        
+        return x
+    
+
+class PointNetAE_Folding(PointNetAE):
+    def __init__(self, point_size, latent_size):
+        super().__init__(point_size, latent_size)
+        self.decoder = FoldingDecoder(point_size, latent_size)
+
+    def forward(self, x):
+        x, _ , trans_feat_encoder = self.encoder(x)
+        x = self.decoder(x)
+        return x, [trans_feat_encoder,]
+
+
+
+
