@@ -1,1 +1,2 @@
-latent_size: 64
+latent_size: 256
+type: PointNetAE_Folding

@@ -13,13 +13,13 @@ def main():
 
     # Parameters for RDF calculation
     batch_size = 64
-    num_points = 64
+    point_size = 64
     sphere_radius = 5.0
     dr = 0.05
     drop_first_n_bins = 2
 
     # Create a random point cloud with shape (B, 3, N)
-    point_cloud = torch.rand((batch_size, 3, num_points), device=device)
+    point_cloud = torch.rand((batch_size, 3, point_size), device=device)
 
     # Compute RDF using the old (loop-based) implementation and the fast (vectorized) version.
     with torch.no_grad():

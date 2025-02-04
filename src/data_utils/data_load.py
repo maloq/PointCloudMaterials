@@ -34,7 +34,7 @@ class AtomicDataset(Dataset):
                  cube_size=16,
                  overlap_fraction=0.0,
                  n_samples=1000,
-                 num_points=100,
+                 point_size=100,
                  label=0):
         """Initialize the dataset with cubic samples from OFF files.
         Args:
@@ -42,12 +42,12 @@ class AtomicDataset(Dataset):
             TODO: Add more details
         """
         self.root = root
-        self.npoints = num_points
+        self.npoints = point_size
         self.cube_size = cube_size
         self.radius = radius
         self.n_samples = n_samples
         self.label = label
-        logging.debug(f"Sample number of points {num_points}")
+        logging.debug(f"Sample number of points {point_size}")
         for off_file in data_files:
             print(f"Reading {off_file}")
             points = read_off_file(os.path.join(root, off_file), verbose=False)
@@ -139,7 +139,7 @@ if __name__ == '__main__':
                          data_files=["240ps.off"],
                          cube_size=16,
                          n_samples=6000,
-                         num_points=200,
+                         point_size=200,
                          label=0)
     
     DataLoader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)

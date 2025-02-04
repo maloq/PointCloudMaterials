@@ -136,7 +136,7 @@ if __name__ == "__main__":
         cfg = compose(config_name="Al_classification.yaml")
     print(OmegaConf.to_yaml(cfg))
 
-    cfg.data.num_points = 64
+    cfg.data.point_size = 64
     cfg.data.radius = 7.9
     cfg.data.overlap_fraction = 0.5
 

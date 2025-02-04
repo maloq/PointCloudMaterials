@@ -18,13 +18,13 @@ def create_dataloader(cfg: DictConfig, file_path: str, shuffle: bool = False) ->
     if cfg.data.sample_shape == 'cubic':
         dataset = CubeDataset(points,
                               size=cfg.data.cube_size,
-                              n_points=cfg.data.num_points,
+                              n_points=cfg.data.point_size,
                               overlap_fraction=cfg.data.overlap_fraction)
         print(f"Number of samples in cubic dataset: {len(dataset)}")
     elif cfg.data.sample_shape == 'spheric':
         dataset = SphericDataset(points,
                                  size=cfg.data.radius,
-                                 n_points=cfg.data.num_points,
+                                 n_points=cfg.data.point_size,
                                  overlap_fraction=cfg.data.overlap_fraction)
         print(f"Number of samples in spheric dataset: {len(dataset)}")
     else:

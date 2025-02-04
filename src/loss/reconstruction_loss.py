@@ -43,7 +43,7 @@ def chamfer(pred, target, **kwargs):
 
 
 
-def calculate_rdf_old(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2):
+def calculate_rdf_old(point_cloud, sphere_radius, dr, point_size=None, drop_first_n_bins=2):
     """
     Calculates the Radial Distribution Function (RDF) for batched points within a sphere.
 
@@ -52,7 +52,7 @@ def calculate_rdf_old(point_cloud, sphere_radius, dr, num_points=None, drop_firs
                                   where B is batch size and N is number of points.
         sphere_radius (float): Radius of the sphere containing the points.
         dr (float): Bin width for the RDF histogram.
-        num_points (int, optional): Number of points to expect in the sphere.
+        point_size (int, optional): Number of points to expect in the sphere.
 
     Returns:
         torch.Tensor: RDF values for each radial bin, shape (B, num_bins).
@@ -63,8 +63,8 @@ def calculate_rdf_old(point_cloud, sphere_radius, dr, num_points=None, drop_firs
         point_cloud = point_cloud.transpose(1, 2)
     
     batch_size = point_cloud.shape[0]
-    if num_points is None:
-        num_points = point_cloud.shape[1]
+    if point_size is None:
+        point_size = point_cloud.shape[1]
 
     # Create radial bins
     r_bins = torch.arange(0, sphere_radius + dr, dr, device=point_cloud.device)
@@ -79,18 +79,18 @@ def calculate_rdf_old(point_cloud, sphere_radius, dr, num_points=None, drop_firs
         distances = torch.cdist(point_cloud[b], point_cloud[b])
         
         # Get upper triangle and remove self-interactions
-        distances_triu = distances[torch.triu_indices(num_points, num_points, offset=1)]
+        distances_triu = distances[torch.triu_indices(point_size, point_size, offset=1)]
 
         # Histogram distances
         hist = torch.histc(distances_triu, bins=num_bins, min=0, max=sphere_radius)
 
         # Calculate density for sphere
         volume = (4/3) * torch.pi * (sphere_radius**3)
-        density = num_points / volume
+        density = point_size / volume
 
         # Calculate ideal counts for normalization
         shell_volumes = 4 * torch.pi * r_mid**2 * dr
-        ideal_counts = shell_volumes * density * num_points
+        ideal_counts = shell_volumes * density * point_size
 
         # Normalize to get RDF
         rdf = hist / ideal_counts
@@ -104,7 +104,7 @@ def calculate_rdf_old(point_cloud, sphere_radius, dr, num_points=None, drop_firs
 
 
 
-def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2):
+def calculate_rdf(point_cloud, sphere_radius, dr, point_size=None, drop_first_n_bins=2):
     """
     Calculates the Radial Distribution Function (RDF) for batched points within a sphere faster using vectorized operations.
 
@@ -113,7 +113,7 @@ def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_
                                     where B is batch size and N is number of points.
         sphere_radius (float): Radius of the sphere containing the points.
         dr (float): Bin width for the RDF histogram.
-        num_points (int, optional): Number of points to expect in the sphere.
+        point_size (int, optional): Number of points to expect in the sphere.
         drop_first_n_bins (int): Number of initial bins to drop.
 
     Returns:
@@ -125,8 +125,8 @@ def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_
         point_cloud = point_cloud.transpose(1, 2)
     
     B, N = point_cloud.shape[0], point_cloud.shape[1]
-    if num_points is None:
-        num_points = N
+    if point_size is None:
+        point_size = N
 
 
     # Create radial bins and compute r_mid
@@ -157,10 +157,10 @@ def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_
     
     # Calculate density for sphere: assume each point counts in the density estimation
     volume = (4/3) * torch.pi * (sphere_radius**3)
-    density = num_points / volume
+    density = point_size / volume
     # Calculate ideal counts per shell for normalization
     shell_volumes = 4 * torch.pi * (r_mid ** 2) * dr
-    ideal_counts = shell_volumes * density * num_points
+    ideal_counts = shell_volumes * density * point_size
 
     # Normalize histogram counts to get rdf per batch (broadcast division over bins)
     rdf = hist / (ideal_counts.unsqueeze(0) + 1e-10)

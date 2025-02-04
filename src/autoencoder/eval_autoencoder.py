@@ -25,13 +25,13 @@ def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool
     if cfg.data.sample_shape == 'cubic':
         dataset = CubeDataset(points,
                             size=cfg.data.cube_size,
-                            n_points=cfg.data.num_points,
+                            n_points=cfg.data.point_size,
                             overlap_fraction=cfg.data.overlap_fraction)
         print(f"Number of samples in cubic dataset: {len(dataset)}")
     elif cfg.data.sample_shape == 'spheric':
         dataset = SphericDataset(points,
                                size=cfg.data.radius,
-                               n_points=cfg.data.num_points,
+                               n_points=cfg.data.point_size,
                                overlap_fraction=cfg.data.overlap_fraction)
         print(f"Number of samples in spheric dataset: {len(dataset)}")
     else:
@@ -97,6 +97,6 @@ if __name__ == '__main__':
 
     dataloader = create_autoencoder_dataloader(cfg, file_path)
     points = next(iter(dataloader))[0]
-    original_points, reconstructed_points = get_batch_reconstructions(model, points, cfg.data.num_points)
+    original_points, reconstructed_points = get_batch_reconstructions(model, points, cfg.data.point_size)
     print(original_points.shape, reconstructed_points.shape)
 

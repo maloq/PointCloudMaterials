@@ -23,7 +23,7 @@ class PointCloudDataModule(pl.LightningDataModule):
             cube_size=self.cfg.data.cube_size,
             overlap_fraction=self.cfg.data.overlap_fraction,
             n_samples=self.cfg.data.n_samples,
-            num_points=self.cfg.data.num_points,
+            point_size=self.cfg.data.point_size,
             label=0
         )
         
@@ -36,7 +36,7 @@ class PointCloudDataModule(pl.LightningDataModule):
             cube_size=self.cfg.data.cube_size,
             overlap_fraction=self.cfg.data.overlap_fraction,
             n_samples=self.cfg.data.n_samples,
-            num_points=self.cfg.data.num_points,
+            point_size=self.cfg.data.point_size,
             label=1
         )
         

@@ -5,4 +5,4 @@ defaults:
 project_name: pointnet
 experiment_name: PnAE_Folding_RDF_32_points_hugebatch
 # wandb_mode: online
-wandb_mode: online
+wandb_mode: offline

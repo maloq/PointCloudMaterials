@@ -5,9 +5,8 @@ import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torchmetrics import Accuracy, Precision, Recall, AUROC
-from src.models.point_net.pointnet_autoencoder import PointNetAE, PointNetAE_MLP, MLP_AE, PointNetAE_Transformer
 from src.loss.reconstruction_loss import *
-from src.models.point_net.pointnet_autoencoder import PointNetAE_Folding
+from models.autoencoders_nn.pointnet_autoencoder import build_model
 
 
 class PointNetAutoencoder(pl.LightningModule):
@@ -15,8 +14,7 @@ class PointNetAutoencoder(pl.LightningModule):
     def __init__(self, cfg):
         super().__init__()
         self.save_hyperparameters(cfg)
-        self.model = PointNetAE_Folding(point_size=cfg.data.num_points, latent_size=cfg.model.latent_size)
-        # self.model = PointNetAE_MLP(point_size=cfg.data.num_points, latent_size=cfg.model.latent_size)
+        self.model = build_model(cfg)
         self.criterion = chamfer_wasserstein_loss
 
             
