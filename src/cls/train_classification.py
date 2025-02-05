@@ -1,5 +1,7 @@
 import sys,os
 sys.path.append(os.getcwd())
+from src.utils.logging_config import setup_logging
+logger = setup_logging()
 import torch
 import numpy as np
 import pytorch_lightning as pl
@@ -14,6 +16,7 @@ import logging
 import wandb
 import time
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+
 torch.set_float32_matmul_precision('high')
 
 
@@ -30,8 +33,8 @@ def get_rundir_name() -> str:
 def train_classification(cfg: DictConfig):
 
     start_time = time.process_time()
-    logging.info(f"Starting in {os.getcwd()}")
-    logging.info(f"torch version {torch.__version__ }")
+    logger.print(f"Starting in {os.getcwd()}")
+    logger.print(f"torch version {torch.__version__ }")
     os.environ['WANDB_MODE'] = 'online'
     os.environ['WANDB_DIR'] = 'output/wandb'
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
@@ -41,9 +44,10 @@ def train_classification(cfg: DictConfig):
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
                                name=cfg.experiment_name,
-                               notes=cfg.experiment_name,
-                               tags=cfg.experiment_tags,
-                               log_model='all')
+                               model_log_interval=None,
+                               log_dataset_dir=None,
+                               log_best_dir=None,
+                               log_latest_dir=None)
     
     default_root_dir = run_dir
     checkpoint_loc = run_dir   

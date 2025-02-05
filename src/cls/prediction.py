@@ -18,13 +18,13 @@ def create_dataloader(cfg: DictConfig, file_path: str, shuffle: bool = False) ->
     if cfg.data.sample_shape == 'cubic':
         dataset = CubeDataset(points,
                               size=cfg.data.cube_size,
-                              n_points=cfg.data.point_size,
+                              n_points=cfg.data.num_points,
                               overlap_fraction=cfg.data.overlap_fraction)
         print(f"Number of samples in cubic dataset: {len(dataset)}")
     elif cfg.data.sample_shape == 'spheric':
         dataset = SphericDataset(points,
                                  size=cfg.data.radius,
-                                 n_points=cfg.data.point_size,
+                                 n_points=cfg.data.num_points,
                                  overlap_fraction=cfg.data.overlap_fraction)
         print(f"Number of samples in spheric dataset: {len(dataset)}")
     else:
@@ -68,9 +68,3 @@ def predict_phases(model, dataloader: DataLoader, device: str = 'cpu', return_pr
                 
     return np.array(predictions)
 
-
-
-
-if __name__ == '__main__':
-    from src.cls.lightning_module import PointNetClassifier
-    model = PointNetClassifier.load_from_checkpoint('output/2024-12-03/18-10-55/pointnet-epoch=61-val_acc=0.98.ckpt')

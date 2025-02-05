@@ -257,11 +257,11 @@ def random_point_dropout(batch_pc, max_dropout_ratio=0.875):
 
 
 class DummyPointCloudAE(nn.Module):
-    def __init__(self, point_size, latent_size):
+    def __init__(self, num_points, latent_size):
         super(DummyPointCloudAE, self).__init__()
         self.scale = 2
         self.latent_size = latent_size
-        self.point_size = point_size
+        self.num_points = num_points
         
         self.conv1 = torch.nn.Conv1d(3, 64*self.scale, 1)
         self.conv2 = torch.nn.Conv1d(64*self.scale, 128*self.scale, 1)
@@ -276,7 +276,7 @@ class DummyPointCloudAE(nn.Module):
         
         self.fc2 = nn.Linear(self.latent_size, 512*self.scale)
         self.fc3 = nn.Linear(512*self.scale,256*self.scale)
-        self.fc4 = nn.Linear(256*self.scale,self.point_size*3)
+        self.fc4 = nn.Linear(256*self.scale,self.num_points*3)
 
 
     def encoder(self, x): 
@@ -298,7 +298,7 @@ class DummyPointCloudAE(nn.Module):
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
         x = self.fc4(x)
-        x = x.view(-1, self.point_size, 3)
+        x = x.view(-1, self.num_points, 3)
 
         return x
     

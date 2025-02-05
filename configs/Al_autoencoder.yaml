@@ -3,6 +3,5 @@ defaults:
   - data: autoencoder_Al_basic 
   - model: autoencoder_basic
 project_name: pointnet
-experiment_name: PnAE_Folding_RDF_32_points_hugebatch
-# wandb_mode: online
+experiment_name: PnAE_Folding_chamfer_regularized_32_points
 wandb_mode: offline

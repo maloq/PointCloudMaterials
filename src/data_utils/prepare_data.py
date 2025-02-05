@@ -1,7 +1,16 @@
+import sys,os
+sys.path.append(os.getcwd())
+from src.utils.logging_config import setup_logging
+logger = setup_logging()
 import numpy as np
 from typing import List, Tuple
 from scipy.spatial import KDTree
 from typing import Iterator, Tuple
+import os
+import logging
+from src.utils.logging_config import setup_logging
+logger = setup_logging()
+
 
 
 def farthest_point_sample(point, npoint):
@@ -29,10 +38,32 @@ def farthest_point_sample(point, npoint):
 
 
 
-def read_off_file(filename: str, verbose=True) -> np.ndarray:
-    """Read points from OFF file and return as numpy array."""
+def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
+    """Read points from OFF file and return as numpy array.
+    
+    Optionally caches the file on disk in a faster .npy format.
+    
+    Args:
+        filename: Path to the OFF file.
+        verbose: If True, prints additional information.
+        cache: If True, will attempt to load a cached npy file if available,
+               and will save to cache after parsing.
+        
+    Returns:
+        A numpy array of point coordinates (shape: [N, 3]).
+    """
+    if cache:
+        base, _ = os.path.splitext(filename)
+        cache_filename = base + '.npy'
+        if os.path.exists(cache_filename):
+            if verbose:
+                print(f"Loading cached file from {cache_filename}")
+            points = np.load(cache_filename)
+            return points
+
+    # Read the OFF file
     with open(filename, 'r') as f:
-        # Skip OFF header
+        # Read and verify OFF header
         header = f.readline().strip()
         if header != 'OFF':
             raise ValueError("Invalid OFF file format")
@@ -48,12 +79,17 @@ def read_off_file(filename: str, verbose=True) -> np.ndarray:
     max_coords = points.max(axis=0)
     space_size = max_coords - min_coords
     if verbose: 
-        print(f"Read {len(points)} points")
-        print(f"Size of space: {space_size}")
-        print(f"Min coords: {min_coords}")
-        print(f"Max coords: {max_coords}")
+        logger.print(f"Read {len(points)} points")
+        logger.print(f"Size of space: {space_size}")
+        logger.print(f"Min coords: {min_coords}")
+        logger.print(f"Max coords: {max_coords}")
 
-    return np.array(points)
+    # Cache the data to disk for faster future loading
+    if cache:
+        if verbose:
+            print(f"Caching file to disk at {cache_filename}")
+        np.save(cache_filename, points)
+    return points
 
 
 def drop_points_random(points: np.ndarray, n_points: int) -> np.ndarray:
@@ -217,7 +253,7 @@ def get_random_samples(
             added_points += add
             dropped_points += drop
 
-    print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
+    logger.print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
     return samples
 
 
@@ -247,7 +283,7 @@ def get_regular_samples(
         points, tree, min_center, stride, size, sample_shape, dims, 
         n_points, return_coords, max_samples
     )
-    print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
+    logger.print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
     return samples
 
 
@@ -258,16 +294,16 @@ if __name__ == "__main__":
 
     samples = get_random_samples(points, sample_shape='cubic', n_samples=8000, size=10, n_points=100) 
     std = np.std([len(sample) for sample in samples])
-    print(f"Found {len(samples)} cubic non-empty samples with std={std}")
+    logger.print(f"Found {len(samples)} cubic non-empty samples with std={std}")
 
     samples = get_random_samples(points, sample_shape='spheric', n_samples=8000, size=8.1, n_points=128) 
     std = np.std([len(sample) for sample in samples])
-    print(f"Found {len(samples)} spheric non-empty samples with std={std}")
+    logger.print(f"Found {len(samples)} spheric non-empty samples with std={std}")
 
     samples = get_regular_samples(points, sample_shape='cubic', max_samples=10000, size=10, n_points=100, overlap_fraction=0.3) 
     std = np.std([len(sample) for sample in samples])
-    print(f"Found {len(samples)} regular cubic non-empty samples with std={std}")
+    logger.print(f"Found {len(samples)} regular cubic non-empty samples with std={std}")
 
     samples = get_regular_samples(points, sample_shape='spheric', max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3)
     std = np.std([len(sample) for sample in samples])
-    print(f"Found {len(samples)} regular spheric non-empty samples with std={std}")
+    logger.print(f"Found {len(samples)} regular spheric non-empty samples with std={std}")

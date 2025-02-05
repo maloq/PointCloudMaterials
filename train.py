@@ -11,7 +11,8 @@ print(os.environ.get('WANDB_API_KEY'))
 @hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_classification")
 def main(cfg: DictConfig):    
     train_classification(cfg)
-    logging.info('Train finished!')
+    logger.print
+('Train finished!')
 
 
 if __name__ == "__main__":

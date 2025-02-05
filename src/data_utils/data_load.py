@@ -1,18 +1,14 @@
-
 import sys,os
 sys.path.append(os.getcwd())
-
 import numpy as np
-import warnings
-import pickle
 import logging 
-from tqdm import tqdm
 import torch
 from torch.utils.data import Dataset
-from typing import Iterator, Tuple
-from scipy.spatial import KDTree
 from src.data_utils.prepare_data import get_regular_samples, get_random_samples
 from src.data_utils.prepare_data import read_off_file
+from src.utils.logging_config import setup_logging
+logger = setup_logging()
+
 
 
 def pc_normalize(pc):
@@ -23,7 +19,6 @@ def pc_normalize(pc):
     return pc
 
 
-
 class AtomicDataset(Dataset):
     
     def __init__(self, root,
@@ -31,54 +26,67 @@ class AtomicDataset(Dataset):
                  sample_shape='spheric',
                  sample_type='regular',
                  radius=8,
-                 cube_size=16,
+                 cube_side=16,
                  overlap_fraction=0.0,
                  n_samples=1000,
-                 point_size=100,
-                 label=0):
+                 num_points=100,
+                 label=0,
+                 pre_normalize=True):
         """Initialize the dataset with cubic samples from OFF files.
         Args:
             root: Path to directory containing OFF files
             TODO: Add more details
         """
         self.root = root
-        self.npoints = point_size
-        self.cube_size = cube_size
+        self.npoints = num_points
+        self.cube_side = cube_side
         self.radius = radius
         self.n_samples = n_samples
         self.label = label
-        logging.debug(f"Sample number of points {point_size}")
+        self.samples = []
         for off_file in data_files:
-            print(f"Reading {off_file}")
+            logger.debug(f"Reading {off_file}")
             points = read_off_file(os.path.join(root, off_file), verbose=False)
+            if sample_shape == 'spheric':
+                size = self.radius
+            elif sample_shape == 'cubic':
+                size = self.cube_side
+            else:
+                raise ValueError(f"Invalid sample shape: {sample_shape}")
             if sample_type == 'regular':
-                self.samples = get_regular_samples(points,
-                                                   sample_shape=sample_shape,
-                                                   size=self.cube_size,
-                                                   n_points=self.npoints,
-                                                   overlap_fraction=overlap_fraction)
-          
+                
+                samples = get_regular_samples(points,
+                                              sample_shape=sample_shape,
+                                              size=size,
+                                              n_points=self.npoints,
+                                              overlap_fraction=overlap_fraction)
             elif sample_type == 'random':
-                self.samples = get_random_samples(points,
-                                                  sample_shape=sample_shape,
-                                                  n_samples=self.n_samples,
-                                                  cube_size=self.cube_size,
-                                                  n_points=self.npoints,
-                                                  overlap_fraction=overlap_fraction)
-            
+                samples = get_random_samples(points,
+                                             sample_shape=sample_shape,
+                                             n_samples=self.n_samples,
+                                             size=size,
+                                             n_points=self.npoints,
+                                             overlap_fraction=overlap_fraction)
             else:
                 raise ValueError(f"Invalid sample type: {sample_type}")
 
+            if pre_normalize:
+                import time
+                start_time = time.time()
+                samples = [pc_normalize(s).astype(np.float32) for s in samples]
+                elapsed_time = time.time() - start_time
+                logger.print(f"Pre-normalization took {elapsed_time:.4f} seconds")
+            self.samples.extend(samples)
+            logger.debug(f"Point set shape: {samples[0].shape}")
 
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, index):
         point_set = self.samples[index]
-        assert len(point_set) == self.npoints, f"Expected {self.npoints}, got {len(point_set)}"
-        point_set = pc_normalize(point_set).astype(np.float32)
+        if point_set.dtype != np.float32:
+            point_set = pc_normalize(point_set).astype(np.float32)
         label = np.array(self.label).astype(np.int32)
-        
         return point_set, label
     
 
@@ -139,7 +147,7 @@ if __name__ == '__main__':
                          data_files=["240ps.off"],
                          cube_size=16,
                          n_samples=6000,
-                         point_size=200,
+                         num_points=200,
                          label=0)
     
     DataLoader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)

@@ -96,7 +96,7 @@ def find_n_nearest(points, n_neighbors):
 
 
 def plot_point_cloud_3d(points, n_connections=3, title='Point Cloud',
-                       point_size=5, color=None):
+                       num_points=5, color=None):
     """
     Create interactive 3D visualization of point cloud with connections to nearest neighbors.
     
@@ -104,7 +104,7 @@ def plot_point_cloud_3d(points, n_connections=3, title='Point Cloud',
         points: np.array of shape (N, 3) containing XYZ coordinates
         n_connections: int, number of nearest neighbors to connect
         title: str, plot title
-        point_size: int, size of points
+        num_points: int, size of points
         color: optional array of values for color mapping
     
     Returns:
@@ -131,7 +131,7 @@ def plot_point_cloud_3d(points, n_connections=3, title='Point Cloud',
             z=points[:, 2],
             mode='markers',
             marker=dict(
-                size=point_size,
+                size=num_points,
                 color=color,
                 colorscale='Viridis' if color is not None else None,
                 opacity=0.8

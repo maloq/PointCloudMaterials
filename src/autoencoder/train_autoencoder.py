@@ -1,20 +1,23 @@
 import sys,os
 sys.path.append(os.getcwd())
-
+from src.utils.logging_config import setup_logging
+logger = setup_logging()
 import torch
 import numpy as np
 import hydra
 import pytorch_lightning as pl
-from src.autoencoder.autoencoder_module import PointNetAutoencoder
-from src.data_utils.data_module import PointCloudDataModule
 from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from datetime import datetime
 from omegaconf import DictConfig, OmegaConf
-
-import logging
 import wandb
 import time
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from src.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.data_utils.data_module import PointCloudDataModule
+
+
+import warnings
+warnings.filterwarnings("ignore")
 torch.set_float32_matmul_precision('high')
 
 
@@ -27,11 +30,11 @@ def get_rundir_name() -> str:
     return str(f'output/{now:%Y-%m-%d}/{now:%H-%M-%S}')
 
 
-def train_classification(cfg: DictConfig):
+def train(cfg: DictConfig):
 
     start_time = time.process_time()
-    logging.info(f"Starting in {os.getcwd()}")
-    logging.info(f"torch version {torch.__version__ }")
+    logger.print(f"Starting in {os.getcwd()}")
+    logger.print(f"torch version {torch.__version__ }")
     os.environ['WANDB_MODE'] = cfg.wandb_mode
     os.environ['WANDB_DIR'] = 'output/wandb'
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
@@ -46,14 +49,12 @@ def train_classification(cfg: DictConfig):
                                log_dataset_dir=None,
                                log_best_dir=None,
                                log_latest_dir=None)
-    
     default_root_dir = run_dir
     checkpoint_loc = run_dir   
     lr_monitor = LearningRateMonitor(logging_interval='step', log_momentum=False) 
     
     dm = PointCloudDataModule(cfg)
     model = PointNetAutoencoder(cfg)
-
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_loc,
         monitor='val_loss',
@@ -73,30 +74,28 @@ def train_classification(cfg: DictConfig):
         logger=wandb_logger,
         benchmark=True,
         check_val_every_n_epoch=10,
-        # profiler='simple',
+        profiler='simple',
     )
     log_config(cfg)
-    logging.info(f"Time to start train {time.process_time() - start_time} seconds")
+    logger.print(f"Time to start script {time.process_time() - start_time} seconds")
     trainer.fit(model, dm)
 
 
 
 @hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_autoencoder")
 def main(cfg: DictConfig):
-    print("torch.__version__", torch.__version__)
-    print("torch.version.cuda", torch.version.cuda)
-    print("torch.cuda.is_available()", torch.cuda.is_available())
-    print("torch.cuda.device_count()", torch.cuda.device_count())
+    logger.print(f"torch.version.cuda: {torch.version.cuda}")
+    logger.print(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
+    logger.print(f"torch.cuda.device_count(): {torch.cuda.device_count()}")
     try:
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s-%(message)s')
-        train_classification(cfg)
-        logging.info('Train finished!')
+        train(cfg)
+        logger.print('Train finished!')
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
-            logging.info('Keyboard interrupt detected, finishing training...')
+            logger.print('Keyboard interrupt detected, finishing training...')
             wandb.finish()
         else:
-            logging.error(f"An unexpected error occurred: {e}")
+            logger.error(f"An unexpected error occurred: {e}")
             raise e
 
 

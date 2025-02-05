@@ -1,9 +1,10 @@
-cube_size: 8.0
+# Classifier
+cube_side: 8.0
 radius: 8.0
 sample_type: 'regular' # 'regular' or 'random'
 sample_shape: 'spheric' # 'spheric' or 'cubic'
 n_samples: 800000
-point_size: 32
+num_points: 32
 overlap_fraction: 0.3
 data_path: 'datasets/Al/inherent_configurations_off'
 liquid_files: 

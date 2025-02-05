@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import sys,os
 sys.path.append(os.getcwd())
-from src.loss.regularization_loss import feature_transform_reguliarzer
+from src.loss.reconstruction_loss import feature_transform_reguliarzer
 
 
 class point_loss_classification(torch.nn.Module):

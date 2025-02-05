@@ -3,9 +3,84 @@ sys.path.append(os.getcwd())
 import torch
 from pytorch3d.loss import chamfer_distance
 import torch.nn as nn
+from src.utils.logging_config import setup_logging
+logger = setup_logging()
 
 
-def feature_transform_reguliarzer(trans):
+
+def chamfer_loss(pred, target, **kwargs):
+    """
+    Computes the Chamfer distance loss between predictions and targets.
+
+    Args:
+        pred (Tensor): Predicted point cloud.
+        target (Tensor): Ground truth point cloud.
+        **kwargs: Additional keyword arguments (currently ignored).
+
+    Returns:
+        Tensor: Chamfer distance loss.
+    """
+    loss, _ = chamfer_distance(pred, target)
+    return loss, []
+
+
+def chamfer_regularized_encoder_loss(pred, target, **kwargs):
+    """
+    Computes the Chamfer distance loss with feature transform regularization for the encoder.
+
+    Args:
+        pred (Tensor): Predicted point clouds.
+        target (Tensor): Ground truth point clouds.
+        trans_feat_list (list or tuple): Contains at least the encoder's feature transform as the first element.
+        feature_transform_loss_scale (float): Scale factor for the feature transform regularization loss.
+
+    Returns:
+        Tensor: Total loss.
+    """
+    loss, _ = chamfer_distance(pred, target)
+    encoder_trans = kwargs['trans_feat_list'][0]
+    reg_loss = feature_transform_regularizer(encoder_trans)
+    total_loss = loss + kwargs['feature_transform_loss_scale'] * reg_loss
+    return total_loss, [reg_loss]
+
+
+def chamfer_regularized_encoder_decoder_loss(pred, target, **kwargs ):
+    """
+    Computes the Chamfer distance loss with feature transform regularization for both encoder and decoder.
+
+    Args:
+        pred (Tensor): Predicted point clouds.
+        target (Tensor): Ground truth point clouds.
+        trans_feat_list (list or tuple): Contains [encoder_feature_transform, decoder_feature_transform].
+        feature_transform_loss_scale (float): Scale factor for the feature transform regularization loss.
+
+    Returns:
+        Tensor: Total loss.
+    """
+    if len(kwargs['trans_feat_list']) < 2:
+        raise ValueError("trans_feat_list must contain both encoder and decoder transformation features.")
+
+    loss, _ = chamfer_distance(pred, target)
+    encoder_trans, decoder_trans = kwargs['trans_feat_list']
+    encoder_reg_loss = feature_transform_regularizer(encoder_trans)
+    decoder_reg_loss = feature_transform_regularizer(decoder_trans)
+    total_loss = loss + kwargs['feature_transform_loss_scale'] * (encoder_reg_loss + decoder_reg_loss)
+    return total_loss, [encoder_reg_loss, decoder_reg_loss]
+
+
+def chamfer_wasserstein_loss(pred, target, **kwargs):
+    loss, _ = chamfer_distance(pred, target)
+    rdf1, r_mid1 = calculate_rdf(pred, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
+    rdf2, r_mid2 = calculate_rdf(target, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
+    rec_loss = wasserstein_distance_loss(rdf1, rdf2)
+    feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])    
+    total_loss = loss + rec_loss * kwargs['reconstruction_loss_scale'] + feature_transform_loss * kwargs['feature_transform_loss_scale']
+
+    return total_loss, [rec_loss, feature_transform_loss]
+
+
+
+def feature_transform_regularizer(trans):
     d = trans.size()[1]
     I = torch.eye(d)[None, :, :]
     if trans.is_cuda:
@@ -14,159 +89,70 @@ def feature_transform_reguliarzer(trans):
     return loss
 
 
-
-def chamfer_regularized_encoder_decoder(pred, target, trans_feat_list, feature_transform_loss_scale=0.001):
-    loss, _ = chamfer_distance(pred, target) 
-    trans_feat_encoder = trans_feat_list[0]
-    trans_feat_decoder = trans_feat_list[1]
-    feature_transform_loss = feature_transform_reguliarzer(trans_feat_encoder) + feature_transform_reguliarzer(trans_feat_decoder)
-    total_loss = loss + feature_transform_loss * feature_transform_loss_scale
-    return total_loss
-
-
-
-def chamfer_regularized_encoder(pred, target, trans_feat_list, feature_transform_loss_scale=0.001):
-    loss, _ = chamfer_distance(pred, target) 
-    trans_feat_encoder = trans_feat_list[0]
-    feature_transform_loss = feature_transform_reguliarzer(trans_feat_encoder)
-    total_loss = loss + feature_transform_loss * feature_transform_loss_scale
-    return total_loss
-
-
-
-def chamfer(pred, target, **kwargs):
-    loss, _ = chamfer_distance(pred, target) 
-    return loss
-
-
-
-
-
-
-def calculate_rdf_old(point_cloud, sphere_radius, dr, point_size=None, drop_first_n_bins=2):
+def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2, density=None):
     """
-    Calculates the Radial Distribution Function (RDF) for batched points within a sphere.
-
-    Args:
-        point_cloud (torch.Tensor): Point cloud of shape (B, 3, N) or (B, N, 3), 
-                                  where B is batch size and N is number of points.
-        sphere_radius (float): Radius of the sphere containing the points.
-        dr (float): Bin width for the RDF histogram.
-        point_size (int, optional): Number of points to expect in the sphere.
-
-    Returns:
-        torch.Tensor: RDF values for each radial bin, shape (B, num_bins).
-        torch.Tensor: Radial distances corresponding to the RDF bins.
-    """
-    # Ensure point cloud is in (B, N, 3) format
-    if point_cloud.shape[1] == 3:
-        point_cloud = point_cloud.transpose(1, 2)
+    Calculates the Radial Distribution Function (RDF) for batched points within a sphere using vectorized operations.
     
-    batch_size = point_cloud.shape[0]
-    if point_size is None:
-        point_size = point_cloud.shape[1]
-
-    # Create radial bins
-    r_bins = torch.arange(0, sphere_radius + dr, dr, device=point_cloud.device)
-    r_mid = (r_bins[:-1] + r_bins[1:]) / 2
-    num_bins = len(r_bins) - 1
-
-    # Initialize batch RDF tensor
-    batch_rdf = torch.zeros((batch_size, num_bins), device=point_cloud.device)
-
-    for b in range(batch_size):
-        # Calculate pairwise distances for each batch
-        distances = torch.cdist(point_cloud[b], point_cloud[b])
-        
-        # Get upper triangle and remove self-interactions
-        distances_triu = distances[torch.triu_indices(point_size, point_size, offset=1)]
-
-        # Histogram distances
-        hist = torch.histc(distances_triu, bins=num_bins, min=0, max=sphere_radius)
-
-        # Calculate density for sphere
-        volume = (4/3) * torch.pi * (sphere_radius**3)
-        density = point_size / volume
-
-        # Calculate ideal counts for normalization
-        shell_volumes = 4 * torch.pi * r_mid**2 * dr
-        ideal_counts = shell_volumes * density * point_size
-
-        # Normalize to get RDF
-        rdf = hist / ideal_counts
-        rdf[torch.isnan(rdf)] = 0.0
-        batch_rdf[b] = rdf
-
-    batch_rdf = batch_rdf[:, drop_first_n_bins:]
-    r_mid = r_mid[drop_first_n_bins:]
-
-    return batch_rdf, r_mid
-
-
-
-def calculate_rdf(point_cloud, sphere_radius, dr, point_size=None, drop_first_n_bins=2):
-    """
-    Calculates the Radial Distribution Function (RDF) for batched points within a sphere faster using vectorized operations.
+    If a precomputed density is provided (from config where sphere_radius and num_points are constants),
+    the function will use it rather than recalculating the density.
 
     Args:
         point_cloud (torch.Tensor): Point cloud of shape (B, 3, N) or (B, N, 3), 
                                     where B is batch size and N is number of points.
         sphere_radius (float): Radius of the sphere containing the points.
         dr (float): Bin width for the RDF histogram.
-        point_size (int, optional): Number of points to expect in the sphere.
+        num_points (int, optional): Number of points to expect in the sphere.
+                                    If None, it is inferred from the point cloud.
         drop_first_n_bins (int): Number of initial bins to drop.
+        density (float, optional): Precomputed density (num_points / volume). If provided,
+                                   density calculation is skipped.
 
     Returns:
         torch.Tensor: RDF values for each radial bin, shape (B, num_bins_after_drop).
         torch.Tensor: Radial distances corresponding to the RDF bins after dropping.
     """
-    # Ensure point cloud is in (B, N, 3) format
+    # Ensure point cloud is in (B, N, 3) format.
     if point_cloud.shape[1] == 3:
         point_cloud = point_cloud.transpose(1, 2)
-    
+
     B, N = point_cloud.shape[0], point_cloud.shape[1]
-    if point_size is None:
-        point_size = N
+    if num_points is None:
+        num_points = N
 
+    # Compute density only if not provided.
+    if density is None:
+        volume = (4/3) * torch.pi * (sphere_radius**3)
+        density = num_points / volume
 
-    # Create radial bins and compute r_mid
+    # Create radial bins and compute r_mid.
     r_bins = torch.arange(0, sphere_radius + dr, dr, device=point_cloud.device)
     r_mid = (r_bins[:-1] + r_bins[1:]) / 2
     num_bins = len(r_bins) - 1
 
     # Compute all pairwise distances in a batched manner.
-    # distances: shape (B, N, N)
     distances = torch.cdist(point_cloud, point_cloud)
 
-    # Get the same upper triangular indices for all batches to avoid double counting
+    # Get the upper triangular indices for all batches to avoid double counting.
     triu_idx = torch.triu_indices(N, N, offset=1)
-    # distances_upper: shape (B, M) where M = number of upper triangular elements per batch
     distances_upper = distances[:, triu_idx[0], triu_idx[1]]
 
-    # Use bucketize to assign each distance to a bin
-    # Use right=True so that values exactly equal to a bin edge are handled like torch.histc.
+    # Bucketize to assign each distance to a bin.
     bin_indices = torch.bucketize(distances_upper, r_bins, right=True) - 1
-    # Clamp bin indices to ensure they fall into the valid range [0, num_bins-1]
     bin_indices = torch.clamp(bin_indices, 0, num_bins - 1)
 
     # Create one-hot encoding of bin indices and sum along the M dimension per batch.
-    # shape: (B, M, num_bins)
     one_hot = torch.nn.functional.one_hot(bin_indices, num_classes=num_bins).to(torch.float)
-    # Compute histograms for each batch; shape: (B, num_bins)
     hist = one_hot.sum(dim=1)
     
-    # Calculate density for sphere: assume each point counts in the density estimation
-    volume = (4/3) * torch.pi * (sphere_radius**3)
-    density = point_size / volume
-    # Calculate ideal counts per shell for normalization
+    # Calculate ideal counts per shell for normalization.
     shell_volumes = 4 * torch.pi * (r_mid ** 2) * dr
-    ideal_counts = shell_volumes * density * point_size
+    ideal_counts = shell_volumes * density * num_points
 
-    # Normalize histogram counts to get rdf per batch (broadcast division over bins)
+    # Normalize histogram counts to get rdf per batch.
     rdf = hist / (ideal_counts.unsqueeze(0) + 1e-10)
     rdf[rdf != rdf] = 0.0  # Replace any NaNs with 0
 
-    # Drop the first few bins if requested
+    # Drop the first few bins if requested.
     rdf = rdf[:, drop_first_n_bins:]
     r_mid = r_mid[drop_first_n_bins:]
 
@@ -219,14 +205,3 @@ def rdf_wasserstein_loss(pred, target):
     loss = wasserstein_distance_loss(rdf1, rdf2)
     return loss
 
-
-def chamfer_wasserstein_loss(pred, target, reconstruction_loss_scale=0.005, feature_transform_loss_scale=0.0001, trans_feat_list=None):
-    loss, _ = chamfer_distance(pred, target)
-    rdf1, r_mid1 = calculate_rdf(pred, sphere_radius=5, dr=0.05)
-    rdf2, r_mid2 = calculate_rdf(target, sphere_radius=5, dr=0.05)
-    rec_loss = wasserstein_distance_loss(rdf1, rdf2)
-
-    feature_transform_loss = feature_transform_reguliarzer(trans_feat_list[0])
-    total_loss = loss + rec_loss * reconstruction_loss_scale + feature_transform_loss * feature_transform_loss_scale
-
-    return total_loss, rec_loss, feature_transform_loss
