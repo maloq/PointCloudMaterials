@@ -22,11 +22,8 @@ def setup_logging(log_file='training.log'):
     file_handler.setFormatter(simple_formatter)
     logger.addHandler(file_handler)
 
-    # Define the new method that we want to bind to the logger
     def custom_print(self, msg):
         rank_zero_info(msg)
-
-    # Bind the custom_print function as a method to the logger instance:
     logger.print = MethodType(custom_print, logger)
 
     return logger

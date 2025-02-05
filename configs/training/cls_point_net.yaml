@@ -4,4 +4,4 @@ epochs: 100
 decay_rate: 0.002
 gpu: True
 log_every_n_steps: 5
-num_workers: 4
+num_workers: 6

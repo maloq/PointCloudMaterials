@@ -70,12 +70,11 @@ def chamfer_regularized_encoder_decoder_loss(pred, target, **kwargs ):
 
 def chamfer_wasserstein_loss(pred, target, **kwargs):
     loss, _ = chamfer_distance(pred, target)
-    rdf1, r_mid1 = calculate_rdf(pred, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
-    rdf2, r_mid2 = calculate_rdf(target, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
+    rdf1, r_mid1 = calculate_rdf_central(pred, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
+    rdf2, r_mid2 = calculate_rdf_central(target, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
     rec_loss = wasserstein_distance_loss(rdf1, rdf2)
     feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])    
     total_loss = loss + rec_loss * kwargs['reconstruction_loss_scale'] + feature_transform_loss * kwargs['feature_transform_loss_scale']
-
     return total_loss, [rec_loss, feature_transform_loss]
 
 
@@ -89,7 +88,7 @@ def feature_transform_regularizer(trans):
     return loss
 
 
-def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2, density=None):
+def calculate_rdf_pairvise(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2, density=None):
     """
     Calculates the Radial Distribution Function (RDF) for batched points within a sphere using vectorized operations.
     
@@ -159,6 +158,78 @@ def calculate_rdf(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_
     return rdf, r_mid
 
 
+def calculate_rdf_central(point_cloud, sphere_radius, dr, drop_first_n_bins=1, density=None):
+    """
+    Calculates the Radial Distribution Function (RDF) for each point cloud in a batch, using the point 
+    closest to the sample center as the reference.
+
+    The function works as follows:
+      1. Computes the centroid for each point cloud sample.
+      2. Finds the point closest to this centroid (the “central point”).
+      3. Computes Euclidean distances from this central point to all points in the sample.
+      4. Bins these distances into radial bins defined by sphere_radius and dr.
+      5. Normalizes the histogram counts by the ideal count expected for each shell.
+      6. Drops the first few bins (typically dropping the zero distance) as requested.
+
+    Args:
+        point_cloud (torch.Tensor): Batched point clouds of shape (B, N, 3), where B is the batch size.
+        sphere_radius (float): Maximum radius within which to calculate the RDF.
+        dr (float): Bin width for the RDF histogram.
+        drop_first_n_bins (int): Number of initial bins to drop (default is 1 to exclude the zero-distance bin).
+        density (float, optional): Precomputed density (points per unit volume). If not provided, it is computed 
+                                   as (N / volume) where volume = (4/3)*pi*(sphere_radius)^3.
+      
+    Returns:
+        rdf (torch.Tensor): Radial Distribution Function values for each sample, shape (B, num_bins_after_drop).
+        r_mid (torch.Tensor): Midpoints of the radial bins after dropping the initial bins, shape (num_bins_after_drop,).
+    """
+    B, N, _ = point_cloud.shape
+    
+    # Compute the centroid for each sample.
+    centroid = point_cloud.mean(dim=1)  # Shape: (B, 3)
+    
+    # For each sample, find the point closest to the centroid.
+    dists_to_centroid = torch.norm(point_cloud - centroid.unsqueeze(1), dim=2)  # Shape: (B, N)
+    central_idx = torch.argmin(dists_to_centroid, dim=1)  # Shape: (B,)
+    batch_indices = torch.arange(B, device=point_cloud.device)
+    central_points = point_cloud[batch_indices, central_idx, :]  # Shape: (B, 3)
+    
+    # Compute distances from the central point to all points within the same sample.
+    distances_from_center = torch.norm(point_cloud - central_points.unsqueeze(1), dim=2)  # Shape: (B, N)
+    
+    # Define radial bins from 0 up to sphere_radius in steps of dr.
+    device = point_cloud.device
+    bins = torch.arange(0, sphere_radius + dr, dr, device=device)  # (num_bins + 1,) edges
+    num_bins = len(bins) - 1
+    r_mid = (bins[:-1] + bins[1:]) / 2.0  # Bin midpoints, shape: (num_bins,)
+    
+    # Bucketize each distance into its corresponding radial bin.
+    # Subtract 1 to convert to 0-based indexing.
+    bin_indices = torch.bucketize(distances_from_center, bins, right=True) - 1   # Shape: (B, N)
+    bin_indices = torch.clamp(bin_indices, min=0, max=num_bins - 1)
+    
+    # Create one-hot representation and sum over the points dimension to obtain histogram counts per bin.
+    one_hot = torch.nn.functional.one_hot(bin_indices, num_classes=num_bins).float()  # Shape: (B, N, num_bins)
+    hist = one_hot.sum(dim=1)  # Shape: (B, num_bins)
+    
+    # Compute density if not provided.
+    if density is None:
+        volume = (4.0 / 3.0) * torch.pi * (sphere_radius ** 3)
+        density = N / volume
+    
+    # Calculate the ideal (expected) counts per radial shell.
+    shell_volumes = 4 * torch.pi * (r_mid ** 2) * dr  # Volume of spherical shells, shape: (num_bins,)
+    ideal_counts = shell_volumes * density  # Expected count for a uniform distribution, shape: (num_bins,)
+    
+    # Normalize the histogram counts by the ideal counts to obtain the RDF.
+    rdf = hist / (ideal_counts.unsqueeze(0) + 1e-10)
+    
+    # Optionally drop the first few bins (e.g., the bin centered at zero distance).
+    rdf = rdf[:, drop_first_n_bins:]
+    r_mid = r_mid[drop_first_n_bins:]
+    
+    return rdf, r_mid
+
 
 def kl_divergence_loss(rdf1, rdf2):
     """
@@ -200,8 +271,8 @@ def wasserstein_distance_loss(rdf1, rdf2):
 
 
 def rdf_wasserstein_loss(pred, target):
-    rdf1, r_mid1 = calculate_rdf(pred, sphere_radius=5, dr=0.05, r_max = 5)
-    rdf2, r_mid2 = calculate_rdf(target, sphere_radius=5, dr=0.05, r_max = 5)
+    rdf1, r_mid1 = calculate_rdf_central(pred, sphere_radius=5, dr=0.05, r_max = 5)
+    rdf2, r_mid2 = calculate_rdf_central(target, sphere_radius=5, dr=0.05, r_max = 5)
     loss = wasserstein_distance_loss(rdf1, rdf2)
     return loss
 
