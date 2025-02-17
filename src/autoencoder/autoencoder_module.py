@@ -23,7 +23,7 @@ class PointNetAutoencoder(pl.LightningModule):
 
         if cfg.model.torch_compile:
             self.model = torch.compile(self.model)
-        self.criterion = chamfer_regularized_encoder_loss
+        self.criterion = chamfer_kl_divergence_loss
         self.density = self.compute_density()
         logger.print(f"Loss: {self.criterion.__name__}")
 
@@ -33,8 +33,12 @@ class PointNetAutoencoder(pl.LightningModule):
         density = self.num_points / volume
         return density
     
-    def forward(self, x):
-        return self.model(x)        
+    def forward(self, x, return_latent: bool = False):
+        if return_latent:
+            latent = self.model.encoder(x)
+            return latent
+        else:
+            return self.model(x)
     
     def training_step(self, batch, batch_idx):
         points, _ = batch
@@ -43,6 +47,8 @@ class PointNetAutoencoder(pl.LightningModule):
                                         pred.float(),
                                         trans_feat_list=trans_feat_list,
                                         density=self.density,
+                                        dr=self.dr,
+                                        sphere_radius=self.sphere_radius,
                                         reconstruction_loss_scale=self.reconstruction_loss_scale,
                                         feature_transform_loss_scale=self.feature_transform_loss_scale)
         if len(aux_loss) == 2:
@@ -65,6 +71,8 @@ class PointNetAutoencoder(pl.LightningModule):
                                         pred.float(),
                                         trans_feat_list=trans_feat_list,
                                         density=self.density,
+                                        dr=self.dr,
+                                        sphere_radius=self.sphere_radius,
                                         reconstruction_loss_scale=self.reconstruction_loss_scale,
                                         feature_transform_loss_scale=self.feature_transform_loss_scale)
         if len(aux_loss) == 2:
@@ -79,21 +87,39 @@ class PointNetAutoencoder(pl.LightningModule):
     
     
     def configure_optimizers(self):
-        if self.hparams.training.scheduler_name == 'step':
-            optimizer = torch.optim.Adam(
+        if self.hparams.training.scheduler_name == 'Step':
+            optimizer = torch.optim.AdamW(
                 self.parameters(),
                 lr=self.hparams.training.learning_rate,
                 weight_decay=self.hparams.training.decay_rate
             )
             scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=self.hparams.training.scheduler_gamma)
             return [optimizer], [scheduler]
-        elif self.hparams.training.scheduler_name == 'onecycle':
-            optimizer = torch.optim.Adam(
+        elif self.hparams.training.scheduler_name == 'OneCycle':
+            optimizer = torch.optim.AdamW(
                 self.parameters(),
                 lr=self.hparams.training.learning_rate,
                 weight_decay=self.hparams.training.decay_rate
             )
-            scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=self.hparams.training.learning_rate, steps_per_epoch=5, epochs=self.hparams.training.epochs)
+            scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=self.hparams.training.learning_rate, total_steps=self.hparams.training.epochs)
+            return [optimizer], [scheduler]
+        elif self.hparams.training.scheduler_name == 'CosineAnnealingWarmRestarts':
+            optimizer = torch.optim.AdamW(
+                self.parameters(),
+                lr=self.hparams.training.learning_rate,
+                weight_decay=self.hparams.training.decay_rate
+            )
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=20, T_mult=3)
+            return [optimizer], [scheduler]
+        elif self.hparams.training.scheduler_name == 'chained':
+            optimizer = torch.optim.AdamW(
+                self.parameters(),
+                lr=self.hparams.training.learning_rate,
+                weight_decay=self.hparams.training.decay_rate
+            )
+            scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=self.hparams.training.learning_rate, total_steps=self.hparams.training.epochs)
+            scheduler1 = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=self.hparams.training.learning_rate, total_steps=self.hparams.training.epochs)
+            scheduler = torch.optim.lr_scheduler.ChainedScheduler([scheduler1, scheduler2])
             return [optimizer], [scheduler]
         else:
             raise ValueError(f"Scheduler {self.hparams.training.scheduler_name} not found")

@@ -1,12 +1,12 @@
-learning_rate: 0.015
-batch_size: 32768
+learning_rate: 0.0004
+batch_size: 4096
 epochs: 1000
-decay_rate: 0.002
+decay_rate: 0.004
 gpu: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
-scheduler_name: onecycle
+scheduler_name: chained
 
 feature_transform_loss_scale: 0.001
-reconstruction_loss_scale: 0.005
+reconstruction_loss_scale: 0.5 #

@@ -70,13 +70,22 @@ def chamfer_regularized_encoder_decoder_loss(pred, target, **kwargs ):
 
 def chamfer_wasserstein_loss(pred, target, **kwargs):
     loss, _ = chamfer_distance(pred, target)
-    rdf1, r_mid1 = calculate_rdf_central(pred, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
-    rdf2, r_mid2 = calculate_rdf_central(target, density=kwargs['density'], dr=kwargs['dr'], num_points=kwargs['num_points'])
+    rdf1, r_mid1 = calculate_rdf_central(pred, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
+    rdf2, r_mid2 = calculate_rdf_central(target, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
     rec_loss = wasserstein_distance_loss(rdf1, rdf2)
     feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])    
     total_loss = loss + rec_loss * kwargs['reconstruction_loss_scale'] + feature_transform_loss * kwargs['feature_transform_loss_scale']
     return total_loss, [rec_loss, feature_transform_loss]
 
+
+def chamfer_kl_divergence_loss(pred, target, **kwargs):
+    loss, _ = chamfer_distance(pred, target)
+    rdf1, r_mid1 = calculate_rdf_central(pred, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
+    rdf2, r_mid2 = calculate_rdf_central(target, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
+    rec_loss = kl_divergence_loss(rdf1, rdf2)
+    feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])    
+    total_loss = loss + rec_loss * kwargs['reconstruction_loss_scale'] + feature_transform_loss * kwargs['feature_transform_loss_scale']
+    return total_loss, [rec_loss, feature_transform_loss]
 
 
 def feature_transform_regularizer(trans):
@@ -165,7 +174,7 @@ def calculate_rdf_central(point_cloud, sphere_radius, dr, drop_first_n_bins=1, d
 
     The function works as follows:
       1. Computes the centroid for each point cloud sample.
-      2. Finds the point closest to this centroid (the “central point”).
+      2. Finds the point closest to this centroid (the "central point").
       3. Computes Euclidean distances from this central point to all points in the sample.
       4. Bins these distances into radial bins defined by sphere_radius and dr.
       5. Normalizes the histogram counts by the ideal count expected for each shell.
@@ -233,21 +242,31 @@ def calculate_rdf_central(point_cloud, sphere_radius, dr, drop_first_n_bins=1, d
 
 def kl_divergence_loss(rdf1, rdf2):
     """
-    Calculate symmetric KL divergence (Jensen-Shannon without 0.5 factor) between two RDFs
-    
+    Calculate the Jensen-Shannon divergence (symmetric KL divergence) between two
+    RDF probability distributions for each sample in a batch, and return the mean divergence.
+
+    This implementation computes the canonical JS divergence for each sample,
+    then averages over the batch.
+
     Args:
-        rdf1, rdf2: torch tensors of RDF values
+        rdf1, rdf2: torch tensors of RDF values with shape (B, N),
+                    where B is the batch size and N is the number of RDF features.
     Returns:
-        torch.Tensor: KL divergence loss
+        torch.Tensor: Scalar representing the mean Jensen-Shannon divergence loss over the batch.
     """
     epsilon = 1e-10
-    rdf1_norm = rdf1 / (torch.sum(rdf1) + epsilon)
-    rdf2_norm = rdf2 / (torch.sum(rdf2) + epsilon)
-    
+    # Normalize each distribution along the last dimension.
+    rdf1_norm = rdf1 / (torch.sum(rdf1, dim=-1, keepdim=True) + epsilon)
+    rdf2_norm = rdf2 / (torch.sum(rdf2, dim=-1, keepdim=True) + epsilon)
+
     m = 0.5 * (rdf1_norm + rdf2_norm)
-    loss = torch.sum(rdf1_norm * torch.log(rdf1_norm / (m + epsilon) + epsilon)) + \
-           torch.sum(rdf2_norm * torch.log(rdf2_norm / (m + epsilon) + epsilon))
-    return loss
+    # Compute KL divergence for each batch sample along the last dimension.
+    kl1 = torch.sum(rdf1_norm * torch.log((rdf1_norm + epsilon) / (m + epsilon)), dim=-1)
+    kl2 = torch.sum(rdf2_norm * torch.log((rdf2_norm + epsilon) / (m + epsilon)), dim=-1)
+    loss_per_sample = 0.5 * (kl1 + kl2)
+    
+    # Return the mean loss over the batch dimension.
+    return loss_per_sample.mean()
 
 
 
@@ -276,3 +295,8 @@ def rdf_wasserstein_loss(pred, target):
     loss = wasserstein_distance_loss(rdf1, rdf2)
     return loss
 
+def rdf_kl_divergence_loss(pred, target):
+    rdf1, r_mid1 = calculate_rdf_central(pred, sphere_radius=5, dr=0.05)
+    rdf2, r_mid2 = calculate_rdf_central(target, sphere_radius=5, dr=0.05)
+    loss = kl_divergence_loss(rdf1, rdf2)
+    return loss

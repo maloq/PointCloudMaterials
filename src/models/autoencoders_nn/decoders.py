@@ -82,6 +82,7 @@ class PointNetDecoder(nn.Module):
         # Transpose to match expected shape (batch_size, num_points, 3)
         return x.transpose(2, 1), trans, trans_feat
 
+
 class TransformerDecoder(nn.Module):
     def __init__(self, num_points, latent_size, d_model=256, nhead=8, num_layers=3, dropout=0.1):
         super(TransformerDecoder, self).__init__()
@@ -89,18 +90,11 @@ class TransformerDecoder(nn.Module):
         self.latent_size = latent_size
         self.d_model = d_model
         
-        # Project latent vector to the transformer model dimension.
         self.input_proj = nn.Linear(latent_size, d_model)
         
-        # Learnable query embeddings for each output point.
-        # These queries will be used as input to the transformer decoder.
         self.query_embed = nn.Parameter(torch.randn(num_points, d_model))
-        
-        # Build a stack of transformer decoder layers.
         decoder_layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=nhead, dropout=dropout)
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
-        
-        # Final projection from transformer output dimension to 3 (for x, y, z).
         self.output_proj = nn.Linear(d_model, 3)
     
     def forward(self, x):
@@ -110,16 +104,13 @@ class TransformerDecoder(nn.Module):
         # Create transformer memory from the latent vector:
         # shape: (1, batch_size, d_model)
         memory = self.input_proj(x).unsqueeze(0)
-        
-        # Expand the learned query embeddings to the current batch:
+       
         # shape: (num_points, batch_size, d_model)
         queries = self.query_embed.unsqueeze(1).expand(self.num_points, batch_size, self.d_model)
         
-        # Decode using the transformer decoder:
         # output shape: (num_points, batch_size, d_model)
         out = self.transformer_decoder(tgt=queries, memory=memory)
         
-        # Project each token to 3D coordinates:
         # (num_points, batch_size, 3) then transpose to (batch_size, num_points, 3)
         out = self.output_proj(out).transpose(0, 1)
         
@@ -170,3 +161,71 @@ class FoldingDecoder(nn.Module):
         x = self.mlp4(x)
         
         return x
+    
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class TransformerDecoderFolding(nn.Module):
+    def __init__(self, num_points, latent_size, d_model=512, nhead=8, num_layers=3):
+        super(TransformerDecoderFolding, self).__init__()
+        self.num_points = num_points
+        self.latent_size = latent_size
+        self.d_model = d_model
+
+        # Build a fixed 2D grid (assuming num_points is a perfect square)
+        side = int(num_points ** 0.5)
+        xs = torch.linspace(-1, 1, steps=side)
+        ys = torch.linspace(-1, 1, steps=side)
+        grid_x, grid_y = torch.meshgrid(xs, ys, indexing='ij')
+        grid = torch.stack([grid_x.reshape(-1), grid_y.reshape(-1)], dim=-1)
+        # Ensure grid has exactly num_points elements
+        if grid.size(0) < num_points:
+            pad = num_points - grid.size(0)
+            grid = torch.cat([grid, grid[:pad]], dim=0)
+        elif grid.size(0) > num_points:
+            grid = grid[:num_points]
+        self.register_buffer("grid", grid)  # shape: (num_points, 2)
+
+        # Project grid coordinates (2D) to d_model dimension (queries)
+        self.query_proj = nn.Linear(2, d_model, bias=False)
+        # Project the latent code to d_model (memory)
+        self.latent_proj = nn.Linear(latent_size, d_model)
+
+        # Transformer decoder: note that PyTorch's TransformerDecoder expects
+        # input shapes (target_seq_length, batch_size, d_model)
+        decoder_layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=nhead)
+        self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
+
+        # Final projection to convert embeddings to output 3D point coordinates
+        self.out_proj = nn.Linear(d_model, 3)
+    
+    def forward(self, x):
+        """
+        x: latent vector of shape (batch_size, latent_size)
+        """
+        batch_size = x.size(0)
+
+        # Create query tokens from grid:
+        # grid shape: (num_points, 2) -> (num_points, d_model)
+        queries = self.query_proj(self.grid)  # (num_points, d_model)
+        # Expand queries for batch and transpose to shape (num_points, batch_size, d_model)
+        queries = queries.unsqueeze(1).expand(-1, batch_size, -1)
+
+        # Create memory tokens from latent vector:
+        # First, project latent x: (batch_size, latent_size) -> (batch_size, d_model).
+        memory = self.latent_proj(x)  # (batch_size, d_model)
+        # Option 1: Use the single memory token (sequence length 1)
+        memory = memory.unsqueeze(0)   # (1, batch_size, d_model)
+        # (Optionally, you could expand this to multiple tokens if desired.)
+
+        # Pass through the transformer decoder.
+        # The transformer decoder uses cross-attention between queries and memory.
+        decoded = self.transformer_decoder(queries, memory)  # (num_points, batch_size, d_model)
+
+        # Permute to (batch_size, num_points, d_model)
+        decoded = decoded.permute(1, 0, 2)
+        # Project the output to 3D coordinates.
+        out = self.out_proj(decoded)  # (batch_size, num_points, 3)
+        return out

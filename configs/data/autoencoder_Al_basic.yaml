@@ -1,12 +1,12 @@
 # Autoencoder
 cube_side: 5.0
-radius: 5.2
+radius: 7.0
 sample_type: 'regular' # 'regular' or 'random'
 sample_shape: 'spheric' # 'spheric' or 'cubic'
-n_samples: 800000
-num_points: 32
+n_samples: 8000000
+num_points: 64
 overlap_fraction: 0.5
-dr: 0.05 # to calculate rdf
+dr: 0.06 # to calculate rdf
 data_path: 'datasets/Al/inherent_configurations_off'
 liquid_files: 
 - '166ps.off'

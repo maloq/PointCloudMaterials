@@ -10,3 +10,5 @@ wandb
 plotly
 matplotlib
 nbformat
+scikit-learn
+scipy

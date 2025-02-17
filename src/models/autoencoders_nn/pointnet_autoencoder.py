@@ -1,10 +1,8 @@
 from pytorch3d.loss import chamfer_distance
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from src.models.point_net.pointnet_cls import PointNetEncoder, STNkd, STN3d
-from src.models.autoencoders_nn.encoders import MLPEncoder
-from src.models.autoencoders_nn.decoders import MLPDecoder, PointNetDecoder, TransformerDecoder, FoldingDecoder
+from src.models.autoencoders_nn.encoders import MLPEncoder, PointNetEncoder
+from src.models.autoencoders_nn.decoders import MLPDecoder, PointNetDecoder, TransformerDecoder, FoldingDecoder, TransformerDecoderFolding
 from omegaconf import DictConfig
 import logging
 from src.utils.logging_config import setup_logging
@@ -38,6 +36,9 @@ def build_model(cfg: DictConfig):
     elif model_type == "PointNetAE_Folding":
         logger.print("PointNetAE_Folding")
         return PointNetAE_Folding(num_points, latent_size)
+    elif model_type == "PointNetAE_Transformer_Folding":
+        logger.print("PointNetAE_Transformer_Folding")
+        return PointNetAE_Transformer_Folding(num_points, latent_size)
     else:
         raise ValueError(f"Unknown model type: {model_type}") 
 
@@ -61,7 +62,7 @@ class PointNetAE(nn.Module):
         self.latent_size = latent_size
         self.num_points = num_points
 
-        self.features_encoder = PointNetEncoder(global_feat=True, feature_transform=True, channel=3)
+        self.features_encoder = PointNetEncoder(feature_transform=True, channel=3)
         self.encoder_mlp = nn.Sequential(
             nn.Linear(1024, 512),
             nn.BatchNorm1d(512),
@@ -118,6 +119,17 @@ class PointNetAE_Folding(PointNetAE):
     def __init__(self, num_points, latent_size):
         super().__init__(num_points, latent_size)
         self.decoder = FoldingDecoder(num_points, latent_size)
+
+    def forward(self, x):
+        x, _ , trans_feat_encoder = self.encoder(x)
+        x = self.decoder(x)
+        return x, [trans_feat_encoder,]
+    
+
+class PointNetAE_Transformer_Folding(PointNetAE):
+    def __init__(self, num_points, latent_size):
+        super().__init__(num_points, latent_size)
+        self.decoder = TransformerDecoderFolding(num_points, latent_size)
 
     def forward(self, x):
         x, _ , trans_feat_encoder = self.encoder(x)

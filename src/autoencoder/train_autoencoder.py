@@ -7,7 +7,7 @@ import numpy as np
 import hydra
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint, StochasticWeightAveraging
 from datetime import datetime
 from omegaconf import DictConfig, OmegaConf
 import wandb
@@ -59,7 +59,7 @@ def train(cfg: DictConfig):
         dirpath=checkpoint_loc,
         monitor='val_loss',
         filename='pointnet-{epoch:02d}-{val_loss:.2f}',
-        save_top_k=2,
+        save_top_k=3,
         mode='min',
     )
     
@@ -67,7 +67,7 @@ def train(cfg: DictConfig):
         default_root_dir=default_root_dir,
         max_epochs=cfg.training.epochs,
         accelerator='gpu' if cfg.training.gpu else 'cpu',
-        callbacks=[checkpoint_callback, lr_monitor],
+        callbacks=[checkpoint_callback, lr_monitor, StochasticWeightAveraging(swa_lrs=0.001)],
         precision='16-mixed',
         devices=[0],
         log_every_n_steps=cfg.training.log_every_n_steps,

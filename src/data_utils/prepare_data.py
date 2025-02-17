@@ -198,7 +198,12 @@ def generate_samples(
     for i in range(dims[0]):
         for j in range(dims[1]):
             for k in range(dims[2]):
-                center = calculate_center(min_coords, stride, i, j, k, size, sample_type)
+                # Compute the grid center as before.
+                computed_center = calculate_center(min_coords, stride, i, j, k, size, sample_type)
+                # Adjust the center so that it matches an atom by snapping to the nearest input point.
+                _, nearest_index = tree.query(computed_center)
+                center = points[nearest_index]
+                # Proceed as before using the adjusted center.
                 sample_points, add, drop = process_sample(points, tree, center, size, sample_type, n_points)
                 added_points += add
                 dropped_points += drop
@@ -219,7 +224,7 @@ def get_random_samples(
     n_points: int,
     sample_shape: str = 'cubic'
 ) -> List[np.ndarray]:
-    """Get N random samples (cubic or spherical) from point cloud using KDTree for faster querying.
+    """Same as get_regular_samples but with random center points.
     
     Args:
         points: Nx3 array of points (more than 10^5 points)
@@ -266,10 +271,46 @@ def get_regular_samples(
     n_points: int = 100,
     max_samples: int = 2e32
 ) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
-    """Divide point cloud into regular samples covering the entire data space with optional overlap, excluding samples that don't fit entirely."""
-    if sample_shape not in ['cubic', 'spheric']:
-        raise ValueError("sample_shape must be 'cubic' or 'spheric'")
-    
+    """
+    Divide point cloud into regular samples covering the entire data space with optional overlap.
+
+    This function partitions the input point cloud into a grid of regularly spaced sampling regions 
+    (either cubic or spheric) based on the provided size and overlap fraction. For cubic samples, the 
+    regions are cubes with edge length 'size', while for spheric samples, the regions are spheres with 
+    radius 'size'. To ensure uniformity, each sample is adjusted to contain exactly n_points by 
+    appropriately dropping or adding points. Only regions that fully fit within the adjusted data space 
+    (after applying the necessary padding) are considered, thus avoiding partial samples along the edges. 
+    A KDTree is employed for efficient neighborhood queries, and the function logs the average number of 
+    points added and dropped per sample during this adjustment.
+
+    Parameters:
+    -----------
+    points : np.ndarray
+        The input point cloud as an array of shape (N, 3).
+    size : float
+        For cubic samples, the side length of the cube; for spheric samples, the radius of the sphere.
+    sample_shape : str, optional
+        The shape of the sample window; must be either 'cubic' (default) or 'spheric'.
+    overlap_fraction : float, optional
+        The fractional overlap between adjacent sample regions. This value should be less than 1.
+    return_coords : bool, optional
+        If True, each sample is returned as a tuple (sample_points, sample_center), where sample_center 
+        is a tuple (x, y, z); otherwise, only the sample_points array is returned.
+    n_points : int, optional
+        The desired number of points in each sample. Points in a sample will be dropped or added 
+        to meet this exact count.
+    max_samples : int, optional
+        The maximum number of samples to generate. The function stops sampling once this number is reached,
+        even if additional samples could be produced.
+
+    Returns:
+    --------
+    List[Tuple[np.ndarray, Tuple[float, float, float]]]
+        A list of samples extracted from the point cloud. Each entry in the list is:
+          - an np.ndarray of shape (n_points, 3) if return_coords is False, or 
+          - a tuple (sample_points, sample_center) if return_coords is True,
+        where sample_center is a tuple containing the (x, y, z) coordinates of the sample's center.
+    """
     tree = KDTree(points)
     min_coords, max_coords = get_min_max_coords(points)
     stride = calculate_stride(size, sample_shape, overlap_fraction)

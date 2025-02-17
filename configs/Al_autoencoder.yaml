@@ -3,5 +3,11 @@ defaults:
   - data: autoencoder_Al_basic 
   - model: autoencoder_basic
 project_name: pointnet
-experiment_name: PnAE_Folding_chamfer_regularized_32_points
+experiment_name: PnAE_Trans_Folding_KL_RDF_64_SWA_centered
 wandb_mode: online
+experiment_tags:
+  - autoencoder
+  - RDF
+  - SWA
+  - Transformer
+  - Folding
