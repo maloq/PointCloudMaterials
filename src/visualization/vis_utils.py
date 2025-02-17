@@ -1,4 +1,3 @@
-
 from scipy.spatial import KDTree
 import numpy as np
 import plotly.graph_objects as go
@@ -162,3 +161,82 @@ def plot_point_cloud_3d(points, n_connections=3, title='Point Cloud',
     )
 
     return fig
+
+
+def plot_point_cloud_with_arrows(original, modified, title="Point Cloud with Vectors"):
+    """
+    Visualizes original and modified point clouds in 3D with arrows showing the displacement
+    from each original point to its modified version.
+
+    Parameters:
+        original (np.array): Original point cloud of shape (N, 3)
+        modified (np.array): Modified (noised or reconstructed) point cloud of shape (N, 3)
+        title (str): Title for the plot
+
+    Returns:
+        None; displays the interactive 3D plot.
+    """
+    import plotly.graph_objects as go
+    import numpy as np
+
+    if original.shape != modified.shape:
+        raise ValueError("Original and modified point clouds must have the same shape.")
+
+    # Compute displacements for every point
+    displacements = modified - original
+
+    # Create a 3D scatter plot for original and modified points
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter3d(
+        x=original[:, 0],
+        y=original[:, 1],
+        z=original[:, 2],
+        mode='markers',
+        marker=dict(size=3, color='blue'),
+        name='Original'
+    ))
+
+    fig.add_trace(go.Scatter3d(
+        x=modified[:, 0],
+        y=modified[:, 1],
+        z=modified[:, 2],
+        mode='markers',
+        marker=dict(size=3, color='red', opacity=0.6),
+        name='Modified'
+    ))
+
+    # Add arrows to indicate displacements
+    for i in range(original.shape[0]):
+        fig.add_trace(go.Cone(
+            x=[original[i, 0]],
+            y=[original[i, 1]],
+            z=[original[i, 2]],
+            u=[displacements[i, 0]],
+            v=[displacements[i, 1]],
+            w=[displacements[i, 2]],
+            showscale=False,
+            colorscale=[[0, 'green'], [1, 'green']],
+            sizemode='absolute',
+            sizeref=0.1,  # Adjusted to make arrows smaller
+            anchor='tip'  # Makes the cone point to the end of the vector
+        ))
+
+    fig.update_layout(
+        title=title,
+        scene=dict(
+            xaxis_title='X',
+            yaxis_title='Y',
+            zaxis_title='Z'
+        ),
+        width=800,
+        height=800
+    )
+
+    fig.show()
+
+if __name__ == "__main__":
+    import numpy as np
+    original = np.random.rand(100, 3)
+    modified = original + np.random.rand(100, 3)
+    plot_point_cloud_with_arrows(original, modified)
