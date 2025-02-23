@@ -13,7 +13,7 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 
-N = 100  # Number of random pairs to average over
+N = 100  
 
 def calculate_chamfer_distances(dataloader1, dataloader2, N=5):
     """
@@ -27,22 +27,18 @@ def calculate_chamfer_distances(dataloader1, dataloader2, N=5):
     Returns:
         dict: Statistics (mean, std) for each comparison type
     """
-    # Initialize lists to store distances
     distances = {
         'Crystal-Liquid': [],
         'Liquid-Liquid': [], 
         'Crystal-Crystal': []
     }
 
-    # Calculate distances for N random pairs
     for _ in range(N):
-        # Get random point clouds
         points_l1, _ = random.choice(list(dataloader1))
         points_l2, _ = random.choice(list(dataloader1)) 
         points_c1, _ = random.choice(list(dataloader2))
         points_c2, _ = random.choice(list(dataloader2))
         
-        # Convert to torch tensors
         points = {
             'l1': torch.tensor(points_l1[0].numpy()).unsqueeze(0),
             'l2': torch.tensor(points_l2[0].numpy()).unsqueeze(0),
@@ -50,19 +46,16 @@ def calculate_chamfer_distances(dataloader1, dataloader2, N=5):
             'c2': torch.tensor(points_c2[0].numpy()).unsqueeze(0)
         }
         
-        # Calculate and store distances
         distances['Crystal-Liquid'].append(chamfer_distance(points['l1'], points['c1'])[0].item())
         distances['Liquid-Liquid'].append(chamfer_distance(points['l1'], points['l2'])[0].item())
         distances['Crystal-Crystal'].append(chamfer_distance(points['c1'], points['c2'])[0].item())
 
-    # Calculate statistics
     stats = {}
     for key in distances:
         mean = sum(distances[key]) / N
         std = (sum((x - mean) ** 2 for x in distances[key]) / N) ** 0.5
         stats[key] = (mean, std)
 
-    # Print results
     print(f"Mean Chamfer distances over {N} random pairs:")
     for key, (mean, std) in stats.items():
         print(f"{key}: {mean:.4f} ± {std:.4f}")

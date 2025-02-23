@@ -24,6 +24,7 @@ class PointNetAutoencoder(pl.LightningModule):
         if cfg.model.torch_compile:
             self.model = torch.compile(self.model)
         self.criterion = chamfer_kl_divergence_loss
+        # self.criterion = chamfer_regularized_encoder_loss
         self.density = self.compute_density()
         logger.print(f"Loss: {self.criterion.__name__}")
 

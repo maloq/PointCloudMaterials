@@ -2,7 +2,7 @@ from pytorch3d.loss import chamfer_distance
 import torch
 import torch.nn as nn
 from src.models.autoencoders_nn.encoders import MLPEncoder, PointNetEncoder
-from src.models.autoencoders_nn.decoders import MLPDecoder, PointNetDecoder, TransformerDecoder, FoldingDecoder, TransformerDecoderFolding
+from src.models.autoencoders_nn.decoders import MLPDecoder, PointNetDecoder, TransformerDecoder, FoldingDecoder, TransformerDecoderFolding, FoldingDecoderRefined
 from omegaconf import DictConfig
 import logging
 from src.utils.logging_config import setup_logging
@@ -39,6 +39,9 @@ def build_model(cfg: DictConfig):
     elif model_type == "PointNetAE_Transformer_Folding":
         logger.print("PointNetAE_Transformer_Folding")
         return PointNetAE_Transformer_Folding(num_points, latent_size)
+    elif model_type == "PointNetAE_Transformer_Folding_Refined":
+        logger.print("PointNetAE_Transformer_Folding_Refined")
+        return PointNetAE_Transformer_Folding_Refined(num_points, latent_size)
     else:
         raise ValueError(f"Unknown model type: {model_type}") 
 
@@ -135,6 +138,20 @@ class PointNetAE_Transformer_Folding(PointNetAE):
         x, _ , trans_feat_encoder = self.encoder(x)
         x = self.decoder(x)
         return x, [trans_feat_encoder,]
+    
+
+
+class PointNetAE_Transformer_Folding_Refined(PointNetAE):
+    def __init__(self, num_points, latent_size):
+        super().__init__(num_points, latent_size)
+        self.decoder = FoldingDecoderRefined(num_points, latent_size)
+
+    def forward(self, x):
+        x, _ , trans_feat_encoder = self.encoder(x)
+        x = self.decoder(x)
+        return x, [trans_feat_encoder,]
+
+
 
 
 

@@ -3,7 +3,7 @@ defaults:
   - data: autoencoder_Al_basic 
   - model: autoencoder_basic
 project_name: pointnet
-experiment_name: PnAE_Trans_Folding_KL_RDF_64_SWA_centered
+experiment_name: PnAE_Folding_64_SWA_centered_latent_size_256
 wandb_mode: online
 experiment_tags:
   - autoencoder

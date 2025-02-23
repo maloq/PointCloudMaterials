@@ -5,6 +5,9 @@ from src.models.point_net.pointnet_cls import STNkd, STN3d
 
 
 class MLPEncoder(nn.Module):
+    """
+    Point cloud encoder using a simple MLP.
+    """
     def __init__(self, num_points, latent_size):
         super(MLPEncoder, self).__init__()
         self.num_points = num_points
@@ -25,6 +28,9 @@ class MLPEncoder(nn.Module):
     
 
 class PointNetEncoder(nn.Module):
+    """
+    Point cloud encoder using PointNet architecture.
+    """
     def __init__(self, feature_transform=False, channel=3):
         super(PointNetEncoder, self).__init__()
         self.stn = STN3d(channel)

@@ -3,7 +3,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from src.models.point_net.pointnet_cls import STNkd, STN3d
 
+
 class MLPDecoder(nn.Module):
+    """
+    Point cloud decoder using a simple MLP
+    """
     def __init__(self, num_points, latent_size):
         super().__init__()
         self.num_points = num_points
@@ -24,6 +28,9 @@ class MLPDecoder(nn.Module):
 
 
 class PointNetDecoder(nn.Module):
+    """
+    Point cloud decoder using PointNet architecture.
+    """
     def __init__(self, num_points, latent_size, feature_transform=True):
         super(PointNetDecoder, self).__init__()
         self.num_points = num_points
@@ -84,6 +91,9 @@ class PointNetDecoder(nn.Module):
 
 
 class TransformerDecoder(nn.Module):
+    """
+    Point cloud decoder using a transformer.
+    """
     def __init__(self, num_points, latent_size, d_model=256, nhead=8, num_layers=3, dropout=0.1):
         super(TransformerDecoder, self).__init__()
         self.num_points = num_points
@@ -100,17 +110,12 @@ class TransformerDecoder(nn.Module):
     def forward(self, x):
         # x is expected to be of shape (batch_size, latent_size)
         batch_size = x.size(0)
-        
-        # Create transformer memory from the latent vector:
         # shape: (1, batch_size, d_model)
         memory = self.input_proj(x).unsqueeze(0)
-       
         # shape: (num_points, batch_size, d_model)
         queries = self.query_embed.unsqueeze(1).expand(self.num_points, batch_size, self.d_model)
-        
         # output shape: (num_points, batch_size, d_model)
         out = self.transformer_decoder(tgt=queries, memory=memory)
-        
         # (num_points, batch_size, 3) then transpose to (batch_size, num_points, 3)
         out = self.output_proj(out).transpose(0, 1)
         
@@ -118,6 +123,9 @@ class TransformerDecoder(nn.Module):
     
 
 class FoldingDecoder(nn.Module):
+    """
+    Point cloud decoder using folding.
+    """
     def __init__(self, num_points, latent_size):
         super(FoldingDecoder, self).__init__()
         self.num_points = num_points
@@ -140,8 +148,11 @@ class FoldingDecoder(nn.Module):
         self.register_buffer('grid', grid)
         
         self.mlp1 = nn.Linear(latent_size + 2, 512)
+        self.bn1 = nn.BatchNorm1d(512)
         self.mlp2 = nn.Linear(512, 512)
+        self.bn2 = nn.BatchNorm1d(512)
         self.mlp3 = nn.Linear(512, 256)
+        self.bn3 = nn.BatchNorm1d(256)
         self.mlp4 = nn.Linear(256, 3)
     
     def forward(self, x):
@@ -153,21 +164,75 @@ class FoldingDecoder(nn.Module):
         # Expand grid (batch_size, num_points, 2)
         grid = self.grid.unsqueeze(0).expand(batch_size, -1, -1)
         
-        # Concatenate latent vector with grid coordinates
+        # Concatenate latent vector with grid coordinates: shape (B, num_points, latent_size+2)
         x_in = torch.cat([x_expanded, grid], dim=-1)
-        x = F.relu(self.mlp1(x_in))
-        x = F.relu(self.mlp2(x))
-        x = F.relu(self.mlp3(x))
+        
+        # MLP1: output shape (B, num_points, 1024)
+        x = self.mlp1(x_in)
+        # Transpose so that feature dimension is second: (B, 1024, num_points)
+        x = x.transpose(1, 2)
+        x = F.relu(self.bn1(x))
+        # Transpose back: (B, num_points, 1024)
+        x = x.transpose(1, 2)
+        
+        # For MLP2:
+        x = self.mlp2(x)
+        x = x.transpose(1, 2)
+        x = F.relu(self.bn2(x))
+        x = x.transpose(1, 2)
+        
+        # For MLP3:
+        x = self.mlp3(x)
+        x = x.transpose(1, 2)
+        x = F.relu(self.bn3(x))
+        x = x.transpose(1, 2)
+        
         x = self.mlp4(x)
         
         return x
     
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+class FoldingDecoderRefined(nn.Module):
+      """
+      A two-stage decoder where the first stage produces a coarse output and a second stage refines it.
+      """
+      def __init__(self, num_points, latent_size):
+          super(FoldingDecoderRefined, self).__init__()
+          self.coarse_decoder = FoldingDecoder(num_points, latent_size)
+          # Refinement MLP that works on weighted concatenation of coarse output and the latent code.
+          self.refine_mlp1 = nn.Linear(3 + latent_size, 512)
+          self.refine_bn1 = nn.BatchNorm1d(512)
+          self.refine_mlp2 = nn.Linear(512, 256)
+          self.refine_bn2 = nn.BatchNorm1d(256)
+          self.refine_mlp3 = nn.Linear(256, 3)
+
+      def forward(self, x):
+          # Coarse output shape: (B, num_points, 3)
+          coarse_output = self.coarse_decoder(x)
+          batch_size, num_points, _ = coarse_output.size()
+          
+          # Expand latent code to match the number of points: (B, num_points, latent_size)
+          x_expanded = x.unsqueeze(1).expand(-1, num_points, -1)
+          
+          # Concatenate coarse output and latent features: (B, num_points, latent_size + 3)
+          refinement_input = torch.cat([coarse_output, x_expanded], dim=2)
+          
+          # Process through the refinement MLP (reshaping for BatchNorm if necessary)
+          # (B, num_points, latent_size+3) -> (B, latent_size+3, num_points)
+          refinement_input = refinement_input.transpose(1, 2)
+          refined = F.relu(self.refine_bn1(self.refine_mlp1(refinement_input)))
+          refined = F.relu(self.refine_bn2(self.refine_mlp2(refined)))
+          refined = self.refine_mlp3(refined)
+          # Return back to shape: (B, num_points, 3)
+          refined = refined.transpose(1, 2)
+          return refined
+      
+
 
 class TransformerDecoderFolding(nn.Module):
+    """
+    Point cloud decoder using a transformer with folding.
+    """
     def __init__(self, num_points, latent_size, d_model=512, nhead=8, num_layers=3):
         super(TransformerDecoderFolding, self).__init__()
         self.num_points = num_points
@@ -193,12 +258,9 @@ class TransformerDecoderFolding(nn.Module):
         # Project the latent code to d_model (memory)
         self.latent_proj = nn.Linear(latent_size, d_model)
 
-        # Transformer decoder: note that PyTorch's TransformerDecoder expects
-        # input shapes (target_seq_length, batch_size, d_model)
         decoder_layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=nhead)
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
-
-        # Final projection to convert embeddings to output 3D point coordinates
+        
         self.out_proj = nn.Linear(d_model, 3)
     
     def forward(self, x):
@@ -218,7 +280,6 @@ class TransformerDecoderFolding(nn.Module):
         memory = self.latent_proj(x)  # (batch_size, d_model)
         # Option 1: Use the single memory token (sequence length 1)
         memory = memory.unsqueeze(0)   # (1, batch_size, d_model)
-        # (Optionally, you could expand this to multiple tokens if desired.)
 
         # Pass through the transformer decoder.
         # The transformer decoder uses cross-attention between queries and memory.
@@ -226,6 +287,5 @@ class TransformerDecoderFolding(nn.Module):
 
         # Permute to (batch_size, num_points, d_model)
         decoded = decoded.permute(1, 0, 2)
-        # Project the output to 3D coordinates.
         out = self.out_proj(decoded)  # (batch_size, num_points, 3)
         return out

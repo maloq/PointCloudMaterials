@@ -14,33 +14,27 @@ import wandb
 import time
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
 from src.data_utils.data_module import PointCloudDataModule
-
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 import warnings
 warnings.filterwarnings("ignore")
 torch.set_float32_matmul_precision('high')
 
-
+@rank_zero_only
 def log_config(cfg):
     wandb.config.update(OmegaConf.to_container(cfg, resolve=True))
 
-
+@rank_zero_only
 def get_rundir_name() -> str:
     now = datetime.now()
     return str(f'output/{now:%Y-%m-%d}/{now:%H-%M-%S}')
 
-
-def train(cfg: DictConfig):
-
-    start_time = time.process_time()
-    logger.print(f"Starting in {os.getcwd()}")
-    logger.print(f"torch version {torch.__version__ }")
+@rank_zero_only
+def init_wandb(cfg: DictConfig, run_dir):
     os.environ['WANDB_MODE'] = cfg.wandb_mode
     os.environ['WANDB_DIR'] = 'output/wandb'
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
-    run_dir = get_rundir_name()
-    wandb.finish()
     wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
@@ -49,6 +43,16 @@ def train(cfg: DictConfig):
                                log_dataset_dir=None,
                                log_best_dir=None,
                                log_latest_dir=None)
+    return wandb_logger
+
+def train(cfg: DictConfig):
+
+    start_time = time.process_time()
+    logger.print(f"Starting in {os.getcwd()}")
+    logger.print(f"torch version {torch.__version__ }")
+    run_dir = get_rundir_name()
+    wandb_logger = init_wandb(cfg, run_dir)
+
     default_root_dir = run_dir
     checkpoint_loc = run_dir   
     lr_monitor = LearningRateMonitor(logging_interval='step', log_momentum=False) 
@@ -69,12 +73,13 @@ def train(cfg: DictConfig):
         accelerator='gpu' if cfg.training.gpu else 'cpu',
         callbacks=[checkpoint_callback, lr_monitor, StochasticWeightAveraging(swa_lrs=0.001)],
         precision='16-mixed',
-        devices=[0],
+        devices=[0, 1, 2],
         log_every_n_steps=cfg.training.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
         check_val_every_n_epoch=10,
         profiler='simple',
+        gradient_clip_val=0.5
     )
     log_config(cfg)
     logger.print(f"Time to start script {time.process_time() - start_time} seconds")

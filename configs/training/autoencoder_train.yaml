@@ -1,6 +1,6 @@
 learning_rate: 0.0004
-batch_size: 4096
-epochs: 1000
+batch_size: 16192
+epochs: 4000
 decay_rate: 0.004
 gpu: True
 log_every_n_steps: 5
@@ -9,4 +9,4 @@ scheduler_gamma: 0.5
 scheduler_name: chained
 
 feature_transform_loss_scale: 0.001
-reconstruction_loss_scale: 0.5 #
+reconstruction_loss_scale: 0.5
