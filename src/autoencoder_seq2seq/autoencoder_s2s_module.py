@@ -43,47 +43,37 @@ class PointNetAutoencoderSeq2Seq(pl.LightningModule):
     
     def training_step(self, batch, batch_idx):
         points, _ = batch
-        pred, trans_feat_list = self(points)
+        pred, latent = self(points)
         loss, aux_loss = self.criterion(points.float(),
                                         pred.float(),
-                                        trans_feat_list=trans_feat_list,
                                         density=self.density,
                                         dr=self.dr,
                                         sphere_radius=self.sphere_radius,
-                                        reconstruction_loss_scale=self.reconstruction_loss_scale,
-                                        feature_transform_loss_scale=self.feature_transform_loss_scale)
-        if len(aux_loss) == 2:
-            rec_loss, feature_transform_loss = aux_loss
-            self.log('train_aux_rec_loss', rec_loss, prog_bar=True)
-        elif len(aux_loss) == 1:
-            feature_transform_loss = aux_loss[0]
+                                        reconstruction_loss_scale=self.reconstruction_loss_scale)
+        if len(aux_loss) == 1:
+            self.log('train_aux_rec_loss', aux_loss[0], prog_bar=True)
         else:
             pass
             
         self.log('train_loss', loss, prog_bar=True)
-        self.log('train_ft_loss', feature_transform_loss, prog_bar=False)
         return {'loss': loss}  
       
 
     def validation_step(self, batch, batch_idx):
         points, _ = batch
-        pred, trans_feat_list = self(points)
+        pred, latent = self(points)
         loss, aux_loss = self.criterion(points.float(),
                                         pred.float(),
-                                        trans_feat_list=trans_feat_list,
                                         density=self.density,
                                         dr=self.dr,
                                         sphere_radius=self.sphere_radius,
-                                        reconstruction_loss_scale=self.reconstruction_loss_scale,
-                                        feature_transform_loss_scale=self.feature_transform_loss_scale)
-        if len(aux_loss) == 2:
-            rec_loss, feature_transform_loss = aux_loss
-            self.log('val_aux_rec_loss', rec_loss, prog_bar=True)
+                                        reconstruction_loss_scale=self.reconstruction_loss_scale)
+        if len(aux_loss) == 1:
+            self.log('val_aux_rec_loss', aux_loss[0], prog_bar=True)
         else:
-            feature_transform_loss = aux_loss[0]
+            pass
 
         self.log('val_loss', loss, prog_bar=True)
-        self.log('val_ft_loss', feature_transform_loss, prog_bar=True)
         return {'val_loss': loss}    
     
     

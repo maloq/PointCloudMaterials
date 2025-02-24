@@ -56,7 +56,7 @@ def get_batch_reconstructions(model: PointNetAutoencoderSeq2Seq,
     """
     model.eval()
     model.to(device)
-
+    print(f"Device: {device}")
     with torch.no_grad():
         # For the seq2seq autoencoder, the input is expected as (B, N, 3) so no transpose is needed.
         points = points.to(device)

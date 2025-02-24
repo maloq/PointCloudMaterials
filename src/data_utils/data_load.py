@@ -141,6 +141,7 @@ def cartesian_to_spherical(points):
     spherical = np.stack((r, theta, phi), axis=1)
     return spherical
 
+
 def convert_and_sort_sample(sample):
     """
     Convert Cartesian points to spherical coordinates and sort the points by the radial coordinate.

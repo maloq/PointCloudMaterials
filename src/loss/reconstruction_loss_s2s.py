@@ -118,6 +118,94 @@ def calculate_rdf_spherical(spherical_points, sphere_radius, dr, drop_first_n_bi
     return rdf, r_mid
 
 
+import torch
+
+def radial_distribution_function(points, bin_width, r_max, box_volume=None, normalize=True):
+    """
+    Calculate the radial distribution function (RDF) for a batch of point clouds 
+    (each in spherical coordinates: (r, theta, phi)) using PyTorch.
+
+    The function computes the histogram of unique pairwise distances over radial bins.
+    Optionally, it normalizes the histogram to yield the conventional g(r) if the overall
+    system volume (box_volume) is provided. Without box_volume, normalization divides by
+    the total number of unique pairs.
+
+    Args:
+        points (torch.Tensor): Tensor of shape (B, N, 3) containing spherical coordinates 
+                                 (r, theta, phi) for each atom.
+        bin_width (float): Width of the radial bins.
+        r_max (float): Maximum radial distance to consider (bins span [0, r_max]).
+        box_volume (float, optional): The volume of the system. If provided, normalization
+                                      yields g(r) = (V/(N(N-1))) (dn/dr)/(4πr²). If not provided,
+                                      the histogram is normalized by the total number of pairs.
+        normalize (bool, optional): If True, normalize the RDF; otherwise, return raw counts.
+    
+    Returns:
+        rdf (torch.Tensor): Tensor of shape (B, num_bins) containing the (normalized) RDF 
+                            for each batch element.
+        bin_centers (torch.Tensor): Tensor of shape (num_bins,) containing the center 
+                                    of each radial bin.
+    """
+    B, N, _ = points.shape
+    device = points.device
+
+    # Define bins
+    num_bins = int(r_max / bin_width)
+    # Create bin edges between 0 and r_max (inclusive)
+    bin_edges = torch.linspace(0, r_max, num_bins + 1, device=device)
+    # Compute bin centers (this is used both for plotting and for normalization)
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+
+    # Convert spherical to Cartesian coordinates:
+    # Spherical coordinates are assumed to be given in (r, theta, phi)
+    r_vals = points[..., 0]
+    theta = points[..., 1]
+    phi = points[..., 2]
+    x = r_vals * torch.sin(theta) * torch.cos(phi)
+    y = r_vals * torch.sin(theta) * torch.sin(phi)
+    z = r_vals * torch.cos(theta)
+    pts_cartesian = torch.stack((x, y, z), dim=-1)  # shape: (B, N, 3)
+
+    # Compute pairwise Euclidean distances using a fast, vectorized operation.
+    # dists will have shape (B, N, N)
+    dists = torch.cdist(pts_cartesian, pts_cartesian, p=2)
+
+    # Extract the distances for unique pairs by taking the upper triangle with offset=1.
+    triu_indices = torch.triu_indices(N, N, offset=1)
+    # pairwise_dists: shape (B, M) where M = N*(N-1)/2
+    pairwise_dists = dists[:, triu_indices[0], triu_indices[1]]
+
+    # Bin the pairwise distances.
+    # One simple way is to compute a bin index per distance by using floor division.
+    # (Distances exactly equal to r_max are clamped into the last bin.)
+    bin_indices = (pairwise_dists / bin_width).floor().long()
+    bin_indices = torch.clamp(bin_indices, max=num_bins - 1)
+
+    # Count how many pair distances fall into each bin for each batch element.
+    # Use one-hot encoding for vectorized histogramming.
+    one_hot = torch.nn.functional.one_hot(bin_indices, num_classes=num_bins)  # Shape: (B, M, num_bins)
+    counts = one_hot.sum(dim=1).to(torch.float)  # Shape: (B, num_bins)
+
+    if normalize:
+        total_pairs = N * (N - 1) / 2  # Total number of unique pairs.
+        if box_volume is not None:
+            # For a uniform (ideal gas) distribution the expected number of pairs in a spherical shell 
+            # between r and r+dr is:
+            #    expected_counts = total_pairs * (shell_volume / box_volume)
+            # where the spherical shell volume:
+            #    shell_volume = 4π r² dr   (we use bin_centers as representative r)
+            shell_volumes = 4 * torch.pi * (bin_centers ** 2) * bin_width  # shape: (num_bins,)
+            expected_counts = total_pairs * (shell_volumes / box_volume)
+            rdf = counts / expected_counts.unsqueeze(0)  # Broadcast over batch dimension.
+        else:
+            # Otherwise, simply normalize by total number of pairs (i.e. yield a probability density)
+            rdf = counts / total_pairs
+    else:
+        rdf = counts
+
+    return rdf, bin_centers
+
+
 
 def rdf_wasserstein_loss(pred, target):
     rdf1, r_mid1 = calculate_rdf_spherical(pred, sphere_radius=5, dr=0.05, r_max = 5)
