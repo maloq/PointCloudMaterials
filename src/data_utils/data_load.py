@@ -93,71 +93,32 @@ class AtomicDataset(Dataset):
 
 
 
-class CubeDataset(Dataset):
+class RegularDataset(Dataset):
     def __init__(
         self, 
         points: np.ndarray, 
-        size: float, # cube_size actually
+        size: float,  # cube_side for cubic or radius for spheric sampling
         n_points: int = 128, 
-        overlap_fraction: float = 0.0
-    ):
-        self.samples = get_regular_samples(
-            points,
-            size=size, 
-            n_points=n_points,
-            return_coords=True,
-            overlap_fraction=overlap_fraction,
-            sample_shape='cubic'
-        )
-
-    def __len__(self):
-        return len(self.samples)
-
-    def __getitem__(self, idx):
-        cube_points, coords = self.samples[idx]        
-        cube_points = pc_normalize(cube_points).astype(np.float32)
-        return torch.tensor(cube_points, dtype=torch.float32), coords
-
-
-
-class SphericDataset(Dataset):
-    def __init__(
-        self, 
-        points: np.ndarray, 
-        size: float, # radius actually
-        n_points: int = 128, 
-        overlap_fraction: float = 0.0
+        overlap_fraction: float = 0.0,
+        sample_shape: str = 'cubic'  # set to 'cubic' or 'spheric'
     ):
         self.samples = get_regular_samples(
             points,
             size=size,
-            n_points=n_points, 
+            n_points=n_points,
             return_coords=True,
             overlap_fraction=overlap_fraction,
-            sample_shape='spheric'
+            sample_shape=sample_shape
         )
 
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, idx):
-        spheres, coords = self.samples[idx]        
-        spheres = pc_normalize(spheres).astype(np.float32)
-        return torch.tensor(spheres, dtype=torch.float32), coords
+        sample_points, coords = self.samples[idx]
+        sample_points = pc_normalize(sample_points).astype(np.float32)
+        return torch.tensor(sample_points, dtype=torch.float32), coords
 
-
-if __name__ == '__main__':
-    data = AtomicDataset(root="datasets/Al/inherent_configurations_off",
-                         data_files=["240ps.off"],
-                         cube_size=16,
-                         n_samples=6000,
-                         num_points=200,
-                         label=0)
-    
-    DataLoader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)
-    for point, label in DataLoader:
-        print(point.shape)
-        print(label.shape)
 
 
 def cartesian_to_spherical(points):
@@ -290,3 +251,67 @@ class AtomicSequenceDataset(Dataset):
         point_set_tensor = torch.tensor(point_set, dtype=torch.float32)
         label_tensor = torch.tensor(self.label, dtype=torch.long)
         return point_set_tensor, label_tensor
+    
+
+class RegularSequenceDataset(Dataset):
+    """
+    Dataset that creates regular samples of point cloud data and then converts 
+    each sample from Cartesian to spherical coordinates, sorting the points 
+    based on the radial coordinate.
+    
+    Args:
+        points (np.ndarray): Input point cloud data.
+        size (float): Cube side length (if sample_shape is 'cubic') or radius (if 'spheric').
+        n_points (int, optional): Number of points per sample. Default is 128.
+        overlap_fraction (float, optional): Fractional overlap between adjacent samples. Default is 0.0.
+        sample_shape (str, optional): Determines the sampling shape. Can be 'cubic' or 'spheric'.
+                                      Default is 'spheric'. Note that output is converted to spherical coordinates.
+        pre_normalize (bool, optional): If True, normalize the point cloud before conversion. Default is True.
+    """
+    def __init__(
+        self,
+        points: np.ndarray,
+        size: float,
+        n_points: int = 128,
+        overlap_fraction: float = 0.0,
+        sample_shape: str = 'spheric',
+        pre_normalize: bool = True
+    ):
+        raw_samples = get_regular_samples(
+            points,
+            size=size,
+            n_points=n_points,
+            return_coords=True,
+            overlap_fraction=overlap_fraction,
+            sample_shape=sample_shape
+        )
+        self.samples = []
+        self.pre_normalize = pre_normalize
+        for sample_points, coords in raw_samples:
+            if self.pre_normalize:
+                sample_points = pc_normalize(sample_points)
+            # Convert Cartesian points to spherical coordinates and sort by the radial component.
+            sample_points = convert_and_sort_sample(sample_points)
+            sample_points = sample_points.astype(np.float32)
+            self.samples.append((sample_points, coords))
+            
+    def __len__(self):
+        return len(self.samples)
+        
+    def __getitem__(self, idx):
+        sample_points, coords = self.samples[idx]
+        return torch.tensor(sample_points, dtype=torch.float32), coords
+    
+
+if __name__ == '__main__':
+    data = AtomicDataset(root="datasets/Al/inherent_configurations_off",
+                         data_files=["240ps.off"],
+                         cube_size=16,
+                         n_samples=6000,
+                         num_points=200,
+                         label=0)
+    
+    DataLoader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)
+    for point, label in DataLoader:
+        print(point.shape)
+        print(label.shape)

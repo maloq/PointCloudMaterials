@@ -193,39 +193,47 @@ class FoldingDecoder(nn.Module):
     
 
 class FoldingDecoderRefined(nn.Module):
-      """
-      A two-stage decoder where the first stage produces a coarse output and a second stage refines it.
-      """
-      def __init__(self, num_points, latent_size):
-          super(FoldingDecoderRefined, self).__init__()
-          self.coarse_decoder = FoldingDecoder(num_points, latent_size)
-          # Refinement MLP that works on weighted concatenation of coarse output and the latent code.
-          self.refine_mlp1 = nn.Linear(3 + latent_size, 512)
-          self.refine_bn1 = nn.BatchNorm1d(512)
-          self.refine_mlp2 = nn.Linear(512, 256)
-          self.refine_bn2 = nn.BatchNorm1d(256)
-          self.refine_mlp3 = nn.Linear(256, 3)
+    """
+    A two-stage decoder where the first stage produces a coarse output and a second stage refines it.
+    """
+    def __init__(self, num_points, latent_size):
+        super(FoldingDecoderRefined, self).__init__()
+        self.coarse_decoder = FoldingDecoder(num_points, latent_size)
+        # Refinement MLP that works on the concatenation of the coarse output and the latent code.
+        self.refine_mlp1 = nn.Linear(3 + latent_size, 512)
+        self.refine_bn1 = nn.BatchNorm1d(512)
+        self.refine_mlp2 = nn.Linear(512, 256)
+        self.refine_bn2 = nn.BatchNorm1d(256)
+        self.refine_mlp3 = nn.Linear(256, 3)
 
-      def forward(self, x):
-          # Coarse output shape: (B, num_points, 3)
-          coarse_output = self.coarse_decoder(x)
-          batch_size, num_points, _ = coarse_output.size()
+    def forward(self, x):
+        # Coarse output: shape (B, num_points, 3)
+        coarse_output = self.coarse_decoder(x)
+        batch_size, num_points, _ = coarse_output.size()
           
-          # Expand latent code to match the number of points: (B, num_points, latent_size)
-          x_expanded = x.unsqueeze(1).expand(-1, num_points, -1)
+        # Expand the latent code to match the number of points: shape (B, num_points, latent_size)
+        x_expanded = x.unsqueeze(1).expand(-1, num_points, -1)
           
-          # Concatenate coarse output and latent features: (B, num_points, latent_size + 3)
-          refinement_input = torch.cat([coarse_output, x_expanded], dim=2)
+        # Concatenate coarse output and latent features: shape (B, num_points, latent_size + 3)
+        refinement_input = torch.cat([coarse_output, x_expanded], dim=2)
           
-          # Process through the refinement MLP (reshaping for BatchNorm if necessary)
-          # (B, num_points, latent_size+3) -> (B, latent_size+3, num_points)
-          refinement_input = refinement_input.transpose(1, 2)
-          refined = F.relu(self.refine_bn1(self.refine_mlp1(refinement_input)))
-          refined = F.relu(self.refine_bn2(self.refine_mlp2(refined)))
-          refined = self.refine_mlp3(refined)
-          # Return back to shape: (B, num_points, 3)
-          refined = refined.transpose(1, 2)
-          return refined
+        # Apply the refinement MLP:
+        # 1. Process with the linear layer (operates on the last dimension)
+        x_refined = self.refine_mlp1(refinement_input)        # (B, num_points, 512)
+        # 2. Transpose to (B, 512, num_points) for BatchNorm1d
+        x_refined = x_refined.transpose(1, 2)
+        x_refined = F.relu(self.refine_bn1(x_refined))
+        # Transpose back to (B, num_points, 512)
+        x_refined = x_refined.transpose(1, 2)
+          
+        x_refined = self.refine_mlp2(x_refined)                # (B, num_points, 256)
+        x_refined = x_refined.transpose(1, 2)
+        x_refined = F.relu(self.refine_bn2(x_refined))
+        x_refined = x_refined.transpose(1, 2)                  # (B, num_points, 256)
+          
+        # Final linear layer to produce refined 3D points
+        refined = self.refine_mlp3(x_refined)                  # (B, num_points, 3)
+        return refined
       
 
 

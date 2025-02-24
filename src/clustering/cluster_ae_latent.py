@@ -38,13 +38,14 @@ def get_latents_from_dataloader(model: PointNetAutoencoder, dataloader, device: 
     return latents
 
 
-def predict_and_save_latent(checkpoint_path,
-                            liquid_file_path,
-                            crystal_file_path,
+def predict_and_save_latent(config_name: str,
+                            checkpoint_path: str,
+                            liquid_file_path: str,
+                            crystal_file_path: str,
                             device: str = 'cpu',
                             save_path: str = 'output/latent_label_pairs.npy'):
     with initialize(version_base=None, config_path="../../configs"):
-        cfg: DictConfig = compose(config_name="Al_autoencoder")
+        cfg: DictConfig = compose(config_name=config_name)
     
     model = PointNetAutoencoder.load_from_checkpoint(checkpoint_path)
     model.to(device)

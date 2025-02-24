@@ -4,6 +4,7 @@ import torch.nn as nn
 from omegaconf import DictConfig
 import logging
 from src.utils.logging_config import setup_logging
+import math
 logger = setup_logging()
 
 
@@ -23,11 +24,11 @@ def build_model(cfg: DictConfig):
     latent_size = cfg.model.latent_size
 
     if model_type == "MLP_AE_seq2seq":
-        logger.print("PointNetAE")
-        return MLP_AE_seq2seq(num_points, latent_size)
+        logger.print("MLP_AE_seq2seq")
+        return MLP_AE_seq2seq(input_dim=3, n_points=num_points, latent_dim=latent_size)
     elif model_type == "TransformerAutoencoder":
         logger.print("TransformerAutoencoder")
-        return TransformerAutoencoder(num_points, latent_size)
+        return TransformerAutoencoder(input_dim=3, model_dim=latent_size, num_heads=8, encoder_layers=4, decoder_layers=4, dropout=0.1, seq_length=num_points)
     else:
         raise ValueError(f"Unknown model type: {model_type}") 
 
@@ -48,7 +49,6 @@ class MLP_Encoder(nn.Module):
         self.input_dim = input_dim
         self.latent_dim = latent_dim
 
-        # Flatten the point cloud sample and apply fully connected layers.
         self.fc1 = nn.Linear(n_points * input_dim, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc3 = nn.Linear(256, latent_dim)
@@ -65,8 +65,8 @@ class MLP_Encoder(nn.Module):
             z (Tensor): Latent representation of shape (batch_size, latent_dim).
         """
         batch_size = x.size(0)
-        # Flatten the input: shape becomes (batch_size, n_points * input_dim)
-        x = x.view(batch_size, -1)
+        x = x.reshape(batch_size, -1)
+        
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
         z = self.fc3(x)
@@ -272,7 +272,7 @@ class TransformerAutoencoder(nn.Module):
         
         # Project decoder outputs back to the original input space.
         reconstruction = self.output_proj(decoder_output)  # (B, T, input_dim)
-        return reconstruction
+        return reconstruction, latent
 
 
 

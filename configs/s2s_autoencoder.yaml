@@ -1,0 +1,11 @@
+defaults:
+  - training: autoencoder_s2s_train
+  - data: autoencoder_Al_basic 
+  - model: autoencoder_s2s
+project_name: pointnet
+experiment_name: PnAE_s2s_MLP_64_SWA_centered_latent_size_256
+wandb_mode: offline
+experiment_tags:
+  - autoencoder
+  - S2S
+  - MLP

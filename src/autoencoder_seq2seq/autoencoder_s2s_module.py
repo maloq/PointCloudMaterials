@@ -3,9 +3,10 @@ import sys
 import torch
 import numpy as np
 import pytorch_lightning as pl
-from src.loss.reconstruction_loss import *
-from src.models.autoencoders_nn.pointnet_autoencoder import build_model
+from src.loss.reconstruction_loss_s2s import *
+from src.models.autoencoders_nn.seq2seq_autoencoder import build_model
 from src.utils.logging_config import setup_logging  
+from src.utils.optimizer_utils import get_optimizers_and_scheduler
 logger = setup_logging()
 
 
@@ -23,7 +24,7 @@ class PointNetAutoencoderSeq2Seq(pl.LightningModule):
 
         if cfg.model.torch_compile:
             self.model = torch.compile(self.model)
-        self.criterion = chamfer_kl_divergence_loss
+        self.criterion = mse_loss
         self.density = self.compute_density()
         logger.print(f"Loss: {self.criterion.__name__}")
 
@@ -42,7 +43,7 @@ class PointNetAutoencoderSeq2Seq(pl.LightningModule):
     
     def training_step(self, batch, batch_idx):
         points, _ = batch
-        pred, trans_feat_list = self(points.permute(0,2,1))
+        pred, trans_feat_list = self(points)
         loss, aux_loss = self.criterion(points.float(),
                                         pred.float(),
                                         trans_feat_list=trans_feat_list,
@@ -66,7 +67,7 @@ class PointNetAutoencoderSeq2Seq(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         points, _ = batch
-        pred, trans_feat_list = self(points.permute(0,2,1))
+        pred, trans_feat_list = self(points)
         loss, aux_loss = self.criterion(points.float(),
                                         pred.float(),
                                         trans_feat_list=trans_feat_list,
@@ -87,39 +88,4 @@ class PointNetAutoencoderSeq2Seq(pl.LightningModule):
     
     
     def configure_optimizers(self):
-        if self.hparams.training.scheduler_name == 'Step':
-            optimizer = torch.optim.AdamW(
-                self.parameters(),
-                lr=self.hparams.training.learning_rate,
-                weight_decay=self.hparams.training.decay_rate
-            )
-            scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=self.hparams.training.scheduler_gamma)
-            return [optimizer], [scheduler]
-        elif self.hparams.training.scheduler_name == 'OneCycle':
-            optimizer = torch.optim.AdamW(
-                self.parameters(),
-                lr=self.hparams.training.learning_rate,
-                weight_decay=self.hparams.training.decay_rate
-            )
-            scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=self.hparams.training.learning_rate, total_steps=self.hparams.training.epochs)
-            return [optimizer], [scheduler]
-        elif self.hparams.training.scheduler_name == 'CosineAnnealingWarmRestarts':
-            optimizer = torch.optim.AdamW(
-                self.parameters(),
-                lr=self.hparams.training.learning_rate,
-                weight_decay=self.hparams.training.decay_rate
-            )
-            scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=20, T_mult=3)
-            return [optimizer], [scheduler]
-        elif self.hparams.training.scheduler_name == 'chained':
-            optimizer = torch.optim.AdamW(
-                self.parameters(),
-                lr=self.hparams.training.learning_rate,
-                weight_decay=self.hparams.training.decay_rate
-            )
-            scheduler2 = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=self.hparams.training.learning_rate, total_steps=self.hparams.training.epochs)
-            scheduler1 = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=self.hparams.training.learning_rate, total_steps=self.hparams.training.epochs)
-            scheduler = torch.optim.lr_scheduler.ChainedScheduler([scheduler1, scheduler2])
-            return [optimizer], [scheduler]
-        else:
-            raise ValueError(f"Scheduler {self.hparams.training.scheduler_name} not found")
+        return get_optimizers_and_scheduler(self)

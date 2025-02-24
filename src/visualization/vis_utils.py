@@ -243,6 +243,43 @@ def plot_point_cloud_with_arrows(original, modified, title="Point Cloud with Vec
     fig.show()
 
 
+def visualize_original_and_reconstructed(original_points, reconstructed_points, random_sample=False):
+    """
+    Visualize original and reconstructed point clouds side by side.
+    
+    Args:
+        original_points: Original point cloud array of shape (N, 3)
+        reconstructed_points: Reconstructed point cloud array of shape (N, 3)
+    """
+    # Visualize original points
+    if random_sample:
+       random_sample_idx = np.random.randint(0, original_points.shape[0])
+
+    fig_original = plot_point_cloud_3d(
+        original_points[random_sample_idx][:, :3],  # Take only XYZ coordinates
+        n_connections=3,
+        title='Original',
+        num_points=3, 
+    )
+    fig_original.update_layout(
+        width=600,  
+        height=400 
+    )
+    fig_original.show()
+
+    # Visualize reconstructed points
+    fig_reconstructed = plot_point_cloud_3d(
+        reconstructed_points[random_sample_idx][:, :3],  # Take only XYZ coordinates
+        n_connections=3,
+        title='Reconstructed',
+        num_points=3,
+        color='red'
+    )
+    fig_reconstructed.update_layout(
+        width=600,  
+        height=400
+    )
+    fig_reconstructed.show()
 # sample_idx = np.random.randint(0, original_points_l.shape[0])
 
 # sample_l = original_points_l[sample_idx]

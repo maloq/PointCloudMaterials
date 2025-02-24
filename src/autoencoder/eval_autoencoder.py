@@ -4,7 +4,7 @@ import torch
 sys.path.append(os.getcwd())
 from src.data_utils.prepare_data import read_off_file
 from torch.utils.data import DataLoader
-from src.data_utils.data_load import CubeDataset, SphericDataset
+from src.data_utils.data_load import RegularDataset
 from omegaconf import DictConfig
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
 from omegaconf import OmegaConf
@@ -22,21 +22,12 @@ def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool
         DataLoader containing point cloud samples
     """
     points = read_off_file(file_path)
-    if cfg.data.sample_shape == 'cubic':
-        dataset = CubeDataset(points,
-                            size=cfg.data.cube_size,
-                            n_points=cfg.data.num_points,
-                            overlap_fraction=cfg.data.overlap_fraction)
-        print(f"Number of samples in cubic dataset: {len(dataset)}")
-    elif cfg.data.sample_shape == 'spheric':
-        dataset = SphericDataset(points,
-                               size=cfg.data.radius,
-                               n_points=cfg.data.num_points,
-                               overlap_fraction=cfg.data.overlap_fraction)
-        print(f"Number of samples in spheric dataset: {len(dataset)}")
-    else:
-        raise ValueError(f"Invalid sample type: {cfg.data.sample_shape}")
-    
+    dataset = RegularDataset(points,
+                             sample_shape=cfg.data.sample_shape,
+                             size=cfg.data.cube_size,
+                             n_points=cfg.data.num_points,
+                             overlap_fraction=cfg.data.overlap_fraction)
+    print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
     return DataLoader(dataset, batch_size=cfg.training.batch_size, shuffle=shuffle)
 
 
