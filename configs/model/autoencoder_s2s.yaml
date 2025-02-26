@@ -1,3 +1,4 @@
-latent_size: 256
-type: TransformerAutoencoderS2S
-torch_compile: False
+latent_size: 128
+type: ConvUNetSequenceAutoencoderWithRefinement
+torch_compile: True
+num_refinement_steps: 2

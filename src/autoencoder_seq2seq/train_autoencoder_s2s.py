@@ -12,8 +12,8 @@ from datetime import datetime
 from omegaconf import DictConfig, OmegaConf
 import wandb
 import time
-from src.autoencoder_seq2seq.autoencoder_s2s_module import PointNetAutoencoderSeq2Seq
-from src.data_utils.data_module import PointCloudDataModule
+from src.autoencoder_seq2seq.autoencoder_s2s_module import AutoencoderSeq2Seq
+from src.data_utils.data_module import Seq2SeqDataModule
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 import warnings
@@ -39,6 +39,12 @@ def init_wandb(cfg: DictConfig, run_dir):
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
                                name=cfg.experiment_name,
+                               lr=cfg.training.lr,
+                               decay_rate=cfg.training.decay_rate,
+                               batch_size=cfg.training.batch_size,
+                               epochs=cfg.training.epochs,
+                               num_refinement_steps=cfg.model.num_refinement_steps,
+                               latent_size=cfg.model.latent_size,
                                model_log_interval=None,
                                log_dataset_dir=None,
                                log_best_dir=None,
@@ -57,8 +63,8 @@ def train(cfg: DictConfig):
     checkpoint_loc = run_dir   
     lr_monitor = LearningRateMonitor(logging_interval='step', log_momentum=False) 
     
-    dm = PointCloudDataModule(cfg)
-    model = PointNetAutoencoderSeq2Seq(cfg)
+    dm = Seq2SeqDataModule(cfg)
+    model = AutoencoderSeq2Seq(cfg)
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_loc,
         monitor='val_loss',

@@ -7,18 +7,20 @@ sys.path.append(os.getcwd())
 from hydra import compose, initialize
 from omegaconf import DictConfig
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.autoencoder_seq2seq.autoencoder_s2s_module import AutoencoderSeq2Seq
 from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader
+from src.autoencoder_seq2seq.eval_s2s_autoencoder import create_autoencoder_dataloader_s2s
 
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
 
-def get_latents_from_dataloader(model: PointNetAutoencoder, dataloader, device: str = 'cpu') -> np.ndarray:
+def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.ndarray:
     """
     Runs the autoencoder on each batch and extracts the latent representations.
     
     Args:
-        model: The loaded PointNetAutoencoder model.
+        model: The loaded autoencoder model (PointNetAutoencoder or AutoencoderSeq2Seq).
         dataloader: Torch DataLoader yielding point cloud batches.
         device: Device to run the inference on.
     
@@ -29,10 +31,19 @@ def get_latents_from_dataloader(model: PointNetAutoencoder, dataloader, device: 
     for batch in dataloader:
         points = batch[0]
         points = points.to(device)
-        points = points.transpose(2, 1)
+        
+        # Check if the model is a PointNetAutoencoder or AutoencoderSeq2Seq
+        if isinstance(model, PointNetAutoencoder):
+        # PointNetAutoencoder expects input shape [batch, 3, num_points]
+            points = points.transpose(2, 1)
+        # AutoencoderSeq2Seq already expects input shape [batch, num_points, 3]
         with torch.no_grad():
+            # Get latent representation
             latent = model(points, return_latent=True)[0]
+            print(type(latent))
+            print(len(latent))
             print(latent.shape)
+
         latents.append(latent.cpu().numpy())
     latents = np.concatenate(latents, axis=0)
     return latents
@@ -43,24 +54,38 @@ def predict_and_save_latent(config_name: str,
                             liquid_file_path: str,
                             crystal_file_path: str,
                             device: str = 'cpu',
-                            save_path: str = 'output/latent_label_pairs.npy'):
+                            save_path: str = 'output/latent_label_pairs.npy',
+                            model_class: str = None):
+    
     with initialize(version_base=None, config_path="../../configs"):
         cfg: DictConfig = compose(config_name=config_name)
     
-    model = PointNetAutoencoder.load_from_checkpoint(checkpoint_path)
+    # Load the checkpoint to determine the model type
+    checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+    
+    # Determine which model class to use based on the checkpoint
+    if model_class and 'Seq2Seq' in model_class:
+        model = AutoencoderSeq2Seq.load_from_checkpoint(checkpoint_path)
+        print("Loaded AutoencoderSeq2Seq model")
+        liquid_loader = create_autoencoder_dataloader_s2s(cfg, liquid_file_path, shuffle=False)
+        crystal_loader = create_autoencoder_dataloader_s2s(cfg, crystal_file_path, shuffle=False)
+    else:
+        model = PointNetAutoencoder.load_from_checkpoint(checkpoint_path)
+        print("Loaded PointNetAutoencoder model")
+        liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=False)
+        crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=False)
+    
     model.to(device)
     model.eval()
     
     latent_label_pairs = []
     
     print("Processing liquid dataset ...")
-    liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=False)
     liquid_latents = get_latents_from_dataloader(model, liquid_loader, device)
     for latent_vec in liquid_latents:
         latent_label_pairs.append((latent_vec, "liquid"))
     
     print("Processing crystal dataset ...")
-    crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=False)
     crystal_latents = get_latents_from_dataloader(model, crystal_loader, device)
     for latent_vec in crystal_latents:
         latent_label_pairs.append((latent_vec, "crystal"))
@@ -138,7 +163,8 @@ if __name__ == '__main__':
     crystal_file_path = 'datasets/Al/inherent_configurations_off/240ps.off'
 
     if not os.path.exists(save_path):
-        predict_and_save_latent(checkpoint_path,
+        predict_and_save_latent('autoencoder',
+                                checkpoint_path,
                                 liquid_file_path,
                                 crystal_file_path,
                                 device='cuda')

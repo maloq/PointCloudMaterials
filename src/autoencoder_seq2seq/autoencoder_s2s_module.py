@@ -10,7 +10,7 @@ from src.utils.optimizer_utils import get_optimizers_and_scheduler
 logger = setup_logging()
 
 
-class PointNetAutoencoderSeq2Seq(pl.LightningModule):
+class AutoencoderSeq2Seq(pl.LightningModule):
 
     def __init__(self, cfg):
         super().__init__()
@@ -36,8 +36,9 @@ class PointNetAutoencoderSeq2Seq(pl.LightningModule):
     
     def forward(self, x, return_latent: bool = False):
         if return_latent:
+            # Get the latent representation from the encoder
             latent = self.model.encoder(x)
-            return latent
+            return latent, None  # Return a tuple to be consistent with PointNetAutoencoder
         else:
             return self.model(x)
     

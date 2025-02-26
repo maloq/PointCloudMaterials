@@ -9,12 +9,12 @@ from src.data_utils.prepare_data import read_off_file
 from torch.utils.data import DataLoader
 from src.data_utils.data_load import RegularSequenceDataset
 from omegaconf import DictConfig
-from src.autoencoder_seq2seq.autoencoder_s2s_module import PointNetAutoencoderSeq2Seq
+from src.autoencoder_seq2seq.autoencoder_s2s_module import AutoencoderSeq2Seq
 from omegaconf import OmegaConf
 from hydra import compose, initialize
 
 
-def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool = False) -> DataLoader:
+def create_autoencoder_dataloader_s2s(cfg: DictConfig, file_path: str, shuffle: bool = False) -> DataLoader:
     """
     Create a dataloader for autoencoder inference from an OFF file
     for the seq2seq autoencoder.
@@ -38,7 +38,7 @@ def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool
     return DataLoader(dataset, batch_size=cfg.training.batch_size, shuffle=shuffle)
 
 
-def get_batch_reconstructions(model: PointNetAutoencoderSeq2Seq,
+def get_batch_reconstructions(model: AutoencoderSeq2Seq,
                               points: torch.Tensor,
                               n_points: int,
                               device: str = 'cpu') -> tuple[np.ndarray, np.ndarray]:
@@ -93,7 +93,7 @@ def get_batch_reconstructions(model: PointNetAutoencoderSeq2Seq,
 
 
 if __name__ == '__main__':
-    model = PointNetAutoencoderSeq2Seq.load_from_checkpoint('output/2025-02-24/00-37-30/pointnet-epoch=59-val_loss=0.19.ckpt')
+    model = AutoencoderSeq2Seq.load_from_checkpoint('output/2025-02-24/00-37-30/pointnet-epoch=59-val_loss=0.19.ckpt')
     with initialize(version_base=None, config_path="../../configs"):
         cfg = compose(config_name="s2s_autoencoder")
         
