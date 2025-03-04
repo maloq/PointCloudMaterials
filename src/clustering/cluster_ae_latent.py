@@ -46,28 +46,21 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
     return latents
 
 
-def predict_and_save_latent(config_name: str,
-                            checkpoint_path: str,
+def predict_and_save_latent(cfg: str,
+                            model,
                             liquid_file_path: str,
                             crystal_file_path: str,
                             device: str = 'cpu',
                             save_path: str = 'output/latent_label_pairs.npy',
-                            model_class: str = None):
-    
-    with initialize(version_base=None, config_path="../../configs"):
-        cfg: DictConfig = compose(config_name=config_name)
-    
-    # Load the checkpoint to determine the model type
-    checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+                            model_class: str = None,
+                            max_samples: int = None):
     
     # Determine which model class to use based on the checkpoint
     if model_class and 'Seq2Seq' in model_class:
-        model = AutoencoderSeq2Seq.load_from_checkpoint(checkpoint_path)
         print("Loaded AutoencoderSeq2Seq model")
         liquid_loader = create_autoencoder_dataloader_s2s(cfg, liquid_file_path, shuffle=False)
         crystal_loader = create_autoencoder_dataloader_s2s(cfg, crystal_file_path, shuffle=False)
     else:
-        model = PointNetAutoencoder.load_from_checkpoint(checkpoint_path)
         print("Loaded PointNetAutoencoder model")
         liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=False)
         crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=False)
@@ -89,6 +82,11 @@ def predict_and_save_latent(config_name: str,
     
     latent_label_pairs_np = np.array(latent_label_pairs, dtype=object)
     print(f"Created latent-label pairs tensor with shape: {latent_label_pairs_np.shape}")
+    
+    if max_samples:
+        #shuffle the latent-label pairs
+        np.random.shuffle(latent_label_pairs_np)
+        latent_label_pairs_np = latent_label_pairs_np[:max_samples]
     
     np.save(save_path, latent_label_pairs_np)
     print(f"Saved latent-label pairs to {save_path}.")

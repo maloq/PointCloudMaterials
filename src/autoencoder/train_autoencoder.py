@@ -39,11 +39,8 @@ def init_wandb(cfg: DictConfig, run_dir):
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
                                name=cfg.experiment_name,
-                               lr=cfg.training.learning_rate,
-                               decay_rate=cfg.training.decay_rate,
-                               batch_size=cfg.training.batch_size,
-                               epochs=cfg.training.epochs,
-                               latent_size=cfg.model.latent_size,
+                               num_points=cfg.data.num_points,
+                               overlap_fraction=cfg.data.overlap_fraction,
                                model_log_interval=None,
                                log_dataset_dir=None,
                                log_best_dir=None,
@@ -74,12 +71,12 @@ def train(cfg: DictConfig):
     
     trainer = pl.Trainer(
         default_root_dir=default_root_dir,
-        max_epochs=cfg.training.epochs,
-        accelerator='gpu' if cfg.training.gpu else 'cpu',
+        max_epochs=cfg.epochs,
+        accelerator='gpu' if cfg.gpu else 'cpu',
         callbacks=[checkpoint_callback, lr_monitor, StochasticWeightAveraging(swa_lrs=0.001)],
         precision='16-mixed',
-        devices=[0, 1, 2],
-        log_every_n_steps=cfg.training.log_every_n_steps,
+        devices=[1],
+        log_every_n_steps=cfg.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
         check_val_every_n_epoch=10,
@@ -92,7 +89,7 @@ def train(cfg: DictConfig):
 
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="Al_autoencoder")
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="autoencoder")
 def main(cfg: DictConfig):
     logger.print(f"torch.version.cuda: {torch.version.cuda}")
     logger.print(f"torch.cuda.is_available(): {torch.cuda.is_available()}")

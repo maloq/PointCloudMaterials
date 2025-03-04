@@ -44,6 +44,8 @@ def train_classification(cfg: DictConfig):
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
                                name=cfg.experiment_name,
+                               num_points=cfg.data.num_points,
+                               overlap_fraction=cfg.data.overlap_fraction,
                                model_log_interval=None,
                                log_dataset_dir=None,
                                log_best_dir=None,
@@ -56,9 +58,9 @@ def train_classification(cfg: DictConfig):
     dm = PointCloudDataModule(cfg)
     
     model = PointNetClassifier(
-        lr=cfg.training.learning_rate,
+        lr=cfg.learning_rate,
         use_normals=False,
-        decay_rate=cfg.training.decay_rate
+        decay_rate=cfg.decay_rate
     )
 
     checkpoint_callback = ModelCheckpoint(
@@ -71,12 +73,12 @@ def train_classification(cfg: DictConfig):
     
     trainer = pl.Trainer(
         default_root_dir=default_root_dir,
-        max_epochs=cfg.training.epochs,
-        accelerator='gpu' if cfg.training.gpu else 'cpu',
+        max_epochs=cfg.epochs,
+        accelerator='gpu' if cfg.gpu else 'cpu',
         callbacks=[checkpoint_callback, lr_monitor],
         precision='16-mixed',
         devices=[1],
-        log_every_n_steps=cfg.training.log_every_n_steps,
+        log_every_n_steps=cfg.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
         profiler='simple',

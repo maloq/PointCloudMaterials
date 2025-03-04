@@ -14,8 +14,8 @@ class PointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
         self.cfg = cfg
-        self.batch_size = cfg.training.batch_size
-        self.num_workers = cfg.training.num_workers
+        self.batch_size = cfg.batch_size
+        self.num_workers = cfg.num_workers
         
     def setup(self, stage=None):
         start_time = time.time()
@@ -73,8 +73,8 @@ class Seq2SeqDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
         self.cfg = cfg
-        self.batch_size = cfg.training.batch_size
-        self.num_workers = cfg.training.num_workers
+        self.batch_size = cfg.batch_size
+        self.num_workers = cfg.num_workers
         
     def setup(self, stage=None):
         start_time = time.time()

@@ -19,13 +19,13 @@ def build_model(cfg: DictConfig):
     Returns:
         nn.Module: Instantiated model.
     """
-    model_type = cfg.model.type
+    model_type = cfg.type
     num_points = cfg.data.num_points
-    latent_size = cfg.model.latent_size
-    num_refinement_steps = cfg.model.get("num_refinement_steps", 5)
-    diffusion_steps = cfg.model.get("diffusion_steps", 1000)
-    diffusion_beta_schedule = cfg.model.get("diffusion_beta_schedule", "linear")
-    blocks_per_level = cfg.model.get("blocks_per_level", 2)
+    latent_size = cfg.latent_size
+    num_refinement_steps = cfg.get("num_refinement_steps", 5)
+    diffusion_steps = cfg.get("diffusion_steps", 1000)
+    diffusion_beta_schedule = cfg.get("diffusion_beta_schedule", "linear")
+    blocks_per_level = cfg.get("blocks_per_level", 2)
 
     if model_type == "MLP_AE_seq2seq":
         logger.print("MLP_AE_seq2seq")

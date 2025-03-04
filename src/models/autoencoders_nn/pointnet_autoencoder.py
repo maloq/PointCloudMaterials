@@ -23,9 +23,10 @@ def build_model(cfg: DictConfig):
     Returns:
         nn.Module: Instantiated model.
     """
-    model_type = cfg.model.type
+    # Use cfg.type instead of cfg.data.type
+    model_type = cfg.type
     num_points = cfg.data.num_points
-    latent_size = cfg.model.latent_size
+    latent_size = cfg.latent_size
 
     if model_type == "PointNetAE":
         logger.print("PointNetAE")
@@ -392,9 +393,9 @@ class FoldingDecoder(nn.Module):
         
         self.register_buffer('grid', grid)
         
-        self.mlp1 = nn.Linear(latent_size + 2, 512)
-        self.bn1 = nn.BatchNorm1d(512)
-        self.mlp2 = nn.Linear(512, 512)
+        self.mlp1 = nn.Linear(latent_size + 2, 1024)
+        self.bn1 = nn.BatchNorm1d(1024)
+        self.mlp2 = nn.Linear(1024, 512)
         self.bn2 = nn.BatchNorm1d(512)
         self.mlp3 = nn.Linear(512, 256)
         self.bn3 = nn.BatchNorm1d(256)

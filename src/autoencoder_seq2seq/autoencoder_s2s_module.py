@@ -24,7 +24,10 @@ class AutoencoderSeq2Seq(pl.LightningModule):
 
         if cfg.model.torch_compile:
             self.model = torch.compile(self.model)
-        self.criterion = chamfer_kl_divergence_loss
+        if cfg.loss == 'chamfer_kl_divergence_loss':
+            self.criterion = chamfer_kl_divergence_loss
+        elif cfg.loss == 'mse_loss':
+            self.criterion == mse_loss
         self.density = self.compute_density()
         logger.print(f"Loss: {self.criterion.__name__}")
 

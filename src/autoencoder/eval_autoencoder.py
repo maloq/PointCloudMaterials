@@ -24,18 +24,18 @@ def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool
     points = read_off_file(file_path)
     dataset = RegularDataset(points,
                              sample_shape=cfg.data.sample_shape,
-                             size=cfg.data.cube_size,
+                             size= cfg.data.cube_size if cfg.data.sample_shape == 'cubic' else cfg.data.radius,
                              n_points=cfg.data.num_points,
                              overlap_fraction=cfg.data.overlap_fraction)
     print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
-    return DataLoader(dataset, batch_size=cfg.training.batch_size, shuffle=shuffle)
+    return DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
 
 
 
 def get_batch_reconstructions(model: PointNetAutoencoder,
-                            points: torch.Tensor,
-                            n_points: int,
-                            device: str = 'cpu') -> tuple[np.ndarray, np.ndarray]:
+                             points: torch.Tensor,
+                             n_points: int,
+                             device: str = 'cpu') -> tuple[np.ndarray, np.ndarray]:
     original_points = []
     reconstructed_points = []
     model.eval()

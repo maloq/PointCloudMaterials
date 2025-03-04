@@ -35,7 +35,7 @@ def create_autoencoder_dataloader_s2s(cfg: DictConfig, file_path: str, shuffle: 
                              overlap_fraction=cfg.data.overlap_fraction)
     print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
 
-    return DataLoader(dataset, batch_size=cfg.training.batch_size, shuffle=shuffle)
+    return DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
 
 
 def get_batch_reconstructions(model: AutoencoderSeq2Seq,
