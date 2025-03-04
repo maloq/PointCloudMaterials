@@ -1,4 +1,4 @@
-latent_size: 128
-type: ConvUNetSequenceAutoencoderWithRefinement
+latent_size: 256
+type: ResNetSequenceAutoencoderWithRefinement
 torch_compile: True
 num_refinement_steps: 2

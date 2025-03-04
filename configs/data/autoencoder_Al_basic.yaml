@@ -6,7 +6,7 @@ sample_shape: 'spheric' # 'spheric' or 'cubic'
 n_samples: 8000000
 num_points: 64
 overlap_fraction: 0.5
-dr: 0.06 # to calculate rdf
+dr: 0.01 # to calculate rdf
 data_path: 'datasets/Al/inherent_configurations_off'
 liquid_files: 
 - '166ps.off'

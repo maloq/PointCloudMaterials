@@ -24,7 +24,7 @@ class AutoencoderSeq2Seq(pl.LightningModule):
 
         if cfg.model.torch_compile:
             self.model = torch.compile(self.model)
-        self.criterion = mse_loss
+        self.criterion = chamfer_kl_divergence_loss
         self.density = self.compute_density()
         logger.print(f"Loss: {self.criterion.__name__}")
 
@@ -36,9 +36,8 @@ class AutoencoderSeq2Seq(pl.LightningModule):
     
     def forward(self, x, return_latent: bool = False):
         if return_latent:
-            # Get the latent representation from the encoder
             latent = self.model.encoder(x)
-            return latent, None  # Return a tuple to be consistent with PointNetAutoencoder
+            return latent
         else:
             return self.model(x)
     

@@ -3,11 +3,11 @@ defaults:
   - data: autoencoder_Al_basic 
   - model: autoencoder_s2s
 project_name: pointnet
-experiment_name: s2s_UNet_64_latent_128
-wandb_mode: online
+experiment_name: s2s_ResNet_KLRDF_64_latent_256
+wandb_mode: offline
 experiment_tags:
   - autoencoder
   - S2S
-  - UNet
+  - ResNet
   - SWA
   - centered

@@ -18,7 +18,7 @@ from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 import warnings
 warnings.filterwarnings("ignore")
-torch.set_float32_matmul_precision('high')
+torch.set_float32_matmul_precision('medium')
 
 @rank_zero_only
 def log_config(cfg):
@@ -39,7 +39,7 @@ def init_wandb(cfg: DictConfig, run_dir):
     wandb_logger = WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                                project=cfg.project_name,
                                name=cfg.experiment_name,
-                               lr=cfg.training.lr,
+                               lr=cfg.training.learning_rate,
                                decay_rate=cfg.training.decay_rate,
                                batch_size=cfg.training.batch_size,
                                epochs=cfg.training.epochs,
@@ -110,7 +110,6 @@ def main(cfg: DictConfig):
 
 
 if __name__ == "__main__":
-    wandb.finish()
     sys.argv.append('hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}')
     main()
     wandb.finish()

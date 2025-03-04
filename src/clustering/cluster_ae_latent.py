@@ -40,9 +40,6 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
         with torch.no_grad():
             # Get latent representation
             latent = model(points, return_latent=True)[0]
-            print(type(latent))
-            print(len(latent))
-            print(latent.shape)
 
         latents.append(latent.cpu().numpy())
     latents = np.concatenate(latents, axis=0)
