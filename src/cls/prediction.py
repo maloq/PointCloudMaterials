@@ -22,7 +22,7 @@ def create_dataloader(cfg: DictConfig, file_path: str, shuffle: bool = False) ->
                              overlap_fraction=cfg.data.overlap_fraction)
     print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
     
-    return DataLoader(dataset, batch_size=cfg.training.batch_size, shuffle=shuffle)
+    return DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
 
 
 def predict_phases(model, dataloader: DataLoader, device: str = 'cpu', return_probablitity=False) -> np.ndarray:

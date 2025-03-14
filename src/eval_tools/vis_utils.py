@@ -44,7 +44,6 @@ def visualize_predictions(predictions, title: str = "Phase Predictions"):
     
     fig.show()
 
-#Create version of fuction visualize_predictions, but instead of phase label(which is classification class), use probability and visulaze in using colormap
 
 def visualize_probabilities(points_and_probs, title: str = "Phase Probabilities"):
     """Visualize 3D points with probability values using plotly.
@@ -281,32 +280,121 @@ def visualize_original_and_reconstructed(original_points, reconstructed_points, 
     )
     fig_reconstructed.show()
     
-# sample_idx = np.random.randint(0, original_points_l.shape[0])
-
-# sample_l = original_points_l[sample_idx]
-# sample_c = original_points_c[sample_idx]
-
-# noise_magnitude = 0.1  
-# points_l1_noised = sample_l + np.random.normal(scale=noise_magnitude, size=sample_l.shape)
-
-# noised_sample_tensor = torch.from_numpy(points_l1_noised[:, :3]).unsqueeze(0).float()
-# _ , reconstructed_noised_sample = get_batch_reconstructions(
-#     model, noised_sample_tensor, cfg.data.num_points, device='cuda'
-# )
-
-# plot_point_cloud_with_arrows(sample_l, points_l1_noised, title="Original vs Noised Point Cloud (Liquid)")
 
 
-# reconstructed_noised_sample = reconstructed_noised_sample.squeeze(0)
-# plot_point_cloud_with_arrows(points_l1_noised, reconstructed_noised_sample, title="Original vs Noised Point Cloud (Liquid)")
-
-# noise_magnitude = 0.05  
-# points_c_noised = sample_c + np.random.normal(scale=noise_magnitude, size=sample_c.shape)
-
-# noised_sample_tensor = torch.from_numpy(points_c_noised[:, :3]).unsqueeze(0).float()
-# _ , reconstructed_noised_sample_c = get_batch_reconstructions(
-#     model, noised_sample_tensor, cfg.data.num_points, device='cuda'
-# )
-# reconstructed_noised_sample_c = reconstructed_noised_sample_c.squeeze(0)
-
-# plot_point_cloud_with_arrows(sample_c, points_c_noised, title="Original vs Noised Point Cloud (Crystal)")
+def perform_tsne_clustering(latents, labels, chosen_label='liquid', n_clusters=3, 
+                            perplexity=20, n_iter=2000, random_state=42,
+                            include_other_labels=False, cluster_colors=None):
+    """
+    Perform t-SNE dimensionality reduction and K-means clustering on latent representations.
+    
+    Parameters:
+    -----------
+    latents : numpy.ndarray
+        Latent representations of the data
+    labels : numpy.ndarray
+        Labels for each latent representation
+    chosen_label : str, default='liquid'
+        Label to perform clustering on
+    n_clusters : int, default=3
+        Number of clusters for K-means
+    perplexity : int, default=20
+        Perplexity parameter for t-SNE
+    n_iter : int, default=2000
+        Maximum number of iterations for t-SNE
+    random_state : int, default=42
+        Random seed for reproducibility
+    include_other_labels : bool, default=False
+        Whether to include other labels in the t-SNE visualization
+    cluster_colors : list, default=None
+        Colors for the clusters. If None, default colors will be used
+        
+    Returns:
+    --------
+    tuple
+        (tsne_results, cluster_labels, kmeans)
+    """
+    from sklearn.manifold import TSNE
+    from sklearn.cluster import KMeans
+    import matplotlib.pyplot as plt
+    import numpy as np
+    
+    # Default cluster colors if not provided
+    if cluster_colors is None:
+        cluster_colors = ['coral', 'gold', 'olive']
+    
+    # Get unique labels
+    unique_labels = np.unique(labels)
+    
+    # Filter latents for the chosen label
+    mask = labels == chosen_label
+    filtered_latents = latents[mask]
+    
+    print(f"Performing t-SNE on {'all data' if include_other_labels else 'filtered data'}...")
+    
+    # Perform t-SNE
+    tsne = TSNE(n_components=2, perplexity=perplexity, max_iter=n_iter, random_state=random_state)
+    
+    if include_other_labels:
+        # Perform t-SNE on all data
+        tsne_results = tsne.fit_transform(latents)
+        filtered_indices = np.where(mask)[0]
+    else:
+        # Perform t-SNE only on filtered data
+        tsne_results = tsne.fit_transform(filtered_latents)
+    
+    # Perform K-means clustering on filtered latents
+    print(f"Performing clustering on label '{chosen_label}' with {n_clusters} clusters...")
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
+    cluster_labels = kmeans.fit_predict(filtered_latents)
+    
+    # Create a new figure for clustered visualization
+    plt.figure(figsize=(10, 8))
+    
+    if include_other_labels:
+        # Create a color map for labels
+        color_map = {}
+        for i, label in enumerate(unique_labels):
+            color_map[label] = plt.cm.tab10(i % 10)
+            
+        # Visualize original t-SNE plot first for other labels
+        for label in unique_labels:
+            if label == chosen_label:
+                # Don't plot the chosen label yet (will be colored by cluster)
+                continue
+            indices = np.where(labels == label)
+            plt.scatter(tsne_results[indices, 0], tsne_results[indices, 1],
+                        color=color_map[label], label=label,
+                        alpha=0.3, edgecolors='w', s=12)
+        
+        # Plot clusters for the chosen label
+        for cluster_id in range(n_clusters):
+            cluster_points = filtered_indices[cluster_labels == cluster_id]
+            plt.scatter(tsne_results[cluster_points, 0], tsne_results[cluster_points, 1],
+                       color=cluster_colors[cluster_id % len(cluster_colors)], 
+                       label=f"{chosen_label} - Cluster {cluster_id}",
+                       alpha=0.6, edgecolors='w', s=30)
+    else:
+        # Plot just the clusters from the filtered t-SNE results
+        for cluster_id in range(n_clusters):
+            plt.scatter(tsne_results[cluster_labels == cluster_id, 0], 
+                        tsne_results[cluster_labels == cluster_id, 1],
+                        color=cluster_colors[cluster_id % len(cluster_colors)], 
+                        label=f"{chosen_label} - Cluster {cluster_id}",
+                        alpha=0.6, edgecolors='w', s=30)
+    
+    # Add plot details
+    plt.title(f"t-SNE with Clustering for Label '{chosen_label}'")
+    plt.xlabel("t-SNE Component 1")
+    plt.ylabel("t-SNE Component 2")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+    
+    # Print cluster statistics
+    for cluster_id in range(n_clusters):
+        count = np.sum(cluster_labels == cluster_id)
+        percentage = count / len(cluster_labels) * 100
+        print(f"Cluster {cluster_id}: {count} points ({percentage:.1f}%)")
+    
+    return tsne_results, cluster_labels, kmeans

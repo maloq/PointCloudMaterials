@@ -40,8 +40,8 @@ class PointNetAutoencoder(pl.LightningModule):
     
     def forward(self, x, return_latent: bool = False):
         if return_latent:
-            latent = self.model.encoder(x)
-            return latent
+            latent = self.model.encoder(x)[0]
+            return self.model(x)[0], latent
         else:
             return self.model(x)
     

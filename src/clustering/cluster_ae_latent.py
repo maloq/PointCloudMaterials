@@ -27,7 +27,8 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
     Returns:
         A numpy array of shape (num_samples, latent_dim) with latent codes.
     """
-    latents = []
+    latents_list = []
+    point_clouds_list = []
     for batch in dataloader:
         points = batch[0]
         points = points.to(device)
@@ -39,11 +40,14 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
         # AutoencoderSeq2Seq already expects input shape [batch, num_points, 3]
         with torch.no_grad():
             # Get latent representation
-            latent = model(points, return_latent=True)[0]
+            point_cloud, latent = model(points, return_latent=True)
 
-        latents.append(latent.cpu().numpy())
-    latents = np.concatenate(latents, axis=0)
-    return latents
+        latents_list.append(latent.cpu().numpy())
+        point_clouds_list.append(point_cloud.cpu().numpy())
+
+    latents = np.concatenate(latents_list, axis=0)
+    point_clouds = np.concatenate(point_clouds_list, axis=0)
+    return latents, point_clouds
 
 
 def predict_and_save_latent(cfg: str,
@@ -71,14 +75,14 @@ def predict_and_save_latent(cfg: str,
     latent_label_pairs = []
     
     print("Processing liquid dataset ...")
-    liquid_latents = get_latents_from_dataloader(model, liquid_loader, device)
-    for latent_vec in liquid_latents:
-        latent_label_pairs.append((latent_vec, "liquid"))
+    liquid_latents, liquid_points = get_latents_from_dataloader(model, liquid_loader, device)
+    for latent_vec, point_vec in zip(liquid_latents, liquid_points):
+        latent_label_pairs.append((latent_vec, point_vec, "liquid"))
     
     print("Processing crystal dataset ...")
-    crystal_latents = get_latents_from_dataloader(model, crystal_loader, device)
-    for latent_vec in crystal_latents:
-        latent_label_pairs.append((latent_vec, "crystal"))
+    crystal_latents, crystal_points = get_latents_from_dataloader(model, crystal_loader, device)
+    for latent_vec, point_vec in zip(crystal_latents, crystal_points):
+        latent_label_pairs.append((latent_vec, point_vec, "crystal"))
     
     latent_label_pairs_np = np.array(latent_label_pairs, dtype=object)
     print(f"Created latent-label pairs tensor with shape: {latent_label_pairs_np.shape}")
@@ -90,7 +94,6 @@ def predict_and_save_latent(cfg: str,
     
     np.save(save_path, latent_label_pairs_np)
     print(f"Saved latent-label pairs to {save_path}.")
-
 
 
 def visualize_latents(npy_file="latent_label_pairs.npy",
@@ -149,6 +152,98 @@ def visualize_latents(npy_file="latent_label_pairs.npy",
     plt.savefig(output_image, dpi=300)
     print("Saved t-SNE plot to:", output_image)
     plt.show()
+
+
+def cluster_latents(npy_file="output/latent_label_pairs.npy",
+                   n_clusters=2,
+                   random_state=42,
+                   save_centers=False,
+                   label=None,
+                   output_file="output/cluster_centers.npy"):
+    """
+    Performs clustering on latent representations and finds samples closest to each cluster center.
+    
+    Args:
+        npy_file (str): Path to the numpy file containing latent-label pairs.
+        n_clusters (int): Number of clusters to create.
+        random_state (int): Random seed for reproducibility.
+        save_centers (bool): Whether to save the cluster centers and their closest samples.
+        output_file (str): Path to save the cluster centers and representative samples.
+        
+    Returns:
+        tuple: (cluster_centers, representative_samples, representative_points, representative_labels)
+        - cluster_centers: Array of cluster centers
+        - representative_samples: Latent vectors closest to each center
+        - representative_points: Point clouds closest to each center
+        - representative_labels: Labels of the representative samples
+    """
+    from sklearn.cluster import KMeans
+    
+    # Load the latent-label pairs
+    print(f"Loading latent-label pairs from {npy_file}...")
+    latent_label_pairs = np.load(npy_file, allow_pickle=True)
+    
+    if label:
+        latent_label_pairs = latent_label_pairs[latent_label_pairs[:, 2] == label]
+    print(f"Found {len(latent_label_pairs)} latent-label pairs for label {label}")
+
+    latents = []
+    points = []
+    labels = []
+    for latent, point, label in latent_label_pairs:
+        latents.append(latent)
+        points.append(point)
+        labels.append(label)
+    
+    latents = np.stack(latents, axis=0)
+    points = np.stack(points, axis=0)
+    labels = np.array(labels)
+    
+    # Perform K-means clustering
+    print(f"Performing K-means clustering with {n_clusters} clusters...")
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
+    cluster_labels = kmeans.fit_predict(latents)
+    cluster_centers = kmeans.cluster_centers_
+    
+    # Find the sample closest to each cluster center
+    representative_indices = []
+    for i in range(n_clusters):
+        # Get indices of points in this cluster
+        cluster_indices = np.where(cluster_labels == i)[0]
+        
+        # Calculate distance from each point in cluster to the center
+        cluster_points = latents[cluster_indices]
+        distances = np.linalg.norm(cluster_points - cluster_centers[i], axis=1)
+        
+        # Find the point with minimum distance to center
+        min_distance_idx = np.argmin(distances)
+        representative_idx = cluster_indices[min_distance_idx]
+        representative_indices.append(representative_idx)
+        
+        print(f"Cluster {i}: Found representative sample with index {representative_idx}, "
+              f"label={labels[representative_idx]}, "
+              f"distance={distances[min_distance_idx]:.4f}")
+    
+    # Extract the representative samples
+    representative_samples = latents[representative_indices]
+    representative_points = points[representative_indices]
+    representative_labels = labels[representative_indices]
+    
+    if save_centers:
+        # Save the cluster centers and representative samples
+        output_data = {
+            'cluster_centers': cluster_centers,
+            'representative_samples': representative_samples,
+            'representative_points': representative_points,
+            'representative_labels': representative_labels,
+            'cluster_labels': cluster_labels  # Also save the cluster assignments
+        }
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        np.save(output_file, output_data)
+        print(f"Saved cluster centers and representative samples to {output_file}")
+    
+    return cluster_centers, representative_samples, representative_points, representative_labels
+
 
 if __name__ == '__main__':
 
