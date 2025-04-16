@@ -12,9 +12,10 @@ from omegaconf import DictConfig
 from src.autoencoder_seq2seq.autoencoder_s2s_module import AutoencoderSeq2Seq
 from omegaconf import OmegaConf
 from hydra import compose, initialize
+from torch.utils.data import Subset
 
 
-def create_autoencoder_dataloader_s2s(cfg: DictConfig, file_path: str, shuffle: bool = False) -> DataLoader:
+def create_autoencoder_dataloader_s2s(cfg: DictConfig, file_path: str, shuffle: bool = False, max_samples = None) -> DataLoader:
     """
     Create a dataloader for autoencoder inference from an OFF file
     for the seq2seq autoencoder.
@@ -32,9 +33,13 @@ def create_autoencoder_dataloader_s2s(cfg: DictConfig, file_path: str, shuffle: 
                              sample_shape=cfg.data.sample_shape,
                              size=cfg.data.cube_size if cfg.data.sample_shape == 'cubic' else cfg.data.radius,
                              n_points=cfg.data.num_points,
-                             overlap_fraction=cfg.data.overlap_fraction)
+                             overlap_fraction=cfg.data.overlap_fraction,
+                             augment=False,
+                             )
     print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
-
+    if max_samples:
+        dataset = Subset(dataset, list(range(max_samples)))
+        print(f"Dataset limited to {len(dataset)}")
     return DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
 
 
@@ -99,7 +104,7 @@ if __name__ == '__main__':
         
     file_path = 'datasets/Al/inherent_configurations_off/240ps.off'
 
-    dataloader = create_autoencoder_dataloader(cfg, file_path)
+    dataloader = create_autoencoder_dataloader_s2s(cfg, file_path)
     points = next(iter(dataloader))[0]
     
     original_points, reconstructed_points = get_batch_reconstructions(model, points, cfg.data.num_points)

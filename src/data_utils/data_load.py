@@ -150,10 +150,10 @@ def convert_and_sort_sample(sample):
         sample (np.ndarray): Array of shape (N, 3) in Cartesian coordinates.
         
     Returns:
-        np.ndarray: Array of shape (N, 3) in spherical coordinates, sorted by the radius.
+        np.ndarray: Array of shape (N, 3) in spherical coordinates, sorted by the angle Th.
     """
     spherical = cartesian_to_spherical(sample)
-    sorted_indices = np.argsort(spherical[:, 0])
+    sorted_indices = np.argsort(spherical[:, 1])
     return spherical[sorted_indices]
 
 
@@ -162,7 +162,7 @@ class AtomicSequenceDataset(Dataset):
     Dataset similar to AtomicDataset but with every sample:
       1. Optionally normalized using pc_normalize.
       2. Converted to spherical coordinates.
-      3. Sorted by the radius coordinate.
+      3. Sorted by the angle Th coordinate.
     
     It uses the same parameters as AtomicDataset.
     """
@@ -276,7 +276,8 @@ class RegularSequenceDataset(Dataset):
         n_points: int = 128,
         overlap_fraction: float = 0.0,
         sample_shape: str = 'spheric',
-        pre_normalize: bool = True
+        pre_normalize: bool = True,
+        augment: bool = False,
     ):
         raw_samples = get_regular_samples(
             points,
@@ -295,12 +296,28 @@ class RegularSequenceDataset(Dataset):
             sample_points = convert_and_sort_sample(sample_points)
             sample_points = sample_points.astype(np.float32)
             self.samples.append((sample_points, coords))
+        self.augment = augment
             
     def __len__(self):
         return len(self.samples)
         
     def __getitem__(self, idx):
         sample_points, coords = self.samples[idx]
+        sample_points = sample_points.copy()
+        
+        if self.augment:
+            phi_shift = np.random.uniform(-np.pi, np.pi)
+            # Apply shift and wrap to [-π, π] range
+            sample_points[:, 2] = np.arctan2(np.sin(sample_points[:, 2] + phi_shift), 
+                                              np.cos(sample_points[:, 2] + phi_shift))
+            
+            # Theta is in [0, π] range
+            max_theta_shift = np.pi / 4  # Limit shift to ±45 degrees
+            theta_shift = np.random.uniform(-max_theta_shift, max_theta_shift)
+            
+            # Apply shift and clamp to valid range [0, π]
+            sample_points[:, 1] = np.clip(sample_points[:, 1] + theta_shift, 0, np.pi)
+        
         return torch.tensor(sample_points, dtype=torch.float32), coords
     
 

@@ -29,6 +29,8 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
     """
     latents_list = []
     point_clouds_list = []
+    original_points_list = []
+
     for batch in dataloader:
         points = batch[0]
         points = points.to(device)
@@ -39,15 +41,18 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
             points = points.transpose(2, 1)
         # AutoencoderSeq2Seq already expects input shape [batch, num_points, 3]
         with torch.no_grad():
-            # Get latent representation
+            print(points.shape)
             point_cloud, latent = model(points, return_latent=True)
 
         latents_list.append(latent.cpu().numpy())
         point_clouds_list.append(point_cloud.cpu().numpy())
+        original_points_list.append(points.cpu().numpy())
 
     latents = np.concatenate(latents_list, axis=0)
     point_clouds = np.concatenate(point_clouds_list, axis=0)
-    return latents, point_clouds
+    original_points = np.concatenate(original_points_list, axis=0)
+    
+    return latents, point_clouds, original_points
 
 
 def predict_and_save_latent(cfg: str,
@@ -55,45 +60,62 @@ def predict_and_save_latent(cfg: str,
                             liquid_file_path: str,
                             crystal_file_path: str,
                             device: str = 'cpu',
-                            save_path: str = 'output/latent_label_pairs.npy',
+                            save_folder: str = 'output',
                             model_class: str = None,
                             max_samples: int = None):
-    
+
     # Determine which model class to use based on the checkpoint
+    if max_samples:
+        # Ensure balanced samples if max_samples is set
+        max_samples_c = max_samples // 2
+        max_samples_l = max_samples - max_samples_c
+    else:
+        # Handle case where max_samples is None
+        max_samples_l = None
+        max_samples_c = None
+        
     if model_class and 'Seq2Seq' in model_class:
         print("Loaded AutoencoderSeq2Seq model")
-        liquid_loader = create_autoencoder_dataloader_s2s(cfg, liquid_file_path, shuffle=False)
-        crystal_loader = create_autoencoder_dataloader_s2s(cfg, crystal_file_path, shuffle=False)
+        liquid_loader = create_autoencoder_dataloader_s2s(cfg, liquid_file_path, shuffle=True, max_samples=max_samples_l)
+        crystal_loader = create_autoencoder_dataloader_s2s(cfg, crystal_file_path, shuffle=True, max_samples=max_samples_c)
     else:
         print("Loaded PointNetAutoencoder model")
-        liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=False)
-        crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=False)
-    
+        liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=True, max_samples=max_samples_l)
+        crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=True, max_samples=max_samples_c)
+
     model.to(device)
     model.eval()
     
-    latent_label_pairs = []
-    
     print("Processing liquid dataset ...")
-    liquid_latents, liquid_points = get_latents_from_dataloader(model, liquid_loader, device)
-    for latent_vec, point_vec in zip(liquid_latents, liquid_points):
-        latent_label_pairs.append((latent_vec, point_vec, "liquid"))
-    
+    latents_l, point_clouds_l, original_points_l = get_latents_from_dataloader(model, liquid_loader, device)
+    labels_l = ["liquid"] * len(latents_l) # Create list of labels
+    print(f"{len(latents_l)} liquid latents") # Corrected print statement
+
     print("Processing crystal dataset ...")
-    crystal_latents, crystal_points = get_latents_from_dataloader(model, crystal_loader, device)
-    for latent_vec, point_vec in zip(crystal_latents, crystal_points):
-        latent_label_pairs.append((latent_vec, point_vec, "crystal"))
-    
-    latent_label_pairs_np = np.array(latent_label_pairs, dtype=object)
-    print(f"Created latent-label pairs tensor with shape: {latent_label_pairs_np.shape}")
-    
-    if max_samples:
-        #shuffle the latent-label pairs
-        np.random.shuffle(latent_label_pairs_np)
-        latent_label_pairs_np = latent_label_pairs_np[:max_samples]
-    
-    np.save(save_path, latent_label_pairs_np)
-    print(f"Saved latent-label pairs to {save_path}.")
+    latents_c, point_clouds_c, original_points_c = get_latents_from_dataloader(model, crystal_loader, device)
+    labels_c = ["crystal"] * len(latents_c) # Corrected label calculation
+    print(f"{len(latents_c)} crystal latents")
+
+    # Concatenate numpy arrays correctly
+    all_latents = np.concatenate((latents_l, latents_c), axis=0)
+    all_points = np.concatenate((point_clouds_l, point_clouds_c), axis=0)
+    all_originals = np.concatenate((original_points_l, original_points_c), axis=0)
+    all_labels = np.array(labels_l + labels_c) # Combine lists and convert to numpy array
+
+    print(f"Created combined arrays. Total samples: {len(all_latents)}")
+
+    # Define the path for the single output file
+    output_path = os.path.join(save_folder, "latent_data.npz")
+    os.makedirs(save_folder, exist_ok=True) # Ensure save folder exists
+
+    # Save all arrays into a single compressed .npz file
+    np.savez_compressed(output_path, 
+                          latents=all_latents, 
+                          points=all_points, 
+                          originals=all_originals, 
+                          labels=all_labels)
+
+    print(f"Saved combined data to {output_path}")
 
 
 def visualize_latents(npy_file="latent_label_pairs.npy",
@@ -184,13 +206,13 @@ def cluster_latents(npy_file="output/latent_label_pairs.npy",
     latent_label_pairs = np.load(npy_file, allow_pickle=True)
     
     if label:
-        latent_label_pairs = latent_label_pairs[latent_label_pairs[:, 2] == label]
+        latent_label_pairs = latent_label_pairs[latent_label_pairs[:, 3] == label]
     print(f"Found {len(latent_label_pairs)} latent-label pairs for label {label}")
 
     latents = []
     points = []
     labels = []
-    for latent, point, label in latent_label_pairs:
+    for latent, point, original_point, label in latent_label_pairs:
         latents.append(latent)
         points.append(point)
         labels.append(label)
@@ -258,8 +280,3 @@ if __name__ == '__main__':
                                 liquid_file_path,
                                 crystal_file_path,
                                 device='cuda')
-    
-    # visualize_latents(npy_file='output/latent_label_pairs.npy',
-    #                   perplexity=30, n_iter=1000,
-    #                   random_state=42,
-    #                   output_image="latent_tsne.png")

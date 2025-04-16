@@ -9,23 +9,25 @@ logger = setup_logging()
 
 
 def mse_loss(pred, target, **kwargs):
-    """
-    Computes the Chamfer distance loss between predictions and targets.
 
-    Args:
-        pred (Tensor): Predicted point cloud.
-        target (Tensor): Ground truth point cloud.
-        **kwargs: Additional keyword arguments (currently ignored).
-
-    Returns:
-        Tensor: Chamfer distance loss.
-    """
     loss = nn.functional.mse_loss(pred, target)
     return loss, [0]
 
 
+def mse_loss_l1reg(pred, target, **kwargs):
+    loss = nn.functional.mse_loss(pred, target)
+    latent = kwargs.get('latent', None) 
+    sparsity_reg_strength = kwargs.get('sparsity_reg_strength', 1e-4) 
 
-def chamfer_wasserstein_loss(pred, target, **kwargs):
+    if latent is not None:
+        sparsity_loss = torch.mean(torch.abs(latent))
+        total_loss = loss + sparsity_reg_strength * sparsity_loss
+        return total_loss, [sparsity_loss.item()] 
+    else:
+        return loss, [0]
+
+
+def mse_wasserstein_loss(pred, target, **kwargs):
     loss, _ = mse_loss(pred, target)
     rdf1, r_mid1 = calculate_rdf_spherical(pred, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
     rdf2, r_mid2 = calculate_rdf_spherical(target, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
@@ -34,7 +36,7 @@ def chamfer_wasserstein_loss(pred, target, **kwargs):
     return total_loss, [rec_loss,]
 
 
-def chamfer_kl_divergence_loss(pred, target, **kwargs):
+def mse_kl_divergence_loss(pred, target, **kwargs):
     loss, _ = mse_loss(pred, target)
     rdf1, r_mid1 = calculate_rdf_spherical(pred, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
     rdf2, r_mid2 = calculate_rdf_spherical(target, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])

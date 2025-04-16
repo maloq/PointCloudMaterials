@@ -9,9 +9,10 @@ from omegaconf import DictConfig
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
 from omegaconf import OmegaConf
 from hydra import compose, initialize
+from torch.utils.data import Subset
 
 
-def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool = False) -> DataLoader:
+def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool = False, max_samples = None) -> DataLoader:
     """Create a dataloader for autoencoder inference from an OFF file.
     
     Args:
@@ -28,6 +29,9 @@ def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool
                              n_points=cfg.data.num_points,
                              overlap_fraction=cfg.data.overlap_fraction)
     print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
+    if max_samples:
+        dataset = Subset(dataset, list(range(max_samples)))
+        print(f"Dataset limited to {len(dataset)}")
     return DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
 
 

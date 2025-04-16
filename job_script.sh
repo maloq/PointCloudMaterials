@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=PnAE_l8            # Name of your job
+#SBATCH --job-name=s2s_AE           # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
 #SBATCH --partition=A100              # Partition to submit to (A100, V100, etc.)
@@ -22,6 +22,6 @@ cd /home/infres/vmorozov/PointCloudMaterials
 export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run the Python script
-srun python src/autoencoder/train_autoencoder.py --config-name autoencoder_PnAEFold  
+srun python src/autoencoder_seq2seq/train_autoencoder_s2s.py --config-name s2s_autoencoder
 
 echo "Job finished at: $(date)"

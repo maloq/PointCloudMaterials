@@ -27,12 +27,12 @@ def get_optimizers_and_scheduler(module):
             T_mult=3
         )
     elif scheduler_name == 'chained':
-        scheduler2 = torch.optim.lr_scheduler.OneCycleLR(
+        scheduler1 = torch.optim.lr_scheduler.OneCycleLR(
             optimizer,
             max_lr=module.hparams.learning_rate, 
             total_steps=module.hparams.epochs
         )
-        scheduler1 = torch.optim.lr_scheduler.OneCycleLR(
+        scheduler2 = torch.optim.lr_scheduler.OneCycleLR(
             optimizer,
             max_lr=module.hparams.learning_rate, 
             total_steps=module.hparams.epochs

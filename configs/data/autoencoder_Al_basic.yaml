@@ -11,8 +11,8 @@ data_path: 'datasets/Al/inherent_configurations_off'
 liquid_files: 
 - '166ps.off'
 - '170ps.off'
-#- '174ps.off'
-#- '175ps.off'
+- '174ps.off'
+- '175ps.off'
 crystal_files: 
 - '177ps.off'
 - '240ps.off'

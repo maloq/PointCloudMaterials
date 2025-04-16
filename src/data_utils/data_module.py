@@ -19,34 +19,50 @@ class PointCloudDataModule(pl.LightningDataModule):
         
     def setup(self, stage=None):
         start_time = time.time()
-        
-        liquid_dataset = AtomicDataset(
-            root=self.cfg.data.data_path,
-            data_files=self.cfg.data.liquid_files,
-            radius=self.cfg.data.radius,
-            sample_type=self.cfg.data.sample_type,
-            sample_shape=self.cfg.data.sample_shape,
-            cube_side=self.cfg.data.cube_side,
-            overlap_fraction=self.cfg.data.overlap_fraction,
-            n_samples=self.cfg.data.n_samples,
-            num_points=self.cfg.data.num_points,
-            label=0
-        )
-        
-        crystal_dataset = AtomicDataset(
-            root=self.cfg.data.data_path,
-            data_files=self.cfg.data.crystal_files,
-            radius=self.cfg.data.radius,
-            sample_type=self.cfg.data.sample_type,
-            sample_shape=self.cfg.data.sample_shape,
-            cube_side=self.cfg.data.cube_side,
-            overlap_fraction=self.cfg.data.overlap_fraction,
-            n_samples=self.cfg.data.n_samples,
-            num_points=self.cfg.data.num_points,
-            label=1
-        )
-        
-        full_dataset = ConcatDataset([liquid_dataset, crystal_dataset])
+        if self.cfg.data.liquid_files:
+            liquid_dataset = AtomicDataset(
+                root=self.cfg.data.data_path,
+                data_files=self.cfg.data.liquid_files,
+                radius=self.cfg.data.radius,
+                sample_type=self.cfg.data.sample_type,
+                sample_shape=self.cfg.data.sample_shape,
+                cube_side=self.cfg.data.cube_side,
+                overlap_fraction=self.cfg.data.overlap_fraction,
+                n_samples=self.cfg.data.n_samples,
+                num_points=self.cfg.data.num_points,
+                label=0
+            )
+        else:
+            print('No liquid dataset')
+            liquid_dataset = None
+
+        if self.cfg.data.crystal_files:
+            crystal_dataset = AtomicDataset(
+                root=self.cfg.data.data_path,
+                data_files=self.cfg.data.crystal_files,
+                radius=self.cfg.data.radius,
+                sample_type=self.cfg.data.sample_type,
+                sample_shape=self.cfg.data.sample_shape,
+                cube_side=self.cfg.data.cube_side,
+                overlap_fraction=self.cfg.data.overlap_fraction,
+                n_samples=self.cfg.data.n_samples,
+                num_points=self.cfg.data.num_points,
+                label=1
+            )
+        else:
+            print('No crystal dataset')
+            crystal_dataset = None
+            
+        datasets_to_concat = []
+        if liquid_dataset is not None:
+            datasets_to_concat.append(liquid_dataset)
+        if crystal_dataset is not None:
+            datasets_to_concat.append(crystal_dataset)
+
+        if not datasets_to_concat:
+            raise ValueError("No datasets found. Please provide at least one of liquid or crystal files.")
+            
+        full_dataset = ConcatDataset(datasets_to_concat)
         train_size = int(0.8 * len(full_dataset))
         val_size = len(full_dataset) - train_size
         self.train_dataset, self.val_dataset = random_split(full_dataset, [train_size, val_size])
@@ -79,33 +95,50 @@ class Seq2SeqDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         start_time = time.time()
         
-        liquid_dataset = AtomicSequenceDataset(
-            root=self.cfg.data.data_path,
-            data_files=self.cfg.data.liquid_files,
-            radius=self.cfg.data.radius,
-            sample_type=self.cfg.data.sample_type,
-            sample_shape=self.cfg.data.sample_shape,
-            cube_side=self.cfg.data.cube_side,
-            overlap_fraction=self.cfg.data.overlap_fraction,
-            n_samples=self.cfg.data.n_samples,
-            num_points=self.cfg.data.num_points,
-            label=0
-        )
-        
-        crystal_dataset = AtomicSequenceDataset(
-            root=self.cfg.data.data_path,
-            data_files=self.cfg.data.crystal_files,
-            radius=self.cfg.data.radius,
-            sample_type=self.cfg.data.sample_type,
-            sample_shape=self.cfg.data.sample_shape,
-            cube_side=self.cfg.data.cube_side,
-            overlap_fraction=self.cfg.data.overlap_fraction,
-            n_samples=self.cfg.data.n_samples,
-            num_points=self.cfg.data.num_points,
-            label=1
-        )
-        
-        full_dataset = ConcatDataset([liquid_dataset, crystal_dataset])
+        if self.cfg.data.liquid_files:
+            liquid_dataset = AtomicSequenceDataset(
+                root=self.cfg.data.data_path,
+                data_files=self.cfg.data.liquid_files,
+                radius=self.cfg.data.radius,
+                sample_type=self.cfg.data.sample_type,
+                sample_shape=self.cfg.data.sample_shape,
+                cube_side=self.cfg.data.cube_side,
+                overlap_fraction=self.cfg.data.overlap_fraction,
+                n_samples=self.cfg.data.n_samples,
+                num_points=self.cfg.data.num_points,
+                label=0
+            )
+        else:
+            print('No liquid dataset')
+            liquid_dataset = None
+            
+        if self.cfg.data.crystal_files:
+            crystal_dataset = AtomicSequenceDataset(
+                root=self.cfg.data.data_path,
+                data_files=self.cfg.data.crystal_files,
+                radius=self.cfg.data.radius,
+                sample_type=self.cfg.data.sample_type,
+                sample_shape=self.cfg.data.sample_shape,
+                cube_side=self.cfg.data.cube_side,
+                overlap_fraction=self.cfg.data.overlap_fraction,
+                n_samples=self.cfg.data.n_samples,
+                num_points=self.cfg.data.num_points,
+                label=1
+            )
+        else:
+            print('No crystal dataset')
+            crystal_dataset = None
+            
+        datasets_to_concat = []
+        if liquid_dataset is not None:
+            datasets_to_concat.append(liquid_dataset)
+        if crystal_dataset is not None:
+            datasets_to_concat.append(crystal_dataset)
+            
+        if not datasets_to_concat:
+            raise ValueError("No datasets found. Please provide at least one of liquid or crystal files.")
+            
+        full_dataset = ConcatDataset(datasets_to_concat)
         train_size = int(0.8 * len(full_dataset))
         val_size = len(full_dataset) - train_size
         self.train_dataset, self.val_dataset = random_split(full_dataset, [train_size, val_size])

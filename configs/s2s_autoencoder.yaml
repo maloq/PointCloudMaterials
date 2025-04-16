@@ -1,29 +1,33 @@
 defaults:
   - data: autoencoder_Al_basic 
 project_name: pointnet
-experiment_name: s2s_ResNet_KLRDF_64_latent_256
-wandb_mode: offline
+experiment_name: s2s_ResNet1D_MSE_64_latent_64
+wandb_mode: online
 experiment_tags:
   - autoencoder
   - S2S
   - ResNet
   - SWA
   - centered
+  - angle_sort
 
-latent_size: 256
-type: ResNetSequenceAutoencoderWithRefinement
+latent_size: 64
+type: ResNet1D_AE
+loss: mse_loss_l1reg
 torch_compile: True
-num_refinement_steps: 2
+num_refinement_steps: 1
 
-learning_rate: 0.005
-batch_size: 16000  
-epochs: 500
-decay_rate: 0.003
+learning_rate: 0.006
+batch_size: 16384  
+epochs: 6000
+decay_rate: 0.001
 gpu: True
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 2
 scheduler_gamma: 0.5
 scheduler_name: chained
 
 feature_transform_loss_scale: 0.001
 reconstruction_loss_scale: 0.5
+
+sparsity_reg_strength: 0.0000
