@@ -7,9 +7,7 @@ sys.path.append(os.getcwd())
 from hydra import compose, initialize
 from omegaconf import DictConfig
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
-from src.autoencoder_seq2seq.autoencoder_s2s_module import AutoencoderSeq2Seq
 from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader
-from src.autoencoder_seq2seq.eval_s2s_autoencoder import create_autoencoder_dataloader_s2s
 
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
@@ -37,9 +35,10 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
         
         # Check if the model is a PointNetAutoencoder or AutoencoderSeq2Seq
         if isinstance(model, PointNetAutoencoder):
-        # PointNetAutoencoder expects input shape [batch, 3, num_points]
             points = points.transpose(2, 1)
-        # AutoencoderSeq2Seq already expects input shape [batch, num_points, 3]
+        else:
+            raise ValueError(f"Unknown model class: {type(model)}")
+        
         with torch.no_grad():
             print(points.shape)
             point_cloud, latent = model(points, return_latent=True)
@@ -74,14 +73,10 @@ def predict_and_save_latent(cfg: str,
         max_samples_l = None
         max_samples_c = None
         
-    if model_class and 'Seq2Seq' in model_class:
-        print("Loaded AutoencoderSeq2Seq model")
-        liquid_loader = create_autoencoder_dataloader_s2s(cfg, liquid_file_path, shuffle=True, max_samples=max_samples_l)
-        crystal_loader = create_autoencoder_dataloader_s2s(cfg, crystal_file_path, shuffle=True, max_samples=max_samples_c)
-    else:
-        print("Loaded PointNetAutoencoder model")
-        liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=True, max_samples=max_samples_l)
-        crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=True, max_samples=max_samples_c)
+
+    print("Loaded PointNetAutoencoder model")
+    liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=True, max_samples=max_samples_l)
+    crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=True, max_samples=max_samples_c)
 
     model.to(device)
     model.eval()

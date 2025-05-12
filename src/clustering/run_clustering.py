@@ -62,10 +62,8 @@ def run_clustering_pipeline(checkpoint_path: str,
     model = None
     if model_class == 'Autoencoder':
         model = load_model_from_checkpoint(checkpoint_path, cfg, device=device, module=PointNetAutoencoder)
-    elif model_class == 'Seq2Seq':
-        model = load_model_from_checkpoint(checkpoint_path, cfg, device=device, module=AutoencoderSeq2Seq)
     else:
-        raise ValueError(f"Unknown model_class: {model_class}. Use 'Autoencoder' or 'Seq2Seq'.")
+        raise ValueError(f"Unknown model_class: {model_class}. Use 'Autoencoder' or ...")
 
     if model is None:
         raise RuntimeError("Failed to load the model.")
