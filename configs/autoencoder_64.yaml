@@ -1,0 +1,38 @@
+defaults:
+  - data: autoencoder_Al
+project_name: pointnet
+experiment_name: PnVAE_Folding2Step_ElboSWDRep_RotCon_64_l16
+wandb_mode: online
+experiment_tags:
+  - SWA
+  - Transformer
+  - Folding
+  - VAE
+  - centered
+  - SWA
+  - RotationConsistency
+
+latent_size: 16
+type:  PointNetVAE_Folding                   # PointNetAE_MLP
+loss: chamfer_elbo_loss
+kl_beta_start: 0.0
+kl_beta: 1.0
+kl_beta_warmup: 10_000
+kl_beta_schedule: linear
+torch_compile: False
+
+learning_rate: 0.0004
+batch_size: 2048
+epochs: 2000
+decay_rate: 0.01
+gpu: True
+devices: 0
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: OneCycle
+
+feature_transform_loss_scale: 0.001
+rotation_loss_scale: 0.03
+reconstruction_loss_scale: 0.5
+

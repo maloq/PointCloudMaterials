@@ -41,7 +41,7 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.nd
         
         with torch.no_grad():
             print(points.shape)
-            point_cloud, latent = model(points, return_latent=True)
+            point_cloud, latent, _ = model(points)
 
         latents_list.append(latent.cpu().numpy())
         point_clouds_list.append(point_cloud.cpu().numpy())

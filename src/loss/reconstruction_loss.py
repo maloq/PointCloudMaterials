@@ -18,10 +18,10 @@ def chamfer_loss(pred, target, **kwargs):
         **kwargs: Additional keyword arguments (currently ignored).
 
     Returns:
-        Tensor: Chamfer distance loss.
+        tuple: (Chamfer distance loss, empty dictionary for auxiliary losses).
     """
     loss, _ = chamfer_distance(pred, target)
-    return loss, []
+    return loss, {} # Return empty dict for aux losses
 
 
 def chamfer_regularized_encoder_loss(pred, target, **kwargs):
@@ -35,268 +35,142 @@ def chamfer_regularized_encoder_loss(pred, target, **kwargs):
         feature_transform_loss_scale (float): Scale factor for the feature transform regularization loss.
 
     Returns:
-        Tensor: Total loss.
+        tuple: (Total loss, dictionary containing {'ft_loss': regularization_loss}).
     """
     loss, _ = chamfer_distance(pred, target)
     encoder_trans = kwargs['trans_feat_list'][0]
     reg_loss = feature_transform_regularizer(encoder_trans)
     total_loss = loss + kwargs['feature_transform_loss_scale'] * reg_loss
-    return total_loss, [reg_loss]
-
-
-def chamfer_regularized_encoder_decoder_loss(pred, target, **kwargs ):
-    """
-    Computes the Chamfer distance loss with feature transform regularization for both encoder and decoder.
-
-    Args:
-        pred (Tensor): Predicted point clouds.
-        target (Tensor): Ground truth point clouds.
-        trans_feat_list (list or tuple): Contains [encoder_feature_transform, decoder_feature_transform].
-        feature_transform_loss_scale (float): Scale factor for the feature transform regularization loss.
-
-    Returns:
-        Tensor: Total loss.
-    """
-    if len(kwargs['trans_feat_list']) < 2:
-        raise ValueError("trans_feat_list must contain both encoder and decoder transformation features.")
-
-    loss, _ = chamfer_distance(pred, target)
-    encoder_trans, decoder_trans = kwargs['trans_feat_list']
-    encoder_reg_loss = feature_transform_regularizer(encoder_trans)
-    decoder_reg_loss = feature_transform_regularizer(decoder_trans)
-    total_loss = loss + kwargs['feature_transform_loss_scale'] * (encoder_reg_loss + decoder_reg_loss)
-    return total_loss, [encoder_reg_loss, decoder_reg_loss]
-
-
-def chamfer_wasserstein_loss(pred, target, **kwargs):
-    loss, _ = chamfer_distance(pred, target)
-    rdf1, r_mid1 = calculate_rdf_central(pred, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
-    rdf2, r_mid2 = calculate_rdf_central(target, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
-    rec_loss = wasserstein_distance_loss(rdf1, rdf2)
-    feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])    
-    total_loss = loss + rec_loss * kwargs['reconstruction_loss_scale'] + feature_transform_loss * kwargs['feature_transform_loss_scale']
-    return total_loss, [rec_loss, feature_transform_loss]
-
-
-def chamfer_kl_divergence_loss(pred, target, **kwargs):
-    loss, _ = chamfer_distance(pred, target)
-    rdf1, r_mid1 = calculate_rdf_central(pred, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
-    rdf2, r_mid2 = calculate_rdf_central(target, density=kwargs['density'], dr=kwargs['dr'], sphere_radius=kwargs['sphere_radius'])
-    rec_loss = kl_divergence_loss(rdf1, rdf2)
-    feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])    
-    total_loss = loss + rec_loss * kwargs['reconstruction_loss_scale'] + feature_transform_loss * kwargs['feature_transform_loss_scale']
-    return total_loss, [rec_loss, feature_transform_loss]
+    aux_loss_dict = {'ft_loss': reg_loss}
+    return total_loss, aux_loss_dict
 
 
 def feature_transform_regularizer(trans):
     d = trans.size()[1]
-    I = torch.eye(d)[None, :, :]
-    if trans.is_cuda:
-        I = I.cuda()
+    I = torch.eye(d, device=trans.device, dtype=trans.dtype)[None, :, :] # (1, d, d)
+
     loss = torch.mean(torch.norm(torch.bmm(trans, trans.transpose(2, 1)) - I, dim=(1, 2)))
     return loss
 
 
-def calculate_rdf_pairvise(point_cloud, sphere_radius, dr, num_points=None, drop_first_n_bins=2, density=None):
+
+def chamfer_elbo_loss(pred, target, mu, logvar, **kwargs):
     """
-    Calculates the Radial Distribution Function (RDF) for batched points within a sphere using vectorized operations.
-    
-    If a precomputed density is provided (from config where sphere_radius and num_points are constants),
-    the function will use it rather than recalculating the density.
+    Computes the VAE ELBO loss: Chamfer reconstruction loss + KL divergence.
+    Optionally includes feature transform regularization.
 
     Args:
-        point_cloud (torch.Tensor): Point cloud of shape (B, 3, N) or (B, N, 3), 
-                                    where B is batch size and N is number of points.
-        sphere_radius (float): Radius of the sphere containing the points.
-        dr (float): Bin width for the RDF histogram.
-        num_points (int, optional): Number of points to expect in the sphere.
-                                    If None, it is inferred from the point cloud.
-        drop_first_n_bins (int): Number of initial bins to drop.
-        density (float, optional): Precomputed density (num_points / volume). If provided,
-                                   density calculation is skipped.
+        pred (Tensor): Predicted point clouds.
+        target (Tensor): Ground truth point clouds.
+        mu (Tensor): Latent space mean.
+        logvar (Tensor): Latent space log variance.
+        **kwargs: Must include 'kl_beta'. Can include 'trans_feat_list', 
+                  'feature_transform_loss_scale'.
 
     Returns:
-        torch.Tensor: RDF values for each radial bin, shape (B, num_bins_after_drop).
-        torch.Tensor: Radial distances corresponding to the RDF bins after dropping.
+        tuple: (Total ELBO loss, dictionary of auxiliary losses {'kld_loss': unscaled_kld, 'ft_loss': unscaled_ft_loss}).
     """
-    # Ensure point cloud is in (B, N, 3) format.
-    if point_cloud.shape[1] == 3:
-        point_cloud = point_cloud.transpose(1, 2)
+    # Reconstruction loss
+    recon_loss, _ = chamfer_distance(pred, target)
 
-    B, N = point_cloud.shape[0], point_cloud.shape[1]
-    if num_points is None:
-        num_points = N
+    # KL divergence: -0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
+    # Sum over latent dimensions, then mean over batch
+    kld_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
+    kld_loss = torch.mean(kld_loss)
 
-    # Compute density only if not provided.
-    if density is None:
-        volume = (4/3) * torch.pi * (sphere_radius**3)
-        density = num_points / volume
-
-    # Create radial bins and compute r_mid.
-    r_bins = torch.arange(0, sphere_radius + dr, dr, device=point_cloud.device)
-    r_mid = (r_bins[:-1] + r_bins[1:]) / 2
-    num_bins = len(r_bins) - 1
-
-    # Compute all pairwise distances in a batched manner.
-    distances = torch.cdist(point_cloud, point_cloud)
-
-    # Get the upper triangular indices for all batches to avoid double counting.
-    triu_idx = torch.triu_indices(N, N, offset=1)
-    distances_upper = distances[:, triu_idx[0], triu_idx[1]]
-
-    # Bucketize to assign each distance to a bin.
-    bin_indices = torch.bucketize(distances_upper, r_bins, right=True) - 1
-    bin_indices = torch.clamp(bin_indices, 0, num_bins - 1)
-
-    # Create one-hot encoding of bin indices and sum along the M dimension per batch.
-    one_hot = torch.nn.functional.one_hot(bin_indices, num_classes=num_bins).to(torch.float)
-    hist = one_hot.sum(dim=1)
+    kl_beta = kwargs.get('kl_beta', 1.0)
     
-    # Calculate ideal counts per shell for normalization.
-    shell_volumes = 4 * torch.pi * (r_mid ** 2) * dr
-    ideal_counts = shell_volumes * density * num_points
+    total_loss = recon_loss + kl_beta * kld_loss
+    aux_loss_dict = {'kld_loss': kld_loss}
 
-    # Normalize histogram counts to get rdf per batch.
-    rdf = hist / (ideal_counts.unsqueeze(0) + 1e-10)
-    rdf[rdf != rdf] = 0.0  # Replace any NaNs with 0
-
-    # Drop the first few bins if requested.
-    rdf = rdf[:, drop_first_n_bins:]
-    r_mid = r_mid[drop_first_n_bins:]
-
-    return rdf, r_mid
-
-
-def calculate_rdf_central(point_cloud, sphere_radius, dr, drop_first_n_bins=1, density=None):
-    """
-    Calculates the Radial Distribution Function (RDF) for each point cloud in a batch, using the point 
-    closest to the sample center as the reference.
-
-    The function works as follows:
-      1. Computes the centroid for each point cloud sample.
-      2. Finds the point closest to this centroid (the "central point").
-      3. Computes Euclidean distances from this central point to all points in the sample.
-      4. Bins these distances into radial bins defined by sphere_radius and dr.
-      5. Normalizes the histogram counts by the ideal count expected for each shell.
-      6. Drops the first few bins (typically dropping the zero distance) as requested.
-
-    Args:
-        point_cloud (torch.Tensor): Batched point clouds of shape (B, N, 3), where B is the batch size.
-        sphere_radius (float): Maximum radius within which to calculate the RDF.
-        dr (float): Bin width for the RDF histogram.
-        drop_first_n_bins (int): Number of initial bins to drop (default is 1 to exclude the zero-distance bin).
-        density (float, optional): Precomputed density (points per unit volume). If not provided, it is computed 
-                                   as (N / volume) where volume = (4/3)*pi*(sphere_radius)^3.
-      
-    Returns:
-        rdf (torch.Tensor): Radial Distribution Function values for each sample, shape (B, num_bins_after_drop).
-        r_mid (torch.Tensor): Midpoints of the radial bins after dropping the initial bins, shape (num_bins_after_drop,).
-    """
-    B, N, _ = point_cloud.shape
-    
-    # Compute the centroid for each sample.
-    centroid = point_cloud.mean(dim=1)  # Shape: (B, 3)
-    
-    # For each sample, find the point closest to the centroid.
-    dists_to_centroid = torch.norm(point_cloud - centroid.unsqueeze(1), dim=2)  # Shape: (B, N)
-    central_idx = torch.argmin(dists_to_centroid, dim=1)  # Shape: (B,)
-    batch_indices = torch.arange(B, device=point_cloud.device)
-    central_points = point_cloud[batch_indices, central_idx, :]  # Shape: (B, 3)
-    
-    # Compute distances from the central point to all points within the same sample.
-    distances_from_center = torch.norm(point_cloud - central_points.unsqueeze(1), dim=2)  # Shape: (B, N)
-    
-    # Define radial bins from 0 up to sphere_radius in steps of dr.
-    device = point_cloud.device
-    bins = torch.arange(0, sphere_radius + dr, dr, device=device)  # (num_bins + 1,) edges
-    num_bins = len(bins) - 1
-    r_mid = (bins[:-1] + bins[1:]) / 2.0  # Bin midpoints, shape: (num_bins,)
-    
-    # Bucketize each distance into its corresponding radial bin.
-    # Subtract 1 to convert to 0-based indexing.
-    bin_indices = torch.bucketize(distances_from_center, bins, right=True) - 1   # Shape: (B, N)
-    bin_indices = torch.clamp(bin_indices, min=0, max=num_bins - 1)
-    
-    # Create one-hot representation and sum over the points dimension to obtain histogram counts per bin.
-    one_hot = torch.nn.functional.one_hot(bin_indices, num_classes=num_bins).float()  # Shape: (B, N, num_bins)
-    hist = one_hot.sum(dim=1)  # Shape: (B, num_bins)
-    
-    # Compute density if not provided.
-    if density is None:
-        volume = (4.0 / 3.0) * torch.pi * (sphere_radius ** 3)
-        density = N / volume
-    
-    # Calculate the ideal (expected) counts per radial shell.
-    shell_volumes = 4 * torch.pi * (r_mid ** 2) * dr  # Volume of spherical shells, shape: (num_bins,)
-    ideal_counts = shell_volumes * density  # Expected count for a uniform distribution, shape: (num_bins,)
-    
-    # Normalize the histogram counts by the ideal counts to obtain the RDF.
-    rdf = hist / (ideal_counts.unsqueeze(0) + 1e-10)
-    
-    # Optionally drop the first few bins (e.g., the bin centered at zero distance).
-    rdf = rdf[:, drop_first_n_bins:]
-    r_mid = r_mid[drop_first_n_bins:]
-    
-    return rdf, r_mid
+    # Optional: Feature transform regularization
+    feature_transform_loss = torch.tensor(0.0, device=pred.device)
+    if 'trans_feat_list' in kwargs and kwargs['trans_feat_list'] and \
+       'feature_transform_loss_scale' in kwargs and kwargs['feature_transform_loss_scale'] > 0:
+        
+        # Ensure trans_feat_list is not empty before trying to access its elements
+        if isinstance(kwargs['trans_feat_list'], (list, tuple)) and len(kwargs['trans_feat_list']) > 0:
+            # Assuming the relevant transform is the first, typically from the encoder
+            feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])
+            total_loss += kwargs['feature_transform_loss_scale'] * feature_transform_loss
+            aux_loss_dict['ft_loss'] = feature_transform_loss
+        else:
+            logger.debug("trans_feat_list provided but empty or not a list/tuple, skipping ft_loss for ELBO.")
+            
+    return total_loss, aux_loss_dict
 
 
-def kl_divergence_loss(rdf1, rdf2):
-    """
-    Calculate the Jensen-Shannon divergence (symmetric KL divergence) between two
-    RDF probability distributions for each sample in a batch, and return the mean divergence.
+EPS = 1e-10
 
-    This implementation computes the canonical JS divergence for each sample,
-    then averages over the batch.
-
-    Args:
-        rdf1, rdf2: torch tensors of RDF values with shape (B, N),
-                    where B is the batch size and N is the number of RDF features.
-    Returns:
-        torch.Tensor: Scalar representing the mean Jensen-Shannon divergence loss over the batch.
-    """
-    epsilon = 1e-10
-    # Normalize each distribution along the last dimension.
-    rdf1_norm = rdf1 / (torch.sum(rdf1, dim=-1, keepdim=True) + epsilon)
-    rdf2_norm = rdf2 / (torch.sum(rdf2, dim=-1, keepdim=True) + epsilon)
-
-    m = 0.5 * (rdf1_norm + rdf2_norm)
-    # Compute KL divergence for each batch sample along the last dimension.
-    kl1 = torch.sum(rdf1_norm * torch.log((rdf1_norm + epsilon) / (m + epsilon)), dim=-1)
-    kl2 = torch.sum(rdf2_norm * torch.log((rdf2_norm + epsilon) / (m + epsilon)), dim=-1)
-    loss_per_sample = 0.5 * (kl1 + kl2)
-    
-    # Return the mean loss over the batch dimension.
-    return loss_per_sample.mean()
+def _to_B_N_3(pc: torch.Tensor) -> torch.Tensor:
+    """Ensure tensor shape is (B, N, 3). Accepts (B, 3, N)."""
+    if pc.dim() != 3:
+        raise ValueError("Point cloud must be (B,N,3) or (B,3,N)")
+    if pc.shape[1] == 3 and pc.shape[2] != 3:
+        pc = pc.transpose(1, 2).contiguous()
+    return pc
 
 
 
-def wasserstein_distance_loss(rdf1, rdf2):
-    """
-    Calculate batched approximate 1D Wasserstein distance between two RDFs
-    
-    Args:
-        rdf1, rdf2: torch tensors of RDF values, shape (B, num_bins)
-    Returns:
-        torch.Tensor: Wasserstein distance loss per batch
-    """
-    epsilon = 1e-10
-    rdf1_norm = rdf1 / (torch.sum(rdf1, dim=1, keepdim=True) + epsilon)
-    rdf2_norm = rdf2 / (torch.sum(rdf2, dim=1, keepdim=True) + epsilon)
-    
-    cdf1 = torch.cumsum(rdf1_norm, dim=1)
-    cdf2 = torch.cumsum(rdf2_norm, dim=1)
-    loss = torch.sum(torch.abs(cdf1 - cdf2), dim=1)
-    return loss.mean()
+def sliced_wasserstein_distance(pc1: torch.Tensor, pc2: torch.Tensor,
+                                num_projections: int = 64, p: int = 2) -> torch.Tensor:
+    """Compute batched SWD‑p (default p=2)."""
+    pc1 = _to_B_N_3(pc1)
+    pc2 = _to_B_N_3(pc2)
+    B, N, _ = pc1.shape
+
+    device = pc1.device
+    dirs = torch.randn(num_projections, 3, device=device)
+    dirs = dirs / (dirs.norm(dim=1, keepdim=True) + EPS)
+
+    proj1 = torch.matmul(pc1, dirs.t())   # (B,N,K)
+    proj2 = torch.matmul(pc2, dirs.t())
+    proj1, _ = torch.sort(proj1, dim=1)
+    proj2, _ = torch.sort(proj2, dim=1)
+
+    if p == 1:
+        dist = torch.abs(proj1 - proj2).mean(dim=1)   # (B,K)
+    else:
+        dist = ((proj1 - proj2) ** p).mean(dim=1)
+
+    return dist.mean()                                # scalar
 
 
-def rdf_wasserstein_loss(pred, target):
-    rdf1, r_mid1 = calculate_rdf_central(pred, sphere_radius=5, dr=0.05, r_max = 5)
-    rdf2, r_mid2 = calculate_rdf_central(target, sphere_radius=5, dr=0.05, r_max = 5)
-    loss = wasserstein_distance_loss(rdf1, rdf2)
-    return loss
 
-def rdf_kl_divergence_loss(pred, target):
-    rdf1, r_mid1 = calculate_rdf_central(pred, sphere_radius=5, dr=0.05)
-    rdf2, r_mid2 = calculate_rdf_central(target, sphere_radius=5, dr=0.05)
-    loss = kl_divergence_loss(rdf1, rdf2)
-    return loss
+def repulsion_loss(pc: torch.Tensor, h: float = 0.05) -> torch.Tensor:
+    pc = _to_B_N_3(pc)
+    B, N, _ = pc.shape
+    dists = torch.cdist(pc, pc, p=2)                  # (B,N,N)
+    eye = torch.eye(N, device=pc.device).bool()
+    dists.masked_fill_(eye.unsqueeze(0), 1e9)
+    return torch.exp(- (dists ** 2) / (h ** 2)).mean()
+
+
+
+def swd_repulsion_loss(pred: torch.Tensor, target: torch.Tensor, *,
+                       num_projections: int = 64,
+                       repulsion_h: float = 0.05,
+                       repulsion_scale: float = 0.1):
+    """Sliced‑Wasserstein + repulsion."""
+    swd = sliced_wasserstein_distance(pred, target, num_projections=num_projections)
+    rep = repulsion_loss(pred, h=repulsion_h)
+    return swd + repulsion_scale * rep, {'swd': swd, 'repulsion': rep}
+
+
+
+
+def elbo_swd_repulsion_loss(pred: torch.Tensor, target: torch.Tensor,
+                            mu: torch.Tensor, logvar: torch.Tensor, *,
+                            kl_beta: float = 1.0,
+                            num_projections: int = 64,
+                            repulsion_h: float = 0.05,
+                            repulsion_scale: float = 0.1,
+                            **kwargs):
+    """ELBO with SWD reconstruction + repulsion term and annealed KL."""
+    swd = sliced_wasserstein_distance(pred, target, num_projections=num_projections)
+    rep = repulsion_loss(pred, h=repulsion_h)
+    recon = swd + repulsion_scale * rep
+
+    kld = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1).mean()
+    total = recon + kl_beta * kld
+    return total, {'swd': swd, 'repulsion': rep, 'kld': kld}

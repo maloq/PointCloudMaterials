@@ -64,7 +64,7 @@ def train(cfg: DictConfig):
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_loc,
         monitor='val_loss',
-        filename='pointnet-{epoch:02d}-{val_loss:.2f}',
+        filename='{cfg.experiment_name}-{epoch:02d}-{val_loss:.2f}',
         save_top_k=3,
         mode='min',
     )
@@ -75,13 +75,14 @@ def train(cfg: DictConfig):
         accelerator='gpu' if cfg.gpu else 'cpu',
         callbacks=[checkpoint_callback, lr_monitor, StochasticWeightAveraging(swa_lrs=0.001)],
         precision='16-mixed',
-        devices=cfg.devices,
+        devices=[1],
         log_every_n_steps=cfg.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
         check_val_every_n_epoch=10,
         profiler='simple',
-        gradient_clip_val=0.5
+        gradient_clip_val=0.5,
+        
     )
     log_config(cfg)
     logger.print(f"Time to start script {time.process_time() - start_time} seconds")
@@ -89,7 +90,7 @@ def train(cfg: DictConfig):
 
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="autoencoder")
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="autoencoder_64")
 def main(cfg: DictConfig):
     logger.print(f"torch.version.cuda: {torch.version.cuda}")
     logger.print(f"torch.cuda.is_available(): {torch.cuda.is_available()}")

@@ -66,6 +66,8 @@ class STNkd(nn.Module):
 
     def forward(self, x):
         batchsize = x.size()[0]
+        x_orig_device = x.device
+        x_orig_dtype = x.dtype
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
@@ -76,10 +78,15 @@ class STNkd(nn.Module):
         x = F.relu(self.bn5(self.fc2(x)))
         x = self.fc3(x)
 
-        iden = Variable(torch.from_numpy(np.eye(self.k).flatten().astype(np.float32))).view(1, self.k * self.k).repeat(
-            batchsize, 1)
-        if x.is_cuda:
-            iden = iden.cuda()
+        # iden = Variable(torch.from_numpy(np.eye(self.k).flatten().astype(np.float32))).view(1, self.k * self.k).repeat(
+        #     batchsize, 1)
+        # if x.is_cuda: # x is on x_orig_device
+        #     iden = iden.cuda()
+        
+        # Modernized identity matrix creation
+        iden_matrix = torch.eye(self.k, device=x_orig_device, dtype=x_orig_dtype)
+        iden = iden_matrix.view(1, self.k * self.k).repeat(batchsize, 1)
+        
         x = x + iden
         x = x.view(-1, self.k, self.k)
         return x

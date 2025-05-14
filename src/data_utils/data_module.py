@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, ConcatDataset, random_split
-from src.data_utils.data_load import AtomicDataset, AtomicSequenceDataset
+from src.data_utils.data_load import AtomicDataset
 import time
 import logging
 from src.utils.logging_config import setup_logging

@@ -6,7 +6,6 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from src.clustering.cluster_ae_latent import predict_and_save_latent
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
-from src.autoencoder_seq2seq.autoencoder_s2s_module import AutoencoderSeq2Seq
 from src.utils.model_utils import load_model_from_checkpoint
 from hydra import compose, initialize
 
