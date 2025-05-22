@@ -67,8 +67,8 @@ class PointCloudDataModule(pl.LightningDataModule):
         val_size = len(full_dataset) - train_size
         self.train_dataset, self.val_dataset = random_split(full_dataset, [train_size, val_size])
 
-        # self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(100))
-        # self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(100))
+        # self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(2))
+        # self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(2))
 
         elapsed_time = time.time() - start_time
         logger.print(f"Train dataset size: {len(self.train_dataset)}")
@@ -77,9 +77,9 @@ class PointCloudDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, 
-                        num_workers=self.num_workers, shuffle=True, drop_last=True, pin_memory=True)
+                        num_workers=self.num_workers, shuffle=True, drop_last=True, pin_memory=True, persistent_workers=True)
     
     def val_dataloader(self):
         return DataLoader(self.val_dataset, batch_size=self.batch_size, 
-                          num_workers=self.num_workers, pin_memory=True)
+                          num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
     

@@ -53,6 +53,37 @@ def feature_transform_regularizer(trans):
     return loss
 
 
+def chamfer_regularized_encoder_loss_repulsion(pred, target, **kwargs):
+    """
+    Computes the Chamfer distance loss with feature transform regularization for the encoder.
+    Optionally includes repulsion loss.
+
+    Args:
+        pred (Tensor): Predicted point clouds.
+        target (Tensor): Ground truth point clouds.
+        trans_feat_list (list or tuple): Contains at least the encoder's feature transform as the first element.
+        feature_transform_loss_scale (float): Scale factor for the feature transform regularization loss.
+        **kwargs: Can include 'repulsion_h' (float, default 0.05) and 
+                  'repulsion_scale' (float, default 0.1).
+
+
+    Returns:
+        tuple: (Total loss, dictionary containing {'ft_loss': regularization_loss, 'repulsion_loss': repulsion_loss_val}).
+    """
+    loss, _ = chamfer_distance(pred, target)
+    encoder_trans = kwargs['trans_feat_list'][0]
+    reg_loss = feature_transform_regularizer(encoder_trans)
+    total_loss = loss + kwargs['feature_transform_loss_scale'] * reg_loss
+    
+    repulsion_h = kwargs.get('repulsion_h', 0.05)
+    repulsion_scale = kwargs.get('repulsion_scale', 0.1)
+    
+    repulsion_loss_val = repulsion_loss(pred, h=repulsion_h)
+    total_loss += repulsion_scale * repulsion_loss_val
+    
+    aux_loss_dict = {'ft_loss': reg_loss, 'repulsion_loss': repulsion_loss_val}
+    return total_loss, aux_loss_dict
+
 
 def chamfer_elbo_loss(pred, target, mu, logvar, **kwargs):
     """
@@ -142,7 +173,7 @@ def repulsion_loss(pc: torch.Tensor, h: float = 0.05) -> torch.Tensor:
     B, N, _ = pc.shape
     dists = torch.cdist(pc, pc, p=2)                  # (B,N,N)
     eye = torch.eye(N, device=pc.device).bool()
-    dists.masked_fill_(eye.unsqueeze(0), 1e9)
+    dists = dists.masked_fill(eye.unsqueeze(0), 1e9)
     return torch.exp(- (dists ** 2) / (h ** 2)).mean()
 
 

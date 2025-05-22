@@ -15,6 +15,8 @@ import time
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
 from src.data_utils.data_module import PointCloudDataModule
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
+from pytorch_lightning.utilities.exceptions import MisconfigurationException
+from typing import Union
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -47,6 +49,22 @@ def init_wandb(cfg: DictConfig, run_dir):
                                log_latest_dir=None)
     return wandb_logger
 
+
+class AdaptiveSWA(StochasticWeightAveraging):
+    """Start SWA from whatever LR the optimizer is using at swa_epoch_start."""
+    def __init__(self, swa_epoch_start=0.8, **kwargs):
+        # pass a dummy lr to satisfy the parent __init__
+        super().__init__(swa_lrs=1e-3, swa_epoch_start=swa_epoch_start, **kwargs)
+
+    def on_train_epoch_start(self, trainer, pl_module):
+        # When we reach the first SWA epoch (but before Lightning initialises SWA)
+        if (not self._initialized) and (self.swa_start <= trainer.current_epoch <= self.swa_end):
+            # Grab the live LRs from the (single) optimizer
+            self._swa_lrs = [pg["lr"] for pg in trainer.optimizers[0].param_groups]
+        # Let the parent class do the normal SWA setup
+        super().on_train_epoch_start(trainer, pl_module)
+
+
 def train(cfg: DictConfig):
 
     start_time = time.process_time()
@@ -64,18 +82,25 @@ def train(cfg: DictConfig):
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_loc,
         monitor='val_loss',
-        filename='{cfg.experiment_name}-{epoch:02d}-{val_loss:.2f}',
+        filename=f'{cfg.experiment_name}-{{epoch:02d}}-{{val_loss:.2f}}',
         save_top_k=3,
         mode='min',
     )
     
+    if cfg.enable_swa:
+        assert cfg.swa_epoch_start < cfg.epochs, "SWA epoch start must be less than epochs"
+        swa_callback = AdaptiveSWA(swa_epoch_start=cfg.swa_epoch_start)
+        callbacks=[checkpoint_callback, lr_monitor, swa_callback]
+    else:
+        callbacks=[checkpoint_callback, lr_monitor]
+
     trainer = pl.Trainer(
         default_root_dir=default_root_dir,
         max_epochs=cfg.epochs,
         accelerator='gpu' if cfg.gpu else 'cpu',
-        callbacks=[checkpoint_callback, lr_monitor, StochasticWeightAveraging(swa_lrs=0.001)],
+        callbacks=callbacks,
         precision='16-mixed',
-        devices=[1],
+        devices=[0],
         log_every_n_steps=cfg.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
@@ -108,6 +133,7 @@ def main(cfg: DictConfig):
 
 
 if __name__ == "__main__":
+    torch.multiprocessing.set_start_method('spawn', force=True)
     sys.argv.append('hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}')
     main()
     wandb.finish()

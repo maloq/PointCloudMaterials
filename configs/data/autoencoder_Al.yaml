@@ -1,6 +1,6 @@
 # Autoencoder
-cube_side: 5.0
-radius: 7.0
+cube_side: 3.4
+radius: 6.7
 sample_type: 'regular' # 'regular' or 'random'
 sample_shape: 'spheric' # 'spheric' or 'cubic'
 n_samples: 8000000

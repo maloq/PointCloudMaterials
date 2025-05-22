@@ -191,13 +191,36 @@ def generate_samples(
     dims: np.ndarray,
     n_points: int,
     return_coords: bool,
-    max_samples: int
+    max_samples: int,
+    drop_edge_samples: bool = False
 ) -> Tuple[List, int, int]:
     samples = []
     added_points = dropped_points = 0
-    for i in range(dims[0]):
-        for j in range(dims[1]):
-            for k in range(dims[2]):
+
+    # Determine loop ranges based on drop_edge_samples
+    loop_range_i = range(dims[0])
+    loop_range_j = range(dims[1])
+    loop_range_k = range(dims[2])
+
+    if drop_edge_samples:
+        if dims[0] >= 3:
+            loop_range_i = range(1, dims[0] - 1)
+        else:
+            loop_range_i = range(0)  # Empty range
+
+        if dims[1] >= 3:
+            loop_range_j = range(1, dims[1] - 1)
+        else:
+            loop_range_j = range(0)  # Empty range
+
+        if dims[2] >= 3:
+            loop_range_k = range(1, dims[2] - 1)
+        else:
+            loop_range_k = range(0)  # Empty range
+
+    for i in loop_range_i:
+        for j in loop_range_j:
+            for k in loop_range_k:
                 # Compute the grid center as before.
                 computed_center = calculate_center(min_coords, stride, i, j, k, size, sample_type)
                 # Adjust the center so that it matches an atom by snapping to the nearest input point.
@@ -269,7 +292,8 @@ def get_regular_samples(
     overlap_fraction: float = 0.0,
     return_coords: bool = False,
     n_points: int = 100,
-    max_samples: int = 2e32
+    max_samples: int = 2e32,
+    drop_edge_samples: bool = True
 ) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
     """
     Divide point cloud into regular samples covering the entire data space with optional overlap.
@@ -302,6 +326,9 @@ def get_regular_samples(
     max_samples : int, optional
         The maximum number of samples to generate. The function stops sampling once this number is reached,
         even if additional samples could be produced.
+    drop_edge_samples : bool, optional
+        If True, samples from the outermost layer of the grid will be dropped. This results in samples
+        that are further away from the boundaries of the sampling region. Defaults to False.
 
     Returns:
     --------
@@ -319,12 +346,31 @@ def get_regular_samples(
     min_center = min_coords + padding
     max_center = max_coords - padding
 
+    # Ensure min_center is less than max_center along all dimensions
+    if np.any(min_center >= max_center):
+        logger.print("Sampling region is too small or inverted after padding. No samples will be generated.")
+        return []
+
     dims = compute_dimensions(min_center, max_center, stride)
+    
+    # Ensure dimensions are non-negative
+    if np.any(dims <= 0):
+        logger.print("Calculated dimensions for sampling grid are non-positive. No samples will be generated.")
+        return []
+
     samples, added_points, dropped_points = generate_samples(
         points, tree, min_center, stride, size, sample_shape, dims, 
-        n_points, return_coords, max_samples
+        n_points, return_coords, max_samples, drop_edge_samples
     )
-    logger.print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
+
+    if len(samples) > 0:
+        avg_added = round(added_points / len(samples), 2)
+        avg_dropped = round(dropped_points / len(samples), 2)
+        logger.print(f"Generated {len(samples)} samples.")
+        logger.print(f"Avg added {avg_added} points, avg dropped {avg_dropped} points per sample.")
+    else:
+        logger.print("No samples were generated with the given parameters.")
+        
     return samples
 
 
@@ -348,3 +394,18 @@ if __name__ == "__main__":
     samples = get_regular_samples(points, sample_shape='spheric', max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3)
     std = np.std([len(sample) for sample in samples])
     logger.print(f"Found {len(samples)} regular spheric non-empty samples with std={std}")
+
+    # Example of using the new parameter
+    samples_no_edges = get_regular_samples(points, sample_shape='cubic', max_samples=10000, size=10, n_points=100, overlap_fraction=0.3, drop_edge_samples=True)
+    if samples_no_edges:
+        std_no_edges = np.std([len(sample) for sample in samples_no_edges])
+        logger.print(f"Found {len(samples_no_edges)} regular cubic non-empty samples (edges dropped) with std={std_no_edges}")
+    else:
+        logger.print("Found 0 regular cubic non-empty samples (edges dropped)")
+
+    samples_spheric_no_edges = get_regular_samples(points, sample_shape='spheric', max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3, drop_edge_samples=True)
+    if samples_spheric_no_edges:
+        std_spheric_no_edges = np.std([len(sample) for sample in samples_spheric_no_edges])
+        logger.print(f"Found {len(samples_spheric_no_edges)} regular spheric non-empty samples (edges dropped) with std={std_spheric_no_edges}")
+    else:
+        logger.print("Found 0 regular spheric non-empty samples (edges dropped)")

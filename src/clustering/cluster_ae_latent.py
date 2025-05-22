@@ -2,113 +2,115 @@ import sys
 import os
 import torch
 import numpy as np
+from typing import List
 sys.path.append(os.getcwd())
 
 from hydra import compose, initialize
 from omegaconf import DictConfig
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.models.autoencoders_nn.pointnet_autoencoder import PointNetVAEBase
 from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader
 
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
 
-def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> np.ndarray:
-    """
-    Runs the autoencoder on each batch and extracts the latent representations.
-    
-    Args:
-        model: The loaded autoencoder model (PointNetAutoencoder or AutoencoderSeq2Seq).
-        dataloader: Torch DataLoader yielding point cloud batches.
-        device: Device to run the inference on.
-    
-    Returns:
-        A numpy array of shape (num_samples, latent_dim) with latent codes.
-    """
-    latents_list = []
-    point_clouds_list = []
-    original_points_list = []
+def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Extract latent representations from dataloader batches."""
+    if len(dataloader) == 0:
+        raise ValueError("Dataloader is empty - no data to process")
+        
+    latents, point_clouds, originals = [], [], []
 
     for batch in dataloader:
-        points = batch[0]
-        points = points.to(device)
-        
-        # Check if the model is a PointNetAutoencoder or AutoencoderSeq2Seq
-        if isinstance(model, PointNetAutoencoder):
-            points = points.transpose(2, 1)
-        else:
-            raise ValueError(f"Unknown model class: {type(model)}")
+        points = batch[0].to(device).transpose(2, 1)
         
         with torch.no_grad():
-            print(points.shape)
-            point_cloud, latent, _ = model(points)
+            if isinstance(model, PointNetAutoencoder):
+                point_cloud, latent, _ = model(points)
+            elif isinstance(model, PointNetVAEBase):
+                point_cloud, latent, _, _ = model(points)
+            else:
+                raise ValueError(f"Unknown model class: {type(model)}")
+        
+        latents.append(latent.cpu().numpy())
+        point_clouds.append(point_cloud.cpu().numpy())
+        originals.append(points.cpu().numpy())
 
-        latents_list.append(latent.cpu().numpy())
-        point_clouds_list.append(point_cloud.cpu().numpy())
-        original_points_list.append(points.cpu().numpy())
+    return (np.concatenate(latents, axis=0), 
+            np.concatenate(point_clouds, axis=0), 
+            np.concatenate(originals, axis=0))
 
-    latents = np.concatenate(latents_list, axis=0)
-    point_clouds = np.concatenate(point_clouds_list, axis=0)
-    original_points = np.concatenate(original_points_list, axis=0)
+
+def _process_files(cfg, model, file_paths: List[str], label: str, device: str, max_samples: int = None):
+    """Helper function to process a list of files and extract latents."""
+    if not file_paths:
+        raise ValueError(f"No {label} file paths provided")
+        
+    print(f"Processing {label} datasets...")
+    all_latents, all_point_clouds, all_originals = [], [], []
     
-    return latents, point_clouds, original_points
+    for i, file_path in enumerate(file_paths):
+        print(f"Processing {label} file {i+1}/{len(file_paths)}: {file_path}")
+        dataloader = create_autoencoder_dataloader(cfg, file_path, shuffle=True, max_samples=max_samples)
+        latents, point_clouds, originals = get_latents_from_dataloader(model, dataloader, device)
+        
+        all_latents.append(latents)
+        all_point_clouds.append(point_clouds)
+        all_originals.append(originals)
+        print(f"  {len(latents)} samples from {file_path}")
+    
+    if not all_latents:
+        raise ValueError(f"No data was successfully loaded from any {label} files")
+        
+    return (np.concatenate(all_latents, axis=0),
+            np.concatenate(all_point_clouds, axis=0), 
+            np.concatenate(all_originals, axis=0))
 
 
 def predict_and_save_latent(cfg: str,
                             model,
-                            liquid_file_path: str,
-                            crystal_file_path: str,
+                            liquid_file_paths: List[str],
+                            crystal_file_paths: List[str],
                             device: str = 'cpu',
                             save_folder: str = 'output',
                             model_class: str = None,
                             max_samples: int = None):
 
-    # Determine which model class to use based on the checkpoint
-    if max_samples:
-        # Ensure balanced samples if max_samples is set
-        max_samples_c = max_samples // 2
-        max_samples_l = max_samples - max_samples_c
-    else:
-        # Handle case where max_samples is None
-        max_samples_l = None
-        max_samples_c = None
-        
+    if not liquid_file_paths and not crystal_file_paths:
+        raise ValueError("At least one of liquid_file_paths or crystal_file_paths must be provided")
 
-    print("Loaded PointNetAutoencoder model")
-    liquid_loader = create_autoencoder_dataloader(cfg, liquid_file_path, shuffle=True, max_samples=max_samples_l)
-    crystal_loader = create_autoencoder_dataloader(cfg, crystal_file_path, shuffle=True, max_samples=max_samples_c)
-
-    model.to(device)
-    model.eval()
+    model.to(device).eval()
     
-    print("Processing liquid dataset ...")
-    latents_l, point_clouds_l, original_points_l = get_latents_from_dataloader(model, liquid_loader, device)
-    labels_l = ["liquid"] * len(latents_l) # Create list of labels
-    print(f"{len(latents_l)} liquid latents") # Corrected print statement
+    # Split max_samples if specified
+    if max_samples:
+        max_samples_per_type = max_samples // 2
+        max_samples_l = max_samples_per_type
+        max_samples_c = max_samples - max_samples_per_type
+    else:
+        max_samples_l = max_samples_c = None
 
-    print("Processing crystal dataset ...")
-    latents_c, point_clouds_c, original_points_c = get_latents_from_dataloader(model, crystal_loader, device)
-    labels_c = ["crystal"] * len(latents_c) # Corrected label calculation
-    print(f"{len(latents_c)} crystal latents")
-
-    # Concatenate numpy arrays correctly
+    # Process files - these will raise errors if no data is found
+    latents_l, point_clouds_l, originals_l = _process_files(cfg, model, liquid_file_paths, "liquid", device, max_samples_l)
+    latents_c, point_clouds_c, originals_c = _process_files(cfg, model, crystal_file_paths, "crystal", device, max_samples_c)
+    
+    # Create labels and combine data
+    labels = np.array(["liquid"] * len(latents_l) + ["crystal"] * len(latents_c))
     all_latents = np.concatenate((latents_l, latents_c), axis=0)
     all_points = np.concatenate((point_clouds_l, point_clouds_c), axis=0)
-    all_originals = np.concatenate((original_points_l, original_points_c), axis=0)
-    all_labels = np.array(labels_l + labels_c) # Combine lists and convert to numpy array
+    all_originals = np.concatenate((originals_l, originals_c), axis=0)
 
-    print(f"Created combined arrays. Total samples: {len(all_latents)}")
+    print(f"Total samples: {len(all_latents)} (liquid: {len(latents_l)}, crystal: {len(latents_c)})")
 
-    # Define the path for the single output file
+    # Save combined data
     output_path = os.path.join(save_folder, "latent_data.npz")
-    os.makedirs(save_folder, exist_ok=True) # Ensure save folder exists
-
-    # Save all arrays into a single compressed .npz file
+    os.makedirs(save_folder, exist_ok=True)
+    
     np.savez_compressed(output_path, 
-                          latents=all_latents, 
-                          points=all_points, 
-                          originals=all_originals, 
-                          labels=all_labels)
+                        latents=all_latents, 
+                        points=all_points, 
+                        originals=all_originals, 
+                        labels=labels)
 
     print(f"Saved combined data to {output_path}")
 
@@ -171,107 +173,55 @@ def visualize_latents(npy_file="latent_label_pairs.npy",
     plt.show()
 
 
-def cluster_latents(npy_file="output/latent_label_pairs.npy",
-                   n_clusters=2,
-                   random_state=42,
-                   save_centers=False,
-                   label=None,
+
+def cluster_latents(latents, points, original_points, labels, n_clusters=2, 
+                   random_state=42, save_centers=False, label=None, 
                    output_file="output/cluster_centers.npy"):
-    """
-    Performs clustering on latent representations and finds samples closest to each cluster center.
-    
-    Args:
-        npy_file (str): Path to the numpy file containing latent-label pairs.
-        n_clusters (int): Number of clusters to create.
-        random_state (int): Random seed for reproducibility.
-        save_centers (bool): Whether to save the cluster centers and their closest samples.
-        output_file (str): Path to save the cluster centers and representative samples.
-        
-    Returns:
-        tuple: (cluster_centers, representative_samples, representative_points, representative_labels)
-        - cluster_centers: Array of cluster centers
-        - representative_samples: Latent vectors closest to each center
-        - representative_points: Point clouds closest to each center
-        - representative_labels: Labels of the representative samples
-    """
+    """Clusters latent representations and finds samples closest to each cluster center."""
     from sklearn.cluster import KMeans
     
-    # Load the latent-label pairs
-    print(f"Loading latent-label pairs from {npy_file}...")
-    latent_label_pairs = np.load(npy_file, allow_pickle=True)
-    
-    if label:
-        latent_label_pairs = latent_label_pairs[latent_label_pairs[:, 3] == label]
-    print(f"Found {len(latent_label_pairs)} latent-label pairs for label {label}")
-
-    latents = []
-    points = []
-    labels = []
-    for latent, point, original_point, label in latent_label_pairs:
-        latents.append(latent)
-        points.append(point)
-        labels.append(label)
-    
-    latents = np.stack(latents, axis=0)
-    points = np.stack(points, axis=0)
-    labels = np.array(labels)
-    
-    # Perform K-means clustering
-    print(f"Performing K-means clustering with {n_clusters} clusters...")
+    print(f"K-means clustering with {n_clusters} clusters...")
     kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
     cluster_labels = kmeans.fit_predict(latents)
-    cluster_centers = kmeans.cluster_centers_
     
-    # Find the sample closest to each cluster center
-    representative_indices = []
+    # Find closest sample to each cluster center
+    rep_indices = []
     for i in range(n_clusters):
-        # Get indices of points in this cluster
-        cluster_indices = np.where(cluster_labels == i)[0]
-        
-        # Calculate distance from each point in cluster to the center
-        cluster_points = latents[cluster_indices]
-        distances = np.linalg.norm(cluster_points - cluster_centers[i], axis=1)
-        
-        # Find the point with minimum distance to center
-        min_distance_idx = np.argmin(distances)
-        representative_idx = cluster_indices[min_distance_idx]
-        representative_indices.append(representative_idx)
-        
-        print(f"Cluster {i}: Found representative sample with index {representative_idx}, "
-              f"label={labels[representative_idx]}, "
-              f"distance={distances[min_distance_idx]:.4f}")
+        cluster_mask = cluster_labels == i
+        distances = np.linalg.norm(latents[cluster_mask] - kmeans.cluster_centers_[i], axis=1)
+        rep_indices.append(np.where(cluster_mask)[0][np.argmin(distances)])
+        print(f"Cluster {i}: sample {rep_indices[-1]}, label={labels[rep_indices[-1]]}")
     
-    # Extract the representative samples
-    representative_samples = latents[representative_indices]
-    representative_points = points[representative_indices]
-    representative_labels = labels[representative_indices]
+    # Extract representative data
+    rep_samples = latents[rep_indices]
+    rep_points = points[rep_indices]
+    rep_originals = original_points[rep_indices]
+    rep_labels = labels[rep_indices]
     
     if save_centers:
-        # Save the cluster centers and representative samples
-        output_data = {
-            'cluster_centers': cluster_centers,
-            'representative_samples': representative_samples,
-            'representative_points': representative_points,
-            'representative_labels': representative_labels,
-            'cluster_labels': cluster_labels  # Also save the cluster assignments
-        }
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
-        np.save(output_file, output_data)
-        print(f"Saved cluster centers and representative samples to {output_file}")
+        np.save(output_file, {
+            'cluster_centers': kmeans.cluster_centers_,
+            'representative_samples': rep_samples,
+            'representative_points': rep_points,
+            'representative_labels': rep_labels,
+            'cluster_labels': cluster_labels
+        })
+        print(f"Saved to {output_file}")
     
-    return cluster_centers, representative_samples, representative_points, representative_labels
+    return kmeans.cluster_centers_, rep_samples, rep_points, rep_originals, rep_labels
 
 
 if __name__ == '__main__':
 
     save_path = 'output/latent_label_pairs.npy'
     checkpoint_path = 'output/2025-02-05/23-02-04/pointnet-epoch=289-val_loss=0.37.ckpt'
-    liquid_file_path = 'datasets/Al/inherent_configurations_off/166ps.off'
-    crystal_file_path = 'datasets/Al/inherent_configurations_off/240ps.off'
+    liquid_file_paths = ['datasets/Al/inherent_configurations_off/166ps.off']
+    crystal_file_paths = ['datasets/Al/inherent_configurations_off/240ps.off']
 
     if not os.path.exists(save_path):
         predict_and_save_latent('autoencoder',
                                 checkpoint_path,
-                                liquid_file_path,
-                                crystal_file_path,
+                                liquid_file_paths,
+                                crystal_file_paths,
                                 device='cuda')

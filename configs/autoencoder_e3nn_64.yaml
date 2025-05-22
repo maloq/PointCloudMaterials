@@ -1,0 +1,38 @@
+defaults:
+  - data: autoencoder_Al
+project_name: pointnet
+experiment_name: e3nnAE_Folding2Step_CD_64_l16
+wandb_mode: online
+experiment_tags:
+  - SWA
+  - Folding
+  - centered
+  - Equivariant
+
+latent_size: 16
+type:  SO3DenseAutoEncoder                   # PointNetAE_MLP
+loss: chamfer_loss
+kl_beta_start: 0.0
+kl_beta: 1.0
+kl_beta_warmup: 10_000
+kl_beta_schedule: linear
+torch_compile: False
+
+learning_rate: 0.006
+batch_size: 8192
+epochs: 1000
+decay_rate: 0.01
+gpu: True
+devices: 0
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+
+radial_dim: 32
+l_max: 6
+decoder_hidden_dim: 1024
+
+feature_transform_loss_scale: 0.001
+reconstruction_loss_scale: 0.5
+rotation_loss_scale: 0.10

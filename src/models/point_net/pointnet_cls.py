@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.parallel
 import torch.utils.data
-from torch.autograd import Variable
 import numpy as np
 import torch.nn.functional as F
 
@@ -36,10 +35,7 @@ class STN3d(nn.Module):
         x = F.relu(self.bn5(self.fc2(x)))
         x = self.fc3(x)
 
-        iden = Variable(torch.from_numpy(np.array([1, 0, 0, 0, 1, 0, 0, 0, 1]).astype(np.float32))).view(1, 9).repeat(
-            batchsize, 1)
-        if x.is_cuda:
-            iden = iden.cuda()
+        iden = torch.eye(3, device=x.device, dtype=x.dtype).view(1, 9).repeat(batchsize, 1)
         x = x + iden
         x = x.view(-1, 3, 3)
         return x

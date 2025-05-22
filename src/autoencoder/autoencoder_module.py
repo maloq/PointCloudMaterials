@@ -21,21 +21,29 @@ class PointNetAutoencoder(pl.LightningModule):
         self.sphere_radius = cfg.data.radius
         self.num_points = cfg.data.num_points
         self.dr = getattr(cfg.data, 'dr', None)
-        self.reconstruction_loss_scale = cfg.reconstruction_loss_scale
-        self.feature_transform_loss_scale = cfg.feature_transform_loss_scale
+        self.reconstruction_loss_scale = cfg.get('reconstruction_loss_scale', 0.0)
+        self.feature_transform_loss_scale = cfg.get('feature_transform_loss_scale', 0.0)
         self.rotation_loss_scale = cfg.get('rotation_loss_scale', 0.0)
+        self.repulsion_h = cfg.get('repulsion_h', 0.05)
+        self.repulsion_scale = cfg.get('repulsion_scale', 0.1)
         self.kl_beta_start   = cfg.get('kl_beta_start',   0.0)     # β at step 0
         self.kl_beta_max     = cfg.get('kl_beta',         1.0)     # target β
-        self.kl_beta_warmup  = cfg.get('kl_beta_warmup',  10_000)  # steps to reach β_max
+        self.kl_beta_warmup  = cfg.get('kl_beta_warmup',  1000)  # steps to reach β_max
         self.kl_beta_sched   = cfg.get('kl_beta_schedule', 'linear')
         self.kl_beta         = self.kl_beta_start
 
         if cfg.torch_compile:
-            self.model = torch.compile(self.model)
+            self.model = torch.compile(self.model, fullgraph=True)
             
         if cfg.loss == 'chamfer_loss':
              self.criterion = chamfer_loss
              logger.print(f"Using Chamfer loss")
+        elif cfg.loss == 'chamfer_regularized_encoder_loss':
+             self.criterion = chamfer_regularized_encoder_loss
+             logger.print(f"Using Chamfer loss with feature transform regularization")
+        elif cfg.loss == 'chamfer_regularized_encoder_loss_repulsion':
+             self.criterion = chamfer_regularized_encoder_loss_repulsion
+             logger.print(f"Using Chamfer loss with feature transform regularization and repulsion loss")
         elif cfg.loss == 'chamfer_elbo_loss': # New VAE loss
              self.criterion = chamfer_elbo_loss
              logger.print(f"Using ELBO loss for VAE with kl_beta: {self.kl_beta}")
@@ -143,14 +151,17 @@ class PointNetAutoencoder(pl.LightningModule):
             'pred': predicted_points.float(),
             'target': target_points.float(),
             'trans_feat_list': trans_feat_list,
-            'feature_transform_loss_scale': self.hparams.feature_transform_loss_scale
+            'feature_transform_loss_scale': self.hparams.get('feature_transform_loss_scale', 0.0),
+            'repulsion_h': self.hparams.get('repulsion_h', 0.05),
+            'repulsion_scale': self.hparams.get('repulsion_scale', 0.1),
+            'rotation_loss_scale': self.hparams.get('rotation_loss_scale', 0.0)
         }
         if self.density is not None:
             loss_args.update({
                 'density': self.density,
                 'dr': self.hparams.data.dr,
                 'sphere_radius': self.hparams.data.radius,
-                'reconstruction_loss_scale': self.hparams.reconstruction_loss_scale
+                'reconstruction_loss_scale': self.hparams.get('reconstruction_loss_scale', 0.0)
             })
         
         # Add mu and logvar to loss_args if they are provided (i.e., not None)
@@ -208,44 +219,45 @@ class PointNetAutoencoder(pl.LightningModule):
 
         # Optional: track the schedule in TensorBoard
         self.log('train/kl_beta', self.kl_beta, prog_bar=False, sync_dist=True)
-        def training_step(self, batch, batch_idx):
-            points, _ = batch
-            points_permuted = points.permute(0, 2, 1)
+        
+    def training_step(self, batch, batch_idx):
+        points, _ = batch
+        points_permuted = points.permute(0, 2, 1)
 
-            # Perform model forward pass, returns 4-tuple:
-            # AE: (reconstructed_x, latent_code, None, aux_outputs)
-            # VAE: (reconstructed_x, mu, logvar, aux_outputs)
-            model_outputs = self.model(points_permuted)
-            pred, latent_or_mu, logvar_or_none, trans_feat_list = model_outputs
+        # Perform model forward pass, returns 4-tuple:
+        # AE: (reconstructed_x, latent_code, None, aux_outputs)
+        # VAE: (reconstructed_x, mu, logvar, aux_outputs)
+        model_outputs = self.model(points_permuted)
+        pred, latent_or_mu, logvar_or_none, trans_feat_list = model_outputs
 
-            # Prepare loss arguments, passing mu and logvar (which might be None for AE)
-            loss_args = self._prepare_loss_args(points, pred, trans_feat_list, mu=latent_or_mu, logvar=logvar_or_none)
+        # Prepare loss arguments, passing mu and logvar (which might be None for AE)
+        loss_args = self._prepare_loss_args(points, pred, trans_feat_list, mu=latent_or_mu, logvar=logvar_or_none)
 
-            # Compute criterion loss (criterion should handle mu/logvar if it needs them)
-            main_loss, aux_loss_dict = self.criterion(**loss_args)
+        # Compute criterion loss (criterion should handle mu/logvar if it needs them)
+        main_loss, aux_loss_dict = self.criterion(**loss_args)
 
-            # Compute rotation loss
-            rotation_loss = torch.tensor(0.0, device=self.device)
-            if self.rotation_loss_scale > 0:
-                points_rotated = self.random_rotate_point_cloud_batch(points)
-                points_rotated_permuted = points_rotated.permute(0, 2, 1)
-                
-                # Get latent representation of rotated points.
-                # self.model.encoder returns:
-                # AE (PointNetAE.encoder): (latent_code, trans, trans_feat)
-                # VAE (PointNetVAEBase.encoder): (mu, logvar, trans, trans_feat)
-                # We need the primary latent (latent_code or mu).
-                encoder_outputs_rotated = self.model.encoder(points_rotated_permuted)
-                latent_rotated = encoder_outputs_rotated[0] # This is latent_code for AE, mu for VAE.
-                
-                # Ensure latent vectors are compatible for loss calculation
-                # latent_or_mu is the primary latent from the original points.
-                rotation_loss = F.mse_loss(latent_or_mu, latent_rotated)
+        # Compute rotation loss if applicable
+        computed_rotation_loss = None
+        if self.rotation_loss_scale > 0:
+            points_rotated = self.random_rotate_point_cloud_batch(points)
+            points_rotated_permuted = points_rotated.permute(0, 2, 1)
+            
+            # Get latent representation of rotated points.
+            # self.model.encoder returns:
+            # AE (PointNetAE.encoder): (latent_code, trans, trans_feat)
+            # VAE (PointNetVAEBase.encoder): (mu, logvar, trans, trans_feat)
+            # We need the primary latent (latent_code or mu).
+            encoder_outputs_rotated = self.model.encoder(points_rotated_permuted)
+            latent_rotated = encoder_outputs_rotated[0] # This is latent_code for AE, mu for VAE.
+            
+            # Ensure latent vectors are compatible for loss calculation
+            # latent_or_mu is the primary latent from the original points.
+            computed_rotation_loss = F.mse_loss(latent_or_mu, latent_rotated)
 
-            # Log all losses and get total loss
-            total_loss = self._log_losses(main_loss, aux_loss_dict, 'train', rotation_loss=rotation_loss)
+        # Log all losses and get total loss
+        total_loss = self._log_losses(main_loss, aux_loss_dict, 'train', rotation_loss=computed_rotation_loss)
 
-            return {'loss': total_loss}
+        return {'loss': total_loss}
 
 
     def validation_step(self, batch, batch_idx):

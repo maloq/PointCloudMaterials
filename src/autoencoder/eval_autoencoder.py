@@ -12,26 +12,47 @@ from hydra import compose, initialize
 from torch.utils.data import Subset
 
 
-def create_autoencoder_dataloader(cfg: DictConfig, file_path: str, shuffle: bool = False, max_samples = None) -> DataLoader:
-    """Create a dataloader for autoencoder inference from an OFF file.
+def create_autoencoder_dataloader(cfg: DictConfig, file_path, shuffle: bool = False, max_samples = None) -> DataLoader:
+    """Create a dataloader for autoencoder inference from OFF file(s).
     
     Args:
         cfg: Configuration dictionary 
-        file_path: Path to the OFF file
+        file_path: Path to the OFF file or list of paths to OFF files
         shuffle: Whether to shuffle the samples
+        max_samples: Maximum number of samples to include
     Returns:
         DataLoader containing point cloud samples
     """
-    points = read_off_file(file_path)
-    dataset = RegularDataset(points,
+    # Handle both single path and list of paths
+    if isinstance(file_path, str):
+        file_paths = [file_path]
+    elif isinstance(file_path, (list, tuple)):
+        file_paths = file_path
+    else:
+        raise ValueError("file_path must be a string or a list/tuple of strings")
+    
+    # Read and combine points from all files
+    all_points = []
+    for path in file_paths:
+        points = read_off_file(path)
+        all_points.append(points)
+        print(f"Loaded {len(points)} points from {path}")
+    
+    # Concatenate all points
+    combined_points = np.concatenate(all_points, axis=0)
+    print(f"Total combined points: {len(combined_points)}")
+    
+    dataset = RegularDataset(combined_points,
                              sample_shape=cfg.data.sample_shape,
                              size= cfg.data.cube_size if cfg.data.sample_shape == 'cubic' else cfg.data.radius,
                              n_points=cfg.data.num_points,
                              overlap_fraction=cfg.data.overlap_fraction)
     print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
+    
     if max_samples:
         dataset = Subset(dataset, list(range(max_samples)))
         print(f"Dataset limited to {len(dataset)}")
+    
     return DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
 
 
