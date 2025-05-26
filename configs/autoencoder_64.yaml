@@ -6,7 +6,6 @@ wandb_mode: online
 experiment_tags:
   - SWA
   - Folding
-  - VAE
   - centered
   - RotationConsistency
   - no_edges

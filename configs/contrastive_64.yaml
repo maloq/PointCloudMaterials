@@ -1,0 +1,31 @@
+defaults:
+  - data: autoencoder_Al
+project_name: pointnet
+experiment_name: DimeNet_Contrastive_64_l16_no_edges
+wandb_mode: offline
+experiment_tags:
+- Contrastive
+- DimeNet
+
+latent_size: 16
+type:  DimeNetContrastive                  
+loss: c
+
+torch_compile: False
+
+learning_rate: 0.005
+batch_size: 10
+
+enable_swa: False
+swa_epoch_start: 90 
+epochs: 100
+
+decay_rate: 0.01
+gpu: True
+devices: 0
+log_every_n_steps: 5
+num_workers: 1
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+
+temperature: 0.1

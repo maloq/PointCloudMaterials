@@ -2,7 +2,7 @@
 cube_side: 3.4
 radius: 6.7
 sample_type: 'regular' # 'regular' or 'random'
-sample_shape: 'spheric' # 'spheric' or 'cubic'
+sample_shape: 'spheric'
 n_samples: 8000000
 num_points: 64
 overlap_fraction: 0.5
@@ -10,9 +10,9 @@ dr: 0.01 # to calculate rdf
 data_path: 'datasets/Al/inherent_configurations_off'
 liquid_files: 
 - '166ps.off'
-- '170ps.off'
-- '174ps.off'
-- '175ps.off'
+# - '170ps.off'
+# - '174ps.off'
+# - '175ps.off'
 crystal_files: 
-- '177ps.off'
+# - '177ps.off'
 - '240ps.off'

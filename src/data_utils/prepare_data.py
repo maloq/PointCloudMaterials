@@ -152,26 +152,18 @@ def calculate_center(min_coords, stride, i, j, k, size, sample_type):
     return center
 
 
-def process_sample(points, tree, center, size, sample_type, n_points):
-    if sample_type == 'cubic':
-        radius = (size * np.sqrt(3)) / 2
-    else:
-        radius = size
+def process_sample(points, tree, center, size, n_points):
+ 
+    radius = size
     indices = tree.query_ball_point(center, radius)
     if not indices:
         return None, 0, 0
     sample_points = points[indices]
-    if sample_type == 'cubic':
-        min_corner = center - size / 2
-        max_corner = center + size / 2
-        mask = np.all((sample_points >= min_corner) & (sample_points <= max_corner), axis=1)
-        sample_points = sample_points[mask]
-        drop_func = drop_points_random
-    else:
-        distances = np.linalg.norm(sample_points - center, axis=1)
-        mask = distances <= size
-        sample_points = sample_points[mask]
-        drop_func = drop_points_farthest
+   
+    distances = np.linalg.norm(sample_points - center, axis=1)
+    mask = distances <= size
+    sample_points = sample_points[mask]
+    drop_func = drop_points_farthest
     if len(sample_points) > n_points:
         dropped = len(sample_points) - n_points
     else:
@@ -240,55 +232,10 @@ def generate_samples(
     return samples, added_points, dropped_points
 
 
-def get_random_samples(
-    points: np.ndarray,
-    n_samples: int,
-    size: float,
-    n_points: int,
-    sample_shape: str = 'cubic'
-) -> List[np.ndarray]:
-    """Same as get_regular_samples but with random center points.
-    
-    Args:
-        points: Nx3 array of points (more than 10^5 points)
-        n_samples: Number of samples to extract
-        size: Size of the sample (cube_size for cubic, radius for spherical)
-        n_points: Number of points per sample
-        sample_shape: 'cubic' or 'spheric'
-    Returns:
-        List of arrays containing points within each sample
-    """
-    
-    if sample_shape not in ['cubic', 'spheric']:
-        raise ValueError("sample_shape must be 'cubic' or 'spheric'")
-    
-    samples = []
-    tree = KDTree(points)
-    min_coords, max_coords = get_min_max_coords(points)
-    dropped_points = 0
-    added_points = 0
-
-    while len(samples) < n_samples:
-        # Random center point for sample
-        center = np.random.uniform(
-            low=min_coords + (size / 2 if sample_shape == 'cubic' else size),
-            high=max_coords - (size / 2 if sample_shape == 'cubic' else size)
-        )
-        
-        sample_points, add, drop = process_sample(points, tree, center, size, sample_shape, n_points)
-        if sample_points is not None:
-            samples.append(sample_points)
-            added_points += add
-            dropped_points += drop
-
-    logger.print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
-    return samples
-
 
 def get_regular_samples(
     points: np.ndarray,
     size: float,
-    sample_shape: str = 'cubic',
     overlap_fraction: float = 0.0,
     return_coords: bool = False,
     n_points: int = 100,
@@ -299,8 +246,7 @@ def get_regular_samples(
     Divide point cloud into regular samples covering the entire data space with optional overlap.
 
     This function partitions the input point cloud into a grid of regularly spaced sampling regions 
-    (either cubic or spheric) based on the provided size and overlap fraction. For cubic samples, the 
-    regions are cubes with edge length 'size', while for spheric samples, the regions are spheres with 
+    (spheric) based on the provided size and overlap fraction. For spheric samples, the regions are spheres with 
     radius 'size'. To ensure uniformity, each sample is adjusted to contain exactly n_points by 
     appropriately dropping or adding points. Only regions that fully fit within the adjusted data space 
     (after applying the necessary padding) are considered, thus avoiding partial samples along the edges. 
@@ -312,9 +258,8 @@ def get_regular_samples(
     points : np.ndarray
         The input point cloud as an array of shape (N, 3).
     size : float
-        For cubic samples, the side length of the cube; for spheric samples, the radius of the sphere.
-    sample_shape : str, optional
-        The shape of the sample window; must be either 'cubic' (default) or 'spheric'.
+        For spheric samples, the radius of the sphere.
+
     overlap_fraction : float, optional
         The fractional overlap between adjacent sample regions. This value should be less than 1.
     return_coords : bool, optional
@@ -340,9 +285,9 @@ def get_regular_samples(
     """
     tree = KDTree(points)
     min_coords, max_coords = get_min_max_coords(points)
-    stride = calculate_stride(size, sample_shape, overlap_fraction)
+    stride = calculate_stride(size, overlap_fraction)
     
-    padding = size / 2 if sample_shape == 'cubic' else size
+    padding = size
     min_center = min_coords + padding
     max_center = max_coords - padding
 
@@ -359,7 +304,7 @@ def get_regular_samples(
         return []
 
     samples, added_points, dropped_points = generate_samples(
-        points, tree, min_center, stride, size, sample_shape, dims, 
+        points, tree, min_center, stride, size, dims, 
         n_points, return_coords, max_samples, drop_edge_samples
     )
 
@@ -374,36 +319,64 @@ def get_regular_samples(
     return samples
 
 
+def get_random_samples(
+    points: np.ndarray,
+    n_samples: int,
+    size: float,
+    n_points: int,
+) -> List[np.ndarray]:
+    """Same as get_regular_samples but with random center points.
+    
+    Args:
+        points: Nx3 array of points (more than 10^5 points)
+        n_samples: Number of samples to extract
+        size: Size of the sample (radius for spherical)
+        n_points: Number of points per sample
+    Returns:
+        List of arrays containing points within each sample
+    """
+    
+
+    
+    samples = []
+    tree = KDTree(points)
+    min_coords, max_coords = get_min_max_coords(points)
+    dropped_points = 0
+    added_points = 0
+
+    while len(samples) < n_samples:
+        # Random center point for sample
+        center = np.random.uniform(
+            low=min_coords + (size),
+            high=max_coords - (size)
+        )
+        
+        sample_points, add, drop = process_sample(points, tree, center, size, n_points)
+        if sample_points is not None:
+            samples.append(sample_points)
+            added_points += add
+            dropped_points += drop
+
+    logger.print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
+    return samples
 
 
 if __name__ == "__main__":
     points = read_off_file("datasets/Al/inherent_configurations_off/240ps.off")
 
-    samples = get_random_samples(points, sample_shape='cubic', n_samples=8000, size=10, n_points=100) 
-    std = np.std([len(sample) for sample in samples])
-    logger.print(f"Found {len(samples)} cubic non-empty samples with std={std}")
+  
 
-    samples = get_random_samples(points, sample_shape='spheric', n_samples=8000, size=8.1, n_points=128) 
+    samples = get_random_samples(points, n_samples=8000, size=8.1, n_points=128) 
     std = np.std([len(sample) for sample in samples])
     logger.print(f"Found {len(samples)} spheric non-empty samples with std={std}")
 
-    samples = get_regular_samples(points, sample_shape='cubic', max_samples=10000, size=10, n_points=100, overlap_fraction=0.3) 
-    std = np.std([len(sample) for sample in samples])
-    logger.print(f"Found {len(samples)} regular cubic non-empty samples with std={std}")
 
-    samples = get_regular_samples(points, sample_shape='spheric', max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3)
+    samples = get_regular_samples(points, max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3)
     std = np.std([len(sample) for sample in samples])
     logger.print(f"Found {len(samples)} regular spheric non-empty samples with std={std}")
 
-    # Example of using the new parameter
-    samples_no_edges = get_regular_samples(points, sample_shape='cubic', max_samples=10000, size=10, n_points=100, overlap_fraction=0.3, drop_edge_samples=True)
-    if samples_no_edges:
-        std_no_edges = np.std([len(sample) for sample in samples_no_edges])
-        logger.print(f"Found {len(samples_no_edges)} regular cubic non-empty samples (edges dropped) with std={std_no_edges}")
-    else:
-        logger.print("Found 0 regular cubic non-empty samples (edges dropped)")
 
-    samples_spheric_no_edges = get_regular_samples(points, sample_shape='spheric', max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3, drop_edge_samples=True)
+    samples_spheric_no_edges = get_regular_samples(points, max_samples=10000, size=8.0, n_points=128, overlap_fraction=0.3, drop_edge_samples=True)
     if samples_spheric_no_edges:
         std_spheric_no_edges = np.std([len(sample) for sample in samples_spheric_no_edges])
         logger.print(f"Found {len(samples_spheric_no_edges)} regular spheric non-empty samples (edges dropped) with std={std_spheric_no_edges}")

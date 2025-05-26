@@ -23,7 +23,6 @@ class AtomicDataset(Dataset):
     
     def __init__(self, root,
                  data_files,
-                 sample_shape='spheric',
                  sample_type='regular',
                  radius=8,
                  cube_side=16,
@@ -32,7 +31,7 @@ class AtomicDataset(Dataset):
                  num_points=100,
                  label=0,
                  pre_normalize=True):
-        """Initialize the dataset with cubic samples from OFF files.
+        """Initialize the dataset with samples from OFF files.
         Args:
             root: Path to directory containing OFF files
             TODO: Add more details
@@ -47,22 +46,14 @@ class AtomicDataset(Dataset):
         for off_file in data_files:
             logger.debug(f"Reading {off_file}")
             points = read_off_file(os.path.join(root, off_file), verbose=False)
-            if sample_shape == 'spheric':
-                size = self.radius
-            elif sample_shape == 'cubic':
-                size = self.cube_side
-            else:
-                raise ValueError(f"Invalid sample shape: {sample_shape}")
+            size = self.radius
             if sample_type == 'regular':
-                
                 samples = get_regular_samples(points,
-                                              sample_shape=sample_shape,
                                               size=size,
                                               n_points=self.npoints,
                                               overlap_fraction=overlap_fraction)
             elif sample_type == 'random':
                 samples = get_random_samples(points,
-                                             sample_shape=sample_shape,
                                              n_samples=self.n_samples,
                                              size=size,
                                              n_points=self.npoints,
@@ -97,10 +88,9 @@ class RegularDataset(Dataset):
     def __init__(
         self, 
         points: np.ndarray, 
-        size: float,  # cube_side for cubic or radius for spheric sampling
+        size: float,  #radius for spheric sampling
         n_points: int = 128, 
         overlap_fraction: float = 0.0,
-        sample_shape: str = 'cubic'  # set to 'cubic' or 'spheric'
     ):
         self.samples = get_regular_samples(
             points,
@@ -108,7 +98,6 @@ class RegularDataset(Dataset):
             n_points=n_points,
             return_coords=True,
             overlap_fraction=overlap_fraction,
-            sample_shape=sample_shape
         )
 
     def __len__(self):

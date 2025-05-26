@@ -43,8 +43,7 @@ def create_autoencoder_dataloader(cfg: DictConfig, file_path, shuffle: bool = Fa
     print(f"Total combined points: {len(combined_points)}")
     
     dataset = RegularDataset(combined_points,
-                             sample_shape=cfg.data.sample_shape,
-                             size= cfg.data.cube_size if cfg.data.sample_shape == 'cubic' else cfg.data.radius,
+                             size= cfg.data.radius,
                              n_points=cfg.data.num_points,
                              overlap_fraction=cfg.data.overlap_fraction)
     print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
