@@ -22,6 +22,6 @@ cd /home/infres/vmorozov/PointCloudMaterials
 export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run the Python script
-srun python src/autoencoder/train_autoencoder.py --config-name autoencoder_64
+srun python src/autoencoder/train_autoencoder.py --config-name autoencoder_16
 
 echo "Job finished at: $(date)"

@@ -1,8 +1,6 @@
 # Autoencoder
-cube_side: 3.4
 radius: 6.7
 sample_type: 'regular' # 'regular' or 'random'
-sample_shape: 'spheric'
 n_samples: 8000000
 num_points: 64
 overlap_fraction: 0.5

@@ -162,85 +162,6 @@ def plot_point_cloud_3d(points, n_connections=3, title='Point Cloud',
     return fig
 
 
-import numpy as np
-# from src.visualization.vis_utils import plot_point_cloud_with_arrows_3d
-
-def plot_point_cloud_with_arrows(original, modified, title="Point Cloud with Vectors"):
-    """
-    Visualizes original and modified point clouds in 3D with lines showing the displacement
-    from each original point to its nearest point in the modified point cloud.
-
-    Parameters:
-        original (np.array): Original point cloud of shape (N, D) where D is typically 3.
-        modified (np.array): Modified (noised or reconstructed) point cloud of shape (M, D).
-        title (str): Title for the plot.
-
-    Returns:
-        None; displays the interactive 3D plot.
-    """
-    import plotly.graph_objects as go
-    import numpy as np
-    from scipy.spatial import cKDTree
-
-    # Check that the point dimensions match.
-    if original.shape[1] != modified.shape[1]:
-        raise ValueError("Original and modified point clouds must have the same dimensions per point.")
-
-    # Create a 3D scatter plot for original and modified points.
-    fig = go.Figure()
-
-    fig.add_trace(go.Scatter3d(
-        x=original[:, 0],
-        y=original[:, 1],
-        z=original[:, 2],
-        mode='markers',
-        marker=dict(size=3, color='blue'),
-        name='Original'
-    ))
-
-    fig.add_trace(go.Scatter3d(
-        x=modified[:, 0],
-        y=modified[:, 1],
-        z=modified[:, 2],
-        mode='markers',
-        marker=dict(size=3, color='red', opacity=0.6),
-        name='Modified'
-    ))
-
-    # Build a KD-tree for the modified point cloud.
-    tree = cKDTree(modified)
-    # For each original point, find the closest point in the modified cloud.
-    distances, indices = tree.query(original)
-
-    # Draw lines representing displacement vectors (from each original point to its nearest neighbor).
-    lines_x, lines_y, lines_z = [], [], []
-    for i, nearest_idx in enumerate(indices):
-        lines_x.extend([original[i, 0], modified[nearest_idx, 0], None])
-        lines_y.extend([original[i, 1], modified[nearest_idx, 1], None])
-        lines_z.extend([original[i, 2], modified[nearest_idx, 2], None])
-
-    fig.add_trace(go.Scatter3d(
-        x=lines_x,
-        y=lines_y,
-        z=lines_z,
-        mode='lines',
-        line=dict(color='green', width=2),
-        name='Displacements'
-    ))
-
-    fig.update_layout(
-        title=title,
-        scene=dict(
-            xaxis_title='X',
-            yaxis_title='Y',
-            zaxis_title='Z'
-        ),
-        width=800,
-        height=800
-    )
-
-    fig.show()
-
 
 def visualize_original_and_reconstructed(original_points, reconstructed_points, random_sample=False):
     """
@@ -398,3 +319,69 @@ def perform_tsne_clustering(latents, labels, chosen_label='liquid', n_clusters=3
         print(f"Cluster {cluster_id}: {count} points ({percentage:.1f}%)")
     
     return tsne_results, cluster_labels, kmeans
+
+
+def visualize_cluster_predictions(predictions,
+                                   alphas=[0.7]*6,
+                                   colors = [
+                                            '#FF0000',  # Red
+                                            '#00FFFF',  # Cyan
+                                            '#0000FF',  # Blue
+                                            '#FFFF00',  # Yellow
+                                            '#FF00FF',  # Magenta
+                                            '#FFA500',  # Orange
+                                            '#00FF00',  # Lime Green
+                                            '#800080',  # Purple
+                                            ],
+                                  title: str = "Phase Predictions"):
+
+
+    fig = go.Figure()
+
+    # Define a list of fixed colors
+    
+    
+    
+    # Create scatter plot for each unique prediction class
+    for i, phase in enumerate(np.unique(predictions[:, 3])):
+        mask = predictions[:, 3] == phase
+        points = predictions[mask]
+        
+        if phase == 0:
+            marker_size = 1
+        else:
+            marker_size = 1
+        
+        # Select color from the list, cycling through if more than 8 phases
+        color = colors[i % len(colors)]
+        # Select alpha from the list, cycling through if more than 8 phases
+        alpha = alphas[i % len(alphas)]
+        
+        fig.add_trace(go.Scatter3d(
+            x=points[:, 0],
+            y=points[:, 1],
+            z=points[:, 2],
+            mode='markers',
+            marker=dict(
+                size=marker_size, 
+                color=color, 
+                opacity=alpha
+            ),
+            name=f'Phase {int(phase)}'
+        ))
+    
+    fig.update_layout(
+        title=title,
+        scene=dict(
+            xaxis_title='X',
+            yaxis_title='Y',
+            zaxis_title='Z',
+            camera=dict(
+                eye=dict(x=1.85, y=1.85, z=0.65) 
+            )
+        ),
+        width=800,
+        height=600
+    )
+
+    return fig

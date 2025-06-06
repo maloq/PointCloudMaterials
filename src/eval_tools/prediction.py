@@ -20,14 +20,13 @@ def create_dataloader(cfg: DictConfig, file_paths: list[str], shuffle: bool = Fa
     for file_path in file_paths:
         points = read_off_file(file_path)
         dataset = RegularDataset(points,
-                                 sample_shape=cfg.data.sample_shape,
                                  size=cfg.data.radius,
                                  n_points=cfg.data.num_points,
                                  overlap_fraction=cfg.data.overlap_fraction)
         datasets.append(dataset)
 
     dataset = ConcatDataset(datasets)
-    print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
+    print(f"Number of samples in dataset: {len(dataset)}")
     return DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
 
 
@@ -65,6 +64,7 @@ def predict_phases(model, dataloader: DataLoader, device: str = 'cpu', return_pr
                     predictions.append([coord[0], coord[1], coord[2], label.item()])
                 
     return np.array(predictions)
+
 
 
 

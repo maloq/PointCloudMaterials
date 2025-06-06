@@ -24,7 +24,7 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
         model = module(cfg)
     
     # Load the state dictionary from the checkpoint
-    checkpoint = torch.load(checkpoint_path, map_location=device)
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
     model.load_state_dict(checkpoint['state_dict'])
     
     # Move model to the specified device

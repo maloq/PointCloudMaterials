@@ -14,7 +14,7 @@ End‑to‑end helpers to
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable, List, Sequence, Tuple, Union
+from typing import Iterable, List, Sequence, Tuple, Union, Dict, Any
 
 import numpy as np
 import pandas as pd
@@ -22,18 +22,23 @@ from ase import Atoms
 from dscribe.descriptors import SOAP
 from pathlib import Path
 from typing import List, Dict, Any
-
+from scipy.spatial import KDTree
+import itertools
+import json
+import math
+from tqdm import tqdm
+import os
 
 __all__ = [
     "build_soap",
     "compute_soap_vectors",
     "save_parquet",
     "load_parquet",
+    "select_points_from_parquet",
+    "select_and_save_points_to_parquet",
+    "generate_soap_features_for_npy_files",
 ]
 
-# ──────────────────────────────────────────────────────────────────────────────
-# 1.  Build descriptor
-# ──────────────────────────────────────────────────────────────────────────────
 
 def build_soap(
     *,
@@ -150,6 +155,178 @@ def load_parquet(path: Union[str, Path]) -> np.ndarray:
     return pd.read_parquet(path, engine="pyarrow").to_numpy()
 
 
+def select_points_from_parquet(
+    parquet_path: Union[str, Path],
+    num_coord_dims: int,
+    stride: float,
+    *,
+    show_progress: bool = False,
+) -> Tuple[np.ndarray, Dict[str, Any]]:
+    """
+    Sample points on a stride-aligned grid, snap each virtual cell-centre to
+    the nearest real point (KD-tree), drop true boundary layers, and return
+    the unique point indices.
+
+    Parameters
+    ----------
+    parquet_path
+        File with at least `num_coord_dims` columns of coordinates.
+    num_coord_dims
+        Dimensionality of coordinates (e.g. 2 or 3).
+    stride
+        Side length of each grid cell (> 0).
+    show_progress
+        If True, display a tqdm progress bar.
+
+    Returns
+    -------
+    sel_indices
+        1D np.ndarray of unique integer indices into the original table.
+    stats
+        dict of diagnostic metadata.
+    """
+    if stride <= 0:
+        raise ValueError("`stride` must be strictly positive.")
+
+    # 1) Load data & extract coords
+    data = pd.read_parquet(parquet_path, engine="pyarrow").to_numpy()
+    if data.shape[1] < num_coord_dims:
+        raise ValueError(
+            f"Expected at least {num_coord_dims} columns, found {data.shape[1]}"
+        )
+    points = data[:, :num_coord_dims]
+    if points.size == 0:
+        return np.empty(0, dtype=int), {"notes": "no points in file"}
+
+    # build KD-tree once
+    kdt = KDTree(points)
+
+    # 2) compute stride-aligned bounds
+    p_min = points.min(axis=0)
+    p_max = points.max(axis=0)
+    # snap outwards to multiples of stride
+    min_snap = np.floor(p_min / stride) * stride
+    max_snap = np.ceil(p_max / stride) * stride
+    span     = max_snap - min_snap
+    # number of cells along each dim
+    n_cells = (span / stride).astype(int)
+
+    total_cells = int(math.prod(n_cells))
+    if total_cells == 0:
+        raise ValueError("grid collapsed (check stride)")
+
+    # 3) determine interior‐only ranges
+    # drop 0 and n-1 only if n > 2; else keep all
+    cell_ranges = [
+        range(1, n - 1) if n > 2 else range(n)
+        for n in n_cells
+    ]
+    used_cells = int(math.prod(len(r) for r in cell_ranges))
+
+    # 4) iterate & snap
+    indices: set[int] = set()
+    iterator = itertools.product(*cell_ranges)
+    if show_progress:
+        iterator = tqdm(iterator, total=used_cells, desc="Snapping cells")
+
+    for cell in iterator:
+        centre = min_snap + (np.array(cell) + 0.5) * stride
+        _, idx = kdt.query(centre, k=1)
+        indices.add(int(idx))
+
+    sel = np.fromiter(indices, dtype=int)
+
+    # 5) collect stats
+    stats: Dict[str, Any] = {
+        "total_points_loaded": points.shape[0],
+        "num_coord_dims":       num_coord_dims,
+        "stride":               float(stride),
+        "min_bounds_original":  p_min.tolist(),
+        "max_bounds_original":  p_max.tolist(),
+        "min_bounds_aligned":   min_snap.tolist(),
+        "max_bounds_aligned":   max_snap.tolist(),
+        "grid_shape_nominal":   n_cells.tolist(),
+        "grid_cells_total":     total_cells,
+        "grid_cells_used":      used_cells,
+        "unique_points":        len(indices),
+    }
+
+    return sel, stats
+
+
+def select_and_save_points_to_parquet(
+    input_parquet_path: Union[str, Path],
+    output_parquet_path: Union[str, Path],
+    num_coord_dims: int,
+    stride: float,
+    *,
+    show_progress: bool = False,
+) -> None:
+    """
+    1.  Run :pyfunc:`select_points_from_parquet` on *input_parquet_path* to obtain
+        a sparse set of representative points (KD-tree snapping on a stride-aligned
+        grid, boundary layer discarded).
+    2.  Keep **only**:
+
+        • the first *num_coord_dims* columns (Cartesian coordinates)  
+        • the remaining columns, assumed to be the SOAP feature vectors
+
+    3.  Persist the subset to *output_parquet_path* via :pyfunc:`save_parquet`.
+
+    Parameters
+    ----------
+    input_parquet_path
+        Source Parquet (coordinates + SOAP).
+    output_parquet_path
+        Destination Parquet (same column layout, but fewer rows).
+    num_coord_dims
+        Number of leading coordinate columns.
+    stride
+        Grid spacing used by :pyfunc:`select_points_from_parquet`.
+    show_progress
+        Forwarded to the selector – enables a live ``tqdm`` bar.
+    selection_stats_json_path
+        Optional path to dump selector diagnostics as JSON.
+    """
+    input_path  = Path(input_parquet_path)
+    output_path = Path(output_parquet_path)
+
+    print(f"⟹ selecting points from {input_path.resolve()}")
+
+    # 1. sparse indices on a stride-aligned grid
+    selected_idx, stats = select_points_from_parquet(
+        parquet_path=input_path,
+        num_coord_dims=num_coord_dims,
+        stride=stride,
+        show_progress=show_progress,
+    )
+    print(f"kept {len(selected_idx):,} / {stats['total_points_loaded']:,} atoms")
+
+    if selected_idx.size == 0:
+        raise RuntimeError("selector returned an empty index set – nothing to save")
+
+    # 2. slice full matrix → coordinates | SOAP
+    full = load_parquet(input_path)   # (N, num_coord_dims + n_features)
+    if full.shape[1] < num_coord_dims:
+        raise ValueError(
+            f"Parquet has only {full.shape[1]} columns, "
+            f"but num_coord_dims={num_coord_dims}"
+        )
+
+    subset_coords = full[selected_idx, :num_coord_dims]
+    subset_soap   = full[selected_idx, num_coord_dims:]   # everything after coords
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Soap rows: {subset_soap.shape}")
+    print(f"Coords rows: {subset_coords.shape}")
+    save_parquet(
+        features=subset_soap,
+        path=output_path,
+        coordinates=subset_coords,
+    )
+    print(f" wrote {subset_coords.shape[0]:,} rows → {output_path.resolve()}")
+    
+
 
 def generate_soap_features_for_npy_files(
     npy_file_paths: List[Union[str, Path]],
@@ -248,11 +425,21 @@ if __name__ == "__main__":
     }
 
     # Call the main processing function
-    generate_soap_features_for_npy_files(
-        npy_file_paths=default_npy_files,
-        output_directory=default_output_path,
-        species_element_symbol=default_species_symbol,
-        soap_parameters=default_soap_params,
-    )
-    
+    if False:
+        generate_soap_features_for_npy_files(
+            npy_file_paths=default_npy_files,
+            output_directory=default_output_path,
+            species_element_symbol=default_species_symbol,
+            soap_parameters=default_soap_params,
+        )
+        
+    for file in os.listdir(default_output_path):
+        select_and_save_points_to_parquet(
+            input_parquet_path=f"datasets/Al/soap_features/{file}",
+            output_parquet_path=f"datasets/Al/soap_features/{file.replace('_soap_with_coords.parquet', '_selected.parquet')}",
+            num_coord_dims=3,
+            stride=5,
+            show_progress=True,
+        )
+            
    

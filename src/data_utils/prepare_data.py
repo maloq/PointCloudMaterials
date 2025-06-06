@@ -130,9 +130,8 @@ def get_min_max_coords(points: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return min_coords, max_coords
 
 
-def calculate_stride(size: float, sample_type: str, overlap_fraction: float) -> float:
-    multiplier = 2 if sample_type == 'spheric' else 1
-    stride = size * multiplier * (1 - overlap_fraction)
+def calculate_stride(size: float, overlap_fraction: float) -> float:
+    stride = size * (1 - overlap_fraction)
     if stride <= 0:
         raise ValueError("overlap_fraction must be less than 1.")
     return stride
@@ -143,12 +142,9 @@ def compute_dimensions(min_coords: np.ndarray, max_coords: np.ndarray, stride: f
     return dims
 
 
-def calculate_center(min_coords, stride, i, j, k, size, sample_type):
+def calculate_center(min_coords, stride, i, j, k, size):
     center = min_coords + np.array([i, j, k]) * stride
-    if sample_type == 'spheric':
-        center += size
-    else:
-        center += size / 2
+    center += size
     return center
 
 
@@ -179,7 +175,6 @@ def generate_samples(
     min_coords: np.ndarray,
     stride: float,
     size: float,
-    sample_type: str,
     dims: np.ndarray,
     n_points: int,
     return_coords: bool,
@@ -214,12 +209,12 @@ def generate_samples(
         for j in loop_range_j:
             for k in loop_range_k:
                 # Compute the grid center as before.
-                computed_center = calculate_center(min_coords, stride, i, j, k, size, sample_type)
+                computed_center = calculate_center(min_coords, stride, i, j, k, size)
                 # Adjust the center so that it matches an atom by snapping to the nearest input point.
                 _, nearest_index = tree.query(computed_center)
                 center = points[nearest_index]
                 # Proceed as before using the adjusted center.
-                sample_points, add, drop = process_sample(points, tree, center, size, sample_type, n_points)
+                sample_points, add, drop = process_sample(points, tree, center, size, n_points)
                 added_points += add
                 dropped_points += drop
                 if sample_points is not None:

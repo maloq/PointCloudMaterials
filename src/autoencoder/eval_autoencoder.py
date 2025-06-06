@@ -46,7 +46,7 @@ def create_autoencoder_dataloader(cfg: DictConfig, file_path, shuffle: bool = Fa
                              size= cfg.data.radius,
                              n_points=cfg.data.num_points,
                              overlap_fraction=cfg.data.overlap_fraction)
-    print(f"Number of samples in {cfg.data.sample_shape} dataset: {len(dataset)}")
+    print(f"Number of samples in dataset: {len(dataset)}")
     
     if max_samples:
         dataset = Subset(dataset, list(range(max_samples)))
