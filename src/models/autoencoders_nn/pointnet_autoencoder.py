@@ -6,8 +6,8 @@ from typing import Tuple, Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from e3nn import o3
-from e3nn.o3 import Irreps
+# from e3nn import o3
+# from e3nn.o3 import Irreps
 
 from pytorch3d.loss import chamfer_distance
 import torch
@@ -49,16 +49,16 @@ def build_model(cfg: DictConfig):
     elif model_type == "PointNetVAE_Folding":
         logger.print("PointNetVAE_Folding")
         return PointNetVAE_Folding(num_points, latent_size)
-    elif model_type == "SO3DenseAutoEncoder":
-        logger.print("SO3DenseAutoEncoder")
-        # Get parameters from cfg, with defaults if not specified
-        radial_dim = cfg.get('radial_dim', 8)
-        l_max = cfg.get('l_max', 3)
-        decoder_hidden_dim = cfg.get('decoder_hidden_dim', 512)
-        return SO3DenseAutoEncoder(num_points, latent_size, 
-                                   radial_dim=radial_dim, 
-                                   l_max=l_max, 
-                                   decoder_hidden_dim=decoder_hidden_dim)
+    # elif model_type == "SO3DenseAutoEncoder":
+    #     logger.print("SO3DenseAutoEncoder")
+    #     # Get parameters from cfg, with defaults if not specified
+    #     radial_dim = cfg.get('radial_dim', 8)
+    #     l_max = cfg.get('l_max', 3)
+    #     decoder_hidden_dim = cfg.get('decoder_hidden_dim', 512)
+    #     return SO3DenseAutoEncoder(num_points, latent_size, 
+    #                                radial_dim=radial_dim, 
+    #                                l_max=l_max, 
+    #                                decoder_hidden_dim=decoder_hidden_dim)
     else:
         raise ValueError(f"Unknown model type: {model_type}") 
 

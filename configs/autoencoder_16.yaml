@@ -20,7 +20,7 @@ kl_beta_schedule: linear
 torch_compile: True
 
 learning_rate: 0.005
-batch_size: 8192
+batch_size: 4096
 
 enable_swa: True
 swa_epoch_start: 1000 

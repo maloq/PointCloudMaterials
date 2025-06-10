@@ -1,16 +1,4 @@
-# -*- coding: utf-8 -*-
-"""soap_parquet.py ──────────────────────────────────────────────────────────────
-End‑to‑end helpers to
 
-1. build a **DScribe SOAP descriptor** with the modern API (`r_cut`, `n_max`,
-   `l_max` …),
-2. iterate over atomic point clouds (ASE `Atoms` objects) and compute per–center
-   SOAP vectors, and
-3. **persist / reload** the resulting feature matrix in Apache Parquet so that
-   downstream PyTorch code can `torch.from_numpy()` it without extra copies.
-
-*Tested with **DScribe 2.1.0** (May 2025).*
-"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -425,7 +413,7 @@ if __name__ == "__main__":
     }
 
     # Call the main processing function
-    if False:
+    if True:
         generate_soap_features_for_npy_files(
             npy_file_paths=default_npy_files,
             output_directory=default_output_path,
