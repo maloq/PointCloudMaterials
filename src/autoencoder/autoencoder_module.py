@@ -24,6 +24,7 @@ class PointNetAutoencoder(pl.LightningModule):
         self.reconstruction_loss_scale = cfg.get('reconstruction_loss_scale', 0.0)
         self.feature_transform_loss_scale = cfg.get('feature_transform_loss_scale', 0.0)
         self.rotation_loss_scale = cfg.get('rotation_loss_scale', 0.0)
+        self.l1_latent_loss_scale = cfg.get('l1_latent_loss_scale', 0.0)
         self.repulsion_h = cfg.get('repulsion_h', 0.05)
         self.repulsion_scale = cfg.get('repulsion_scale', 0.1)
         self.kl_beta_start   = cfg.get('kl_beta_start',   0.0)     # β at step 0
@@ -33,7 +34,7 @@ class PointNetAutoencoder(pl.LightningModule):
         self.kl_beta         = self.kl_beta_start
 
         if cfg.torch_compile:
-            self.model = torch.compile(self.model, fullgraph=True)
+            self.model = torch.compile(self.model)
             
         if cfg.loss == 'chamfer_loss':
              self.criterion = chamfer_loss
@@ -65,6 +66,8 @@ class PointNetAutoencoder(pl.LightningModule):
         logger.print(f"Loss: {self.criterion.__name__}")
         if self.rotation_loss_scale > 0:
              logger.print(f"Rotational Consistency Loss enabled with scale: {self.rotation_loss_scale}")
+        if self.l1_latent_loss_scale > 0:
+            logger.print(f"L1 Latent Loss enabled with scale: {self.l1_latent_loss_scale}")
 
 
     def compute_density(self):
@@ -145,7 +148,7 @@ class PointNetAutoencoder(pl.LightningModule):
 
         return reconstructed_points, latent_representation, trans_feat_list
 
-    def _prepare_loss_args(self, target_points, predicted_points, trans_feat_list, mu=None, logvar=None):
+    def _prepare_loss_args(self, target_points, predicted_points, trans_feat_list, latent=None, mu=None, logvar=None):
         """Prepares the arguments dictionary for the loss function."""
         loss_args = {
             'pred': predicted_points.float(),
@@ -154,7 +157,8 @@ class PointNetAutoencoder(pl.LightningModule):
             'feature_transform_loss_scale': self.hparams.get('feature_transform_loss_scale', 0.0),
             'repulsion_h': self.hparams.get('repulsion_h', 0.05),
             'repulsion_scale': self.hparams.get('repulsion_scale', 0.1),
-            'rotation_loss_scale': self.hparams.get('rotation_loss_scale', 0.0)
+            'rotation_loss_scale': self.hparams.get('rotation_loss_scale', 0.0),
+            'l1_latent_loss_scale': self.hparams.get('l1_latent_loss_scale', 0.0)
         }
         if self.density is not None:
             loss_args.update({
@@ -164,6 +168,10 @@ class PointNetAutoencoder(pl.LightningModule):
                 'reconstruction_loss_scale': self.hparams.get('reconstruction_loss_scale', 0.0)
             })
         
+        # Add latent vector for L1 regularization
+        if latent is not None:
+            loss_args['latent'] = latent
+            
         # Add mu and logvar to loss_args if they are provided (i.e., not None)
         # VAE-specific loss functions will expect these.
         if mu is not None:
@@ -231,7 +239,7 @@ class PointNetAutoencoder(pl.LightningModule):
         pred, latent_or_mu, logvar_or_none, trans_feat_list = model_outputs
 
         # Prepare loss arguments, passing mu and logvar (which might be None for AE)
-        loss_args = self._prepare_loss_args(points, pred, trans_feat_list, mu=latent_or_mu, logvar=logvar_or_none)
+        loss_args = self._prepare_loss_args(points, pred, trans_feat_list, latent=latent_or_mu, mu=latent_or_mu, logvar=logvar_or_none)
 
         # Compute criterion loss (criterion should handle mu/logvar if it needs them)
         main_loss, aux_loss_dict = self.criterion(**loss_args)
@@ -264,23 +272,17 @@ class PointNetAutoencoder(pl.LightningModule):
         points, _ = batch
         points_permuted = points.permute(0, 2, 1)
 
-        # Perform model forward pass
         model_outputs = self.model(points_permuted)
-        # pred, latent_or_mu, logvar_or_none, trans_feat_list
         pred, latent_or_mu, logvar_or_none, trans_feat_list = model_outputs
+        
+        loss_args = self._prepare_loss_args(points, pred, trans_feat_list, latent=latent_or_mu, mu=latent_or_mu, logvar=logvar_or_none)
+        
+        main_loss, aux_loss_dict = self.criterion(**loss_args)
+        
+        # In validation, we don't compute rotation loss. You can add it if needed for monitoring.
+        total_loss = self._log_losses(main_loss, aux_loss_dict, "val")
 
-
-        # Prepare loss arguments
-        loss_args = self._prepare_loss_args(points, pred, trans_feat_list, mu=latent_or_mu, logvar=logvar_or_none)
-
-        # Compute criterion loss (assuming it returns loss, aux_dict)
-        val_loss, aux_loss_dict = self.criterion(**loss_args)
-
-        # Log all losses (no rotation loss)
-        self._log_losses(val_loss, aux_loss_dict, 'val')
-
-        # Return main validation loss for checkpointing etc.
-        return {'val_loss': val_loss}
+        return total_loss
 
     def configure_optimizers(self):
-        return get_optimizers_and_scheduler(self)
+        return get_optimizers_and_scheduler(self.hparams, self.parameters())

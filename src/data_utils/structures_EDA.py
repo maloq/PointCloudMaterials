@@ -1,6 +1,12 @@
 import sys,os
 sys.path.append(os.getcwd())
-from pytorch3d.loss import chamfer_distance 
+try:
+    from pytorch3d.loss import chamfer_distance 
+    pytorch3d_available = True
+except:
+    pytorch3d_available = False
+    print("PyTorch3D is not available")
+
 import torch
 
 import numpy as np

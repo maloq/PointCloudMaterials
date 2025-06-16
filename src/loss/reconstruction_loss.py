@@ -1,48 +1,116 @@
-import sys,os
+import sys, os
 sys.path.append(os.getcwd())
 import torch
-from pytorch3d.loss import chamfer_distance
+try:
+    from pytorch3d.loss import chamfer_distance as chamfer_distance  
+    pytorch3d_available = True
+except Exception:                         
+    pytorch3d_available = False
+
 import torch.nn as nn
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
 
 
+if not pytorch3d_available:
+
+    def chamfer_distance(pred: torch.Tensor,
+                         target: torch.Tensor,
+                         *,
+                         squared: bool = True):
+        """
+        Pure-PyTorch implementation of the symmetric Chamfer distance.
+
+        Args
+        ----
+        pred, target : (B, N, 3) or (B, 3, N) tensors
+            Point-clouds of the same batch size B.  N/M may differ.
+        squared : bool, default=True
+            If True (default) uses squared Euclidean distances—matching the
+            behaviour of PyTorch3D.  Set to False for plain L2.
+
+        Returns
+        -------
+        cd : torch.Tensor
+            Scalar Chamfer distance averaged over the batch.
+        aux : None
+            Placeholder to stay API-compatible with PyTorch3D.
+        """
+        # Ensure both clouds are (B, *, 3)
+        pred   = _to_B_N_3(pred)
+        target = _to_B_N_3(target)
+
+        # ------------------------------------------------------------------
+        # fast squared Euclidean distances:  ‖x‖² + ‖y‖² − 2 x·yᵀ
+        # ------------------------------------------------------------------
+        B, N, _ = pred.shape
+        M       = target.shape[1]
+
+        # ‖x‖²   (B, N, 1)
+        pred_sq   = (pred   ** 2).sum(-1, keepdim=True)
+        # ‖y‖²   (B, 1, M)
+        target_sq = (target ** 2).sum(-1).unsqueeze(1)
+
+        # -2 x·yᵀ   (B, N, M)
+        cross = -2.0 * torch.bmm(pred, target.transpose(1, 2))
+
+        dists2 = pred_sq + target_sq + cross                      # (B, N, M)
+
+        # Numerical stability – make sure we do not go below zero
+        dists2 = dists2.clamp_min(0.)
+
+        # If the caller wants plain L2, take the sqrt **once**
+        dists = torch.sqrt(dists2 + 1e-8) if not squared else dists2
+        # ------------------------------------------------------------------
+
+        # Closest distances each way
+        min_pred2gt = dists.min(dim=2)[0]     # (B, N)
+        min_gt2pred = dists.min(dim=1)[0]     # (B, M)
+
+        cd = min_pred2gt.mean(1) + min_gt2pred.mean(1)            # (B,)
+        return cd.mean(), None
+        
+
 
 def chamfer_loss(pred, target, **kwargs):
     """
     Computes the Chamfer distance loss between predictions and targets.
+    Optionally includes L1 regularization on the latent space.
 
     Args:
         pred (Tensor): Predicted point cloud.
         target (Tensor): Ground truth point cloud.
-        **kwargs: Additional keyword arguments (currently ignored).
+        **kwargs: Additional keyword arguments, can include 'latent' and 'l1_latent_loss_scale'.
 
     Returns:
-        tuple: (Chamfer distance loss, empty dictionary for auxiliary losses).
+        tuple: (Total loss, dictionary for auxiliary losses).
     """
     loss, _ = chamfer_distance(pred, target)
-    return loss, {} # Return empty dict for aux losses
+    aux_loss_dict = {}
+    return _add_optional_losses(loss, aux_loss_dict, **kwargs)
 
 
 def chamfer_regularized_encoder_loss(pred, target, **kwargs):
     """
     Computes the Chamfer distance loss with feature transform regularization for the encoder.
+    Optionally includes L1 regularization on the latent space.
 
     Args:
         pred (Tensor): Predicted point clouds.
         target (Tensor): Ground truth point clouds.
-        trans_feat_list (list or tuple): Contains at least the encoder's feature transform as the first element.
-        feature_transform_loss_scale (float): Scale factor for the feature transform regularization loss.
+        trans_feat_list (list or tuple): Contains the encoder's feature transform.
+        feature_transform_loss_scale (float): Scale factor for the feature transform regularization.
+        **kwargs: Can also include 'latent' and 'l1_latent_loss_scale'.
 
     Returns:
-        tuple: (Total loss, dictionary containing {'ft_loss': regularization_loss}).
+        tuple: (Total loss, dictionary containing auxiliary losses).
     """
     loss, _ = chamfer_distance(pred, target)
     encoder_trans = kwargs['trans_feat_list'][0]
     reg_loss = feature_transform_regularizer(encoder_trans)
     total_loss = loss + kwargs['feature_transform_loss_scale'] * reg_loss
     aux_loss_dict = {'ft_loss': reg_loss}
-    return total_loss, aux_loss_dict
+    return _add_optional_losses(total_loss, aux_loss_dict, **kwargs)
 
 
 def feature_transform_regularizer(trans):
@@ -82,13 +150,13 @@ def chamfer_regularized_encoder_loss_repulsion(pred, target, **kwargs):
     total_loss += repulsion_scale * repulsion_loss_val
     
     aux_loss_dict = {'ft_loss': reg_loss, 'repulsion_loss': repulsion_loss_val}
-    return total_loss, aux_loss_dict
+    return _add_optional_losses(total_loss, aux_loss_dict, **kwargs)
 
 
 def chamfer_elbo_loss(pred, target, mu, logvar, **kwargs):
     """
     Computes the VAE ELBO loss: Chamfer reconstruction loss + KL divergence.
-    Optionally includes feature transform regularization.
+    Optionally includes feature transform regularization and L1 latent regularization.
 
     Args:
         pred (Tensor): Predicted point clouds.
@@ -96,10 +164,10 @@ def chamfer_elbo_loss(pred, target, mu, logvar, **kwargs):
         mu (Tensor): Latent space mean.
         logvar (Tensor): Latent space log variance.
         **kwargs: Must include 'kl_beta'. Can include 'trans_feat_list', 
-                  'feature_transform_loss_scale'.
+                  'feature_transform_loss_scale', 'latent', 'l1_latent_loss_scale'.
 
     Returns:
-        tuple: (Total ELBO loss, dictionary of auxiliary losses {'kld_loss': unscaled_kld, 'ft_loss': unscaled_ft_loss}).
+        tuple: (Total ELBO loss, dictionary of auxiliary losses).
     """
     # Reconstruction loss
     recon_loss, _ = chamfer_distance(pred, target)
@@ -128,7 +196,7 @@ def chamfer_elbo_loss(pred, target, mu, logvar, **kwargs):
         else:
             logger.debug("trans_feat_list provided but empty or not a list/tuple, skipping ft_loss for ELBO.")
             
-    return total_loss, aux_loss_dict
+    return _add_optional_losses(total_loss, aux_loss_dict, **kwargs)
 
 
 EPS = 1e-10
@@ -197,11 +265,33 @@ def elbo_swd_repulsion_loss(pred: torch.Tensor, target: torch.Tensor,
                             repulsion_h: float = 0.05,
                             repulsion_scale: float = 0.1,
                             **kwargs):
-    """ELBO with SWD reconstruction + repulsion term and annealed KL."""
-    swd = sliced_wasserstein_distance(pred, target, num_projections=num_projections)
-    rep = repulsion_loss(pred, h=repulsion_h)
-    recon = swd + repulsion_scale * rep
+    """
+    ELBO loss using SWD and repulsion. Optionally L1 regularized.
+    """
+    swd_loss = sliced_wasserstein_distance(pred, target, num_projections=num_projections)
+    rep_loss = repulsion_loss(pred, h=repulsion_h)
+    kld_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1).mean()
+    
+    total_loss = swd_loss + repulsion_scale * rep_loss + kl_beta * kld_loss
+    
+    aux_loss_dict = {
+        'swd_loss': swd_loss,
+        'repulsion_loss': rep_loss,
+        'kld_loss': kld_loss
+    }
+    
+    return _add_optional_losses(total_loss, aux_loss_dict, **kwargs)
 
-    kld = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1).mean()
-    total = recon + kl_beta * kld
-    return total, {'swd': swd, 'repulsion': rep, 'kld': kld}
+
+def l1_latent_regularizer(latent):
+    """Computes the L1 regularization loss on a latent vector."""
+    return torch.mean(torch.abs(latent))
+
+def _add_optional_losses(total_loss, aux_loss_dict, **kwargs):
+    """Helper to add optional losses like L1 latent regularization."""
+    l1_latent_loss_scale = kwargs.get('l1_latent_loss_scale', 0.0)
+    if l1_latent_loss_scale > 0 and 'latent' in kwargs and kwargs['latent'] is not None:
+        l1_loss = l1_latent_regularizer(kwargs['latent'])
+        total_loss += l1_latent_loss_scale * l1_loss
+        aux_loss_dict['l1_latent_loss'] = l1_loss
+    return total_loss, aux_loss_dict

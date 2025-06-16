@@ -1,7 +1,7 @@
 defaults:
-  - data: autoencoder_Al
+  - data: autoencoder_Al_16
 project_name: pointnet
-experiment_name: PnAE_Folding2Step_CD_Repulsion_RotCon_16_l16_no_edges
+experiment_name: PnAE_Folding2Step_CD_Repulsion_RotCon_16_l8_no_edges
 wandb_mode: online
 experiment_tags:
   - SWA
@@ -19,22 +19,23 @@ kl_beta_warmup: 10_000
 kl_beta_schedule: linear
 torch_compile: True
 
-learning_rate: 0.005
-batch_size: 8192
+learning_rate: 0.004
+batch_size: 16384
 
-enable_swa: True
+enable_swa: False 
 swa_epoch_start: 1000 
-epochs: 1500
+epochs: 1000
 
-decay_rate: 0.01
+decay_rate: 0.02
 gpu: True
 devices: 0
 log_every_n_steps: 5
-num_workers: 8
+num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: OneCycle
 
 feature_transform_loss_scale: 0.001
-rotation_loss_scale: 0.03
+rotation_loss_scale: 0.1
 reconstruction_loss_scale: 0.5
-
+l1_latent_loss_scale: 0.1
+dropout_rate: 0.5

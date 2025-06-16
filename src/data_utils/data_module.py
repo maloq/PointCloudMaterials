@@ -72,10 +72,12 @@ class PointCloudDataModule(pl.LightningDataModule):
         logger.print(f"Dataloader took {elapsed_time:.4f} seconds")
 
     def train_dataloader(self):
+        print(f"Using {self.num_workers} workers for train dataloader")
         return DataLoader(self.train_dataset, batch_size=self.batch_size, 
                         num_workers=self.num_workers, shuffle=True, drop_last=True, pin_memory=True, persistent_workers=True)
     
     def val_dataloader(self):
+        print(f"Using {self.num_workers} workers for val dataloader")
         return DataLoader(self.val_dataset, batch_size=self.batch_size, 
                           num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
     

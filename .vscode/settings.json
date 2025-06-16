@@ -1,3 +1,10 @@
 {
-    "python.analysis.autoImportCompletions": false
+    "python.analysis.autoImportCompletions": false,
+    "json.schemas": [
+
+    ],
+    "terminal.integrated.tabs.enabled": true,
+    "workbench.panel.defaultLocation": "right",
+    "terminal.integrated.defaultLocation": "editor",
+
 }
