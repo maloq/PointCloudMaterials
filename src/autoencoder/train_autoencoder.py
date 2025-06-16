@@ -15,7 +15,6 @@ import time
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
 from src.data_utils.data_module import PointCloudDataModule
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
-from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from typing import Union
 
 import warnings

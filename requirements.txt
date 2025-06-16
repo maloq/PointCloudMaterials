@@ -10,3 +10,5 @@ matplotlib
 nbformat
 scikit-learn
 scipy
+dscribe
+ase
