@@ -1,5 +1,5 @@
 defaults:
-  - data: autoencoder_Al
+  - data: data_ae_Al_64
 project_name: pointnet
 experiment_name: PnAE_Folding2Step_CD_Repulsion_RotCon_64_l16_no_edges
 wandb_mode: online

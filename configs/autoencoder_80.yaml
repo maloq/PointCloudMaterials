@@ -1,7 +1,7 @@
 defaults:
-  - data: data_ae_Al_16
+  - data: data_ae_Al_80
 project_name: pointnet
-experiment_name: PnAE_Folding2Step_CD_Repulsion_RotCon_16_l8_no_edges
+experiment_name: PnAE_Folding2Step_CD_Repulsion_RotCon_80_l16_no_edges
 wandb_mode: online
 experiment_tags:
   - SWA
@@ -10,7 +10,7 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 
-latent_size: 16
+latent_size: 32
 type:  PointNetAE_Folding                   # PointNetAE_MLP
 loss: chamfer_regularized_encoder_loss_repulsion
 kl_beta_start: 0.0
@@ -19,23 +19,23 @@ kl_beta_warmup: 10_000
 kl_beta_schedule: linear
 torch_compile: True
 
-learning_rate: 0.004
-batch_size: 16384
+learning_rate: 0.005
+batch_size: 4096
 
-enable_swa: False 
+enable_swa: False
 swa_epoch_start: 1000 
 epochs: 1000
 
-decay_rate: 0.02
+decay_rate: 0.003
 gpu: True
 devices: 0
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 8
 scheduler_gamma: 0.5
-scheduler_name: OneCycle
+scheduler_name: Cosine
 
 feature_transform_loss_scale: 0.001
-rotation_loss_scale: 0.1
+rotation_loss_scale: 0.05
 reconstruction_loss_scale: 0.5
-l1_latent_loss_scale: 0.1
-dropout_rate: 0.5
+l1_latent_loss_scale: 0.05
+dropout_rate: 0.4
