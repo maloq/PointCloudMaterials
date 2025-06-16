@@ -14,6 +14,10 @@ import torch.nn as nn
 import sys,os
 sys.path.append(os.getcwd())
 from src.data_utils.soap_parquet import select_points_from_parquet
+from src.clustering.run_clustering import load_model_and_config, get_config_path_from_checkpoint, get_latents_from_dataloader
+from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader
+
+MAX_SAMPLES = 20000
 
 
 def process_sample(points, tree, center, size, n_points):  # type: ignore
@@ -188,101 +192,22 @@ def rotational_robustness(
 
     return float(np.mean(scores)), np.asarray(scores)
 
-# -------------------------------------------------------------------------
-# 4.  Example entry point – quick smoke test
-# -------------------------------------------------------------------------
 
-class DummyPointNetEncoder(nn.Module):
-    """A very simple PointNet-like encoder for demonstration."""
-    def __init__(self, latent_dim=32):
-        super().__init__()
-        self.conv1 = nn.Conv1d(3, 64, 1)
-        self.conv2 = nn.Conv1d(64, 128, 1)
-        self.conv3 = nn.Conv1d(128, latent_dim, 1)
-        self.relu = nn.ReLU()
-        self.latent_dim = latent_dim
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Input x is (B, 3, N)"""
-        x = self.relu(self.conv1(x))
-        x = self.relu(self.conv2(x))
-        x = self.conv3(x)
-        # Global max pooling
-        x = torch.max(x, 2, keepdim=True)[0]
-        x = x.view(-1, self.latent_dim)
-        return x
-
-class DummyAE(nn.Module):
-    """Dummy Autoencoder model."""
-    def __init__(self, latent_dim=32):
-        super().__init__()
-        self.encoder = DummyPointNetEncoder(latent_dim)
-        # Decoder is not needed for this task.
-
-    def forward(self, x: torch.Tensor) -> Tuple[None, torch.Tensor]:
-        """Returns (None, latent_vector) to mimic expected model output."""
-        latent = self.encoder(x)
-        return None, latent
-
-def make_ae_predict_fn(model: nn.Module, kmeans: KMeans, device: torch.device):
-    """
-    Factory to create a prediction function using an AE model and a KMeans model.
-    """
-    model.eval()
-    def AE_predict(sample: np.ndarray) -> Tuple[int, float, float, float]:
-        """
-        Predicts a cluster label for a sample using an autoencoder and KMeans.
-        """
-        centre = sample.mean(axis=0)
-
-        sample_tensor = torch.from_numpy(sample).float().to(device)  # (N, 3)
-        sample_tensor = sample_tensor.unsqueeze(0)                   # (1, N, 3)
-        sample_tensor = sample_tensor.transpose(1, 2)                # (1, 3, N)
-
-        with torch.no_grad():
-            model_outputs = model(sample_tensor)
-            if isinstance(model_outputs, tuple):
-                latent_vector = model_outputs[1]
-            else:
-                latent_vector = model_outputs
-
-        # The latent vector is on the specified device, KMeans expects CPU numpy array.
-        latent_np = latent_vector.cpu().numpy()
-        label = kmeans.predict(latent_np)[0]
-        return int(label), centre[0], centre[1], centre[2]
-    return AE_predict
 
 
 if __name__ == "__main__":
-    # --- setup ---
-    N_atoms = 1000
-    N_points = 64
-    xyz = np.random.rand(N_atoms, 3) * 20  # 20×20×20 box
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    autoencoder_model = DummyAE().to(device)
 
-    # --- Pre-computation for AE_predict: train KMeans on reference latents ---
-    # 1. Get reference samples (this is also done inside rotational_robustness)
-    rng_for_sampling = np.random.default_rng(42) # Use same seed for consistency
-    centre_idx_for_kmeans = _pick_centre_indices(xyz, 150, rng_for_sampling)
-    ref_samples_for_kmeans, _ = _extract_samples(xyz, centre_idx_for_kmeans, 4.0, N_points)
+    checkpoint_path = 'output/2025-06-16/18-39-11/PnAE_Folding2Step_CD_Repulsion_RotCon_80_l16_no_edges-epoch=29-val_loss=0.05.ckpt'
+    file_path = 'datasets/Al/inherent_configurations_off/166ps.off'
+    config_name = get_config_path_from_checkpoint(checkpoint_path)
+    model, cfg, device = get_config_path_from_checkpoint(checkpoint_path, config_name)
+    dataloader = create_autoencoder_dataloader(cfg, file_path, shuffle=True, max_samples=MAX_SAMPLES)
+    latents, point_clouds, originals = get_latents_from_dataloader(model, dataloader, device)
 
-    # 2. Get their latent vectors
-    latents_list = []
-    with torch.no_grad():
-        for sample in ref_samples_for_kmeans:
-            sample_tensor = torch.from_numpy(sample).float().to(device).unsqueeze(0).transpose(1, 2)
-            _, latent = autoencoder_model(sample_tensor)
-            latents_list.append(latent.cpu().numpy())
-    all_latents = np.concatenate(latents_list, axis=0)
 
-    # 3. Train KMeans on latent vectors
-    kmeans = KMeans(n_clusters=8, random_state=42, n_init='auto').fit(all_latents)
 
-    # 4. Create the prediction function
-    ae_predictor = make_ae_predict_fn(autoencoder_model, kmeans, device)
 
-    # --- Run rotational robustness ---
     rr_mean, rr_dist = rotational_robustness(
         predict_fn=ae_predictor,
         positions=xyz,

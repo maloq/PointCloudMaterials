@@ -4,9 +4,16 @@ import numpy as np
 sys.path.append(os.getcwd())
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
-from src.clustering.cluster_ae_latent import predict_and_save_latent
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, confusion_matrix, silhouette_score
+from sklearn.preprocessing import LabelEncoder
+from sklearn.cluster import KMeans
+from scipy.optimize import linear_sum_assignment
+from itertools import product
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
 from src.utils.model_utils import load_model_from_checkpoint
+from src.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.models.autoencoders_nn.pointnet_autoencoder import PointNetVAEBase
+from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader
 from hydra import compose, initialize
 from typing import List
 
@@ -26,6 +33,49 @@ def get_config_path_from_checkpoint(checkpoint_path, config_name):
         config_name = 'config'
 
     return config_path, config_name
+
+
+
+def load_model_and_config(checkpoint_path: str,
+                          model_class: str,
+                          cuda_device: int = 0,
+                          config_name: str = 'autoencoder_64'):
+    """Load Hydra config, restore the model from *checkpoint_path* and return
+    the model instance together with the resolved *cfg* object and chosen
+    *device* string.
+
+    Args:
+        checkpoint_path (str): Path to the model checkpoint.
+        model_class (str): Model type (currently only 'Autoencoder' supported).
+        cuda_device (int): GPU index to place the model on.
+        config_name (str): Name of the Hydra config file (without extension).
+
+    Returns:
+        Tuple[torch.nn.Module, omegaconf.DictConfig, str]:
+            Restored model, Hydra configuration and device string.
+    """
+    # Resolve the location of the config corresponding to the checkpoint
+    config_path, resolved_config_name = get_config_path_from_checkpoint(checkpoint_path, config_name)
+
+    # Load Hydra config
+    with initialize(version_base=None, config_path='../../' + config_path):
+        print(f"Loading config from {config_path}/{resolved_config_name}")
+        cfg = compose(config_name=resolved_config_name)
+
+    # Select device
+    device = f'cuda:{cuda_device}' if torch.cuda.is_available() else 'cpu'
+    print(f"Using device: {device}")
+
+    # Restore model weights
+    if model_class == 'Autoencoder':
+        model = load_model_from_checkpoint(checkpoint_path, cfg, device=device, module=PointNetAutoencoder)
+    else:
+        raise ValueError(f"Unknown model_class: {model_class}. Use 'Autoencoder' or ...")
+
+    if model is None:
+        raise RuntimeError("Failed to load the model.")
+
+    return model, cfg, device
 
 
 # Encapsulate the main logic into a function
@@ -50,23 +100,15 @@ def run_clustering_pipeline(checkpoint_path: str,
         cuda_device (int): GPU device index to use.
         max_samples (int, optional): Maximum number of samples to process. Defaults to None.
     """
-    config_path, config_name = get_config_path_from_checkpoint(checkpoint_path, config_name)
-
-    with initialize(version_base=None, config_path='../../' + config_path ):
-        print(f"Loading config from {config_path}/{config_name}")
-        cfg = compose(config_name=config_name)
-    
-    device = f'cuda:{cuda_device}' if torch.cuda.is_available() else 'cpu'
-    print(f"Using device: {device}")
-
-    model = None
-    if model_class == 'Autoencoder':
-        model = load_model_from_checkpoint(checkpoint_path, cfg, device=device, module=PointNetAutoencoder)
-    else:
-        raise ValueError(f"Unknown model_class: {model_class}. Use 'Autoencoder' or ...")
-
-    if model is None:
-        raise RuntimeError("Failed to load the model.")
+    # -----------------------------
+    # Load configuration & model
+    # -----------------------------
+    model, cfg, device = load_model_and_config(
+        checkpoint_path=checkpoint_path,
+        model_class=model_class,
+        cuda_device=cuda_device,
+        config_name=config_name,
+    )
 
     # Predict and save latent vectors
     predict_and_save_latent(cfg=cfg,  # Pass the loaded hydra config
@@ -79,15 +121,6 @@ def run_clustering_pipeline(checkpoint_path: str,
                             max_samples=max_samples) # Pass max_samples
     return model
 
-
-
-from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, confusion_matrix, silhouette_score
-from sklearn.preprocessing import LabelEncoder
-from sklearn.cluster import KMeans
-from scipy.optimize import linear_sum_assignment
-import numpy as np
-from itertools import product
-import matplotlib.pyplot as plt
 
 def find_optimal_clusters(data, range_n_clusters=range(2, 11), random_state=66):
     """
@@ -123,6 +156,7 @@ def find_optimal_clusters(data, range_n_clusters=range(2, 11), random_state=66):
     print(f"\nOptimal number of clusters based on silhouette score: {optimal_clusters}")
     
     return optimal_clusters, silhouette_scores
+
 
 def evaluate_clustering(cluster_labels, true_labels):
     """
@@ -237,7 +271,144 @@ def cluster_and_evaluate(latents, labels, random_state=66):
         'full_results': full_results
     }
 
-#   results = cluster_and_evaluate(latents, labels)
+def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Extract latent representations from dataloader batches."""
+    if len(dataloader) == 0:
+        raise ValueError("Dataloader is empty - no data to process")
+        
+    latents, point_clouds, originals = [], [], []
+
+    for batch in dataloader:
+        points = batch[0].to(device).transpose(2, 1)
+        
+        with torch.no_grad():
+            if isinstance(model, PointNetAutoencoder):
+                point_cloud, latent, _ = model(points)
+            elif isinstance(model, PointNetVAEBase):
+                point_cloud, latent, _, _ = model(points)
+            else:
+                raise ValueError(f"Unknown model class: {type(model)}")
+        
+        latents.append(latent.cpu().numpy())
+        point_clouds.append(point_cloud.cpu().numpy())
+        originals.append(points.cpu().numpy())
+
+    return (np.concatenate(latents, axis=0), 
+            np.concatenate(point_clouds, axis=0), 
+            np.concatenate(originals, axis=0))
+
+
+def _process_files(cfg, model, file_paths: List[str], label: str, device: str, max_samples: int = None):
+    """Helper function to process a list of files and extract latents."""
+    if not file_paths:
+        raise ValueError(f"No {label} file paths provided")
+        
+    print(f"Processing {label} datasets...")
+    all_latents, all_point_clouds, all_originals = [], [], []
+    
+    for i, file_path in enumerate(file_paths):
+        print(f"Processing {label} file {i+1}/{len(file_paths)}: {file_path}")
+        dataloader = create_autoencoder_dataloader(cfg, file_path, shuffle=True, max_samples=max_samples)
+        latents, point_clouds, originals = get_latents_from_dataloader(model, dataloader, device)
+        
+        all_latents.append(latents)
+        all_point_clouds.append(point_clouds)
+        all_originals.append(originals)
+        print(f"  {len(latents)} samples from {file_path}")
+    
+    if not all_latents:
+        raise ValueError(f"No data was successfully loaded from any {label} files")
+        
+    return (np.concatenate(all_latents, axis=0),
+            np.concatenate(all_point_clouds, axis=0), 
+            np.concatenate(all_originals, axis=0))
+
+
+def predict_and_save_latent(cfg: str,
+                            model,
+                            liquid_file_paths: List[str],
+                            crystal_file_paths: List[str],
+                            device: str = 'cpu',
+                            save_folder: str = 'output',
+                            model_class: str = None,
+                            max_samples: int = None):
+
+    if not liquid_file_paths and not crystal_file_paths:
+        raise ValueError("At least one of liquid_file_paths or crystal_file_paths must be provided")
+
+    model.to(device).eval()
+    
+    # Split max_samples if specified
+    if max_samples:
+        max_samples_per_type = max_samples // 2
+        max_samples_l = max_samples_per_type
+        max_samples_c = max_samples - max_samples_per_type
+    else:
+        max_samples_l = max_samples_c = None
+
+    # Process files - these will raise errors if no data is found
+    latents_l, point_clouds_l, originals_l = _process_files(cfg, model, liquid_file_paths, "liquid", device, max_samples_l)
+    latents_c, point_clouds_c, originals_c = _process_files(cfg, model, crystal_file_paths, "crystal", device, max_samples_c)
+    
+    # Create labels and combine data
+    labels = np.array(["liquid"] * len(latents_l) + ["crystal"] * len(latents_c))
+    all_latents = np.concatenate((latents_l, latents_c), axis=0)
+    all_points = np.concatenate((point_clouds_l, point_clouds_c), axis=0)
+    all_originals = np.concatenate((originals_l, originals_c), axis=0)
+
+    print(f"Total samples: {len(all_latents)} (liquid: {len(latents_l)}, crystal: {len(latents_c)})")
+
+    # Save combined data
+    output_path = os.path.join(save_folder, "latent_data.npz")
+    os.makedirs(save_folder, exist_ok=True)
+    
+    np.savez_compressed(output_path, 
+                        latents=all_latents, 
+                        points=all_points, 
+                        originals=all_originals, 
+                        labels=labels)
+
+    print(f"Saved combined data to {output_path}")
+
+
+
+def cluster_latents(latents, points, original_points, labels, n_clusters=2, 
+                   random_state=42, save_centers=False, label=None, 
+                   output_file="output/cluster_centers.npy"):
+    """Clusters latent representations and finds samples closest to each cluster center."""
+    from sklearn.cluster import KMeans
+    
+    print(f"K-means clustering with {n_clusters} clusters...")
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
+    cluster_labels = kmeans.fit_predict(latents)
+    
+    # Find closest sample to each cluster center
+    rep_indices = []
+    for i in range(n_clusters):
+        cluster_mask = cluster_labels == i
+        distances = np.linalg.norm(latents[cluster_mask] - kmeans.cluster_centers_[i], axis=1)
+        rep_indices.append(np.where(cluster_mask)[0][np.argmin(distances)])
+        print(f"Cluster {i}: sample {rep_indices[-1]}, label={labels[rep_indices[-1]]}")
+    
+    # Extract representative data
+    rep_samples = latents[rep_indices]
+    rep_points = points[rep_indices]
+    rep_originals = original_points[rep_indices]
+    rep_labels = labels[rep_indices]
+    
+    if save_centers:
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        np.save(output_file, {
+            'cluster_centers': kmeans.cluster_centers_,
+            'representative_samples': rep_samples,
+            'representative_points': rep_points,
+            'representative_labels': rep_labels,
+            'cluster_labels': cluster_labels
+        })
+        print(f"Saved to {output_file}")
+    
+    return kmeans.cluster_centers_, rep_samples, rep_points, rep_originals, rep_labels
+
 
 
 # Example usage (optional, can be removed or put under if __name__ == '__main__')

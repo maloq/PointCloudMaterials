@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=PointNet_VAE           # Name of your job
+#SBATCH --job-name=PN_16          # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
-#SBATCH --partition=A100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --partition=V100              # Partition to submit to (A100, V100, etc.)
 #SBATCH --gpus-per-node=1             # Request 1 node
 #SBATCH --gres=gpu:1                  # Request 1 GPU
 #SBATCH --cpus-per-task=8             # Request 8 CPU cores
-#SBATCH --mem=32G                     # Request 32 GB of memory
+#SBATCH --mem=64G                     # Request 32 GB of memory
 #SBATCH --time=8:00:00               # Time limit for the job (hh:mm:ss)
 
 # Print job details

@@ -2,7 +2,8 @@ from scipy.spatial import KDTree
 import numpy as np
 import plotly.graph_objects as go
 import torch
-
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
 
 
 def visualize_predictions(predictions, title: str = "Phase Predictions"):
@@ -385,3 +386,61 @@ def visualize_cluster_predictions(predictions,
     )
 
     return fig
+
+
+def visualize_latents(npy_file="latent_label_pairs.npy",
+                      perplexity=30, n_iter=1000,
+                      random_state=42,
+                      output_image="latent_tsne.png"):
+    """
+    Loads latent representations and their labels from a numpy file,
+    computes a 2D t-SNE projection, and visualizes them with distinct colors.
+
+    Args:
+        npy_file (str): Path to the numpy file containing latent-label pairs.
+        perplexity (float): The perplexity parameter for t-SNE.
+        n_iter (int): Number of iterations for t-SNE optimization.
+        random_state (int): Random seed for reproducibility.
+        output_image (str): Filename for saving the plot.
+    """
+    # Load the latent-label pairs.
+    print("Loading latent-label pairs from:", npy_file)
+    latent_label_pairs = np.load(npy_file, allow_pickle=True)
+
+    # Separate the latent vectors and labels.
+    latents = []
+    labels = []
+    for latent, label in latent_label_pairs:
+        latents.append(latent)
+        labels.append(label)
+    
+    latents = np.stack(latents, axis=0)
+    labels = np.array(labels)
+
+    # Compute t-SNE projection.
+    print("Performing t-SNE on latent representations...")
+    tsne = TSNE(n_components=2, perplexity=perplexity, max_iter=n_iter, random_state=random_state)
+    tsne_results = tsne.fit_transform(latents)
+
+    # Determine unique labels and map them to colors.
+    unique_labels = sorted(set(labels))
+    # Define a set of colors (expandable if needed).
+    color_list = ['blue', 'red', 'green', 'orange', 'purple', 'brown']
+    color_map = {label: color_list[i % len(color_list)] for i, label in enumerate(unique_labels)}
+
+    # Create scatter plot.
+    plt.figure(figsize=(8, 6))
+    for label in unique_labels:
+        indices = np.where(labels == label)
+        plt.scatter(tsne_results[indices, 0], tsne_results[indices, 1],
+                    color=color_map[label], label=label,
+                    alpha=0.3, edgecolors='w', s=12)
+
+    plt.title("t-SNE Visualization of Latent Space")
+    plt.xlabel("t-SNE Component 1")
+    plt.ylabel("t-SNE Component 2")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(output_image, dpi=300)
+    print("Saved t-SNE plot to:", output_image)
+    plt.show()

@@ -19,8 +19,8 @@ kl_beta_warmup: 10_000
 kl_beta_schedule: linear
 torch_compile: True
 
-learning_rate: 0.004
-batch_size: 16384
+learning_rate: 0.003
+batch_size: 4096
 
 enable_swa: False 
 swa_epoch_start: 1000 
@@ -37,5 +37,5 @@ scheduler_name: OneCycle
 feature_transform_loss_scale: 0.001
 rotation_loss_scale: 0.1
 reconstruction_loss_scale: 0.5
-l1_latent_loss_scale: 0.1
+l1_latent_loss_scale: 0.01
 dropout_rate: 0.5
