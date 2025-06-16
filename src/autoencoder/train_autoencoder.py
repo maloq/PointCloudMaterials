@@ -114,7 +114,7 @@ def train(cfg: DictConfig):
 
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="autoencoder_16")
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(),"configs"), config_name="autoencoder_80")
 def main(cfg: DictConfig):
     logger.print(f"torch.version.cuda: {torch.version.cuda}")
     logger.print(f"torch.cuda.is_available(): {torch.cuda.is_available()}")

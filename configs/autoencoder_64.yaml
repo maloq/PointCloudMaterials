@@ -26,7 +26,7 @@ enable_swa: True
 swa_epoch_start: 1000 
 epochs: 1500
 
-decay_rate: 0.01
+decay_rate: 0.003
 gpu: True
 devices: 0
 log_every_n_steps: 5

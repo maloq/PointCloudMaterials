@@ -1,8 +1,8 @@
 # Autoencoder
-radius: 7.5
+radius: 7.2
 sample_type: 'regular'
 n_samples: 8000000
-num_points: 16
+num_points: 80
 overlap_fraction: 0.5
 dr: 0.01 # to calculate rdf
 data_path: 'datasets/Al/inherent_configurations_off'

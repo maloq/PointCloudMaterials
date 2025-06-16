@@ -179,7 +179,7 @@ def generate_samples(
     n_points: int,
     return_coords: bool,
     max_samples: int,
-    drop_edge_samples: bool = False
+    drop_edge_samples: bool = True
 ) -> Tuple[List, int, int]:
     samples = []
     added_points = dropped_points = 0

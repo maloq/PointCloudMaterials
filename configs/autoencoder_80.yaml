@@ -10,8 +10,8 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 
-latent_size: 32
-type:  PointNetAE_Folding                   # PointNetAE_MLP
+latent_size: 16
+type:  PointNetAE_Folding                  # PointNetAE_MLP
 loss: chamfer_regularized_encoder_loss_repulsion
 kl_beta_start: 0.0
 kl_beta: 1.0
@@ -19,8 +19,8 @@ kl_beta_warmup: 10_000
 kl_beta_schedule: linear
 torch_compile: True
 
-learning_rate: 0.005
-batch_size: 4096
+learning_rate: 0.003
+batch_size: 6096
 
 enable_swa: False
 swa_epoch_start: 1000 
@@ -30,12 +30,12 @@ decay_rate: 0.003
 gpu: True
 devices: 0
 log_every_n_steps: 5
-num_workers: 8
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 
 feature_transform_loss_scale: 0.001
 rotation_loss_scale: 0.05
 reconstruction_loss_scale: 0.5
-l1_latent_loss_scale: 0.05
-dropout_rate: 0.4
+l1_latent_loss_scale: 0.01
+dropout_rate: 0.3

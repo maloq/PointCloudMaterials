@@ -75,19 +75,17 @@ class PointNetAE(nn.Module):
 
         self.features_encoder = PointNetEncoder(feature_transform=True, channel=3, dropout_rate=dropout_rate)
         self.encoder_mlp = nn.Sequential(
-            nn.Linear(1024, 512),
-            # nn.Dropout(0.2),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            # nn.Dropout(0.2),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
             nn.Linear(512, 256),
-            # nn.Dropout(0.2),
+            nn.Dropout(dropout_rate),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Linear(256, self.latent_size)
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, self.latent_size)
         )
         # self.decoder will be initialized by subclasses.
         # Removed: self.decoder =  nn.Linear(self.latent_size, num_points * 3).reshape(-1, self.num_points, 3)
@@ -145,9 +143,9 @@ class PointNetAE_Folding(PointNetAE):
 
 
 
-class PointNetAE_Small(nn.Module):
-    def __init__(self, num_points, latent_size):
-        super(PointNetAE_Small, self).__init__()
+class PointNetAE_Small(PointNetAE):
+    def __init__(self, num_points, latent_size, dropout_rate: float = 0.2):
+        super(PointNetAE_Small, self).__init__(num_points, latent_size, dropout_rate=dropout_rate)
         
         self.latent_size = latent_size
         self.num_points = num_points
@@ -155,6 +153,7 @@ class PointNetAE_Small(nn.Module):
         self.features_encoder = PointNetEncoderSmall(feature_transform=True, channel=3)
         self.encoder_mlp = nn.Sequential(
             nn.Linear(512, 256),
+            nn.Dropout(dropout_rate),
             nn.BatchNorm1d(256),
             nn.ReLU(),
             nn.Linear(256, 128),
@@ -252,13 +251,12 @@ class PointNetEncoder(nn.Module):
         self.conv1 = nn.Conv1d(channel, 96, 1)
         self.conv2 = nn.Conv1d(96, 256, 1)
         self.conv3 = nn.Conv1d(256, 512, 1)
-        self.conv4 = nn.Conv1d(512, 1024, 1)
+        self.conv4 = nn.Conv1d(512, 512, 1)
         self.bn1 = nn.BatchNorm1d(96)
         self.bn2 = nn.BatchNorm1d(256)
         self.bn3 = nn.BatchNorm1d(512)
-        self.bn4 = nn.BatchNorm1d(1024)
+        self.bn4 = nn.BatchNorm1d(512)
         self.dropout1 = nn.Dropout(dropout_rate)
-        self.dropout2 = nn.Dropout(dropout_rate)
         self.dropout3 = nn.Dropout(dropout_rate)
 
         self.feature_transform = feature_transform
@@ -289,11 +287,10 @@ class PointNetEncoder(nn.Module):
         x = F.relu(self.bn2(self.conv2(x)))
         x = self.dropout1(x)
         x = F.relu(self.bn3(self.conv3(x)))
-        x = self.dropout2(x)
         x = F.relu(self.bn4(self.conv4(x)))
         x = self.dropout3(x)
         x = torch.max(x, 2, keepdim=True)[0]
-        x = x.view(-1, 1024)
+        x = x.view(-1, 512)
    
         return x, trans, trans_feat
 

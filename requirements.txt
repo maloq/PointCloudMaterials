@@ -12,3 +12,4 @@ scikit-learn
 scipy
 dscribe
 ase
+hdbscan
