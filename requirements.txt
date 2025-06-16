@@ -1,7 +1,4 @@
 numpy
-torch
-torch_geometric
-torchvision
 pytorch-lightning
 omegaconf
 hydra-core

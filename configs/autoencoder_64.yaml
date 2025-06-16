@@ -35,6 +35,7 @@ scheduler_gamma: 0.5
 scheduler_name: Cosine
 
 feature_transform_loss_scale: 0.001
-rotation_loss_scale: 0.03
+rotation_loss_scale: 0.05
 reconstruction_loss_scale: 0.5
-
+l1_latent_loss_scale: 0.1
+dropout_rate: 0.4

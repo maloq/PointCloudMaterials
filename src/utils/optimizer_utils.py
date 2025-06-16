@@ -1,28 +1,28 @@
 import torch
 
-def get_optimizers_and_scheduler(module):
+def get_optimizers_and_scheduler(hparams, parameters):
     optimizer = torch.optim.AdamW(
-        module.parameters(),
-        lr=module.hparams.learning_rate,
-        weight_decay=module.hparams.decay_rate
+        parameters,
+        lr=hparams.learning_rate,
+        weight_decay=hparams.decay_rate
     )
 
-    if module.hparams.enable_swa:
-        epochs_before_swa = module.hparams.swa_epoch_start + 1
+    if hparams.enable_swa:
+        epochs_before_swa = hparams.swa_epoch_start + 1
     else:
-        epochs_before_swa = module.hparams.epochs
+        epochs_before_swa = hparams.epochs
 
-    scheduler_name = module.hparams.scheduler_name
+    scheduler_name = hparams.scheduler_name
     if scheduler_name == 'Step':
         scheduler = torch.optim.lr_scheduler.StepLR(
             optimizer,
             step_size=100, 
-            gamma=module.hparams.scheduler_gamma
+            gamma=hparams.scheduler_gamma
         )
     elif scheduler_name == 'OneCycle':
         scheduler = torch.optim.lr_scheduler.OneCycleLR(
             optimizer,
-            max_lr=module.hparams.learning_rate, 
+            max_lr=hparams.learning_rate, 
             total_steps=epochs_before_swa
         )
     elif scheduler_name == 'CosineAnnealingWarmRestarts':
@@ -40,12 +40,12 @@ def get_optimizers_and_scheduler(module):
     elif scheduler_name == 'chained':
         scheduler1 = torch.optim.lr_scheduler.OneCycleLR(
             optimizer,
-            max_lr=module.hparams.learning_rate, 
+            max_lr=hparams.learning_rate, 
             total_steps=int(epochs_before_swa/2)
         )
         scheduler2 = torch.optim.lr_scheduler.OneCycleLR(
             optimizer,
-            max_lr=module.hparams.learning_rate, 
+            max_lr=hparams.learning_rate, 
             total_steps=int(epochs_before_swa/2)
         )
         scheduler = torch.optim.lr_scheduler.ChainedScheduler([scheduler1, scheduler2])
