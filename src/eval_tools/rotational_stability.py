@@ -271,7 +271,7 @@ def rotational_robustness(
 
 
 if __name__ == "__main__":
-    checkpoint_path = "output/2025-06-16/16-39-19/PnAE_Folding2Step_CD_Repulsion_RotCon_80_l16_no_edges-epoch=39-val_loss=0.05.ckpt"
+    checkpoint_path = "output/2025-06-16/16-39-19/PnAE_Folding2Step_CD_Repulsion_RotCon_80_l16_no_edges-epoch=29-val_loss=0.05.ckpt"
     file_paths = ["datasets/Al/inherent_configurations_off/175ps.off"]
     model, cfg, device = load_model_and_config(checkpoint_path, cuda_device=0)
 
@@ -287,11 +287,11 @@ if __name__ == "__main__":
         n_centres=None,
         sphere_radius=cfg.data.radius,
         n_points=cfg.data.num_points,
-        n_rotations=2,
+        n_rotations=5,
         metric="ari",
         align=False,
         rng_seed=42,
-        n_clusters=4,
+        n_clusters=6,
         batch_size=4096,
     )
 
