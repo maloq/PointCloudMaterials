@@ -45,9 +45,6 @@ def build_model(cfg: DictConfig):
     elif model_type == "PointNetAE_Folding_Small":
         logger.print("PointNetAE_Folding_Small")
         return PointNetAE_Folding_Small(num_points, latent_size)  
-    elif model_type == "PointNetVAE_Folding":
-        logger.print("PointNetVAE_Folding")
-        return PointNetVAE_Folding(num_points, latent_size, dropout_rate=dropout_rate)
     else:
         raise ValueError(f"Unknown model type: {model_type}") 
 
@@ -453,86 +450,6 @@ class FoldingDecoderTwoStep(nn.Module):
         return refined
     
     
-class PointNetVAEBase(nn.Module):
-    def __init__(self, num_points, latent_size, dropout_rate: float = 0.2):
-        super(PointNetVAEBase, self).__init__()
-        
-        self.latent_size = latent_size
-        self.num_points = num_points
-
-        # Encoder part (similar to PointNetAE's encoder)
-        self.features_encoder = PointNetEncoder(feature_transform=True, channel=3, dropout_rate=dropout_rate) # From existing PointNetEncoder
-        self.encoder_mlp = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Linear(256, self.latent_size * 2) # Outputs for mu and logvar
-        )
-        
-        # A simple linear decoder for PointNetVAEBase itself, for completeness.
-        # Subclasses like PointNetVAE_Folding will override this with a more complex decoder.
-        self.base_decoder_linear = nn.Linear(self.latent_size, num_points * 3)
-
-    def encoder(self, x): 
-        # x shape: (batch_size, 3, num_points)
-        x_feat, trans, trans_feat = self.features_encoder(x) # x_feat: (B, 1024)
-        latents_concat = self.encoder_mlp(x_feat) # (B, latent_size * 2)
-        
-        mu = latents_concat[:, :self.latent_size]
-        logvar = latents_concat[:, self.latent_size:]
-        return mu, logvar, trans, trans_feat # trans is input transform, trans_feat is feature transform
-    
-    def reparameterize(self, mu, logvar):
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std) # Sample epsilon from N(0, I)
-        return mu + eps * std
-
-    def decode_base(self, z): # Method for the base_decoder_linear
-        reconstructed_flat = self.base_decoder_linear(z)
-        reconstructed_points = reconstructed_flat.view(-1, self.num_points, 3)
-        return reconstructed_points
-
-    def forward(self, x):
-        # This forward method is for PointNetVAEBase itself, using its simple linear decoder.
-        # Subclasses will typically override this or at least the decoding part.
-        mu, logvar, _, trans_feat_encoder = self.encoder(x)
-        z = self.reparameterize(mu, logvar)
-        reconstructed_x = self.decode_base(z) 
-        
-        aux_outputs = []
-        if trans_feat_encoder is not None:
-            aux_outputs.append(trans_feat_encoder)
-            
-        return reconstructed_x, mu, logvar, aux_outputs
-
-
-class PointNetVAE_Folding(PointNetVAEBase):
-    def __init__(self, num_points, latent_size, dropout_rate: float = 0.2):
-        super().__init__(num_points, latent_size, dropout_rate=dropout_rate) # Initialize PointNetVAEBase (encoder, reparameterize)
-        
-        # Override the decoder with the FoldingDecoder
-        self.decoder = FoldingDecoderTwoStep(num_points, latent_size, dropout_rate=dropout_rate) 
-
-    def forward(self, x):
-        # Use encoder and reparameterize from PointNetVAEBase
-        mu, logvar, _, trans_feat_encoder = self.encoder(x) 
-        z = self.reparameterize(mu, logvar)
-        
-        # Use the FoldingDecoder for reconstruction
-        reconstructed_x = self.decoder(z) # FoldingDecoder's forward method
-        
-        aux_outputs = []
-        if trans_feat_encoder is not None:
-            aux_outputs.append(trans_feat_encoder)
-        
-        # Return reconstruction, mu, logvar, and auxiliary outputs (e.g., transform features)
-        return reconstructed_x, mu, logvar, aux_outputs
 
 
 class FoldingDecoderTwoStepSmall(nn.Module):

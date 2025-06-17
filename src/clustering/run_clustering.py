@@ -19,10 +19,6 @@ import warnings
 warnings.filterwarnings("ignore")
 print(f'Running from {os.getcwd()}')
 
-from torch_geometric.data import DataLoader
-from tqdm import tqdm
-from src.models.autoencoders_nn.pointnet_autoencoder import PointNetVAEBase
-
 
 # Encapsulate the main logic into a function
 def run_clustering_pipeline(checkpoint_path: str,
@@ -212,29 +208,24 @@ def cluster_and_evaluate(latents, labels, random_state=66):
         'full_results': full_results
     }
 
-def get_latents_from_dataloader(
-    model, dataloader, device, is_pointnet_vae: bool = False
-):
+def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Extract latent representations from dataloader batches."""
     if len(dataloader) == 0:
         raise ValueError("Dataloader is empty - no data to process")
         
     latents, point_clouds, originals = [], [], []
 
-    with torch.no_grad():
-        for batch in tqdm(dataloader):
-            if isinstance(model, PointNetVAEBase):
-                points = batch.to(device).transpose(2, 1)
-                latents, _, _ = model.encoder(points)
-            else:
-                points = batch.to(device)
-                latents = model.encoder(points)
+    for batch in dataloader:
+        points = batch.to(device).transpose(2, 1)
+        
+        with torch.no_grad():
+            point_cloud, latent, _ = model(points)
+        
+        latents.append(latent.cpu().numpy())
+        point_clouds.append(point_cloud.cpu().numpy())
+        originals.append(points.cpu().numpy())
 
-            latents = latents.cpu().numpy()
-            point_clouds.append(points.cpu().numpy())
-            originals.append(points.cpu().numpy())
-
-    return (latents, 
+    return (np.concatenate(latents, axis=0), 
             np.concatenate(point_clouds, axis=0), 
             np.concatenate(originals, axis=0))
 
