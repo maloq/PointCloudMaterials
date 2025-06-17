@@ -23,92 +23,106 @@ def pc_normalize(pc):
     return pc
 
 
-class AtomicDataset(Dataset):
-    
-    def __init__(self, root,
-                 data_files,
+def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords):
+    """
+    Read an OFF file and sample points from it.
+    """
+    samples = []
+    for off_file in data_files:
+        logger.debug(f"Reading {off_file}")
+        points = read_off_file(os.path.join(root, off_file), verbose=False)
+        if sample_type == 'regular':
+            samples = get_regular_samples(points,
+                                            size=radius,
+                                            n_points=n_points,
+                                            overlap_fraction=overlap_fraction,
+                                            return_coords=return_coords)
+        elif sample_type == 'random':
+            samples = get_random_samples(points,
+                                            n_samples=n_samples,
+                                            size=radius,
+                                            n_points=n_points,
+                                            overlap_fraction=overlap_fraction,
+                                            return_coords=return_coords)
+        else:
+            raise ValueError(f"Invalid sample type: {sample_type}")
+    if samples:
+        return samples
+    else:
+        raise ValueError(f"No samples found for {data_files}")
+
+
+class PointCloudDataset(Dataset):
+    def __init__(self,
+                 root: str,
+                 data_files: list[str],
+                 return_coords=False,
                  sample_type='regular',
                  radius=8,
                  overlap_fraction=0.0,
                  n_samples=1000,
                  num_points=100,
-                 label=0,
-                 pre_normalize=True):
+                 pre_normalize=True,
+                 normalize=True ):
         """Initialize the dataset with samples from OFF files.
         Args:
             root: Path to directory containing OFF files
-            TODO: Add more details
         """
         self.root = root
-        self.npoints = num_points
-        self.radius = radius
-        self.n_samples = n_samples
-        self.label = label
-        self.samples = []
-        for off_file in data_files:
-            logger.debug(f"Reading {off_file}")
-            points = read_off_file(os.path.join(root, off_file), verbose=False)
-            size = self.radius
-            if sample_type == 'regular':
-                samples = get_regular_samples(points,
-                                              size=size,
-                                              n_points=self.npoints,
-                                              overlap_fraction=overlap_fraction)
-            elif sample_type == 'random':
-                samples = get_random_samples(points,
-                                             n_samples=self.n_samples,
-                                             size=size,
-                                             n_points=self.npoints,
-                                             overlap_fraction=overlap_fraction)
-            else:
-                raise ValueError(f"Invalid sample type: {sample_type}")
+        self.pre_normalize = pre_normalize
+        self.normalize = normalize
+        self.return_coords = return_coords
+        self.samples = read_and_sample_off_file(root,
+                                                data_files,
+                                                radius,
+                                                num_points,
+                                                overlap_fraction,
+                                                sample_type,
+                                                n_samples,
+                                                return_coords)
+        if self.return_coords:
+            self.samples, self.coords = zip(*self.samples)
+            self.samples = list(self.samples)
+        else:
+            self.coords = None
 
-            if pre_normalize:
-                import time
-                start_time = time.time()
-                samples = [pc_normalize(s).astype(np.float32) for s in samples]
-                elapsed_time = time.time() - start_time
-                logger.print(f"Pre-normalization took {elapsed_time:.4f} seconds")
-            self.samples.extend(samples)
-            logger.debug(f"Point set shape: {samples[0].shape}")
+        if pre_normalize and normalize:
+            self.samples = [pc_normalize(s).astype(np.float32) for s in self.samples]
+        elif not normalize:
+            print("Point Cloud normalization skipped")
+        logger.debug(f"Point set shape: {self.samples[0].shape}")
 
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, index):
         point_set = self.samples[index]
-        if point_set.dtype != np.float32:
+        if not self.pre_normalize and self.normalize:
             point_set = pc_normalize(point_set).astype(np.float32)
         point_set_tensor = torch.tensor(point_set, dtype=torch.float32)
-        label_tensor = torch.tensor(self.label, dtype=torch.long)
-        return point_set_tensor, label_tensor
+        
+        if self.return_coords:
+            return point_set_tensor, self.coords[index]
+        else:
+            return point_set_tensor
     
 
+class PointCloudClsDataset(PointCloudDataset):
+    def __init__(self, *args, label=0, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label = label
 
+    def __getitem__(self, index):
+        item = super().__getitem__(index)
+        label_tensor = torch.tensor(self.label, dtype=torch.long)
+        
+        if self.return_coords:
+            point_set_tensor, coords = item
+            return point_set_tensor, coords, label_tensor
+        else:
+            point_set_tensor = item
+            return point_set_tensor, label_tensor
 
-class RegularDataset(Dataset):
-    def __init__(
-        self, 
-        points: np.ndarray, 
-        size: float,  #radius for spheric sampling
-        n_points: int = 128, 
-        overlap_fraction: float = 0.0,
-    ):
-        self.samples = get_regular_samples(
-            points,
-            size=size,
-            n_points=n_points,
-            return_coords=True,
-            overlap_fraction=overlap_fraction,
-        )
-
-    def __len__(self):
-        return len(self.samples)
-
-    def __getitem__(self, idx):
-        sample_points, coords = self.samples[idx]
-        sample_points = pc_normalize(sample_points).astype(np.float32)
-        return torch.tensor(sample_points, dtype=torch.float32), coords
 
 
 class SoapCoordDataset(Dataset):
@@ -176,11 +190,10 @@ class SoapCoordDataset(Dataset):
     
 
 if __name__ == '__main__':
-    data = AtomicDataset(root="datasets/Al/inherent_configurations_off",
+    data = PointCloudDataset(root="datasets/Al/inherent_configurations_off",
                          data_files=["240ps.off"],
                          n_samples=6000,
-                         num_points=200,
-                         label=0)
+                         num_points=200)
     
     loader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)
     for i, (point, label) in enumerate(loader):

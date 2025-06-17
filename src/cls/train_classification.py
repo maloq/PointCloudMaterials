@@ -6,7 +6,7 @@ import torch
 import numpy as np
 import pytorch_lightning as pl
 from src.cls.classification_module import PointNetClassifier
-from src.data_utils.data_module import PointCloudDataModule
+from src.cls.data_module_cls import PointCloudDataModule
 import hydra
 from pytorch_lightning.loggers import WandbLogger
 from datetime import datetime

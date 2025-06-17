@@ -6,11 +6,10 @@ num_points: 80
 overlap_fraction: 0.5
 dr: 0.01 # to calculate rdf
 data_path: 'datasets/Al/inherent_configurations_off'
-liquid_files: 
+data_files: 
 - '166ps.off'
 - '170ps.off'
 - '174ps.off'
 - '175ps.off'
-crystal_files: 
 - '177ps.off'
 - '240ps.off'

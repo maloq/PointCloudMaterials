@@ -10,6 +10,7 @@ except Exception:
 import torch.nn as nn
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
+EPS = 1e-10
 
 
 if not pytorch3d_available:
@@ -153,54 +154,6 @@ def chamfer_regularized_encoder_loss_repulsion(pred, target, **kwargs):
     return _add_optional_losses(total_loss, aux_loss_dict, **kwargs)
 
 
-def chamfer_elbo_loss(pred, target, mu, logvar, **kwargs):
-    """
-    Computes the VAE ELBO loss: Chamfer reconstruction loss + KL divergence.
-    Optionally includes feature transform regularization and L1 latent regularization.
-
-    Args:
-        pred (Tensor): Predicted point clouds.
-        target (Tensor): Ground truth point clouds.
-        mu (Tensor): Latent space mean.
-        logvar (Tensor): Latent space log variance.
-        **kwargs: Must include 'kl_beta'. Can include 'trans_feat_list', 
-                  'feature_transform_loss_scale', 'latent', 'l1_latent_loss_scale'.
-
-    Returns:
-        tuple: (Total ELBO loss, dictionary of auxiliary losses).
-    """
-    # Reconstruction loss
-    recon_loss, _ = chamfer_distance(pred, target)
-
-    # KL divergence: -0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
-    # Sum over latent dimensions, then mean over batch
-    kld_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
-    kld_loss = torch.mean(kld_loss)
-
-    kl_beta = kwargs.get('kl_beta', 1.0)
-    
-    total_loss = recon_loss + kl_beta * kld_loss
-    aux_loss_dict = {'kld_loss': kld_loss}
-
-    # Optional: Feature transform regularization
-    feature_transform_loss = torch.tensor(0.0, device=pred.device)
-    if 'trans_feat_list' in kwargs and kwargs['trans_feat_list'] and \
-       'feature_transform_loss_scale' in kwargs and kwargs['feature_transform_loss_scale'] > 0:
-        
-        # Ensure trans_feat_list is not empty before trying to access its elements
-        if isinstance(kwargs['trans_feat_list'], (list, tuple)) and len(kwargs['trans_feat_list']) > 0:
-            # Assuming the relevant transform is the first, typically from the encoder
-            feature_transform_loss = feature_transform_regularizer(kwargs['trans_feat_list'][0])
-            total_loss += kwargs['feature_transform_loss_scale'] * feature_transform_loss
-            aux_loss_dict['ft_loss'] = feature_transform_loss
-        else:
-            logger.debug("trans_feat_list provided but empty or not a list/tuple, skipping ft_loss for ELBO.")
-            
-    return _add_optional_losses(total_loss, aux_loss_dict, **kwargs)
-
-
-EPS = 1e-10
-
 def _to_B_N_3(pc: torch.Tensor) -> torch.Tensor:
     """Ensure tensor shape is (B, N, 3). Accepts (B, 3, N)."""
     if pc.dim() != 3:
@@ -245,7 +198,6 @@ def repulsion_loss(pc: torch.Tensor, h: float = 0.05) -> torch.Tensor:
     return torch.exp(- (dists ** 2) / (h ** 2)).mean()
 
 
-
 def swd_repulsion_loss(pred: torch.Tensor, target: torch.Tensor, *,
                        num_projections: int = 64,
                        repulsion_h: float = 0.05,
@@ -256,31 +208,6 @@ def swd_repulsion_loss(pred: torch.Tensor, target: torch.Tensor, *,
     return swd + repulsion_scale * rep, {'swd': swd, 'repulsion': rep}
 
 
-
-
-def elbo_swd_repulsion_loss(pred: torch.Tensor, target: torch.Tensor,
-                            mu: torch.Tensor, logvar: torch.Tensor, *,
-                            kl_beta: float = 1.0,
-                            num_projections: int = 64,
-                            repulsion_h: float = 0.05,
-                            repulsion_scale: float = 0.1,
-                            **kwargs):
-    """
-    ELBO loss using SWD and repulsion. Optionally L1 regularized.
-    """
-    swd_loss = sliced_wasserstein_distance(pred, target, num_projections=num_projections)
-    rep_loss = repulsion_loss(pred, h=repulsion_h)
-    kld_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1).mean()
-    
-    total_loss = swd_loss + repulsion_scale * rep_loss + kl_beta * kld_loss
-    
-    aux_loss_dict = {
-        'swd_loss': swd_loss,
-        'repulsion_loss': rep_loss,
-        'kld_loss': kld_loss
-    }
-    
-    return _add_optional_losses(total_loss, aux_loss_dict, **kwargs)
 
 
 def l1_latent_regularizer(latent):

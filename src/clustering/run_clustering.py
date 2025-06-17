@@ -10,11 +10,7 @@ from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment
 from itertools import product
 from src.autoencoder.autoencoder_module import PointNetAutoencoder
-from src.utils.model_utils import load_model_from_checkpoint
-from src.autoencoder.autoencoder_module import PointNetAutoencoder
-from src.models.autoencoders_nn.pointnet_autoencoder import PointNetVAEBase
-from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader
-from hydra import compose, initialize
+from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader, load_model_and_config
 from typing import List
 
 import random
@@ -23,59 +19,9 @@ import warnings
 warnings.filterwarnings("ignore")
 print(f'Running from {os.getcwd()}')
 
-def get_config_path_from_checkpoint(checkpoint_path, config_name):
-    config_path_chekpoint = os.path.join(*checkpoint_path.split('/')[:-1], '.hydra')
-    if not os.path.exists(config_path_chekpoint):
-        config_path = '../../configs' if 'src' in os.getcwd() else 'configs' 
-        print(f"Config in {config_path_chekpoint} not found, using default location {config_path}")
-    else:
-        config_path =  config_path_chekpoint
-        config_name = 'config'
-
-    return config_path, config_name
-
-
-
-def load_model_and_config(checkpoint_path: str,
-                          model_class: str,
-                          cuda_device: int = 0,
-                          config_name: str = 'autoencoder_64'):
-    """Load Hydra config, restore the model from *checkpoint_path* and return
-    the model instance together with the resolved *cfg* object and chosen
-    *device* string.
-
-    Args:
-        checkpoint_path (str): Path to the model checkpoint.
-        model_class (str): Model type (currently only 'Autoencoder' supported).
-        cuda_device (int): GPU index to place the model on.
-        config_name (str): Name of the Hydra config file (without extension).
-
-    Returns:
-        Tuple[torch.nn.Module, omegaconf.DictConfig, str]:
-            Restored model, Hydra configuration and device string.
-    """
-    # Resolve the location of the config corresponding to the checkpoint
-    config_path, resolved_config_name = get_config_path_from_checkpoint(checkpoint_path, config_name)
-
-    # Load Hydra config
-    with initialize(version_base=None, config_path='../../' + config_path):
-        print(f"Loading config from {config_path}/{resolved_config_name}")
-        cfg = compose(config_name=resolved_config_name)
-
-    # Select device
-    device = f'cuda:{cuda_device}' if torch.cuda.is_available() else 'cpu'
-    print(f"Using device: {device}")
-
-    # Restore model weights
-    if model_class == 'Autoencoder':
-        model = load_model_from_checkpoint(checkpoint_path, cfg, device=device, module=PointNetAutoencoder)
-    else:
-        raise ValueError(f"Unknown model_class: {model_class}. Use 'Autoencoder' or ...")
-
-    if model is None:
-        raise RuntimeError("Failed to load the model.")
-
-    return model, cfg, device
+from torch_geometric.data import DataLoader
+from tqdm import tqdm
+from src.models.autoencoders_nn.pointnet_autoencoder import PointNetVAEBase
 
 
 # Encapsulate the main logic into a function
@@ -83,10 +29,8 @@ def run_clustering_pipeline(checkpoint_path: str,
                             save_folder: str,
                             liquid_file_paths: List[str],
                             crystal_file_paths: List[str],
-                            model_class: str,
                             cuda_device: int = 0,
                             max_samples: int = None,
-                            add_parent_dir=False,
                             config_name: str = 'autoencoder_e3nn_64'):
     """
     Runs the clustering pipeline: loads model, generates/saves latents.
@@ -105,9 +49,7 @@ def run_clustering_pipeline(checkpoint_path: str,
     # -----------------------------
     model, cfg, device = load_model_and_config(
         checkpoint_path=checkpoint_path,
-        model_class=model_class,
         cuda_device=cuda_device,
-        config_name=config_name,
     )
 
     # Predict and save latent vectors
@@ -117,7 +59,6 @@ def run_clustering_pipeline(checkpoint_path: str,
                             crystal_file_paths=crystal_file_paths,
                             device=device,
                             save_folder=save_folder,
-                            model_class=model_class, # Pass model_class to predict_and_save_latent
                             max_samples=max_samples) # Pass max_samples
     return model
 
@@ -271,29 +212,29 @@ def cluster_and_evaluate(latents, labels, random_state=66):
         'full_results': full_results
     }
 
-def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def get_latents_from_dataloader(
+    model, dataloader, device, is_pointnet_vae: bool = False
+):
     """Extract latent representations from dataloader batches."""
     if len(dataloader) == 0:
         raise ValueError("Dataloader is empty - no data to process")
         
     latents, point_clouds, originals = [], [], []
 
-    for batch in dataloader:
-        points = batch[0].to(device).transpose(2, 1)
-        
-        with torch.no_grad():
-            if isinstance(model, PointNetAutoencoder):
-                point_cloud, latent, _ = model(points)
-            elif isinstance(model, PointNetVAEBase):
-                point_cloud, latent, _, _ = model(points)
+    with torch.no_grad():
+        for batch in tqdm(dataloader):
+            if isinstance(model, PointNetVAEBase):
+                points = batch.to(device).transpose(2, 1)
+                latents, _, _ = model.encoder(points)
             else:
-                raise ValueError(f"Unknown model class: {type(model)}")
-        
-        latents.append(latent.cpu().numpy())
-        point_clouds.append(point_cloud.cpu().numpy())
-        originals.append(points.cpu().numpy())
+                points = batch.to(device)
+                latents = model.encoder(points)
 
-    return (np.concatenate(latents, axis=0), 
+            latents = latents.cpu().numpy()
+            point_clouds.append(points.cpu().numpy())
+            originals.append(points.cpu().numpy())
+
+    return (latents, 
             np.concatenate(point_clouds, axis=0), 
             np.concatenate(originals, axis=0))
 
@@ -330,7 +271,6 @@ def predict_and_save_latent(cfg: str,
                             crystal_file_paths: List[str],
                             device: str = 'cpu',
                             save_folder: str = 'output',
-                            model_class: str = None,
                             max_samples: int = None):
 
     if not liquid_file_paths and not crystal_file_paths:
