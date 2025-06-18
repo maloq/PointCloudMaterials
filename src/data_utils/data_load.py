@@ -42,7 +42,6 @@ def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fractio
                                             n_samples=n_samples,
                                             size=radius,
                                             n_points=n_points,
-                                            overlap_fraction=overlap_fraction,
                                             return_coords=return_coords)
         else:
             raise ValueError(f"Invalid sample type: {sample_type}")

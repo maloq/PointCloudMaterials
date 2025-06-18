@@ -34,7 +34,14 @@ def build_model(cfg: DictConfig):
     num_points = cfg.data.num_points
     latent_size = cfg.latent_size
     dropout_rate = cfg.get("dropout_rate", 0.2)
-
+    if num_points <24:
+        R1 = cfg.get("R1", 0.54)
+        R2 = cfg.get("R2", 0.75) # ignored in this case
+        n_shells = cfg.get("n_shells", 1)
+    else:
+        R1 = cfg.get("R1", 0.38)
+        R2 = cfg.get("R2", 0.54)
+        n_shells = cfg.get("n_shells", 2)
 
     if model_type == "PointNetAE_MLP":
         logger.print("PointNetAE_MLP")
@@ -45,6 +52,12 @@ def build_model(cfg: DictConfig):
     elif model_type == "PointNetAE_Folding_Small":
         logger.print("PointNetAE_Folding_Small")
         return PointNetAE_Folding_Small(num_points, latent_size)  
+    elif model_type == "PointNetAE_Folding_Sphere":
+        logger.print("PointNetAE_Folding_Sphere")
+        return PointNetAE_Folding_Sphere(num_points, latent_size, dropout_rate=dropout_rate, R1=R1, R2=R2, n_shells=n_shells)
+    elif model_type == "FoldingDecoderSphereTwoShellAttn":
+        logger.print("FoldingDecoderSphereTwoShellAttn")
+        return FoldingDecoderSphereTwoShellAttn(num_points, latent_size, dropout_rate=dropout_rate, R1=R1, R2=R2, n_shells=n_shells)
     else:
         raise ValueError(f"Unknown model type: {model_type}") 
 
@@ -139,6 +152,11 @@ class PointNetAE_Folding(PointNetAE):
         self.decoder = FoldingDecoderTwoStep(num_points, latent_size, dropout_rate=dropout_rate)
 
 
+class PointNetAE_Folding_Sphere(PointNetAE):
+    def __init__(self, num_points, latent_size, dropout_rate: float = 0.2, R1: float = 0.5, R2: float = 1.0, n_shells: int = 2):
+        super().__init__(num_points, latent_size, dropout_rate=dropout_rate)
+        self.decoder = FoldingDecoderSphereTwoShell(num_points, latent_size, dropout_rate=dropout_rate, R1=R1, R2=R2, n_shells=n_shells)
+
 
 class PointNetAE_Small(PointNetAE):
     def __init__(self, num_points, latent_size, dropout_rate: float = 0.2):
@@ -158,7 +176,6 @@ class PointNetAE_Small(PointNetAE):
             nn.ReLU(),
             nn.Linear(128, self.latent_size)
         )
-        # self.decoder will be initialized by subclasses.
 
     def encoder(self, x): 
         """
@@ -369,19 +386,6 @@ class MLPDecoder(nn.Module):
         return x.reshape(-1, self.num_points, 3)
 
 
-class _TransposedBatchNormRelu(nn.Module):
-    def __init__(self, num_features, dropout_rate: float = 0.0):
-        super().__init__()
-        self.bn = nn.BatchNorm1d(num_features)
-        self.dropout = nn.Dropout(dropout_rate) if dropout_rate > 0 else None
-    
-    def forward(self, x):
-        x = x.transpose(1, 2)
-        x = F.relu(self.bn(x))
-        x = x.transpose(1, 2)
-        if self.dropout:
-            x = self.dropout(x)
-        return x
 
 
 class FoldingDecoderTwoStep(nn.Module):
@@ -514,3 +518,313 @@ class FoldingDecoderTwoStepSmall(nn.Module):
         h2 = torch.cat((z_expand, coarse), dim=-1)
         refined = self.stage2(h2)
         return refined
+    
+
+class _TransposedBatchNormRelu(nn.Module):
+    """BN + ReLU for tensors of shape (B, N, C).
+
+    The tensor is temporarily transposed to (B, C, N) so that ``BatchNorm1d``
+    can be applied over the *channel* dimension C.
+    """
+
+    def __init__(self, num_features: int, dropout_rate: float = 0.0):
+        super().__init__()
+        self.bn = nn.BatchNorm1d(num_features)
+        self.dropout = nn.Dropout(dropout_rate) if dropout_rate > 0 else None
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # (B, N, C)
+        x = x.transpose(1, 2)            # (B, C, N)
+        x = F.relu(self.bn(x))
+        x = x.transpose(1, 2)            # (B, N, C)
+        if self.dropout is not None:
+            x = self.dropout(x)
+        return x
+
+
+
+def _fibonacci_sphere_points(n: int, radius: float) -> torch.Tensor:
+    """Generate *n* approximately uniformly distributed points on a sphere.
+
+    Uses the *Fibonacci sphere* / *golden‑section spiral* algorithm, which is
+    deterministic and O(n).  Points lie on the sphere of the given *radius*.
+    Returns a tensor of shape *(n, 3)*.
+    """
+    if n <= 0:
+        return torch.empty((0, 3))
+
+    device = "cpu"  # will be moved later by the caller via register_buffer
+    i = torch.arange(n, dtype=torch.float32, device=device)  # [0, 1, …, n‑1]
+
+    phi = (1 + 5 ** 0.5) / 2  # golden ratio
+    theta = 2 * math.pi * i / phi
+
+    z = 1.0 - 2.0 * (i + 0.5) / n           # linear in [1‑1/n, ‑1+1/n]
+    r_xy = torch.sqrt(1.0 - z * z)
+
+    x = r_xy * torch.cos(theta)
+    y = r_xy * torch.sin(theta)
+
+    return radius * torch.stack((x, y, z), dim=-1)  # (n, 3)
+
+
+# -----------------------------------------------------------------------------
+#  Main decoder
+# -----------------------------------------------------------------------------
+
+class FoldingDecoderSphereTwoShell(nn.Module):
+    r"""FoldingNet-style decoder initialised from one **or** two spherical shells
+    plus a central point.
+
+    Parameters
+    ----------
+    num_points : int
+        Total number of points *N* (including the centre).
+    latent_size : int
+        Dimensionality of the latent vector.
+    n_shells : {1, 2}, optional
+        How many spherical shells to use (default **2**).
+    R1, R2 : float, optional
+        Radii of the shells.  If *n_shells* = 1 only *R1* is used.
+    hidden_dim : int, optional
+        Width of the MLP stacks (default **512**).
+    dropout_rate : float, optional
+        Dropout after each hidden layer (default **0.0**).
+    """
+
+    def __init__(
+        self,
+        num_points: int,
+        latent_size: int,
+        *,
+        n_shells: int = 2,
+        R1: float = 0.5,
+        R2: float = 1.0,
+        hidden_dim: int = 512,
+        dropout_rate: float = 0.0,
+    ) -> None:
+        super().__init__()
+
+        if n_shells not in (1, 2):
+            raise ValueError("`n_shells` must be 1 or 2.")
+        if R1 <= 0 or (n_shells == 2 and (R2 <= 0 or R1 >= R2)):
+            raise ValueError("Require R1 > 0 and (if two shells) 0 < R1 < R2.")
+
+        # --------------------------------------------------------------
+        #  Build the fixed 3-D template  (centre point  +  shell points)
+        # --------------------------------------------------------------
+        # Reserve exactly one point for the centre
+        if num_points < 2:
+            raise ValueError("`num_points` must be at least 2 (centre + shell).")
+        n_shell_pts = num_points - 1          # remaining points go on shell(s)
+
+        if n_shells == 1:
+            # All shell points on radius R1
+            pts_shell = _fibonacci_sphere_points(n_shell_pts, R1)
+            template = torch.cat(
+                [torch.zeros(1, 3),          # centre (0,0,0)
+                 pts_shell],
+                dim=0,
+            )                                # (N, 3)
+        else:  # n_shells == 2
+            # Allocate points proportional to surface areas (R²)
+            area_ratio = R1 ** 2 / (R1 ** 2 + R2 ** 2)
+            n1 = max(1, round(n_shell_pts * area_ratio))
+            n2 = n_shell_pts - n1            # ensure total matches exactly
+            if n2 == 0:                      # pathological but guard anyway
+                n1 -= 1
+                n2 = 1
+
+            pts_shell1 = _fibonacci_sphere_points(n1, R1)
+            pts_shell2 = _fibonacci_sphere_points(n2, R2)
+
+            template = torch.cat(
+                [torch.zeros(1, 3),          # centre
+                 pts_shell1,
+                 pts_shell2],
+                dim=0,
+            )                                # (N, 3)
+
+        # Register so the buffer moves with the module & is saved in checkpoints
+        self.register_buffer("template", template)
+
+        self.num_points  = num_points
+        self.latent_size = latent_size
+
+        # --------------------------------------------------------------
+        #  Two-stage folding MLPs  (unchanged from original implementation)
+        # --------------------------------------------------------------
+        self.stage1 = nn.Sequential(
+            nn.Linear(latent_size + 3, hidden_dim),
+            _TransposedBatchNormRelu(hidden_dim, dropout_rate=dropout_rate),
+            nn.Linear(hidden_dim, hidden_dim),
+            _TransposedBatchNormRelu(hidden_dim, dropout_rate=dropout_rate),
+            nn.Linear(hidden_dim, 3),
+            _TransposedBatchNormRelu(3),
+            nn.Linear(3, 3),
+        )
+
+        self.stage2 = nn.Sequential(
+            nn.Linear(latent_size + 3, hidden_dim),
+            _TransposedBatchNormRelu(hidden_dim, dropout_rate=dropout_rate),
+            nn.Linear(hidden_dim, hidden_dim),
+            _TransposedBatchNormRelu(hidden_dim, dropout_rate=dropout_rate),
+            nn.Linear(hidden_dim, 3),
+            _TransposedBatchNormRelu(3),
+            nn.Linear(3, 3),
+        )
+
+    # ------------------------------------------------------------------
+    #  Forward pass
+    # ------------------------------------------------------------------
+    def forward(self, z: torch.Tensor) -> torch.Tensor:     # (B, latent)
+        B = z.size(0)
+
+        z_exp  = z.unsqueeze(1).expand(B, self.num_points, -1)   # (B, N, latent)
+        templ  = self.template.unsqueeze(0).expand(B, -1, -1)    # (B, N, 3)
+
+        # -------- Stage-1 : template → coarse deformation -------- #
+        h1 = torch.cat((z_exp, templ), dim=-1)                  # (B, N, latent+3)
+        coarse = self.stage1(h1)                                # (B, N, 3)
+
+        # -------- Stage-2 : coarse → refined output ------------- #
+        h2 = torch.cat((z_exp, coarse), dim=-1)
+        refined = self.stage2(h2)                               # (B, N, 3)
+
+        return refined
+
+
+class FoldingDecoderSphereTwoShellAttn(nn.Module):
+    r"""FoldingNet-style decoder with three folding steps **plus local self-attention**.
+
+    Parameters
+    ----------
+    num_points  : int     Total #points **N** (incl. centre).
+    latent_size : int     Dimensionality of the latent code.
+    n_shells    : {1,2}   One or two initial spherical shells (default 2).
+    R1, R2      : float   Radii of the shells.  *R2* ignored if *n_shells==1*.
+    R_att       : float   Cut-off radius for attention neighbourhoods.
+    hidden_dim  : int     Width of per-point MLPs (default 512).
+    attn_dim    : int     Dimension of Q/K/V projections (default 128).
+    dropout_rate: float   Dropout rate after hidden layers (default 0).
+    """
+
+    def __init__(
+        self,
+        num_points      : int,
+        latent_size     : int,
+        *,
+        n_shells        : int   = 2,
+        R1              : float = 1.0,
+        R2              : float = 1.5,
+        R_att           : float = 0.20,
+        hidden_dim      : int   = 512,
+        attn_dim        : int   = 128,
+        dropout_rate    : float = 0.0,
+    ) -> None:
+        super().__init__()
+
+        # ------------------------------------------------------------------
+        #  Template construction  (identical to previous implementation)
+        # ------------------------------------------------------------------
+        if n_shells not in (1, 2):
+            raise ValueError("`n_shells` must be 1 or 2.")
+        if num_points < 2:
+            raise ValueError("Need at least 2 points (centre + shell).")
+
+        n_shell_pts = num_points - 1
+        if n_shells == 1:
+            shell_pts = _fibonacci_sphere_points(n_shell_pts, R1)
+            template  = torch.cat([torch.zeros(1, 3), shell_pts], dim=0)
+        else:
+            # Allocate by surface-area ratio
+            area_ratio = R1**2 / (R1**2 + R2**2)
+            n1 = max(1, round(n_shell_pts * area_ratio))
+            n2 = n_shell_pts - n1
+            if n2 == 0: n1, n2 = n1 - 1, 1
+            t1 = _fibonacci_sphere_points(n1, R1)
+            t2 = _fibonacci_sphere_points(n2, R2)
+            template = torch.cat([torch.zeros(1, 3), t1, t2], dim=0)
+
+        self.register_buffer("template", template)      # (N, 3)
+        self.num_points   = num_points
+        self.latent_size  = latent_size
+        self.R_att        = R_att
+        self.sqrt_d       = math.sqrt(attn_dim)
+
+        # ------------------------------------------------------------------
+        #  Shared Q/K/V projections for attention
+        # ------------------------------------------------------------------
+        self.q_proj = nn.Linear(3, attn_dim, bias=False)
+        self.k_proj = nn.Linear(3, attn_dim, bias=False)
+        self.v_proj = nn.Linear(3, attn_dim, bias=False)
+
+        # ------------------------------------------------------------------
+        #  Three folding stages
+        #  Each stage:  (latent + coords + attn) → per-point MLP → new coords
+        # ------------------------------------------------------------------
+        def make_stage(in_dim: int) -> nn.Sequential:
+            return nn.Sequential(
+                nn.Linear(in_dim, hidden_dim),
+                _TransposedBatchNormRelu(hidden_dim, dropout_rate),
+                nn.Linear(hidden_dim, hidden_dim),
+                _TransposedBatchNormRelu(hidden_dim, dropout_rate),
+                nn.Linear(hidden_dim, 3),
+            )
+
+        # Stage-0 takes latent + template  (no attn yet)
+        self.stage0 = make_stage(latent_size + 3)
+        # Stage-1 and Stage-2 take latent + prev_coords + attn_out
+        self.stage1 = make_stage(latent_size + 3 + attn_dim)
+        self.stage2 = make_stage(latent_size + 3 + attn_dim)
+
+    # ======================================================================
+    #                            F O R W A R D
+    # ======================================================================
+    def forward(self, z: torch.Tensor) -> torch.Tensor:               # (B,L)
+        B = z.shape[0]
+        z_exp = z.unsqueeze(1).expand(B, self.num_points, -1)         # (B,N,L)
+
+        # ---------- Stage-0 : template → coarse-0 (no attention) ------------ #
+        coords0 = self.stage0(torch.cat((z_exp, self.template.expand(B, -1, -1)), dim=-1))
+
+        # ---------- Stage-1 : attention on coords0 → coords1 ---------------- #
+        attn1   = self._local_attention(coords0)                      # (B,N,A)
+        coords1 = self.stage1(torch.cat((z_exp, coords0, attn1), dim=-1))
+
+        # ---------- Stage-2 : attention on coords1 → refined --------------- #
+        attn2   = self._local_attention(coords1)
+        coords2 = self.stage2(torch.cat((z_exp, coords1, attn2), dim=-1))
+
+        return coords2                                                # (B,N,3)
+
+    # ------------------------------------------------------------------
+    #  Local self-attention with radius-based masking
+    # ------------------------------------------------------------------
+    def _local_attention(self, coords: torch.Tensor) -> torch.Tensor:
+        """
+        coords : (B, N, 3)  — current point coordinates
+
+        Returns
+        -------
+        out    : (B, N, attn_dim) — aggregated value vectors
+        """
+        # Q,K,V  from coordinates
+        Q = self.q_proj(coords)                                       # (B,N,A)
+        K = self.k_proj(coords)                                       # (B,N,A)
+        V = self.v_proj(coords)                                       # (B,N,A)
+
+        # Pair-wise squared distances
+        D2 = torch.cdist(coords, coords, p=2.0) ** 2                  # (B,N,N)
+
+        # Build mask:  True = keep, False = ignore
+        mask = D2 <= (self.R_att ** 2)                                # (B,N,N)
+
+        # Scaled dot-product attention
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / self.sqrt_d   # (B,N,N)
+        scores = scores.masked_fill(~mask, float("-inf"))
+        W = F.softmax(scores, dim=-1)                                 # (B,N,N)
+        W = W.masked_fill(~mask, 0.0)
+
+        # Attention output
+        out = torch.matmul(W, V)                                      # (B,N,A)
+        return out

@@ -13,10 +13,6 @@ experiment_tags:
 latent_size: 16
 type:  PointNetAE_Folding                   # PointNetAE_MLP
 loss: chamfer_regularized_encoder_loss_repulsion
-kl_beta_start: 0.0
-kl_beta: 1.0
-kl_beta_warmup: 10_000
-kl_beta_schedule: linear
 torch_compile: True
 
 learning_rate: 0.005

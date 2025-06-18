@@ -319,6 +319,7 @@ def get_random_samples(
     n_samples: int,
     size: float,
     n_points: int,
+    return_coords: bool = False,
 ) -> List[np.ndarray]:
     """Same as get_regular_samples but with random center points.
     

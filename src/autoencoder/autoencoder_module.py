@@ -185,7 +185,7 @@ class PointNetAutoencoder(pl.LightningModule):
         return total_loss # Return total_loss needed for training_step return
 
     def training_step(self, batch, batch_idx):
-        points, _ = batch
+        points = batch
         points_permuted = points.permute(0, 2, 1)
 
         # model returns: reconstructed_points, latent_vector, _, transformation_features
@@ -218,7 +218,7 @@ class PointNetAutoencoder(pl.LightningModule):
 
 
     def validation_step(self, batch, batch_idx):
-        points, _ = batch
+        points = batch
         points_permuted = points.permute(0, 2, 1)
 
         model_outputs = self.model(points_permuted)

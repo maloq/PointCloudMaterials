@@ -1,33 +1,102 @@
 from __future__ import annotations
 
-from typing import Callable, List, Tuple, Dict, Any, Optional
-import copy
+"""Rotational‑robustness benchmark – **config‑driven & easily extensible**.
+
+The module is split into three conceptual layers:
+
+1. **Core utilities** – geometry helpers, sampling, clustering, etc.  *Rarely
+   changed.*
+2. **Predictors** – plug‑ins that map point clouds → fixed‑size
+   representations (latent vectors **or** integer labels).  New models are
+   added simply by decorating a class with ``@register_predictor``.
+3. **Entry points** – ``run(cfg)`` executes the benchmark for a YAML/``dict``
+   config; the *only* command‑line usage left is an *optional* ``python ‑m
+   rotational_robustness_benchmark config.yml`` convenience wrapper.
+
+Example **YAML** (drop this next to your script)::
+
+    # benchmark.yml
+    snapshot_files:
+      - datasets/Al/inherent_configurations_off/175ps.off
+
+    predictor:
+      type: autoencoder            # "autoencoder" | "soap_pca" | …your model…
+      checkpoint: output/2025‑06‑16/16‑39‑19/model.ckpt
+      cuda_device: 0
+
+    benchmark:
+      n_centres: null              # keep all
+      sphere_radius: 7.4
+      n_points: 128
+      n_rotations: 5
+      metric: ari                  # "ari" | "fraction"
+      align: false
+      rng_seed: 42
+      n_clusters: 6
+      batch_size: 4096
+
+Run with::
+
+    import rotational_robustness_benchmark as rrb
+    rrb.run("benchmark.yml")
+
+or directly::
+
+    python -m rotational_robustness_benchmark benchmark.yml
+
+Adding a new predictor is **one small class**::
+
+    @register_predictor("my_model")
+    class MyPredictor(Predictor):
+        def __init__(self, some_param: str):
+            self._model = load_my_model(some_param)
+
+        def predict(self, pcs: np.ndarray) -> np.ndarray:
+            return self._model(pcs)  # shape (B, d)
+
+That's it – the registry + config take care of the rest.
+"""
+
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type
+import abc
+import importlib
+import sys
+
 import numpy as np
+from tqdm.auto import tqdm
+
+# -----------------------------------------------------------------------------
+# External scientific stack
+# -----------------------------------------------------------------------------
 from scipy.spatial.transform import Rotation as R
 from scipy.spatial import KDTree
 from scipy.optimize import linear_sum_assignment
 from sklearn.metrics import adjusted_rand_score
 from sklearn.cluster import KMeans
+
 import torch
-import torch.nn as nn
-from functools import partial
-import sys, os
-from tqdm.auto import tqdm
-import glob
-sys.path.append(os.getcwd())
+
+
 from src.data_utils.prepare_data import read_off_file, process_sample
 from src.data_utils.data_load import pc_normalize
-from src.autoencoder.eval_autoencoder import autoencoder_predict_latent, load_model_and_config
+from src.autoencoder.eval_autoencoder import (
+    autoencoder_predict_latent,
+    load_model_and_config,
+)
 from src.SOAP.predict_soap_pca import soap_pca_predict_latent, fit_soap_pca
-torch.set_float32_matmul_precision('high')
-# -------------------------------------------------------------------------
-# 0.  Helper utilities
-# -------------------------------------------------------------------------
 
+# Optional: maximise matmul precision for Ampere GPUs and newer
+torch.set_float32_matmul_precision("high")
+
+# =============================================================================
+# 0.  Generic helper utilities (unchanged from the original script)
+# =============================================================================
 
 
 def _sample_rotations(n: int, rng: np.random.Generator | None = None) -> List[np.ndarray]:
-    """Return `n` SO(3) rotation matrices. Index 0 is identity."""
+    """Return *n* SO(3) rotation matrices.  Index 0 is identity."""
     if n < 1:
         raise ValueError("n_rotations must be ≥ 1 (identity included).")
     rng = np.random.default_rng(rng)
@@ -37,7 +106,7 @@ def _sample_rotations(n: int, rng: np.random.Generator | None = None) -> List[np
 
 
 def _hungarian_relabel(ref: np.ndarray, pred: np.ndarray) -> np.ndarray:
-    """Map `pred` labels on to `ref` labels via maximal overlap."""
+    """Map *pred* labels on to *ref* labels via maximal overlap."""
     ref_labels, ref_inv = np.unique(ref, return_inverse=True)
     pred_labels, pred_inv = np.unique(pred, return_inverse=True)
 
@@ -55,9 +124,10 @@ def _fraction_unchanged(ref: np.ndarray, pred: np.ndarray) -> float:
     return float(np.mean(ref == pred))
 
 
-# -------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # 1.  Centre‑selection helpers
-# -------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 
 def _pick_centre_indices(
     points: np.ndarray,
@@ -65,33 +135,27 @@ def _pick_centre_indices(
     n_max: Optional[int] = None,
     rng: np.random.Generator | None = None,
 ) -> np.ndarray:
-    """Pick centre atoms as **nearest atoms to the nodes of a regular cubic grid**.
-
-    The grid spacing equals ``radius`` (i.e. one *sphere radius*).  Every grid
-    node is associated with its nearest atom; duplicates are removed so each
-    atom appears at most once.  If ``n_max`` is given and the number of unique
-    centres exceeds it, a reproducible random subset of size ``n_max`` is
-    returned.
-    """
-    # Build grid covering the snapshot bounding box
+    """Pick centre atoms as **nearest atoms to the nodes of a regular cubic grid**."""
     mins = points.min(axis=0)
     maxs = points.max(axis=0)
     spacing = radius
-    # Slight epsilon so the max boundary is included when it falls exactly on a multiple of spacing
     coords = [np.arange(mins[d], maxs[d] + 1e-6, spacing) for d in range(3)]
-    grid = np.stack(np.meshgrid(*coords, indexing="ij"), axis=-1).reshape(-1, 3)
+    grid = (
+        np.stack(np.meshgrid(*coords, indexing="ij"), axis=-1)
+        .reshape(-1, 3)
+        .astype(points.dtype)
+    )
 
-    # Map each grid node to its nearest atom
     tree = KDTree(points)
     _, nearest_idx = tree.query(grid)
     centre_idx = np.unique(nearest_idx)
 
-    # Optionally limit to at most n_max centres
     if n_max is not None and centre_idx.size > n_max:
         rng = np.random.default_rng(rng)
         centre_idx = rng.choice(centre_idx, size=n_max, replace=False)
 
     return centre_idx
+
 
 
 def _filter_edge_centres(
@@ -100,7 +164,7 @@ def _filter_edge_centres(
     radius: float,
     factor: float = 1.5,
 ) -> np.ndarray:
-    """Drop centre indices whose coordinates are closer than ``factor * radius`` to any face of the simulation box."""
+    """Drop centres that are closer than *factor·radius* to any box face."""
     if centre_idx.size == 0:
         return centre_idx
 
@@ -113,9 +177,10 @@ def _filter_edge_centres(
     return centre_idx[inside]
 
 
-# -------------------------------------------------------------------------
-# 2.  Sampling utilities
-# -------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# 2.  Local‑environment sampling
+# -----------------------------------------------------------------------------
+
 
 def _extract_samples(
     points: np.ndarray,
@@ -123,7 +188,7 @@ def _extract_samples(
     radius: float,
     n_points: int,
 ) -> Tuple[List[np.ndarray], np.ndarray]:
-    """Return list of local-environment point clouds and mask of valid centres."""
+    """Return list of local point clouds and mask of *valid* centres."""
     tree = KDTree(points)
     centres = points[centre_idx]
     samples: List[np.ndarray] = []
@@ -133,17 +198,129 @@ def _extract_samples(
         if struct is None:
             valid_mask[i] = False
             continue
-        struct = pc_normalize(struct)
-        samples.append(struct)
+        samples.append(pc_normalize(struct))
     return samples, valid_mask
 
-# -------------------------------------------------------------------------
-# 3.  Public API – rotational robustness
-# -------------------------------------------------------------------------
+
+# =============================================================================
+# 3.  Predictor plug‑in system – add your models here
+# =============================================================================
+
+
+class Predictor(abc.ABC):
+    """Minimal interface all *predictors* must implement."""
+
+    @abc.abstractmethod
+    def predict(self, pcs: np.ndarray | List[np.ndarray]) -> np.ndarray:
+        """Return latent vectors **or** integer labels for *pcs* (B, N, 3)."""
+
+    # Optional – override if your model needs access to *all* snapshots first
+    def fit(self, snapshots: List[np.ndarray]) -> None:  # noqa: D401 – imperative
+        """(Re‑)train / pre‑compute statistics for this predictor, if needed."""
+        return None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Predictor registry & helper decorator
+# ─────────────────────────────────────────────────────────────────────────────
+_PREDICTOR_REGISTRY: Dict[str, Type[Predictor]] = {}
+
+
+def register_predictor(name: str):
+    """Decorator: ``@register_predictor("foo")`` adds *foo* → class mapping."""
+
+    def _decorator(cls: Type[Predictor]):
+        if name in _PREDICTOR_REGISTRY:
+            raise KeyError(f"Predictor '{name}' already registered")
+        _PREDICTOR_REGISTRY[name] = cls
+        cls.__registry_name__ = name  # type: ignore[attr-defined]
+        return cls
+
+    return _decorator
+
+
+# -----------------------------------------------------------------------------
+# 3.1  Autoencoder latent predictor
+# -----------------------------------------------------------------------------
+
+
+@register_predictor("autoencoder")
+class AutoencoderPredictor(Predictor):
+    """Wrapper around a trained *Point‑Net‑style* autoencoder."""
+
+    def __init__(self, checkpoint: str, cuda_device: int = 0):
+        self.model, _cfg, self.device = load_model_and_config(checkpoint, cuda_device)
+
+    # Autoencoder already supports batched input → just delegate
+    def predict(self, pcs: np.ndarray | List[np.ndarray]) -> np.ndarray:  # type: ignore[override]
+        return autoencoder_predict_latent(pcs, model=self.model, device=self.device)
+
+
+# -----------------------------------------------------------------------------
+# 3.2  SOAP + PCA predictor
+# -----------------------------------------------------------------------------
+
+
+@register_predictor("soap_pca")
+class SOAPPredictor(Predictor):
+    """Density‑based SOAP descriptor compressed by PCA."""
+
+    def __init__(self, species: str, r_cut: float = 7.4, n_max: int = 8, l_max: int = 6, sigma: float = 0.2, pca_components: int = 16):
+        from ase.atoms import Atoms  # Imported lazily – avoids heavy deps unless used
+
+        self.species = species
+        # Store descriptor parameters – actual construction deferred to *fit*
+        self._soap_params = dict(r_cut=r_cut, n_max=n_max, l_max=l_max, sigma=sigma)
+        self._pca_components = pca_components
+        self._soap_desc = None  # set in *fit*
+        self._pca_model = None
+
+    # The SOAP pipeline needs to *see* the full dataset to centre PCA
+    def fit(self, snapshots: List[np.ndarray]) -> None:  # noqa: D401 – imperative style
+        soap_desc, pca_model = fit_soap_pca(
+            snapshots,
+            species=self.species,
+            soap_params=self._soap_params,
+            n_components=self._pca_components,
+        )
+        self._soap_desc, self._pca_model = soap_desc, pca_model
+
+    def predict(self, pcs: np.ndarray | List[np.ndarray]) -> np.ndarray:  # type: ignore[override]
+        if self._soap_desc is None or self._pca_model is None:
+            raise RuntimeError("SOAPPredictor.fit() must be called before predict()")
+        return soap_pca_predict_latent(pcs, soap=self._soap_desc, pca=self._pca_model, species=self.species)
+
+
+# =============================================================================
+# 4.  Rotational‑robustness core (algorithm body unchanged, but parameterised)
+# =============================================================================
+
+
+def _predict_batch(
+    predictor: Predictor,
+    samples: List[np.ndarray],
+    batch_size: Optional[int],
+    desc: str,
+) -> np.ndarray:
+    """Utility: run *predictor* on *samples* with optional batching."""
+
+    if batch_size is None or batch_size <= 1:
+        reps = [predictor.predict(s) for s in tqdm(samples, desc=desc, leave=False)]
+        reps = np.asarray(reps)
+    else:
+        reps_chunks: List[np.ndarray] = []
+        for i in tqdm(range(0, len(samples), batch_size), desc=desc, leave=False):
+            batch = np.stack(samples[i : i + batch_size], axis=0)  # (B, N, 3)
+            reps_chunks.append(predictor.predict(batch))
+        reps = np.concatenate(reps_chunks, axis=0)
+    return reps
+
+
 
 def rotational_robustness(
-    predict_fn: Callable[[np.ndarray], Tuple[Any, float, float, float]],
+    predictor: Predictor,
     points: np.ndarray,
+    *,
     n_centres: Optional[int] = 200,
     sphere_radius: float = 6.0,
     n_points: int = 128,
@@ -155,112 +332,51 @@ def rotational_robustness(
     edge_margin_factor: float = 1.5,
     batch_size: Optional[int] = None,
 ) -> Tuple[float, np.ndarray]:
-    """Compute mean rotational-robustness score & per-rotation distribution.
+    """Compute **mean** rotational‑robustness score & distribution (per rotation)."""
 
-    Parameters
-    ----------
-    predict_fn
-        Function that maps a point cloud (shape ``(N, 3)``) **or** a batch of
-        point clouds (shape ``(B, N, 3)``) to a representation suitable for
-        comparison/clustering.  The return type can be either
-        ``np.ndarray``/``torch.Tensor`` of shape ``(d,)`` or ``(B, d)`` or a
-        1-D array of labels.  When *batched* predictions are requested the
-        function **must** support batched input.
-
-    batch_size
-        If ``None`` (default) every sample is forwarded to ``predict_fn``
-        individually exactly as before.  Otherwise samples are stacked into
-        batches of the given size, dramatically speeding-up evaluation on
-        accelerators (GPU).
-
-    Other parameters are identical to the previous version.
-
-    **Centre selection** – Atoms are chosen as the **nearest atoms to the
-    nodes of a regular cubic grid** whose spacing equals ``sphere_radius``.  A
-    maximum of ``n_centres`` atoms is kept (if not ``None``).
-
-    Centres whose coordinates are nearer than ``edge_margin_factor *
-    sphere_radius`` to any face of the simulation box are **ignored** to avoid
-    incomplete neighbourhoods at the edges.
-    """
     rng = np.random.default_rng(rng_seed)
 
-    # 1. Pick central atoms by grid & drop those near the box edges
+    # 1. Pick central atoms on a grid & drop edge‑neighbours
     centre_idx = _pick_centre_indices(points, sphere_radius, n_max=n_centres, rng=rng)
     centre_idx = _filter_edge_centres(points, centre_idx, sphere_radius, factor=edge_margin_factor)
     if centre_idx.size == 0:
         raise ValueError(
-            "All candidate centres were filtered out by edge criteria. "
-            "Try reducing `edge_margin_factor`, increasing `n_centres`, or using a larger snapshot."
+            "All candidate centres were filtered out. Adjust 'edge_margin_factor', 'n_centres' or input snapshot size."
         )
 
-    # 2. Reference samples & predictions (no rotation)
+    # 2. Reference samples / predictions (no rotation)
     ref_samples, valid_mask = _extract_samples(points, centre_idx, sphere_radius, n_points)
     if not valid_mask.all():
-        centre_idx = centre_idx[valid_mask]  # keep only valid ones
+        centre_idx = centre_idx[valid_mask]
 
-    # ------------------------------------------------------------------
-    # Helper — run prediction on a list of point clouds with optional batching
-    # ------------------------------------------------------------------
-    def _predict(samples: List[np.ndarray], desc: str) -> np.ndarray:
-        """Run *predict_fn* on *samples* with optional batching."""
+    ref_reps = _predict_batch(predictor, ref_samples, batch_size, desc="Predicting reference samples")
 
-        if batch_size is None or batch_size <= 1:
-            reps = []
-            for sample in tqdm(samples, desc=desc, leave=False):
-                rep = predict_fn(sample)
-                reps.append(rep)
-            reps = np.asarray(reps)
-        else:
-            reps_chunks: List[np.ndarray] = []
-            for i in tqdm(range(0, len(samples), batch_size), desc=desc, leave=False):
-                batch_samples = samples[i : i + batch_size]
-                batch = np.stack(batch_samples, axis=0)  # (B, N, 3)
-                batch_rep = predict_fn(batch)
-
-                # Convert to numpy & ensure first dimension is batch-dim
-                if isinstance(batch_rep, torch.Tensor):
-                    batch_rep = batch_rep.cpu().numpy()
-                batch_rep = np.asarray(batch_rep)
-                reps_chunks.append(batch_rep)
-            reps = np.concatenate(reps_chunks, axis=0)
-        return reps
-
-    ref_reps = _predict(ref_samples, desc="Predicting reference samples")
-
-    # 3. Generate rotations
+    # 3. Generate rotations & compute scores
     R_mats = _sample_rotations(n_rotations, rng)
     scores: List[float] = []
 
-    # precompute original centre coordinates for mapping
     original_centres = points[centre_idx]
 
     for rot in tqdm(R_mats[1:], desc="Processing rotations"):  # skip identity
-        # rotate whole snapshot
         pos_rot = points @ rot.T
-
-        # rotate centre coordinates and find nearest atoms
         tree_rot = KDTree(pos_rot)
-        _, new_idx = tree_rot.query(original_centres @ rot.T)  # same order
-
+        _, new_idx = tree_rot.query(original_centres @ rot.T)
         rot_samples, _ = _extract_samples(pos_rot, new_idx, sphere_radius, n_points)
-
-        pred_reps = _predict(rot_samples, desc="Predicting rotated samples")
+        pred_reps = _predict_batch(predictor, rot_samples, batch_size, desc="Predicting rotated samples")
 
         if metric == "ari":
             if ref_reps.ndim == 1:  # already labels
-                ref_labels = ref_reps
-                pred_labels = pred_reps
-            else:  # representations are vectors → cluster them first
-                kmeans = KMeans(n_clusters=n_clusters, random_state=rng_seed, n_init="auto")
-                ref_labels = kmeans.fit_predict(ref_reps)
+                ref_labels, pred_labels = ref_reps, pred_reps
+            else:
+                kmeans_ref = KMeans(n_clusters=n_clusters, random_state=rng_seed, n_init="auto")
+                ref_labels = kmeans_ref.fit_predict(ref_reps)
                 pred_labels = KMeans(n_clusters=n_clusters, random_state=rng_seed, n_init="auto").fit_predict(
                     pred_reps
                 )
             score = adjusted_rand_score(ref_labels, pred_labels)
         elif metric == "fraction":
             if align:
-                pred_labels = _hungarian_relabel(ref_reps, pred_reps)
+                pred_reps = _hungarian_relabel(ref_reps, pred_reps)
             score = _fraction_unchanged(ref_reps, pred_reps)
         else:
             raise ValueError(f"Unsupported metric: {metric!r}")
@@ -270,65 +386,118 @@ def rotational_robustness(
     return float(np.mean(scores)), np.asarray(scores)
 
 
+# =============================================================================
+# 5.  Configuration – dataclasses & YAML loader
+# =============================================================================
+
+
+@dataclass
+class BenchmarkParams:
+    """Subset of *rotational_robustness* kwargs that can be set via YAML."""
+
+    n_centres: Optional[int] = 200
+    sphere_radius: float = 6.0
+    n_points: int = 128
+    n_rotations: int = 24
+    metric: str = "ari"
+    align: bool = True
+    rng_seed: Optional[int] = 0
+    n_clusters: int = 8
+    edge_margin_factor: float = 1.5
+    batch_size: Optional[int] = None
+
+
+@dataclass
+class Config:
+    snapshot_files: List[str]
+    predictor: Dict[str, Any]
+    benchmark: BenchmarkParams = field(default_factory=BenchmarkParams)
+
+    @staticmethod
+    def from_yaml(path_or_str: str | Path | Dict[str, Any]) -> "Config":
+        if isinstance(path_or_str, (str, Path)) and Path(path_or_str).is_file():
+            with open(path_or_str, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+        elif isinstance(path_or_str, dict):
+            data = path_or_str
+        else:
+            raise FileNotFoundError(f"Cannot load config from: {path_or_str}")
+        # *benchmark* part can be missing – defaults will fill in
+        bench = BenchmarkParams(**data.get("benchmark", {}))
+        return Config(
+            snapshot_files=data["snapshot_files"],
+            predictor=data["predictor"],
+            benchmark=bench,
+        )
+
+
+# =============================================================================
+# 6.  Public API – run() helper & __main__
+# =============================================================================
+
+
+def _load_points(files: List[str]) -> np.ndarray:
+    """Read & concatenate all *OFF* snapshots listed in *files*."""
+    all_points = [read_off_file(fp, verbose=True) for fp in files]
+    return np.concatenate(all_points, axis=0)
+
+
+def _build_predictor(spec: Dict[str, Any], snapshots: List[np.ndarray]) -> Predictor:
+    """Instantiate *and* optionally ``fit`` a predictor from *spec*."""
+
+    typ = spec["type"]
+    cls = _PREDICTOR_REGISTRY.get(typ)
+    if cls is None:
+        raise KeyError(
+            f"Predictor type '{typ}' is not registered. Implement it via @register_predictor and add to config."
+        )
+
+    # Remove the *type* key before passing remaining kwargs
+    kwargs = {k: v for k, v in spec.items() if k != "type"}
+    predictor = cls(**kwargs)  # type: ignore[arg-type]
+
+    # Some predictors (e.g. SOAP‑PCA) need to see samples first
+    try:
+        predictor.fit(snapshots)  # no‑op for predictors that don't override fit()
+    except Exception as exc:  # noqa: BLE001 – propagate informative errors
+        raise RuntimeError(f"Error during predictor.fit(): {exc}") from exc
+
+    return predictor
+
+
+def run(cfg: str | Path | Dict[str, Any]) -> None:
+    """Convenience API: *cfg* → YAML/``dict`` → execute benchmark & print result."""
+    config = Config.from_yaml(cfg)
+
+    points = _load_points(config.snapshot_files)
+    predictor = _build_predictor(config.predictor, [points])
+
+    bench = config.benchmark
+    mean, dist = rotational_robustness(
+        predictor,
+        points,
+        n_centres=bench.n_centres,
+        sphere_radius=bench.sphere_radius,
+        n_points=bench.n_points,
+        n_rotations=bench.n_rotations,
+        metric=bench.metric,
+        align=bench.align,
+        rng_seed=bench.rng_seed,
+        n_clusters=bench.n_clusters,
+        edge_margin_factor=bench.edge_margin_factor,
+        batch_size=bench.batch_size,
+    )
+
+    print(f"Rotational robustness ({config.predictor['type']}) = {mean:.3f}")
+
+
+# -----------------------------------------------------------------------------
+# 7.  Fallback *module‑as‑script* execution
+# -----------------------------------------------------------------------------
+# Allows `python -m rotational_robustness_benchmark cfg.yml` without argparse.
+# -----------------------------------------------------------------------------
+
+
 if __name__ == "__main__":
-    checkpoint_path = "output/2025-06-16/16-39-19/PnAE_Folding2Step_CD_Repulsion_RotCon_80_l16_no_edges-epoch=29-val_loss=0.05.ckpt"
-    file_paths = ["datasets/Al/inherent_configurations_off/175ps.off"]
-    model, cfg, device = load_model_and_config(checkpoint_path, cuda_device=0)
 
-    all_points = []
-    for file_path in file_paths:
-        points = read_off_file(file_path, verbose=True)
-        all_points.append(points)
-    all_points = np.concatenate(all_points, axis=0)
-
-    rr_mean, rr_dist = rotational_robustness(
-        predict_fn=partial(autoencoder_predict_latent, model=model, device=device),
-        points=all_points,
-        n_centres=None,
-        sphere_radius=cfg.data.radius,
-        n_points=cfg.data.num_points,
-        n_rotations=5,
-        metric="ari",
-        align=False,
-        rng_seed=42,
-        n_clusters=6,
-        batch_size=4096,
-    )
-
-
-    print(f"Rotational robustness AE = {rr_mean:.3f}")
-
-
-
-    # 1.  Collect *all* snapshots once and fit PCA
-    soap_desc, pca_model = fit_soap_pca(
-        [all_points],
-        species="Al",
-        soap_params=dict(r_cut=7.4, n_max=8, l_max=6, sigma=0.2),
-        n_components=16,          # PCA components
-    )
-
-    # 2.  Wrap the predictor exactly like autoencoder_predict_latent
-    predict_fn = partial(
-        soap_pca_predict_latent,
-        soap=soap_desc,
-        pca=pca_model,
-        species="Al",
-    )
-
-    # 3.  Drop it into your rotational-robustness benchmark
-    rr_mean, rr_dist = rotational_robustness(
-        predict_fn=predict_fn,
-        points=all_points,        # ← same variable as before
-        n_centres=None,
-        sphere_radius=cfg.data.radius,
-        n_points=cfg.data.num_points,
-        n_rotations=6,
-        metric="ari",
-        align=False,
-        rng_seed=42,
-        n_clusters=4,
-        batch_size=4096,
-    )
-
-    print(f"Rotational robustness SOAP = {rr_mean:.3f}")
+    run("configs/autoencoder_80.yaml")

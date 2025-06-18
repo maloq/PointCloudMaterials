@@ -10,21 +10,17 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 
-latent_size: 16
-type:  PointNetAE_Folding                  # PointNetAE_MLP
+latent_size: 6
+type:  PointNetAE_Folding_Sphere  
 loss: chamfer_regularized_encoder_loss_repulsion
-kl_beta_start: 0.0
-kl_beta: 1.0
-kl_beta_warmup: 10_000
-kl_beta_schedule: linear
 torch_compile: True
 
-learning_rate: 0.003
+learning_rate: 0.004
 batch_size: 6096
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 1000
+epochs: 100
 
 decay_rate: 0.003
 gpu: True
