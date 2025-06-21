@@ -13,28 +13,6 @@ The module is split into three conceptual layers:
    config; the *only* command‑line usage left is an *optional* ``python ‑m
    rotational_robustness_benchmark config.yml`` convenience wrapper.
 
-Example **YAML** (drop this next to your script)::
-
-    # benchmark.yml
-    snapshot_files:
-      - datasets/Al/inherent_configurations_off/175ps.off
-
-    predictor:
-      type: autoencoder            # "autoencoder" | "soap_pca" | …your model…
-      checkpoint: output/2025‑06‑16/16‑39‑19/model.ckpt
-      cuda_device: 0
-
-    benchmark:
-      n_centres: null              # keep all
-      sphere_radius: 7.4
-      n_points: 128
-      n_rotations: 5
-      metric: ari                  # "ari" | "fraction"
-      align: false
-      rng_seed: 42
-      n_clusters: 6
-      batch_size: 4096
-
 Run with::
 
     import rotational_robustness_benchmark as rrb
@@ -63,13 +41,11 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Type
 import abc
 import importlib
 import sys
-
+import yaml
 import numpy as np
 from tqdm.auto import tqdm
 
-# -----------------------------------------------------------------------------
-# External scientific stack
-# -----------------------------------------------------------------------------
+
 from scipy.spatial.transform import Rotation as R
 from scipy.spatial import KDTree
 from scipy.optimize import linear_sum_assignment
@@ -78,7 +54,8 @@ from sklearn.cluster import KMeans
 
 import torch
 
-
+import sys,os
+sys.path.append(os.getcwd())
 from src.data_utils.prepare_data import read_off_file, process_sample
 from src.data_utils.data_load import pc_normalize
 from src.autoencoder.eval_autoencoder import (
@@ -500,4 +477,4 @@ def run(cfg: str | Path | Dict[str, Any]) -> None:
 
 if __name__ == "__main__":
 
-    run("configs/autoencoder_80.yaml")
+    run("configs/eval_configs/benchmark.yml")

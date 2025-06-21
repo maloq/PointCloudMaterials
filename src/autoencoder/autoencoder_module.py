@@ -5,10 +5,14 @@ import numpy as np
 import pytorch_lightning as pl
 import torch.nn.functional as F  # Import F for functional operations like mse_loss
 from src.loss.reconstruction_loss import *
-from src.models.autoencoders_nn.pointnet_autoencoder import build_model
+import src.models.autoencoders.encoders
+import src.models.autoencoders.decoders
+from src.models.autoencoders.factory import build_model
 from src.utils.logging_config import setup_logging  
 from src.utils.optimizer_utils import get_optimizers_and_scheduler
-import math
+from src.data_utils.data_transforms import random_rotate_point_cloud_batch
+import wandb
+from pytorch_lightning.loggers import WandbLogger
 logger = setup_logging()
 
 
@@ -17,91 +21,48 @@ class PointNetAutoencoder(pl.LightningModule):
     def __init__(self, cfg):
         super().__init__()
         self.save_hyperparameters(cfg)
-        self.model = build_model(cfg)
-        self.sphere_radius = cfg.data.radius
+        # ------------------------------------------------------------------
+        # Build encoder & decoder **separately**
+        # ------------------------------------------------------------------
+        self.encoder, self.decoder = build_model(cfg)
+
+        # Optional compilation of the individual components
+        if cfg.torch_compile:
+            self.encoder = torch.compile(self.encoder)
+            self.decoder = torch.compile(self.decoder)
+
         self.num_points = cfg.data.num_points
-        self.dr = getattr(cfg.data, 'dr', None)
-        self.reconstruction_loss_scale = cfg.get('reconstruction_loss_scale', 0.0)
         self.feature_transform_loss_scale = cfg.get('feature_transform_loss_scale', 0.0)
         self.rotation_loss_scale = cfg.get('rotation_loss_scale', 0.0)
         self.l1_latent_loss_scale = cfg.get('l1_latent_loss_scale', 0.0)
         self.repulsion_h = cfg.get('repulsion_h', 0.05)
         self.repulsion_scale = cfg.get('repulsion_scale', 0.1)
+        self.kl_latent_loss_scale = cfg.get('kl_latent_loss_scale', 0.0)
+        self.latent_noise_std = cfg.get('latent_noise_std', 0.0)
+        if self.latent_noise_std > 0:
+            logger.print(f"Latent noise enabled with std: {self.latent_noise_std}")
 
-        if cfg.torch_compile:
-            self.model = torch.compile(self.model)
-            
-        if cfg.loss == 'chamfer_loss':
+        if cfg.loss == 'CD':
              self.criterion = chamfer_loss
              logger.print(f"Using Chamfer loss")
-        elif cfg.loss == 'chamfer_regularized_encoder_loss':
+        elif cfg.loss == 'CD_FTreg':
              self.criterion = chamfer_regularized_encoder_loss
              logger.print(f"Using Chamfer loss with feature transform regularization")
-        elif cfg.loss == 'chamfer_regularized_encoder_loss_repulsion':
+        elif cfg.loss == 'CD_FTreg_Rep':
              self.criterion = chamfer_regularized_encoder_loss_repulsion
              logger.print(f"Using Chamfer loss with feature transform regularization and repulsion loss")
         else:
             logger.warning(f"Unknown or basic loss type '{cfg.loss}' specified. Defaulting to basic chamfer_loss.")
             self.criterion = chamfer_loss
             
-        if 'density' in self.criterion.__code__.co_varnames or 'dr' in self.criterion.__code__.co_varnames:
-             if self.dr is None:
-                  raise ValueError("`cfg.data.dr` must be specified for RDF-based losses.")
-             self.density = self.compute_density()
-             logger.print(f"Density computed: {self.density}")
-        else:
-             self.density = None
-
         logger.print(f"Loss: {self.criterion.__name__}")
         if self.rotation_loss_scale > 0:
              logger.print(f"Rotational Consistency Loss enabled with scale: {self.rotation_loss_scale}")
         if self.l1_latent_loss_scale > 0:
             logger.print(f"L1 Latent Loss enabled with scale: {self.l1_latent_loss_scale}")
+        if self.kl_latent_loss_scale > 0:
+            logger.print(f"β-VIB (KL) loss enabled with scale: {self.kl_latent_loss_scale}")
 
-
-    def compute_density(self):
-        if self.sphere_radius <= 0 or self.num_points <= 0:
-             raise ValueError("Sphere radius and num_points must be positive for density calculation.")
-        volume = (4/3) * torch.pi * (self.sphere_radius**3)
-        density = self.num_points / volume
-        return density
-    
-    def random_rotate_point_cloud_batch(self, batch_pc):
-        """Applies a random rotation to each point cloud in the batch."""
-        B, N, _ = batch_pc.shape
-        device = batch_pc.device
-
-        angles = torch.rand(B, 3, device=device) * 2 * torch.pi
-
-        cos_x, sin_x = torch.cos(angles[:, 2]), torch.sin(angles[:, 2])
-        cos_y, sin_y = torch.cos(angles[:, 1]), torch.sin(angles[:, 1])
-        cos_z, sin_z = torch.cos(angles[:, 0]), torch.sin(angles[:, 0])
-
-        rot_x = torch.zeros(B, 3, 3, device=device)
-        rot_x[:, 0, 0] = 1
-        rot_x[:, 1, 1] = cos_x
-        rot_x[:, 1, 2] = -sin_x
-        rot_x[:, 2, 1] = sin_x
-        rot_x[:, 2, 2] = cos_x
-
-        rot_y = torch.zeros(B, 3, 3, device=device)
-        rot_y[:, 0, 0] = cos_y
-        rot_y[:, 0, 2] = sin_y
-        rot_y[:, 1, 1] = 1
-        rot_y[:, 2, 0] = -sin_y
-        rot_y[:, 2, 2] = cos_y
-
-        rot_z = torch.zeros(B, 3, 3, device=device)
-        rot_z[:, 0, 0] = cos_z
-        rot_z[:, 0, 1] = -sin_z
-        rot_z[:, 1, 0] = sin_z
-        rot_z[:, 1, 1] = cos_z
-        rot_z[:, 2, 2] = 1
-
-        rotation_matrix = rot_z @ rot_y @ rot_x
-
-        rotated_batch_pc = torch.bmm(batch_pc, rotation_matrix)
-        return rotated_batch_pc
 
     def forward(self, x):
         """
@@ -116,11 +77,12 @@ class PointNetAutoencoder(pl.LightningModule):
                 - latent_vector (torch.Tensor): The latent representation (B, latent_dim).
                 - trans_feat_list (list): A list of feature transformation matrices.
         """
-        # self.model(x) returns: (reconstructed_x, latent_code, _, aux_outputs)
-        # The third element is unused.
-        reconstructed_points, latent_vector, _, trans_feat_list = self.model(x)
-
-        # Ensure reconstructed points have the shape (B, N, 3) if necessary
+        # Encode & decode
+        latent_vector, _, trans_feat = self.encoder(x)
+        reconstructed_points = self.decoder(latent_vector)
+        trans_feat_list = [trans_feat] if trans_feat is not None else []
+        
+        # TODO: check if this is needed
         if reconstructed_points.ndim == 3: 
             if reconstructed_points.shape[1] == 3 and reconstructed_points.shape[2] == self.num_points:
                  reconstructed_points = reconstructed_points.permute(0, 2, 1) # (B, 3, N) -> (B, N, 3)
@@ -139,15 +101,9 @@ class PointNetAutoencoder(pl.LightningModule):
             'repulsion_h': self.hparams.get('repulsion_h', 0.05),
             'repulsion_scale': self.hparams.get('repulsion_scale', 0.1),
             'rotation_loss_scale': self.hparams.get('rotation_loss_scale', 0.0),
-            'l1_latent_loss_scale': self.hparams.get('l1_latent_loss_scale', 0.0)
+            'l1_latent_loss_scale': self.hparams.get('l1_latent_loss_scale', 0.0),
+            'kl_latent_loss_scale': self.hparams.get('kl_latent_loss_scale', 0.0)
         }
-        if self.density is not None:
-            loss_args.update({
-                'density': self.density,
-                'dr': self.hparams.data.dr,
-                'sphere_radius': self.hparams.data.radius,
-                'reconstruction_loss_scale': self.hparams.get('reconstruction_loss_scale', 0.0)
-            })
         
         # Add latent vector for L1 regularization
         if latent is not None:
@@ -185,34 +141,61 @@ class PointNetAutoencoder(pl.LightningModule):
         return total_loss # Return total_loss needed for training_step return
 
     def training_step(self, batch, batch_idx):
-        points = batch
-        points_permuted = points.permute(0, 2, 1)
+        points = batch                                  # (B, N, 3)
+        points_permuted = points.permute(0, 2, 1)       # (B, 3, N)
 
-        # model returns: reconstructed_points, latent_vector, _, transformation_features
-        model_outputs = self.model(points_permuted)
-        pred, latent, _, trans_feat_list = model_outputs
+        # ------------------------------------------------------------------
+        # Encode only once to avoid double-updating BatchNorm statistics
+        # ------------------------------------------------------------------
+        # encoder returns: (latent_code, trans, trans_feat)
+        latent, _, trans_feat = self.encoder(points_permuted)
+        trans_feat_list = [trans_feat] if trans_feat is not None else []
 
-        # Prepare loss arguments
+        # ------------------------------------------------------------------
+        # Optional Gaussian noise  (applied **only** during training)
+        # ------------------------------------------------------------------
+        if self.latent_noise_std > 0:
+            latent_input = latent + torch.randn_like(latent) * self.latent_noise_std
+        else:
+            latent_input = latent
+
+        # Single pass through the decoder
+        pred = self.decoder(latent_input)
+
+        # Prepare loss arguments (regularisers use clean latent)
         loss_args = self._prepare_loss_args(points, pred, trans_feat_list, latent=latent)
-
+         
         # Compute criterion loss
         main_loss, aux_loss_dict = self.criterion(**loss_args)
-
-        # Compute rotation loss if applicable
+        
+        # Compute rotation loss if applicable (uses clean latent)
         computed_rotation_loss = None
         if self.rotation_loss_scale > 0:
-            points_rotated = self.random_rotate_point_cloud_batch(points)
+            points_rotated = random_rotate_point_cloud_batch(points)
             points_rotated_permuted = points_rotated.permute(0, 2, 1)
-            
-            # self.model.encoder returns: (latent_code, trans, trans_feat)
-            encoder_outputs_rotated = self.model.encoder(points_rotated_permuted)
-            latent_rotated = encoder_outputs_rotated[0]
-            
-            # latent is the primary latent from the original points.
+
+            latent_rotated, _, _ = self.encoder(points_rotated_permuted)
             computed_rotation_loss = F.mse_loss(latent, latent_rotated)
 
         # Log all losses and get total loss
         total_loss = self._log_losses(main_loss, aux_loss_dict, 'train', rotation_loss=computed_rotation_loss)
+
+        if isinstance(self.logger, WandbLogger):
+            if batch_idx % 100 == 0:
+                # Monitor encoder statistics (clean latent)
+                latent_mean = latent.detach().mean(dim=0).cpu().numpy()
+                latent_std  = latent.detach().std(dim=0).cpu().numpy()
+
+                dims = np.arange(latent_mean.shape[0])
+                mean_table = wandb.Table(data=list(zip(dims, latent_mean)),
+                                        columns=["latent_id", "mean"])
+                std_table  = wandb.Table(data=list(zip(dims, latent_std)),
+                                        columns=["latent_id", "std"])
+
+                self.logger.experiment.log({
+                    "train/latent_mean_bar": wandb.plot.bar(mean_table, "latent_id", "mean", title="Mean per latent dimension"),
+                    "train/latent_std_bar":  wandb.plot.bar(std_table,  "latent_id", "std",  title="Std per latent dimension"),
+                }, step=self.global_step)
 
         return {'loss': total_loss}
 
@@ -221,8 +204,9 @@ class PointNetAutoencoder(pl.LightningModule):
         points = batch
         points_permuted = points.permute(0, 2, 1)
 
-        model_outputs = self.model(points_permuted)
-        pred, latent, _, trans_feat_list = model_outputs
+        latent, _, trans_feat = self.encoder(points_permuted)
+        pred = self.decoder(latent)
+        trans_feat_list = [trans_feat] if trans_feat is not None else []
         
         loss_args = self._prepare_loss_args(points, pred, trans_feat_list, latent=latent)
         
@@ -230,6 +214,28 @@ class PointNetAutoencoder(pl.LightningModule):
         
         # In validation, we don't compute rotation loss. You can add it if needed for monitoring.
         total_loss = self._log_losses(main_loss, aux_loss_dict, "val")
+
+        if isinstance(self.logger, WandbLogger):
+            # Compute mean and std across the batch for each latent dimension
+            latent_mean = latent.detach().mean(dim=0).cpu().numpy()
+            latent_std  = latent.detach().std(dim=0).cpu().numpy()
+
+            # Prepare one row per latent component  →  [["dim", value], …]
+            dims = np.arange(latent_mean.shape[0])
+            mean_table = wandb.Table(data=list(zip(dims, latent_mean)),
+                                     columns=["latent_id", "mean"])
+            std_table  = wandb.Table(data=list(zip(dims, latent_std)),
+                                     columns=["latent_id", "std"])
+
+            # One bar = one latent component
+            self.logger.experiment.log({
+                "val/latent_mean_bar": wandb.plot.bar(mean_table,
+                                                        "latent_id", "mean",
+                                                        title="Mean per latent dimension"),
+                "val/latent_std_bar":  wandb.plot.bar(std_table,
+                                                        "latent_id", "std",
+                                                        title="Std per latent dimension"),
+            }, step=self.global_step)
 
         return total_loss
 

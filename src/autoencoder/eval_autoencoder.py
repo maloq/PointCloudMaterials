@@ -99,7 +99,10 @@ def get_batch_reconstructions(model: PointNetAutoencoder,
     
 
 def get_config_path_from_checkpoint(checkpoint_path):
+
     config_path_chekpoint = os.path.join(*checkpoint_path.split('/')[:-1], '.hydra')
+    config_name = checkpoint_path.split('/')[-1].split('.')[0]
+    
     if not os.path.exists(config_path_chekpoint):
         config_path = '../../configs' if 'src' in os.getcwd() else 'configs' 
         print(f"Config in {config_path_chekpoint} not found, using default location {config_path}")
@@ -113,7 +116,7 @@ def get_config_path_from_checkpoint(checkpoint_path):
 
 def load_model_and_config(checkpoint_path: str,
                           cuda_device: int = 0,
-                          config_path: str = None):
+                          fallback_config_path: str = None):
     """Load Hydra config, restore the model from *checkpoint_path* and return
     the model instance together with the resolved *cfg* object and chosen
     *device* string.
@@ -127,11 +130,12 @@ def load_model_and_config(checkpoint_path: str,
         Tuple[torch.nn.Module, omegaconf.DictConfig, str]:
             Restored model, Hydra configuration and device string.
     """
-    # Resolve the location of the config corresponding to the checkpoint
-    if config_path is None:
+
+    if fallback_config_path is None:
         config_path, resolved_config_name = get_config_path_from_checkpoint(checkpoint_path)
     else:
-        resolved_config_name = config_path.split('/')[-1].split('.')[0]
+        config_path = os.path.join(*fallback_config_path.split('/')[:-1])
+        resolved_config_name = fallback_config_path.split('/')[-1].split('.')[0]
 
     # Load Hydra config
     with initialize(version_base=None, config_path='../../' + config_path):

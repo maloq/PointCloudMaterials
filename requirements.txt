@@ -13,3 +13,5 @@ scipy
 dscribe
 ase
 hdbscan
+importlib
+pkgutil

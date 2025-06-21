@@ -1,0 +1,19 @@
+snapshot_files:
+  - datasets/Al/inherent_configurations_off/175ps.off
+
+predictor:
+  type: autoencoder            # "autoencoder" | "soap_pca" | …your model…
+  checkpoint: output/2025-06-19/02-43-16/PnAE_F3Artt_CDRep_RotCon_80_l4_no_edges-epoch=199-val_loss=0.02.ckpt
+  cuda_device: 0
+
+
+benchmark:
+  n_centres: null              # keep all
+  sphere_radius: 7.4
+  n_points: 80
+  n_rotations: 4
+  metric: ari                  # "ari" | "fraction"
+  align: false
+  rng_seed: 42
+  n_clusters: 6
+  batch_size: 4096

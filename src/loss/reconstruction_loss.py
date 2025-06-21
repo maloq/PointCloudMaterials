@@ -208,6 +208,12 @@ def swd_repulsion_loss(pred: torch.Tensor, target: torch.Tensor, *,
     return swd + repulsion_scale * rep, {'swd': swd, 'repulsion': rep}
 
 
+def kl_latent_regularizer(latent: torch.Tensor) -> torch.Tensor:
+    """
+    Deterministic β-VIB penalty.
+    KL( N(latent, I) ‖ N(0, I) )  =  0.5 · ‖latent‖²  (up to a constant)
+    """
+    return 0.5 * torch.mean(torch.sum(latent ** 2, dim=1))
 
 
 def l1_latent_regularizer(latent):
@@ -221,4 +227,11 @@ def _add_optional_losses(total_loss, aux_loss_dict, **kwargs):
         l1_loss = l1_latent_regularizer(kwargs['latent'])
         total_loss += l1_latent_loss_scale * l1_loss
         aux_loss_dict['l1_latent_loss'] = l1_loss
+
+    kl_latent_loss_scale = kwargs.get('kl_latent_loss_scale', 0.0)
+    if kl_latent_loss_scale > 0 and 'latent' in kwargs and kwargs['latent'] is not None:
+        kl_loss = kl_latent_regularizer(kwargs['latent'])
+        total_loss += kl_latent_loss_scale * kl_loss
+        aux_loss_dict['kl_latent_loss'] = kl_loss
+        
     return total_loss, aux_loss_dict

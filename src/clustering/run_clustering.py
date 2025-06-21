@@ -27,7 +27,7 @@ def run_clustering_pipeline(checkpoint_path: str,
                             crystal_file_paths: List[str],
                             cuda_device: int = 0,
                             max_samples: int = None,
-                            config_name: str = 'autoencoder_e3nn_64'):
+                            config_path: str = 'autoencoder_e3nn_64'):
     """
     Runs the clustering pipeline: loads model, generates/saves latents.
 
@@ -46,6 +46,7 @@ def run_clustering_pipeline(checkpoint_path: str,
     model, cfg, device = load_model_and_config(
         checkpoint_path=checkpoint_path,
         cuda_device=cuda_device,
+        fallback_config_path=config_path
     )
 
     # Predict and save latent vectors

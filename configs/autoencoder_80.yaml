@@ -1,7 +1,7 @@
 defaults:
   - data: data_ae_Al_80
 project_name: pointnet
-experiment_name: PnAE_Folding2Step_CD_Repulsion_RotCon_80_l16_no_edges
+experiment_name: ${encoder.name}_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}_${now:%m%d}
 wandb_mode: online
 experiment_tags:
   - SWA
@@ -10,19 +10,37 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 
-latent_size: 6
-type:  PointNetAE_Folding_Sphere  
-loss: chamfer_regularized_encoder_loss_repulsion
-torch_compile: True
+latent_size: 16
+encoder: 
+  name: PnE_L
+  kwargs:
+    latent_size: ${latent_size}
+    dropout_rate: 0.2
+    feature_transform: True
+decoder: 
+  name: FoldingSphereAttn
+  kwargs: 
+    latent_size: ${latent_size}
+    num_points: ${data.num_points}
+    dropout_rate: 0.2
+    n_shells: 2
+    R1: 0.5
+    R2: 1.0
+    R_att: 0.20
+    hidden_dim: 256
+    attn_dim: 64
+
+loss: CD_FTreg_Rep
+torch_compile: False
 
 learning_rate: 0.004
-batch_size: 6096
+batch_size: 4096
 
 enable_swa: False
 swa_epoch_start: 1000 
 epochs: 100
 
-decay_rate: 0.003
+decay_rate: 0.006
 gpu: True
 devices: 0
 log_every_n_steps: 5
@@ -31,7 +49,8 @@ scheduler_gamma: 0.5
 scheduler_name: Cosine
 
 feature_transform_loss_scale: 0.001
-rotation_loss_scale: 0.05
+rotation_loss_scale: 0.01
 reconstruction_loss_scale: 0.5
-l1_latent_loss_scale: 0.01
-dropout_rate: 0.3
+l1_latent_loss_scale: 0.00
+kl_latent_loss_scale: 0.01
+latent_noise_std: 0.00
