@@ -10,27 +10,25 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 
-latent_size: 16
+latent_size: 64
 encoder: 
-  name: PnE_L
+  name: PnE_S
   kwargs:
     latent_size: ${latent_size}
     dropout_rate: 0.2
     feature_transform: True
 decoder: 
-  name: FoldingSphereAttn
+  name: FoldingSphere
   kwargs: 
     latent_size: ${latent_size}
     num_points: ${data.num_points}
-    dropout_rate: 0.2
+    dropout_rate: 0.1
     n_shells: 2
     R1: 0.5
     R2: 1.0
-    R_att: 0.20
     hidden_dim: 256
-    attn_dim: 64
 
-loss: CD_FTreg_Rep
+loss: CD_FTreg
 torch_compile: False
 
 learning_rate: 0.004
@@ -40,7 +38,6 @@ enable_swa: False
 swa_epoch_start: 1000 
 epochs: 100
 
-decay_rate: 0.006
 gpu: True
 devices: 0
 log_every_n_steps: 5
@@ -48,9 +45,9 @@ num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 
+decay_rate: 0.003
 feature_transform_loss_scale: 0.001
-rotation_loss_scale: 0.01
-reconstruction_loss_scale: 0.5
+rotation_loss_scale: 0.05
 l1_latent_loss_scale: 0.00
-kl_latent_loss_scale: 0.01
+kl_latent_loss_scale: 0.00
 latent_noise_std: 0.00

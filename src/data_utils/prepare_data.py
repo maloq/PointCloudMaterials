@@ -56,8 +56,7 @@ def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
         base, _ = os.path.splitext(filename)
         cache_filename = base + '.npy'
         if os.path.exists(cache_filename):
-            if verbose:
-                print(f"Loading cached file from {cache_filename}")
+            print(f"Loading cached file from {cache_filename}")
             points = np.load(cache_filename)
             return points
 
@@ -86,8 +85,7 @@ def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
 
     # Cache the data to disk for faster future loading
     if cache:
-        if verbose:
-            print(f"Caching file to disk at {cache_filename}")
+        print(f"Caching file to disk at {cache_filename}")
         np.save(cache_filename, points)
     return points
 

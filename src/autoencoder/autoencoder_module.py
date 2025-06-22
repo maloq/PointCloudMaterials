@@ -215,7 +215,7 @@ class PointNetAutoencoder(pl.LightningModule):
         # In validation, we don't compute rotation loss. You can add it if needed for monitoring.
         total_loss = self._log_losses(main_loss, aux_loss_dict, "val")
 
-        if isinstance(self.logger, WandbLogger):
+        if isinstance(self.logger, WandbLogger) and batch_idx % 100 == 0:
             # Compute mean and std across the batch for each latent dimension
             latent_mean = latent.detach().mean(dim=0).cpu().numpy()
             latent_std  = latent.detach().std(dim=0).cpu().numpy()
