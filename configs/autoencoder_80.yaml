@@ -12,7 +12,7 @@ experiment_tags:
 
 latent_size: 64
 encoder: 
-  name: PnE_S
+  name: PnE_L
   kwargs:
     latent_size: ${latent_size}
     dropout_rate: 0.2
@@ -36,18 +36,18 @@ batch_size: 4096
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 100
+epochs: 1000
 
 gpu: True
 devices: 0
 log_every_n_steps: 5
 num_workers: 4
 scheduler_gamma: 0.5
-scheduler_name: Cosine
+scheduler_name: OneCycle
 
 decay_rate: 0.003
 feature_transform_loss_scale: 0.001
-rotation_loss_scale: 0.05
+rotation_loss_scale: 0.2
 l1_latent_loss_scale: 0.00
-kl_latent_loss_scale: 0.00
-latent_noise_std: 0.00
+kl_latent_loss_scale: 0.03
+latent_noise_std: 0.01

@@ -99,7 +99,7 @@ def train(cfg: DictConfig):
         accelerator='gpu' if cfg.gpu else 'cpu',
         callbacks=callbacks,
         precision='16-mixed',
-        devices=[0, 2],
+        devices=[0],
         log_every_n_steps=cfg.log_every_n_steps,
         logger=wandb_logger,
         benchmark=True,
