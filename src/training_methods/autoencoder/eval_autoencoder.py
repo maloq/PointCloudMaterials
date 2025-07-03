@@ -6,7 +6,7 @@ from src.data_utils.prepare_data import read_off_file
 from torch.utils.data import DataLoader
 from src.data_utils.data_load import PointCloudDataset
 from omegaconf import DictConfig
-from src.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
 from src.utils.model_utils import load_model_from_checkpoint
 from hydra import compose, initialize
 from torch.utils.data import Subset

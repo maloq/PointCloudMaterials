@@ -12,7 +12,7 @@ from datetime import datetime
 from omegaconf import DictConfig, OmegaConf
 import wandb
 import time
-from src.contrastive.dimenet_module import DimeNetContrastive
+from src.training_methods.contrastive.dimenet_module import DimeNetContrastive
 from src.data_utils.data_module import PointCloudDataModule
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 from typing import Union

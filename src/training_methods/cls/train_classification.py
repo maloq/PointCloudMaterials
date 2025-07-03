@@ -5,8 +5,8 @@ logger = setup_logging()
 import torch
 import numpy as np
 import pytorch_lightning as pl
-from src.cls.classification_module import PointNetClassifier
-from src.cls.data_module_cls import PointCloudDataModule
+from src.training_methods.cls.classification_module import PointNetClassifier
+from src.training_methods.cls.data_module_cls import PointCloudDataModule
 import hydra
 from pytorch_lightning.loggers import WandbLogger
 from datetime import datetime
