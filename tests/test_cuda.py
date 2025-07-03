@@ -67,8 +67,7 @@ except ImportError:
     print("  PyTorch3D not found. Skipping test.")
 except Exception as e:
     print(f"  PyTorch3D test FAILED: {e}")
-=======
-#!/usr/bin/env python3
+
 """
 PyTorch CUDA Test Script
 Checks if CUDA is available and working properly with PyTorch
