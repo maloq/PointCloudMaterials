@@ -143,17 +143,9 @@ class PointNetAutoencoder(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         points = batch                                  # (B, N, 3)
         points_permuted = points.permute(0, 2, 1)       # (B, 3, N)
-
-        # ------------------------------------------------------------------
-        # Encode only once to avoid double-updating BatchNorm statistics
-        # ------------------------------------------------------------------
-        # encoder returns: (latent_code, trans, trans_feat)
         latent, _, trans_feat = self.encoder(points_permuted)
         trans_feat_list = [trans_feat] if trans_feat is not None else []
 
-        # ------------------------------------------------------------------
-        # Optional Gaussian noise  (applied **only** during training)
-        # ------------------------------------------------------------------
         if self.latent_noise_std > 0:
             latent_input = latent + torch.randn_like(latent) * self.latent_noise_std
         else:

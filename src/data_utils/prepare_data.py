@@ -216,6 +216,7 @@ def generate_samples(
                 added_points += add
                 dropped_points += drop
                 if sample_points is not None:
+                    sample_points = sample_points - center
                     if return_coords:
                         samples.append((sample_points, tuple(center)))
                     else:

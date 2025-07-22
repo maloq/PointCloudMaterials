@@ -63,10 +63,12 @@ def get_batch_reconstructions(model: PointNetAutoencoder,
     with torch.no_grad():
         # Prepare input
         points = points.to(device)
+        if points.dim() == 2:
+            points = points.unsqueeze(0)
         points_transposed = points.transpose(2, 1)  # (B, N, 3) -> (B, 3, N)
         
         # Get reconstruction
-        reconstructed, _ = model(points_transposed)
+        reconstructed, _, _ = model(points_transposed)
         # reconstructed is (B, 3, N), we need to handle this shape
         
         print(f"Input points shape: {points.shape}")

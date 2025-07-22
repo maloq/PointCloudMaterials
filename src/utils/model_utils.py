@@ -16,18 +16,12 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
         PointNetAutoencoder: The loaded model
     """
     
-    # ------------------------------------------------------------------
-    # 1. Determine the module class to instantiate
-    # ------------------------------------------------------------------
     if module is None:
-        # Fallback to PointNetAutoencoder if no specific module is provided
-        from src.autoencoder.autoencoder_module import PointNetAutoencoder as module
+        from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder as module
     model = None
-    # Instantiate the module *manually*
     try:
         model = module(cfg)
     except Exception:
-        # In case the ctor doesn't accept cfg, try without it.
         model = module()
 
     # With PyTorch >=2.6 the default for `weights_only` became `True`,
@@ -35,38 +29,28 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
     # tensors (e.g., Hydra configurations stored by Lightning).
     checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
 
-    # Determine the right key that contains the actual weights.
     if isinstance(checkpoint, dict):
         if 'state_dict' in checkpoint:
             state_dict = checkpoint['state_dict']
         elif 'model_state_dict' in checkpoint:
             state_dict = checkpoint['model_state_dict']
         else:
-            # It might *just* be a state-dict already.
             state_dict = checkpoint
     else:
         state_dict = checkpoint
 
-    # Some checkpoints prefix parameters with "model.". Remove that
-    # prefix so that it matches our module's keys.
+
     stripped_state_dict = {}
     for k, v in state_dict.items():
         new_key = k[6:] if k.startswith('model.') else k
         stripped_state_dict[new_key] = v
 
-    # Finally, load the weights (allowing missing keys for flexibility).
     model.load_state_dict(stripped_state_dict, strict=False)
     print("✅ Loaded checkpoint by manually restoring state_dict")
 
-    # ------------------------------------------------------------------
-    # 4. Device placement & evaluation mode
-    # ------------------------------------------------------------------
     model = model.to(device)
     model.eval()
 
-    # ------------------------------------------------------------------
-    # 5. Friendly logging
-    # ------------------------------------------------------------------
     try:
         print(f"Model loaded successfully from {checkpoint_path}")
         if hasattr(cfg, 'type'):

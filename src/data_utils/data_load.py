@@ -15,11 +15,14 @@ logger = setup_logging()
 
 
 
-def pc_normalize(pc):
-    centroid = np.mean(pc, axis=0)
-    pc = pc - centroid
-    m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
-    pc = pc / m
+def pc_normalize(pc, radius = None):
+    # centroid = np.mean(pc, axis=0)
+    # pc = pc - centroid
+    if radius:
+        pc = pc / radius
+    else:
+        m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
+        pc = pc / m
     return pc
 
 
@@ -71,6 +74,7 @@ class PointCloudDataset(Dataset):
         self.pre_normalize = pre_normalize
         self.normalize = normalize
         self.return_coords = return_coords
+        self.radius = radius
         self.samples = read_and_sample_off_file(root,
                                                 data_files,
                                                 radius,
@@ -86,7 +90,7 @@ class PointCloudDataset(Dataset):
             self.coords = None
 
         if pre_normalize and normalize:
-            self.samples = [pc_normalize(s).astype(np.float32) for s in self.samples]
+            self.samples = [pc_normalize(s, self.radius).astype(np.float32) for s in self.samples]
         elif not normalize:
             print("Point Cloud normalization skipped")
         logger.debug(f"Point set shape: {self.samples[0].shape}")
@@ -97,7 +101,7 @@ class PointCloudDataset(Dataset):
     def __getitem__(self, index):
         point_set = self.samples[index]
         if not self.pre_normalize and self.normalize:
-            point_set = pc_normalize(point_set).astype(np.float32)
+            point_set = pc_normalize(point_set, self.radius).astype(np.float32)
         point_set_tensor = torch.tensor(point_set, dtype=torch.float32)
         
         if self.return_coords:
