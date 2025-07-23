@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import hydra
+import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
@@ -10,9 +11,12 @@ from omegaconf import DictConfig
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 import wandb
 
+
+sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
 from src.data_utils.data_module import PointCloudDataModule
+torch.set_float32_matmul_precision('medium')
 
 logger = setup_logging()
 
@@ -60,14 +64,14 @@ def train(cfg: DictConfig):
         logger=wandb_logger,
         callbacks=[checkpoint_callback, lr_monitor],
         log_every_n_steps=cfg.log_every_n_steps,
-        precision='16-mixed',
+        precision='32-true',
         benchmark=True,
     )
 
     trainer.fit(model, dm)
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='autoencoder_80')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd')
 def main(cfg: DictConfig):
     train(cfg)
 

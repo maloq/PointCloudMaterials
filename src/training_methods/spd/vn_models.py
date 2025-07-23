@@ -127,10 +127,9 @@ class VNStdFeature(nn.Module):
         return x_std, z0
 
 
-# ---------------------------------------------------------------------------
-# VN PointNet-style encoder and rotation head
-# ---------------------------------------------------------------------------
-class PointNetEncoder(nn.Module):
+
+
+class PointNetEncoderVN(nn.Module):
     def __init__(self, latent_size=256, n_knn=20, pooling='mean', feature_transform=False):
         super().__init__()
         self.n_knn = n_knn
@@ -161,6 +160,9 @@ class PointNetEncoder(nn.Module):
         if self.feature_transform:
             x_global = self.fstn(x).unsqueeze(-1).repeat(1, 1, 1, N)
             x = torch.cat((x, x_global), 1)
+        else:
+            x_mean = x.mean(dim=-1, keepdim=True)
+            x = torch.cat((x, x_mean.expand_as(x)), 1)
         x = self.conv2(x)
         x = self.bn3(self.conv3(x))
         x_mean_out = x.mean(dim=-1, keepdim=True)

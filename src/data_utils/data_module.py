@@ -16,6 +16,7 @@ class PointCloudDataModule(pl.LightningDataModule):
         self.cfg = cfg
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
+        self.max_samples = cfg.max_samples
         
     def setup(self, stage=None):
         start_time = time.time()
@@ -37,8 +38,9 @@ class PointCloudDataModule(pl.LightningDataModule):
         val_size = len(full_dataset) - train_size
         self.train_dataset, self.val_dataset = random_split(full_dataset, [train_size, val_size])
 
-        # self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(2))
-        # self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(2))
+        if self.max_samples:
+            self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(self.max_samples))
+            self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(self.max_samples))
 
         elapsed_time = time.time() - start_time
         logger.print(f"Train dataset size: {len(self.train_dataset)}")

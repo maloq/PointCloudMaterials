@@ -1,0 +1,55 @@
+defaults:
+  - data: data_ae_Al_80_small
+project_name: pointnet
+experiment_name: ${encoder.name}_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}_${now:%m%d}
+wandb_mode: offline
+experiment_tags:
+  - SWA
+  - Folding
+  - centered
+  - RotationConsistency
+  - no_edges
+
+latent_size: 64
+encoder: 
+  name: PnE_L
+  kwargs:
+    latent_size: ${latent_size}
+    dropout_rate: 0.2
+    feature_transform: False
+decoder: 
+  name: FoldingSphereAttn
+  kwargs: 
+    latent_size: ${latent_size}
+    num_points: ${data.num_points}
+    dropout_rate: 0.1
+    n_shells: 2
+    R1: 0.5
+    R2: 1.0
+    hidden_dim: 256
+
+max_samples: 20000
+
+loss: Sinkhorn
+torch_compile: False
+
+learning_rate: 0.004
+batch_size: 2000
+
+enable_swa: False
+swa_epoch_start: 1000 
+epochs: 1000
+
+gpu: True
+devices: 0
+log_every_n_steps: 5
+num_workers: 4
+scheduler_gamma: 0.5
+scheduler_name: OneCycle
+
+decay_rate: 0.003
+feature_transform_loss_scale: 0.001
+rotation_loss_scale: 0.2
+l1_latent_loss_scale: 0.00
+kl_latent_loss_scale: 0.03
+latent_noise_std: 0.00
