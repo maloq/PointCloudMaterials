@@ -18,7 +18,7 @@ encoder:
     dropout_rate: 0.2
     feature_transform: True
 decoder: 
-  name: FoldingSphere
+  name: FoldingSphereAttn
   kwargs: 
     latent_size: ${latent_size}
     num_points: ${data.num_points}
@@ -28,7 +28,7 @@ decoder:
     R2: 1.0
     hidden_dim: 256
 
-loss: CD_FTreg
+loss: Sinkhorn
 torch_compile: False
 
 learning_rate: 0.004
@@ -50,4 +50,4 @@ feature_transform_loss_scale: 0.001
 rotation_loss_scale: 0.2
 l1_latent_loss_scale: 0.00
 kl_latent_loss_scale: 0.03
-latent_noise_std: 0.01
+latent_noise_std: 0.00

@@ -7,6 +7,12 @@ try:
 except Exception:                         
     pytorch3d_available = False
 
+try:
+    import geomloss
+    geomloss_available = True
+except ImportError:
+    geomloss_available = False
+
 import torch.nn as nn
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
@@ -72,6 +78,42 @@ if not pytorch3d_available:
         return cd.mean(), None
         
 
+def sinkhorn_distance(pred: torch.Tensor,
+                        target: torch.Tensor,
+                        *,
+                        blur=.05, p=2, scaling=.5):
+    """
+    Batched Sinkhorn distance between two point clouds.
+    
+    This is a wrapper around the `geomloss` library.
+
+    Args
+    ----
+    pred, target : (B, N, 3) or (B, 3, N) tensors
+        Point-clouds of the same batch size B.  N/M may differ.
+    blur : float, default .05
+        Sinkhorn softness parameter.
+    p : int, default 2
+        Power of the Euclidean distance for the cost.
+    scaling : float, default .5
+        Scaling of the cost matrix.
+
+    Returns
+    -------
+    shd : torch.Tensor
+        Scalar Sinkhorn distance averaged over the batch.
+    aux : None
+        Placeholder to stay API-compatible with PyTorch3D.
+    """
+
+    pred = _to_B_N_3(pred)
+    target = _to_B_N_3(target)
+
+    loss = geomloss.SamplesLoss(loss="sinkhorn", p=p, blur=blur,
+                                scaling=scaling, backend="tensorized")
+    
+    return loss(pred, target).mean(), None
+
 
 def chamfer_loss(pred, target, **kwargs):
     """
@@ -87,6 +129,25 @@ def chamfer_loss(pred, target, **kwargs):
         tuple: (Total loss, dictionary for auxiliary losses).
     """
     loss, _ = chamfer_distance(pred, target)
+    aux_loss_dict = {}
+    return _add_optional_losses(loss, aux_loss_dict, **kwargs)
+
+
+def sinkhorn_loss(pred, target, **kwargs):
+    """
+    Computes the Sinkhorn distance loss between predictions and targets.
+    Optionally includes L1/KL regularization on the latent space.
+
+    Args:
+        pred (Tensor): Predicted point cloud.
+        target (Tensor): Ground truth point cloud.
+        **kwargs: Additional keyword arguments, can include 'latent', 
+                  'l1_latent_loss_scale', and 'kl_latent_loss_scale'.
+
+    Returns:
+        tuple: (Total loss, dictionary for auxiliary losses).
+    """
+    loss, _ = sinkhorn_distance(pred, target)
     aux_loss_dict = {}
     return _add_optional_losses(loss, aux_loss_dict, **kwargs)
 

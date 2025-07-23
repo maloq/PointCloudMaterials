@@ -51,6 +51,9 @@ class PointNetAutoencoder(pl.LightningModule):
         elif cfg.loss == 'CD_FTreg_Rep':
              self.criterion = chamfer_regularized_encoder_loss_repulsion
              logger.print(f"Using Chamfer loss with feature transform regularization and repulsion loss")
+        elif cfg.loss == 'Sinkhorn':
+             self.criterion = sinkhorn_loss
+             logger.print(f"Using Sinkhorn loss")
         else:
             logger.warning(f"Unknown or basic loss type '{cfg.loss}' specified. Defaulting to basic chamfer_loss.")
             self.criterion = chamfer_loss
