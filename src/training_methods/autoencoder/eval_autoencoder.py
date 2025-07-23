@@ -140,7 +140,7 @@ def load_model_and_config(checkpoint_path: str,
         resolved_config_name = fallback_config_path.split('/')[-1].split('.')[0]
 
     # Load Hydra config
-    with initialize(version_base=None, config_path='../../' + config_path):
+    with initialize(version_base=None, config_path='../../../' + config_path):
         print(f"Loading config from {config_path}/{resolved_config_name}")
         cfg = compose(config_name=resolved_config_name)
 

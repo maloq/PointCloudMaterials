@@ -9,8 +9,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment
 from itertools import product
-from src.autoencoder.autoencoder_module import PointNetAutoencoder
-from src.autoencoder.eval_autoencoder import create_autoencoder_dataloader, load_model_and_config
+from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.training_methods.autoencoder.eval_autoencoder import create_autoencoder_dataloader, load_model_and_config
 from typing import List
 
 import random
