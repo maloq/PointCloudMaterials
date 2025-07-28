@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=PN_80          # Name of your job
+#SBATCH --job-name=SPD_80          # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
-#SBATCH --partition=A100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
 #SBATCH --gpus-per-node=1             # Request 1 node
 #SBATCH --gres=gpu:1                  # Request 1 GPU
 #SBATCH --cpus-per-task=8             # Request 8 CPU cores
@@ -22,6 +22,6 @@ cd /home/infres/vmorozov/PointCloudMaterials
 export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run the Python script
-srun python src/training_methods/autoencoder/train_autoencoder.py --config-name autoencoder_80
+srun python src/training_methods/spd/train_spd.py --config-name spd
 
 echo "Job finished at: $(date)"

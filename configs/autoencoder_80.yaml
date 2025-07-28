@@ -1,7 +1,7 @@
 defaults:
   - data: data_ae_Al_80
 project_name: pointnet
-experiment_name: ${encoder.name}_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}_${now:%m%d}
+experiment_name: ${encoder.name}_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online
 experiment_tags:
   - SWA

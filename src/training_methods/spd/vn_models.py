@@ -97,13 +97,21 @@ def mean_pool(x: torch.Tensor, dim=-1, keepdim=False) -> torch.Tensor:
 
 
 class VNStdFeature(nn.Module):
-    def __init__(self, in_channels, dim=4, normalize_frame=False, share_nonlinearity=False, negative_slope=0.2, use_batchnorm=True):
+    def __init__(self, in_channels, dim=4, normalize_frame=False, share_nonlinearity=False, negative_slope=0.2, use_batchnorm=True, hidden_dims=None):
         super().__init__()
         self.dim = dim
         self.normalize_frame = normalize_frame
-        self.vn1 = VNLinearLeakyReLU(in_channels, in_channels // 2, dim=dim, share_nonlinearity=share_nonlinearity, negative_slope=negative_slope, use_batchnorm=use_batchnorm)
-        self.vn2 = VNLinearLeakyReLU(in_channels // 2, in_channels // 4, dim=dim, share_nonlinearity=share_nonlinearity, negative_slope=negative_slope, use_batchnorm=use_batchnorm)
-        self.vn_lin = nn.Linear(in_channels // 4, 3 if not normalize_frame else 2, bias=False)
+
+        if hidden_dims is None:
+            # Maintain original behavior if hidden_dims is not provided
+            h1 = in_channels // 2
+            h2 = in_channels // 4
+        else:
+            h1, h2 = hidden_dims
+
+        self.vn1 = VNLinearLeakyReLU(in_channels, h1, dim=dim, share_nonlinearity=share_nonlinearity, negative_slope=negative_slope, use_batchnorm=use_batchnorm)
+        self.vn2 = VNLinearLeakyReLU(h1, h2, dim=dim, share_nonlinearity=share_nonlinearity, negative_slope=negative_slope, use_batchnorm=use_batchnorm)
+        self.vn_lin = nn.Linear(h2, 3 if not normalize_frame else 2, bias=False)
 
     def forward(self, x: torch.Tensor):
         z0 = self.vn1(x)
@@ -130,23 +138,36 @@ class VNStdFeature(nn.Module):
 
 
 class PointNetEncoderVN(nn.Module):
-    def __init__(self, latent_size=256, n_knn=20, pooling='mean', feature_transform=False):
+    def __init__(self, latent_size=64, n_knn=32, pooling='mean',
+                 feature_transform=False, hidden_dim1=256, hidden_dim2=1024,
+                 stn_hidden_dims=(64, 128, 1024), stn_fc_dims=(512, 256),
+                 std_feature_hidden_dims=None,
+                 use_batchnorm=True):
         super().__init__()
         self.n_knn = n_knn
         self.pooling = pooling
-        self.conv_pos = VNLinearLeakyReLU(3, 64 // 3, dim=5, negative_slope=0.0)
-        self.conv1 = VNLinearLeakyReLU(64 // 3, 64 // 3, dim=4, negative_slope=0.0)
-        self.conv2 = VNLinearLeakyReLU(64 // 3 * 2, 128 // 3, dim=4, negative_slope=0.0)
-        self.conv3 = VNLinear(128 // 3, latent_size // 3)
-        self.bn3 = VNBatchNorm(latent_size // 3, dim=4)
-        self.std_feature = VNStdFeature(latent_size // 3 * 2, dim=4, normalize_frame=False, negative_slope=0.0)
+
+        # To accommodate the Vector-Neuronal processing, the channels are divided by 3.
+        # It's recommended to use hidden dimensions that are multiples of 3.
+        c1 = hidden_dim1 // 3
+        c2 = hidden_dim2 // 3  
+        c3 = latent_size // 3
+
+        self.conv_pos = VNLinearLeakyReLU(3, c1, dim=5, negative_slope=0.1)
+        self.conv1 = VNLinearLeakyReLU(c1, c1, dim=4, negative_slope=0.1)
+        self.conv2 = VNLinearLeakyReLU(c1 * 2, c2, dim=4, negative_slope=0.1)
+        self.conv3 = VNLinear(c2, c3)
+        self.bn3 = VNBatchNorm(c3, dim=4)
+        self.conv4 = VNLinear(c3, c3)
+        self.bn4 = VNBatchNorm(c3, dim=4)
+        self.std_feature = VNStdFeature(c3 * 2, dim=4, normalize_frame=False, negative_slope=0.0, hidden_dims=std_feature_hidden_dims)
         if pooling == 'max':
-            self.pool = VNMaxPool(64 // 3)
+            self.pool = VNMaxPool(c1)
         else:
             self.pool = mean_pool
         self.feature_transform = feature_transform
         if self.feature_transform:
-            self.fstn = STNkd(latent_size)
+            self.fstn = STNkd(c1, hidden_dims=stn_hidden_dims, fc_dims=stn_fc_dims)
 
     def forward(self, x: torch.Tensor):
         # x: (B, N, 3)
@@ -165,6 +186,7 @@ class PointNetEncoderVN(nn.Module):
             x = torch.cat((x, x_mean.expand_as(x)), 1)
         x = self.conv2(x)
         x = self.bn3(self.conv3(x))
+        x = self.bn4(self.conv4(x))
         x_mean_out = x.mean(dim=-1, keepdim=True)
         x = torch.cat((x, x_mean_out.expand_as(x)), 1)
         x, trans = self.std_feature(x)
@@ -175,15 +197,18 @@ class PointNetEncoderVN(nn.Module):
 
 
 class STNkd(nn.Module):
-    def __init__(self, d=64):
+    def __init__(self, d=64, hidden_dims=(64, 128, 1024), fc_dims=(512, 256)):
         super().__init__()
-        self.conv1 = VNLinearLeakyReLU(d, 64 // 3, dim=4, negative_slope=0.0)
-        self.conv2 = VNLinearLeakyReLU(64 // 3, 128 // 3, dim=4, negative_slope=0.0)
-        self.conv3 = VNLinearLeakyReLU(128 // 3, 1024 // 3, dim=4, negative_slope=0.0)
-        self.fc1 = VNLinearLeakyReLU(1024 // 3, 512 // 3, dim=3, negative_slope=0.0)
-        self.fc2 = VNLinearLeakyReLU(512 // 3, 256 // 3, dim=3, negative_slope=0.0)
-        self.pool = VNMaxPool(1024 // 3)
-        self.fc3 = VNLinear(256 // 3, d)
+        c1, c2, c3 = [dim // 3 for dim in hidden_dims]
+        fc1_dim, fc2_dim = [dim // 3 for dim in fc_dims]
+
+        self.conv1 = VNLinearLeakyReLU(d, c1, dim=4, negative_slope=0.0)
+        self.conv2 = VNLinearLeakyReLU(c1, c2, dim=4, negative_slope=0.0)
+        self.conv3 = VNLinearLeakyReLU(c2, c3, dim=4, negative_slope=0.0)
+        self.fc1 = VNLinearLeakyReLU(c3, fc1_dim, dim=3, negative_slope=0.0)
+        self.fc2 = VNLinearLeakyReLU(fc1_dim, fc2_dim, dim=3, negative_slope=0.0)
+        self.pool = VNMaxPool(c3)
+        self.fc3 = VNLinear(fc2_dim, d)
 
     def forward(self, x: torch.Tensor):
         x = self.conv1(x)

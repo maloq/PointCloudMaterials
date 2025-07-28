@@ -1,8 +1,8 @@
 defaults:
-  - data: data_ae_Al_80_small
+  - data: data_ae_Al_80
 project_name: pointnet
-experiment_name: ${encoder.name}_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}_${now:%m%d}
-wandb_mode: offline
+experiment_name: SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
+wandb_mode: online
 experiment_tags:
   - SWA
   - Folding
@@ -26,15 +26,15 @@ decoder:
     n_shells: 2
     R1: 0.5
     R2: 1.0
-    hidden_dim: 256
+    hidden_dim: 384
 
-max_samples: 20000
+max_samples: 0
 
 loss: Sinkhorn
-torch_compile: False
+torch_compile: True
 
-learning_rate: 0.004
-batch_size: 2000
+learning_rate: 0.005
+batch_size: 1024
 
 enable_swa: False
 swa_epoch_start: 1000 
@@ -48,8 +48,4 @@ scheduler_gamma: 0.5
 scheduler_name: OneCycle
 
 decay_rate: 0.003
-feature_transform_loss_scale: 0.001
-rotation_loss_scale: 0.2
-l1_latent_loss_scale: 0.00
-kl_latent_loss_scale: 0.03
-latent_noise_std: 0.00
+kl_latent_loss_scale: 0.02

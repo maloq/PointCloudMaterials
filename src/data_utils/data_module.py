@@ -38,7 +38,7 @@ class PointCloudDataModule(pl.LightningDataModule):
         val_size = len(full_dataset) - train_size
         self.train_dataset, self.val_dataset = random_split(full_dataset, [train_size, val_size])
 
-        if self.max_samples:
+        if self.max_samples>0:
             self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(self.max_samples))
             self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(self.max_samples))
 

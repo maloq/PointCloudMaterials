@@ -27,7 +27,8 @@ def run_clustering_pipeline(checkpoint_path: str,
                             crystal_file_paths: List[str],
                             cuda_device: int = 0,
                             max_samples: int = None,
-                            config_path: str = 'autoencoder_e3nn_64'):
+                            model_class: str = 'Autoencoder',
+                            config_path: str = 'autoencoder'):
     """
     Runs the clustering pipeline: loads model, generates/saves latents.
 
@@ -220,7 +221,7 @@ def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> tuple
         points = batch.to(device).transpose(2, 1)
         
         with torch.no_grad():
-            point_cloud, latent, _ = model(points)
+            latent, point_cloud, _ = model(points)
         
         latents.append(latent.cpu().numpy())
         point_clouds.append(point_cloud.cpu().numpy())

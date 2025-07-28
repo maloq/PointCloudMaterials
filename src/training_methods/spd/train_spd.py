@@ -64,7 +64,7 @@ def train(cfg: DictConfig):
         logger=wandb_logger,
         callbacks=[checkpoint_callback, lr_monitor],
         log_every_n_steps=cfg.log_every_n_steps,
-        precision='32-true',
+        precision='bf16-mixed',
         benchmark=True,
     )
 
