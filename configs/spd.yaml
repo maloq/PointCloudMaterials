@@ -12,11 +12,12 @@ experiment_tags:
 
 latent_size: 72
 encoder: 
-  name: PnE_L
+  name: PnE_VN
   kwargs:
     latent_size: ${latent_size}
     dropout_rate: 0.2
-    feature_transform: False
+    hidden_dim1: 360
+    hidden_dim2: 1200
 decoder: 
   name: FoldingSphereAttn
   kwargs: 
@@ -26,7 +27,7 @@ decoder:
     n_shells: 2
     R1: 0.5
     R2: 1.0
-    hidden_dim: 384
+    hidden_dim: 400
 
 max_samples: 0
 
@@ -34,11 +35,11 @@ loss: Sinkhorn
 torch_compile: True
 
 learning_rate: 0.005
-batch_size: 1024
+batch_size: 512
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 1000
+epochs: 300
 
 gpu: True
 devices: 0

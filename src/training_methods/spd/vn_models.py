@@ -139,7 +139,7 @@ class VNStdFeature(nn.Module):
 
 class PointNetEncoderVN(nn.Module):
     def __init__(self, latent_size=64, n_knn=32, pooling='mean',
-                 feature_transform=False, hidden_dim1=256, hidden_dim2=1024,
+                 feature_transform=True, hidden_dim1=256, hidden_dim2=1024,
                  stn_hidden_dims=(64, 128, 1024), stn_fc_dims=(512, 256),
                  std_feature_hidden_dims=None,
                  use_batchnorm=True):
@@ -156,10 +156,8 @@ class PointNetEncoderVN(nn.Module):
         self.conv_pos = VNLinearLeakyReLU(3, c1, dim=5, negative_slope=0.1)
         self.conv1 = VNLinearLeakyReLU(c1, c1, dim=4, negative_slope=0.1)
         self.conv2 = VNLinearLeakyReLU(c1 * 2, c2, dim=4, negative_slope=0.1)
-        self.conv3 = VNLinear(c2, c3)
-        self.bn3 = VNBatchNorm(c3, dim=4)
-        self.conv4 = VNLinear(c3, c3)
-        self.bn4 = VNBatchNorm(c3, dim=4)
+        self.conv3 = VNLinearLeakyReLU(c2, c3, dim=4, negative_slope=0.1)
+        self.conv4 = VNLinearLeakyReLU(c3, c3, dim=4, negative_slope=0.1)
         self.std_feature = VNStdFeature(c3 * 2, dim=4, normalize_frame=False, negative_slope=0.0, hidden_dims=std_feature_hidden_dims)
         if pooling == 'max':
             self.pool = VNMaxPool(c1)
@@ -185,8 +183,8 @@ class PointNetEncoderVN(nn.Module):
             x_mean = x.mean(dim=-1, keepdim=True)
             x = torch.cat((x, x_mean.expand_as(x)), 1)
         x = self.conv2(x)
-        x = self.bn3(self.conv3(x))
-        x = self.bn4(self.conv4(x))
+        x = self.conv3(x)
+        x = self.conv4(x)
         x_mean_out = x.mean(dim=-1, keepdim=True)
         x = torch.cat((x, x_mean_out.expand_as(x)), 1)
         x, trans = self.std_feature(x)
@@ -236,6 +234,29 @@ class SimpleRot(nn.Module):
         rot_mat = self.model(x).squeeze(-1)
         return self.constraint_rot(rot_mat)
 
+
+class ComplexRot(nn.Module):
+    def __init__(self, in_ch, strict='None'):
+        super().__init__()
+        self.linear1 = VNLinearLeakyReLU(in_ch, in_ch * 4, dim=4, negative_slope=0.0)
+        self.linear2 = VNLinearLeakyReLU(in_ch*4 , in_ch*2, dim=4, negative_slope=0.0)
+        self.linear3 = VNLinearLeakyReLU(in_ch*2, in_ch // 2, dim=4, negative_slope=0.0)
+        self.linearR = VNLinear(in_ch // 2, 3)
+        self.strict = strict
+
+    def constraint_rot(self, rot_mat: torch.Tensor) -> torch.Tensor:
+        if self.strict == 'None':
+            return rot_mat
+        u, _, v = torch.linalg.svd(rot_mat)
+        return u @ v.transpose(-1, -2)
+
+    def forward(self, x):
+        x = self.linear1(x)
+        x = self.linear2(x)
+        x = self.linear3(x)
+        R = self.linearR(x)
+        rot_mat = torch.mean(R, dim=-1)
+        return self.constraint_rot(rot_mat)
 
 # Utilities
 def knn(x, k):

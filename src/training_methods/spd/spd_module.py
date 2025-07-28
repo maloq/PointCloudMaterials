@@ -8,17 +8,11 @@ from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
 from src.utils.optimizer_utils import get_optimizers_and_scheduler
 import src.models.autoencoders.encoders
 import src.models.autoencoders.decoders
-from .vn_models import PointNetEncoderVN, SimpleRot
+from .vn_models import PointNetEncoderVN, SimpleRot, ComplexRot
 from src.loss.reconstruction_loss import kl_latent_regularizer
 
 
-def _orthogonalize(mat: torch.Tensor) -> torch.Tensor:
-    """Return closest orthogonal matrix using SVD."""
-    # The SVD does not seem to support bfloat16 on CUDA.
-    # We cast to float32 and then back to the original type.
-    orig_dtype = mat.dtype
-    u, _, v = torch.linalg.svd(mat.to(torch.float32))
-    return (u @ v.transpose(-1, -2)).to(orig_dtype)
+
 
 
 class ShapePoseDisentanglement(pl.LightningModule):
@@ -28,29 +22,27 @@ class ShapePoseDisentanglement(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters(cfg)
 
-        _, self.decoder = build_model(cfg)
+        self.decoder = build_model(cfg, only_decoder=True)
         
         encoder_kwargs = self.hparams.encoder.get('kwargs', {})
 
-        # The latent dimension used **inside** the encoder (half of global latent_size)
-        self.encoder_latent_size = encoder_kwargs.get('latent_size', self.hparams.latent_size) // 2
+        self.encoder_latent_size = encoder_kwargs.get('latent_size', self.hparams.latent_size) 
 
         self.encoder = PointNetEncoderVN(
-            latent_size=self.encoder_latent_size,
+            latent_size=self.encoder_latent_size // 2,
             n_knn=32,
+            hidden_dim1=encoder_kwargs.get('hidden_dim1', 256),
+            hidden_dim2=encoder_kwargs.get('hidden_dim2', 1024),
             pooling=encoder_kwargs.get('pooling', 'mean'),
             feature_transform=encoder_kwargs.get('feature_transform', False)
         )
 
         # Align rotation network input with the equivariant latent vector produced
         # by the encoder.  The channel count equals encoder_latent_size // 3.
-        self.rot_net = SimpleRot(self.encoder_latent_size // 3)
-
-        # ------------------------------------------------------------------
-        # Optional mapper to align invariant latent size with decoder input
-        # ------------------------------------------------------------------
-        
-        self.inv_mapper = nn.LazyLinear(self.hparams.latent_size)
+        # The encoder returns an equivariant latent tensor whose channel
+        # dimension equals (latent_size // 2) // 3 = latent_size // 6.
+        # Align the rotation head to this size to avoid shape mismatches.
+        self.rot_net = ComplexRot(self.encoder_latent_size // 6)
 
         # Map the encoder-predicted translation (which has encoder_latent_size//3
         # channels) to a proper 3-D translation vector that can be broadcast
@@ -63,10 +55,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # pc: (B, N, 3)
         inv_z, eq_z, _ = self.encoder(pc)
 
-        # Map invariant latent to the expected decoder dimension
-        inv_z_mapped = self.inv_mapper(inv_z)
-
-        cano = self.decoder(inv_z_mapped)
+        cano = self.decoder(inv_z)
         if cano.shape[1] == 3:
             cano = cano.permute(0, 2, 1)
 
@@ -82,9 +71,24 @@ class ShapePoseDisentanglement(pl.LightningModule):
     def _step(self, batch, batch_idx, stage: str):
         pc = batch
         inv_z, recon, cano, rot = self(pc)
-        loss_recon, _ = sinkhorn_distance(recon.contiguous(), pc)
-        loss_chamfer, _ = chamfer_distance(recon, pc)
-        ortho_loss = torch.mean((rot.transpose(1, 2) @ rot - torch.eye(3, device=self.device)) ** 2)
+
+        # ------------------------------------------------------------------
+        # Losses are computed with external libraries (geomloss & PyTorch3D)
+        # which currently do NOT support bf16 on CUDA.  When running with AMP
+        # (autocast="bf16") the model outputs `recon`/`rot` in bf16 while the
+        # input `pc` stays in fp32, leading to dtype mismatches.  We therefore
+        # cast everything to fp32 **just for the loss computation**.
+        # ------------------------------------------------------------------
+
+        # Cast to fp32 for external loss functions which do not support bf16
+        recon_f32 = recon.to(torch.float32)
+        pc_f32    = pc.to(torch.float32)
+
+        loss_recon, _   = sinkhorn_distance(recon_f32.contiguous(), pc_f32)
+        loss_chamfer, _ = chamfer_distance(recon_f32, pc_f32)
+
+        ortho_loss = torch.mean((rot.transpose(1, 2).float() @ rot.float()
+                                 - torch.eye(3, device=self.device)) ** 2)
         
         loss = loss_recon + self.ortho_scale * ortho_loss
 
@@ -107,3 +111,12 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
     def configure_optimizers(self):
         return get_optimizers_and_scheduler(self.hparams, self.parameters())
+
+
+def _orthogonalize(mat: torch.Tensor) -> torch.Tensor:
+    """Return closest orthogonal matrix using SVD."""
+    # The SVD does not seem to support bfloat16 on CUDA.
+    # We cast to float32 and then back to the original type.
+    orig_dtype = mat.dtype
+    u, _, v = torch.linalg.svd(mat.to(torch.float32))
+    return (u @ v.transpose(-1, -2)).to(orig_dtype)
