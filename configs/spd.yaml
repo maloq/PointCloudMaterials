@@ -10,7 +10,7 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 
-latent_size: 64
+latent_size: 72
 encoder: 
   name: PnE_L
   kwargs:

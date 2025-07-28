@@ -55,14 +55,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Map the encoder-predicted translation (which has encoder_latent_size//3
         # channels) to a proper 3-D translation vector that can be broadcast
         # with the reconstructed points.
-        self.trans_mapper = nn.Linear(self.encoder_latent_size // 3, 3)
 
         self.ortho_scale = cfg.get("ortho_scale", 0.01)
         self.kl_latent_loss_scale = cfg.get("kl_latent_loss_scale", 0.0)
 
     def forward(self, pc: torch.Tensor):
         # pc: (B, N, 3)
-        inv_z, eq_z, trans = self.encoder(pc)
+        inv_z, eq_z, _ = self.encoder(pc)
 
         # Map invariant latent to the expected decoder dimension
         inv_z_mapped = self.inv_mapper(inv_z)
@@ -76,14 +75,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # the high-dim translation estimate down to 3-D.  This guarantees an
         # input shape of (B, C) for the linear layer even if the encoder
         # returns (B, C, 1).
-        trans = self.trans_mapper(trans.reshape(trans.size(0), -1)).unsqueeze(1)
 
-        recon = (rot @ cano.transpose(1, 2)).transpose(1, 2) + trans
-        return recon, cano, rot, trans, inv_z
+        recon = (rot @ cano.transpose(1, 2)).transpose(1, 2)
+        return inv_z, recon, cano, rot 
 
     def _step(self, batch, batch_idx, stage: str):
         pc = batch
-        recon, cano, rot, _, inv_z = self(pc)
+        inv_z, recon, cano, rot = self(pc)
         loss_recon, _ = sinkhorn_distance(recon.contiguous(), pc)
         loss_chamfer, _ = chamfer_distance(recon, pc)
         ortho_loss = torch.mean((rot.transpose(1, 2) @ rot - torch.eye(3, device=self.device)) ** 2)
