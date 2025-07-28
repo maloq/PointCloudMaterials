@@ -116,8 +116,9 @@ def get_config_path_from_checkpoint(checkpoint_path):
 
 
 
-def load_model_and_config(checkpoint_path: str,
+def load_ae_model_and_config(checkpoint_path: str,
                           cuda_device: int = 0,
+                          model_class: str = 'Autoencoder',
                           fallback_config_path: str = None):
     """Load Hydra config, restore the model from *checkpoint_path* and return
     the model instance together with the resolved *cfg* object and chosen

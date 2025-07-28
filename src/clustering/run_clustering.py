@@ -2,15 +2,12 @@ import sys
 import os
 import numpy as np
 sys.path.append(os.getcwd())
-from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, confusion_matrix, silhouette_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment
 from itertools import product
-from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
-from src.training_methods.autoencoder.eval_autoencoder import create_autoencoder_dataloader, load_model_and_config
 from typing import List
 
 import random
@@ -19,46 +16,6 @@ import warnings
 warnings.filterwarnings("ignore")
 print(f'Running from {os.getcwd()}')
 
-
-# Encapsulate the main logic into a function
-def run_clustering_pipeline(checkpoint_path: str,
-                            save_folder: str,
-                            liquid_file_paths: List[str],
-                            crystal_file_paths: List[str],
-                            cuda_device: int = 0,
-                            max_samples: int = None,
-                            model_class: str = 'Autoencoder',
-                            config_path: str = 'autoencoder'):
-    """
-    Runs the clustering pipeline: loads model, generates/saves latents.
-
-    Args:
-        checkpoint_path (str): Path to the model checkpoint.
-        save_folder (str): Path to save the latent-label pairs (.npy).
-        liquid_file_paths (List[str]): List of paths to liquid dataset files.
-        crystal_file_paths (List[str]): List of paths to crystal dataset files.
-        model_class (str): Type of model ('Autoencoder' or 'Seq2Seq').
-        cuda_device (int): GPU device index to use.
-        max_samples (int, optional): Maximum number of samples to process. Defaults to None.
-    """
-    # -----------------------------
-    # Load configuration & model
-    # -----------------------------
-    model, cfg, device = load_model_and_config(
-        checkpoint_path=checkpoint_path,
-        cuda_device=cuda_device,
-        fallback_config_path=config_path
-    )
-
-    # Predict and save latent vectors
-    predict_and_save_latent(cfg=cfg,  # Pass the loaded hydra config
-                            model=model,
-                            liquid_file_paths=liquid_file_paths,
-                            crystal_file_paths=crystal_file_paths,
-                            device=device,
-                            save_folder=save_folder,
-                            max_samples=max_samples) # Pass max_samples
-    return model
 
 
 def find_optimal_clusters(data, range_n_clusters=range(2, 11), random_state=66):
@@ -210,99 +167,6 @@ def cluster_and_evaluate(latents, labels, random_state=66):
         'full_results': full_results
     }
 
-def get_latents_from_dataloader(model, dataloader, device: str = 'cpu') -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Extract latent representations from dataloader batches."""
-    if len(dataloader) == 0:
-        raise ValueError("Dataloader is empty - no data to process")
-        
-    latents, point_clouds, originals = [], [], []
-
-    for batch in dataloader:
-        points = batch.to(device).transpose(2, 1)
-        
-        with torch.no_grad():
-            latent, point_cloud, _ = model(points)
-        
-        latents.append(latent.cpu().numpy())
-        point_clouds.append(point_cloud.cpu().numpy())
-        originals.append(points.cpu().numpy())
-
-    return (np.concatenate(latents, axis=0), 
-            np.concatenate(point_clouds, axis=0), 
-            np.concatenate(originals, axis=0))
-
-
-def _process_files(cfg, model, file_paths: List[str], label: str, device: str, max_samples: int = None):
-    """Helper function to process a list of files and extract latents."""
-    if not file_paths:
-        raise ValueError(f"No {label} file paths provided")
-        
-    print(f"Processing {label} datasets...")
-    all_latents, all_point_clouds, all_originals = [], [], []
-    
-    for i, file_path in enumerate(file_paths):
-        print(f"Processing {label} file {i+1}/{len(file_paths)}: {file_path}")
-        dataloader = create_autoencoder_dataloader(cfg, file_path, shuffle=True, max_samples=max_samples)
-        latents, point_clouds, originals = get_latents_from_dataloader(model, dataloader, device)
-        
-        all_latents.append(latents)
-        all_point_clouds.append(point_clouds)
-        all_originals.append(originals)
-        print(f"  {len(latents)} samples from {file_path}")
-    
-    if not all_latents:
-        raise ValueError(f"No data was successfully loaded from any {label} files")
-        
-    return (np.concatenate(all_latents, axis=0),
-            np.concatenate(all_point_clouds, axis=0), 
-            np.concatenate(all_originals, axis=0))
-
-
-def predict_and_save_latent(cfg: str,
-                            model,
-                            liquid_file_paths: List[str],
-                            crystal_file_paths: List[str],
-                            device: str = 'cpu',
-                            save_folder: str = 'output',
-                            max_samples: int = None):
-
-    if not liquid_file_paths and not crystal_file_paths:
-        raise ValueError("At least one of liquid_file_paths or crystal_file_paths must be provided")
-
-    model.to(device).eval()
-    
-    # Split max_samples if specified
-    if max_samples:
-        max_samples_per_type = max_samples // 2
-        max_samples_l = max_samples_per_type
-        max_samples_c = max_samples - max_samples_per_type
-    else:
-        max_samples_l = max_samples_c = None
-
-    # Process files - these will raise errors if no data is found
-    latents_l, point_clouds_l, originals_l = _process_files(cfg, model, liquid_file_paths, "liquid", device, max_samples_l)
-    latents_c, point_clouds_c, originals_c = _process_files(cfg, model, crystal_file_paths, "crystal", device, max_samples_c)
-    
-    # Create labels and combine data
-    labels = np.array(["liquid"] * len(latents_l) + ["crystal"] * len(latents_c))
-    all_latents = np.concatenate((latents_l, latents_c), axis=0)
-    all_points = np.concatenate((point_clouds_l, point_clouds_c), axis=0)
-    all_originals = np.concatenate((originals_l, originals_c), axis=0)
-
-    print(f"Total samples: {len(all_latents)} (liquid: {len(latents_l)}, crystal: {len(latents_c)})")
-
-    # Save combined data
-    output_path = os.path.join(save_folder, "latent_data.npz")
-    os.makedirs(save_folder, exist_ok=True)
-    
-    np.savez_compressed(output_path, 
-                        latents=all_latents, 
-                        points=all_points, 
-                        originals=all_originals, 
-                        labels=labels)
-
-    print(f"Saved combined data to {output_path}")
-
 
 
 def cluster_latents(latents, points, original_points, labels, n_clusters=2, 
@@ -344,19 +208,186 @@ def cluster_latents(latents, points, original_points, labels, n_clusters=2,
 
 
 
-# Example usage (optional, can be removed or put under if __name__ == '__main__')
-if __name__ == '__main__':
-    checkpoint_path = 'output/2025-04-15/05-09-11/pointnet-epoch=7999-val_loss=0.04.ckpt'
-    save_folder = 'output'
-    liquid_file_paths = ['datasets/Al/inherent_configurations_off/166ps.off']
-    crystal_file_paths = ['datasets/Al/inherent_configurations_off/240ps.off']
-    model_class = 'Seq2Seq' # Or 'Autoencoder'
 
-    run_clustering_pipeline(checkpoint_path=checkpoint_path,
-                            save_folder=save_folder,
-                            liquid_file_paths=liquid_file_paths,
-                            crystal_file_paths=crystal_file_paths,
-                            model_class=model_class,
-                            cuda_device=0,
-                            max_samples=1000,
-                            add_parent_dir=True) 
+def predict_clusters(model,
+                     train_dataloader,
+                     eval_dataloader,
+                     n_clusters: int = None,
+                     clustering_method: str = 'kmeans',
+                     device: str = 'cpu',
+                     kmeans_random_state: int = 42,
+                     hdbscan_min_cluster_size: int = 1000,
+                     hdbscan_min_samples: int = 500,
+                     hdbscan_cluster_selection_epsilon: float = 0.0, 
+                     subsample_rate: int = 1
+                     ) -> np.ndarray:
+    """
+    Fits clustering (KMeans or HDBSCAN) on latent vectors from train_dataloader and predicts
+    cluster assignments for samples from eval_dataloader.
+    
+    Args:
+        model: Trained model (e.g. PointNetAutoencoder, ShapePoseDisentanglement, ...).
+               Its forward pass should yield latent codes either directly or inside a tuple.
+        train_dataloader: DataLoader for training samples used to fit clustering.
+        eval_dataloader: DataLoader for evaluation samples to predict cluster assignments.
+                        Both dataloaders yield (points, coords) for each sample.
+                        'points' are expected to be (batch_size, num_points, features),
+                        and 'coords' are expected to be (batch_size, 3).
+        n_clusters: The number of clusters to form using KMeans. Ignored for HDBSCAN.
+        clustering_method: Clustering method to use ('kmeans' or 'hdbscan').
+        device: Device to run autoencoder inference on ('cpu' or 'cuda').
+        kmeans_random_state: Random state for KMeans for reproducibility.
+        hdbscan_min_cluster_size: Minimum size of clusters for HDBSCAN.
+        hdbscan_min_samples: Number of samples in a neighborhood for a point to be considered core.
+        hdbscan_cluster_selection_epsilon: Distance threshold for cluster selection in HDBSCAN.
+
+    Returns:
+        Nx4 numpy array where each row contains (x, y, z, cluster_id) for eval samples.
+        Note: HDBSCAN may assign noise points cluster_id = -1.
+    """
+    
+    def extract_latents_and_coords(dataloader):
+        """Helper function to extract latent vectors and coordinates from a dataloader."""
+        latents_list = []
+        coords_list = []
+        
+        # Local imports to avoid heavy dependencies at module import time
+        from src.training_methods.spd.spd_module import ShapePoseDisentanglement
+        from src.training_methods.spd.eval_spd import spd_predict_latent
+        from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
+
+        with torch.no_grad():
+            for batch in dataloader:
+                # ------------------------------------------------------
+                # Unpack batch (points[, coords])
+                # ------------------------------------------------------
+                if isinstance(batch, (tuple, list)) and len(batch) == 2:
+                    points_batch, coords_batch = batch
+                else:
+                    # When dataloader returns only points
+                    points_batch, coords_batch = batch, None
+
+                points_batch = points_batch.to(device)
+
+                # Optionally subsample batch dimension
+                if subsample_rate > 1:
+                    points_batch = points_batch[::subsample_rate]
+                    if coords_batch is not None:
+                        coords_batch = np.array(coords_batch)[::subsample_rate]
+
+                # Ensure shape (B, N, 3) for further processing
+                if points_batch.dim() == 2:
+                    points_batch = points_batch.unsqueeze(0)
+
+                if points_batch.dim() == 3 and points_batch.shape[1] == 3:
+                    # (B, 3, N) → (B, N, 3)
+                    points_batch = points_batch.permute(0, 2, 1)
+
+                # ------------------------------------------------------
+                # Extract latent representations depending on model type
+                # ------------------------------------------------------
+                if isinstance(model, ShapePoseDisentanglement):
+                    latent_np = spd_predict_latent(points_batch, model, device=device)
+                elif isinstance(model, PointNetAutoencoder):
+                    # PointNetAutoencoder expects transposed input
+                    points_transposed = points_batch.transpose(1, 2)
+                    recon, latent_tensor, _ = model(points_transposed)
+                    latent_np = latent_tensor.cpu().numpy()
+                else:
+                    # Generic fallback – try to interpret model output
+                    model_outputs = model(points_batch)
+                    if isinstance(model_outputs, tuple):
+                        latent_tensor = model_outputs[0]
+                    else:
+                        latent_tensor = model_outputs
+                    latent_np = latent_tensor.detach().cpu().numpy()
+
+                # Ensure 2-D array with shape (B, D)
+                if latent_np.ndim == 1:
+                    latent_np = latent_np[None, :]
+                latents_list.append(latent_np)
+
+                # Handle coordinates if provided
+                if coords_batch is not None:
+                    coords_np = np.array(coords_batch)
+                    # Make sure coords have shape (B, 3)
+                    if coords_np.ndim == 1:
+                        coords_np = coords_np[None, :]
+                    coords_list.append(coords_np)
+                else:
+                    # Fallback to dummy zeros if coords are missing
+                    coords_list.append(np.zeros((points_batch.shape[0], 3)))
+        
+        return latents_list, coords_list
+    
+    if clustering_method not in ['kmeans', 'hdbscan']:
+        raise ValueError("clustering_method must be 'kmeans' or 'hdbscan'")
+    
+    model.eval()
+    model.to(device)
+    
+    # Extract latent vectors from train dataloader
+    print("Extracting latent vectors from train dataloader...")
+    train_latents_list, _ = extract_latents_and_coords(train_dataloader)
+    
+    if not train_latents_list:
+        return np.empty((0, 4))
+    
+    # Concatenate all train latent vectors
+    train_latents = np.concatenate(train_latents_list, axis=0)
+    
+    # Fit clustering model on train latent vectors
+    if clustering_method == 'kmeans':
+        from sklearn.cluster import KMeans
+        print(f"Fitting KMeans with {n_clusters} clusters on {train_latents.shape[0]} train samples...")
+        clusterer = KMeans(n_clusters=n_clusters, random_state=kmeans_random_state, n_init=10)
+        clusterer.fit(train_latents)
+    elif clustering_method == 'hdbscan':
+        import hdbscan
+        print(f"Fitting HDBSCAN on {train_latents.shape[0]} train samples...")
+        print(f"HDBSCAN parameters: min_cluster_size={hdbscan_min_cluster_size}, "
+            f"min_samples={hdbscan_min_samples}, "
+            f"cluster_selection_epsilon={hdbscan_cluster_selection_epsilon}")
+
+        clusterer = hdbscan.HDBSCAN(
+            min_cluster_size=hdbscan_min_cluster_size,
+            min_samples=hdbscan_min_samples,
+            cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
+            prediction_data=True           # <- keep data needed for approximate_predict
+        )
+        clusterer.fit(train_latents)
+    
+    # Extract latent vectors from eval dataloader
+    print("Extracting latent vectors from eval dataloader...")
+    eval_latents_list, eval_coords_list = extract_latents_and_coords(eval_dataloader)
+    
+    if not eval_latents_list:
+        return np.empty((0, 4))
+    
+    # Concatenate all eval latent vectors and coordinates
+    eval_latents = np.concatenate(eval_latents_list, axis=0)
+    eval_coords = np.concatenate(eval_coords_list, axis=0)
+    
+    # Predict cluster assignments for eval samples
+    if clustering_method == 'kmeans':
+        print(f"Predicting cluster assignments for {eval_latents.shape[0]} eval samples...")
+        cluster_labels = clusterer.predict(eval_latents)
+    elif clustering_method == 'hdbscan':
+        print(f"Predicting cluster assignments for {eval_latents.shape[0]} eval samples using HDBSCAN...")
+        # For HDBSCAN, we need to use approximate_predict for new data
+        cluster_labels, _ = hdbscan.approximate_predict(clusterer, eval_latents)
+        
+        # Report clustering statistics
+        unique_labels = np.unique(cluster_labels)
+        n_clusters_found = len(unique_labels) - (1 if -1 in unique_labels else 0)
+        n_noise = np.sum(cluster_labels == -1)
+        print(f"HDBSCAN found {n_clusters_found} clusters with {n_noise} noise points")
+    
+    # Combine coordinates and cluster labels for eval samples
+    output_data = []
+    for i in range(eval_coords.shape[0]):
+        coord = eval_coords[i]  # [x, y, z]
+        label = cluster_labels[i]  # cluster_id (integer, -1 for noise in HDBSCAN)
+        output_data.append([coord[0], coord[1], coord[2], label])
+
+    return np.array(output_data)
