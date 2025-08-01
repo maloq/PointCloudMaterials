@@ -7,7 +7,7 @@ import torch
 from torchsummary import summary
 import hydra
 from omegaconf import DictConfig
-from src.autoencoder_seq2seq.autoencoder_s2s_module import AutoencoderSeq2Seq
+from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
 import numpy as np
 
 
@@ -21,7 +21,7 @@ def summarize_autoencoder(cfg: DictConfig) -> None:
     run_dir = get_rundir_name()  
     
     # Create model instance
-    model = AutoencoderSeq2Seq(cfg)
+    model = PointNetAutoencoder(cfg)
     
     # Determine input shape based on config
     # Assuming input is point cloud with shape [num_points, point_dims]

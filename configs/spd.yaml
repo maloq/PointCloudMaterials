@@ -9,7 +9,7 @@ experiment_tags:
   - centered
   - RotationConsistency
   - no_edges
-
+model_type: spd
 latent_size: 72
 encoder: 
   name: PnE_VN
@@ -29,13 +29,12 @@ decoder:
     R2: 1.0
     hidden_dim: 400
 
-max_samples: 0
-
 loss: Sinkhorn
+max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.005
-batch_size: 512
+batch_size: 1024
 
 enable_swa: False
 swa_epoch_start: 1000 

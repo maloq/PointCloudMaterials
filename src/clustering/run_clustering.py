@@ -1,393 +1,290 @@
-import sys
+from __future__ import annotations
+
+"""Run clustering on latent spaces produced by the prediction helpers.
+
+This version supports **both** classic *K‑Means* and density‑based *HDBSCAN*
+clustering.  All encoding / latent‑extraction logic lives in
+:pyfile:`predict_functions.py`; here we only concern ourselves with the
+clustering routines and their evaluation utilities.
+"""
+
 import os
-import numpy as np
-sys.path.append(os.getcwd())
-import matplotlib.pyplot as plt
-from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, confusion_matrix, silhouette_score
-from sklearn.preprocessing import LabelEncoder
-from sklearn.cluster import KMeans
-from scipy.optimize import linear_sum_assignment
-from itertools import product
-from typing import List
-
-import random
-import torch
+import sys
 import warnings
+from itertools import product
+from pathlib import Path
+from typing import Iterable, List, Tuple, Literal
+
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+from scipy.optimize import linear_sum_assignment
+from sklearn.cluster import KMeans
+from sklearn.metrics import (
+    adjusted_rand_score,
+    confusion_matrix,
+    normalized_mutual_info_score,
+    silhouette_score,
+)
+from sklearn.preprocessing import LabelEncoder
+
+try:  
+    import hdbscan
+except ModuleNotFoundError:  
+    hdbscan = None
+
+sys.path.append(os.getcwd())
+
+
+from src.eval_tools.predict_functions import _get_latents_from_dataloader  
 warnings.filterwarnings("ignore")
-print(f'Running from {os.getcwd()}')
+
+
+def _extract_latents(
+    model: torch.nn.Module,
+    dataloader: torch.utils.data.DataLoader,
+    *,
+    device: str = "cpu",
+) -> np.ndarray:
+    """Return only the latent codes for *dataloader* using *model*."""
+    latents, *_ = _get_latents_from_dataloader(model, dataloader, device=device)
+    return latents
 
 
 
-def find_optimal_clusters(data, range_n_clusters=range(2, 11), random_state=66):
-    """
-    Use silhouette score to find the optimal number of clusters
-    """
-    silhouette_scores = []
-    
-    for n_clusters in range_n_clusters:
-        # Initialize the clusterer
-        kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
-        cluster_labels = kmeans.fit_predict(data)
-        
-        # Calculate silhouette score
-        if n_clusters > 1:  # Silhouette requires at least 2 clusters
-            silhouette_avg = silhouette_score(data, cluster_labels)
-            silhouette_scores.append(silhouette_avg)
-            print(f"For n_clusters = {n_clusters}, the silhouette score is {silhouette_avg:.4f}")
+def _extract_coords(dataloader: torch.utils.data.DataLoader) -> np.ndarray:
+    """Gather (x, y, z) coordinates when the dataloader provides them."""
+    coords: list[np.ndarray] = []
+    for batch in dataloader:
+        if isinstance(batch, (tuple, list)) and len(batch) == 2:
+            _, c = batch
+            c = np.asarray(c)
+            if c.ndim == 1:
+                c = c[None, :]
         else:
-            silhouette_scores.append(0)
-    
-    # Plot silhouette scores
-    plt.figure(figsize=(10, 6))
-    plt.plot(list(range_n_clusters), silhouette_scores, 'o-')
-    plt.xlabel('Number of clusters')
-    plt.ylabel('Silhouette Score')
-    plt.title('Silhouette Score vs Number of Clusters')
-    plt.grid(True)
-    # plt.savefig('silhouette_scores.png')
-    plt.show()
-    
-    # Return the optimal number of clusters (maximum silhouette score)
-    optimal_clusters = list(range_n_clusters)[np.argmax(silhouette_scores)]
-    print(f"\nOptimal number of clusters based on silhouette score: {optimal_clusters}")
-    
-    return optimal_clusters, silhouette_scores
+            # Fallback: zeros when no coords are supplied
+            bsz = batch[0].shape[0] if isinstance(batch, (tuple, list)) else len(batch)
+            c = np.zeros((bsz, 3), dtype=np.float32)
+        coords.append(c)
+    coords = [coord.squeeze() for coord in coords]
+    coords_concat = np.concatenate(coords, axis=0) if coords else np.empty((0, 3))
+    return coords_concat
 
 
-def evaluate_clustering(cluster_labels, true_labels):
-    """
-    Evaluate clustering performance using multiple metrics
-    and find the best cluster-to-class assignment
-    """
-    # Encode true labels if they're not already numeric
+def find_optimal_clusters(
+    data: np.ndarray,
+    *,
+    range_n_clusters: Iterable[int] = range(2, 11),
+    random_state: int = 42,
+) -> Tuple[int, List[float]]:
+    """Select *k* via silhouette score."""
+    scores: list[float] = []
+    for k in range_n_clusters:
+        labels = KMeans(n_clusters=k, random_state=random_state, n_init=10).fit_predict(data)
+        score = silhouette_score(data, labels) if k > 1 else 0.0
+        print(f"k = {k:>2}: silhouette = {score:.4f}")
+        scores.append(score)
+    best_k = max(range_n_clusters, key=lambda idx: scores[idx - range_n_clusters.start])
+    print(f"✓ Chosen k = {best_k}\n")
+    return best_k, scores
+
+
+
+def _best_binary_assignment(cluster_labels: np.ndarray, true_labels: np.ndarray) -> Tuple[float, np.ndarray]:
+    """Hungarian‑based best assignment for binary clustering."""
     le = LabelEncoder()
-    true_labels_encoded = le.fit_transform(true_labels)
+    y_true = le.fit_transform(true_labels)
     n_clusters = len(np.unique(cluster_labels))
-    
-    # Calculate ARI and NMI
-    ari = adjusted_rand_score(true_labels_encoded, cluster_labels)
-    nmi = normalized_mutual_info_score(true_labels_encoded, cluster_labels)
-    
-    # Find the best cluster-to-class assignment
-    best_accuracy = 0
-    best_labels = None
-    best_assignment = None
-    
-    # Try all possible binary assignments for each cluster
-    for assignment in product([0, 1], repeat=n_clusters):
-        # Skip trivial assignments
-        if sum(assignment) == 0 or sum(assignment) == n_clusters:
-            continue
-            
-        # Create mapped labels
-        mapped_labels = np.array([assignment[lbl] for lbl in cluster_labels])
-        
-        # Compute confusion matrix and accuracy
-        cm = confusion_matrix(true_labels_encoded, mapped_labels)
-        
-        # Find optimal assignment
-        row_ind, col_ind = linear_sum_assignment(-cm)
-        accuracy = cm[row_ind, col_ind].sum() / cm.sum()
-        
-        if accuracy > best_accuracy:
-            best_accuracy = accuracy
-            best_labels = mapped_labels.copy()
-            best_assignment = assignment
-    
-    # Swap classes if needed for better correspondence
-    final_labels = best_labels.copy()
-    cm_final = confusion_matrix(true_labels_encoded, final_labels)
-    if cm_final[0][1] + cm_final[1][0] > cm_final[0][0] + cm_final[1][1]:
-        final_labels = 1 - final_labels
-    
-    return {
-        'accuracy': best_accuracy,
-        'ari': ari,
-        'nmi': nmi,
-        'cluster_mapping': best_assignment,
-        'mapped_labels': final_labels
-    }
 
-def cluster_and_evaluate(latents, labels, random_state=66):
+    best_acc = 0.0
+    best_lab = None
+
+    for mapping in product([0, 1], repeat=n_clusters):
+        if mapping.count(1) in (0, n_clusters):
+            continue  # trivial
+        mapped = np.array([mapping[c] for c in cluster_labels])
+        cm = confusion_matrix(y_true, mapped)
+        row, col = linear_sum_assignment(-cm)
+        acc = cm[row, col].sum() / cm.sum()
+        if acc > best_acc:
+            best_acc, best_lab = acc, mapped
+
+    # Flip so that label 0 ≈ class 0
+    cm_final = confusion_matrix(y_true, best_lab)
+    if cm_final[0, 1] + cm_final[1, 0] > cm_final[0, 0] + cm_final[1, 1]:
+        best_lab = 1 - best_lab
+
+    return float(best_acc), best_lab
+
+
+
+def evaluate_clustering(cluster_labels: np.ndarray, true_labels: np.ndarray) -> dict:
+    """Return Accuracy / ARI / NMI together with mapped labels.
+
+    **Note**: Any *noise* points marked as -1 (e.g. by HDBSCAN) are ignored
+    when computing the metrics.
     """
-    Main function to perform clustering evaluation with train/validation split
+    keep = cluster_labels != -1
+    if keep.sum() < len(cluster_labels):  # some noise present
+        cluster_labels = cluster_labels[keep]
+        true_labels = true_labels[keep]
+
+    ari = adjusted_rand_score(true_labels, cluster_labels)
+    nmi = normalized_mutual_info_score(true_labels, cluster_labels)
+    acc, mapped = _best_binary_assignment(cluster_labels, true_labels)
+    return {"accuracy": acc, "ari": ari, "nmi": nmi, "mapped_labels": mapped}
+
+
+
+ClusteringAlgo = Literal["kmeans", "hdbscan"]
+
+def predict_clusters(
+    model: torch.nn.Module,
+    train_latents: np.ndarray,
+    eval_latents: np.ndarray,
+    eval_coords: np.ndarray,
+    algorithm: ClusteringAlgo = "kmeans",
+    # --- K‑Means options -----------------------------------------------------
+    n_clusters: int | None = None,
+    kmeans_random_state: int = 42,
+    # --- HDBSCAN options -----------------------------------------------------
+    hdbscan_min_cluster_size: int = 15,
+    hdbscan_min_samples: int | None = None,
+    hdbscan_cluster_selection_epsilon: float = 0.0,
+    # --- Subsampling options -------------------------------------------------
+    subsample_size: int | None = None,
+    subsample_random_state: int = 42,
+    # -------------------------------------------------------------------------
+    device: str = "cpu",
+) -> np.ndarray:
+    """Fit clustering algorithm on *train* latents and predict labels for *eval*.
+
+    Returns an ``(N, 4)`` array where the first three columns are the
+    coordinates (if available, else zeros) and the last column holds the
+    cluster assignment (``‑1`` denotes *noise* for HDBSCAN).
     """
-    # Split data into training and validation sets (50/50 split)
-    split_idx = len(latents) // 2
-    train_latents = latents[:split_idx]
-    train_labels = labels[:split_idx]
-    val_latents = latents[split_idx:]
-    val_labels = labels[split_idx:]
-    
-    print("Finding optimal number of clusters using silhouette score...")
-    optimal_clusters, silhouette_scores = find_optimal_clusters(train_latents, random_state=random_state)
-    
-    print(f"\nTraining KMeans with {optimal_clusters} clusters...")
-    kmeans = KMeans(n_clusters=optimal_clusters, random_state=random_state)
-    kmeans.fit(train_latents)
-    
-    # Get cluster assignments
-    train_cluster_labels = kmeans.predict(train_latents)
-    val_cluster_labels = kmeans.predict(val_latents)
-    
-    # Evaluate on training set
-    print("\nEvaluating on training set...")
-    train_results = evaluate_clustering(train_cluster_labels, train_labels)
-    
-    # Evaluate on validation set
-    print("\nEvaluating on validation set...")
-    val_results = evaluate_clustering(val_cluster_labels, val_labels)
-    
-    # Print results
-    print("\n===== CLUSTERING RESULTS WITH OPTIMAL CLUSTERS =====")
-    print(f"Optimal number of clusters: {optimal_clusters}")
-    print(f"Training Accuracy: {train_results['accuracy']:.4f}")
-    print(f"Training ARI: {train_results['ari']:.4f}")
-    print(f"Training NMI: {train_results['nmi']:.4f}")
-    print(f"Validation Accuracy: {val_results['accuracy']:.4f}")
-    print(f"Validation ARI: {val_results['ari']:.4f}")
-    print(f"Validation NMI: {val_results['nmi']:.4f}")
-    
-    # Apply the model to the full dataset for the final result
-    print("\nApplying to full dataset...")
-    full_cluster_labels = kmeans.predict(latents)
-    full_results = evaluate_clustering(full_cluster_labels, labels)
-    
-    print("\n===== FINAL RESULTS ON FULL DATASET =====")
-    print(f"Full Dataset Accuracy: {full_results['accuracy']:.4f}")
-    print(f"Full Dataset ARI: {full_results['ari']:.4f}")
-    print(f"Full Dataset NMI: {full_results['nmi']:.4f}")
-    
-    return {
-        'optimal_clusters': optimal_clusters,
-        'silhouette_scores': silhouette_scores,
-        'kmeans_model': kmeans,
-        'train_results': train_results,
-        'val_results': val_results,
-        'full_results': full_results
-    }
+    model.eval().to(device)
+    print("Extracting train latents …")
+    train_latents
 
+    if subsample_size is not None:
+        if subsample_size > len(train_latents):
+            raise ValueError(
+                f"Subsample size {subsample_size} is larger than the number of "
+                f"training samples {len(train_latents)}."
+            )
+        print(f"Subsampling train latents to {subsample_size} …")
+        rng = np.random.default_rng(subsample_random_state)
+        indices = rng.choice(len(train_latents), size=subsample_size, replace=False)
+        train_latents = train_latents[indices]
 
+    print("Extracting eval latents …")
 
-def cluster_latents(latents, points, original_points, labels, n_clusters=2, 
-                   random_state=42, save_centers=False, label=None, 
-                   output_file="output/cluster_centers.npy"):
-    """Clusters latent representations and finds samples closest to each cluster center."""
-    from sklearn.cluster import KMeans
     
-    print(f"K-means clustering with {n_clusters} clusters...")
-    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
-    cluster_labels = kmeans.fit_predict(latents)
-    
-    # Find closest sample to each cluster center
-    rep_indices = []
-    for i in range(n_clusters):
-        cluster_mask = cluster_labels == i
-        distances = np.linalg.norm(latents[cluster_mask] - kmeans.cluster_centers_[i], axis=1)
-        rep_indices.append(np.where(cluster_mask)[0][np.argmin(distances)])
-        print(f"Cluster {i}: sample {rep_indices[-1]}, label={labels[rep_indices[-1]]}")
-    
-    # Extract representative data
-    rep_samples = latents[rep_indices]
-    rep_points = points[rep_indices]
-    rep_originals = original_points[rep_indices]
-    rep_labels = labels[rep_indices]
-    
-    if save_centers:
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
-        np.save(output_file, {
-            'cluster_centers': kmeans.cluster_centers_,
-            'representative_samples': rep_samples,
-            'representative_points': rep_points,
-            'representative_labels': rep_labels,
-            'cluster_labels': cluster_labels
-        })
-        print(f"Saved to {output_file}")
-    
-    return kmeans.cluster_centers_, rep_samples, rep_points, rep_originals, rep_labels
+    if algorithm == "kmeans":
+        if n_clusters is None:
+            n_clusters, _ = find_optimal_clusters(train_latents, random_state=kmeans_random_state)
 
-
-
-
-def predict_clusters(model,
-                     train_dataloader,
-                     eval_dataloader,
-                     n_clusters: int = None,
-                     clustering_method: str = 'kmeans',
-                     device: str = 'cpu',
-                     kmeans_random_state: int = 42,
-                     hdbscan_min_cluster_size: int = 1000,
-                     hdbscan_min_samples: int = 500,
-                     hdbscan_cluster_selection_epsilon: float = 0.0, 
-                     subsample_rate: int = 1
-                     ) -> np.ndarray:
-    """
-    Fits clustering (KMeans or HDBSCAN) on latent vectors from train_dataloader and predicts
-    cluster assignments for samples from eval_dataloader.
-    
-    Args:
-        model: Trained model (e.g. PointNetAutoencoder, ShapePoseDisentanglement, ...).
-               Its forward pass should yield latent codes either directly or inside a tuple.
-        train_dataloader: DataLoader for training samples used to fit clustering.
-        eval_dataloader: DataLoader for evaluation samples to predict cluster assignments.
-                        Both dataloaders yield (points, coords) for each sample.
-                        'points' are expected to be (batch_size, num_points, features),
-                        and 'coords' are expected to be (batch_size, 3).
-        n_clusters: The number of clusters to form using KMeans. Ignored for HDBSCAN.
-        clustering_method: Clustering method to use ('kmeans' or 'hdbscan').
-        device: Device to run autoencoder inference on ('cpu' or 'cuda').
-        kmeans_random_state: Random state for KMeans for reproducibility.
-        hdbscan_min_cluster_size: Minimum size of clusters for HDBSCAN.
-        hdbscan_min_samples: Number of samples in a neighborhood for a point to be considered core.
-        hdbscan_cluster_selection_epsilon: Distance threshold for cluster selection in HDBSCAN.
-
-    Returns:
-        Nx4 numpy array where each row contains (x, y, z, cluster_id) for eval samples.
-        Note: HDBSCAN may assign noise points cluster_id = -1.
-    """
-    
-    def extract_latents_and_coords(dataloader):
-        """Helper function to extract latent vectors and coordinates from a dataloader."""
-        latents_list = []
-        coords_list = []
-        
-        # Local imports to avoid heavy dependencies at module import time
-        from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-        from src.training_methods.spd.eval_spd import spd_predict_latent
-        from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
-
-        with torch.no_grad():
-            for batch in dataloader:
-                # ------------------------------------------------------
-                # Unpack batch (points[, coords])
-                # ------------------------------------------------------
-                if isinstance(batch, (tuple, list)) and len(batch) == 2:
-                    points_batch, coords_batch = batch
-                else:
-                    # When dataloader returns only points
-                    points_batch, coords_batch = batch, None
-
-                points_batch = points_batch.to(device)
-
-                # Optionally subsample batch dimension
-                if subsample_rate > 1:
-                    points_batch = points_batch[::subsample_rate]
-                    if coords_batch is not None:
-                        coords_batch = np.array(coords_batch)[::subsample_rate]
-
-                # Ensure shape (B, N, 3) for further processing
-                if points_batch.dim() == 2:
-                    points_batch = points_batch.unsqueeze(0)
-
-                if points_batch.dim() == 3 and points_batch.shape[1] == 3:
-                    # (B, 3, N) → (B, N, 3)
-                    points_batch = points_batch.permute(0, 2, 1)
-
-                # ------------------------------------------------------
-                # Extract latent representations depending on model type
-                # ------------------------------------------------------
-                if isinstance(model, ShapePoseDisentanglement):
-                    latent_np = spd_predict_latent(points_batch, model, device=device)
-                elif isinstance(model, PointNetAutoencoder):
-                    # PointNetAutoencoder expects transposed input
-                    points_transposed = points_batch.transpose(1, 2)
-                    recon, latent_tensor, _ = model(points_transposed)
-                    latent_np = latent_tensor.cpu().numpy()
-                else:
-                    # Generic fallback – try to interpret model output
-                    model_outputs = model(points_batch)
-                    if isinstance(model_outputs, tuple):
-                        latent_tensor = model_outputs[0]
-                    else:
-                        latent_tensor = model_outputs
-                    latent_np = latent_tensor.detach().cpu().numpy()
-
-                # Ensure 2-D array with shape (B, D)
-                if latent_np.ndim == 1:
-                    latent_np = latent_np[None, :]
-                latents_list.append(latent_np)
-
-                # Handle coordinates if provided
-                if coords_batch is not None:
-                    coords_np = np.array(coords_batch)
-                    # Make sure coords have shape (B, 3)
-                    if coords_np.ndim == 1:
-                        coords_np = coords_np[None, :]
-                    coords_list.append(coords_np)
-                else:
-                    # Fallback to dummy zeros if coords are missing
-                    coords_list.append(np.zeros((points_batch.shape[0], 3)))
-        
-        return latents_list, coords_list
-    
-    if clustering_method not in ['kmeans', 'hdbscan']:
-        raise ValueError("clustering_method must be 'kmeans' or 'hdbscan'")
-    
-    model.eval()
-    model.to(device)
-    
-    # Extract latent vectors from train dataloader
-    print("Extracting latent vectors from train dataloader...")
-    train_latents_list, _ = extract_latents_and_coords(train_dataloader)
-    
-    if not train_latents_list:
-        return np.empty((0, 4))
-    
-    # Concatenate all train latent vectors
-    train_latents = np.concatenate(train_latents_list, axis=0)
-    
-    # Fit clustering model on train latent vectors
-    if clustering_method == 'kmeans':
-        from sklearn.cluster import KMeans
-        print(f"Fitting KMeans with {n_clusters} clusters on {train_latents.shape[0]} train samples...")
         clusterer = KMeans(n_clusters=n_clusters, random_state=kmeans_random_state, n_init=10)
         clusterer.fit(train_latents)
-    elif clustering_method == 'hdbscan':
-        import hdbscan
-        print(f"Fitting HDBSCAN on {train_latents.shape[0]} train samples...")
-        print(f"HDBSCAN parameters: min_cluster_size={hdbscan_min_cluster_size}, "
-            f"min_samples={hdbscan_min_samples}, "
-            f"cluster_selection_epsilon={hdbscan_cluster_selection_epsilon}")
+        labels = clusterer.predict(eval_latents)
+
+    elif algorithm == "hdbscan":
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=hdbscan_min_cluster_size,
             min_samples=hdbscan_min_samples,
             cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
-            prediction_data=True           # <- keep data needed for approximate_predict
-        )
-        clusterer.fit(train_latents)
-    
-    # Extract latent vectors from eval dataloader
-    print("Extracting latent vectors from eval dataloader...")
-    eval_latents_list, eval_coords_list = extract_latents_and_coords(eval_dataloader)
-    
-    if not eval_latents_list:
-        return np.empty((0, 4))
-    
-    # Concatenate all eval latent vectors and coordinates
-    eval_latents = np.concatenate(eval_latents_list, axis=0)
-    eval_coords = np.concatenate(eval_coords_list, axis=0)
-    
-    # Predict cluster assignments for eval samples
-    if clustering_method == 'kmeans':
-        print(f"Predicting cluster assignments for {eval_latents.shape[0]} eval samples...")
-        cluster_labels = clusterer.predict(eval_latents)
-    elif clustering_method == 'hdbscan':
-        print(f"Predicting cluster assignments for {eval_latents.shape[0]} eval samples using HDBSCAN...")
-        # For HDBSCAN, we need to use approximate_predict for new data
-        cluster_labels, _ = hdbscan.approximate_predict(clusterer, eval_latents)
-        
-        # Report clustering statistics
-        unique_labels = np.unique(cluster_labels)
-        n_clusters_found = len(unique_labels) - (1 if -1 in unique_labels else 0)
-        n_noise = np.sum(cluster_labels == -1)
-        print(f"HDBSCAN found {n_clusters_found} clusters with {n_noise} noise points")
-    
-    # Combine coordinates and cluster labels for eval samples
-    output_data = []
-    for i in range(eval_coords.shape[0]):
-        coord = eval_coords[i]  # [x, y, z]
-        label = cluster_labels[i]  # cluster_id (integer, -1 for noise in HDBSCAN)
-        output_data.append([coord[0], coord[1], coord[2], label])
+            prediction_data=True,
+        ).fit(train_latents)
 
-    return np.array(output_data)
+        print("Found ", len(np.unique(clusterer.labels_)), "clusters")
+        labels, _ = hdbscan.approximate_predict(clusterer, eval_latents)
+    else:
+        raise ValueError(f"Unknown algorithm: {algorithm}")
+  
+    return np.column_stack([eval_coords, labels])
+
+
+
+def cluster_and_evaluate(
+    latents: np.ndarray,
+    labels: np.ndarray,
+    *,
+    algorithm: ClusteringAlgo = "kmeans",
+    random_state: int = 42,
+    subsample_size: int | None = None,
+    subsample_random_state: int = 42,
+    **algo_kwargs,
+) -> dict:
+    """Simple 50/50 split evaluation (train / val / full metrics)."""
+    split = len(latents) // 2
+    train_lat, val_lat = latents[:split], latents[split:]
+    train_lab, val_lab = labels[:split], labels[split:]
+
+    if subsample_size is not None:
+        if subsample_size > len(train_lat):
+            raise ValueError(
+                f"Subsample size {subsample_size} is larger than the number of "
+                f"training samples {len(train_lat)}."
+            )
+        print(f"Subsampling train latents to {subsample_size} …")
+        rng = np.random.default_rng(subsample_random_state)
+        indices = rng.choice(len(train_lat), size=subsample_size, replace=False)
+        train_lat = train_lat[indices]
+        train_lab = train_lab[indices]
+
+
+    if algorithm == "kmeans":
+        print("→ Selecting k on train split")
+        k, _ = find_optimal_clusters(train_lat, random_state=random_state)
+        clusterer = KMeans(n_clusters=k, random_state=random_state, n_init=10).fit(train_lat)
+
+        train_pred = clusterer.labels_
+        val_pred = clusterer.predict(val_lat)
+        full_pred = clusterer.predict(latents)
+
+    elif algorithm == "hdbscan":
+        if hdbscan is None:
+            raise ImportError(
+                "HDBSCAN requested but the 'hdbscan' package is not installed. "
+                "Install with `pip install hdbscan`."
+            )
+
+        clusterer = hdbscan.HDBSCAN(prediction_data=True, **algo_kwargs).fit(train_lat)
+        train_pred = clusterer.labels_
+        val_pred, _ = hdbscan.approximate_predict(clusterer, val_lat)
+        full_pred, _ = hdbscan.approximate_predict(clusterer, latents)
+
+    else:  # pragma: no cover
+        raise ValueError(f"Unknown algorithm: {algorithm}")
+
+    print("\n→ Evaluating")
+    train_res = evaluate_clustering(train_pred, train_lab)
+    val_res = evaluate_clustering(val_pred, val_lab)
+    full_res = evaluate_clustering(full_pred, labels)
+
+    for name, res in [("train", train_res), ("val", val_res), ("full", full_res)]:
+        print(f"{name:>5}  acc={res['accuracy']:.3f}  ari={res['ari']:.3f}  nmi={res['nmi']:.3f}")
+
+    return {
+        "clusterer": clusterer,
+        "algorithm": algorithm,
+        "train": train_res,
+        "val": val_res,
+        "full": full_res,
+    }
+
+
+
+if __name__ == "__main__":
+
+    data = np.load("output/latent_data_spd.npz")
+    latents, labels = data["latents"], data["labels"]
+
+    cluster_and_evaluate(
+        latents,
+        labels,
+        algorithm="kmeans",
+        n_clusters=4,
+    )

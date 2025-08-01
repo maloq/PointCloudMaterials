@@ -93,7 +93,7 @@ class PointCloudDataset(Dataset):
             self.samples = [pc_normalize(s, self.radius).astype(np.float32) for s in self.samples]
         elif not normalize:
             print("Point Cloud normalization skipped")
-        logger.debug(f"Point set shape: {self.samples[0].shape}")
+        # logger.info(f"Point set shape: {self.samples[0].shape}")
 
     def __len__(self):
         return len(self.samples)
@@ -121,6 +121,7 @@ class PointCloudClsDataset(PointCloudDataset):
         
         if self.return_coords:
             point_set_tensor, coords = item
+            coords = torch.tensor(coords, dtype=torch.float32)
             return point_set_tensor, coords, label_tensor
         else:
             point_set_tensor = item

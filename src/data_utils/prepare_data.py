@@ -218,7 +218,7 @@ def generate_samples(
                 if sample_points is not None:
                     sample_points = sample_points - center
                     if return_coords:
-                        samples.append((sample_points, tuple(center)))
+                        samples.append((sample_points, np.array(center)))
                     else:
                         samples.append(sample_points)
                     if len(samples) >= max_samples:

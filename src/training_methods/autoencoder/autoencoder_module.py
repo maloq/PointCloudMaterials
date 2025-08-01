@@ -84,13 +84,6 @@ class PointNetAutoencoder(pl.LightningModule):
         latent_vector, _, trans_feat = self.encoder(x)
         reconstructed_points = self.decoder(latent_vector)
         trans_feat_list = [trans_feat] if trans_feat is not None else []
-        
-        # TODO: check if this is needed
-        if reconstructed_points.ndim == 3: 
-            if reconstructed_points.shape[1] == 3 and reconstructed_points.shape[2] == self.num_points:
-                 reconstructed_points = reconstructed_points.permute(0, 2, 1) # (B, 3, N) -> (B, N, 3)
-            elif reconstructed_points.shape[2] == 3 and reconstructed_points.shape[1] == self.num_points:
-                 pass # Already (B, N, 3)
 
         return reconstructed_points, latent_vector, trans_feat_list
 
@@ -145,13 +138,12 @@ class PointNetAutoencoder(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         points = batch                                  # (B, N, 3)
-        points_permuted = points.permute(0, 2, 1)       # (B, 3, N)
 
         # ------------------------------------------------------------------
         # Encode only once to avoid double-updating BatchNorm statistics
         # ------------------------------------------------------------------
         # encoder returns: (latent_code, trans, trans_feat)
-        latent, _, trans_feat = self.encoder(points_permuted)
+        latent, _, trans_feat = self.encoder(points)
         trans_feat_list = [trans_feat] if trans_feat is not None else []
 
         # ------------------------------------------------------------------

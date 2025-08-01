@@ -9,7 +9,7 @@ experiment_tags:
   - centered
   - RotationConsistency
   - no_edges
-
+model_type: autoencoder
 latent_size: 64
 encoder: 
   name: PnE_L
@@ -30,7 +30,7 @@ decoder:
 
 loss: Sinkhorn
 torch_compile: False
-
+max_samples: 0  # no limit
 learning_rate: 0.004
 batch_size: 4096
 

@@ -1,4 +1,16 @@
 import torch
+import os
+from typing import Tuple
+
+
+def resolve_config_path(checkpoint_path: str) -> Tuple[str, str]:
+    """Return *(config_dir, config_name)* guessed from *checkpoint_path*."""
+    hydra_dir = os.path.join(os.path.dirname(checkpoint_path), ".hydra")
+    if os.path.isdir(hydra_dir):
+        return hydra_dir, "config"
+    else:
+        print(f"No hydra directory found in {checkpoint_path}, using default config")
+        return None, None
 
 
 def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):

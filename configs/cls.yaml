@@ -4,7 +4,7 @@ project_name: pointnet
 experiment_name: 32_points_cls_defalut_loss
 experiment_tags:
   - cls
-
+model_type: cls
 learning_rate: 0.003
 batch_size: 2096
 epochs: 100

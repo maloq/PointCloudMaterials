@@ -110,6 +110,7 @@ class _PointNetBackbone(nn.Module):
 
     def forward(self, x: torch.Tensor):
         B, D, N = x.size()
+        # B, 3, N for point clouds
         trans = self.stn(x)
 
         x = x.transpose(2, 1)                       # (B,N,C)
