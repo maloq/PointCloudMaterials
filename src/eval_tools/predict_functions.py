@@ -242,6 +242,28 @@ def save_latents_to_file(
     return model
 
 
+def load_latents(folder: str, files: list[str]):
+    """Loads and concatenates latent data from multiple .npz files."""
+    if not files:
+        raise ValueError("No files to load")
+
+    data_keys = ['latents', 'reconstructions', 'originals', 'labels', 'coords']
+    data_lists = {key: [] for key in data_keys}
+
+    for file in files:
+        file_path = f"{folder}/latent_data_{file}.npz"
+        print(file_path)
+        with np.load(file_path) as data:
+            for key in data_keys:
+                data_lists[key].append(data[key])
+
+    concatenated_data = tuple(
+        np.concatenate(data_lists[key], axis=0) for key in data_keys
+    )
+
+    return concatenated_data
+
+
 if __name__ == "__main__":
     model, cfg, device, backend, model_type = load_model_for_inference(
         checkpoint_path="output/2025-07-31/00-06-11/PnE_L_FoldingSphereAttn_l64_P80_Sinkhorn_4096-epoch=09-val_loss=0.02.ckpt",

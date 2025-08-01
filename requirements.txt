@@ -15,3 +15,5 @@ ase
 hdbscan
 importlib
 pkgutil
+seaborn
+umap-learn

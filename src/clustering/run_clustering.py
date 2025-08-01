@@ -27,11 +27,11 @@ from sklearn.metrics import (
     silhouette_score,
 )
 from sklearn.preprocessing import LabelEncoder
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+import hdbscan
+from typing import Literal, Optional
 
-try:  
-    import hdbscan
-except ModuleNotFoundError:  
-    hdbscan = None
 
 sys.path.append(os.getcwd())
 
@@ -136,74 +136,154 @@ def evaluate_clustering(cluster_labels: np.ndarray, true_labels: np.ndarray) -> 
 
 
 
-ClusteringAlgo = Literal["kmeans", "hdbscan"]
+try:
+    import umap  # noqa: F401; for optional UMAP support
+    _HAS_UMAP = True
+except ImportError:
+    _HAS_UMAP = False
+
+ClusteringAlgo      = Literal["kmeans", "hdbscan"]
+DimReductionAlgoOpt = Optional[Literal["pca", "umap", None]]
+
 
 def predict_clusters(
     model: torch.nn.Module,
     train_latents: np.ndarray,
     eval_latents: np.ndarray,
     eval_coords: np.ndarray,
+    # ---------------- Clustering -------------------------------------------
     algorithm: ClusteringAlgo = "kmeans",
-    # --- K‑Means options -----------------------------------------------------
+    # --- K-Means options ---------------------------------------------------
     n_clusters: int | None = None,
     kmeans_random_state: int = 42,
-    # --- HDBSCAN options -----------------------------------------------------
+    # --- HDBSCAN options ---------------------------------------------------
     hdbscan_min_cluster_size: int = 15,
     hdbscan_min_samples: int | None = None,
     hdbscan_cluster_selection_epsilon: float = 0.0,
-    # --- Subsampling options -------------------------------------------------
+    hdbscan_metric: str = "euclidean",
+    # ---------------- Dimensionality reduction ----------------------------
+    dim_reduction: DimReductionAlgoOpt = None,       # "pca", "umap", or None
+    n_components: int = 32,                          # output dimension
+    pca_whiten: bool = False,                        # PCA option
+    umap_n_neighbors: int = 15,                      # UMAP option
+    umap_min_dist: float = 0.1,                      # UMAP option
+    umap_random_state: int = 42,                     # UMAP option
+    # ---------------- Subsampling -----------------------------------------
     subsample_size: int | None = None,
     subsample_random_state: int = 42,
-    # -------------------------------------------------------------------------
+    # ----------------------------------------------------------------------
     device: str = "cpu",
 ) -> np.ndarray:
-    """Fit clustering algorithm on *train* latents and predict labels for *eval*.
+    """
+    Cluster *all* (train + eval) latents with an optional dimensionality-
+    reduction step, then return labels only for the evaluation points.
 
-    Returns an ``(N, 4)`` array where the first three columns are the
-    coordinates (if available, else zeros) and the last column holds the
-    cluster assignment (``‑1`` denotes *noise* for HDBSCAN).
+    Returns
+    -------
+    np.ndarray, shape (N_eval, 4)
+        Columns 0-2: coordinates (zeros if not provided)
+        Column 3  : cluster label (-1 = noise for HDBSCAN)
     """
     model.eval().to(device)
-    print("Extracting train latents …")
-    train_latents
 
+    # ---------------------------------------------------------------------- #
+    # 0)  Concatenate latents                                                #
+    # ---------------------------------------------------------------------- #
+    all_latents = np.concatenate([train_latents, eval_latents], axis=0)
+
+    # ---------------------------------------------------------------------- #
+    # 1)  Optional subsampling                                               #
+    # ---------------------------------------------------------------------- #
     if subsample_size is not None:
-        if subsample_size > len(train_latents):
+        if subsample_size > len(all_latents):
             raise ValueError(
-                f"Subsample size {subsample_size} is larger than the number of "
-                f"training samples {len(train_latents)}."
+                f"Subsample size {subsample_size} exceeds total samples {len(all_latents)}."
             )
-        print(f"Subsampling train latents to {subsample_size} …")
-        rng = np.random.default_rng(subsample_random_state)
-        indices = rng.choice(len(train_latents), size=subsample_size, replace=False)
-        train_latents = train_latents[indices]
+        rng          = np.random.default_rng(subsample_random_state)
+        fit_idx      = rng.choice(len(all_latents), size=subsample_size, replace=False)
+        fit_latents  = all_latents[fit_idx]
+    else:
+        fit_idx      = None  # sentinel
+        fit_latents  = all_latents
 
-    print("Extracting eval latents …")
+    # ---------------------------------------------------------------------- #
+    # 2)  Dimensionality reduction                                           #
+    # ---------------------------------------------------------------------- #
+    reducer = None
+    if dim_reduction is not None:
+        if dim_reduction == "pca":
+            reducer = PCA(
+                n_components=n_components,
+                whiten=pca_whiten,
+                random_state=kmeans_random_state,  # keep seeds consistent
+            )
+        elif dim_reduction == "umap":
+            if not _HAS_UMAP:
+                raise ImportError(
+                    "UMAP is not installed. Run `pip install umap-learn` or "
+                    "set dim_reduction=None / 'pca'."
+                )
+            reducer = umap.UMAP(
+                n_components=n_components,
+                n_neighbors=umap_n_neighbors,
+                min_dist=umap_min_dist,
+                random_state=umap_random_state,
+            )
+        else:
+            raise ValueError(
+                f"dim_reduction must be None, 'pca', or 'umap' (got {dim_reduction})"
+            )
 
-    
+        # Fit reducer on the *same* data we’ll fit the clusterer to
+        reducer.fit(fit_latents)
+
+        # Transform *all* data to keep shapes aligned
+        all_latents_reduced  = reducer.transform(all_latents)
+        eval_latents_reduced = all_latents_reduced[-len(eval_latents) :]
+        fit_latents_reduced  = (
+            all_latents_reduced[fit_idx] if fit_idx is not None else all_latents_reduced
+        )
+    else:
+        # No reduction
+        fit_latents_reduced  = fit_latents
+        eval_latents_reduced = eval_latents
+
+    # ---------------------------------------------------------------------- #
+    # 3)  Fit clustering                                                     #
+    # ---------------------------------------------------------------------- #
     if algorithm == "kmeans":
         if n_clusters is None:
-            n_clusters, _ = find_optimal_clusters(train_latents, random_state=kmeans_random_state)
+            n_clusters, _ = find_optimal_clusters(
+                fit_latents_reduced, random_state=kmeans_random_state
+            )
 
-        clusterer = KMeans(n_clusters=n_clusters, random_state=kmeans_random_state, n_init=10)
-        clusterer.fit(train_latents)
-        labels = clusterer.predict(eval_latents)
+        clusterer = KMeans(
+            n_clusters=n_clusters,
+            random_state=kmeans_random_state,
+            n_init=10,
+        ).fit(fit_latents_reduced)
+
+        labels_eval = clusterer.predict(eval_latents_reduced)
 
     elif algorithm == "hdbscan":
-
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=hdbscan_min_cluster_size,
             min_samples=hdbscan_min_samples,
             cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
             prediction_data=True,
-        ).fit(train_latents)
+            metric=hdbscan_metric,
+            core_dist_n_jobs = -1
+        ).fit(fit_latents_reduced)
 
-        print("Found ", len(np.unique(clusterer.labels_)), "clusters")
-        labels, _ = hdbscan.approximate_predict(clusterer, eval_latents)
+        labels_eval, _ = hdbscan.approximate_predict(clusterer, eval_latents_reduced)
+
     else:
-        raise ValueError(f"Unknown algorithm: {algorithm}")
-  
-    return np.column_stack([eval_coords, labels])
+        raise ValueError(f"Unknown clustering algorithm: {algorithm}")
+
+    # ---------------------------------------------------------------------- #
+    # 4)  Assemble output                                                    #
+    # ---------------------------------------------------------------------- #
+    return np.column_stack([eval_coords, labels_eval])
 
 
 
