@@ -238,10 +238,10 @@ class SimpleRot(nn.Module):
 class ComplexRot(nn.Module):
     def __init__(self, in_ch, strict='None'):
         super().__init__()
-        self.linear1 = VNLinearLeakyReLU(in_ch, in_ch * 4, dim=4, negative_slope=0.0)
-        self.linear2 = VNLinearLeakyReLU(in_ch*4 , in_ch*2, dim=4, negative_slope=0.0)
-        self.linear3 = VNLinearLeakyReLU(in_ch*2, in_ch // 2, dim=4, negative_slope=0.0)
-        self.linearR = VNLinear(in_ch // 2, 3)
+        self.linear1 = VNLinearLeakyReLU(in_ch, in_ch * 6, dim=4, negative_slope=0.1)
+        self.linear2 = VNLinearLeakyReLU(in_ch*6 , in_ch*4, dim=4, negative_slope=0.1)
+        self.linear3 = VNLinearLeakyReLU(in_ch*4, in_ch , dim=4, negative_slope=0.1)
+        self.linearR = VNLinear(in_ch , 3)
         self.strict = strict
 
     def constraint_rot(self, rot_mat: torch.Tensor) -> torch.Tensor:

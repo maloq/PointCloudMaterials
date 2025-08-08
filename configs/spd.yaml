@@ -15,9 +15,8 @@ encoder:
   name: PnE_VN
   kwargs:
     latent_size: ${latent_size}
-    dropout_rate: 0.2
-    hidden_dim1: 360
-    hidden_dim2: 1200
+    hidden_dim1: 384
+    hidden_dim2: 1024
 decoder: 
   name: FoldingSphereAttn
   kwargs: 
@@ -27,7 +26,8 @@ decoder:
     n_shells: 2
     R1: 0.5
     R2: 1.0
-    hidden_dim: 400
+    hidden_dim: 384
+    R_att: 0.40
 
 loss: Sinkhorn
 max_samples: 0  # no limit
@@ -38,14 +38,14 @@ batch_size: 1024
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 300
+epochs: 100
 
 gpu: True
 devices: 0
 log_every_n_steps: 5
-num_workers: 4
+num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: OneCycle
 
-decay_rate: 0.003
-kl_latent_loss_scale: 0.02
+decay_rate: 0.002
+kl_latent_loss_scale: 0.03

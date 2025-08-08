@@ -84,8 +84,9 @@ class ShapePoseDisentanglement(pl.LightningModule):
         recon_f32 = recon.to(torch.float32)
         pc_f32    = pc.to(torch.float32)
 
-        loss_recon, _   = sinkhorn_distance(recon_f32.contiguous(), pc_f32)
-        loss_chamfer, _ = chamfer_distance(recon_f32, pc_f32)
+        # loss_recon, _   = sinkhorn_distance(recon_f32.contiguous(), pc_f32)
+        loss_recon = chamfer_distance(recon_f32, pc_f32)[0]
+        # loss_chamfer, _ = chamfer_distance(recon_f32, pc_f32)
 
         ortho_loss = torch.mean((rot.transpose(1, 2).float() @ rot.float()
                                  - torch.eye(3, device=self.device)) ** 2)
@@ -98,7 +99,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             self.log(f"{stage}_kl_loss", kl_loss)
 
         self.log(f"{stage}_loss", loss, prog_bar=True)
-        self.log(f"{stage}_chamfer", loss_chamfer, prog_bar=True)
+        self.log(f"{stage}_chamfer", loss_recon, prog_bar=False)
         self.log(f"{stage}_recon", loss_recon)
         self.log(f"{stage}_ortho", ortho_loss)
         return loss
