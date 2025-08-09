@@ -68,7 +68,7 @@ class AutoencoderPredictor(Predictor):
     @torch.inference_mode()
     def predict(self, dataloader: torch.utils.data.DataLoader) -> PredictionBundle:  # type: ignore[override]
         lats, recs, origs = [], [], []
-        for batch in tqdm(dataloader, desc="Predicting (autoencoder)"):
+        for batch in dataloader:
             pts = batch[0] if isinstance(batch, (list, tuple)) else batch
             pts = pts.to(self.device)
             recon, latent, _ = self.model(pts.transpose(2, 1))
@@ -110,7 +110,7 @@ class SPDPredictor(Predictor):
     @torch.inference_mode()
     def predict(self, dataloader: torch.utils.data.DataLoader) -> PredictionBundle:  # type: ignore[override]
         lats, recs, origs = [], [], []
-        for batch in tqdm(dataloader, desc="Predicting (SPD)"):
+        for batch in dataloader:
             pts = batch[0] if isinstance(batch, (list, tuple)) else batch
             pts = pts.to(self.device)
             inv_z, recon, _, _ = self.model(pts)
@@ -154,7 +154,7 @@ class SOAPPredictor(Predictor):
         from src.training_methods.SOAP.predict_soap_pca import soap_pca_predict_latent
 
         lats, origs = [], []
-        for batch in tqdm(dataloader, desc="Predicting (SOAP)"):
+        for batch in dataloader:
             pts = batch[0] if isinstance(batch, (list, tuple)) else batch
             np_pts = pts.detach().cpu().numpy()
             lat = soap_pca_predict_latent(np_pts, soap=self.soap, pca=self.pca, species=self.species)

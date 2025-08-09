@@ -5,21 +5,39 @@ dataset:
       - 175ps.off
 
 prediction:
-  model_type: spd  # or "spd" or "soap"
-  checkpoint: output/2025-08-02/23-49-33/SPD_FoldingSphereAttn_l72_P80_Sinkhorn_1024-epoch=97-val_loss=0.06.ckpt
+  model_type: autoencoder  # or "spd" or "soap"
+  checkpoint: output/2025-07-31/00-06-11/PnE_L_FoldingSphereAttn_l64_P80_Sinkhorn_4096-epoch=09-val_loss=0.02.ckpt
   cuda_device: 0
   batch_size: 512
+  max_samples: 40000
 
 metrics:
-  # Clustering is performed once and shared by all single-run metrics
-  clustering_method: kmeans  # or "gmm" or "hdbscan"
-  clustering_params:
-    n_clusters: 6
+  # Define multiple clusterings. Each will be used to compute all single-run metrics.
+  clusterings:
+    - method: kmeans
+      params:
+        n_clusters: 4
+    - method: kmeans
+      params:
+        n_clusters: 5
+    - method: kmeans
+      params:
+        n_clusters: 6
+    - method: gmm
+      params:
+        n_components: 6
   single_run:
     - name: silhouette
+    - name: reconstruction_chamfer
+    - name: reconstruction_emd
   multi_run:
     - name: rotational_consistency
       params:
         n_rotations: 4
         sphere_radius: 7.4
         n_points: 80
+        # Make centre filtering less aggressive to avoid empty centre set
+        edge_margin_factor: 1.0
+        # Consider sampling more candidate centres for robustness
+        n_centres: 500
+        batch_size: 1024
