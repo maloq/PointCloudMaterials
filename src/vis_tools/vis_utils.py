@@ -2,8 +2,8 @@ from scipy.spatial import KDTree
 import numpy as np
 import plotly.graph_objects as go
 import torch
-from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
+from .tsne_vis import compute_tsne, save_tsne_plot
 
 
 def visualize_predictions(predictions, title: str = "Phase Predictions"):
@@ -172,9 +172,10 @@ def visualize_original_and_reconstructed(original_points, reconstructed_points, 
         original_points: Original point cloud array of shape (N, 3)
         reconstructed_points: Reconstructed point cloud array of shape (N, 3)
     """
-    # Visualize original points
-    if random_sample:
-       random_sample_idx = np.random.randint(0, original_points.shape[0])
+    # Determine which sample index to visualize
+    random_sample_idx = (
+        np.random.randint(0, original_points.shape[0]) if random_sample else 0
+    )
 
     fig_original = plot_point_cloud_3d(
         original_points[random_sample_idx][:, :3],  # Take only XYZ coordinates
@@ -236,7 +237,6 @@ def perform_tsne_clustering(latents, labels, chosen_label='liquid', n_clusters=3
     tuple
         (tsne_results, cluster_labels, kmeans)
     """
-    from sklearn.manifold import TSNE
     from sklearn.cluster import KMeans
     import matplotlib.pyplot as plt
     import numpy as np
@@ -254,16 +254,22 @@ def perform_tsne_clustering(latents, labels, chosen_label='liquid', n_clusters=3
     
     print(f"Performing t-SNE on {'all data' if include_other_labels else 'filtered data'}...")
     
-    # Perform t-SNE
-    tsne = TSNE(n_components=2, perplexity=perplexity, max_iter=n_iter, random_state=random_state)
-    
+    # Perform t-SNE using shared utility
     if include_other_labels:
-        # Perform t-SNE on all data
-        tsne_results = tsne.fit_transform(latents)
+        tsne_results = compute_tsne(
+            latents,
+            perplexity=perplexity,
+            random_state=random_state,
+            n_iter=n_iter,
+        )
         filtered_indices = np.where(mask)[0]
     else:
-        # Perform t-SNE only on filtered data
-        tsne_results = tsne.fit_transform(filtered_latents)
+        tsne_results = compute_tsne(
+            filtered_latents,
+            perplexity=perplexity,
+            random_state=random_state,
+            n_iter=n_iter,
+        )
     
     # Perform K-means clustering on filtered latents
     print(f"Performing clustering on label '{chosen_label}' with {n_clusters} clusters...")
@@ -413,34 +419,25 @@ def visualize_latents(npy_file="latent_label_pairs.npy",
     for latent, label in latent_label_pairs:
         latents.append(latent)
         labels.append(label)
-    
+
     latents = np.stack(latents, axis=0)
     labels = np.array(labels)
 
-    # Compute t-SNE projection.
+    # Compute t-SNE projection using shared utility.
     print("Performing t-SNE on latent representations...")
-    tsne = TSNE(n_components=2, perplexity=perplexity, max_iter=n_iter, random_state=random_state)
-    tsne_results = tsne.fit_transform(latents)
+    tsne_results = compute_tsne(
+        latents,
+        perplexity=perplexity,
+        random_state=random_state,
+        n_iter=n_iter,
+    )
 
-    # Determine unique labels and map them to colors.
-    unique_labels = sorted(set(labels))
-    # Define a set of colors (expandable if needed).
-    color_list = ['blue', 'red', 'green', 'orange', 'purple', 'brown']
-    color_map = {label: color_list[i % len(color_list)] for i, label in enumerate(unique_labels)}
-
-    # Create scatter plot.
-    plt.figure(figsize=(8, 6))
-    for label in unique_labels:
-        indices = np.where(labels == label)
-        plt.scatter(tsne_results[indices, 0], tsne_results[indices, 1],
-                    color=color_map[label], label=label,
-                    alpha=0.3, edgecolors='w', s=12)
-
-    plt.title("t-SNE Visualization of Latent Space")
-    plt.xlabel("t-SNE Component 1")
-    plt.ylabel("t-SNE Component 2")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(output_image, dpi=300)
+    # Save and optionally show the plot using shared utility.
+    save_tsne_plot(
+        tsne_results,
+        labels,
+        out_file=output_image,
+        title="t-SNE Visualization of Latent Space",
+        show=True,
+    )
     print("Saved t-SNE plot to:", output_image)
-    plt.show()

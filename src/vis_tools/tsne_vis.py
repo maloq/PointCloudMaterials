@@ -10,6 +10,7 @@ def compute_tsne(
     *,
     random_state: int = 42,
     perplexity: int | None = None,
+    n_iter: int | None = None,
 ) -> np.ndarray:
     """Project high-dimensional latents to 2D using t-SNE.
 
@@ -24,13 +25,18 @@ def compute_tsne(
         auto = max(2, min(30, (num_samples - 1) // 3))
         perplexity = min(auto, num_samples - 1)
 
-    tsne = TSNE(
-        n_components=2,
-        init="pca",
-        learning_rate="auto",
-        random_state=random_state,
-        perplexity=perplexity,
-    )
+    # Build kwargs to avoid passing None for sklearn parameters
+    tsne_kwargs: Dict[str, Any] = {
+        "n_components": 2,
+        "init": "pca",
+        "learning_rate": "auto",
+        "random_state": random_state,
+        "perplexity": perplexity,
+    }
+    if n_iter is not None:
+        tsne_kwargs["n_iter"] = int(n_iter)
+
+    tsne = TSNE(**tsne_kwargs)
     return tsne.fit_transform(latents)
 
 
@@ -40,6 +46,7 @@ def save_tsne_plot(
     *,
     out_file: str,
     title: str,
+    show: bool = False,
 ) -> None:
     """Save a t-SNE scatter plot, colored by cluster labels, to *out_file*.
 
@@ -47,31 +54,39 @@ def save_tsne_plot(
     """
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
-    # Build a robust color mapping
+    # Build a robust color mapping for arbitrary (possibly non-integer) labels
     unique_labels = np.unique(labels)
-    non_noise = [int(l) for l in unique_labels if int(l) != -1]
-    colormap = plt.cm.get_cmap("tab20", max(1, len(non_noise)))
-    label_to_color: Dict[int, Any] = {}
+    # Normalize numpy scalar types to Python scalars for consistent comparisons
+    def to_py(v: Any) -> Any:
+        return v.item() if isinstance(v, np.generic) else v
+
+    unique_labels = [to_py(v) for v in unique_labels]
+
+    def is_noise_label(v: Any) -> bool:
+        return v in {-1, -1.0, "-1"}
+
+    non_noise_labels = [v for v in unique_labels if not is_noise_label(v)]
+    colormap = plt.cm.get_cmap("tab20", max(1, len(non_noise_labels)))
+    label_to_color: Dict[Any, Any] = {}
     color_index = 0
-    for lbl in sorted(unique_labels, key=lambda x: (x == -1, x)):
-        lbl_int = int(lbl)
-        if lbl_int == -1:
-            label_to_color[lbl_int] = "lightgray"
+    # Sort with noise last for visibility
+    for lbl in sorted(unique_labels, key=lambda x: (is_noise_label(x), str(x))):
+        if is_noise_label(lbl):
+            label_to_color[lbl] = "lightgray"
         else:
-            label_to_color[lbl_int] = colormap(color_index)
+            label_to_color[lbl] = colormap(color_index)
             color_index += 1
 
     plt.figure(figsize=(7, 6), dpi=150)
     for lbl in unique_labels:
-        lbl_int = int(lbl)
         mask = labels == lbl
         plt.scatter(
             tsne_coords[mask, 0],
             tsne_coords[mask, 1],
             s=6,
             alpha=0.8,
-            c=[label_to_color[lbl_int]],
-            label=str(lbl_int),
+            c=[label_to_color[lbl]],
+            label=str(lbl),
             linewidths=0,
         )
 
@@ -83,4 +98,7 @@ def save_tsne_plot(
         plt.legend(title="cluster", markerscale=2, fontsize=8, loc="best", frameon=False)
     plt.tight_layout()
     plt.savefig(out_file, bbox_inches="tight")
-    plt.close()
+    if show:
+        plt.show()
+    else:
+        plt.close()

@@ -149,7 +149,7 @@ def run(eval_config_path: str) -> Dict[str, Any]:
     # Pre-compute a single t-SNE embedding for all clustering visualizations
     tsne_coords: np.ndarray | None = None
     try:
-        tsne_coords = compute_tsne(preds.latents)
+        tsne_coords = compute_tsne(preds.latents, perplexity=20, n_iter=1000)
         print("t-SNE embedding computed")
     except Exception as e:
         print(f"Warning: failed to compute t-SNE embedding: {e}")
