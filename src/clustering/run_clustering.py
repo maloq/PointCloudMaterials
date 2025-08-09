@@ -36,7 +36,7 @@ from typing import Literal, Optional
 sys.path.append(os.getcwd())
 
 
-from src.eval_tools.predict_functions import _get_latents_from_dataloader  
+from eval_pipeline.predict_functions import _get_latents_from_dataloader  
 warnings.filterwarnings("ignore")
 
 

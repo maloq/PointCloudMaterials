@@ -1,0 +1,25 @@
+dataset:
+  config: configs/data/data_ae_Al_80.yaml
+  override:
+    data_files:
+      - 175ps.off
+
+prediction:
+  model_type: spd  # or "spd" or "soap"
+  checkpoint: output/2025-08-02/23-49-33/SPD_FoldingSphereAttn_l72_P80_Sinkhorn_1024-epoch=97-val_loss=0.06.ckpt
+  cuda_device: 0
+  batch_size: 512
+
+metrics:
+  # Clustering is performed once and shared by all single-run metrics
+  clustering_method: kmeans  # or "gmm" or "hdbscan"
+  clustering_params:
+    n_clusters: 6
+  single_run:
+    - name: silhouette
+  multi_run:
+    - name: rotational_consistency
+      params:
+        n_rotations: 4
+        sphere_radius: 7.4
+        n_points: 80

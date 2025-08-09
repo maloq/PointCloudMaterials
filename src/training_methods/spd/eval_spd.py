@@ -48,6 +48,7 @@ def create_spd_dataloader(
     shuffle: bool = False,
     max_samples: int | None = None,
     return_coords: bool = False,
+    batch_size: int | None = None,
 ) -> torch.utils.data.DataLoader:
     """Build a dataloader from one or more .off files for SPD inference."""
     if isinstance(file_paths, str):
@@ -68,10 +69,12 @@ def create_spd_dataloader(
 
     if max_samples is not None:
         from torch.utils.data import Subset
-
         dataset = Subset(dataset, list(range(max_samples)))
 
-    return torch.utils.data.DataLoader(dataset, batch_size=cfg.batch_size, shuffle=shuffle)
+    if batch_size is None:
+        batch_size = cfg.batch_size
+
+    return torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 
 
 def _prepare_batch(points: torch.Tensor | np.ndarray, device: str) -> torch.Tensor:
