@@ -110,7 +110,7 @@ def run(eval_config_path: str) -> Dict[str, Any]:
     train_cfg = load_training_config(checkpoint)
     checkpoint_stem = os.path.splitext(os.path.basename(checkpoint))[0]
     now_str = datetime.now().strftime("%m-%d_%H-%M")
-    out_dir = os.path.join("output/eval_results", f"{train_cfg.model_type}_{now_str}_{checkpoint_stem}")
+    out_dir = os.path.join("output/eval_results", f"{eval_cfg.prediction.model_type}_{now_str}_{checkpoint_stem}")
 
     # ------------------------------------------------------------------
     # Compose dataset config (training data cfg + overrides from eval cfg)
@@ -207,7 +207,13 @@ def run(eval_config_path: str) -> Dict[str, Any]:
             print("Running single run metric:", m.name, "with", method)
             metric: SingleRunMetric = cls()
             params = m.get("params", {})
-            key = f"{m.name}:{method}"
+            if method == "kmeans":
+                key = f"{m.name}:{method}:{cparams['n_clusters']}"
+            elif method == "gmm":
+                key = f"{m.name}:{method}:{cparams['n_components']}"
+            else:
+                key = f"{m.name}:{method}"
+            
             results["metrics"][key] = metric.run_once(
                 preds.latents,
                 cluster_labels=cluster_labels,

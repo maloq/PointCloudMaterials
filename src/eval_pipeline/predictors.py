@@ -143,11 +143,73 @@ class SOAPPredictor(Predictor):
 
     @classmethod
     def from_checkpoint(cls, cfg, checkpoint_path: str, device: str) -> "SOAPPredictor":
-        import joblib
-        bundle = joblib.load(checkpoint_path)
-        soap = bundle["soap"]
-        pca = bundle["pca"]
-        species = bundle.get("species", "Al")
+        """
+        Restore a SOAP+PCA predictor.
+
+        Two modes are supported:
+        1) If checkpoint_path points to a joblib bundle with keys 'soap' and 'pca',
+           load them directly.
+        2) Otherwise, fall back to building SOAP and fitting PCA on-the-fly using the
+           dataset described by cfg.data. This makes SOAP usable without a model
+           checkpoint. The fallback limits the number of samples for speed.
+        """
+        # First try to load a precomputed bundle
+        try:
+            import joblib  # local import to avoid an unconditional dependency
+
+            bundle = joblib.load(checkpoint_path)
+            soap = bundle["soap"]
+            pca = bundle["pca"]
+            species = bundle.get("species", "Al")
+            return cls(soap, pca, species)
+        except Exception:
+            # Fall back to on-the-fly fitting from data
+            pass
+
+        # Fallback path: build SOAP and fit PCA from a subset of the evaluation dataset
+        # We intentionally reuse the autoencoder dataloader which yields (B, N, 3)
+        from src.training_methods.autoencoder.eval_autoencoder import (
+            create_autoencoder_dataloader,
+        )
+        from src.training_methods.SOAP.predict_soap_pca import fit_soap_pca
+
+        # Sensible defaults for quick fitting; can be tuned later via config if needed
+        max_fit_pointclouds = int(getattr(cfg, "soap_max_fit_pointclouds", 10000))
+        soap_params = dict(getattr(cfg, "soap_params", {}))
+        n_components = getattr(cfg, "soap_pca_components", 32)
+        species = getattr(cfg, "soap_species", "Al")
+
+        # Build a small dataloader to sample point clouds for fitting
+        file_paths = cfg.data.data_files
+        dl = create_autoencoder_dataloader(
+            cfg,
+            file_paths,
+            shuffle=False,
+            max_samples=max_fit_pointclouds,
+            batch_size=getattr(cfg, "batch_size", 512),
+        )
+
+        # Stream point clouds from the dataloader into the fitter
+        def iter_point_clouds():
+            num_seen = 0
+            for batch in dl:
+                pts = batch[0] if isinstance(batch, (list, tuple)) else batch
+                np_pts = pts.detach().cpu().numpy()
+                # np_pts is (B, N, 3); yield each (N, 3)
+                for xyz in np_pts:
+                    yield xyz
+                    num_seen += 1
+                    if num_seen >= max_fit_pointclouds:
+                        return
+
+        soap, pca = fit_soap_pca(
+            iter_point_clouds(),
+            species=species,
+            soap_params=soap_params,
+            n_components=n_components,
+            n_jobs=1,
+            verbose=False,
+        )
         return cls(soap, pca, species)
 
     def predict(self, dataloader: torch.utils.data.DataLoader) -> PredictionBundle:  # type: ignore[override]
@@ -158,10 +220,12 @@ class SOAPPredictor(Predictor):
             pts = batch[0] if isinstance(batch, (list, tuple)) else batch
             np_pts = pts.detach().cpu().numpy()
             lat = soap_pca_predict_latent(np_pts, soap=self.soap, pca=self.pca, species=self.species)
-            lats.append(lat)
-            origs.append(np_pts)
+            lats.append(lat)          # (B, d)
+            origs.append(np_pts)      # (B, N, 3)
         return PredictionBundle(
-            latents=np.asarray(lats), reconstructions=None, originals=np.asarray(origs)
+            latents=np.concatenate(lats, axis=0),
+            reconstructions=None,
+            originals=np.concatenate(origs, axis=0),
         )
 
     def predict_raw(self, points: np.ndarray) -> np.ndarray:  # type: ignore[override]
