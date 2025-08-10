@@ -81,7 +81,7 @@ if not pytorch3d_available:
 def sinkhorn_distance(pred: torch.Tensor,
                         target: torch.Tensor,
                         *,
-                        blur=.05, p=2, scaling=.5):
+                        blur=.02, p=2, scaling=.5):
     """
     Batched Sinkhorn distance between two point clouds.
     
@@ -296,3 +296,53 @@ def _add_optional_losses(total_loss, aux_loss_dict, **kwargs):
         aux_loss_dict['kl_latent_loss'] = kl_loss
         
     return total_loss, aux_loss_dict
+
+
+@torch.no_grad()
+def _kabsch_so3_teacher(
+        cano_points: torch.Tensor,
+        target_points: torch.Tensor
+) -> torch.Tensor:
+    """
+    Computes the optimal rotation matrix using Kabsch algorithm.
+    :param cano_points: canonical point cloud. (B, N, 3)
+    :param target_points: target point cloud. (B, N, 3)
+    :return: optimal rotation matrix. (B, 3, 3)
+    """
+    #  H = A^T B
+    H = torch.einsum("bni,bnj->bij", cano_points, target_points) # H (B,3,3)
+    U, S, Vh = torch.linalg.svd(H.to(torch.float32), full_matrices=False)
+
+    #  R = Vh^T U^T
+    R = torch.einsum("bij,bkj->bik", Vh, U) # R (B,3,3)
+    return R
+
+
+def rotation_geodesic_kabsch_loss(rot_pred: torch.Tensor,
+                                  cano_points: torch.Tensor,
+                                  target_points: torch.Tensor,
+                                  detach_teacher: bool = True,
+                                  eps: float = 1e-6) -> torch.Tensor:
+    """
+    Geodesic SO(3) loss between predicted rotation R and Kabsch teacher R*.
+    Args:
+        rot_pred:      (B, 3, 3)  predicted rotation (need not be perfect SO(3), you can orthogonalize upstream)
+        cano_points:   (B, N, 3)  canonical reconstruction (pre-rotation)
+        target_points: (B, N, 3)  target point cloud
+        detach_teacher: if True, stop gradient through R* (recommended)
+    Returns:
+        Mean geodesic angle (radians) over the batch.
+    """
+    with torch.no_grad() if detach_teacher else torch.enable_grad():
+        R_star = _kabsch_so3_teacher(cano_points, target_points)
+    if detach_teacher:
+        R_star = R_star.detach()
+
+    # geodesic angle between R and R*:  theta = arccos( (trace(R^T R*) - 1)/2 )
+    RtR = torch.matmul(rot_pred.transpose(-1, -2).to(torch.float32), R_star.to(torch.float32))  # (B,3,3)
+    tr = RtR.diagonal(dim1=-2, dim2=-1).sum(-1)                                                 # (B,)
+    # numeric guards
+    tr = tr.clamp(min=-1.0, max=3.0)
+    cos_theta = ((tr - 1.0) * 0.5).clamp(-1.0 + eps, 1.0 - eps)
+    theta = torch.arccos(cos_theta)                                                             # (B,)
+    return theta.mean()

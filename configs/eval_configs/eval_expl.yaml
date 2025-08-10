@@ -5,8 +5,8 @@ dataset:
       - 175ps.off
 
 prediction:
-  model_type: soap  # autoencoder or spd or soap
-  checkpoint: output/2025-07-31/00-06-11/PnE_L_FoldingSphereAttn_l64_P80_Sinkhorn_4096-epoch=09-val_loss=0.02.ckpt
+  model_type: spd  # autoencoder or spd or soap
+  checkpoint: output/2025-08-10/15-36-33/SPD_FoldingSphereAttnRes_l72_P80_Sinkhorn_512-epoch=59-val_loss=0.06.ckpt
   cuda_device: 0
   batch_size: 512
   max_samples: 40000

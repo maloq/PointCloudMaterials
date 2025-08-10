@@ -55,6 +55,7 @@ class FoldingDecoderSphereTwoShell(Decoder):
         R2         : float = 1.0,
         hidden_dim : int   = 512,
         dropout_rate: float = 0.0,
+        learnable_template: bool = False,
     ) -> None:
         super().__init__()
         if n_shells not in (1, 2):
@@ -76,8 +77,12 @@ class FoldingDecoderSphereTwoShell(Decoder):
                 _fibonacci_sphere_points(n1, R1),
                 _fibonacci_sphere_points(n2, R2),
             ], dim=0)
-        self.register_buffer("template", templ)     # (N,3)
-        self._n = num_points
+
+            if learnable_template:
+                self.template = nn.Parameter(templ)   # learnable
+            else:
+                self.register_buffer("template", templ)
+            self._n = num_points
 
         def make_stage(in_dim: int) -> nn.Sequential:
             return nn.Sequential(
@@ -121,6 +126,7 @@ class FoldingDecoderSphereTwoShellAttn(FoldingDecoderSphereTwoShell):
         hidden_dim   : int   = 512,
         attn_dim     : int   = 128,
         dropout_rate : float = 0.0,
+        learnable_template: bool = False,
     ):
         super().__init__(
             num_points=num_points,
@@ -176,3 +182,112 @@ class FoldingDecoderSphereTwoShellAttn(FoldingDecoderSphereTwoShell):
         scores = scores.masked_fill(~mask, float('-inf'))
         W = torch.softmax(scores, dim=-1).masked_fill(~mask, 0.0)
         return torch.matmul(W, V)
+
+
+
+@register_decoder("FoldingSphereAttnRes")
+class FoldingDecoderSphereTwoShellAttnRes(FoldingDecoderSphereTwoShell):
+    """Adds 2 local‑attention Folding stages on top of the sphere decoder with residual connections."""
+
+    def __init__(
+        self,
+        num_points   : int,
+        latent_size  : int,
+        *,
+        n_shells     : int   = 2,
+        R1           : float = 1.0,
+        R2           : float = 1.5,
+        R_att        : float = 0.20,
+        hidden_dim   : int   = 512,
+        attn_dim     : int   = 128,
+        dropout_rate : float = 0.0,
+        learnable_template: bool = False,
+    ):
+        super().__init__(
+            num_points=num_points,
+            latent_size=latent_size,
+            n_shells=n_shells,
+            R1=R1,
+            R2=R2,
+            hidden_dim=hidden_dim,
+            dropout_rate=dropout_rate,
+        )
+        self.R_att    = R_att
+        self.sqrt_d   = math.sqrt(attn_dim)
+        self.q_proj   = nn.Linear(3, attn_dim, bias=False)
+        self.k_proj   = nn.Linear(3, attn_dim, bias=False)
+        self.v_proj   = nn.Linear(3, attn_dim, bias=False)
+
+        def make_stage(in_dim: int) -> nn.Sequential:
+            return nn.Sequential(
+                nn.Linear(in_dim, hidden_dim),
+                _TransposedBatchNormRelu(hidden_dim, dropout_rate),
+                nn.Linear(hidden_dim, hidden_dim),
+                _TransposedBatchNormRelu(hidden_dim, dropout_rate),
+                nn.Linear(hidden_dim, 3),
+            )
+
+        self.stage0 = make_stage(latent_size + 3)                 # (latent + templ)
+        self.stage1 = make_stage(latent_size + 3 + attn_dim)
+        self.stage2 = make_stage(latent_size + 3 + attn_dim)
+
+    # ----------------  local attention ----------------
+    def _local_attention(self, coords: torch.Tensor) -> torch.Tensor:
+        Q = self.q_proj(coords)
+        K = self.k_proj(coords)
+        V = self.v_proj(coords)
+
+        d2 = torch.cdist(coords, coords) ** 2
+        mask = d2 <= (self.R_att ** 2)
+
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / self.sqrt_d
+        scores = scores.masked_fill(~mask, float('-inf'))
+        W = torch.softmax(scores, dim=-1).masked_fill(~mask, 0.0)
+        return torch.matmul(W, V)
+
+    def forward(self, z: torch.Tensor) -> torch.Tensor:
+        B = z.size(0)
+
+        # ---- Infer the latent width this decoder was built with from stage0 ----
+        # stage0 takes (latent + 3) inputs
+        first_linear = None
+        for m in self.stage0.modules():
+            if isinstance(m, nn.Linear):
+                first_linear = m
+                break
+        assert first_linear is not None, "stage0 must start with a Linear layer"
+        expected_latent = first_linear.in_features - 3
+
+        # Pad/trim z so it matches what the decoder expects (no new params)
+        zdim = z.size(-1)
+        if zdim != expected_latent:
+            if zdim < expected_latent:
+                z = F.pad(z, (0, expected_latent - zdim))
+            else:
+                z = z[..., :expected_latent]
+
+        # ---- (B,N,3) template and per-point latent ----
+        templ = self.template
+        if templ.dim() == 2:              # (N,3) -> (1,N,3)
+            templ = templ.unsqueeze(0)
+        templ = templ.expand(B, -1, -1)   # (B,N,3)
+        z_exp = z.unsqueeze(1).expand(B, templ.size(1), -1)  # (B,N,latent)
+
+        # ---------------- stage 0: offsets from template ----------------
+        x0 = torch.cat((z_exp, templ), dim=-1)   # (B,N,latent+3)
+        delta0  = self.stage0(x0)                # (B,N,3)
+        coarse0 = templ + delta0                 # residual add
+
+        # ---------------- stage 1: include local attention ----------------
+        attn1   = self._local_attention(coarse0) # (B,N,attn_dim)
+        x1 = torch.cat((z_exp, coarse0, attn1), dim=-1)  # (B,N,latent+3+attn_dim)
+        delta1  = self.stage1(x1)                # (B,N,3)
+        coarse1 = coarse0 + delta1
+
+        # ---------------- stage 2: include local attention ----------------
+        attn2   = self._local_attention(coarse1)
+        x2 = torch.cat((z_exp, coarse1, attn2), dim=-1)  # (B,N,latent+3+attn_dim)
+        delta2  = self.stage2(x2)                # (B,N,3)
+        refined = coarse1 + delta2
+
+        return refined 

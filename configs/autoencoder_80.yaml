@@ -27,6 +27,7 @@ decoder:
     R1: 0.5
     R2: 1.0
     hidden_dim: 256
+    learnable_template: True
 
 loss: Sinkhorn
 torch_compile: False

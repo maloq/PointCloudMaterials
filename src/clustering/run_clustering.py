@@ -1,13 +1,4 @@
 from __future__ import annotations
-
-"""Run clustering on latent spaces produced by the prediction helpers.
-
-This version supports **both** classic *K‑Means* and density‑based *HDBSCAN*
-clustering.  All encoding / latent‑extraction logic lives in
-:pyfile:`predict_functions.py`; here we only concern ourselves with the
-clustering routines and their evaluation utilities.
-"""
-
 import os
 import sys
 import warnings
@@ -36,7 +27,7 @@ from typing import Literal, Optional
 sys.path.append(os.getcwd())
 
 
-from eval_pipeline.predict_functions import _get_latents_from_dataloader  
+from src.eval_pipeline.predict_functions import _get_latents_from_dataloader  
 warnings.filterwarnings("ignore")
 
 
