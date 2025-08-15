@@ -138,7 +138,6 @@ DimReductionAlgoOpt = Optional[Literal["pca", "umap", None]]
 
 
 def predict_clusters(
-    model: torch.nn.Module,
     train_latents: np.ndarray,
     eval_latents: np.ndarray,
     eval_coords: np.ndarray,
@@ -175,7 +174,6 @@ def predict_clusters(
         Columns 0-2: coordinates (zeros if not provided)
         Column 3  : cluster label (-1 = noise for HDBSCAN)
     """
-    model.eval().to(device)
 
     # ---------------------------------------------------------------------- #
     # 0)  Concatenate latents                                                #

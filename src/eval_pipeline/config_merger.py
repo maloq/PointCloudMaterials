@@ -3,10 +3,10 @@ from __future__ import annotations
 """Utility helpers for merging evaluation and training configs."""
 
 import os
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from omegaconf import OmegaConf, DictConfig
-from datetime import datetime
 import shutil
+import subprocess
 
 
 def load_training_config(checkpoint_path: str) -> DictConfig:
@@ -20,6 +20,21 @@ def load_training_config(checkpoint_path: str) -> DictConfig:
     return OmegaConf.load(cfg_path)
 
 
+def get_current_git_commit() -> Optional[str]:
+    """Return current Git commit SHA if available, otherwise None."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        return result.stdout.strip()
+    except Exception:
+        return None
+
+
 def merge_and_save(out_dir: str, train_cfg: DictConfig, eval_cfg: DictConfig, metrics: Dict[str, Any], *, checkpoint_path: str) -> str:
     """Merge configs and persist results under outputs/eval_results_{date}_{checkpoint_name}/eval_results.yaml.
 
@@ -27,6 +42,9 @@ def merge_and_save(out_dir: str, train_cfg: DictConfig, eval_cfg: DictConfig, me
     """
     merged = OmegaConf.merge(train_cfg, eval_cfg)
     merged.eval_results = metrics
+    git_commit = get_current_git_commit()
+    if git_commit:
+        merged.git_commit = git_commit
 
     os.makedirs(out_dir, exist_ok=True)
 

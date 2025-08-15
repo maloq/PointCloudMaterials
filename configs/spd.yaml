@@ -1,5 +1,5 @@
 defaults:
-  - data: data_ae_Al_80_small
+  - data: data_ae_Al_80
 project_name: pointnet
 experiment_name: SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online
@@ -10,7 +10,7 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 model_type: spd
-latent_size: 72
+latent_size: 36
 encoder: 
   name: PnE_VN
   kwargs:
@@ -33,23 +33,29 @@ decoder:
     R_att: 1.0
     learnable_template: False
 
+rot_net:
+  name: Rot6DHead
+  kwargs:
+    hidden: 256
+    use_attention: True
+
 loss: Sinkhorn
 max_samples: 0  # no limit
 torch_compile: True
 
-learning_rate: 0.005
+learning_rate: 0.003
 batch_size: 512
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 100
+epochs: 200
 
 gpu: True
 devices: 0
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
-scheduler_name: OneCycle
+scheduler_name: Cosine
 
 decay_rate: 0.0002
 kl_latent_loss_scale: 0.01

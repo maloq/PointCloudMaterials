@@ -275,16 +275,15 @@ class PointNetEncoderVN(nn.Module):
             x_mean = x.mean(dim=-1, keepdim=True)
             x = torch.cat((x, x_mean.expand_as(x)), 1)
 
-        # Stage 2
         x = self.conv2(x)                     # (B, c2, 3, N)
         x = self.res2(x)                      # deeper @ c2
 
-        # Stage 3
         x = self.conv3(x)                     # (B, c3, 3, N)
         x = self.res3(x)                      # deeper @ c3
         x = self.conv4(x)                     # (B, c3, 3, N)
 
-        # Head (unchanged)
+        eq_z = x.view(B, -1, D, N)
+
         x_mean_out = x.mean(dim=-1, keepdim=True)      # (B, c3, 3, 1)
         x = torch.cat((x, x_mean_out.expand_as(x)), 1) # (B, 2*c3, 3, N)
         x, trans = self.std_feature(x)                 # (B, c3, 3, N), frame
@@ -292,185 +291,9 @@ class PointNetEncoderVN(nn.Module):
         x = x.view(B, -1, N)
         inv_z = x.max(dim=-1, keepdim=False)[0]
         center_loc = x_mean_out.mean(dim=2)
-        return inv_z, x_mean_out, center_loc
+        return inv_z, eq_z, center_loc
 
 
-class PointNetEncoderResVN(nn.Module):
-    def __init__(self, latent_size=64, n_knn=20, pooling='mean',
-                 feature_transform=True, hidden_dim1=256, hidden_dim2=1024,
-                 stn_hidden_dims=(64, 128, 1024), stn_fc_dims=(512, 256),
-                 std_feature_hidden_dims=None,
-                 use_batchnorm=True,
-                 # NEW: residual options
-                 residual=True, blocks=(2, 2, 2), bottleneck_ratio=0.5):
-        """
-        blocks: number of residual blocks at each stage (c1, c2, c3).
-        bottleneck_ratio: bottleneck width inside each VNResBlock.
-        Set residual=False to disable residual stacks (keeps original depth).
-        """
-        super().__init__()
-        self.n_knn = n_knn
-        self.pooling = pooling
-
-        # As before: channels are divided by 3 for VN (vector) channels.
-        c1 = hidden_dim1 // 3
-        c2 = hidden_dim2 // 3
-        c3 = latent_size // 3
-
-        # Stem on 5D tensor from graph features
-        self.conv_pos = VNLinearLeakyReLU(3, c1, dim=5, negative_slope=0.1, use_batchnorm=use_batchnorm)
-
-        # Stage 1 (dim=4)
-        self.conv1 = VNLinearLeakyReLU(c1, c1, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
-
-        # Residual stacks (all dim=4)
-        self.residual = residual
-        if residual:
-            self.res1 = _make_vn_layer(
-                c1, blocks[0], dim=4, bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1, use_batchnorm=use_batchnorm
-            )
-        else:
-            self.res1 = nn.Identity()
-
-        # STN is unchanged
-        self.feature_transform = feature_transform
-        if self.feature_transform:
-            self.fstn = STNkd(c1, hidden_dims=stn_hidden_dims, fc_dims=stn_fc_dims)
-
-        # Stage 2 projection & residuals
-        self.conv2 = VNLinearLeakyReLU(c1 * 2, c2, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
-        if residual:
-            self.res2 = _make_vn_layer(
-                c2, blocks[1], dim=4, bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1, use_batchnorm=use_batchnorm
-            )
-        else:
-            self.res2 = nn.Identity()
-
-        # Stage 3 projection & residuals
-        self.conv3 = VNLinearLeakyReLU(c2, c3, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
-        if residual:
-            self.res3 = _make_vn_layer(
-                c3, blocks[2], dim=4, bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1, use_batchnorm=use_batchnorm
-            )
-        else:
-            self.res3 = nn.Identity()
-
-        # Keep the original head conv
-        self.conv4 = VNLinearLeakyReLU(c3, c3, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
-
-        # Frame/std feature is unchanged
-        self.std_feature = VNStdFeature(
-            c3 * 2, dim=4, normalize_frame=False, negative_slope=0.0,
-            hidden_dims=std_feature_hidden_dims
-        )
-
-        # Pooling choice for the 5D graph features right after conv_pos
-        if pooling == 'max':
-            self.pool = VNMaxPool(c1)
-        else:
-            self.pool = mean_pool
-
-    def forward(self, x: torch.Tensor):
-        # x: (B, N, 3)
-        x = x.permute(0, 2, 1)  # (B,3,N)
-        B, D, N = x.size()
-        x = x.unsqueeze(1)
-
-        # Build local graph and lift to VN features (5D)
-        feat = get_graph_feature_cross(x, k=self.n_knn)
-        x = self.conv_pos(feat)               # (B, c1, 3, N, k)
-        x = self.pool(x)                      # (B, c1, 3, N)
-
-        # Stage 1
-        x = self.conv1(x)                     # (B, c1, 3, N)
-        x = self.res1(x)                      # deeper @ c1
-
-        # Optional STN (feature transform), identical placement as before
-        if self.feature_transform:
-            x_global = self.fstn(x).unsqueeze(-1).repeat(1, 1, 1, N)
-            x = torch.cat((x, x_global), 1)
-        else:
-            x_mean = x.mean(dim=-1, keepdim=True)
-            x = torch.cat((x, x_mean.expand_as(x)), 1)
-
-        # Stage 2
-        x = self.conv2(x)                     # (B, c2, 3, N)
-        x = self.res2(x)                      # deeper @ c2
-
-        # Stage 3
-        x = self.conv3(x)                     # (B, c3, 3, N)
-        x = self.res3(x)                      # deeper @ c3
-        x = self.conv4(x)                     # (B, c3, 3, N)
-
-        # Head (unchanged)
-        x_mean_out = x.mean(dim=-1, keepdim=True)      # (B, c3, 3, 1)
-        x = torch.cat((x, x_mean_out.expand_as(x)), 1) # (B, 2*c3, 3, N)
-        x, trans = self.std_feature(x)                 # (B, c3, 3, N), frame
-
-        x = x.view(B, -1, N)
-        inv_z = x.max(dim=-1, keepdim=False)[0]
-        center_loc = x_mean_out.mean(dim=2)
-        return inv_z, x_mean_out, center_loc
-
-
-class PointNetEncoderVN(nn.Module):
-    def __init__(self, latent_size=64, n_knn=32, pooling='mean',
-                 feature_transform=True, hidden_dim1=256, hidden_dim2=1024,
-                 stn_hidden_dims=(64, 128, 1024), stn_fc_dims=(512, 256),
-                 std_feature_hidden_dims=None,
-                 use_batchnorm=True):
-        super().__init__()
-        self.n_knn = n_knn
-        self.pooling = pooling
-
-        # To accommodate the Vector-Neuronal processing, the channels are divided by 3.
-        # It's recommended to use hidden dimensions that are multiples of 3.
-        c1 = hidden_dim1 // 3
-        c2 = hidden_dim2 // 3  
-        c3 = latent_size // 3
-
-        self.conv_pos = VNLinearLeakyReLU(3, c1, dim=5, negative_slope=0.1)
-        self.conv1 = VNLinearLeakyReLU(c1, c1, dim=4, negative_slope=0.1)
-        self.conv2 = VNLinearLeakyReLU(c1 * 2, c2, dim=4, negative_slope=0.1)
-        self.conv3 = VNLinearLeakyReLU(c2, c3, dim=4, negative_slope=0.1)
-        self.conv4 = VNLinearLeakyReLU(c3, c3, dim=4, negative_slope=0.1)
-        self.std_feature = VNStdFeature(c3 * 2, dim=4, normalize_frame=False, negative_slope=0.0, hidden_dims=std_feature_hidden_dims)
-        if pooling == 'max':
-            self.pool = VNMaxPool(c1)
-        else:
-            self.pool = mean_pool
-        self.feature_transform = feature_transform
-        if self.feature_transform:
-            self.fstn = STNkd(c1, hidden_dims=stn_hidden_dims, fc_dims=stn_fc_dims)
-
-    def forward(self, x: torch.Tensor):
-        # x: (B, N, 3)
-        x = x.permute(0, 2, 1)  # (B,3,N)
-        B, D, N = x.size()
-        x = x.unsqueeze(1)
-        feat = get_graph_feature_cross(x, k=self.n_knn)
-        x = self.conv_pos(feat)
-        x = self.pool(x)
-        x = self.conv1(x)
-        if self.feature_transform:
-            x_global = self.fstn(x).unsqueeze(-1).repeat(1, 1, 1, N)
-            x = torch.cat((x, x_global), 1)
-        else:
-            x_mean = x.mean(dim=-1, keepdim=True)
-            x = torch.cat((x, x_mean.expand_as(x)), 1)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x_mean_out = x.mean(dim=-1, keepdim=True)
-        x = torch.cat((x, x_mean_out.expand_as(x)), 1)
-        x, trans = self.std_feature(x)
-        x = x.view(B, -1, N)
-        inv_z = x.max(dim=-1, keepdim=False)[0]
-        center_loc = x_mean_out.mean(dim=2)
-        return inv_z, x_mean_out, center_loc
 
 class STNkd(nn.Module):
     def __init__(self, d=64, hidden_dims=(64, 128, 1024), fc_dims=(512, 256)):

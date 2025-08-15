@@ -6,7 +6,7 @@ import sys,os
 from datetime import datetime
 sys.path.append(os.getcwd())
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-from src.eval_tools.vis_utils import plot_point_cloud_3d
+from src.vis_tools.vis_utils import plot_point_cloud_3d
 from src.data_utils.data_load import PointCloudDataset
 from torch.utils.data import DataLoader
 from torch.utils.data import Subset

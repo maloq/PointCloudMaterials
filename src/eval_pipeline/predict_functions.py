@@ -239,7 +239,7 @@ def save_latents_to_file(
         )   
     
     print(f"Saved to {full_save_folder}")
-    return model
+    return full_save_folder
 
 
 def load_latents(folder: str, files: list[str]):
