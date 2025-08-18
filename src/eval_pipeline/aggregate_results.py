@@ -5,6 +5,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Sequence
 
 import pandas as pd
 from omegaconf import DictConfig, OmegaConf
+from pandas.api.types import is_numeric_dtype
 
 
 def _find_eval_result_files(root_dir: str) -> List[str]:
@@ -77,13 +78,13 @@ def aggregate_eval_results(
     """Crawl all runs under root_dir and build a comparison table.
 
     - config_keys: dotted keys to extract from the merged config. Defaults to
-      ["model_type", "experiment_name"]. You can include nested keys like
+      ["model_type", "experiment_name", "latent_size"]. You can include nested keys like
       "prediction.model_type" if desired.
     - include_eval_results: whether to append all flattened eval_results.* columns.
     - extra_columns: optional static columns to add to each row (e.g., dataset tag).
     - output_csv: if provided, save the resulting table to this CSV path.
     """
-    keys = list(config_keys) if config_keys is not None else ["model_type", "experiment_name"]
+    keys = list(config_keys) if config_keys is not None else ["model_type", "experiment_name", "latent_size"]
 
     yaml_paths = _find_eval_result_files(root_dir)
     rows: List[Dict[str, Any]] = []
@@ -106,10 +107,26 @@ def aggregate_eval_results(
         rows.append(row)
 
     df = pd.DataFrame(rows)
-    # Stable column order: run_dir, requested keys, then eval_results*
-    desired_prefix = ["run_dir", *keys]
-    other_cols = [c for c in df.columns if c not in desired_prefix]
-    df = df[[*desired_prefix, *other_cols]] if not df.empty else df
+
+    if not df.empty:
+        # Strip 'eval_results.' prefix from column names and round metrics to 3 decimals
+        eval_cols_with_prefix = [c for c in df.columns if isinstance(c, str) and c.startswith("eval_results.")]
+        if eval_cols_with_prefix:
+            rename_map = {c: c.split(".", 1)[1] for c in eval_cols_with_prefix}
+            df = df.rename(columns=rename_map)
+
+            # Round numeric metric columns (those coming from eval_results) to 3 decimals
+            metric_cols = list(rename_map.values())
+            for col in metric_cols:
+                if col in df.columns:
+                    series = pd.to_numeric(df[col], errors="coerce")
+                    if is_numeric_dtype(series):
+                        df[col] = series.round(3)
+
+        # Stable column order: run_dir, requested keys, then remaining columns
+        desired_prefix = ["run_dir", *keys]
+        other_cols = [c for c in df.columns if c not in desired_prefix]
+        df = df[[*desired_prefix, *other_cols]]
 
     if output_csv:
         os.makedirs(os.path.dirname(os.path.abspath(output_csv)), exist_ok=True)
@@ -121,7 +138,7 @@ def aggregate_eval_results(
 if __name__ == "__main__":  # Convenience local run
     table = aggregate_eval_results(
         root_dir="output/eval_results",
-        config_keys=["model_type", "experiment_name"],
+        config_keys=["model_type", "experiment_name", "latent_size"],
         include_eval_results=True,
         output_csv="output/eval_results_summary.csv",
     )

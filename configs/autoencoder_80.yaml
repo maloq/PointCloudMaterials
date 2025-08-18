@@ -33,7 +33,7 @@ loss: Sinkhorn
 torch_compile: False
 max_samples: 0  # no limit
 learning_rate: 0.004
-batch_size: 4096
+batch_size: 2048
 
 enable_swa: False
 swa_epoch_start: 1000 
@@ -46,9 +46,9 @@ num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: OneCycle
 
-decay_rate: 0.003
+decay_rate: 0.002
 feature_transform_loss_scale: 0.001
 rotation_loss_scale: 0.2
 l1_latent_loss_scale: 0.00
-kl_latent_loss_scale: 0.03
+kl_latent_loss_scale: 0.01
 latent_noise_std: 0.00
