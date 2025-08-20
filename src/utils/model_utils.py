@@ -5,12 +5,18 @@ from typing import Tuple
 
 def resolve_config_path(checkpoint_path: str) -> Tuple[str, str]:
     """Return *(config_dir, config_name)* guessed from *checkpoint_path*."""
-    hydra_dir = os.path.join(os.path.dirname(checkpoint_path), ".hydra")
-    if os.path.isdir(hydra_dir):
-        return hydra_dir, "config"
+    if "eval_results" in checkpoint_path:
+        checkpoint_path = os.path.join(*checkpoint_path.split("/")[:-1])
+        print(f"Eval results checkpoint path, using {checkpoint_path} as config path")
+        assert os.path.isdir(checkpoint_path), f"Config path {checkpoint_path} is not a directory"
+        assert os.path.isfile(os.path.join(checkpoint_path, "eval_results.yaml")), f"Config file not found in {checkpoint_path}"
+        return checkpoint_path,  "eval_results"
     else:
-        print(f"No hydra directory found in {checkpoint_path}, using default config")
-        return None, None
+        hydra_dir = os.path.join(os.path.dirname(checkpoint_path), ".hydra")
+        if os.path.isdir(hydra_dir):
+            return hydra_dir, "config"
+        else:
+            raise ValueError(f"No hydra directory found in {checkpoint_path}, put default config in .hydra/config.yaml")
 
 
 def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
