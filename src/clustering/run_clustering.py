@@ -151,6 +151,7 @@ def predict_clusters(
     hdbscan_min_samples: int | None = None,
     hdbscan_cluster_selection_epsilon: float = 0.0,
     hdbscan_metric: str = "euclidean",
+    core_dist_n_jobs: int = 4,
     # ---------------- Dimensionality reduction ----------------------------
     dim_reduction: DimReductionAlgoOpt = None,       # "pca", "umap", or None
     n_components: int = 32,                          # output dimension
@@ -261,7 +262,7 @@ def predict_clusters(
             cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
             prediction_data=True,
             metric=hdbscan_metric,
-            core_dist_n_jobs = -1
+            core_dist_n_jobs = core_dist_n_jobs,
         ).fit(fit_latents_reduced)
 
         labels_eval, _ = hdbscan.approximate_predict(clusterer, eval_latents_reduced)

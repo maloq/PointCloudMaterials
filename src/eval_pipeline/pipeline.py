@@ -25,6 +25,9 @@ from src.eval_pipeline.metrics.chamfer_distance import ReconstructionChamferMetr
 from src.eval_pipeline.metrics.earth_mover_distance import ReconstructionEMDMetric
 from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
 
+import warnings
+warnings.filterwarnings("ignore")
+
 SINGLE_METRICS = {
     "silhouette": SilhouetteMetric,
     "ari": ARIMetric,
@@ -76,6 +79,9 @@ def _cluster_latents(latents: np.ndarray, method: str, params: Dict[str, Any]) -
     """
 
     method = method.lower()
+    # Allow YAML entries like `params:` (which parse as None)
+    if params is None:
+        params = {}
     if method == "kmeans":
         from sklearn.cluster import KMeans
 
@@ -91,10 +97,28 @@ def _cluster_latents(latents: np.ndarray, method: str, params: Dict[str, Any]) -
         model = KMeans(n_init="auto", **params)
     elif method == "gmm":
         from sklearn.mixture import GaussianMixture
+        
+        # Cap n_components to the number of samples when necessary
+        params = dict(params)  # shallow copy to avoid mutating caller
+        n_components = params.get("n_components")
+        if n_components is not None:
+            n_samples = latents.shape[0]
+            if n_samples < 1:
+                raise ValueError("Cannot cluster: no samples provided in latents.")
+            params["n_components"] = max(1, min(n_components, n_samples))
 
         model = GaussianMixture(**params)
     elif method == "hdbscan":
         from hdbscan import HDBSCAN
+        
+        # Cap min_cluster_size to the number of samples when necessary (and at least 2)
+        params = dict(params)  # shallow copy to avoid mutating caller
+        min_cluster_size = params.get("min_cluster_size")
+        if min_cluster_size is not None:
+            n_samples = latents.shape[0]
+            if n_samples < 1:
+                raise ValueError("Cannot cluster: no samples provided in latents.")
+            params["min_cluster_size"] = max(2, min(min_cluster_size, n_samples))
 
         model = HDBSCAN(**params)
     else:
@@ -181,7 +205,8 @@ def run(eval_config_path: str) -> Dict[str, Any]:
 
     for clustering in clusterings_cfg:
         method = clustering["method"]
-        cparams = clustering.get("params", {})
+        # Support missing or null params in YAML (treat as empty dict)
+        cparams = clustering.get("params") or {}
         print(f"Clustering using {method} with params: {cparams}")
         cluster_labels = _cluster_latents(preds.latents, method, cparams)
 

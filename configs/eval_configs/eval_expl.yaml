@@ -6,14 +6,17 @@ dataset:
 
 prediction:
   model_type: soap  # autoencoder or spd or soap
-  checkpoint: output/2025-08-18/01-28-40/PnE_L_FoldingSphereAttn_l64_P80_Sinkhorn_2048-epoch=119-val_loss=0.01.ckpt
+  checkpoint: output/eval_results/spd_08-10_22-45_SPD_FoldingSphereAttnRes_l72_P80_Sinkhorn_512-epoch=20-val_loss=0.06/SPD_FoldingSphereAttnRes_l72_P80_Sinkhorn_512-epoch=20-val_loss=0.06.ckpt
   cuda_device: 0
   batch_size: 512
-  max_samples: 40000
+  max_samples: 100000
 
 metrics:
   # Define multiple clusterings. Each will be used to compute all single-run metrics.
   clusterings:
+    - method: kmeans
+      params:
+        n_clusters: 3
     - method: kmeans
       params:
         n_clusters: 4
@@ -25,7 +28,28 @@ metrics:
         n_clusters: 6
     - method: gmm
       params:
+        n_components: 3
+    - method: gmm
+      params:
+        n_components: 4
+    - method: gmm
+      params:
+        n_components: 4
+    - method: gmm
+      params:
         n_components: 6
+    - method: hdbscan
+      params:
+        min_cluster_size: 10
+    - method: hdbscan
+      params:
+        min_cluster_size: 20
+    - method: hdbscan
+      params:
+        min_cluster_size: 30
+    - method: hdbscan
+      params:
+        min_cluster_size: 50
   single_run:
     - name: silhouette
     - name: reconstruction_chamfer
