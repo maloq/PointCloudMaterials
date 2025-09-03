@@ -13,6 +13,7 @@ from src.utils.optimizer_utils import get_optimizers_and_scheduler
 from src.data_utils.data_transforms import random_rotate_point_cloud_batch
 import wandb
 from pytorch_lightning.loggers import WandbLogger
+from src.loss.neighbor_latent_loss import neighbor_pair_latent_loss
 logger = setup_logging()
 
 
@@ -39,6 +40,10 @@ class PointNetAutoencoder(pl.LightningModule):
         self.repulsion_scale = cfg.get('repulsion_scale', 0.1)
         self.kl_latent_loss_scale = cfg.get('kl_latent_loss_scale', 0.0)
         self.latent_noise_std = cfg.get('latent_noise_std', 0.0)
+        # Neighbor latent consistency configuration
+        self.neighbor_loss_scale = cfg.get('neighbor_loss_scale', 0.0)
+        self.neighbor_weight = cfg.get('neighbor_weight', 'binary')
+        self.neighbor_sigma = cfg.get('neighbor_sigma', 1.0)
         if self.latent_noise_std > 0:
             logger.print(f"Latent noise enabled with std: {self.latent_noise_std}")
 
@@ -136,8 +141,88 @@ class PointNetAutoencoder(pl.LightningModule):
 
         return total_loss # Return total_loss needed for training_step return
 
-    def training_step(self, batch, batch_idx):
-        points = batch                                  # (B, N, 3)
+    def training_step(self, batch, batch_idx, dataloader_idx: int = 0):
+        # Compatibility: PL may pass a combined list [main_batch, pair_batch]
+        if isinstance(batch, (list, tuple)) and len(batch) == 2 and (batch[0] is not None or batch[1] is not None):
+            total_loss_out = 0.0
+            # Main AE branch
+            if batch[0] is not None:
+                points0 = batch[0]
+                if isinstance(points0, (tuple, list)):
+                    points0 = points0[0]
+                points_permuted0 = points0.permute(0, 2, 1)
+                latent0, _, trans_feat0 = self.encoder(points_permuted0)
+                trans_feat_list0 = [trans_feat0] if trans_feat0 is not None else []
+                latent_input0 = latent0 + torch.randn_like(latent0) * self.latent_noise_std if self.latent_noise_std > 0 else latent0
+                pred0 = self.decoder(latent_input0)
+                loss_args0 = self._prepare_loss_args(points0, pred0, trans_feat_list0, latent=latent0)
+                main_loss0, aux_loss_dict0 = self.criterion(**loss_args0)
+                rot_loss0 = None
+                if self.rotation_loss_scale > 0:
+                    points_rot = random_rotate_point_cloud_batch(points0)
+                    latent_rot, _, _ = self.encoder(points_rot.permute(0, 2, 1))
+                    rot_loss0 = F.mse_loss(latent0, latent_rot)
+                total_main0 = self._log_losses(main_loss0, aux_loss_dict0, 'train', rotation_loss=rot_loss0)
+                total_loss_out = total_loss_out + total_main0
+            # Neighbor-pair branch
+            if batch[1] is not None and self.neighbor_loss_scale > 0:
+                try:
+                    pts_i, pts_j, dists = batch[1]
+                except Exception as e:
+                    raise ValueError("Neighbor pair dataloader must return (points_i, points_j, distances)") from e
+                z_i, _, _ = self.encoder(pts_i.permute(0, 2, 1))
+                z_j, _, _ = self.encoder(pts_j.permute(0, 2, 1))
+                loss_pairs, stats = neighbor_pair_latent_loss(
+                    z_i, z_j, dists,
+                    weight=self.neighbor_weight,
+                    sigma=float(self.neighbor_sigma),
+                )
+                scaled = float(self.neighbor_loss_scale) * loss_pairs
+                self.log('train/neighbor_loss', loss_pairs, prog_bar=True, on_step=True, on_epoch=True, batch_size=z_i.shape[0])
+                self.log('train/neighbor_loss_scaled', scaled, on_step=True, on_epoch=False, batch_size=z_i.shape[0])
+                self.log('train/neighbor_pairs', float(z_i.shape[0]), on_step=True, on_epoch=False, batch_size=z_i.shape[0])
+                for k, v in stats.items():
+                    self.log(f'train/{k}', v, on_step=True, on_epoch=False, batch_size=z_i.shape[0])
+                total_loss_out = total_loss_out + scaled
+            return {'loss': total_loss_out}
+
+        # Branch for neighbor-pair dataloader index
+        if dataloader_idx == 1:
+            # Expect batch: (pts_i, pts_j, distances)
+            try:
+                pts_i, pts_j, dists = batch
+            except Exception as e:
+                raise ValueError("Neighbor pair dataloader must return (points_i, points_j, distances)") from e
+
+            pts_i = pts_i  # (B, N, 3)
+            pts_j = pts_j
+            dists = dists.to(self.device)
+
+            # Encode both sides (encoder expects (B, 3, N))
+            z_i, _, _ = self.encoder(pts_i.permute(0, 2, 1))
+            z_j, _, _ = self.encoder(pts_j.permute(0, 2, 1))
+
+            # Neighbor latent loss
+            loss_pairs, stats = neighbor_pair_latent_loss(
+                z_i, z_j, dists,
+                weight=self.neighbor_weight,
+                sigma=float(self.neighbor_sigma),
+            )
+            scaled = float(self.neighbor_loss_scale) * loss_pairs
+
+            # Logging
+            self.log('train/neighbor_loss', loss_pairs, prog_bar=True, on_step=True, on_epoch=True, batch_size=z_i.shape[0])
+            self.log('train/neighbor_loss_scaled', scaled, on_step=True, on_epoch=False, batch_size=z_i.shape[0])
+            self.log('train/neighbor_pairs', float(z_i.shape[0]), on_step=True, on_epoch=False, batch_size=z_i.shape[0])
+            for k, v in stats.items():
+                self.log(f'train/{k}', v, on_step=True, on_epoch=False, batch_size=z_i.shape[0])
+
+            return { 'loss': scaled }
+
+        # Default single-sample AE branch
+        points = batch                                  # (B, N, 3) or ((B, N, 3), coords)
+        if isinstance(points, (tuple, list)):
+            points = points[0]
         points_permuted = points.permute(0, 2, 1)
         # ------------------------------------------------------------------
         # Encode only once to avoid double-updating BatchNorm statistics
@@ -197,6 +282,8 @@ class PointNetAutoencoder(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         points = batch
+        if isinstance(points, (tuple, list)):
+            points = points[0]
         points_permuted = points.permute(0, 2, 1)
 
         latent, _, trans_feat = self.encoder(points_permuted)

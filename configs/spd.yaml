@@ -44,7 +44,7 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.003
-batch_size: 512
+batch_size: 128 # if neighbor_loss_scale>0, then neighbor_pair_batch_size added to batch_size
 
 enable_swa: False
 swa_epoch_start: 1000 
@@ -58,6 +58,14 @@ scheduler_gamma: 0.5
 scheduler_name: Cosine
 
 decay_rate: 0.0002
-kl_latent_loss_scale: 0.01
+kl_latent_loss_scale: 0.00
 pdist_loss_scale: 0.01
 kabsch_rotation_loss_scale: 0.005
+
+# Neighbor latent smoothness (global pair-sampler)
+neighbor_loss_scale: 0.1     # set > 0 to enable
+neighbor_radius: 6.0          # distinct from data.radius
+neighbor_weight: binary       # 'binary' or 'gaussian'
+neighbor_sigma: 2.0           # used if neighbor_weight == 'gaussian'
+neighbor_max_neighbors: 16    # cap per-anchor neighbors
+neighbor_pair_batch_size: 64 #  added to batch_size as x2

@@ -52,3 +52,11 @@ rotation_loss_scale: 0.2
 l1_latent_loss_scale: 0.00
 kl_latent_loss_scale: 0.01
 latent_noise_std: 0.00
+
+# Neighbor latent smoothness (global pair-sampler)
+neighbor_loss_scale: 0.00     # set > 0 to enable
+neighbor_radius: 4.0          # different from data.radius
+neighbor_weight: binary       # 'binary' or 'gaussian'
+neighbor_sigma: 2.0           # used if neighbor_weight == 'gaussian'
+neighbor_max_neighbors: 32    # cap per-anchor neighbors (Yes by default)
+neighbor_pair_batch_size: 4096
