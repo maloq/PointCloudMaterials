@@ -6,7 +6,7 @@ dataset:
 
 prediction:
   model_type: soap  # autoencoder or spd or soap
-  checkpoint: output/eval_results/spd_08-10_22-45_SPD_FoldingSphereAttnRes_l72_P80_Sinkhorn_512-epoch=20-val_loss=0.06/SPD_FoldingSphereAttnRes_l72_P80_Sinkhorn_512-epoch=20-val_loss=0.06.ckpt
+  checkpoint: output/2025-09-02/18-05-45/SPD_FoldingSphereAttnRes_l36_P80_Sinkhorn_16-epoch=02-val_loss=0.01.ckpt
   cuda_device: 0
   batch_size: 512
   max_samples: 100000
@@ -14,6 +14,9 @@ prediction:
 metrics:
   # Define multiple clusterings. Each will be used to compute all single-run metrics.
   clusterings:
+    - method: kmeans
+      params:
+        n_clusters: 2
     - method: kmeans
       params:
         n_clusters: 3
@@ -57,7 +60,7 @@ metrics:
   multi_run:
     - name: rotational_consistency
       params:
-        n_rotations: 4
+        n_rotations: 1
         sphere_radius: 7.4
         n_points: 80
         # Make centre filtering less aggressive to avoid empty centre set

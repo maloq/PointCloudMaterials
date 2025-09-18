@@ -290,7 +290,23 @@ def get_regular_samples(
         logger.print("Sampling region is too small or inverted after padding. No samples will be generated.")
         return []
 
+    # Grid dimensions
     dims = compute_dimensions(min_center, max_center, stride)
+    # For reporting: grid without padding (i.e., if edge-near centers were not dropped)
+    dims_no_padding = compute_dimensions(min_coords, max_coords, stride)
+
+    # Report what fraction is excluded by padding and by drop_edge_samples
+    total_no_padding = int(np.prod(np.maximum(dims_no_padding, 0)))
+    total_padded = int(np.prod(np.maximum(dims, 0)))
+    if total_no_padding > 0:
+        dropped_padding = max(total_no_padding - total_padded, 0)
+        pct_padding = 100.0 * dropped_padding / total_no_padding
+        logger.print(
+            f"Edge exclusion (padding): dropped {dropped_padding}/{total_no_padding} centers "
+            f"({pct_padding:.2f}%)"
+        )
+    else:
+        logger.print("Edge exclusion (padding): insufficient grid to estimate (0 total)")
     
     # Ensure dimensions are non-negative
     if np.any(dims <= 0):
@@ -307,6 +323,18 @@ def get_regular_samples(
         avg_dropped = round(dropped_points / len(samples), 2)
         logger.print(f"Generated {len(samples)} samples.")
         logger.print(f"Avg added {avg_added} points, avg dropped {avg_dropped} points per sample.")
+        if drop_edge_samples and total_padded > 0:
+            # interior dims after dropping the outer layer on each side when dims >= 3
+            keep_i = dims[0] - 2 if dims[0] >= 3 else 0
+            keep_j = dims[1] - 2 if dims[1] >= 3 else 0
+            keep_k = dims[2] - 2 if dims[2] >= 3 else 0
+            kept_interior = int(max(keep_i, 0) * max(keep_j, 0) * max(keep_k, 0))
+            dropped_edges = max(total_padded - kept_interior, 0)
+            pct_edges = 100.0 * dropped_edges / total_padded
+            logger.print(
+                f"Additional edge-layer drop (drop_edge_samples=True): dropped {dropped_edges}/{total_padded} centers "
+                f"({pct_edges:.2f}%), kept interior {kept_interior}"
+            )
     else:
         logger.print("No samples were generated with the given parameters.")
         
