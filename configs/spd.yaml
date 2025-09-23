@@ -1,7 +1,7 @@
 defaults:
-  - data: data_ae_Al_80
+  - data: data_synth_baseline
 project_name: pointnet
-experiment_name: SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
+experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online
 experiment_tags:
   - SWA
@@ -39,16 +39,18 @@ rot_net:
     hidden: 256
     use_attention: True
 
+bypass_rot_head: False
+
 loss: Sinkhorn
 max_samples: 0  # no limit
 torch_compile: True
 
-learning_rate: 0.003
-batch_size: 128 # if neighbor_loss_scale>0, then neighbor_pair_batch_size added to batch_size
+learning_rate: 0.004
+batch_size: 512  # if neighbor_loss_scale>0, then neighbor_pair_batch_size added to batch_size
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 200
+epochs: 16
 
 gpu: True
 devices: 0
@@ -59,13 +61,13 @@ scheduler_name: Cosine
 
 decay_rate: 0.0002
 kl_latent_loss_scale: 0.00
-pdist_loss_scale: 0.01
+pdist_loss_scale: 0.05
 kabsch_rotation_loss_scale: 0.005
 
 # Neighbor latent smoothness (global pair-sampler)
-neighbor_loss_scale: 0.1     # set > 0 to enable
+neighbor_loss_scale: 0.00     # set > 0 to enable
 neighbor_radius: 6.0          # distinct from data.radius
 neighbor_weight: binary       # 'binary' or 'gaussian'
 neighbor_sigma: 2.0           # used if neighbor_weight == 'gaussian'
-neighbor_max_neighbors: 16    # cap per-anchor neighbors
-neighbor_pair_batch_size: 64 #  added to batch_size as x2
+neighbor_max_neighbors: 6    # cap per-anchor neighbors
+neighbor_pair_batch_size: 256  #  added to batch_size as x2

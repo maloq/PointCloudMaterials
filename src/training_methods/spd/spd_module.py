@@ -29,11 +29,10 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         self.decoder = build_model(cfg, only_decoder=True)
         
-        encoder_cfg = getattr(self.hparams, 'encoder', {})
-        encoder_kwargs = encoder_cfg.get('kwargs', {}) if hasattr(encoder_cfg, 'get') else {}
+        encoder_kwargs = self.hparams.encoder.get('kwargs', {}) 
         self.encoder_latent_size = encoder_kwargs.get('latent_size', self.hparams.latent_size)
         self.bypass_rot_head = cfg.get("bypass_rot_head", False)
-
+        encoder_cfg = self.hparams.encoder
         encoder_name = encoder_cfg.get('name', 'PnE_VN') if hasattr(encoder_cfg, 'get') else 'PnE_VN'
         if encoder_name == 'PnE_VN':
             # Use the configured latent size (no unintended halving)
@@ -78,9 +77,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
     def forward(self, pc: torch.Tensor):
         # pc: (B, N, 3)
         # Center inputs to remove translation; add back after reconstruction
-        center = pc.mean(dim=1, keepdim=True)
-        pc_centered = pc - center
-        inv_z, eq_z, _ = self.encoder(pc_centered)
+        inv_z, eq_z, _ = self.encoder(pc)
 
         if self.bypass_rot_head:
             eq_latent = self._eq_to_decoder_latent(eq_z)
@@ -88,7 +85,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             if cano.shape[1] == 3:
                 cano = cano.permute(0, 2, 1)
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
-            recon = cano + center
+            recon = cano
         else:
             cano = self.decoder(inv_z)
             if cano.shape[1] == 3:
@@ -97,8 +94,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
             # rot = _orthogonalize(rot)
 
-            recon_centered = (rot @ cano.transpose(1, 2)).transpose(1, 2)
-            recon = recon_centered + center
+            recon = (rot @ cano.transpose(1, 2)).transpose(1, 2)
         return inv_z, recon, cano, rot 
 
     def _step(self, batch, batch_idx, stage: str):
@@ -118,14 +114,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
         ortho_loss = torch.mean((rot.transpose(1, 2).float() @ rot.float()
                                  - torch.eye(3, device=self.device)) ** 2)
         
-        loss_pd = pairwise_distance_loss(pred=recon_f32,target=pc_f32)
+        # loss_pd = pairwise_distance_loss(pred=recon_f32,target=pc_f32)
         # Rotation supervision via Kabsch teacher (use centered targets)
-        pc_centered_f32 = pc_f32 - pc_f32.mean(dim=1, keepdim=True)
         # loss_rot = rotation_geodesic_kabsch_loss(rot.to(torch.float32), cano.to(torch.float32), pc_centered_f32)
 
         # Total loss
         loss = loss_recon + self.ortho_scale * ortho_loss 
-        if self.pdist_loss_scale > 0:
+        if False:
             loss += float(self.pdist_loss_scale) * loss_pd
             self.log(f"{stage}_pdist_scaled", float(self.pdist_loss_scale) * loss_pd, prog_bar=False)
         # if self.rotation_loss_scale > 0:
@@ -139,7 +134,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         self.log(f"{stage}_loss", loss, prog_bar=True)
         self.log(f"{stage}_chamfer", loss_chamfer, prog_bar=False)
-        self.log(f"{stage}_pd", loss_pd, prog_bar=False)
+        # self.log(f"{stage}_pd", loss_pd, prog_bar=False)
         # self.log(f"{stage}_rot", loss_rot)
         self.log(f"{stage}_recon", loss_recon)
         self.log(f"{stage}_ortho", ortho_loss)
