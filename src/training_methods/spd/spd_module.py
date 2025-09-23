@@ -5,6 +5,9 @@ import torch.nn.functional as F
 from torch.nn.functional import normalize
 
 import sys,os
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
@@ -26,20 +29,24 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         self.decoder = build_model(cfg, only_decoder=True)
         
-        encoder_kwargs = self.hparams.encoder.get('kwargs', {})
-        self.encoder_latent_size = encoder_kwargs.get('latent_size', self.hparams.latent_size) 
+        encoder_cfg = getattr(self.hparams, 'encoder', {})
+        encoder_kwargs = encoder_cfg.get('kwargs', {}) if hasattr(encoder_cfg, 'get') else {}
+        self.encoder_latent_size = encoder_kwargs.get('latent_size', self.hparams.latent_size)
+        self.bypass_rot_head = cfg.get("bypass_rot_head", False)
 
-        if encoder_kwargs.get('name', 'PnE_VN') == 'PnE_VN':
+        encoder_name = encoder_cfg.get('name', 'PnE_VN') if hasattr(encoder_cfg, 'get') else 'PnE_VN'
+        if encoder_name == 'PnE_VN':
+            # Use the configured latent size (no unintended halving)
             self.encoder = PointNetEncoderVN(
-                latent_size=self.encoder_latent_size // 2,
-                n_knn=32,
+                latent_size=self.encoder_latent_size//2,
+                n_knn=20,
                 hidden_dim1=encoder_kwargs.get('hidden_dim1', 256),
                 hidden_dim2=encoder_kwargs.get('hidden_dim2', 1024),
                 pooling=encoder_kwargs.get('pooling', 'mean'),
                 feature_transform=encoder_kwargs.get('feature_transform', False),
-                    # blocks=encoder_kwargs.get('blocks', [2, 2, 2]),
-                    # bottleneck_ratio=encoder_kwargs.get('bottleneck_ratio', 0.5)
-                )
+                # blocks=encoder_kwargs.get('blocks', [2, 2, 2]),
+                # bottleneck_ratio=encoder_kwargs.get('bottleneck_ratio', 0.5)
+            )
         # elif encoder_kwargs.get('name', 'PnE_VN') == 'PnE_ResVN':
         #     self.encoder = PointNetEncoderResVN(
         #         latent_size=self.encoder_latent_size // 2,
@@ -47,8 +54,12 @@ class ShapePoseDisentanglement(pl.LightningModule):
         #     )
 
         # self.rot_net = ComplexRot(self.encoder_latent_size // 6)
-        rot_net_kwargs = self.hparams.rot_net.get('kwargs', {})
-        self.rot_net = Rot6DHead(hidden=rot_net_kwargs.get('hidden', 256), use_attention=rot_net_kwargs.get('use_attention', True))
+        if not self.bypass_rot_head:
+            rot_net_cfg = getattr(self.hparams, 'rot_net', {})
+            rot_net_kwargs = rot_net_cfg.get('kwargs', {}) if hasattr(rot_net_cfg, 'get') else {}
+            self.rot_net = Rot6DHead(hidden=rot_net_kwargs.get('hidden', 256), use_attention=rot_net_kwargs.get('use_attention', True))
+        else:
+            self.rot_net = None
 
         self.ortho_scale = cfg.get("ortho_scale", 0.01)
         self.kl_latent_loss_scale = cfg.get("kl_latent_loss_scale", 0.0)
@@ -59,25 +70,43 @@ class ShapePoseDisentanglement(pl.LightningModule):
         self.neighbor_weight = cfg.get('neighbor_weight', 'binary')
         self.neighbor_sigma = cfg.get('neighbor_sigma', 1.0)
 
+        self._supervised_cache = {
+            "train": {"latents": [], "phase": []},
+            "val": {"latents": [], "phase": []},
+        }
+
     def forward(self, pc: torch.Tensor):
         # pc: (B, N, 3)
-        inv_z, eq_z, _ = self.encoder(pc)
+        # Center inputs to remove translation; add back after reconstruction
+        center = pc.mean(dim=1, keepdim=True)
+        pc_centered = pc - center
+        inv_z, eq_z, _ = self.encoder(pc_centered)
 
-        cano = self.decoder(inv_z)
-        if cano.shape[1] == 3:
-            cano = cano.permute(0, 2, 1)
-        rot = self.rot_net(eq_z)
+        if self.bypass_rot_head:
+            eq_latent = self._eq_to_decoder_latent(eq_z)
+            cano = self.decoder(eq_latent)
+            if cano.shape[1] == 3:
+                cano = cano.permute(0, 2, 1)
+            rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
+            recon = cano + center
+        else:
+            cano = self.decoder(inv_z)
+            if cano.shape[1] == 3:
+                cano = cano.permute(0, 2, 1)
+            rot = self.rot_net(eq_z)
 
-        # rot = _orthogonalize(rot)
+            # rot = _orthogonalize(rot)
 
-        recon = (rot @ cano.transpose(1, 2)).transpose(1, 2)
+            recon_centered = (rot @ cano.transpose(1, 2)).transpose(1, 2)
+            recon = recon_centered + center
         return inv_z, recon, cano, rot 
 
     def _step(self, batch, batch_idx, stage: str):
-        pc = batch
-        if isinstance(pc, (tuple, list)):
-            pc = pc[0]
+        pc, labels = self._unpack_batch(batch)
         inv_z, recon, cano, rot = self(pc)
+
+        if stage in self._supervised_cache:
+            self._cache_supervised_batch(stage, inv_z, labels)
         
         recon_f32 = recon.to(torch.float32)
         pc_f32    = pc.to(torch.float32)
@@ -90,8 +119,19 @@ class ShapePoseDisentanglement(pl.LightningModule):
                                  - torch.eye(3, device=self.device)) ** 2)
         
         loss_pd = pairwise_distance_loss(pred=recon_f32,target=pc_f32)
-        # loss_rot = rotation_geodesic_kabsch_loss(rot.to(torch.float32), cano.to(torch.float32), pc_f32)
+        # Rotation supervision via Kabsch teacher (use centered targets)
+        pc_centered_f32 = pc_f32 - pc_f32.mean(dim=1, keepdim=True)
+        # loss_rot = rotation_geodesic_kabsch_loss(rot.to(torch.float32), cano.to(torch.float32), pc_centered_f32)
+
+        # Total loss
         loss = loss_recon + self.ortho_scale * ortho_loss 
+        if self.pdist_loss_scale > 0:
+            loss += float(self.pdist_loss_scale) * loss_pd
+            self.log(f"{stage}_pdist_scaled", float(self.pdist_loss_scale) * loss_pd, prog_bar=False)
+        # if self.rotation_loss_scale > 0:
+        if False:
+            loss += float(self.rotation_loss_scale) * loss_rot
+            self.log(f"{stage}_rot_loss_scaled", float(self.rotation_loss_scale) * loss_rot, prog_bar=False)
         if self.kl_latent_loss_scale > 0:
             kl_loss = kl_latent_regularizer(inv_z)
             loss += self.kl_latent_loss_scale * kl_loss
@@ -103,6 +143,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # self.log(f"{stage}_rot", loss_rot)
         self.log(f"{stage}_recon", loss_recon)
         self.log(f"{stage}_ortho", ortho_loss)
+
+        # Optional supervised diagnostics when synthetic labels are available
+        if rot is not None and labels.get("orientation") is not None:
+            gt_rot = labels["orientation"].to(device=rot.device, dtype=torch.float32)
+            geodesic = self._rotation_geodesic(rot.to(torch.float32), gt_rot)
+            self.log(f"{stage}_rot_geodesic_deg", geodesic * (180.0 / torch.pi), prog_bar=False)
+
         return loss
 
     def training_step(self, batch, batch_idx, dataloader_idx: int = 0):
@@ -129,7 +176,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
                     sigma=float(self.neighbor_sigma),
                 )
                 scaled = float(self.neighbor_loss_scale) * loss_pairs
-                self.log('train_neighbor_loss', loss_pairs, prog_bar=True, on_step=True, on_epoch=True, batch_size=inv_i.shape[0])
+                self.log('train_neighbor_loss', loss_pairs, prog_bar=False, on_step=True, on_epoch=True, batch_size=inv_i.shape[0])
                 self.log('train_neighbor_loss_scaled', scaled, on_step=True, on_epoch=False, batch_size=inv_i.shape[0])
                 self.log('train_neighbor_pairs', float(inv_i.shape[0]), on_step=True, on_epoch=False, batch_size=inv_i.shape[0])
                 for k, v in stats.items():
@@ -172,6 +219,115 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
     def configure_optimizers(self):
         return get_optimizers_and_scheduler(self.hparams, self.parameters())
+
+    def on_train_epoch_start(self) -> None:
+        super().on_train_epoch_start()
+        self._reset_supervised_cache("train")
+
+    def on_train_epoch_end(self) -> None:
+        self._log_supervised_metrics("train")
+        super().on_train_epoch_end()
+
+    def on_validation_epoch_start(self) -> None:
+        super().on_validation_epoch_start()
+        self._reset_supervised_cache("val")
+
+    def on_validation_epoch_end(self) -> None:
+        self._log_supervised_metrics("val")
+        super().on_validation_epoch_end()
+
+    def _reset_supervised_cache(self, stage: str) -> None:
+        cache = self._supervised_cache.get(stage)
+        if cache is None:
+            return
+        cache["latents"].clear()
+        cache["phase"].clear()
+
+    def _cache_supervised_batch(self, stage: str, inv_z: torch.Tensor, labels: dict) -> None:
+        cache = self._supervised_cache.get(stage)
+        if cache is None:
+            return
+        cache["latents"].append(inv_z.detach().to(torch.float32).cpu())
+        phase = labels.get("phase")
+        if phase is None:
+            return
+        if not torch.is_tensor(phase):
+            phase = torch.as_tensor(phase)
+        cache["phase"].append(phase.detach().view(-1).cpu())
+
+    def _log_supervised_metrics(self, stage: str) -> None:
+        cache = self._supervised_cache.get(stage)
+        if not cache or not cache["latents"] or not cache["phase"]:
+            return
+        latents = torch.cat(cache["latents"], dim=0).numpy()
+        labels = torch.cat(cache["phase"], dim=0).numpy()
+        metrics = self._compute_cluster_metrics(latents, labels)
+        if not metrics:
+            return
+        for name, value in metrics.items():
+            self.log(
+                f"{stage}_phase_{name.lower()}",
+                value,
+                prog_bar=False,
+                on_step=False,
+                on_epoch=True,
+                sync_dist=True,
+            )
+        cache["latents"].clear()
+        cache["phase"].clear()
+
+    @staticmethod
+    def _compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray):
+        unique = np.unique(labels)
+        if unique.size < 2 or latents.shape[0] < unique.size:
+            return None
+        try:
+            assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
+        except Exception:
+            return None
+        return {
+            "ARI": float(adjusted_rand_score(labels, assignments)),
+            "NMI": float(normalized_mutual_info_score(labels, assignments)),
+        }
+
+
+    @staticmethod
+    def _rotation_geodesic(pred: torch.Tensor, target: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
+        """Mean geodesic angle (radians) between predicted and ground-truth rotations."""
+        if pred.shape != target.shape:
+            raise ValueError(f"Rotation shapes must match (got {pred.shape} vs {target.shape})")
+        delta = pred.transpose(-1, -2) @ target
+        trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1)
+        cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + eps, 1.0 - eps)
+        return torch.arccos(cos_theta).mean()
+
+    @staticmethod
+    def _unpack_batch(batch):
+        if not isinstance(batch, (tuple, list)):
+            return batch, {}
+        pc = batch[0]
+        labels = {}
+        if len(batch) > 1 and batch[1] is not None:
+            labels["phase"] = batch[1]
+        if len(batch) > 2 and batch[2] is not None:
+            labels["grain"] = batch[2]
+        if len(batch) > 3 and batch[3] is not None:
+            labels["orientation"] = batch[3]
+        if len(batch) > 4 and batch[4] is not None:
+            labels["quaternion"] = batch[4]
+        if len(batch) > 5 and batch[5] is not None:
+            labels["meta"] = batch[5]
+        return pc, labels
+
+    def _eq_to_decoder_latent(self, eq_z: torch.Tensor) -> torch.Tensor:
+        """Pool per-point equivariant features to match decoder latent expectations."""
+        pooled = eq_z.mean(dim=-1)  # (B, C, 3)
+        return pooled.reshape(pooled.size(0), -1)
+
+    @staticmethod
+    def _identity_rotation(batch_size: int, device, dtype) -> torch.Tensor:
+        eye = torch.eye(3, device=device, dtype=dtype)
+        return eye.unsqueeze(0).expand(batch_size, -1, -1)
 
 
 def _orthogonalize(mat: torch.Tensor) -> torch.Tensor:
