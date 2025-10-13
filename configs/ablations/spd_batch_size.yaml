@@ -1,0 +1,23 @@
+experiment:
+  config_name: spd_synth
+  config_path: configs
+  base_overrides:
+    - wandb_mode=offline
+    - log_every_n_steps=10
+variable:
+  override: batch_size
+  values: [1012, 1020, 1024, 1028, 1030,]
+metrics:
+  final:
+    - train/loss
+    - val/loss
+    - val/chamfer
+    - val/phase/nmi
+  best:
+    - name: val/loss
+      mode: min
+    - name: val/phase/nmi
+      mode: max
+output:
+  root_dir: output/ablations
+  run_name: spd_batch_size

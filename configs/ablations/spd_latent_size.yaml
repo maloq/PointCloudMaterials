@@ -1,0 +1,23 @@
+experiment:
+  config_name: spd_synth
+  config_path: configs
+  base_overrides:
+    - wandb_mode=offline
+    - log_every_n_steps=10
+variable:
+  override: latent_size
+  values: [9, 12]
+metrics:
+  final:
+    - train/loss
+    - val/loss
+    - val/chamfer
+    - val/phase/nmi
+  best:
+    - name: val/loss
+      mode: min
+    - name: val/phase/nmi
+      mode: max
+output:
+  root_dir: output/ablations
+  run_name: spd_latent_size_small

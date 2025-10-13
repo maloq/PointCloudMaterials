@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=SPD_synth        # Name of your job
+#SBATCH --job-name=SPD_ablations        # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
-#SBATCH --partition=A100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
 #SBATCH --gpus-per-node=1             # Request 1 node
 #SBATCH --gres=gpu:1                  # Request 1 GPU
 #SBATCH --cpus-per-task=8             # Request 8 CPU cores
@@ -23,6 +23,6 @@ export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run the Python script
 # srun python src/training_methods/spd/train_spd.py --config-name spd
-srun python src/training_methods/spd/train_spd.py --config-name spd
+srun python scripts/run_ablation.py --config configs/ablations/spd_batch_size.yaml
 
 echo "Job finished at: $(date)"

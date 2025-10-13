@@ -60,7 +60,7 @@ def train(cfg: DictConfig):
         default_root_dir=run_dir,
         max_epochs=cfg.epochs,
         accelerator='gpu' if cfg.gpu else 'cpu',
-        devices=[0,1],
+        devices=[0],
         logger=wandb_logger,
         callbacks=[checkpoint_callback, lr_monitor],
         log_every_n_steps=cfg.log_every_n_steps,
