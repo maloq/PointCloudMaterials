@@ -7,7 +7,7 @@ from torch.nn.functional import normalize
 import sys,os
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, silhouette_score
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
@@ -56,8 +56,14 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if not self.bypass_rot_head:
             rot_net_cfg = getattr(self.hparams, 'rot_net', {})
             rot_net_kwargs = rot_net_cfg.get('kwargs', {}) if hasattr(rot_net_cfg, 'get') else {}
-            self.rot_net = Rot6DHead(hidden=rot_net_kwargs.get('hidden', 256), use_attention=rot_net_kwargs.get('use_attention', True))
+            self.rot_head_in_features = self._infer_eq_latent_dim(cfg)
+            self.rot_net = Rot6DHead(
+                in_features=self.rot_head_in_features,
+                hidden=rot_net_kwargs.get('hidden', 256),
+                use_attention=rot_net_kwargs.get('use_attention', True),
+            )
         else:
+            self.rot_head_in_features = None
             self.rot_net = None
 
         self.ortho_scale = cfg.get("ortho_scale", 0.01)
@@ -75,8 +81,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
         }
 
     def forward(self, pc: torch.Tensor):
-        # pc: (B, N, 3)
-        # Center inputs to remove translation; add back after reconstruction
         inv_z, eq_z, _ = self.encoder(pc)
 
         if self.bypass_rot_head:
@@ -137,6 +141,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # self.log(f"{stage}_pd", loss_pd, prog_bar=False)
         # self.log(f"{stage}_rot", loss_rot)
         self.log(f"{stage}_recon", loss_recon)
+        self.log(f"{stage}_emd", loss_recon)
         self.log(f"{stage}_ortho", ortho_loss)
 
         # Optional supervised diagnostics when synthetic labels are available
@@ -256,7 +261,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             return
         latents = torch.cat(cache["latents"], dim=0).numpy()
         labels = torch.cat(cache["phase"], dim=0).numpy()
-        metrics = self._compute_cluster_metrics(latents, labels)
+        metrics = self._compute_cluster_metrics(latents, labels, stage)
         if not metrics:
             return
         for name, value in metrics.items():
@@ -272,18 +277,24 @@ class ShapePoseDisentanglement(pl.LightningModule):
         cache["phase"].clear()
 
     @staticmethod
-    def _compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray):
+    def _compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray, stage: str):
+        metrics = {}
         unique = np.unique(labels)
-        if unique.size < 2 or latents.shape[0] < unique.size:
-            return None
-        try:
-            assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
-        except Exception:
-            return None
-        return {
-            "ARI": float(adjusted_rand_score(labels, assignments)),
-            "NMI": float(normalized_mutual_info_score(labels, assignments)),
-        }
+        if unique.size >= 2 and latents.shape[0] >= unique.size:
+            try:
+                assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
+                metrics["ARI"] = float(adjusted_rand_score(labels, assignments))
+                metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
+            except Exception:
+                pass
+        if stage == "val" and latents.shape[0] >= 3:
+            try:
+                assignments_k3 = KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(latents)
+                if np.unique(assignments_k3).size > 1:
+                    metrics["Silhouette"] = float(silhouette_score(latents, assignments_k3))
+            except Exception:
+                pass
+        return metrics or None
 
 
     @staticmethod
@@ -323,6 +334,30 @@ class ShapePoseDisentanglement(pl.LightningModule):
     def _identity_rotation(batch_size: int, device, dtype) -> torch.Tensor:
         eye = torch.eye(3, device=device, dtype=dtype)
         return eye.unsqueeze(0).expand(batch_size, -1, -1)
+
+    def _infer_eq_latent_dim(self, cfg) -> int:
+        """Determine flattened equivariant latent size to initialize the rotation head."""
+        num_points = None
+        data_cfg = getattr(cfg, "data", None)
+        if data_cfg is not None and hasattr(data_cfg, "get"):
+            num_points = data_cfg.get("num_points", None)
+        if num_points is None:
+            decoder_cfg = getattr(cfg, "decoder", None)
+            if decoder_cfg is not None and hasattr(decoder_cfg, "get"):
+                decoder_kwargs = decoder_cfg.get("kwargs", {})
+                if decoder_kwargs and hasattr(decoder_kwargs, "get"):
+                    num_points = decoder_kwargs.get("num_points", None)
+        if num_points is None:
+            num_points = 1024
+
+        dummy_points = torch.zeros(1, int(num_points), 3)
+        encoder_was_training = self.encoder.training
+        self.encoder.eval()
+        with torch.no_grad():
+            _, eq_z, _ = self.encoder(dummy_points)
+        if encoder_was_training:
+            self.encoder.train()
+        return int(eq_z.shape[1] * eq_z.shape[2])
 
 
 def _orthogonalize(mat: torch.Tensor) -> torch.Tensor:

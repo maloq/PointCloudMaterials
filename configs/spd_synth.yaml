@@ -10,7 +10,7 @@ experiment_tags:
   - RotationConsistency
   - no_edges
 model_type: spd
-latent_size: 72
+latent_size: 36
 encoder: 
   name: PnE_VN
   kwargs:
@@ -59,7 +59,7 @@ num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 
-decay_rate: 0.0004
+decay_rate: 0.0004 
 kl_latent_loss_scale: 0.02
 pdist_loss_scale: 0.00
 kabsch_rotation_loss_scale: 0.000

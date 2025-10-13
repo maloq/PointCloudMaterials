@@ -9,7 +9,7 @@ data_path: ""
 data_files: []
 synthetic:
   preset: baseline
-  num_environments: 64000
+  num_environments: 128000
   seed: 42
   cache_path: output/synthetic/baseline_scene.npz
   regenerate: false

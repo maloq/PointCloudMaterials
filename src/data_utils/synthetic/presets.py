@@ -19,7 +19,7 @@ from .config import (
 BASELINE_PRESET = DatasetConfig(
     L=1.0,
     num_phase_types=5,
-    phase_mix={"fcc": 0.34, "amorphous": 0.34, "plate": 0.32},
+    phase_mix={"fcc": 0.50, "amorphous": 0.25, "plate": 0.25},
     grain_model="thomas",
     thomas_parent_intensity=25.0,
     thomas_child_mean=6.0,
@@ -28,7 +28,7 @@ BASELINE_PRESET = DatasetConfig(
     orientation_intra_grain_kappa=np.deg2rad(3.0),
     M=64,
     env_center_sampler=EnvCenterSamplerSpec(name="boundary_band", boundary_band_fraction=0.02, oversample_factor=1.2),
-    noise=NoiseSpec(jitter_sigma=0.01, missing_rate=0.010, outlier_rate=0.01, anisotropic_scale=(0.98, 1.02)),
+    noise=NoiseSpec(jitter_sigma=0.01, missing_rate=0.000, outlier_rate=0.01, anisotropic_scale=(0.98, 1.02)),
     splits=SplitSpec(ratios={"train": 0.7, "val": 0.15, "test": 0.15}),
     seed=42,
 )

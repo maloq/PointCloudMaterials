@@ -60,7 +60,7 @@ def train(cfg: DictConfig):
         default_root_dir=run_dir,
         max_epochs=cfg.epochs,
         accelerator='gpu' if cfg.gpu else 'cpu',
-        devices=[0],
+        devices=[0,1],
         logger=wandb_logger,
         callbacks=[checkpoint_callback, lr_monitor],
         log_every_n_steps=cfg.log_every_n_steps,
@@ -71,7 +71,7 @@ def train(cfg: DictConfig):
     trainer.fit(model, dm)
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')
 def main(cfg: DictConfig):
     train(cfg)
 

@@ -32,11 +32,14 @@ class Rot6DHead(nn.Module):
     - Uses a simple learned pooling over points (optional attention)
     - MLP -> 6D -> sixd_to_so3
     """
-    def __init__(self, hidden: int = 256, use_attention: bool = True):
+    def __init__(self, in_features: int, hidden: int = 256, use_attention: bool = True):
         super().__init__()
+        if in_features <= 0:
+            raise ValueError(f"in_features must be positive, got {in_features}")
+        self.in_features = in_features
         self.use_attention = use_attention
         self.mlp = nn.Sequential(
-            nn.LazyLinear(hidden),
+            nn.Linear(in_features, hidden),
             nn.ReLU(inplace=True),
             nn.Linear(hidden, hidden),
             nn.ReLU(inplace=True),
