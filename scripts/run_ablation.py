@@ -8,6 +8,7 @@ import os
 import sys
 from copy import deepcopy
 from dataclasses import dataclass
+from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
@@ -67,31 +68,164 @@ def _sanitize_metric_name(name: str) -> str:
     return name.replace("/", "_").replace(" ", "_")
 
 
+def _normalize_value(value: Any) -> Any:
+    if isinstance(value, (DictConfig, ListConfig)):
+        return OmegaConf.to_container(value, resolve=True)
+    return value
+
+
+def _merge_decoder_override(cfg: DictConfig, override_dict: Dict[str, Any]) -> Dict[str, Any]:
+    base = OmegaConf.to_container(cfg.decoder, resolve=False)
+    base_dict = deepcopy(base) if base is not None else {}
+    override_copy = deepcopy(override_dict)
+
+    override_copy.pop("label", None)
+    replace_all = bool(override_copy.pop("replace", False))
+    replace_kwargs = bool(override_copy.pop("replace_kwargs", False))
+
+    if replace_all:
+        merged: Dict[str, Any] = {}
+    else:
+        merged = base_dict if isinstance(base_dict, dict) else {}
+
+    if "name" in override_copy and override_copy["name"] is not None:
+        merged["name"] = override_copy.pop("name")
+
+    if "kwargs" in override_copy:
+        kwargs_update = override_copy.pop("kwargs") or {}
+        if replace_kwargs or "kwargs" not in merged:
+            merged["kwargs"] = kwargs_update
+        else:
+            current_kwargs = dict(merged.get("kwargs", {}))
+            current_kwargs.update(kwargs_update)
+            merged["kwargs"] = current_kwargs
+
+    for key, val in override_copy.items():
+        merged[key] = val
+
+    return merged
+
+
+def _value_to_display(value: Any) -> str:
+    value = _normalize_value(value)
+    if isinstance(value, dict):
+        if "label" in value:
+            return str(value["label"])
+        name = value.get("name")
+        if name is None:
+            return json.dumps(value, sort_keys=True)
+        display = str(name)
+        kwargs = value.get("kwargs")
+        if isinstance(kwargs, dict) and kwargs:
+            items = []
+            for key in sorted(kwargs):
+                val = kwargs[key]
+                if isinstance(val, (int, float)):
+                    items.append(f"{key}={val:.6g}")
+                elif isinstance(val, bool):
+                    items.append(f"{key}={'true' if val else 'false'}")
+                else:
+                    items.append(f"{key}={val}")
+            if items:
+                display += " (" + ", ".join(items) + ")"
+        return display
+    if isinstance(value, list):
+        return "[" + ", ".join(_value_to_display(v) for v in value) + "]"
+    return str(value)
+
+
 def _format_value_for_tag(value: Any) -> str:
+    value = _normalize_value(value)
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (int,)):
         return str(value)
     if isinstance(value, float):
         return f"{value:.6g}".replace(".", "p").replace("-", "m")
+    if isinstance(value, dict):
+        if "label" in value:
+            return _format_value_for_tag(value["label"])
+        base = _format_value_for_tag(value.get("name", "dict"))
+        kwargs = value.get("kwargs")
+        if isinstance(kwargs, dict) and kwargs:
+            extras = []
+            for key in sorted(kwargs):
+                val = kwargs[key]
+                if isinstance(val, (int, float)):
+                    fmt = f"{val:.6g}".replace(".", "p").replace("-", "m")
+                    extras.append(f"{key}={fmt}")
+                elif isinstance(val, bool):
+                    extras.append(f"{key}={'true' if val else 'false'}")
+                else:
+                    extras.append(f"{key}={str(val).replace(' ', '_')}")
+            if extras:
+                base += "_" + "_".join(extras)
+        return base
+    if isinstance(value, list):
+        return "_".join(_format_value_for_tag(v) for v in value)
     return str(value).replace(" ", "_")
 
 
-def _format_value_for_path(value: Any) -> str:
-    raw = _format_value_for_tag(value)
-    safe = "".join(ch if ch.isalnum() or ch in ("-", "_") else "-" for ch in raw)
-    return safe or "value"
+def _format_value_for_path(value: Any, *, fallback: Optional[str] = None) -> str:
+    normalized = _normalize_value(value)
+    candidate: Optional[str] = None
+    if isinstance(normalized, dict):
+        for key in ("label", "name"):
+            text = normalized.get(key)
+            if isinstance(text, str) and text.strip():
+                candidate = text.strip()
+                break
+    elif isinstance(normalized, str) and normalized.strip():
+        candidate = normalized.strip()
+    if candidate is None:
+        candidate = _format_value_for_tag(normalized)
+
+    def _sanitize(text: str) -> str:
+        filtered = []
+        for ch in text.strip():
+            if ch.isalnum():
+                filtered.append(ch)
+            elif ch in {"-", "_"}:
+                filtered.append(ch)
+            else:
+                filtered.append("-")
+        safe = "".join(filtered).strip("-_")
+        while "--" in safe:
+            safe = safe.replace("--", "-")
+        while "__" in safe:
+            safe = safe.replace("__", "_")
+        if len(safe) > 48:
+            safe = safe[:48]
+        return safe
+
+    safe_candidate = _sanitize(candidate)
+    ambiguous_tokens = {"", "value", "dict", "mapping", "list"}
+    if safe_candidate in ambiguous_tokens or safe_candidate.startswith("mapping-values"):
+        fallback_text = fallback or "value"
+        safe_fallback = _sanitize(fallback_text)
+        return safe_fallback or "value"
+    return safe_candidate
 
 
-def _resolve_devices(cfg: DictConfig) -> Union[int, Sequence[int]]:
-    devices = cfg.get("devices")
-    if isinstance(devices, ListConfig):
-        devices = list(devices)
-    if devices in (None, 0):
-        return [0, 1]
-    if isinstance(devices, int):
-        return [devices]
-    return devices
+def _json_safe(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {str(k): _json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_json_safe(v) for v in value]
+    if isinstance(value, (int, float, bool)) or value is None:
+        return value
+    return str(value)
+
+
+# def _resolve_devices(cfg: DictConfig) -> Union[int, Sequence[int]]:
+#     devices = cfg.get("devices")
+#     if isinstance(devices, ListConfig):
+#         devices = list(devices)
+#     if devices in (None, 0):
+#         return [0, 1]
+#     if isinstance(devices, int):
+#         return [devices]
+#     return devices
 
 
 @dataclass
@@ -205,7 +339,7 @@ def validate_ablation_config(cfg: DictConfig) -> None:
                 raise ValueError("Each metrics.best entry must define 'name' and 'mode'.")
 
 
-def prepare_output_root(cfg: DictConfig) -> Path:
+def prepare_output_root(cfg: DictConfig) -> Tuple[Path, str]:
     output_cfg = cfg.output if "output" in cfg and cfg.output is not None else DictConfig({})
     root_dir = Path(output_cfg.get("root_dir", "output/ablations"))
     run_name = output_cfg.get("run_name")
@@ -214,10 +348,17 @@ def prepare_output_root(cfg: DictConfig) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_dir = root_dir / f"{run_name}_{timestamp}"
     output_dir.mkdir(parents=True, exist_ok=False)
-    return output_dir
+    return output_dir, run_name
 
 
-def compose_training_config(exp_cfg: DictConfig, variable_override: str, value: Any) -> DictConfig:
+def compose_training_config(
+    exp_cfg: DictConfig,
+    variable_override: str,
+    value: Any,
+    *,
+    run_name: str,
+    value_label: str,
+) -> DictConfig:
     overrides = _as_list(exp_cfg.get("base_overrides", []))
     config_path_entry = exp_cfg.get("config_path", "configs")
     config_path = Path(config_path_entry)
@@ -233,16 +374,28 @@ def compose_training_config(exp_cfg: DictConfig, variable_override: str, value: 
     with initialize_config_dir(version_base=None, config_dir=str(config_path), job_name=job_name):
         cfg = compose(config_name=exp_cfg.config_name, overrides=list(overrides))
     OmegaConf.set_struct(cfg, False)
-    if isinstance(value, (DictConfig, ListConfig)):
-        value = OmegaConf.to_container(value, resolve=True)
+    normalized_value = _normalize_value(value)
+    tag_source = normalized_value
+    decoder_override_applied = False
+    if variable_override == "decoder" and isinstance(normalized_value, dict):
+        normalized_value = _merge_decoder_override(cfg, normalized_value)
+        decoder_override_applied = True
     try:
-        OmegaConf.update(cfg, variable_override, value, force_add=True)
+        if decoder_override_applied:
+            cfg[variable_override] = OmegaConf.create(normalized_value)
+        else:
+            OmegaConf.update(cfg, variable_override, normalized_value, force_add=True)
     except Exception as exc:
         raise ValueError(
-            f"Failed to apply override '{variable_override}' with value {value!r}."
+            f"Failed to apply override '{variable_override}' with value {normalized_value!r}."
             " Verify that the key exists in the training config or adjust the path."
         ) from exc
-    tag_value = _format_value_for_tag(value)
+    cfg.wandb_mode = "online"
+    variable_sanitized = variable_override.replace(".", "_")
+    experiment_label = f"ablation_{run_name}_{variable_sanitized}_{value_label}"
+    cfg.experiment_name = experiment_label
+
+    tag_value = _format_value_for_tag(tag_source)
     tags = _as_list(cfg.get("experiment_tags"))
     tags.append(f"abl/{variable_override}={tag_value}")
     cfg.experiment_tags = tags
@@ -275,7 +428,7 @@ def run_single_experiment(
 
     run_dir = get_rundir_name()
     wandb_logger = init_wandb(cfg, run_dir)
-
+    
     datamodule = PointCloudDataModule(cfg)
     model = ShapePoseDisentanglement(cfg)
     checkpoint_callback = ModelCheckpoint(
@@ -287,15 +440,17 @@ def run_single_experiment(
     )
     lr_monitor = LearningRateMonitor(logging_interval="step")
 
+    precision = cfg.get("precision", "32")
+    
     trainer = pl.Trainer(
         default_root_dir=run_dir,
         max_epochs=cfg.epochs,
         accelerator="gpu" if cfg.gpu else "cpu",
-        devices='auto',
+        devices=[0],
         logger=wandb_logger,
         callbacks=[checkpoint_callback, lr_monitor, tracker],
         log_every_n_steps=cfg.log_every_n_steps,
-        precision="bf16-mixed",
+        precision=precision,
         benchmark=True,
     )
 
@@ -322,13 +477,47 @@ def aggregate_and_save_tables(
     best_specs: Sequence[MetricSpec],
     variable_name: str,
 ) -> None:
+    def fmt_metric(value: Optional[float]) -> Optional[str]:
+        if value is None:
+            return None
+
+        try:
+            decimal_value = Decimal(str(value))
+        except (ArithmeticError, ValueError):
+            return str(value)
+
+        if decimal_value.is_nan():
+            return "nan"
+        if decimal_value.is_infinite():
+            return "inf" if decimal_value > 0 else "-inf"
+        if decimal_value == 0:
+            return "0"
+
+        abs_value = abs(decimal_value)
+        if abs_value >= 1:
+            quantize_unit = Decimal("0.01")
+        else:
+            significant_digits = 2
+            exponent = abs_value.adjusted() - significant_digits + 1
+            quantize_unit = Decimal(f"1e{exponent}")
+
+        rounded_value = decimal_value.quantize(quantize_unit, rounding=ROUND_HALF_UP)
+        if rounded_value == 0:
+            return "0"
+
+        formatted = format(rounded_value.normalize(), "f")
+        if "." in formatted:
+            formatted = formatted.rstrip("0").rstrip(".")
+        return formatted or "0"
+
     final_rows: List[Dict[str, Any]] = []
     for entry in runs:
-        row: Dict[str, Any] = {"variable": entry["value"]}
+        variable_display = entry.get("value_display", entry["value"])
+        row: Dict[str, Any] = {"variable": variable_display}
         final_metrics = entry["final_metrics"]
         for metric in final_metric_names:
             column = _sanitize_metric_name(metric)
-            row[column] = final_metrics.get(metric)
+            row[column] = fmt_metric(final_metrics.get(metric))
         final_rows.append(row)
     _write_csv(output_dir / "final_metrics.csv", final_rows)
 
@@ -337,10 +526,11 @@ def aggregate_and_save_tables(
         rows: List[Dict[str, Any]] = []
         for entry in runs:
             best_data = entry["best_metrics"].get(spec.name)
+            variable_display = entry.get("value_display", entry["value"])
             rows.append(
                 {
-                    "variable": entry["value"],
-                    f"{column_value}_value": None if best_data is None else best_data.get("value"),
+                    "variable": variable_display,
+                    f"{column_value}_value": None if best_data is None else fmt_metric(best_data.get("value")),
                     f"{column_value}_epoch": None if best_data is None else best_data.get("epoch"),
                 }
             )
@@ -386,7 +576,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
     cfg = load_ablation_config(config_path)
     validate_ablation_config(cfg)
-    output_root = prepare_output_root(cfg)
+    output_root, run_name = prepare_output_root(cfg)
     _write_json(output_root / "ablation_config_resolved.json", OmegaConf.to_container(cfg, resolve=True))
 
     exp_cfg = cfg.experiment
@@ -402,14 +592,24 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     values = _as_list(variable_cfg.get("values"))
 
     runs: List[Dict[str, Any]] = []
-    for value in values:
-        cfg_instance = compose_training_config(exp_cfg, override_key, value)
-        value_label = _format_value_for_path(value)
+    for idx, value in enumerate(values):
+        value_serializable = _normalize_value(value)
+        fallback_label = f"value_{idx + 1:02d}"
+        value_label = _format_value_for_path(value_serializable, fallback=fallback_label)
+        value_display = _value_to_display(value_serializable)
+        cfg_instance = compose_training_config(
+            exp_cfg,
+            override_key,
+            value,
+            run_name=run_name,
+            value_label=value_label,
+        )
         run_dir = output_root / f"{override_key.replace('.', '_')}_{value_label}"
         final_metrics, best_metrics, training_dir, history = run_single_experiment(cfg_instance, metric_cfg, run_dir)
         runs.append(
             {
-                "value": value,
+                "value": _json_safe(value_serializable),
+                "value_display": value_display,
                 "value_label": value_label,
                 "final_metrics": final_metrics,
                 "best_metrics": best_metrics,

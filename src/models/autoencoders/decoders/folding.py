@@ -70,3 +70,67 @@ class FoldingDecoderTwoStep(Decoder):
 class FoldingDecoderTwoStepSmall(FoldingDecoderTwoStep):
     def __init__(self, num_points: int, latent_size: int, hidden_dim: int = 256, dropout_rate: float = 0.0):
         super().__init__(num_points, latent_size, hidden_dim, dropout_rate)
+
+
+@register_decoder("FoldingTwoStepAttn")
+class FoldingDecoderTwoStepAttn(FoldingDecoderTwoStep):
+    """Folding decoder with two local-attention refinement stages."""
+
+    def __init__(
+        self,
+        num_points: int,
+        latent_size: int,
+        *,
+        hidden_dim: int = 512,
+        attn_dim: int = 128,
+        R_att: float = 0.20,
+        dropout_rate: float = 0.0,
+    ) -> None:
+        super().__init__(num_points, latent_size, hidden_dim, dropout_rate)
+
+        self.R_att = R_att
+        self.sqrt_d = math.sqrt(attn_dim)
+        self.q_proj = nn.Linear(3, attn_dim, bias=False)
+        self.k_proj = nn.Linear(3, attn_dim, bias=False)
+        self.v_proj = nn.Linear(3, attn_dim, bias=False)
+
+        def make_stage(in_dim: int) -> nn.Sequential:
+            return nn.Sequential(
+                nn.Linear(in_dim, hidden_dim),
+                _TransposedBatchNormRelu(hidden_dim, dropout_rate),
+                nn.Linear(hidden_dim, hidden_dim),
+                _TransposedBatchNormRelu(hidden_dim, dropout_rate),
+                nn.Linear(hidden_dim, 3),
+            )
+
+        self.stage0 = make_stage(latent_size + 2)
+        self.stage1 = make_stage(latent_size + 3 + attn_dim)
+        self.stage2 = make_stage(latent_size + 3 + attn_dim)
+
+    def _local_attention(self, coords: torch.Tensor) -> torch.Tensor:
+        Q = self.q_proj(coords)
+        K = self.k_proj(coords)
+        V = self.v_proj(coords)
+
+        d2 = torch.cdist(coords, coords) ** 2
+        mask = d2 <= (self.R_att ** 2)
+
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / self.sqrt_d
+        scores = scores.masked_fill(~mask, float("-inf"))
+        W = torch.softmax(scores, dim=-1).masked_fill(~mask, 0.0)
+        return torch.matmul(W, V)
+
+    def forward(self, z: torch.Tensor) -> torch.Tensor:
+        B = z.size(0)
+        grid = self.grid
+        if grid.dim() == 2:
+            grid = grid.unsqueeze(0)
+        g = grid.expand(B, -1, -1)
+        z_exp = z.unsqueeze(1).expand(B, self._n, -1)
+
+        coords0 = self.stage0(torch.cat((z_exp, g), dim=-1))
+        attn1 = self._local_attention(coords0)
+        coords1 = self.stage1(torch.cat((z_exp, coords0, attn1), dim=-1))
+        attn2 = self._local_attention(coords1)
+        coords2 = self.stage2(torch.cat((z_exp, coords1, attn2), dim=-1))
+        return coords2

@@ -4,10 +4,10 @@ experiment:
   base_overrides:
     - wandb_mode=offline
     - log_every_n_steps=10
-    - precision=bf16-mixed
+    - precision=32
 variable:
-  override: batch_size
-  values: [1012, 1020, 1024, 1028, 1030,]
+  override: rotation_mode
+  values: [sixd_head, matrix_head, eq_decoder, inv_no_rot, inv_kabsch]
 metrics:
   final:
     - train/loss
@@ -33,4 +33,4 @@ metrics:
       mode: max
 output:
   root_dir: output/ablations
-  run_name: spd_batch_size
+  run_name: spd_rotation_method

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=SPD_ablations        # Name of your job
+#SBATCH --job-name=SPD_single        # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
 #SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
@@ -21,8 +21,11 @@ conda activate pointnet
 cd /home/infres/vmorozov/PointCloudMaterials
 export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
-# Run the Python script
-# srun python src/training_methods/spd/train_spd.py --config-name spd
-srun python scripts/run_ablation.py --config configs/ablations/spd_batch_size.yaml
 
-echo "Job finished at: $(date)"
+# Run multiple ablation experiments consecutively
+echo "=== Running experiment ==="
+srun python scripts/run_ablation.py --config configs/ablations/spd_rotation_method.yaml
+echo "Experiment 1 finished at: $(date)"
+
+
+echo "All experiments finished at: $(date)"

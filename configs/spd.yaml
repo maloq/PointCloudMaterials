@@ -21,17 +21,17 @@ encoder:
     bottleneck_ratio: 0.5
     
 decoder: 
-  name: FoldingSphereAttnRes
+  name: Folding
   kwargs: 
     latent_size: ${latent_size}
     num_points: ${data.num_points}
     dropout_rate: 0.1
-    n_shells: 2
-    R1: 0.5
-    R2: 1.0
+    # n_shells: 2
+    # R1: 0.5
+    # R2: 1.0
     hidden_dim: 512
-    R_att: 1.0
-    learnable_template: False
+    # R_att: 1.0
+    # learnable_template: False
 
 rot_net:
   name: Rot6DHead

@@ -71,7 +71,7 @@ def train(cfg: DictConfig):
     trainer.fit(model, dm)
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd')
 def main(cfg: DictConfig):
     train(cfg)
 
