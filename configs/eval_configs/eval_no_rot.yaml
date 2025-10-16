@@ -1,0 +1,60 @@
+dataset:
+  config: configs/data/data_ae_Al_80.yaml
+  override:
+    data_files:
+      - 175ps.off
+
+prediction:
+  model_type: spd  # autoencoder or spd or soap
+  checkpoint: output/2025-09-02/18-05-45/SPD_FoldingSphereAttnRes_l36_P80_Sinkhorn_16-epoch=02-val_loss=0.01.ckpt
+  cuda_device: 0
+  batch_size: 512
+  max_samples: 100000
+
+metrics:
+  # Define multiple clusterings. Each will be used to compute all single-run metrics.
+  clusterings:
+    - method: kmeans
+      params:
+        n_clusters: 2
+    - method: kmeans
+      params:
+        n_clusters: 3
+    - method: kmeans
+      params:
+        n_clusters: 4
+    - method: kmeans
+      params:
+        n_clusters: 5
+    - method: kmeans
+      params:
+        n_clusters: 6
+    - method: gmm
+      params:
+        n_components: 3
+    - method: gmm
+      params:
+        n_components: 4
+    - method: gmm
+      params:
+        n_components: 4
+    - method: gmm
+      params:
+        n_components: 6
+    - method: hdbscan
+      params:
+        min_cluster_size: 10
+    - method: hdbscan
+      params:
+        min_cluster_size: 20
+    - method: hdbscan
+      params:
+        min_cluster_size: 30
+    - method: hdbscan
+      params:
+        min_cluster_size: 50
+  single_run:
+    - name: silhouette
+    - name: reconstruction_chamfer
+    - name: reconstruction_emd
+  multi_run:

@@ -73,7 +73,7 @@ class AutoencoderPredictor(Predictor):
             pts = pts.to(self.device)
             recon, latent, _ = self.model(pts.transpose(2, 1))
             lats.append(latent.detach().cpu().numpy())
-            recs.append(recon.permute(0, 2, 1).detach().cpu().numpy())
+            recs.append(recon.detach().cpu().numpy())
             origs.append(pts.detach().cpu().numpy())
         return PredictionBundle(
             latents=np.concatenate(lats, axis=0),
@@ -115,7 +115,7 @@ class SPDPredictor(Predictor):
             pts = pts.to(self.device)
             inv_z, recon, _, _ = self.model(pts)
             lats.append(inv_z.detach().cpu().numpy())
-            recs.append(recon.permute(0, 2, 1).detach().cpu().numpy())
+            recs.append(recon.detach().cpu().numpy())
             origs.append(pts.detach().cpu().numpy())
         return PredictionBundle(
             latents=np.concatenate(lats, axis=0),

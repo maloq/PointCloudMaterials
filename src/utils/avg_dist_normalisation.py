@@ -5,6 +5,7 @@ from tqdm import tqdm
 import sys,os
 sys.path.append(os.getcwd())
 from src.data_utils.data_load import PointCloudDataset, pc_normalize
+from src.data_utils.prepare_data import read_off_file, calculate_stride, compute_dimensions
 
 
 def mean_pairwise_distance(points: np.ndarray) -> float:
@@ -20,6 +21,63 @@ def mean_pairwise_distance(points: np.ndarray) -> float:
 def main() -> None:
     root = "datasets/Al/inherent_configurations_off"
     off_files = [f for f in os.listdir(root) if f.endswith(".off")]
+    if not off_files:
+        print(f"No .off files found under {root}")
+        return
+
+    # Print simulation box dimensions and density from the first file
+    first_file = sorted(off_files)[0]
+    first_path = os.path.join(root, first_file)
+    points_full = read_off_file(first_path, verbose=False)
+    min_coords = points_full.min(axis=0)
+    max_coords = points_full.max(axis=0)
+    box_lengths = max_coords - min_coords
+    volume = float(np.prod(box_lengths))  # Å^3
+    n_atoms = int(points_full.shape[0])
+    number_density = n_atoms / volume if volume > 0 else float('nan')  # atoms/Å^3
+
+    print("Simulation box (from first snapshot):")
+    print(f"  Min coords: {min_coords} Å")
+    print(f"  Max coords: {max_coords} Å")
+    print(f"  Box lengths: Lx={box_lengths[0]:.3f} Å, Ly={box_lengths[1]:.3f} Å, Lz={box_lengths[2]:.3f} Å")
+    print(f"  Atoms: {n_atoms}")
+    print(f"  Number density: {number_density:.6f} atoms/Å^3")
+
+    # Parameters used for sampling/normalisation
+    radius = 7.5
+    overlap_fraction = 0.0  # adjust if you use overlapped regular grid
+
+    # Geometric fraction of volume excluded near edges (centers must be >= radius from faces)
+    inner_lengths = np.maximum(box_lengths - 2.0 * radius, 0.0)
+    if np.any(box_lengths <= 0):
+        frac_excluded = float('nan')
+    else:
+        vol_inner = float(np.prod(inner_lengths))
+        frac_excluded = 1.0 - (vol_inner / volume) if volume > 0 else float('nan')
+    print(f"  Edge-excluded volume: {frac_excluded * 100.0:.2f}% of box volume")
+
+    # Grid-based estimate (if you were to use a regular grid)
+    stride = calculate_stride(radius, overlap_fraction)
+    dims_no_pad = compute_dimensions(min_coords, max_coords, stride)
+    dims_pad    = compute_dimensions(min_coords + radius, max_coords - radius, stride)
+    total_no_pad = int(np.prod(np.maximum(dims_no_pad, 0)))
+    total_pad    = int(np.prod(np.maximum(dims_pad, 0)))
+    if total_no_pad > 0:
+        pct_pad = 100.0 * max(total_no_pad - total_pad, 0) / total_no_pad
+        print(
+            f"  Grid edge exclusion (padding): drop {total_no_pad - total_pad}/{total_no_pad} centers ({pct_pad:.2f}%)"
+        )
+        # If also dropping the outermost interior layer
+        keep_i = dims_pad[0] - 2 if dims_pad[0] >= 3 else 0
+        keep_j = dims_pad[1] - 2 if dims_pad[1] >= 3 else 0
+        keep_k = dims_pad[2] - 2 if dims_pad[2] >= 3 else 0
+        kept_interior = int(max(keep_i, 0) * max(keep_j, 0) * max(keep_k, 0))
+        dropped_edges = max(total_pad - kept_interior, 0)
+        if total_pad > 0:
+            pct_edges = 100.0 * dropped_edges / total_pad
+            print(
+                f"  Grid edge-layer drop (drop_edge_samples=True): drop {dropped_edges}/{total_pad} centers ({pct_edges:.2f}%)"
+            )
 
     # 10 000 random samples, 128 atoms each, radius 8 Å
     ds = PointCloudDataset(
@@ -28,7 +86,7 @@ def main() -> None:
         sample_type="random",
         n_samples=10_000,
         num_points=80,
-        radius=7.5,
+        radius=radius,
         pre_normalize=False,   # keep raw coordinates
         normalize=False,       # no automatic normalisation
         return_coords=False,
