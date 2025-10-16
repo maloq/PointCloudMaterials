@@ -1,0 +1,36 @@
+experiment:
+  config_name: spd_synth
+  config_path: configs
+  base_overrides:
+    - wandb_mode=offline
+    - log_every_n_steps=10
+    - precision=32
+variable:
+  override: rotation_mode
+  values: [sixd_head, matrix_head, eq_decoder, inv_no_rot, inv_kabsch]
+metrics:
+  final:
+    - train/loss
+    - train/chamfer
+    - val/loss
+    - val/chamfer
+    - val/emd
+    - val/phase/nmi
+    - val/phase/ari
+    - val/phase/silhouette
+    - train/phase/nmi 
+    - train/phase/ari
+  best:
+    - name: val/loss
+      mode: min
+    - name: val/phase/nmi
+      mode: max
+    - name: val/emd
+      mode: min
+    - name: val/phase/silhouette
+      mode: max
+    - name: val/phase/ari
+      mode: max
+output:
+  root_dir: output/ablations
+  run_name: spd_rotation_method

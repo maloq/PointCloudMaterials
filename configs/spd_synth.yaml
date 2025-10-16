@@ -1,0 +1,68 @@
+defaults:
+  - data: data_synth_baseline
+project_name: pointnet
+experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
+wandb_mode: online
+
+model_type: spd
+latent_size: 36
+encoder: 
+  name: VN_DGCNN
+  kwargs:
+    latent_size: ${latent_size}
+    # hidden_dim1: 360
+    # hidden_dim2: 720
+    # blocks: [2, 2, 2]
+    # bottleneck_ratio: 0.5
+    
+decoder: 
+  name: FoldingSphereAttnRes
+  kwargs: 
+    latent_size: ${latent_size}
+    num_points: ${data.num_points}
+    dropout_rate: 0.1
+    n_shells: 2
+    R1: 0.5
+    R2: 1.0
+    hidden_dim: 512
+    R_att: 1.0
+    learnable_template: False
+
+rot_net:
+  name: Rot6DHead
+  kwargs:
+    hidden: 256
+    use_attention: True
+
+rotation_mode: sixd_head
+
+loss: Sinkhorn
+max_samples: 0  # no limit
+torch_compile: True
+
+learning_rate: 0.004
+batch_size: 1024  # if neighbor_loss_scale>0, then neighbor_pair_batch_size added to batch_size
+
+enable_swa: False
+swa_epoch_start: 1000 
+epochs: 24
+
+gpu: True
+devices: 0
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+
+decay_rate: 0.0004 
+kl_latent_loss_scale: 0.02
+pdist_loss_scale: 0.00
+kabsch_rotation_loss_scale: 0.000
+
+# Neighbor latent smoothness (global pair-sampler)
+neighbor_loss_scale: 0.00     # set > 0 to enable
+neighbor_radius: 6.0          # distinct from data.radius
+neighbor_weight: binary       # 'binary' or 'gaussian'
+neighbor_sigma: 2.0           # used if neighbor_weight == 'gaussian'
+neighbor_max_neighbors: 6    # cap per-anchor neighbors
+neighbor_pair_batch_size: 256  #  added to batch_size as x2

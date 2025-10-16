@@ -294,6 +294,127 @@ class PointNetEncoderVN(nn.Module):
         return inv_z, eq_z, center_loc
 
 
+class VNDGCNNEncoder(nn.Module):
+    def __init__(
+        self,
+        latent_size=256,
+        n_knn=20,
+        pooling='mean',
+        feature_dims=(96, 96, 192, 384, 576),
+        global_mlp_dims=(256, 128),
+        global_dropout=0.5,
+        share_nonlinearity=True,
+        std_feature_hidden_dims=None,
+        use_batchnorm=True,
+    ):
+        super().__init__()
+        if len(feature_dims) != 5:
+            raise ValueError(f"feature_dims must provide five entries (got {feature_dims})")
+
+        self.n_knn = n_knn
+        self.pooling = pooling
+
+        c1, c2, c3, c4, c5 = [max(1, dim // 3) for dim in feature_dims]
+
+        self.conv1 = VNLinearLeakyReLU(
+            2, c1, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+        )
+        self.conv2 = VNLinearLeakyReLU(
+            c1 * 2, c2, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+        )
+        self.conv3 = VNLinearLeakyReLU(
+            c2 * 2, c3, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+        )
+        self.conv4 = VNLinearLeakyReLU(
+            c3 * 2, c4, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+        )
+
+        concat_channels = c1 + c2 + c3 + c4
+        self.conv5 = VNLinearLeakyReLU(
+            concat_channels,
+            c5,
+            dim=4,
+            negative_slope=0.2,
+            share_nonlinearity=share_nonlinearity,
+            use_batchnorm=use_batchnorm,
+        )
+
+        self.std_feature = VNStdFeature(
+            c5 * 2,
+            dim=4,
+            normalize_frame=False,
+            negative_slope=0.0,
+            use_batchnorm=use_batchnorm,
+            hidden_dims=std_feature_hidden_dims,
+        )
+
+        # Match original VN-DGCNN design: pooled invariant features (max + avg) over
+        # three vector components and two frames => 12 * VN channels.
+        global_in_dim = c5 * 12
+        g1, g2 = global_mlp_dims
+        self.global_mlp = nn.Sequential(
+            nn.Linear(global_in_dim, g1),
+            nn.BatchNorm1d(g1),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(p=global_dropout),
+            nn.Linear(g1, g2),
+            nn.BatchNorm1d(g2),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(p=global_dropout),
+            nn.Linear(g2, latent_size),
+        )
+
+        if pooling == 'max':
+            self.pool1 = VNMaxPool(c1)
+            self.pool2 = VNMaxPool(c2)
+            self.pool3 = VNMaxPool(c3)
+            self.pool4 = VNMaxPool(c4)
+        else:
+            self.pool1 = mean_pool
+            self.pool2 = mean_pool
+            self.pool3 = mean_pool
+            self.pool4 = mean_pool
+
+    def forward(self, x: torch.Tensor):
+        x = x.permute(0, 2, 1)
+        batch_size, d, num_points = x.size()
+        x = x.unsqueeze(1)
+
+        x = get_graph_feature(x, k=self.n_knn)
+        x = self.conv1(x)
+        x1 = self.pool1(x)
+
+        x = get_graph_feature(x1, k=self.n_knn)
+        x = self.conv2(x)
+        x2 = self.pool2(x)
+
+        x = get_graph_feature(x2, k=self.n_knn)
+        x = self.conv3(x)
+        x3 = self.pool3(x)
+
+        x = get_graph_feature(x3, k=self.n_knn)
+        x = self.conv4(x)
+        x4 = self.pool4(x)
+
+        x = torch.cat((x1, x2, x3, x4), dim=1)
+        x = self.conv5(x)
+
+        eq_z = x.view(batch_size, -1, d, num_points)
+
+        x_mean_out = x.mean(dim=-1, keepdim=True)
+        center_loc = x_mean_out.mean(dim=2)
+
+        x_mean = x_mean_out.expand_as(x)
+        x, _ = self.std_feature(torch.cat((x, x_mean), dim=1))
+
+        x = x.view(batch_size, -1, num_points)
+        x_max = F.adaptive_max_pool1d(x, 1).view(batch_size, -1)
+        x_avg = F.adaptive_avg_pool1d(x, 1).view(batch_size, -1)
+        x_global = torch.cat((x_max, x_avg), dim=1)
+
+        inv_z = self.global_mlp(x_global)
+        return inv_z, eq_z, center_loc
+
 
 class STNkd(nn.Module):
     def __init__(self, d=64, hidden_dims=(64, 128, 1024), fc_dims=(512, 256)):
@@ -365,6 +486,34 @@ def knn(x, k):
     xx = torch.sum(x ** 2, dim=1, keepdim=True)
     pairwise_distance = -xx - inner - xx.transpose(2, 1)
     return pairwise_distance.topk(k=k, dim=-1)[1]
+
+
+def get_graph_feature(x, k=20, idx=None, x_coord=None):
+    batch_size = x.size(0)
+    num_points = x.size(3)
+    x = x.view(batch_size, -1, num_points)
+
+    if idx is None:
+        if x_coord is None:
+            idx = knn(x, k=k)
+        else:
+            idx = knn(x_coord, k=k)
+
+    device = x.device
+    idx_base = torch.arange(0, batch_size, device=device).view(-1, 1, 1) * num_points
+    idx = idx + idx_base
+    idx = idx.view(-1)
+
+    _, num_dims, _ = x.size()
+    num_dims = num_dims // 3
+
+    x = x.transpose(2, 1).contiguous()
+    feature = x.view(batch_size * num_points, -1)[idx, :]
+    feature = feature.view(batch_size, num_points, k, num_dims, 3)
+    x = x.view(batch_size, num_points, 1, num_dims, 3).repeat(1, 1, k, 1, 1)
+
+    feature = torch.cat((feature - x, x), dim=3).permute(0, 3, 4, 1, 2).contiguous()
+    return feature
 
 
 def get_graph_feature_cross(x, k=20, idx=None):

@@ -1,0 +1,19 @@
+# Synthetic baseline scene used for SPD training.
+kind: synthetic
+num_points: 64
+radius: 1.0  # placeholder; synthetic scenes set their own scale
+sample_type: synthetic
+overlap_fraction: 0.0
+n_samples: 0
+data_path: ""
+data_files: []
+synthetic:
+  preset: baseline
+  num_environments: 128000
+  seed: 42
+  cache_path: output/synthetic/baseline_scene.npz
+  regenerate: false
+  train_split: train
+  val_split: val
+  return_orientation: true
+  return_meta: false

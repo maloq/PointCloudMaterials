@@ -53,6 +53,10 @@ metrics:
     - method: hdbscan
       params:
         min_cluster_size: 50
+    - method: hdbscan
+      params:
+        min_cluster_size: 200
+    - method: hdbscan
   single_run:
     - name: silhouette
     - name: reconstruction_chamfer
