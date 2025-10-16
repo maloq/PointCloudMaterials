@@ -4,6 +4,7 @@
 import argparse
 import csv
 import json
+import re
 import os
 import sys
 from copy import deepcopy
@@ -17,6 +18,7 @@ import torch
 
 import pytorch_lightning as pl
 from hydra import compose, initialize_config_dir
+from hydra.errors import ConfigCompositionException
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from pytorch_lightning.callbacks import Callback, LearningRateMonitor, ModelCheckpoint
 
@@ -359,7 +361,7 @@ def compose_training_config(
     run_name: str,
     value_label: str,
 ) -> DictConfig:
-    overrides = _as_list(exp_cfg.get("base_overrides", []))
+    overrides = [str(item) for item in _as_list(exp_cfg.get("base_overrides", []))]
     config_path_entry = exp_cfg.get("config_path", "configs")
     config_path = Path(config_path_entry)
     if not config_path.is_absolute():
@@ -371,8 +373,40 @@ def compose_training_config(
     if not config_path.exists():
         raise FileNotFoundError(f"Configuration directory '{config_path}' does not exist.")
     job_name = f"ablation_{variable_override.replace('.', '_')}"
-    with initialize_config_dir(version_base=None, config_dir=str(config_path), job_name=job_name):
-        cfg = compose(config_name=exp_cfg.config_name, overrides=list(overrides))
+    adaptive_overrides = list(overrides)
+    attempted_missing: set[str] = set()
+
+    def _compose_with_overrides(active_overrides: Sequence[str]) -> DictConfig:
+        with initialize_config_dir(version_base=None, config_dir=str(config_path), job_name=job_name):
+            return compose(config_name=exp_cfg.config_name, overrides=list(active_overrides))
+
+    # Retry composition, upgrading overrides to additions (+key=value) when Hydra reports missing keys.
+    while True:
+        try:
+            cfg = _compose_with_overrides(adaptive_overrides)
+            break
+        except ConfigCompositionException as exc:
+            message = str(exc)
+            match = re.search(r"Could not override '([^']+)'", message)
+            if not match:
+                raise
+            missing_key = match.group(1)
+            if missing_key in attempted_missing:
+                raise
+            updated = False
+            for idx, override in enumerate(adaptive_overrides):
+                stripped = override.lstrip("+")
+                if "=" not in stripped:
+                    continue
+                key_candidate = stripped.split("=", 1)[0]
+                if key_candidate == missing_key and not override.startswith("+"):
+                    adaptive_overrides[idx] = "+" + override
+                    updated = True
+                    break
+            if not updated:
+                raise
+            attempted_missing.add(missing_key)
+            continue
     OmegaConf.set_struct(cfg, False)
     normalized_value = _normalize_value(value)
     tag_source = normalized_value

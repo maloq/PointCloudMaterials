@@ -14,7 +14,7 @@ from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
 from src.utils.optimizer_utils import get_optimizers_and_scheduler
 import src.models.autoencoders.encoders
 import src.models.autoencoders.decoders
-from .vn_models import PointNetEncoderVN, SimpleRot, ComplexRot
+from .vn_models import PointNetEncoderVN, VNDGCNNEncoder, SimpleRot, ComplexRot
 from src.loss.reconstruction_loss import kl_latent_regularizer, rotation_geodesic_kabsch_loss
 from src.loss.pdist_loss import pairwise_distance_loss
 from src.loss.neighbor_latent_loss import neighbor_pair_latent_loss
@@ -37,22 +37,42 @@ class ShapePoseDisentanglement(pl.LightningModule):
         encoder_cfg = self.hparams.encoder
         encoder_name = encoder_cfg.get('name', 'PnE_VN') if hasattr(encoder_cfg, 'get') else 'PnE_VN'
         if encoder_name == 'PnE_VN':
-            # Use the configured latent size (no unintended halving)
             self.encoder = PointNetEncoderVN(
-                latent_size=self.encoder_latent_size//2,
+                latent_size=self.encoder_latent_size,
                 n_knn=20,
                 hidden_dim1=encoder_kwargs.get('hidden_dim1', 256),
-                hidden_dim2=encoder_kwargs.get('hidden_dim2', 1024),
+                hidden_dim2=encoder_kwargs.get('hidden_dim2', 512),
                 pooling=encoder_kwargs.get('pooling', 'mean'),
                 feature_transform=encoder_kwargs.get('feature_transform', False),
                 # blocks=encoder_kwargs.get('blocks', [2, 2, 2]),
                 # bottleneck_ratio=encoder_kwargs.get('bottleneck_ratio', 0.5)
+            )
+        elif encoder_name in {'VN_DGCNN'}:
+            feature_dims = encoder_kwargs.get('feature_dims', (64, 64, 128, 256, 1024))
+            global_mlp_dims = encoder_kwargs.get('global_mlp_dims', (512, 256))
+            self.encoder = VNDGCNNEncoder(
+                latent_size=self.encoder_latent_size,
+                n_knn=encoder_kwargs.get('n_knn', 20),
+                pooling=encoder_kwargs.get('pooling', 'mean'),
+                feature_dims=tuple(feature_dims),
+                global_mlp_dims=tuple(global_mlp_dims),
+                global_dropout=encoder_kwargs.get('global_dropout', 0.5),
+                share_nonlinearity=encoder_kwargs.get('share_nonlinearity', True),
+                std_feature_hidden_dims=encoder_kwargs.get('std_feature_hidden_dims'),
+                use_batchnorm=encoder_kwargs.get('use_batchnorm', True),
             )
         # elif encoder_kwargs.get('name', 'PnE_VN') == 'PnE_ResVN':
         #     self.encoder = PointNetEncoderResVN(
         #         latent_size=self.encoder_latent_size // 2,
         #         n_knn=32,
         #     )
+
+        adapter_in = int(self.encoder_latent_size)
+        adapter_out = int(self.hparams.latent_size)
+        if adapter_in != adapter_out:
+            self.latent_adapter = nn.Linear(adapter_in, adapter_out)
+        else:
+            self.latent_adapter = nn.Identity()
 
         # self.rot_net = ComplexRot(self.encoder_latent_size // 6)
         if self.rotation_mode in {"sixd_head", "matrix_head"}:
@@ -92,6 +112,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
     def forward(self, pc: torch.Tensor):
         inv_z, eq_z, _ = self.encoder(pc)
+        inv_z = self.latent_adapter(inv_z)
 
         if self.rotation_mode == "eq_decoder":
             decoder_latent = self._eq_to_decoder_latent(eq_z)
