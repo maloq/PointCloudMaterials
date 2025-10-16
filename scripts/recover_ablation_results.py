@@ -292,7 +292,8 @@ def validate_ablation_config(cfg: DictConfig) -> None:
     variable = cfg.variable
     if "override" not in variable:
         raise ValueError("variable.override is required.")
-    if "values" not in variable or not variable.values:
+    values_section = variable.get("values")
+    if not _as_list(values_section):
         raise ValueError("variable.values must contain at least one value.")
 
     metrics = cfg.metrics
@@ -605,7 +606,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     validate_ablation_config(cfg)
 
     override_key = cfg.variable.override
-    values = _as_list(cfg.variable.values)
+    values = _as_list(cfg.variable.get("values"))
     final_metric_names = _as_list(cfg.metrics.final)
     best_specs = [MetricSpec(name=entry.name, mode=entry.mode) for entry in _as_list(cfg.metrics.get("best", []))]
 

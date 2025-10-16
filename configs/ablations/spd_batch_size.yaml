@@ -7,7 +7,7 @@ experiment:
     - precision=bf16-mixed
 variable:
   override: batch_size
-  values: [1012, 1020, 1024, 1028, 1030,]
+  values: [1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029, 1030]
 metrics:
   final:
     - train/loss
@@ -33,4 +33,4 @@ metrics:
       mode: max
 output:
   root_dir: output/ablations
-  run_name: spd_batch_size
+  run_name: spd_mean_and_std

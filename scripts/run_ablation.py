@@ -22,7 +22,6 @@ from hydra.errors import ConfigCompositionException
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from pytorch_lightning.callbacks import Callback, LearningRateMonitor, ModelCheckpoint
 
-import sys
 sys.path.append(os.getcwd())
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
 from src.training_methods.spd.train_spd import get_rundir_name, init_wandb
@@ -329,7 +328,8 @@ def validate_ablation_config(cfg: DictConfig) -> None:
     variable = cfg.variable
     if "override" not in variable:
         raise ValueError("variable.override is required.")
-    if "values" not in variable or not variable.values:
+    values_section = variable.get("values")
+    if not _as_list(values_section):
         raise ValueError("variable.values must contain at least one value.")
 
     metrics = cfg.metrics
@@ -475,18 +475,41 @@ def run_single_experiment(
     lr_monitor = LearningRateMonitor(logging_interval="step")
 
     precision = cfg.get("precision", "32")
-    
-    trainer = pl.Trainer(
-        default_root_dir=run_dir,
-        max_epochs=cfg.epochs,
-        accelerator="gpu" if cfg.gpu else "cpu",
-        devices=[0],
-        logger=wandb_logger,
-        callbacks=[checkpoint_callback, lr_monitor, tracker],
-        log_every_n_steps=cfg.log_every_n_steps,
-        precision=precision,
-        benchmark=True,
-    )
+    use_gpu = bool(cfg.get("gpu"))
+    device_cfg = cfg.get("devices", 1)
+
+    if torch.cuda.is_available():
+        device_count = torch.cuda.device_count()
+        device_names_list = [torch.cuda.get_device_name(i) for i in range(device_count)]
+        unique_device_names = list(dict.fromkeys(device_names_list))
+        device_names = ", ".join(unique_device_names)
+        print(f"[Ablation] Visible CUDA devices ({device_count}): {device_names}")  # noqa: T201
+    else:
+        print("[Ablation] No CUDA devices detected on this node.")  # noqa: T201
+
+    if use_gpu and not torch.cuda.is_available():
+        raise RuntimeError("GPU execution requested but no CUDA devices are available on this node.")
+
+    if use_gpu:
+        if isinstance(device_cfg, (list, tuple)):
+            trainer_devices: Union[int, List[int]] = list(device_cfg)
+        else:
+            trainer_devices = [int(device_cfg)]
+    else:
+        trainer_devices = 1
+
+    trainer_kwargs = {
+        "default_root_dir": run_dir,
+        "max_epochs": cfg.epochs,
+        "accelerator": "gpu" if use_gpu else "cpu",
+        "devices": trainer_devices,
+        "logger": wandb_logger,
+        "callbacks": [checkpoint_callback, lr_monitor, tracker],
+        "log_every_n_steps": cfg.log_every_n_steps,
+        "precision": precision,
+        "benchmark": True,
+    }
+    trainer = pl.Trainer(**trainer_kwargs)
 
     try:
         trainer.fit(model, datamodule)

@@ -49,7 +49,7 @@ def main(argv: Any = None) -> None:
     validate_ablation_config(ablation_cfg)
 
     override_key = args.override_key or ablation_cfg.variable.override
-    values = _as_list(ablation_cfg.variable.values)
+    values = _as_list(ablation_cfg.variable.get("values"))
     if args.value_index < 0 or args.value_index >= len(values):
         raise IndexError(f"value-index {args.value_index} out of range (0..{len(values)-1}).")
     value = values[args.value_index]
