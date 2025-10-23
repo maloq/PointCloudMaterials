@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from typing import Any, Dict
 
 
 def sixd_to_so3(x: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
@@ -30,6 +31,43 @@ def _orthogonalize(mat: torch.Tensor) -> torch.Tensor:
     orig_dtype = mat.dtype
     u, _, v = torch.linalg.svd(mat.to(torch.float32))
     return (u @ v.transpose(-1, -2)).to(orig_dtype)
+
+
+def kabsch_rotation(cano: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    """
+    Compute optimal rotation aligning canonical output to target using Kabsch algorithm.
+    Args:
+        cano: predicted canonical points (B, N, 3) or (B, 3, N)
+        target: reference points (matching shape permutations)
+    """
+    def _ensure_points_last_dim(points: torch.Tensor) -> torch.Tensor:
+        if points.ndim != 3:
+            raise ValueError(f"Expected point cloud of shape (B, N, 3) or (B, 3, N), got {points.shape}")
+        if points.shape[-1] == 3:
+            return points
+        if points.shape[1] == 3:
+            return points.transpose(1, 2).contiguous()
+        raise ValueError(f"Cannot interpret point cloud shape {points.shape}")
+
+    target_points = _ensure_points_last_dim(target).to(dtype=cano.dtype, device=cano.device)
+    cano_points = _ensure_points_last_dim(cano).to(torch.float32)
+    target_points32 = target_points.to(torch.float32)
+
+    cano_centered = cano_points - cano_points.mean(dim=1, keepdim=True)
+    target_centered = target_points32 - target_points32.mean(dim=1, keepdim=True)
+
+    cov = cano_centered.transpose(1, 2) @ target_centered
+    U, _, Vh = torch.linalg.svd(cov, full_matrices=False)
+    R = Vh.transpose(-1, -2) @ U.transpose(-1, -2)
+
+    det = torch.linalg.det(R)
+    neg_mask = det < 0
+    if torch.any(neg_mask):
+        Vh_adjusted = Vh.clone()
+        Vh_adjusted[neg_mask, -1, :] *= -1
+        R = Vh_adjusted.transpose(-1, -2) @ U.transpose(-1, -2)
+
+    return R.to(dtype=cano.dtype)
 
 
 class _BaseRotHead(nn.Module):
@@ -128,3 +166,32 @@ class RotMatrixHead(_BaseRotHead):
         if self.orthogonalize:
             mat = _orthogonalize(mat)
         return mat
+
+
+def build_rot_head(cfg: Any, in_features: int) -> nn.Module:
+    """
+    Factory helper to initialize rotation heads from configuration.
+
+    Args:
+        cfg: configuration object (OmegaConf DictConfig or similar) with
+            - rot_net.name
+            - rot_net.kwargs (optional)
+        in_features: flattened equivariant feature dimension (C * 3)
+    """
+    if cfg is None:
+        raise ValueError("Rotation head configuration `cfg` must be provided")
+
+    rot_net_cfg = getattr(cfg, "rot_net", None)
+    if rot_net_cfg is None:
+        raise ValueError("cfg.rot_net is required to build the rotation head")
+
+    name = rot_net_cfg.get("name", "Rot6DHead") if hasattr(rot_net_cfg, "get") else getattr(rot_net_cfg, "name", "Rot6DHead")
+    kwargs: Dict[str, Any] = rot_net_cfg.get("kwargs", {}) if hasattr(rot_net_cfg, "get") else getattr(rot_net_cfg, "kwargs", {})
+
+    name = name.lower()
+    if name == "rot6dhead" or name == "sixd_head" or name == "rot6d":
+        return Rot6DHead(in_features=in_features, **kwargs)
+    if name == "rotmatrixhead" or name == "matrix_head" or name == "rotmat":
+        return RotMatrixHead(in_features=in_features, **kwargs)
+
+    raise ValueError(f"Unknown rotation head '{rot_net_cfg.get('name', name)}'")

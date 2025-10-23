@@ -1,9 +1,7 @@
 import torch
-import numpy as np
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
 from src.data_utils.data_load import PointCloudDataset
-from src.data_utils.neighbor_pairs import NeighborPairDataset
 import time
 import logging
 from pathlib import Path
@@ -41,11 +39,6 @@ class PointCloudDataModule(pl.LightningDataModule):
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
         self.max_samples = cfg.max_samples
-        # Neighbor-pair configuration (optional)
-        self.neighbor_loss_scale = float(getattr(cfg, 'neighbor_loss_scale', 0.0))
-        self.neighbor_radius = float(getattr(cfg, 'neighbor_radius', 1.0))
-        self.neighbor_max_neighbors = int(getattr(cfg, 'neighbor_max_neighbors', 0) or 0)
-        self.neighbor_pair_batch_size = int(getattr(cfg, 'neighbor_pair_batch_size', max(1, cfg.batch_size // 2)))
         
     def setup(self, stage=None):
         start_time = time.time()
@@ -62,17 +55,6 @@ class PointCloudDataModule(pl.LightningDataModule):
             self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
             self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
 
-        # Optional: build neighbor pair dataset on the train split
-        self.train_pair_dataset = None
-        if self.neighbor_loss_scale > 0 and len(self.train_dataset) > 0:
-            max_nbrs = self.neighbor_max_neighbors if self.neighbor_max_neighbors > 0 else None
-            self.train_pair_dataset = NeighborPairDataset(
-                self.train_dataset,
-                radius=self.neighbor_radius,
-                max_neighbors=max_nbrs,
-                directed=True,
-            )
-
         elapsed_time = time.time() - start_time
         logger.print(f"Train dataset size: {len(self.train_dataset)}")
         logger.print(f"Val dataset size: {len(self.val_dataset)}")
@@ -87,7 +69,6 @@ class PointCloudDataModule(pl.LightningDataModule):
         file_list = self._to_container(data_files)
         if isinstance(file_list, str):
             file_list = [file_list]
-        return_coords = bool(self.neighbor_loss_scale > 0)
         full_dataset = PointCloudDataset(
             root=data_cfg.data_path,
             data_files=file_list,
@@ -96,7 +77,6 @@ class PointCloudDataModule(pl.LightningDataModule):
             overlap_fraction=data_cfg.overlap_fraction,
             n_samples=data_cfg.n_samples,
             num_points=data_cfg.num_points,
-            return_coords=return_coords,
         )
 
         train_ratio = getattr(data_cfg, "train_ratio", 0.8)
@@ -268,18 +248,7 @@ class PointCloudDataModule(pl.LightningDataModule):
             pin_memory=True,
             persistent_workers=True,
         )
-        if self.train_pair_dataset is None:
-            return main
-        pairs = DataLoader(
-            self.train_pair_dataset,
-            batch_size=self.neighbor_pair_batch_size,
-            num_workers=self.num_workers,
-            shuffle=True,
-            drop_last=True,
-            pin_memory=True,
-            persistent_workers=True,
-        )
-        return [main, pairs]
+        return main
     
     def val_dataloader(self):
         print(f"Using {self.num_workers} workers for val dataloader")

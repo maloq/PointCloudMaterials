@@ -1,14 +1,20 @@
+from __future__ import annotations
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from ..base import Encoder
+from ..registry import register_encoder
+
 EPS = 1e-6
+
 
 # ---------------------------------------------------------------------------
 # Vector Neuron building blocks (adapted from VN-SPD)
 # ---------------------------------------------------------------------------
 class VNLinear(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels: int, out_channels: int):
         super().__init__()
         self.map_to_feat = nn.Linear(in_channels, out_channels, bias=False)
 
@@ -17,7 +23,7 @@ class VNLinear(nn.Module):
 
 
 class VNLeakyReLU(nn.Module):
-    def __init__(self, in_channels, share_nonlinearity=False, negative_slope=0.2):
+    def __init__(self, in_channels: int, share_nonlinearity: bool = False, negative_slope: float = 0.2):
         super().__init__()
         if share_nonlinearity:
             self.map_to_dir = nn.Linear(in_channels, 1, bias=False)
@@ -36,7 +42,7 @@ class VNLeakyReLU(nn.Module):
 
 
 class VNBatchNorm(nn.Module):
-    def __init__(self, num_features, dim):
+    def __init__(self, num_features: int, dim: int):
         super().__init__()
         self.dim = dim
         if dim in (3, 4):
@@ -53,7 +59,15 @@ class VNBatchNorm(nn.Module):
 
 
 class VNLinearLeakyReLU(nn.Module):
-    def __init__(self, in_channels, out_channels, dim=5, share_nonlinearity=False, negative_slope=0.2, use_batchnorm=True):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        dim: int = 5,
+        share_nonlinearity: bool = False,
+        negative_slope: float = 0.2,
+        use_batchnorm: bool = True,
+    ):
         super().__init__()
         self.dim = dim
         self.negative_slope = negative_slope
@@ -80,7 +94,7 @@ class VNLinearLeakyReLU(nn.Module):
 
 
 class VNMaxPool(nn.Module):
-    def __init__(self, in_channels):
+    def __init__(self, in_channels: int):
         super().__init__()
         self.map_to_dir = nn.Linear(in_channels, in_channels, bias=False)
 
@@ -92,25 +106,47 @@ class VNMaxPool(nn.Module):
         return x[index_tuple]
 
 
-def mean_pool(x: torch.Tensor, dim=-1, keepdim=False) -> torch.Tensor:
+def mean_pool(x: torch.Tensor, dim: int = -1, keepdim: bool = False) -> torch.Tensor:
     return x.mean(dim=dim, keepdim=keepdim)
 
 
 class VNStdFeature(nn.Module):
-    def __init__(self, in_channels, dim=4, normalize_frame=False, share_nonlinearity=False, negative_slope=0.2, use_batchnorm=True, hidden_dims=None):
+    def __init__(
+        self,
+        in_channels: int,
+        dim: int = 4,
+        normalize_frame: bool = False,
+        share_nonlinearity: bool = False,
+        negative_slope: float = 0.2,
+        use_batchnorm: bool = True,
+        hidden_dims: tuple[int, int] | None = None,
+    ):
         super().__init__()
         self.dim = dim
         self.normalize_frame = normalize_frame
 
         if hidden_dims is None:
-            # Maintain original behavior if hidden_dims is not provided
             h1 = in_channels // 2
             h2 = in_channels // 4
         else:
             h1, h2 = hidden_dims
 
-        self.vn1 = VNLinearLeakyReLU(in_channels, h1, dim=dim, share_nonlinearity=share_nonlinearity, negative_slope=negative_slope, use_batchnorm=use_batchnorm)
-        self.vn2 = VNLinearLeakyReLU(h1, h2, dim=dim, share_nonlinearity=share_nonlinearity, negative_slope=negative_slope, use_batchnorm=use_batchnorm)
+        self.vn1 = VNLinearLeakyReLU(
+            in_channels,
+            h1,
+            dim=dim,
+            share_nonlinearity=share_nonlinearity,
+            negative_slope=negative_slope,
+            use_batchnorm=use_batchnorm,
+        )
+        self.vn2 = VNLinearLeakyReLU(
+            h1,
+            h2,
+            dim=dim,
+            share_nonlinearity=share_nonlinearity,
+            negative_slope=negative_slope,
+            use_batchnorm=use_batchnorm,
+        )
         self.vn_lin = nn.Linear(h2, 3 if not normalize_frame else 2, bias=False)
 
     def forward(self, x: torch.Tensor):
@@ -132,16 +168,14 @@ class VNStdFeature(nn.Module):
             x_std = torch.einsum('bij,bjk->bik', x, z0)
         elif self.dim == 5:
             x_std = torch.einsum('bijmn,bjkmn->bikmn', x, z0)
+        else:
+            raise ValueError(f"Unsupported VNStdFeature dim {self.dim}")
         return x_std, z0
 
 
-
-
 class VNResBlock(nn.Module):
-    """
-    ResNet-style residual block for Vector Neurons.
-    Uses a bottleneck (1x 'channels' -> mid -> 'channels') in VN space.
-    """
+    """ResNet-style residual block for Vector Neurons with a VN bottleneck."""
+
     def __init__(
         self,
         channels: int,
@@ -154,13 +188,17 @@ class VNResBlock(nn.Module):
         super().__init__()
         mid = max(1, int(round(channels * bottleneck_ratio)))
         self.conv1 = VNLinearLeakyReLU(
-            channels, mid, dim=dim,
+            channels,
+            mid,
+            dim=dim,
             share_nonlinearity=share_nonlinearity,
             negative_slope=negative_slope,
             use_batchnorm=use_batchnorm,
         )
         self.conv2 = VNLinearLeakyReLU(
-            mid, channels, dim=dim,
+            mid,
+            channels,
+            dim=dim,
             share_nonlinearity=share_nonlinearity,
             negative_slope=negative_slope,
             use_batchnorm=use_batchnorm,
@@ -174,138 +212,158 @@ def _make_vn_layer(channels: int, num_blocks: int, dim: int = 4, **kwargs) -> nn
     return nn.Sequential(*[VNResBlock(channels, dim=dim, **kwargs) for _ in range(num_blocks)])
 
 
-class PointNetEncoderVN(nn.Module):
-    def __init__(self, latent_size=64, n_knn=20, pooling='mean',
-                 feature_transform=True, hidden_dim1=256, hidden_dim2=1024,
-                 stn_hidden_dims=(64, 128, 1024), stn_fc_dims=(512, 256),
-                 std_feature_hidden_dims=None,
-                 use_batchnorm=True,
-                 # NEW: residual options
-                 residual=True, blocks=(2, 2, 2), bottleneck_ratio=0.5):
+@register_encoder("PnE_VN")
+class PointNetEncoderVN(Encoder):
+    def __init__(
+        self,
+        latent_size: int = 64,
+        n_knn: int = 20,
+        pooling: str = 'mean',
+        feature_transform: bool = True,
+        hidden_dim1: int = 256,
+        hidden_dim2: int = 1024,
+        stn_hidden_dims: tuple[int, int, int] = (64, 128, 1024),
+        stn_fc_dims: tuple[int, int] = (512, 256),
+        std_feature_hidden_dims: tuple[int, int] | None = None,
+        use_batchnorm: bool = True,
+        residual: bool = True,
+        blocks: tuple[int, int, int] = (2, 2, 2),
+        bottleneck_ratio: float = 0.5,
+    ):
         """
-        blocks: number of residual blocks at each stage (c1, c2, c3).
-        bottleneck_ratio: bottleneck width inside each VNResBlock.
-        Set residual=False to disable residual stacks (keeps original depth).
+        Vector neuron PointNet backbone producing invariant/equivariant latents.
         """
         super().__init__()
         self.n_knn = n_knn
         self.pooling = pooling
 
-        # As before: channels are divided by 3 for VN (vector) channels.
         c1 = hidden_dim1 // 3
         c2 = hidden_dim2 // 3
         c3 = latent_size // 3
 
-        # Stem on 5D tensor from graph features
         self.conv_pos = VNLinearLeakyReLU(3, c1, dim=5, negative_slope=0.1, use_batchnorm=use_batchnorm)
-
-        # Stage 1 (dim=4)
         self.conv1 = VNLinearLeakyReLU(c1, c1, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
 
-        # Residual stacks (all dim=4)
         self.residual = residual
         if residual:
             self.res1 = _make_vn_layer(
-                c1, blocks[0], dim=4, bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1, use_batchnorm=use_batchnorm
+                c1,
+                blocks[0],
+                dim=4,
+                bottleneck_ratio=bottleneck_ratio,
+                negative_slope=0.1,
+                use_batchnorm=use_batchnorm,
             )
         else:
             self.res1 = nn.Identity()
 
-        # STN is unchanged
         self.feature_transform = feature_transform
         if self.feature_transform:
             self.fstn = STNkd(c1, hidden_dims=stn_hidden_dims, fc_dims=stn_fc_dims)
 
-        # Stage 2 projection & residuals
-        self.conv2 = VNLinearLeakyReLU(c1 * 2, c2, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
+        self.conv2 = VNLinearLeakyReLU(
+            c1 * 2,
+            c2,
+            dim=4,
+            negative_slope=0.1,
+            use_batchnorm=use_batchnorm,
+        )
         if residual:
             self.res2 = _make_vn_layer(
-                c2, blocks[1], dim=4, bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1, use_batchnorm=use_batchnorm
+                c2,
+                blocks[1],
+                dim=4,
+                bottleneck_ratio=bottleneck_ratio,
+                negative_slope=0.1,
+                use_batchnorm=use_batchnorm,
             )
         else:
             self.res2 = nn.Identity()
 
-        # Stage 3 projection & residuals
-        self.conv3 = VNLinearLeakyReLU(c2, c3, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
+        self.conv3 = VNLinearLeakyReLU(
+            c2,
+            c3,
+            dim=4,
+            negative_slope=0.1,
+            use_batchnorm=use_batchnorm,
+        )
         if residual:
             self.res3 = _make_vn_layer(
-                c3, blocks[2], dim=4, bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1, use_batchnorm=use_batchnorm
+                c3,
+                blocks[2],
+                dim=4,
+                bottleneck_ratio=bottleneck_ratio,
+                negative_slope=0.1,
+                use_batchnorm=use_batchnorm,
             )
         else:
             self.res3 = nn.Identity()
 
-        # Keep the original head conv
         self.conv4 = VNLinearLeakyReLU(c3, c3, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
-
-        # Frame/std feature is unchanged
         self.std_feature = VNStdFeature(
-            c3 * 2, dim=4, normalize_frame=False, negative_slope=0.0,
-            hidden_dims=std_feature_hidden_dims
+            c3 * 2,
+            dim=4,
+            normalize_frame=False,
+            negative_slope=0.0,
+            hidden_dims=std_feature_hidden_dims,
         )
 
-        # Pooling choice for the 5D graph features right after conv_pos
         if pooling == 'max':
             self.pool = VNMaxPool(c1)
         else:
             self.pool = mean_pool
 
-    def forward(self, x: torch.Tensor):
-        # x: (B, N, 3)
-        x = x.permute(0, 2, 1)  # (B,3,N)
-        B, D, N = x.size()
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        x = x.permute(0, 2, 1)
+        batch_size, channels, num_points = x.size()
         x = x.unsqueeze(1)
 
-        # Build local graph and lift to VN features (5D)
         feat = get_graph_feature_cross(x, k=self.n_knn)
-        x = self.conv_pos(feat)               # (B, c1, 3, N, k)
-        x = self.pool(x)                      # (B, c1, 3, N)
+        x = self.conv_pos(feat)
+        x = self.pool(x)
 
-        # Stage 1
-        x = self.conv1(x)                     # (B, c1, 3, N)
-        x = self.res1(x)                      # deeper @ c1
+        x = self.conv1(x)
+        x = self.res1(x)
 
-        # Optional STN (feature transform), identical placement as before
         if self.feature_transform:
-            x_global = self.fstn(x).unsqueeze(-1).repeat(1, 1, 1, N)
+            x_global = self.fstn(x).unsqueeze(-1).repeat(1, 1, 1, num_points)
             x = torch.cat((x, x_global), 1)
         else:
             x_mean = x.mean(dim=-1, keepdim=True)
             x = torch.cat((x, x_mean.expand_as(x)), 1)
 
-        x = self.conv2(x)                     # (B, c2, 3, N)
-        x = self.res2(x)                      # deeper @ c2
+        x = self.conv2(x)
+        x = self.res2(x)
 
-        x = self.conv3(x)                     # (B, c3, 3, N)
-        x = self.res3(x)                      # deeper @ c3
-        x = self.conv4(x)                     # (B, c3, 3, N)
+        x = self.conv3(x)
+        x = self.res3(x)
+        x = self.conv4(x)
 
-        eq_z = x.view(B, -1, D, N)
+        eq_z = x.view(batch_size, -1, channels, num_points)
 
-        x_mean_out = x.mean(dim=-1, keepdim=True)      # (B, c3, 3, 1)
-        x = torch.cat((x, x_mean_out.expand_as(x)), 1) # (B, 2*c3, 3, N)
-        x, trans = self.std_feature(x)                 # (B, c3, 3, N), frame
+        x_mean_out = x.mean(dim=-1, keepdim=True)
+        x = torch.cat((x, x_mean_out.expand_as(x)), 1)
+        x, _ = self.std_feature(x)
 
-        x = x.view(B, -1, N)
+        x = x.view(batch_size, -1, num_points)
         inv_z = x.max(dim=-1, keepdim=False)[0]
         center_loc = x_mean_out.mean(dim=2)
         return inv_z, eq_z, center_loc
 
 
-class VNDGCNNEncoder(nn.Module):
+@register_encoder("VN_DGCNN")
+class VNDGCNNEncoder(Encoder):
     def __init__(
         self,
-        latent_size=256,
-        n_knn=20,
-        pooling='mean',
-        feature_dims=(96, 96, 192, 384, 576),
-        global_mlp_dims=(256, 128),
-        global_dropout=0.5,
-        share_nonlinearity=True,
-        std_feature_hidden_dims=None,
-        use_batchnorm=True,
+        latent_size: int = 256,
+        n_knn: int = 20,
+        pooling: str = 'mean',
+        feature_dims: tuple[int, int, int, int, int] = (96, 96, 192, 384, 576),
+        global_mlp_dims: tuple[int, int] = (256, 128),
+        global_dropout: float = 0.5,
+        share_nonlinearity: bool = True,
+        std_feature_hidden_dims: tuple[int, int] | None = None,
+        use_batchnorm: bool = True,
     ):
         super().__init__()
         if len(feature_dims) != 5:
@@ -317,16 +375,32 @@ class VNDGCNNEncoder(nn.Module):
         c1, c2, c3, c4, c5 = [max(1, dim // 3) for dim in feature_dims]
 
         self.conv1 = VNLinearLeakyReLU(
-            2, c1, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+            2,
+            c1,
+            dim=5,
+            negative_slope=0.2,
+            use_batchnorm=use_batchnorm,
         )
         self.conv2 = VNLinearLeakyReLU(
-            c1 * 2, c2, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+            c1 * 2,
+            c2,
+            dim=5,
+            negative_slope=0.2,
+            use_batchnorm=use_batchnorm,
         )
         self.conv3 = VNLinearLeakyReLU(
-            c2 * 2, c3, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+            c2 * 2,
+            c3,
+            dim=5,
+            negative_slope=0.2,
+            use_batchnorm=use_batchnorm,
         )
         self.conv4 = VNLinearLeakyReLU(
-            c3 * 2, c4, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm
+            c3 * 2,
+            c4,
+            dim=5,
+            negative_slope=0.2,
+            use_batchnorm=use_batchnorm,
         )
 
         concat_channels = c1 + c2 + c3 + c4
@@ -348,8 +422,6 @@ class VNDGCNNEncoder(nn.Module):
             hidden_dims=std_feature_hidden_dims,
         )
 
-        # Match original VN-DGCNN design: pooled invariant features (max + avg) over
-        # three vector components and two frames => 12 * VN channels.
         global_in_dim = c5 * 12
         g1, g2 = global_mlp_dims
         self.global_mlp = nn.Sequential(
@@ -375,9 +447,9 @@ class VNDGCNNEncoder(nn.Module):
             self.pool3 = mean_pool
             self.pool4 = mean_pool
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         x = x.permute(0, 2, 1)
-        batch_size, d, num_points = x.size()
+        batch_size, channels, num_points = x.size()
         x = x.unsqueeze(1)
 
         x = get_graph_feature(x, k=self.n_knn)
@@ -399,7 +471,7 @@ class VNDGCNNEncoder(nn.Module):
         x = torch.cat((x1, x2, x3, x4), dim=1)
         x = self.conv5(x)
 
-        eq_z = x.view(batch_size, -1, d, num_points)
+        eq_z = x.view(batch_size, -1, channels, num_points)
 
         x_mean_out = x.mean(dim=-1, keepdim=True)
         center_loc = x_mean_out.mean(dim=2)
@@ -417,7 +489,12 @@ class VNDGCNNEncoder(nn.Module):
 
 
 class STNkd(nn.Module):
-    def __init__(self, d=64, hidden_dims=(64, 128, 1024), fc_dims=(512, 256)):
+    def __init__(
+        self,
+        d: int = 64,
+        hidden_dims: tuple[int, int, int] = (64, 128, 1024),
+        fc_dims: tuple[int, int] = (512, 256),
+    ):
         super().__init__()
         c1, c2, c3 = [dim // 3 for dim in hidden_dims]
         fc1_dim, fc2_dim = [dim // 3 for dim in fc_dims]
@@ -430,7 +507,7 @@ class STNkd(nn.Module):
         self.pool = VNMaxPool(c3)
         self.fc3 = VNLinear(fc2_dim, d)
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
@@ -441,7 +518,7 @@ class STNkd(nn.Module):
 
 
 class SimpleRot(nn.Module):
-    def __init__(self, in_ch, strict='None'):
+    def __init__(self, in_ch: int, strict: str = 'None'):
         super().__init__()
         self.model = VNLinear(in_ch, 3)
         self.strict = strict
@@ -458,12 +535,12 @@ class SimpleRot(nn.Module):
 
 
 class ComplexRot(nn.Module):
-    def __init__(self, in_ch, strict='None'):
+    def __init__(self, in_ch: int, strict: str = 'None'):
         super().__init__()
         self.linear1 = VNLinearLeakyReLU(in_ch, in_ch * 6, dim=4, negative_slope=0.1)
-        self.linear2 = VNLinearLeakyReLU(in_ch*6 , in_ch*4, dim=4, negative_slope=0.1)
-        self.linear3 = VNLinearLeakyReLU(in_ch*4, in_ch , dim=4, negative_slope=0.1)
-        self.linearR = VNLinear(in_ch , 3)
+        self.linear2 = VNLinearLeakyReLU(in_ch * 6, in_ch * 4, dim=4, negative_slope=0.1)
+        self.linear3 = VNLinearLeakyReLU(in_ch * 4, in_ch, dim=4, negative_slope=0.1)
+        self.linearR = VNLinear(in_ch, 3)
         self.strict = strict
 
     def constraint_rot(self, rot_mat: torch.Tensor) -> torch.Tensor:
@@ -472,7 +549,7 @@ class ComplexRot(nn.Module):
         u, _, v = torch.linalg.svd(rot_mat)
         return u @ v.transpose(-1, -2)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.linear1(x)
         x = self.linear2(x)
         x = self.linear3(x)
@@ -480,15 +557,15 @@ class ComplexRot(nn.Module):
         rot_mat = torch.mean(R, dim=-1)
         return self.constraint_rot(rot_mat)
 
-# Utilities
-def knn(x, k):
+
+def knn(x: torch.Tensor, k: int) -> torch.Tensor:
     inner = -2 * torch.matmul(x.transpose(2, 1), x)
     xx = torch.sum(x ** 2, dim=1, keepdim=True)
     pairwise_distance = -xx - inner - xx.transpose(2, 1)
     return pairwise_distance.topk(k=k, dim=-1)[1]
 
 
-def get_graph_feature(x, k=20, idx=None, x_coord=None):
+def get_graph_feature(x: torch.Tensor, k: int = 20, idx: torch.Tensor | None = None, x_coord: torch.Tensor | None = None):
     batch_size = x.size(0)
     num_points = x.size(3)
     x = x.view(batch_size, -1, num_points)
@@ -516,7 +593,7 @@ def get_graph_feature(x, k=20, idx=None, x_coord=None):
     return feature
 
 
-def get_graph_feature_cross(x, k=20, idx=None):
+def get_graph_feature_cross(x: torch.Tensor, k: int = 20, idx: torch.Tensor | None = None):
     batch_size = x.size(0)
     num_points = x.size(3)
     x = x.view(batch_size, -1, num_points)
@@ -535,3 +612,21 @@ def get_graph_feature_cross(x, k=20, idx=None):
     cross = torch.cross(feature, x, dim=-1)
     feature = torch.cat((feature - x, x, cross), dim=3).permute(0, 3, 4, 1, 2).contiguous()
     return feature
+
+
+__all__ = [
+    "PointNetEncoderVN",
+    "VNDGCNNEncoder",
+    "SimpleRot",
+    "ComplexRot",
+    "VNLinear",
+    "VNLeakyReLU",
+    "VNLinearLeakyReLU",
+    "VNMaxPool",
+    "VNBatchNorm",
+    "VNResBlock",
+    "VNStdFeature",
+    "STNkd",
+    "get_graph_feature",
+    "get_graph_feature_cross",
+]
