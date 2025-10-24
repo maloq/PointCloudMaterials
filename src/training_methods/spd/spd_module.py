@@ -28,10 +28,11 @@ class ShapePoseDisentanglement(pl.LightningModule):
         rotation_mode = getattr(cfg, "rotation_mode", None)
         if hasattr(cfg, "get"):
             rotation_mode = cfg.get("rotation_mode", rotation_mode)
-            
+
         self.rotation_mode = str(rotation_mode).lower()
         self._use_rot_head = self.rotation_mode in {"sixd_head", "matrix_head"}
-        self.rot_net = None
+        self.rot_head_in_features = None
+        self.rot_net = self._init_rotation_head(cfg) if self._use_rot_head else None
 
         self.ortho_scale = cfg.get("ortho_scale", 0.01)
         self.kl_latent_loss_scale = cfg.get("kl_latent_loss_scale", 0.0)
@@ -59,10 +60,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
             rot = kabsch_rotation(cano, pc)
             recon = self._apply_rotation(cano, rot)
         else:
-            if self._use_rot_head and self.rot_net is None:
-                channels = int(eq_z.shape[1])
-                frames = int(eq_z.shape[2]) if eq_z.ndim >= 4 else 1
-                self.rot_net = build_rot_head(self.hparams, in_features=channels * frames)
             cano = self._decode(inv_z)
             rot = self.rot_net(eq_z)
             recon = self._apply_rotation(cano, rot)
