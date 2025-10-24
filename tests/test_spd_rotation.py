@@ -1,6 +1,8 @@
 import torch
 from scipy.spatial.transform import Rotation as R
 from omegaconf import OmegaConf
+import sys,os
+sys.path.append(os.getcwd())
 
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
 
@@ -28,6 +30,14 @@ def _cfg(n_points: int = 32, latent: int = 16) -> OmegaConf:
                 'hidden_dim': 32,
             },
         },
+        'rotation_mode': 'sixd_head',
+        'rot_net': {
+            'name': 'Rot6DHead',
+            'kwargs': {
+                'hidden': 32,
+                'use_attention': False,
+            },
+        },
     })
 
 
@@ -35,7 +45,7 @@ def test_rotation_recovery(tmp_path):
     cfg = _cfg()
     model = ShapePoseDisentanglement(cfg)
 
-    pc = torch.randn(1, cfg.decoder.kwargs.num_points, 3)
+    pc = torch.randn(2, 3, cfg.decoder.kwargs.num_points)
     rot = R.from_euler('xyz', [45, 20, 10], degrees=True).as_matrix()
     pc_rot = pc @ torch.tensor(rot, dtype=torch.float32).T
 
@@ -48,3 +58,5 @@ def test_rotation_recovery(tmp_path):
 
     error = torch.norm(rot_pred - torch.tensor(rot, dtype=torch.float32))
     print(f'Rotation L2 error: {error.item():.2f}')
+
+

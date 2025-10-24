@@ -1,7 +1,8 @@
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
-
+import sys,os
+sys.path.append(os.getcwd())
 from src.eval_pipeline.metrics.silhouette import SilhouetteMetric
 from src.eval_pipeline.metrics.ari import ARIMetric
 

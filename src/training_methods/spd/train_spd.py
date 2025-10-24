@@ -15,7 +15,10 @@ import wandb
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-from src.data_utils.data_module import PointCloudDataModule
+from src.data_utils.data_module import (
+    RealPointCloudDataModule,
+    SyntheticPointCloudDataModule,
+)
 torch.set_float32_matmul_precision('medium')
 
 logger = setup_logging()
@@ -43,13 +46,17 @@ def train(cfg: DictConfig):
     run_dir = get_rundir_name()
     wandb_logger = init_wandb(cfg, run_dir)
 
-    dm = PointCloudDataModule(cfg)
+    data_kind = getattr(cfg.data, "kind", "off")
+    if data_kind == "synthetic":
+        dm = SyntheticPointCloudDataModule(cfg)
+    else:
+        dm = RealPointCloudDataModule(cfg)
     model = ShapePoseDisentanglement(cfg)
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=run_dir,
-        monitor='val_loss',
-        filename=f'{cfg.experiment_name}-{{epoch:02d}}-{{val_loss:.2f}}',
+        monitor='val/loss',
+        filename=f'{cfg.experiment_name}-{{epoch:02d}}',
         save_top_k=3,
         mode='min',
     )

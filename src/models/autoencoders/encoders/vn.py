@@ -226,9 +226,6 @@ class PointNetEncoderVN(Encoder):
         stn_fc_dims: tuple[int, int] = (512, 256),
         std_feature_hidden_dims: tuple[int, int] | None = None,
         use_batchnorm: bool = True,
-        residual: bool = True,
-        blocks: tuple[int, int, int] = (2, 2, 2),
-        bottleneck_ratio: float = 0.5,
     ):
         """
         Vector neuron PointNet backbone producing invariant/equivariant latents.
@@ -244,19 +241,6 @@ class PointNetEncoderVN(Encoder):
         self.conv_pos = VNLinearLeakyReLU(3, c1, dim=5, negative_slope=0.1, use_batchnorm=use_batchnorm)
         self.conv1 = VNLinearLeakyReLU(c1, c1, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
 
-        self.residual = residual
-        if residual:
-            self.res1 = _make_vn_layer(
-                c1,
-                blocks[0],
-                dim=4,
-                bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1,
-                use_batchnorm=use_batchnorm,
-            )
-        else:
-            self.res1 = nn.Identity()
-
         self.feature_transform = feature_transform
         if self.feature_transform:
             self.fstn = STNkd(c1, hidden_dims=stn_hidden_dims, fc_dims=stn_fc_dims)
@@ -268,17 +252,6 @@ class PointNetEncoderVN(Encoder):
             negative_slope=0.1,
             use_batchnorm=use_batchnorm,
         )
-        if residual:
-            self.res2 = _make_vn_layer(
-                c2,
-                blocks[1],
-                dim=4,
-                bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1,
-                use_batchnorm=use_batchnorm,
-            )
-        else:
-            self.res2 = nn.Identity()
 
         self.conv3 = VNLinearLeakyReLU(
             c2,
@@ -287,17 +260,6 @@ class PointNetEncoderVN(Encoder):
             negative_slope=0.1,
             use_batchnorm=use_batchnorm,
         )
-        if residual:
-            self.res3 = _make_vn_layer(
-                c3,
-                blocks[2],
-                dim=4,
-                bottleneck_ratio=bottleneck_ratio,
-                negative_slope=0.1,
-                use_batchnorm=use_batchnorm,
-            )
-        else:
-            self.res3 = nn.Identity()
 
         self.conv4 = VNLinearLeakyReLU(c3, c3, dim=4, negative_slope=0.1, use_batchnorm=use_batchnorm)
         self.std_feature = VNStdFeature(
@@ -307,6 +269,11 @@ class PointNetEncoderVN(Encoder):
             negative_slope=0.0,
             hidden_dims=std_feature_hidden_dims,
         )
+        assert latent_size % 3 == 0, f"latent_size must be divisible by 3, got {latent_size}"
+        # Map pooled equivariant VN features (B, c3, 3) -> (B, latent_size, 3)
+        self.out_eq_mlp = VNLinearLeakyReLU(c3, latent_size, dim=3, use_batchnorm=False)
+        # Map invariant feature vector (B, 2*c3*3) -> (B, latent_size)
+        self.out_inv_mlp = nn.Linear(c3 * 2 * 3, latent_size)
 
         if pooling == 'max':
             self.pool = VNMaxPool(c1)
@@ -323,7 +290,6 @@ class PointNetEncoderVN(Encoder):
         x = self.pool(x)
 
         x = self.conv1(x)
-        x = self.res1(x)
 
         if self.feature_transform:
             x_global = self.fstn(x).unsqueeze(-1).repeat(1, 1, 1, num_points)
@@ -333,20 +299,20 @@ class PointNetEncoderVN(Encoder):
             x = torch.cat((x, x_mean.expand_as(x)), 1)
 
         x = self.conv2(x)
-        x = self.res2(x)
-
         x = self.conv3(x)
-        x = self.res3(x)
         x = self.conv4(x)
 
-        eq_z = x.view(batch_size, -1, channels, num_points)
-
+        # Pool per-point VN features, then map to desired latent_size VN channels
+        eq_z = x.mean(dim=-1)  # (B, c3, 3)
+        eq_z = self.out_eq_mlp(eq_z)  # (B, latent_size, 3)
+      
         x_mean_out = x.mean(dim=-1, keepdim=True)
         x = torch.cat((x, x_mean_out.expand_as(x)), 1)
         x, _ = self.std_feature(x)
 
         x = x.view(batch_size, -1, num_points)
-        inv_z = x.max(dim=-1, keepdim=False)[0]
+        inv_feat = x.max(dim=-1, keepdim=False)[0]
+        inv_z = self.out_inv_mlp(inv_feat)
         center_loc = x_mean_out.mean(dim=2)
         return inv_z, eq_z, center_loc
 
@@ -435,6 +401,8 @@ class VNDGCNNEncoder(Encoder):
             nn.Dropout(p=global_dropout),
             nn.Linear(g2, latent_size),
         )
+        # Map pooled equivariant VN features (B, c5, 3) -> (B, latent_size, 3)
+        self.out_eq_mlp = VNLinearLeakyReLU(c5, latent_size, dim=3, use_batchnorm=False)
 
         if pooling == 'max':
             self.pool1 = VNMaxPool(c1)
@@ -471,8 +439,9 @@ class VNDGCNNEncoder(Encoder):
         x = torch.cat((x1, x2, x3, x4), dim=1)
         x = self.conv5(x)
 
-        eq_z = x.view(batch_size, -1, channels, num_points)
-
+        # Pool per-point VN features, then map to desired latent_size VN channels
+        eq_z = x.mean(dim=-1)  # (B, c5, 3)
+        eq_z = self.out_eq_mlp(eq_z)  # (B, latent_size, 3)
         x_mean_out = x.mean(dim=-1, keepdim=True)
         center_loc = x_mean_out.mean(dim=2)
 

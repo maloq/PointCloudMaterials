@@ -26,13 +26,14 @@ class ShapePoseDisentanglement(pl.LightningModule):
         encoder_kwargs = self.hparams.encoder.get('kwargs', {})
         self.encoder_latent_size = encoder_kwargs.get('latent_size', self.hparams.latent_size)
         rotation_mode = getattr(cfg, "rotation_mode", None)
-        if hasattr(cfg, "get"):
-            rotation_mode = cfg.get("rotation_mode", rotation_mode)
+        # if hasattr(cfg, "get"):
+        #     rotation_mode = cfg.get("rotation_mode", rotation_mode)
+        if rotation_mode is None or rotation_mode == "":
+            raise ValueError("rotation_mode is required")
 
         self.rotation_mode = str(rotation_mode).lower()
         self._use_rot_head = self.rotation_mode in {"sixd_head", "matrix_head"}
-        self.rot_head_in_features = None
-        self.rot_net = self._init_rotation_head(cfg) if self._use_rot_head else None
+        self.rot_net = build_rot_head(cfg, in_features=self.encoder_latent_size * 3) if self._use_rot_head else None
 
         self.ortho_scale = cfg.get("ortho_scale", 0.01)
         self.kl_latent_loss_scale = cfg.get("kl_latent_loss_scale", 0.0)
@@ -47,20 +48,19 @@ class ShapePoseDisentanglement(pl.LightningModule):
         inv_z, eq_z, _ = self.encoder(pc)
 
         if self.rotation_mode == "eq_decoder":
-            decoder_latent = self._eq_to_decoder_latent(eq_z)
-            cano = self._decode(decoder_latent)
+            cano = self.decoder(eq_z)
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
             recon = cano
         elif self.rotation_mode == "inv_no_rot":
-            cano = self._decode(inv_z)
+            cano = self.decoder(inv_z)
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
             recon = cano
         elif self.rotation_mode == "inv_kabsch":
-            cano = self._decode(inv_z)
+            cano = self.decoder(inv_z)
             rot = kabsch_rotation(cano, pc)
             recon = self._apply_rotation(cano, rot)
         else:
-            cano = self._decode(inv_z)
+            cano = self.decoder(inv_z)
             rot = self.rot_net(eq_z)
             recon = self._apply_rotation(cano, rot)
         return inv_z, recon, cano, rot
@@ -79,10 +79,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
         log_name = f"{stage}/{name}"
         self.log(log_name, value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
 
-        if legacy:
-            legacy_name = f"{stage}_{name.replace('/', '_')}"
-            legacy_kwargs = dict(log_kwargs)
-            self.log(legacy_name, value, on_step=on_step, on_epoch=on_epoch, **legacy_kwargs)
 
     def _step(self, batch, batch_idx, stage: str):
         pc, labels = self._unpack_batch(batch)
@@ -92,11 +88,22 @@ class ShapePoseDisentanglement(pl.LightningModule):
             self._cache_supervised_batch(stage, inv_z, labels)
         
         recon_f32 = recon.to(torch.float32)
+        cano_f32  = cano.to(torch.float32)
         pc_f32    = pc.to(torch.float32)
 
-        loss_recon, _   = sinkhorn_distance(recon_f32.contiguous(), pc_f32)
+        # Metrics after rotation (used for loss)
+        emd_after, _      = sinkhorn_distance(recon_f32.contiguous(), pc_f32)
+        chamfer_after, _  = chamfer_distance(recon_f32, pc_f32)
+
+        # Metrics before rotation (diagnostics only)
+        with torch.no_grad():
+            emd_before, _     = sinkhorn_distance(cano_f32.contiguous(), pc_f32)
+            chamfer_before, _ = chamfer_distance(cano_f32, pc_f32)
+
+        # Preserve original variable names for compatibility
+        loss_recon   = emd_after
         # loss_recon, _ = chamfer_distance(recon_f32, pc_f32)
-        loss_chamfer, _ = chamfer_distance(recon_f32, pc_f32)
+        loss_chamfer = chamfer_after
         ortho_loss = torch.mean((rot.transpose(1, 2).float() @ rot.float()
                                  - torch.eye(3, device=self.device)) ** 2)
         
@@ -120,10 +127,11 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         self._log_metric(stage, "loss", loss, prog_bar=True)
         self._log_metric(stage, "chamfer", loss_chamfer, prog_bar=False)
+        self._log_metric(stage, "chamfer_before_rot", chamfer_before, prog_bar=False)
         # self._log_metric(stage, "pd", loss_pd, prog_bar=False)
         # self._log_metric(stage, "rot", loss_rot)
-        self._log_metric(stage, "recon", loss_recon)
         self._log_metric(stage, "emd", loss_recon)
+        self._log_metric(stage, "emd_before_rot", emd_before, prog_bar=False)
         self._log_metric(stage, "ortho", ortho_loss)
 
         # Optional supervised diagnostics when synthetic labels are available
@@ -237,31 +245,12 @@ class ShapePoseDisentanglement(pl.LightningModule):
             return batch, {}
         pc = batch[0]
         labels = {}
-        if len(batch) > 1 and batch[1] is not None:
-            labels["phase"] = batch[1]
-        if len(batch) > 2 and batch[2] is not None:
-            labels["grain"] = batch[2]
-        if len(batch) > 3 and batch[3] is not None:
-            labels["orientation"] = batch[3]
-        if len(batch) > 4 and batch[4] is not None:
-            labels["quaternion"] = batch[4]
-        if len(batch) > 5 and batch[5] is not None:
-            labels["meta"] = batch[5]
+        labels["phase"] = batch[1]
+        labels["grain"] = batch[2]
+        labels["orientation"] = batch[3]
+        labels["quaternion"] = batch[4]
+        labels["meta"] = batch[5]
         return pc, labels
-
-    def _eq_to_decoder_latent(self, eq_z: torch.Tensor) -> torch.Tensor:
-        """Pool per-point equivariant features to match decoder latent expectations."""
-        pooled = eq_z.mean(dim=-1)  # (B, C, 3)
-        return pooled.reshape(pooled.size(0), -1)
-
-    def _decode(self, latent: torch.Tensor) -> torch.Tensor:
-        """Decode latent code and ensure (B, N, 3) layout."""
-        cano = self.decoder(latent)
-        if cano.ndim != 3:
-            raise ValueError(f"Decoder output must be 3D tensor (got {cano.shape})")
-        if cano.shape[1] == 3 and cano.shape[2] != 3:
-            cano = cano.permute(0, 2, 1)
-        return cano.contiguous()
 
     @staticmethod
     def _apply_rotation(points: torch.Tensor, rot: torch.Tensor) -> torch.Tensor:

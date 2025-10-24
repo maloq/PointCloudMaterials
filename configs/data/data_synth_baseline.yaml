@@ -16,4 +16,3 @@ synthetic:
   train_split: train
   val_split: val
   return_orientation: true
-  return_meta: false

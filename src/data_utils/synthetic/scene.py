@@ -344,12 +344,10 @@ class SyntheticPointCloudDataset(Dataset):
         scene: Scene,
         *,
         return_orientation: bool = True,
-        return_meta: bool = False,
         device: torch.device | None = None,
     ) -> None:
         self.scene = scene
         self.return_orientation = return_orientation
-        self.return_meta = return_meta
         self.device = device
         # Expose environment centers so downstream loaders (e.g. neighbor pairs)
         # can build spatial graphs without iterating the dataset item-by-item.
@@ -369,8 +367,5 @@ class SyntheticPointCloudDataset(Dataset):
             orient = torch.as_tensor(self.scene.orientations[idx], dtype=torch.float32, device=self.device)
             quat = torch.as_tensor(self.scene.quaternions[idx], dtype=torch.float32, device=self.device)
             batch.extend([orient, quat])
-        if self.return_meta:
-            meta = {k: torch.as_tensor(v[idx], dtype=torch.float32, device=self.device) for k, v in self.scene.meta.items()}
-            meta["center"] = center
-            batch.append(meta)
+
         return tuple(batch)

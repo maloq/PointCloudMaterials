@@ -108,24 +108,6 @@ class PointCloudDataset(Dataset):
             return point_set_tensor, self.coords[index]
         else:
             return point_set_tensor
-    
-
-class PointCloudClsDataset(PointCloudDataset):
-    def __init__(self, *args, label=0, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label = label
-
-    def __getitem__(self, index):
-        item = super().__getitem__(index)
-        label_tensor = torch.tensor(self.label, dtype=torch.long)
-        
-        if self.return_coords:
-            point_set_tensor, coords = item
-            coords = torch.tensor(coords, dtype=torch.float32)
-            return point_set_tensor, coords, label_tensor
-        else:
-            point_set_tensor = item
-            return point_set_tensor, label_tensor
 
 
 

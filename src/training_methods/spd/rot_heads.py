@@ -118,13 +118,12 @@ class Rot6DHead(_BaseRotHead):
     def forward(self, eq_full: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            eq_full: (B, C, 3, N) per-point equivariant features
+            eq_full: (B, C, 3) equivariant features
         Returns:
             R: (B, 3, 3)
         """
-        B, C, _, _ = eq_full.shape
-        pooled = self._pool_equivariant(eq_full)
-        h = pooled.reshape(B, C * 3)
+        B, C, _ = eq_full.shape
+        h = eq_full.reshape(B, C * 3)
         sixd = self.mlp(h)
         R = sixd_to_so3(sixd)
         return R
@@ -155,13 +154,12 @@ class RotMatrixHead(_BaseRotHead):
     def forward(self, eq_full: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            eq_full: (B, C, 3, N)
+            eq_full: (B, C, 3)
         Returns:
             R: (B, 3, 3)
         """
-        B, C, _, _ = eq_full.shape
-        pooled = self._pool_equivariant(eq_full)
-        h = pooled.reshape(B, C * 3)
+        B, C, _ = eq_full.shape
+        h = eq_full.reshape(B, C * 3)
         mat = self.mlp(h).view(B, 3, 3)
         if self.orthogonalize:
             mat = _orthogonalize(mat)
@@ -189,9 +187,9 @@ def build_rot_head(cfg: Any, in_features: int) -> nn.Module:
     kwargs: Dict[str, Any] = rot_net_cfg.get("kwargs", {}) if hasattr(rot_net_cfg, "get") else getattr(rot_net_cfg, "kwargs", {})
 
     name = name.lower()
-    if name == "rot6dhead" or name == "sixd_head" or name == "rot6d":
+    if name == "rot6dhead" or name == "sixd_head":
         return Rot6DHead(in_features=in_features, **kwargs)
-    if name == "rotmatrixhead" or name == "matrix_head" or name == "rotmat":
+    if name == "rotmatrixhead" or name == "matrix_head":
         return RotMatrixHead(in_features=in_features, **kwargs)
 
     raise ValueError(f"Unknown rotation head '{rot_net_cfg.get('name', name)}'")
