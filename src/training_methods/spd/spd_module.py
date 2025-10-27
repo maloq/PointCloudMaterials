@@ -251,7 +251,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
         labels["grain"] = batch[2]
         labels["orientation"] = batch[3]
         labels["quaternion"] = batch[4]
-        labels["meta"] = batch[5]
         return pc, labels
 
     @staticmethod

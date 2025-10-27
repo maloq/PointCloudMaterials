@@ -1,18 +1,111 @@
-# Synthetic baseline scene used for SPD training.
-kind: synthetic
-num_points: 64
-radius: 1.0  # placeholder; synthetic scenes set their own scale
-sample_type: synthetic
-overlap_fraction: 0.0
-n_samples: 0
-data_path: ""
-data_files: []
-synthetic:
-  preset: baseline
-  num_environments: 128000
-  seed: 42
-  cache_path: output/synthetic/baseline_scene.npz
-  regenerate: false
-  train_split: train
-  val_split: val
-  return_orientation: true
+global:
+  N_total_target: 120000                # Total atoms to seed before perturbations
+  rho_target: 0.25                     # Target number density (atoms per unit volume)
+  avg_nn_dist: 1.0                     # Desired nearest-neighbor distance used for scaling lattices
+  grain_count: 8                       # Number of Voronoi grains to sample inside the simulation box
+  intermediate_layer_thickness_factor: 0.75  # Interface thickness multiplier in units of avg_nn_dist
+  random_seed: 42                      # Global RNG seed for reproducible generation
+  output_dir: output/synthetic_data/baseline_box  # Directory where outputs will be written
+
+phases:
+  crystal_fcc:
+    phase_type: crystal_fcc            # Canonical phase identifier (FCC lattice)
+    structural_params: {}              # FCC uses derived lattice constant so no extra parameters
+    perturbations:
+      sigma_thermal: 0.02              # Std-dev of Gaussian thermal jitter applied to atoms (units of distance)
+      p_dropout: 0.01                  # Probability of deleting an atom to create a vacancy
+      dropout_relax_radius: 1.5        # Radius around a vacancy where surrounding atoms relax inward
+      dropout_relax_max_fraction: 0.35 # Max fraction of distance an atom can move toward a vacancy core
+      rot_bubble_prob: 0.3             # Probability a grain of this phase receives a rotation bubble
+      rot_bubble_radius: 2.5           # Radius of the rotation bubble region
+      rot_bubble_angle_deg: 5.0        # Mean small-angle rotation applied within rotation bubbles
+      density_bubbles:
+        - expected_count: 1.0          # Expected Poisson count of rarefaction bubbles in this phase
+          radius: 2.0                  # Radius of the rarefaction bubble
+          alpha: -0.4                  # Negative alpha removes atoms (rarefies local density)
+        - expected_count: 0.5          # Expected Poisson count of densification bubbles
+          radius: 1.5                  # Radius of densification bubble
+          alpha: 0.6                   # Positive alpha clones atoms (densifies local region)
+
+  crystal_bcc:
+    phase_type: crystal_bcc            # Canonical phase identifier (BCC lattice)
+    structural_params: {}              # BCC uses derived lattice constant so no extra parameters
+    perturbations:
+      sigma_thermal: 0.025             # Gaussian thermal jitter for BCC grains
+      p_dropout: 0.015                 # Vacancy probability for BCC atoms
+      dropout_relax_radius: 1.6        # Relaxation influence radius for BCC vacancies
+      dropout_relax_max_fraction: 0.3  # Maximum relaxation fraction for neighboring atoms
+      rot_bubble_prob: 0.35            # Probability of inserting rotation bubbles in BCC grains
+      rot_bubble_radius: 2.0           # Radius of BCC rotation bubbles
+      rot_bubble_angle_deg: 6.0        # Mean misorientation angle (degrees) for rotation bubbles
+      density_bubbles:
+        - expected_count: 0.7          # Expected rarefaction bubbles in BCC regions
+          radius: 1.8                  # Bubble radius for density modulation
+          alpha: -0.35                 # Negative alpha removes atoms (rarefaction)
+
+  amorphous_repeat:
+    phase_type: amorphous_repeat       # Repeating amorphous pseudo-cell phase
+    structural_params:
+      cell_size: 2.4                   # Edge length of the repeating pseudo-cell
+      motif_point_count: 18            # Number of atoms to place within the pseudo-cell motif
+      min_pair_dist: 0.8               # Minimum allowed spacing when generating the motif
+    perturbations:
+      sigma_thermal: 0.035             # Thermal jitter applied to amorphous_repeat atoms
+      p_dropout: 0.02                  # Vacancy probability for repeat amorphous phase
+      dropout_relax_radius: 1.4        # Relaxation radius for vacancies in this phase
+      dropout_relax_max_fraction: 0.25 # Max relaxation fraction toward vacancy positions
+      rot_bubble_prob: 0.2             # Probability of rotation bubbles in this phase
+      rot_bubble_radius: 2.2           # Radius of rotation bubbles for amorphous_repeat
+      rot_bubble_angle_deg: 4.0        # Mean misorientation angle (degrees) for rotation bubbles
+      density_bubbles:
+        - expected_count: 1.0          # Expected densification bubbles per grain
+          radius: 2.5                  # Radius of densification bubble
+          alpha: 0.5                   # Positive alpha clones atoms to increase density
+
+  amorphous_random:
+    phase_type: amorphous_random       # Non-repeating amorphous phase filled via packing
+    structural_params:
+      min_pair_dist: 0.85              # Minimum separation for random packing
+    perturbations:
+      sigma_thermal: 0.04              # Thermal jitter for amorphous random grains
+      p_dropout: 0.03                  # Vacancy probability for random amorphous atoms
+      dropout_relax_radius: 1.2        # Relaxation influence radius around removed atoms
+      dropout_relax_max_fraction: 0.2  # Maximum relaxation fraction toward vacancy
+      rot_bubble_prob: 0.25            # Probability of rotation bubbles in random amorphous grains
+      rot_bubble_radius: 1.8           # Radius of rotation bubbles
+      rot_bubble_angle_deg: 3.5        # Mean misorientation angle (degrees) applied in bubbles
+      density_bubbles:
+        - expected_count: 0.8          # Expected rarefaction bubbles count
+          radius: 2.0                  # Radius of rarefaction bubble
+          alpha: -0.45                 # Negative alpha removes atoms to lower density
+
+  amorphous_mixed:
+    phase_type: amorphous_mixed        # Amorphous random phase with embedded crystal seeds
+    structural_params:
+      min_pair_dist: 0.8               # Minimum separation for background amorphous packing
+      embedded_crystal: crystal_fcc    # Crystal template to embed as nano-seeds
+      embedded_probability: 0.4        # Probability of embedding a crystalline seed per grain
+      embedded_radius: 2.2             # Radius of spherical crystal inclusions
+    perturbations:
+      sigma_thermal: 0.03              # Thermal jitter for amorphous_mixed atoms
+      p_dropout: 0.02                  # Vacancy probability for this phase
+      dropout_relax_radius: 1.5        # Relaxation radius for vacancies
+      dropout_relax_max_fraction: 0.3  # Maximum relaxation fraction toward vacancy centers
+      rot_bubble_prob: 0.25            # Probability of rotation bubbles affecting this phase
+      rot_bubble_radius: 2.0           # Radius of rotation bubbles
+      rot_bubble_angle_deg: 5.0        # Mean misorientation angle (degrees)
+      density_bubbles:
+        - expected_count: 1.2          # Expected densification bubbles count
+          radius: 2.3                  # Radius of densification bubble
+          alpha: 0.5                   # Positive alpha clones atoms to increase density
+
+grain_assignment:
+  explicit:
+    - crystal_fcc                      # Grain 0 phase assignment
+    - crystal_bcc                      # Grain 1 phase assignment
+    - amorphous_repeat                 # Grain 2 phase assignment
+    - amorphous_random                 # Grain 3 phase assignment
+    - crystal_fcc                      # Grain 4 phase assignment
+    - amorphous_mixed                  # Grain 5 phase assignment
+    - crystal_bcc                      # Grain 6 phase assignment
+    - amorphous_repeat                 # Grain 7 phase assignment

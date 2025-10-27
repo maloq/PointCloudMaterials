@@ -10,23 +10,6 @@ from typing import Any, Dict
 
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
-from src.data_utils.synthetic import (
-    BASELINE_PRESET,
-    SyntheticPointCloudDataset,
-    export_scene,
-    generate_scene,
-    load_scene,
-    make_splits,
-    imbalanced_phase_preset,
-    voronoi_anisotropic_preset,
-)
-from src.data_utils.synthetic.config import (
-    DatasetConfig,
-    EnvCenterSamplerSpec,
-    GrainRadiusDistSpec,
-    NoiseSpec,
-    SplitSpec,
-)
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
 
@@ -106,138 +89,11 @@ class RealPointCloudDataModule(pl.LightningDataModule):
         )
 
 
-class SyntheticPointCloudDataModule(pl.LightningDataModule):
-    def __init__(self, cfg):
-        super().__init__()
-        self.cfg = cfg
-        self.batch_size = cfg.batch_size
-        self.num_workers = cfg.num_workers
-        self.max_samples = cfg.max_samples
-
-    def setup(self, stage=None):
-        start_time = time.time()
-        self.train_dataset, self.val_dataset = self._setup_synthetic_dataset()
-
-        if self.max_samples > 0:
-            max_train = min(self.max_samples, len(self.train_dataset))
-            max_val = min(self.max_samples, len(self.val_dataset))
-            self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
-            self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
-
-        elapsed_time = time.time() - start_time
-        logger.print(f"Train dataset size: {len(self.train_dataset)}")
-        logger.print(f"Val dataset size: {len(self.val_dataset)}")
-        logger.print(f"Dataloader took {elapsed_time:.4f} seconds")
-
-    def _setup_synthetic_dataset(self):
-        data_cfg = self.cfg.data
-        synth_cfg = getattr(data_cfg, "synthetic", None)
-        if synth_cfg is None:
-            raise ValueError("Synthetic dataset requested but `data.synthetic` config is missing")
-
-        spec = _to_container(synth_cfg)
-        if not isinstance(spec, dict):
-            raise ValueError("`data.synthetic` must be a mapping")
-
-        dataset_cfg = _resolve_synthetic_dataset_config(spec)
-        dataset_cfg = deepcopy(dataset_cfg)
-
-        dataset_cfg.M = int(getattr(data_cfg, "num_points", dataset_cfg.M))
-
-        seed_override = spec.get("seed")
-        if seed_override is not None:
-            dataset_cfg.seed = int(seed_override)
-
-        dataset_cfg.validate()
-
-        num_env = int(spec.get("num_environments", 0))
-        if num_env <= 0:
-            raise ValueError("`data.synthetic.num_environments` must be > 0")
-
-        cache_path = spec.get("cache_path")
-        regenerate = bool(spec.get("regenerate", False))
-        scene = None
-        if cache_path:
-            cache_path = Path(cache_path)
-            if cache_path.exists() and not regenerate:
-                logger.print(f"Loading synthetic scene from {cache_path}")
-                scene = load_scene(cache_path)
-            else:
-                if regenerate and cache_path.exists():
-                    logger.print(f"Regenerating synthetic scene at {cache_path}")
-                cache_path.parent.mkdir(parents=True, exist_ok=True)
-
-        if scene is None:
-            logger.print(f"Generating synthetic scene with {num_env} environments")
-            scene = generate_scene(dataset_cfg, num_env)
-            if cache_path:
-                export_scene(scene, cache_path)
-        else:
-            if scene.points.shape[0] < num_env:
-                logger.print(
-                    f"Loaded scene has {scene.points.shape[0]} environments (< requested {num_env}); proceeding with available data"
-                )
-
-        scene_cfg = deepcopy(scene.config)
-        points_per_env = scene.points.shape[1]
-        expected_points = int(getattr(data_cfg, "num_points", points_per_env))
-        if points_per_env != expected_points:
-            raise ValueError(
-                "Synthetic scene point count does not match `data.num_points` ("
-                f"scene has {points_per_env}, config requests {expected_points})."
-            )
-        scene_cfg.M = points_per_env
-
-        splits = make_splits(scene, scene_cfg)
-        train_split = spec.get("train_split", "train")
-        val_split = spec.get("val_split", "val")
-
-        if train_split not in splits:
-            raise ValueError(f"Synthetic scene splits do not contain '{train_split}'")
-        if val_split not in splits:
-            raise ValueError(f"Synthetic scene splits do not contain '{val_split}'")
-
-        dataset_kwargs = {
-            "return_orientation": bool(spec.get("return_orientation", True)),
-        }
-        device_str = spec.get("device")
-        if device_str:
-            dataset_kwargs["device"] = torch.device(device_str)
-
-        train_dataset = SyntheticPointCloudDataset(splits[train_split], **dataset_kwargs)
-        val_dataset = SyntheticPointCloudDataset(splits[val_split], **dataset_kwargs)
-        return train_dataset, val_dataset
-
-    def train_dataloader(self):
-        print(f"Using {self.num_workers} workers for train dataloader")
-        main = DataLoader(
-            self.train_dataset,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            shuffle=True,
-            drop_last=True,
-            pin_memory=True,
-            persistent_workers=True,
-        )
-        return main
-
-    def val_dataloader(self):
-        print(f"Using {self.num_workers} workers for val dataloader")
-        return DataLoader(
-            self.val_dataset,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=True,
-            persistent_workers=True,
-        )
-
-
-
 class PointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
         self.cfg = cfg
-        kind = getattr(cfg.data, "kind", "off")
+        kind = getattr(cfg.data, "kind", "real")
         if kind == "synthetic":
             self.impl = SyntheticPointCloudDataModule(cfg)
         else:
