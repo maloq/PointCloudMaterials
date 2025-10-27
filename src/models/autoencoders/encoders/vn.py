@@ -34,7 +34,7 @@ class VNLeakyReLU(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         d = self.map_to_dir(x.transpose(1, -1)).transpose(1, -1)
         dotprod = (x * d).sum(2, keepdim=True)
-        mask = (dotprod >= 0).float()
+        mask = (dotprod >= 0).to(dtype=x.dtype)
         d_norm_sq = (d * d).sum(2, keepdim=True)
         return self.negative_slope * x + (1 - self.negative_slope) * (
             mask * x + (1 - mask) * (x - (dotprod / (d_norm_sq + EPS)) * d)
@@ -86,7 +86,7 @@ class VNLinearLeakyReLU(nn.Module):
             p = self.batchnorm(p)
         d = self.map_to_dir(x.transpose(1, -1)).transpose(1, -1)
         dotprod = (p * d).sum(2, keepdim=True)
-        mask = (dotprod >= 0).float()
+        mask = (dotprod >= 0).to(dtype=p.dtype)
         d_norm_sq = (d * d).sum(2, keepdim=True)
         return self.negative_slope * p + (1 - self.negative_slope) * (
             mask * p + (1 - mask) * (p - (dotprod / (d_norm_sq + EPS)) * d)

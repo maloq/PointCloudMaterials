@@ -7,7 +7,7 @@ import torch
 from torchsummary import summary
 import hydra
 from omegaconf import DictConfig
-from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
+from src.training_methods.spd.spd_module import ShapePoseDisentanglement
 import numpy as np
 
 
@@ -17,11 +17,11 @@ def get_rundir_name() -> str:
     
 
 def summarize_autoencoder(cfg: DictConfig) -> None: 
-    """Generate a summary of the AutoencoderSeq2Seq model"""
+    """Generate a summary of the ShapePoseDisentanglement model"""
     run_dir = get_rundir_name()  
     
     # Create model instance
-    model = PointNetAutoencoder(cfg)
+    model = ShapePoseDisentanglement(cfg)
     
     # Determine input shape based on config
     # Assuming input is point cloud with shape [num_points, point_dims]
@@ -30,7 +30,7 @@ def summarize_autoencoder(cfg: DictConfig) -> None:
     
     # Print model architecture summary
     print(f"\n{'='*50}")
-    print(f"AutoencoderSeq2Seq Model Summary")
+    print(f" Model Summary")
     print(f"{'='*50}")
     
     # Display model summary

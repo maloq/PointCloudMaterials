@@ -21,9 +21,9 @@ def resolve_config_path(checkpoint_path: str) -> Tuple[str, str]:
 
 def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
     """
-    Load a PointNetAutoencoder model from a checkpoint.
+    Load a ShapePoseDisentanglement model from a checkpoint.
     
-    This function handles the proper loading of a PointNetAutoencoder model from a checkpoint.
+    This function handles the proper loading of a ShapePoseDisentanglement model from a checkpoint.
     It creates a new model instance, and then loads the state dictionary from the checkpoint.
     
     Args:
@@ -31,11 +31,11 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
         device (str): Device to load the model on ('cpu' or 'cuda')
         
     Returns:
-        PointNetAutoencoder: The loaded model
+        ShapePoseDisentanglement: The loaded model
     """
     
     if module is None:
-        from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder as module
+        from src.training_methods.spd.spd_module import ShapePoseDisentanglement as module
     model = None
     try:
         model = module(cfg)

@@ -82,6 +82,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
     def _step(self, batch, batch_idx, stage: str):
         pc, labels = self._unpack_batch(batch)
+        pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
         inv_z, recon, cano, rot = self(pc)
 
         if stage in self._supervised_cache:
@@ -113,6 +114,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         # Total loss
         loss = loss_recon + self.ortho_scale * ortho_loss 
+        loss = loss.to(self.dtype)
         if False:
             loss += float(self.pdist_loss_scale) * loss_pd
             self._log_metric(stage, "pdist_scaled", float(self.pdist_loss_scale) * loss_pd, prog_bar=False)

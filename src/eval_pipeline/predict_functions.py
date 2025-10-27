@@ -13,10 +13,6 @@ import sys,os
 from omegaconf import OmegaConf
 from tqdm import tqdm
 sys.path.append(os.getcwd())
-from src.training_methods.autoencoder.eval_autoencoder import (
-    create_autoencoder_dataloader,
-    load_autoencoder_model,
-)
 from src.training_methods.spd.eval_spd import load_spd_model, create_spd_dataloader
 from datetime import datetime
 import warnings
@@ -47,10 +43,7 @@ class ModelType(str, Enum):
 
 
 BACKENDS: Mapping[ModelType, Backend] = {
-    ModelType.AUTOENCODER: Backend(
-        load_model_and_cfg=load_autoencoder_model,
-        create_dataloader=create_autoencoder_dataloader,
-    ),
+
     ModelType.SPD: Backend(
         load_model_and_cfg=load_spd_model,
         create_dataloader=create_spd_dataloader,
@@ -69,7 +62,6 @@ def _get_latents_from_dataloader(
     """Return *(latents, reconstructions, originals)* for every batch in *dataloader*."""
 
     from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-    from src.training_methods.autoencoder.autoencoder_module import PointNetAutoencoder
 
     lats, recs, origs, coords = [], [], [], []
     for batch in tqdm(dataloader, desc="Extracting latents"):
@@ -83,11 +75,6 @@ def _get_latents_from_dataloader(
         if isinstance(model, ShapePoseDisentanglement):
             inv_z, recon, _, _ = model(points)
             latent = inv_z
-        elif isinstance(model, PointNetAutoencoder):
-            recon, latent, _ = model(points.transpose(2, 1))  # AE expects (B, 3, N)
-        else:  # Fallback – best‑effort guess
-            out = model(points)
-            latent, recon = out[:2] if isinstance(out, (tuple, list)) else (out, points)
 
         coords.append(coords_batch.detach().cpu().numpy())
         lats.append(latent.detach().cpu().numpy())
