@@ -15,6 +15,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
+import itertools
+
 import numpy as np
 import yaml
 
@@ -56,7 +58,7 @@ class GrainAssignmentConfig:
 
 @dataclass
 class GlobalConfig:
-    N_total_target: int
+    L: float
     rho_target: float
     avg_nn_dist: float
     grain_count: int
@@ -64,7 +66,6 @@ class GlobalConfig:
     random_seed: int
     data_path: pathlib.Path
     additional: Dict[str, Any] = field(default_factory=dict)
-    L: float = 0.0
     t_layer: float = 0.0
 
 
@@ -82,9 +83,11 @@ def load_config(path: str | pathlib.Path) -> Tuple[GlobalConfig, Dict[str, Phase
         raw_cfg = yaml.safe_load(handle)
 
     global_raw = raw_cfg.get("global", {})
+    if "L" not in global_raw:
+        raise ValueError("Global configuration must specify box side length 'L'")
     data_path = pathlib.Path(global_raw.get("output_dir", "output/synthetic_data"))
     global_cfg = GlobalConfig(
-        N_total_target=int(global_raw["N_total_target"]),
+        L=float(global_raw["L"]),
         rho_target=float(global_raw["rho_target"]),
         avg_nn_dist=float(global_raw["avg_nn_dist"]),
         grain_count=int(global_raw["grain_count"]),
@@ -92,7 +95,7 @@ def load_config(path: str | pathlib.Path) -> Tuple[GlobalConfig, Dict[str, Phase
         random_seed=int(global_raw.get("random_seed", 0)),
         data_path=data_path,
         additional={k: v for k, v in global_raw.items() if k not in {
-            "N_total_target",
+            "L",
             "rho_target",
             "avg_nn_dist",
             "grain_count",
@@ -102,7 +105,6 @@ def load_config(path: str | pathlib.Path) -> Tuple[GlobalConfig, Dict[str, Phase
         }},
     )
 
-    global_cfg.L = float((global_cfg.N_total_target / global_cfg.rho_target) ** (1.0 / 3.0))
     global_cfg.t_layer = global_cfg.intermediate_layer_thickness_factor * global_cfg.avg_nn_dist
 
     phases_section = raw_cfg.get("phases", {})
@@ -265,6 +267,9 @@ class SyntheticAtomisticDatasetGenerator:
         self.reference_structures: Dict[str, Dict[str, Any]] = {}
         self.grains: List[Dict[str, Any]] = []
         self.intermediate_regions: Dict[Tuple[int, int], Dict[str, Any]] = {}
+        self.interface_candidates: Dict[Tuple[int, int], Dict[str, Any]] = {}
+        self.grain_neighbors: Dict[int, set[int]] = {}
+        self._grain_pure_pre_indices: Dict[int, List[int]] = {}
         self.atoms: List[Dict[str, Any]] = []
         self.metadata: Dict[str, Any] = {}
         self._next_pre_index: int = 0
@@ -376,25 +381,15 @@ class SyntheticAtomisticDatasetGenerator:
         self.grains = []
         for idx, (seed, phase_id) in enumerate(zip(seeds, phases)):
             rotation = random_rotation_matrix(self.rng)
-            nearest_neighbor_dist = self._estimate_neighbor_distance(idx, seeds)
             grain = {
                 "grain_id": idx,
                 "seed_position": seed,
                 "base_phase_id": phase_id,
                 "base_rotation": rotation,
-                "bounding_radius": nearest_neighbor_dist / 2.0,
             }
             self.grains.append(grain)
         self.seed_positions = seeds
         self._progress(f"Sampled {len(self.grains)} grains")
-
-    def _estimate_neighbor_distance(self, idx: int, seeds: np.ndarray) -> float:
-        diffs = seeds - seeds[idx]
-        dists = np.linalg.norm(diffs, axis=1)
-        dists[idx] = np.inf
-        nearest = np.min(dists)
-        second = np.partition(dists, 1)[1]
-        return float(max(nearest, second))
 
     def _assign_grain_phases(self) -> List[str]:
         if self.grain_assignment_cfg.mode == "explicit":
@@ -423,132 +418,206 @@ class SyntheticAtomisticDatasetGenerator:
         self._progress("Populating atoms for all grains")
         self.atoms = []
         self.intermediate_regions = {}
+        self.interface_candidates: Dict[Tuple[int, int], Dict[str, Any]] = {}
+        self.grain_neighbors = {grain["grain_id"]: set() for grain in self.grains}
+        self._grain_pure_pre_indices = {grain["grain_id"]: [] for grain in self.grains}
         self._next_pre_index = 0
-        total_target = self.global_cfg.N_total_target
-        per_grain_targets = self._compute_per_grain_targets(total_target)
-        for grain, n_target in zip(self.grains, per_grain_targets):
-            phase_recipe = self.reference_structures[grain["base_phase_id"]]
+        for grain in self.grains:
+            phase_id = grain["base_phase_id"]
+            phase_recipe = self.reference_structures[phase_id]
+            full_cloud = self._generate_full_box_cloud(grain, phase_recipe)
             self._progress(
-                f" - Grain {grain['grain_id']} ({grain['base_phase_id']}), target {n_target} atoms",
+                f" - Grain {grain['grain_id']} ({phase_id}), full-box candidate atoms {len(full_cloud)}",
             )
-            new_atoms = self._populate_grain_atoms(grain, phase_recipe, n_target)
-            self.atoms.extend(new_atoms)
-            self._progress(f"   Added {len(new_atoms)} atoms (total so far {len(self.atoms)})")
+            self._classify_and_register_grain_atoms(grain, full_cloud)
+        interface_created = self._generate_interface_atoms()
+        if interface_created:
+            self._progress(f"   Added {interface_created} blended interface atoms")
         self._progress(f"Finished populating {len(self.atoms)} pre-perturbation atoms")
 
-    def _compute_per_grain_targets(self, total_target: int) -> List[int]:
-        base = total_target // len(self.grains)
-        remainder = total_target % len(self.grains)
-        targets = [base] * len(self.grains)
-        for idx in range(remainder):
-            targets[idx] += 1
-        return targets
-
-    def _populate_grain_atoms(
-        self,
-        grain: Dict[str, Any],
-        phase_recipe: Dict[str, Any],
-        target_count: int,
-    ) -> List[Dict[str, Any]]:
+    def _generate_full_box_cloud(self, grain: Dict[str, Any], phase_recipe: Dict[str, Any]) -> np.ndarray:
         phase_type = phase_recipe["phase_type"]
         if phase_type.startswith("crystal_") or phase_type == "amorphous_repeat":
-            candidates = self._tile_structured_phase(grain, phase_recipe)
-        elif phase_type == "amorphous_random":
-            candidates = self._sample_amorphous_random(grain, phase_recipe, target_count)
-        elif phase_type == "amorphous_mixed":
-            candidates = self._sample_amorphous_mixed(grain, phase_recipe, target_count)
-        else:
-            raise ValueError(f"Unsupported phase type: {phase_type}")
+            return self._generate_structured_phase_cloud(grain, phase_recipe)
+        if phase_type == "amorphous_random":
+            return self._generate_amorphous_random_cloud(grain, phase_recipe)
+        if phase_type == "amorphous_mixed":
+            return self._generate_amorphous_mixed_cloud(grain, phase_recipe)
+        raise ValueError(f"Unsupported phase type: {phase_type}")
 
-        # Shuffle to avoid spatial bias when trimming down to target count.
-        self.rng.shuffle(candidates)
-        if target_count and len(candidates) > target_count:
-            candidates = candidates[:target_count]
-        return candidates
+    def _classify_and_register_grain_atoms(self, grain: Dict[str, Any], positions: np.ndarray) -> None:
+        grain_id = grain["grain_id"]
+        phase_id = grain["base_phase_id"]
+        orientation = grain["base_rotation"]
+        if positions.size == 0:
+            return
+        for pos in positions:
+            classification = self._classify_position_for_grain(pos, grain_id)
+            kind = classification.get("kind")
+            if kind == "pure":
+                atom_record = self._make_atom_record(
+                    position=pos,
+                    phase_id=phase_id,
+                    grain_id=grain_id,
+                    orientation=orientation,
+                )
+                self.atoms.append(atom_record)
+                self._grain_pure_pre_indices[grain_id].append(atom_record["pre_index"])
+            elif kind == "interface":
+                pair = classification["pair"]
+                entry = self.interface_candidates.setdefault(pair, self._init_interface_candidate(pair))
+                entry["positions"][grain_id].append({
+                    "position": pos,
+                    "dist_owner": classification["dist_owner"],
+                    "dist_neighbor": classification["dist_neighbor"],
+                    "projection": classification["projection"],
+                })
+                neighbor_id = classification["neighbor"]
+                self.grain_neighbors[grain_id].add(neighbor_id)
 
-    def _tile_structured_phase(
-        self,
-        grain: Dict[str, Any],
-        phase_recipe: Dict[str, Any],
-    ) -> List[Dict[str, Any]]:
+    def _init_interface_candidate(self, pair: Tuple[int, int]) -> Dict[str, Any]:
+        seeds = self.seed_positions
+        if seeds is None:
+            raise RuntimeError("Grain seeds have not been initialised.")
+        g0, g1 = pair
+        return {
+            "grain_pair": pair,
+            "phase_ids": (
+                self.grains[g0]["base_phase_id"],
+                self.grains[g1]["base_phase_id"],
+            ),
+            "positions": {
+                g0: [],
+                g1: [],
+            },
+            "seeds": (
+                np.array(self.grains[g0]["seed_position"], dtype=float),
+                np.array(self.grains[g1]["seed_position"], dtype=float),
+            ),
+        }
+
+    def _classify_position_for_grain(self, position: np.ndarray, grain_id: int) -> Dict[str, Any]:
+        if self.seed_positions is None:
+            raise RuntimeError("Grain seeds have not been initialised.")
+        dists = np.linalg.norm(self.seed_positions - position, axis=1)
+        order = np.argsort(dists)
+        nearest = int(order[0])
+        if nearest != grain_id:
+            return {"kind": "other"}
+        if len(order) == 1:
+            return {"kind": "pure"}
+        second = int(order[1])
+        dist_nearest = float(dists[nearest])
+        dist_second = float(dists[second])
+        neighbor_phase = self.grains[second]["base_phase_id"]
+        owner_phase = self.grains[grain_id]["base_phase_id"]
+        if neighbor_phase == owner_phase or self.global_cfg.t_layer <= 0.0:
+            return {
+                "kind": "pure",
+            }
+        diff = abs(dist_second - dist_nearest)
+        if diff > self.global_cfg.t_layer:
+            return {
+                "kind": "pure",
+            }
+        pair = tuple(sorted((grain_id, second)))
+        seeds = self.seed_positions
+        center = 0.5 * (seeds[pair[0]] + seeds[pair[1]])
+        direction = seeds[pair[1]] - seeds[pair[0]]
+        norm = np.linalg.norm(direction)
+        projection = 0.0 if norm == 0.0 else float(np.dot(position - center, direction / norm))
+        return {
+            "kind": "interface",
+            "pair": pair,
+            "neighbor": second,
+            "dist_owner": dist_nearest,
+            "dist_neighbor": dist_second,
+            "projection": projection,
+        }
+
+    def _compute_local_bounds(self, rotation: np.ndarray, seed_position: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        L = self.global_cfg.L
+        corners = np.array(list(itertools.product([0.0, L], repeat=3)), dtype=float)
+        relative = corners - seed_position
+        local = (rotation.T @ relative.T).T
+        return local.min(axis=0), local.max(axis=0)
+
+    def _generate_structured_phase_cloud(self, grain: Dict[str, Any], phase_recipe: Dict[str, Any]) -> np.ndarray:
         if phase_recipe["phase_type"] == "amorphous_repeat":
-            cell_vectors = np.array(phase_recipe.get("tile_vectors"))
-            motif = np.array(phase_recipe.get("motif"))
+            cell_vectors = np.asarray(phase_recipe.get("tile_vectors"), dtype=float)
+            motif = np.asarray(phase_recipe.get("motif"), dtype=float)
             motif_fractional = False
         else:
-            cell_vectors = np.array(phase_recipe.get("lattice_vectors"))
-            motif = np.array(phase_recipe.get("motif"))
+            cell_vectors = np.asarray(phase_recipe.get("lattice_vectors"), dtype=float)
+            motif = np.asarray(phase_recipe.get("motif"), dtype=float)
             motif_fractional = True
-        basis_norms = np.linalg.norm(cell_vectors, axis=1)
-        step = max(1e-6, basis_norms.min())
-        radius = grain["bounding_radius"] + basis_norms.max()
-        n_max = int(math.ceil(radius / step)) + 1
-        atoms: List[Dict[str, Any]] = []
+
+        motif_offsets = motif @ cell_vectors if motif_fractional else motif
         rotation = grain["base_rotation"]
         seed_pos = grain["seed_position"]
-        for i in range(-n_max, n_max + 1):
-            for j in range(-n_max, n_max + 1):
-                for k in range(-n_max, n_max + 1):
-                    lattice_origin = i * cell_vectors[0] + j * cell_vectors[1] + k * cell_vectors[2]
-                    for motif_pos in motif:
-                        if motif_fractional:
-                            motif_offset = motif_pos @ cell_vectors
-                        else:
-                            motif_offset = motif_pos
+        local_min, local_max = self._compute_local_bounds(rotation, seed_pos)
+        cell_norms = np.linalg.norm(cell_vectors, axis=1)
+        pad = float(np.max(cell_norms)) if cell_norms.size else self.global_cfg.avg_nn_dist
+        local_min = local_min - pad
+        local_max = local_max + pad
+
+        if motif_offsets.size == 0:
+            return np.zeros((0, 3), dtype=float)
+        motif_min = motif_offsets.min(axis=0)
+        motif_max = motif_offsets.max(axis=0)
+
+        ranges: List[range] = []
+        for axis in range(3):
+            axis_vec = cell_vectors[axis]
+            axis_norm = np.linalg.norm(axis_vec)
+            if axis_norm <= 1e-8:
+                ranges.append(range(0, 1))
+                continue
+            i_min = math.floor((local_min[axis] - motif_max[axis]) / axis_norm) - 1
+            i_max = math.ceil((local_max[axis] - motif_min[axis]) / axis_norm) + 1
+            if i_min > i_max:
+                i_min, i_max = i_max, i_min
+            ranges.append(range(i_min, i_max + 1))
+
+        positions: List[np.ndarray] = []
+        for i in ranges[0]:
+            base_i = i * cell_vectors[0]
+            for j in ranges[1]:
+                base_j = base_i + j * cell_vectors[1]
+                for k in ranges[2]:
+                    lattice_origin = base_j + k * cell_vectors[2]
+                    for motif_offset in motif_offsets:
                         local = lattice_origin + motif_offset
                         world = rotation @ local + seed_pos
-                        if not self._inside_box(world):
-                            continue
-                        atom = self._assign_atom_to_region(world, grain)
-                        if atom is not None:
-                            atoms.append(atom)
-        return atoms
+                        if self._inside_box(world):
+                            positions.append(world)
+        if not positions:
+            return np.zeros((0, 3), dtype=float)
+        return np.asarray(positions, dtype=float)
 
-    def _sample_amorphous_random(
-        self,
-        grain: Dict[str, Any],
-        phase_recipe: Dict[str, Any],
-        target_count: int,
-    ) -> List[Dict[str, Any]]:
-        radius = grain["bounding_radius"]
-        seed_pos = grain["seed_position"]
+    def _generate_amorphous_random_cloud(self, grain: Dict[str, Any], phase_recipe: Dict[str, Any]) -> np.ndarray:
+        L = self.global_cfg.L
         min_pair = float(phase_recipe.get("min_pair_dist", 0.8 * self.global_cfg.avg_nn_dist))
         min_pair_sq = min_pair * min_pair
         cell_size = max(min_pair, 1e-6)
         inv_cell = 1.0 / cell_size
-        neighbor_offsets = [
-            (dx, dy, dz)
-            for dx in (-1, 0, 1)
-            for dy in (-1, 0, 1)
-            for dz in (-1, 0, 1)
-        ]
-
-        def cell_index(point: np.ndarray) -> Tuple[int, int, int]:
-            return tuple(np.floor(point * inv_cell).astype(int))
-
+        neighbor_offsets = list(itertools.product((-1, 0, 1), repeat=3))
         rng = np.random.default_rng(self.rng.integers(0, 1_000_000))
+        target = max(1, int(round(self.global_cfg.rho_target * (L ** 3))))
         grid: Dict[Tuple[int, int, int], List[np.ndarray]] = defaultdict(list)
-        atoms: List[Dict[str, Any]] = []
+        positions: List[np.ndarray] = []
         attempts = 0
-        max_attempts = max(target_count * 30, 20_000) if target_count else 50_000
+        max_attempts = max(target * 50, 100_000)
 
-        rotation = grain["base_rotation"]
-        while (target_count == 0 or len(atoms) < target_count) and attempts < max_attempts:
-            candidate_local = rng.uniform(-radius, radius, size=3)
-            world = rotation @ candidate_local + seed_pos
+        while len(positions) < target and attempts < max_attempts:
+            candidate = rng.uniform(0.0, L, size=3)
             attempts += 1
-            if not self._inside_box(world):
-                continue
-
-            cell = cell_index(candidate_local)
+            cell = tuple(np.floor(candidate * inv_cell).astype(int))
             too_close = False
             for offset in neighbor_offsets:
                 neighbor_cell = (cell[0] + offset[0], cell[1] + offset[1], cell[2] + offset[2])
-                neighbor_points = grid.get(neighbor_cell)
-                if not neighbor_points:
-                    continue
-                for neighbor_local in neighbor_points:
-                    diff = candidate_local - neighbor_local
+                for neighbor_point in grid.get(neighbor_cell, []):
+                    diff = candidate - neighbor_point
                     if float(diff.dot(diff)) < min_pair_sq:
                         too_close = True
                         break
@@ -556,106 +625,207 @@ class SyntheticAtomisticDatasetGenerator:
                     break
             if too_close:
                 continue
+            grid[cell].append(candidate.copy())
+            positions.append(candidate)
 
-            atom = self._assign_atom_to_region(world, grain)
-            if atom is None:
-                continue
-            grid[cell].append(candidate_local.copy())
-            atoms.append(atom)
-
-        if target_count and len(atoms) < target_count:
+        if len(positions) < target:
             self._progress(
-                f"     Warning: grain {grain['grain_id']} requested {target_count} atoms, generated {len(atoms)}"
+                f"     Warning: grain {grain['grain_id']} generated {len(positions)} amorphous points (< target {target})",
             )
-        return atoms
+        if not positions:
+            return np.zeros((0, 3), dtype=float)
+        return np.asarray(positions, dtype=float)
 
-    def _sample_amorphous_mixed(
-        self,
-        grain: Dict[str, Any],
-        phase_recipe: Dict[str, Any],
-        target_count: int,
-    ) -> List[Dict[str, Any]]:
-        base_atoms = self._sample_amorphous_random(grain, phase_recipe, target_count)
-        # Embed small crystalline seeds.
+    def _generate_amorphous_mixed_cloud(self, grain: Dict[str, Any], phase_recipe: Dict[str, Any]) -> np.ndarray:
+        base_positions = self._generate_amorphous_random_cloud(grain, phase_recipe)
         embedded_phase = phase_recipe.get("embedded_crystal", "crystal_fcc")
         embed_prob = float(phase_recipe.get("embedded_probability", 0.25))
         embed_radius = float(phase_recipe.get("embedded_radius", 2.0 * self.global_cfg.avg_nn_dist))
         crystal_recipe = self.reference_structures.get(embedded_phase)
-        if crystal_recipe is None:
-            return base_atoms
+        if (
+            crystal_recipe is None
+            or embed_radius <= 0.0
+            or base_positions.size == 0
+        ):
+            return base_positions
         rng = np.random.default_rng(self.rng.integers(0, 1_000_000))
-        if rng.random() > embed_prob or not base_atoms:
-            return base_atoms
-        center_atom = rng.choice(base_atoms)
-        center = center_atom["position"]
-        additional_atoms = self._tile_structured_phase(
-            grain={
-                **grain,
-                "base_phase_id": embedded_phase,
-                "base_rotation": random_rotation_matrix(rng),
-                "seed_position": center,
-            },
+        if rng.random() > embed_prob:
+            return base_positions
+        center = base_positions[int(rng.integers(len(base_positions)))]
+        embed_rotation = random_rotation_matrix(rng)
+        embedded_cloud = self._generate_structured_phase_in_ball(
+            center=center,
+            rotation=embed_rotation,
             phase_recipe=crystal_recipe,
+            radius=embed_radius,
         )
-        filtered = []
-        for atom in additional_atoms:
-            if np.linalg.norm(atom["position"] - center) <= embed_radius:
-                filtered.append(atom)
-        base_atoms.extend(filtered)
-        return base_atoms
+        if embedded_cloud.size == 0:
+            return base_positions
+        combined = np.concatenate([base_positions, embedded_cloud], axis=0)
+        return combined
+
+    def _generate_structured_phase_in_ball(
+        self,
+        center: np.ndarray,
+        rotation: np.ndarray,
+        phase_recipe: Dict[str, Any],
+        radius: float,
+    ) -> np.ndarray:
+        if radius <= 0.0:
+            return np.zeros((0, 3), dtype=float)
+        if phase_recipe["phase_type"] == "amorphous_repeat":
+            cell_vectors = np.asarray(phase_recipe.get("tile_vectors"), dtype=float)
+            motif = np.asarray(phase_recipe.get("motif"), dtype=float)
+            motif_fractional = False
+        else:
+            cell_vectors = np.asarray(phase_recipe.get("lattice_vectors"), dtype=float)
+            motif = np.asarray(phase_recipe.get("motif"), dtype=float)
+            motif_fractional = True
+        motif_offsets = motif @ cell_vectors if motif_fractional else motif
+        if motif_offsets.size == 0:
+            return np.zeros((0, 3), dtype=float)
+
+        local_min = np.full(3, -radius - self.global_cfg.avg_nn_dist, dtype=float)
+        local_max = np.full(3, radius + self.global_cfg.avg_nn_dist, dtype=float)
+        motif_min = motif_offsets.min(axis=0)
+        motif_max = motif_offsets.max(axis=0)
+
+        ranges: List[range] = []
+        for axis in range(3):
+            axis_vec = cell_vectors[axis]
+            axis_norm = np.linalg.norm(axis_vec)
+            if axis_norm <= 1e-8:
+                ranges.append(range(0, 1))
+                continue
+            i_min = math.floor((local_min[axis] - motif_max[axis]) / axis_norm) - 1
+            i_max = math.ceil((local_max[axis] - motif_min[axis]) / axis_norm) + 1
+            if i_min > i_max:
+                i_min, i_max = i_max, i_min
+            ranges.append(range(i_min, i_max + 1))
+
+        radius_sq = radius * radius
+        positions: List[np.ndarray] = []
+        for i in ranges[0]:
+            base_i = i * cell_vectors[0]
+            for j in ranges[1]:
+                base_j = base_i + j * cell_vectors[1]
+                for k in ranges[2]:
+                    lattice_origin = base_j + k * cell_vectors[2]
+                    for motif_offset in motif_offsets:
+                        local = lattice_origin + motif_offset
+                        world = rotation @ local + center
+                        diff = world - center
+                        if diff.dot(diff) > radius_sq:
+                            continue
+                        if not self._inside_box(world):
+                            continue
+                        positions.append(world)
+        if not positions:
+            return np.zeros((0, 3), dtype=float)
+        return np.asarray(positions, dtype=float)
+
+    def _evenly_spaced_indices(self, length: int, count: int) -> List[int]:
+        if count <= 0 or length <= 0:
+            return []
+        if count >= length:
+            return list(range(length))
+        indices: List[int] = []
+        step = (length - 1) / max(count - 1, 1)
+        for i in range(count):
+            idx = int(round(i * step))
+            if indices and idx <= indices[-1]:
+                idx = min(length - 1, indices[-1] + 1)
+            indices.append(min(idx, length - 1))
+        return indices
+
+    def _generate_interface_atoms(self) -> int:
+        if self.global_cfg.t_layer <= 0.0 or not self.interface_candidates:
+            return 0
+        created = 0
+        for pair, info in self.interface_candidates.items():
+            g0, g1 = pair
+            positions0 = info["positions"].get(g0, [])
+            positions1 = info["positions"].get(g1, [])
+            if not positions0 or not positions1:
+                continue
+            sorted0 = sorted(positions0, key=lambda item: item["projection"])
+            sorted1 = sorted(positions1, key=lambda item: item["projection"])
+            count = min(len(sorted0), len(sorted1))
+            if count == 0:
+                continue
+            indices0 = self._evenly_spaced_indices(len(sorted0), count)
+            indices1 = self._evenly_spaced_indices(len(sorted1), count)
+            phase_ids = info["phase_ids"]
+            seeds = info["seeds"]
+            inter_phase_id = self._register_intermediate_phase(phase_ids[0], phase_ids[1])
+            for idx_a, idx_b in zip(indices0, indices1):
+                entry_a = sorted0[idx_a]
+                entry_b = sorted1[idx_b]
+                pos_a = entry_a["position"]
+                pos_b = entry_b["position"]
+                mid = 0.5 * (pos_a + pos_b)
+                dist_mid = self._distance_to_pair(mid, pair)
+                if dist_mid is None:
+                    continue
+                dist_a_mid, dist_b_mid = dist_mid
+                if abs(dist_a_mid - dist_b_mid) > self.global_cfg.t_layer:
+                    continue
+                alpha = self._smooth_alpha(dist_a_mid, dist_b_mid)
+                pos_interp = alpha * pos_a + (1.0 - alpha) * pos_b
+                if not self._inside_box(pos_interp):
+                    continue
+                dist_final = self._distance_to_pair(pos_interp, pair)
+                if dist_final is None:
+                    continue
+                if abs(dist_final[0] - dist_final[1]) > self.global_cfg.t_layer:
+                    continue
+                orientation = self._blend_orientations(
+                    self.grains[g0]["base_rotation"],
+                    self.grains[g1]["base_rotation"],
+                    alpha,
+                )
+                atom_record = self._make_atom_record(
+                    position=pos_interp,
+                    phase_id=inter_phase_id,
+                    grain_id=None,
+                    orientation=orientation,
+                    supporting=pair,
+                )
+                self.atoms.append(atom_record)
+                self._register_intermediate_atom(
+                    atom_record,
+                    grain_a=g0,
+                    grain_b=g1,
+                    phase_ids=phase_ids,
+                    seeds=seeds,
+                )
+                created += 1
+        return created
+
+    def _distance_to_pair(self, position: np.ndarray, pair: Tuple[int, int]) -> Optional[Tuple[float, float]]:
+        if self.seed_positions is None:
+            return None
+        seeds = self.seed_positions[list(pair)]
+        dists = np.linalg.norm(seeds - position, axis=1)
+        return float(dists[0]), float(dists[1])
+
+    def _smooth_alpha(self, dist_a: float, dist_b: float) -> float:
+        if self.global_cfg.t_layer <= 0.0:
+            return 0.5
+        band = max(self.global_cfg.t_layer, 1e-8)
+        normalized = np.clip((dist_b - dist_a) / band, -1.0, 1.0)
+        t = 0.5 + 0.5 * normalized
+        t = np.clip(t, 0.0, 1.0)
+        return float(self._smoothstep(t))
+
+    @staticmethod
+    def _smoothstep(t: float) -> float:
+        return t * t * (3.0 - 2.0 * t)
 
     def _inside_box(self, position: np.ndarray) -> bool:
         L = self.global_cfg.L
-        return bool(np.all(position >= 0.0) and np.all(position <= L))
-
-    def _assign_atom_to_region(
-        self,
-        position: np.ndarray,
-        grain: Dict[str, Any],
-    ) -> Optional[Dict[str, Any]]:
-        if self.seed_positions is None:
-            raise RuntimeError("Grain seeds have not been initialised.")
-        dists = np.linalg.norm(self.seed_positions - position, axis=1)
-        idxs = np.argpartition(dists, 2)[:2]
-        idx0, idx1 = idxs[0], idxs[1]
-        if dists[idx0] > dists[idx1]:
-            idx0, idx1 = idx1, idx0
-        if idx0 != grain["grain_id"]:
-            return None
-        phase_id = grain["base_phase_id"]
-        grain_id = grain["grain_id"]
-        orientation = grain["base_rotation"]
-        if self.global_cfg.t_layer > 0 and idx1 < len(self.grains):
-            other_phase = self.grains[idx1]["base_phase_id"]
-            if other_phase != phase_id:
-                dist_diff = abs(dists[idx0] - dists[idx1])
-                if dist_diff < self.global_cfg.t_layer:
-                    inter_phase_id = self._register_intermediate_phase(phase_id, other_phase)
-                    alpha = self._blend_fraction(dists[idx0], dists[idx1])
-                    blended_orientation = self._blend_orientations(
-                        self.grains[idx0]["base_rotation"],
-                        self.grains[idx1]["base_rotation"],
-                        alpha,
-                    )
-                    atom_record = self._make_atom_record(
-                        position=position,
-                        phase_id=inter_phase_id,
-                        grain_id=None,
-                        orientation=blended_orientation,
-                        supporting=(
-                            grain["grain_id"],
-                            self.grains[idx1]["grain_id"],
-                        ),
-                    )
-                    self._register_intermediate_atom(atom_record, grain["grain_id"], self.grains[idx1]["grain_id"])
-                    return atom_record
-        atom_record = self._make_atom_record(
-            position=position,
-            phase_id=phase_id,
-            grain_id=grain_id,
-            orientation=orientation,
-        )
-        return atom_record
+        eps = 1e-8
+        return bool(np.all(position >= -eps) and np.all(position <= L + eps))
 
     def _make_atom_record(
         self,
@@ -687,16 +857,9 @@ class SyntheticAtomisticDatasetGenerator:
                 "phase_type": "intermediate",
                 "parents": ordered,
                 "thickness": self.global_cfg.t_layer,
-                "method": "linear_blend",
+                "method": "spatial_blend_fullbox",
             }
         return phase_id
-
-    def _blend_fraction(self, dist_a: float, dist_b: float) -> float:
-        if self.global_cfg.t_layer == 0:
-            return 0.5
-        offset = 0.5 * (dist_a - dist_b)
-        alpha = 0.5 * (1.0 + np.clip(offset / (self.global_cfg.t_layer / 2.0 + 1e-8), -1.0, 1.0))
-        return float(np.clip(alpha, 0.0, 1.0))
 
     def _blend_orientations(self, Ra: np.ndarray, Rb: np.ndarray, alpha: float) -> np.ndarray:
         qa = rotation_matrix_to_quaternion(Ra)
@@ -704,17 +867,36 @@ class SyntheticAtomisticDatasetGenerator:
         q = quaternion_slerp(qa, qb, alpha)
         return quaternion_to_rotation_matrix(q)
 
-    def _register_intermediate_atom(self, atom_record: Dict[str, Any], grain_a: int, grain_b: int) -> None:
+    def _register_intermediate_atom(
+        self,
+        atom_record: Dict[str, Any],
+        grain_a: int,
+        grain_b: int,
+        phase_ids: Tuple[str, str],
+        seeds: Tuple[np.ndarray, np.ndarray],
+    ) -> None:
         key = tuple(sorted((grain_a, grain_b)))
+        if (grain_a, grain_b) == key:
+            ordered_phases = phase_ids
+            ordered_seeds = seeds
+        else:
+            ordered_phases = (phase_ids[1], phase_ids[0])
+            ordered_seeds = (seeds[1], seeds[0])
         region = self.intermediate_regions.setdefault(
             key,
             {
                 "between_grains": key,
                 "phase_id": atom_record["phase_id"],
+                "parent_phase_ids": ordered_phases,
                 "thickness": self.global_cfg.t_layer,
                 "atom_pre_indices": [],
+                "seed_positions": (ordered_seeds[0].tolist(), ordered_seeds[1].tolist()),
             },
         )
+        if "parent_phase_ids" not in region:
+            region["parent_phase_ids"] = ordered_phases
+        if "seed_positions" not in region:
+            region["seed_positions"] = (ordered_seeds[0].tolist(), ordered_seeds[1].tolist())
         region["atom_pre_indices"].append(atom_record["pre_index"])
 
     # ------------------------------------------------------------------ #
@@ -972,20 +1154,26 @@ class SyntheticAtomisticDatasetGenerator:
 
     def _finalize_metadata(self, final_atoms: List[Dict[str, Any]], pre_to_final: Dict[int, int]) -> None:
         L = self.global_cfg.L
+        phase_ids_sorted = sorted(self.reference_structures.keys())
         self.metadata["global"] = {
-            "box_size": L,
-            "rho_target": self.global_cfg.rho_target,
-            "N_total_target": self.global_cfg.N_total_target,
+            "box_size": float(L),
+            "volume": float(L ** 3),
+            "rho_target": float(self.global_cfg.rho_target),
+            "avg_nn_dist": float(self.global_cfg.avg_nn_dist),
+            "t_layer": float(self.global_cfg.t_layer),
+            "intermediate_layer_thickness_factor": float(self.global_cfg.intermediate_layer_thickness_factor),
+            "random_seed": int(self.global_cfg.random_seed),
+            "grain_count": len(self.grains),
+            "phases": phase_ids_sorted,
             "N_final": len(final_atoms),
-            "avg_nn_dist": self.global_cfg.avg_nn_dist,
-            "random_seed": self.global_cfg.random_seed,
-            "intermediate_layer_thickness_factor": self.global_cfg.intermediate_layer_thickness_factor,
-            "t_layer": self.global_cfg.t_layer,
         }
-        # Grains
+
+        final_lookup = {atom["final_index"]: atom for atom in final_atoms}
+
         grain_records = []
         for grain in self.grains:
-            grain_atoms = [atom for atom in final_atoms if atom["grain_id"] == grain["grain_id"]]
+            grain_id = grain["grain_id"]
+            grain_atoms = [atom for atom in final_atoms if atom["grain_id"] == grain_id]
             if grain_atoms:
                 positions = np.array([atom["position"] for atom in grain_atoms])
                 bbox_min = positions.min(axis=0).tolist()
@@ -994,17 +1182,26 @@ class SyntheticAtomisticDatasetGenerator:
             else:
                 bbox_min = bbox_max = [float(x) for x in grain["seed_position"]]
                 atom_indices = []
+            atom_index_range = [min(atom_indices), max(atom_indices)] if atom_indices else []
+            neighbors = sorted(self.grain_neighbors.get(grain_id, set())) if hasattr(self, "grain_neighbors") else []
             grain_records.append({
-                "grain_id": grain["grain_id"],
-                "phase_id": grain["base_phase_id"],
+                "grain_id": grain_id,
+                "base_phase_id": grain["base_phase_id"],
                 "seed_position": grain["seed_position"].tolist(),
-                "base_rotation": grain["base_rotation"].tolist(),
-                "bounding_box": {"min": bbox_min, "max": bbox_max},
-                "final_atom_indices": atom_indices,
+                "orientation_matrix": grain["base_rotation"].tolist(),
+                "orientation_quaternion": rotation_matrix_to_quaternion(grain["base_rotation"]).tolist(),
+                "region_aabb": {"min": bbox_min, "max": bbox_max},
+                "region_mask_info": {
+                    "type": "voronoi_cell_minus_interfaces",
+                    "seed_position": grain["seed_position"].tolist(),
+                    "neighbor_grain_ids": neighbors,
+                    "interface_thickness": float(self.global_cfg.t_layer),
+                },
+                "atom_indices": atom_indices,
+                "atom_index_range": atom_index_range,
             })
         self.metadata["grains"] = grain_records
 
-        # Intermediate regions
         inter_records = []
         for key, region in self.intermediate_regions.items():
             final_indices = [
@@ -1012,11 +1209,40 @@ class SyntheticAtomisticDatasetGenerator:
             ]
             if not final_indices:
                 continue
+            atoms_positions = np.array([final_lookup[idx]["position"] for idx in final_indices])
+            bbox_min = atoms_positions.min(axis=0).tolist()
+            bbox_max = atoms_positions.max(axis=0).tolist()
+            atom_index_range = [min(final_indices), max(final_indices)] if final_indices else []
+            seed_positions = region.get("seed_positions", (None, None))
+            seed_positions_list: Optional[List[List[float]]] = None
+            normal_vec = None
+            center = None
+            if seed_positions[0] is not None and seed_positions[1] is not None:
+                seed_a = np.array(seed_positions[0], dtype=float)
+                seed_b = np.array(seed_positions[1], dtype=float)
+                diff = seed_b - seed_a
+                norm_val = np.linalg.norm(diff)
+                normal_vec = (diff / norm_val).tolist() if norm_val > 0 else [0.0, 0.0, 0.0]
+                center = (0.5 * (seed_a + seed_b)).tolist()
+                seed_positions_list = [seed_a.tolist(), seed_b.tolist()]
             inter_records.append({
-                "between_grains": list(key),
+                "interface_id": f"{key[0]}_{key[1]}",
+                "grain_A_id": key[0],
+                "grain_B_id": key[1],
+                "parent_phase_A_id": region.get("parent_phase_ids", [None, None])[0],
+                "parent_phase_B_id": region.get("parent_phase_ids", [None, None])[1],
                 "intermediate_phase_id": region["phase_id"],
-                "thickness_used": region["thickness"],
+                "t_layer_used": region.get("thickness", self.global_cfg.t_layer),
                 "atom_indices": final_indices,
+                "atom_index_range": atom_index_range,
+                "bounding_box": {"min": bbox_min, "max": bbox_max},
+                "spatial_band_info": {
+                    "type": "voronoi_interface_band",
+                    "seed_positions": seed_positions_list,
+                    "interface_thickness": region.get("thickness", self.global_cfg.t_layer),
+                    "normal": normal_vec,
+                    "center": center,
+                },
             })
         self.metadata["intermediate_regions"] = inter_records
 
@@ -1054,12 +1280,16 @@ class SyntheticAtomisticDatasetGenerator:
         # Phase registry
         phase_registry = {}
         for phase_id, recipe in self.reference_structures.items():
-            entry = {"phase_type": recipe["phase_type"]}
+            entry: Dict[str, Any] = {
+                "phase_type": recipe["phase_type"],
+            }
             if recipe["phase_type"] == "intermediate":
+                entry["kind"] = "intermediate"
                 entry["parents"] = list(recipe["parents"])
-                entry["thickness"] = recipe.get("thickness", self.global_cfg.t_layer)
-                entry["method"] = recipe.get("method", "linear_blend")
+                entry["interface_thickness"] = recipe.get("thickness", self.global_cfg.t_layer)
+                entry["method"] = recipe.get("method", "spatial_blend_fullbox")
             else:
+                entry["kind"] = "pure"
                 for key in ("lattice_vectors", "motif", "lattice_constant", "tile_vectors", "min_pair_dist", "cell_size"):
                     if key in recipe:
                         entry[key] = recipe[key]
