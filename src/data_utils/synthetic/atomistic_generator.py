@@ -258,10 +258,12 @@ class SyntheticAtomisticDatasetGenerator:
         config_path: str | pathlib.Path,
         rng: Optional[np.random.Generator] = None,
         progress: bool = True,
+        skip_visualization: bool = False,
     ):
         self.global_cfg, self.phase_cfgs, self.grain_assignment_cfg = load_config(config_path)
         self.rng = rng or np.random.default_rng(self.global_cfg.random_seed)
         self.progress = progress
+        self.skip_visualization = skip_visualization
         self._start_time = time.perf_counter()
 
         self.reference_structures: Dict[str, Dict[str, Any]] = {}
@@ -1335,8 +1337,11 @@ class SyntheticAtomisticDatasetGenerator:
         self.apply_perturbations()
         self._progress("Step 5/6: Saving outputs")
         self.save_outputs()
-        self._progress("Step 6/6: Generating visualisations")
-        self.create_visualizations()
+        if not self.skip_visualization:
+            self._progress("Step 6/6: Generating visualisations")
+            self.create_visualizations()
+        else:
+            self._progress("Step 6/6: Skipping visualisations")
         self._progress("Generation complete")
 
 
@@ -1353,9 +1358,14 @@ def main() -> None:
     parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_no_perturb.yaml",
                         help="Path to YAML configuration file")
     parser.add_argument("--quiet", action="store_true", help="Disable progress printing")
+    parser.add_argument("--skip-viz", action="store_true", help="Skip visualization generation")
     args = parser.parse_args()
 
-    generator = SyntheticAtomisticDatasetGenerator(args.config, progress=not args.quiet)
+    generator = SyntheticAtomisticDatasetGenerator(
+        args.config, 
+        progress=not args.quiet,
+        skip_visualization=args.skip_viz
+    )
     generator.run()
 
 

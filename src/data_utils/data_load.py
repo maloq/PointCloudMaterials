@@ -153,7 +153,11 @@ class PointCloudDataset(Dataset):
 
  
 class SyntheticPointCloudDataset(Dataset):
-    """Dataset for synthetic atomistic point clouds with metadata labels."""
+    """Dataset for synthetic atomistic point clouds with metadata labels.
+
+    Optimized for millions of atoms by using lazy metadata computation
+    and pre-converted tensors.
+    """
 
     def __init__(
         self,
@@ -182,11 +186,12 @@ class SyntheticPointCloudDataset(Dataset):
         self.normalize = normalize
         self.max_samples = max_samples if max_samples is not None and max_samples > 0 else None
 
-        self.samples: List[np.ndarray] = []
+        # Store as tensors to avoid conversion overhead
+        self.samples: List[torch.Tensor] = []
         self._phase_labels: List[int] = []
         self._grain_labels: List[int] = []
-        self._orientation: List[np.ndarray] = []
-        self._quaternions: List[np.ndarray] = []
+        self._orientation: List[torch.Tensor] = []
+        self._quaternions: List[torch.Tensor] = []
 
         self._phase_to_idx: Dict[str, int] = {}
         self._grain_to_idx: Dict[Tuple[str, str], int] = {}
@@ -220,7 +225,9 @@ class SyntheticPointCloudDataset(Dataset):
             metadata = json.load(handle)
 
         env_label = env_path.name or f"env_{env_index}"
-        atom_meta = self._build_atom_metadata(metadata, env_label, points.shape[0])
+
+        # Build efficient metadata lookup instead of storing for all atoms
+        atom_to_meta_idx = self._build_efficient_atom_metadata(metadata, env_label, points.shape[0])
         position_tree = cKDTree(points)
 
         samples = self._sample_points(points)
@@ -232,15 +239,19 @@ class SyntheticPointCloudDataset(Dataset):
             center = np.asarray(center, dtype=np.float64)
             _, idx = position_tree.query(center.reshape(1, -1), k=1)
             atom_idx = int(idx[0])
-            meta = atom_meta[atom_idx]
+
+            # Look up metadata on-demand
+            meta = atom_to_meta_idx[atom_idx]
             processed = self._prepare_sample(sample_points)
             phase_idx = self._encode_phase(meta["phase_id"])
             grain_idx = self._encode_grain(meta["grain_key"])
-            self.samples.append(processed)
+
+            # Store as tensors to avoid conversion overhead in __getitem__
+            self.samples.append(torch.tensor(processed, dtype=torch.float32))
             self._phase_labels.append(phase_idx)
             self._grain_labels.append(grain_idx)
-            self._orientation.append(meta["orientation"])
-            self._quaternions.append(meta["quaternion"])
+            self._orientation.append(torch.tensor(meta["orientation"], dtype=torch.float32))
+            self._quaternions.append(torch.tensor(meta["quaternion"], dtype=torch.float32))
 
             if self.max_samples is not None and len(self.samples) >= self.max_samples:
                 break
@@ -283,12 +294,118 @@ class SyntheticPointCloudDataset(Dataset):
             return sample_points.astype(np.float32)
         return sample_points
 
+    def _build_efficient_atom_metadata(
+        self,
+        metadata: Dict[str, Any],
+        env_label: str,
+        num_atoms: int,
+    ) -> np.ndarray:
+        """Build efficient atom metadata using numpy arrays and lazy dict creation.
+
+        Instead of creating num_atoms dictionaries upfront, we use numpy arrays
+        to map atoms to grain indices, and only create dicts when queried.
+        This is much faster and uses far less memory for millions of atoms.
+        """
+        default_orientation = np.eye(3, dtype=np.float32)
+        default_quaternion = rotation_matrix_to_quaternion(default_orientation)
+
+        # Use numpy arrays for efficient storage - map atom_idx -> grain_id
+        atom_to_grain_idx = np.full(num_atoms, -1, dtype=np.int32)  # -1 = unknown
+
+        # Store unique grain metadata
+        grain_metadata = {}  # grain_local_idx -> metadata
+        grain_key_to_idx = {}  # grain_key -> local index
+        next_grain_idx = 0
+
+        # Helper to register a grain
+        def register_grain(grain_key, phase_id, orientation, quaternion):
+            nonlocal next_grain_idx
+            if grain_key not in grain_key_to_idx:
+                grain_key_to_idx[grain_key] = next_grain_idx
+                grain_metadata[next_grain_idx] = {
+                    "phase_id": phase_id,
+                    "grain_key": grain_key,
+                    "orientation": orientation,
+                    "quaternion": quaternion,
+                }
+                next_grain_idx += 1
+            return grain_key_to_idx[grain_key]
+
+        # Register default "unknown" grain
+        unknown_key = (env_label, "unknown")
+        unknown_idx = register_grain(unknown_key, "unknown", default_orientation, default_quaternion)
+
+        # Process grains
+        grain_meta_cache: Dict[Tuple[str, str], Dict[str, Any]] = {}
+        for grain in metadata.get("grains", []):
+            grain_id = str(grain["grain_id"])
+            orientation = np.asarray(grain["orientation_matrix"], dtype=np.float32)
+            quaternion = np.asarray(
+                grain.get("orientation_quaternion"),
+                dtype=np.float32,
+            ) if grain.get("orientation_quaternion") is not None else rotation_matrix_to_quaternion(orientation)
+            grain_key = (env_label, grain_id)
+
+            grain_meta_cache[grain_key] = {
+                "phase_id": grain["base_phase_id"],
+                "orientation": orientation,
+                "quaternion": quaternion,
+            }
+
+            local_idx = register_grain(grain_key, grain["base_phase_id"], orientation, quaternion)
+
+            # Efficiently assign atoms to this grain using numpy indexing
+            atom_indices = np.array(grain.get("atom_indices", []), dtype=np.int32)
+            valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
+            atom_to_grain_idx[atom_indices[valid_mask]] = local_idx
+
+        # Process intermediate regions
+        for region in metadata.get("intermediate_regions", []):
+            grain_a = region.get("grain_A_id")
+            grain_b = region.get("grain_B_id")
+            grain_identifier = f"interface_{grain_a}_{grain_b}"
+            parent_identifier = str(grain_a) if grain_a is not None else str(grain_b)
+            parent_key = (env_label, parent_identifier)
+            parent_meta = grain_meta_cache.get(parent_key, None)
+            orientation = parent_meta["orientation"] if parent_meta else default_orientation
+            quaternion = parent_meta["quaternion"] if parent_meta else default_quaternion
+            grain_key = (env_label, grain_identifier)
+            phase_id = region.get("intermediate_phase_id", "intermediate")
+
+            local_idx = register_grain(grain_key, phase_id, orientation, quaternion)
+
+            # Efficiently assign atoms to this region
+            atom_indices = np.array(region.get("atom_indices", []), dtype=np.int32)
+            valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
+            atom_to_grain_idx[atom_indices[valid_mask]] = local_idx
+
+        # Create a lookup array that can be indexed directly
+        # Each element will be a metadata dict when accessed
+        class LazyMetadataArray:
+            """Lazy array-like object that creates metadata dicts on access."""
+            def __init__(self, atom_to_grain, grain_meta, unknown_idx):
+                self.atom_to_grain = atom_to_grain
+                self.grain_meta = grain_meta
+                self.unknown_idx = unknown_idx
+
+            def __getitem__(self, idx):
+                grain_idx = self.atom_to_grain[idx]
+                if grain_idx == -1:
+                    grain_idx = self.unknown_idx
+                return self.grain_meta[grain_idx]
+
+            def __len__(self):
+                return len(self.atom_to_grain)
+
+        return LazyMetadataArray(atom_to_grain_idx, grain_metadata, unknown_idx)
+
     def _build_atom_metadata(
         self,
         metadata: Dict[str, Any],
         env_label: str,
         num_atoms: int,
     ) -> List[Dict[str, Any]]:
+        """Legacy method - kept for compatibility but deprecated."""
         default_orientation = np.eye(3, dtype=np.float32)
         default_quaternion = rotation_matrix_to_quaternion(default_orientation)
         atom_meta = [{
@@ -359,14 +476,19 @@ class SyntheticPointCloudDataset(Dataset):
         return len(self.samples)
 
     def __getitem__(self, index: int):
-        point_set = self.samples[index]
+        # Samples are already stored as tensors for efficiency
+        pc_tensor = self.samples[index]
         if not self.pre_normalize and self.normalize:
+            # Need to convert back to numpy for normalization, then back to tensor
+            point_set = pc_tensor.numpy()
             point_set = pc_normalize(point_set, self.radius).astype(np.float32)
-        pc_tensor = torch.tensor(point_set, dtype=torch.float32)
+            pc_tensor = torch.tensor(point_set, dtype=torch.float32)
+
+        # Use cached tensors for orientation and quaternion
         phase_tensor = torch.tensor(self._phase_labels[index], dtype=torch.long)
         grain_tensor = torch.tensor(self._grain_labels[index], dtype=torch.long)
-        orientation_tensor = torch.tensor(self._orientation[index], dtype=torch.float32)
-        quaternion_tensor = torch.tensor(self._quaternions[index], dtype=torch.float32)
+        orientation_tensor = self._orientation[index]
+        quaternion_tensor = self._quaternions[index]
         return pc_tensor, phase_tensor, grain_tensor, orientation_tensor, quaternion_tensor
  
  
