@@ -355,6 +355,7 @@ def get_random_samples(
         n_samples: Number of samples to extract
         size: Size of the sample (radius for spherical)
         n_points: Number of points per sample
+        return_coords: If True, also return the sampled center coordinates
     Returns:
         List of arrays containing points within each sample
     """
@@ -373,10 +374,15 @@ def get_random_samples(
             low=min_coords + (size),
             high=max_coords - (size)
         )
+        center = np.asarray(center, dtype=np.float64)
         
         sample_points, add, drop = process_sample(points, tree, center, size, n_points)
         if sample_points is not None:
-            samples.append(sample_points)
+            sample_points = sample_points - center
+            if return_coords:
+                samples.append((sample_points, center.astype(np.float64)))
+            else:
+                samples.append(sample_points)
             added_points += add
             dropped_points += drop
 

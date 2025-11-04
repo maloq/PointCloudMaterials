@@ -1,4 +1,5 @@
 # Autoencoder
+kind: real
 radius: 4.5
 sample_type: 'regular'
 n_samples: 8000000

@@ -1,3 +1,5 @@
+kind: synthetic
+num_points: 80
 global:
   L: 78.2973528234                    # Cube side length matching the previous target count at rho_target
   rho_target: 0.25                     # Target number density (atoms per unit volume)

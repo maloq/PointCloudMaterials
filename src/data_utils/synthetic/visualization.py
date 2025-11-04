@@ -365,6 +365,7 @@ def _render_closeup_view(
 ) -> None:
     """Render a close-up view showing 1/16 of the volume with full point density,
     plus a highlighted diagonal slice on the same picture.
+    If 1/16 has more than 62500 points, also render a 1/32 closeup.
     """
     total_atoms = len(atoms)
     if total_atoms == 0:
@@ -385,6 +386,57 @@ def _render_closeup_view(
     closeup_positions = _ensure_point_array(atom_positions[closeup_indices])
     closeup_phases = np.asarray(phases)[closeup_indices]
 
+    # Render 1/16 closeup
+    _render_single_closeup(
+        closeup_positions=closeup_positions,
+        closeup_phases=closeup_phases,
+        color_map=color_map,
+        corner_min=corner_min,
+        corner_max=corner_max,
+        output_path=output_path,
+        num_points=len(closeup_indices),
+        volume_fraction="1/16"
+    )
+
+    # If 1/16 has more than 62500 points, render 1/32 closeup
+    if len(closeup_indices) > 62500:
+        corner_min_32 = np.array([0, 0, 0])
+        corner_max_32 = np.array([L / 2, L / 2, L / 8])  # 1/32 volume
+        
+        # Filter atoms in the smaller region
+        mask_32 = np.all((atom_positions >= corner_min_32) & (atom_positions <= corner_max_32), axis=1)
+        closeup_indices_32 = np.flatnonzero(mask_32)
+        
+        if closeup_indices_32.size > 0:
+            closeup_positions_32 = _ensure_point_array(atom_positions[closeup_indices_32])
+            closeup_phases_32 = np.asarray(phases)[closeup_indices_32]
+            
+            # Generate output path for 1/32 closeup
+            output_path_32 = output_path.parent / output_path.name.replace("closeup.png", "closeup_32.png")
+            
+            _render_single_closeup(
+                closeup_positions=closeup_positions_32,
+                closeup_phases=closeup_phases_32,
+                color_map=color_map,
+                corner_min=corner_min_32,
+                corner_max=corner_max_32,
+                output_path=output_path_32,
+                num_points=len(closeup_indices_32),
+                volume_fraction="1/32"
+            )
+
+
+def _render_single_closeup(
+    closeup_positions: np.ndarray,
+    closeup_phases: np.ndarray,
+    color_map: Dict[str, Any],
+    corner_min: np.ndarray,
+    corner_max: np.ndarray,
+    output_path: pathlib.Path,
+    num_points: int,
+    volume_fraction: str,
+) -> None:
+    """Helper function to render a single closeup view with diagonal slice overlay."""
     fig = plt.figure(figsize=(12, 12))
     ax = fig.add_subplot(111, projection="3d")
 
@@ -441,7 +493,7 @@ def _render_closeup_view(
                 edgecolors="black", linewidths=0.6
             )
 
-    ax.set_title(f"Close-up (1/16 volume, {len(closeup_indices)} points)")
+    ax.set_title(f"Close-up ({volume_fraction} volume, {num_points} points)")
     ax.set_xlim(corner_min[0], corner_max[0])
     ax.set_ylim(corner_min[1], corner_max[1])
     ax.set_zlim(corner_min[2], corner_max[2])

@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_baseline
+  - data: data_synth_no_perturb
 project_name: pointnet
 experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online
@@ -41,7 +41,7 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.004
-batch_size: 1024  # if neighbor_loss_scale>0, then neighbor_pair_batch_size added to batch_size
+batch_size: 256  # if neighbor_loss_scale>0, then neighbor_pair_batch_size added to batch_size
 
 enable_swa: False
 swa_epoch_start: 1000 

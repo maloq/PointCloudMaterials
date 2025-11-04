@@ -1,18 +1,15 @@
 import torch
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
-from src.data_utils.data_load import PointCloudDataset
+from src.data_utils.data_load import PointCloudDataset, SyntheticPointCloudDataset
 import time
 import logging
 from pathlib import Path
-from copy import deepcopy
-from typing import Any, Dict
 
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
-
 
 
 class RealPointCloudDataModule(pl.LightningDataModule):
@@ -89,6 +86,126 @@ class RealPointCloudDataModule(pl.LightningDataModule):
         )
 
 
+class SyntheticPointCloudDataModule(pl.LightningDataModule):
+    def __init__(self, cfg):
+        super().__init__()
+        self.cfg = cfg
+        self.batch_size = cfg.batch_size
+        self.num_workers = cfg.num_workers
+        self.max_samples = cfg.max_samples
+
+    def setup(self, stage=None):
+        start_time = time.time()
+        self.train_dataset, self.val_dataset = self._build_datasets()
+
+        if self.max_samples > 0:
+            max_train = min(self.max_samples, len(self.train_dataset))
+            max_val = min(self.max_samples, len(self.val_dataset))
+            self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
+            self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+
+        elapsed_time = time.time() - start_time
+        logger.print(f"Synth train dataset size: {len(self.train_dataset)}")
+        logger.print(f"Synth val dataset size: {len(self.val_dataset)}")
+        logger.print(f"Synth dataloader prep took {elapsed_time:.4f} seconds")
+
+    def _build_datasets(self):
+        data_cfg = self.cfg.data
+        synth_cfg = getattr(data_cfg, "synthetic", None)
+        synth_dict = _to_container(synth_cfg) if synth_cfg is not None else {}
+
+        env_dirs = self._resolve_env_dirs(data_cfg, synth_dict)
+        radius = self._get_param("radius", data_cfg, synth_dict, required=True)
+        sample_type = self._get_param("sample_type", data_cfg, synth_dict, default="regular")
+        overlap_fraction = self._get_param("overlap_fraction", data_cfg, synth_dict, default=0.0)
+        n_samples = self._get_param("n_samples", data_cfg, synth_dict, default=0)
+        num_points = self._get_param("num_points", data_cfg, synth_dict, required=True)
+        drop_edge_samples = self._get_param("drop_edge_samples", data_cfg, synth_dict, default=True)
+        pre_normalize = self._get_param("pre_normalize", data_cfg, synth_dict, default=True)
+        normalize = self._get_param("normalize", data_cfg, synth_dict, default=True)
+        dataset_max = self._get_param("dataset_max_samples", data_cfg, synth_dict, default=None)
+
+        dataset = SyntheticPointCloudDataset(
+            env_dirs=env_dirs,
+            radius=float(radius),
+            sample_type=str(sample_type),
+            overlap_fraction=float(overlap_fraction),
+            n_samples=int(n_samples),
+            num_points=int(num_points),
+            drop_edge_samples=bool(drop_edge_samples),
+            pre_normalize=bool(pre_normalize),
+            normalize=bool(normalize),
+            max_samples=int(dataset_max) if dataset_max is not None else None,
+        )
+
+        train_ratio = float(self._get_param("train_ratio", data_cfg, synth_dict, default=0.8))
+        train_size = int(train_ratio * len(dataset))
+        val_size = len(dataset) - train_size
+        if train_size <= 0 or val_size <= 0:
+            raise ValueError("Synthetic dataset split resulted in empty train or val set")
+        return random_split(dataset, [train_size, val_size])
+
+    def _resolve_env_dirs(self, data_cfg, synth_dict):
+        env_dirs = []
+        if isinstance(synth_dict, dict):
+            if "data_dirs" in synth_dict and synth_dict["data_dirs"]:
+                env_dirs = synth_dict["data_dirs"]
+            elif synth_dict.get("data_dir"):
+                env_dirs = [synth_dict["data_dir"]]
+            elif synth_dict.get("root_dir"):
+                root = Path(synth_dict["root_dir"])
+                if not root.exists():
+                    raise FileNotFoundError(f"Synthetic root_dir {root} does not exist")
+                candidates = sorted([p for p in root.iterdir() if p.is_dir()])
+                num_env = synth_dict.get("num_environments")
+                if num_env is not None:
+                    candidates = candidates[:int(num_env)]
+                env_dirs = candidates
+        if not env_dirs and hasattr(data_cfg, "data_path"):
+            env_dirs = [getattr(data_cfg, "data_path")]
+        if not env_dirs:
+            raise ValueError("No synthetic environment directories configured")
+        resolved = []
+        for path in env_dirs:
+            if isinstance(path, (Path, str)):
+                resolved.append(Path(path))
+            else:
+                raise TypeError(f"Unsupported path type {type(path)} in synthetic env_dirs")
+        return resolved
+
+    @staticmethod
+    def _get_param(name, data_cfg, synth_dict, *, required=False, default=None):
+        value = getattr(data_cfg, name, None)
+        if value is None and isinstance(synth_dict, dict):
+            value = synth_dict.get(name, None)
+        if value is None:
+            if default is not None:
+                return default
+            if required:
+                raise ValueError(f"Synthetic data configuration must provide '{name}'")
+        return value
+
+    def train_dataloader(self):
+        return DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            shuffle=True,
+            drop_last=True,
+            pin_memory=True,
+            persistent_workers=True,
+        )
+
+    def val_dataloader(self):
+        return DataLoader(
+            self.val_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+        )
+
+
 class PointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
@@ -109,74 +226,10 @@ class PointCloudDataModule(pl.LightningDataModule):
         return self.impl.val_dataloader()
 
 
-
-# Module-level helpers shared by modules above
-def _to_container(cfg) -> Any:
+# Module-level helper
+def _to_container(cfg):
     if isinstance(cfg, (DictConfig, ListConfig)):
         return OmegaConf.to_container(cfg, resolve=True)
     return cfg
 
-
-def _resolve_synthetic_dataset_config(spec: Dict[str, Any]) -> DatasetConfig:
-    if "config" in spec and spec["config"]:
-        cfg_dict = _to_container(spec["config"])
-        if not isinstance(cfg_dict, dict):
-            raise ValueError("`data.synthetic.config` must be a mapping")
-        return _dataset_config_from_dict(cfg_dict)
-
-    preset = spec.get("preset", "baseline").lower()
-    if preset == "baseline":
-        cfg = deepcopy(BASELINE_PRESET)
-    elif preset == "imbalanced":
-        kwargs = spec.get("preset_kwargs", {}) or {}
-        rare_phase = kwargs.get("rare_phase", "icosa")
-        rare_fraction = float(kwargs.get("rare_fraction", 0.05))
-        cfg = imbalanced_phase_preset(rare_phase=rare_phase, rare_fraction=rare_fraction)
-    elif preset == "voronoi":
-        cfg = voronoi_anisotropic_preset()
-    else:
-        raise ValueError(f"Unknown synthetic preset '{preset}'")
-    return cfg
-
-
-def _dataset_config_from_dict(cfg_dict: Dict[str, Any]) -> DatasetConfig:
-    data = deepcopy(cfg_dict)
-
-    grain_radius = data.get("grain_radius_dist")
-    if grain_radius is not None:
-        params = grain_radius.get("params") or {}
-        data["grain_radius_dist"] = GrainRadiusDistSpec(kind=grain_radius["kind"], params=dict(params))
-
-    noise_cfg = data.get("noise")
-    if noise_cfg is not None:
-        anisotropic = noise_cfg.get("anisotropic_scale")
-        if isinstance(anisotropic, list):
-            anisotropic = tuple(anisotropic)
-        data["noise"] = NoiseSpec(
-            jitter_sigma=noise_cfg["jitter_sigma"],
-            anisotropic_scale=anisotropic,
-            missing_rate=noise_cfg.get("missing_rate", 0.0),
-            outlier_rate=noise_cfg.get("outlier_rate", 0.0),
-            density_gradient=noise_cfg.get("density_gradient"),
-        )
-
-    sampler = data.get("env_center_sampler")
-    if sampler is not None:
-        data["env_center_sampler"] = EnvCenterSamplerSpec(
-            name=sampler["name"],
-            boundary_band_fraction=sampler.get("boundary_band_fraction"),
-            oversample_factor=sampler.get("oversample_factor", 1.0),
-        )
-
-    splits_cfg = data.get("splits")
-    if splits_cfg is not None:
-        ratios = splits_cfg.get("ratios")
-        if ratios is None:
-            raise ValueError("`data.synthetic.config.splits` must include `ratios`")
-        data["splits"] = SplitSpec(
-            ratios=dict(ratios),
-            holdout_unseen_rotations=splits_cfg.get("holdout_unseen_rotations", True),
-            boundary_band_fraction=splits_cfg.get("boundary_band_fraction", 0.02),
-        )
-
-    return DatasetConfig(**data)
+SynthPointCloudDataModule = SyntheticPointCloudDataModule
