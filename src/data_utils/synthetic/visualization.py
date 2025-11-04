@@ -8,129 +8,17 @@ neighborhood galleries with optional separation of intermediate phases.
 from __future__ import annotations
 
 import pathlib
-from typing import Any, Dict, Iterable, List, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 from matplotlib import cm
 from matplotlib import pyplot as plt
-from scipy.spatial import KDTree, ConvexHull, Delaunay
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from matplotlib import colors as mcolors
+from mpl_toolkits.mplot3d import proj3d
+from scipy.spatial import cKDTree
 
-
-def _compute_alpha_shape_mesh(points: np.ndarray, alpha: float = 0.3) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Compute an alpha shape (concave hull) mesh from a point cloud.
-
-    Args:
-        points: Nx3 array of 3D points
-        alpha: Alpha parameter controlling mesh tightness (smaller = tighter fit)
-
-    Returns:
-        vertices: Mx3 array of mesh vertices
-        faces: Kx3 array of triangle face indices
-    """
-    if len(points) < 4:
-        return points, np.array([])
-
-    try:
-        # Compute Delaunay triangulation
-        tri = Delaunay(points)
-
-        # Filter tetrahedra based on circumradius (alpha shape criterion)
-        tetras = tri.simplices
-        valid_faces = []
-
-        for tetra in tetras:
-            # Get the four vertices of the tetrahedron
-            tetra_points = points[tetra]
-
-            # Compute circumradius
-            # For simplicity, we use a rough approximation
-            distances = []
-            for i in range(4):
-                for j in range(i + 1, 4):
-                    distances.append(np.linalg.norm(tetra_points[i] - tetra_points[j]))
-
-            max_edge = max(distances)
-
-            # If circumradius is small enough, include the boundary faces
-            if max_edge < 1.0 / alpha:
-                # Add the four faces of the tetrahedron
-                faces = [
-                    [tetra[0], tetra[1], tetra[2]],
-                    [tetra[0], tetra[1], tetra[3]],
-                    [tetra[0], tetra[2], tetra[3]],
-                    [tetra[1], tetra[2], tetra[3]],
-                ]
-                valid_faces.extend(faces)
-
-        if not valid_faces:
-            # Fallback to convex hull
-            return _compute_convex_hull_mesh(points)
-
-        # Remove duplicate faces (interior faces appear twice)
-        face_set = {}
-        for face in valid_faces:
-            sorted_face = tuple(sorted(face))
-            face_set[sorted_face] = face_set.get(sorted_face, 0) + 1
-
-        # Keep only boundary faces (appear once)
-        boundary_faces = [face for face, count in face_set.items() if count == 1]
-
-        if not boundary_faces:
-            return _compute_convex_hull_mesh(points)
-
-        return points, np.array([list(face) for face in boundary_faces])
-
-    except Exception:
-        # Fallback to convex hull if alpha shape fails
-        return _compute_convex_hull_mesh(points)
-
-
-def _compute_convex_hull_mesh(points: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Compute a convex hull mesh from a point cloud.
-
-    Args:
-        points: Nx3 array of 3D points
-
-    Returns:
-        vertices: Mx3 array of mesh vertices
-        faces: Kx3 array of triangle face indices
-    """
-    if len(points) < 4:
-        return points, np.array([])
-
-    try:
-        hull = ConvexHull(points)
-        return points, hull.simplices
-    except Exception:
-        return points, np.array([])
-
-
-def _render_mesh_surface(ax: Any, vertices: np.ndarray, faces: np.ndarray,
-                         color: Any = 'cyan', alpha: float = 0.3,
-                         edgecolor: str = 'gray', linewidth: float = 0.5) -> None:
-    """
-    Render a triangular mesh surface on a 3D axis.
-
-    Args:
-        ax: Matplotlib 3D axis
-        vertices: Nx3 array of mesh vertices
-        faces: Kx3 array of triangle face indices
-        color: Face color
-        alpha: Transparency
-        edgecolor: Edge color
-        linewidth: Edge line width
-    """
-    if len(faces) == 0:
-        return
-
-    # Create the 3D polygon collection
-    mesh = [[vertices[face[0]], vertices[face[1]], vertices[face[2]]] for face in faces]
-    collection = Poly3DCollection(mesh, alpha=alpha, facecolor=color,
-                                  edgecolor=edgecolor, linewidth=linewidth)
-    ax.add_collection3d(collection)
+_DIAGONAL_DIRECTION = np.array([1.0, 1.0, 1.0], dtype=float) / np.sqrt(3.0)
+_DEFAULT_GRAY_RGBA = tuple(mcolors.to_rgba("gray"))
 
 
 def generate_visualizations(
@@ -153,12 +41,43 @@ def generate_visualizations(
         output_dir: Directory to write figures.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    atoms_array = np.array([atom["position"] for atom in atoms])
-    phases = [atom["phase_id"] for atom in atoms]
+    atoms_array = np.asarray([atom["position"] for atom in atoms], dtype=float)
+    phases = np.asarray([atom["phase_id"] for atom in atoms], dtype=str)
+    grain_ids = np.array(
+        [(-1 if atom.get("grain_id") is None else int(atom["grain_id"])) for atom in atoms],
+        dtype=int,
+    )
+    color_map = _build_phase_color_map(phases)
+    grain_color_map = _build_grain_color_map(grains)
 
-    _render_global_structure(global_cfg, grains, atoms, atoms_array, phases, metadata, output_dir / "figure_global.png", rng)
-    _render_global_structure_mesh(global_cfg, grains, atoms, atoms_array, phases, metadata, output_dir / "figure_global_mesh.png", rng)
-    _render_closeup_view(global_cfg, atoms, atoms_array, phases, output_dir / "figure_closeup.png", rng)
+    _render_global_structure(
+        global_cfg,
+        grains,
+        atoms,
+        atoms_array,
+        phases,
+        grain_ids,
+        metadata,
+        grain_color_map,
+        color_map,
+        output_dir / "figure_global.png",
+        rng,
+    )
+    _render_global_structure_diagonal_cut(
+        global_cfg,
+        grains,
+        atoms,
+        atoms_array,
+        phases,
+        grain_ids,
+        metadata,
+        grain_color_map,
+        color_map,
+        output_dir / "figure_global_diagonal_cut.png",
+        rng,
+        view_angles=_view_from_vector(-_DIAGONAL_DIRECTION),
+    )
+    _render_closeup_view(global_cfg, atoms, atoms_array, phases, color_map, output_dir / "figure_closeup.png", rng)
     _render_local_galleries(global_cfg, atoms, atoms_array, phases, metadata, output_dir, rng)
 
 
@@ -168,62 +87,199 @@ def _render_global_structure(
     atoms: Sequence[Dict[str, Any]],
     atom_positions: np.ndarray,
     phases: Sequence[str],
+    grain_ids: np.ndarray,
     metadata: Dict[str, Any],
+    grain_color_map: Dict[int, Any],
+    color_map: Dict[str, Any],
     output_path: pathlib.Path,
     rng: np.random.Generator,
+    view_angles: Optional[Tuple[float, float]] = None,
+) -> None:
+    _render_global_structure_core(
+        global_cfg=global_cfg,
+        grains=grains,
+        atoms=atoms,
+        atom_positions=atom_positions,
+        phases=phases,
+        grain_ids=grain_ids,
+        metadata=metadata,
+        grain_color_map=grain_color_map,
+        color_map=color_map,
+        output_path=output_path,
+        rng=rng,
+        original_indices=np.arange(len(atoms), dtype=int),
+        view_angles=view_angles,
+    )
+
+
+def _render_global_structure_diagonal_cut(
+    global_cfg: Any,
+    grains: Sequence[Dict[str, Any]],
+    atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    phases: Sequence[str],
+    grain_ids: np.ndarray,
+    metadata: Dict[str, Any],
+    grain_color_map: Dict[int, Any],
+    color_map: Dict[str, Any],
+    output_path: pathlib.Path,
+    rng: np.random.Generator,
+    view_angles: Optional[Tuple[float, float]] = None,
+) -> None:
+    if len(atoms) == 0:
+        return
+
+    mask = _diagonal_cut_mask(atom_positions, global_cfg.L)
+    if not np.any(mask):
+        return
+
+    kept_indices = np.flatnonzero(mask)
+    filtered_atoms = [atoms[int(i)] for i in kept_indices]
+    filtered_positions = atom_positions[mask]
+    filtered_phases = [phases[int(i)] for i in kept_indices]
+    filtered_grain_ids = grain_ids[mask]
+
+    _render_global_structure_core(
+        global_cfg=global_cfg,
+        grains=grains,
+        atoms=filtered_atoms,
+        atom_positions=filtered_positions,
+        phases=filtered_phases,
+        grain_ids=filtered_grain_ids,
+        metadata=metadata,
+        grain_color_map=grain_color_map,
+        color_map=color_map,
+        output_path=output_path,
+        rng=rng,
+        original_indices=kept_indices,
+        view_angles=view_angles,
+    )
+
+
+def _render_global_structure_core(
+    global_cfg: Any,
+    grains: Sequence[Dict[str, Any]],
+    atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    phases: Sequence[str],
+    grain_ids: np.ndarray,
+    metadata: Dict[str, Any],
+    grain_color_map: Dict[int, Any],
+    color_map: Dict[str, Any],
+    output_path: pathlib.Path,
+    rng: np.random.Generator,
+    original_indices: np.ndarray,
+    view_angles: Optional[Tuple[float, float]],
 ) -> None:
     total_atoms = len(atoms)
     if total_atoms == 0:
         return
-    sample_size = min(total_atoms, 3000)
-    if sample_size < total_atoms:
-        sample_indices = rng.choice(total_atoms, size=sample_size, replace=False)
+
+    original_indices = np.asarray(original_indices, dtype=int)
+    orig_to_local = {orig_idx: local_idx for local_idx, orig_idx in enumerate(original_indices)}
+
+    phase_array = np.asarray(phases, dtype=object)
+    grain_ids = np.asarray(grain_ids, dtype=int)
+
+    phase_sample_limit = 6000
+    if total_atoms <= phase_sample_limit:
+        phase_indices = np.arange(total_atoms, dtype=int)
     else:
-        sample_indices = np.arange(total_atoms)
-
-    sampled_atoms = [atoms[i] for i in sample_indices]
-    sampled_positions = atom_positions[sample_indices]
-    sampled_phases = [phases[i] for i in sample_indices]
-
-    unique_phases = sorted(set(phases))
-    color_map = {phase: cm.tab20(i / max(1, len(unique_phases) - 1)) for i, phase in enumerate(unique_phases)}
+        phase_indices = rng.choice(total_atoms, size=phase_sample_limit, replace=False)
+    phase_indices = np.asarray(phase_indices, dtype=int)
+    phase_positions = _ensure_point_array(atom_positions[phase_indices])
+    phase_ids = phase_array[phase_indices]
 
     fig = plt.figure(figsize=(16, 10))
+    border_width = 72.0 / fig.dpi
+    fig.patch.set_facecolor("white")
+    fig.patch.set_edgecolor("black")
+    fig.patch.set_linewidth(border_width)
 
-    # Phases overview with shadows
+    # Phases overview
     ax1 = fig.add_subplot(231, projection="3d")
-    for pos, phase in zip(sampled_positions, sampled_phases):
-        ax1.scatter(*pos, color=color_map[phase], s=12, depthshade=True)
-    # Add shadow projections on bottom plane
-    ax1.scatter(sampled_positions[:, 0], sampled_positions[:, 1],
-                np.zeros(len(sampled_positions)), color='gray', s=2, alpha=0.2)
+    for phase in color_map:
+        mask = phase_ids == phase
+        if not np.any(mask):
+            continue
+        points = phase_positions[mask]
+        ax1.scatter(
+            points[:, 0],
+            points[:, 1],
+            points[:, 2],
+            color=color_map[phase],
+            s=12,
+            depthshade=True,
+            edgecolors="black",
+            linewidths=0.2,
+        )
     ax1.set_title("Phases")
     _set_cube_axes(ax1, global_cfg.L)
+    _add_axes_border(ax1, linewidth=border_width)
 
-    # Intermediate phases
+    # Intermediate phases (full point set)
     ax2 = fig.add_subplot(232, projection="3d")
-    for atom in sampled_atoms:
-        if atom["phase_id"].startswith("intermediate_"):
-            ax2.scatter(*atom["position"], color=color_map[atom["phase_id"]], s=12)
+    for phase in color_map:
+        if not str(phase).startswith("intermediate_"):
+            continue
+        mask = phase_array == phase
+        if not np.any(mask):
+            continue
+        points = _ensure_point_array(atom_positions[mask])
+        ax2.scatter(
+            points[:, 0],
+            points[:, 1],
+            points[:, 2],
+            color=color_map.get(phase, _DEFAULT_GRAY_RGBA),
+            s=12,
+            depthshade=True,
+            edgecolors="black",
+            linewidths=0.2,
+        )
     ax2.set_title("Intermediate phases")
     _set_cube_axes(ax2, global_cfg.L)
+    _add_axes_border(ax2, linewidth=border_width)
 
-    # Grain boundaries
+    # Grain boundaries (full point set)
     ax3 = fig.add_subplot(233, projection="3d")
-    boundary_atoms = [
-        atom for atom in atoms if atom["phase_id"].startswith("intermediate_") or _is_boundary_atom(atom, grains, global_cfg.L)
-    ]
-    if boundary_atoms:
-        boundary_sample_size = min(len(boundary_atoms), 4000)
-        if boundary_sample_size == len(boundary_atoms):
-            boundary_indices = range(len(boundary_atoms))
-        else:
-            boundary_indices = rng.choice(len(boundary_atoms), size=boundary_sample_size, replace=False)
-        for idx in boundary_indices:
-            atom = boundary_atoms[int(idx)]
-            ax3.scatter(*atom["position"], color="gray", s=12)
+    intermediate_mask = np.fromiter(
+        (str(phase).startswith("intermediate_") for phase in phase_array),
+        dtype=bool,
+        count=len(phase_array),
+    )
+    if np.any(intermediate_mask):
+        inter_positions = _ensure_point_array(atom_positions[intermediate_mask])
+        inter_phases = phase_array[intermediate_mask]
+        inter_colors = [color_map.get(phase, _DEFAULT_GRAY_RGBA) for phase in inter_phases]
+        ax3.scatter(
+            inter_positions[:, 0],
+            inter_positions[:, 1],
+            inter_positions[:, 2],
+            c=inter_colors,
+            s=12,
+            depthshade=True,
+            edgecolors="black",
+            linewidths=0.2,
+        )
+
+    boundary_mask, _ = _compute_boundary_indices(atom_positions, grain_ids, grains)
+    if np.any(boundary_mask):
+        boundary_positions = _ensure_point_array(atom_positions[boundary_mask])
+        boundary_grains = grain_ids[boundary_mask]
+        boundary_colors = [grain_color_map.get(int(g), _DEFAULT_GRAY_RGBA) for g in boundary_grains]
+        ax3.scatter(
+            boundary_positions[:, 0],
+            boundary_positions[:, 1],
+            boundary_positions[:, 2],
+            c=boundary_colors,
+            s=14,
+            depthshade=True,
+            edgecolors="black",
+            linewidths=0.25,
+        )
     ax3.set_title("Grain boundaries")
     _set_cube_axes(ax3, global_cfg.L)
+    _add_axes_border(ax3, linewidth=border_width)
 
     # Grain orientations
     ax4 = fig.add_subplot(234, projection="3d")
@@ -244,249 +300,148 @@ def _render_global_structure(
         )
     ax4.set_title("Grain orientations")
     _set_cube_axes(ax4, global_cfg.L)
+    _add_axes_border(ax4, linewidth=border_width)
 
     # Perturbation overview
     ax5 = fig.add_subplot(235, projection="3d")
     perturb = metadata.get("perturbations", {})
     for bubble in perturb.get("rotation_bubbles", []):
         center = np.array(bubble["center"])
-        ax5.scatter(*center, color="orange", s=60, marker="^")
+        ax5.scatter(
+            *center,
+            color="orange",
+            s=60,
+            marker="^",
+            edgecolors="black",
+            linewidths=0.5,
+        )
     for bubble in perturb.get("density_bubbles", []):
         center = np.array(bubble["center"])
         color = "blue" if bubble["alpha"] > 0 else "red"
-        ax5.scatter(*center, color=color, s=60, marker="o")
+        ax5.scatter(
+            *center,
+            color=color,
+            s=60,
+            marker="o",
+            edgecolors="black",
+            linewidths=0.5,
+        )
     for event in perturb.get("dropouts", {}).get("events", []):
         idx = event.get("removed_atom_final_index")
-        if idx is None or idx >= len(atom_positions):
+        if idx is None:
             continue
-        position = atom_positions[idx]
-        ax5.scatter(*position, color="black", marker="x", s=50)
+        local_idx = orig_to_local.get(int(idx))
+        if local_idx is None or local_idx >= len(atom_positions):
+            continue
+        position = atom_positions[local_idx]
+        ax5.scatter(
+            *position,
+            color="black",
+            marker="x",
+            s=50,
+            linewidths=0.5,
+        )
     ax5.set_title("Perturbations")
     _set_cube_axes(ax5, global_cfg.L)
+    _add_axes_border(ax5, linewidth=border_width)
 
     fig.tight_layout()
-    fig.savefig(output_path, dpi=200)
+    if view_angles is not None:
+        for axis in fig.axes:
+            if hasattr(axis, "view_init"):
+                axis.view_init(elev=view_angles[0], azim=view_angles[1])
+
+    fig.savefig(output_path, dpi=300)
     plt.close(fig)
-
-
-def _render_global_structure_mesh(
-    global_cfg: Any,
-    grains: Sequence[Dict[str, Any]],
-    atoms: Sequence[Dict[str, Any]],
-    atom_positions: np.ndarray,
-    phases: Sequence[str],
-    metadata: Dict[str, Any],
-    output_path: pathlib.Path,
-    rng: np.random.Generator,
-) -> None:
-    """Render global structure with mesh-based visualizations for boundaries and phases."""
-    total_atoms = len(atoms)
-    if total_atoms == 0:
-        return
-
-    unique_phases = sorted(set(phases))
-    color_map = {phase: cm.tab20(i / max(1, len(unique_phases) - 1)) for i, phase in enumerate(unique_phases)}
-
-    fig = plt.figure(figsize=(16, 10))
-
-    # Phases as mesh
-    ax1 = fig.add_subplot(231, projection="3d")
-    phase_to_points = {}
-    for i, phase in enumerate(phases):
-        if phase not in phase_to_points:
-            phase_to_points[phase] = []
-        phase_to_points[phase].append(atom_positions[i])
-
-    for phase, points in phase_to_points.items():
-        if len(points) >= 4:
-            points_array = np.array(points)
-            # Sample if too many points for mesh computation
-            if len(points_array) > 500:
-                sample_indices = rng.choice(len(points_array), size=500, replace=False)
-                points_array = points_array[sample_indices]
-
-            vertices, faces = _compute_convex_hull_mesh(points_array)
-            if len(faces) > 0:
-                _render_mesh_surface(ax1, vertices, faces, color=color_map[phase],
-                                    alpha=0.3, edgecolor='darkgray', linewidth=0.3)
-    ax1.set_title("Phases (Mesh)")
-    _set_cube_axes(ax1, global_cfg.L)
-
-    # Intermediate phases as mesh
-    ax2 = fig.add_subplot(232, projection="3d")
-    intermediate_points = []
-    for atom in atoms:
-        if atom["phase_id"].startswith("intermediate_"):
-            intermediate_points.append(atom["position"])
-
-    if len(intermediate_points) >= 4:
-        intermediate_array = np.array(intermediate_points)
-        if len(intermediate_array) > 800:
-            sample_indices = rng.choice(len(intermediate_array), size=800, replace=False)
-            intermediate_array = intermediate_array[sample_indices]
-
-        vertices, faces = _compute_convex_hull_mesh(intermediate_array)
-        if len(faces) > 0:
-            _render_mesh_surface(ax2, vertices, faces, color='purple',
-                                alpha=0.4, edgecolor='darkviolet', linewidth=0.5)
-    ax2.set_title("Intermediate phases (Mesh)")
-    _set_cube_axes(ax2, global_cfg.L)
-
-    # Grain boundaries as mesh
-    ax3 = fig.add_subplot(233, projection="3d")
-    boundary_atoms = [
-        atom for atom in atoms if atom["phase_id"].startswith("intermediate_") or _is_boundary_atom(atom, grains, global_cfg.L)
-    ]
-    if len(boundary_atoms) >= 4:
-        boundary_positions = np.array([atom["position"] for atom in boundary_atoms])
-        boundary_sample_size = min(len(boundary_positions), 1000)
-        if boundary_sample_size < len(boundary_positions):
-            boundary_indices = rng.choice(len(boundary_positions), size=boundary_sample_size, replace=False)
-            boundary_positions = boundary_positions[boundary_indices]
-
-        vertices, faces = _compute_convex_hull_mesh(boundary_positions)
-        if len(faces) > 0:
-            _render_mesh_surface(ax3, vertices, faces, color='gray',
-                                alpha=0.5, edgecolor='black', linewidth=0.4)
-    ax3.set_title("Grain boundaries (Mesh)")
-    _set_cube_axes(ax3, global_cfg.L)
-
-    # Phase boundaries as mesh (boundaries between different phases)
-    ax4 = fig.add_subplot(234, projection="3d")
-    # Build KDTree for neighbor search
-    tree = KDTree(atom_positions)
-    phase_boundary_points = []
-    sample_size = min(total_atoms, 5000)
-    sample_indices = rng.choice(total_atoms, size=sample_size, replace=False)
-
-    for idx in sample_indices:
-        atom = atoms[idx]
-        phase = atom["phase_id"]
-        pos = atom["position"]
-
-        # Query nearest neighbors
-        neighbors_idx = tree.query_ball_point(pos, r=global_cfg.avg_nn_dist * 1.5)
-        neighbor_phases = [phases[n] for n in neighbors_idx if n != idx]
-
-        # If any neighbor has a different phase, this is a phase boundary point
-        if any(np != phase for np in neighbor_phases):
-            phase_boundary_points.append(pos)
-
-    if len(phase_boundary_points) >= 4:
-        phase_boundary_array = np.array(phase_boundary_points)
-        if len(phase_boundary_array) > 800:
-            sample_indices = rng.choice(len(phase_boundary_array), size=800, replace=False)
-            phase_boundary_array = phase_boundary_array[sample_indices]
-
-        vertices, faces = _compute_convex_hull_mesh(phase_boundary_array)
-        if len(faces) > 0:
-            _render_mesh_surface(ax4, vertices, faces, color='cyan',
-                                alpha=0.4, edgecolor='teal', linewidth=0.4)
-    ax4.set_title("Phase boundaries (Mesh)")
-    _set_cube_axes(ax4, global_cfg.L)
-
-    # Grain orientations (same as before)
-    ax5 = fig.add_subplot(235, projection="3d")
-    for grain in grains:
-        seed = grain["seed_position"]
-        rotation = grain["base_rotation"]
-        axes = rotation @ np.eye(3) * global_cfg.avg_nn_dist
-        ax5.quiver(
-            np.full(3, seed[0]),
-            np.full(3, seed[1]),
-            np.full(3, seed[2]),
-            axes[0, :],
-            axes[1, :],
-            axes[2, :],
-            color=["r", "g", "b"],
-            length=global_cfg.avg_nn_dist,
-            normalize=False,
-        )
-    ax5.set_title("Grain orientations")
-    _set_cube_axes(ax5, global_cfg.L)
-
-    # Perturbation overview (same as before)
-    ax6 = fig.add_subplot(236, projection="3d")
-    perturb = metadata.get("perturbations", {})
-    for bubble in perturb.get("rotation_bubbles", []):
-        center = np.array(bubble["center"])
-        ax6.scatter(*center, color="orange", s=60, marker="^")
-    for bubble in perturb.get("density_bubbles", []):
-        center = np.array(bubble["center"])
-        color = "blue" if bubble["alpha"] > 0 else "red"
-        ax6.scatter(*center, color=color, s=60, marker="o")
-    for event in perturb.get("dropouts", {}).get("events", []):
-        idx = event.get("removed_atom_final_index")
-        if idx is None or idx >= len(atom_positions):
-            continue
-        position = atom_positions[idx]
-        ax6.scatter(*position, color="black", marker="x", s=50)
-    ax6.set_title("Perturbations")
-    _set_cube_axes(ax6, global_cfg.L)
-
-    fig.tight_layout()
-    fig.savefig(output_path, dpi=200)
-    plt.close(fig)
-
 
 def _render_closeup_view(
     global_cfg: Any,
     atoms: Sequence[Dict[str, Any]],
     atom_positions: np.ndarray,
     phases: Sequence[str],
+    color_map: Dict[str, Any],
     output_path: pathlib.Path,
     rng: np.random.Generator,
 ) -> None:
-    """Render a close-up view showing 1/8 of the volume with full point density."""
+    """Render a close-up view showing 1/16 of the volume with full point density,
+    plus a highlighted diagonal slice on the same picture.
+    """
     total_atoms = len(atoms)
     if total_atoms == 0:
         return
 
-    # Select 1/8 of the volume (corner region)
+    # Select 1/16 of the volume (corner region)
     L = global_cfg.L
     corner_min = np.array([0, 0, 0])
-    corner_max = np.array([L / 2, L / 2, L / 2])
+    corner_max = np.array([L / 2, L / 2, L / 4])  # 1/16 volume
 
     # Filter atoms in this region
-    closeup_indices = []
-    for i, pos in enumerate(atom_positions):
-        if np.all(pos >= corner_min) and np.all(pos <= corner_max):
-            closeup_indices.append(i)
+    mask = np.all((atom_positions >= corner_min) & (atom_positions <= corner_max), axis=1)
+    closeup_indices = np.flatnonzero(mask)
 
-    if len(closeup_indices) == 0:
+    if closeup_indices.size == 0:
         return
 
-    closeup_atoms = [atoms[i] for i in closeup_indices]
-    closeup_positions = atom_positions[closeup_indices]
-    closeup_phases = [phases[i] for i in closeup_indices]
-
-    unique_phases = sorted(set(phases))
-    color_map = {phase: cm.tab20(i / max(1, len(unique_phases) - 1)) for i, phase in enumerate(unique_phases)}
+    closeup_positions = _ensure_point_array(atom_positions[closeup_indices])
+    closeup_phases = np.asarray(phases)[closeup_indices]
 
     fig = plt.figure(figsize=(12, 12))
     ax = fig.add_subplot(111, projection="3d")
 
-    # Render all points with shadows
-    for pos, phase in zip(closeup_positions, closeup_phases):
-        ax.scatter(*pos, color=color_map[phase], s=15, depthshade=True, alpha=0.8)
+    # --- original rendering of all points (unchanged) ---
+    for phase in np.unique(closeup_phases):
+        phase_mask = closeup_phases == phase
+        points = _ensure_point_array(closeup_positions[phase_mask])
+        if not points.size:
+            continue
+        ax.scatter(
+            points[:, 0],
+            points[:, 1],
+            points[:, 2],
+            color=color_map.get(phase, _DEFAULT_GRAY_RGBA),
+            s=15,
+            depthshade=True,
+            alpha=0.8,
+            edgecolors="black",
+            linewidths=0.5,
+        )
 
-    # Add shadow projections on bottom plane
-    ax.scatter(closeup_positions[:, 0], closeup_positions[:, 1],
-               np.full(len(closeup_positions), corner_min[2]),
-               color='gray', s=3, alpha=0.15)
+    # --- diagonal slice overlay (added) ---
+    # points within a small distance of the long diagonal get highlighted
+    diag_thickness_frac = 0.02  # ~2% of the long-diagonal length; adjust as you like
 
-    # Add shadow projections on back wall (Y-Z plane)
-    ax.scatter(np.full(len(closeup_positions), corner_min[0]),
-               closeup_positions[:, 1], closeup_positions[:, 2],
-               color='gray', s=3, alpha=0.15)
+    diag_p0 = corner_min.astype(float)
+    diag_v = corner_max.astype(float) - corner_min.astype(float)
+    diag_len = np.linalg.norm(diag_v)
+    if diag_len > 0:
+        d_hat = diag_v / diag_len
+        V = closeup_positions - diag_p0[None, :]
+        # distance from point to line in 3D: || (p - p0) x d_hat ||
+        dist = np.linalg.norm(np.cross(V, d_hat[None, :]), axis=1)
+        slab_thickness = diag_thickness_frac * diag_len
+        keep = dist <= slab_thickness
 
-    # Add shadow projections on side wall (X-Z plane)
-    ax.scatter(closeup_positions[:, 0],
-               np.full(len(closeup_positions), corner_min[1]),
-               closeup_positions[:, 2],
-               color='gray', s=3, alpha=0.15)
+        if np.any(keep):
+            slice_pos = _ensure_point_array(closeup_positions[keep])
+            slice_phases = closeup_phases[keep]
+            slice_colors = [color_map.get(p, _DEFAULT_GRAY_RGBA) for p in slice_phases]
 
-    ax.set_title(f"Close-up view (1/8 volume, {len(closeup_indices)} atoms)")
+            # draw the diagonal line for orientation
+            ax.plot(
+                [corner_min[0], corner_max[0]],
+                [corner_min[1], corner_max[1]],
+                [corner_min[2], corner_max[2]],
+                color='k', linewidth=1.0, alpha=0.6
+            )
+
+            # overlay highlighted slice points (slightly bigger, fully opaque, light edge)
+            ax.scatter(
+                slice_pos[:, 0], slice_pos[:, 1], slice_pos[:, 2],
+                c=slice_colors, s=28, depthshade=True, alpha=1.0,
+                edgecolors="black", linewidths=0.6
+            )
+
+    ax.set_title(f"Close-up (1/16 volume, {len(closeup_indices)} points)")
     ax.set_xlim(corner_min[0], corner_max[0])
     ax.set_ylim(corner_min[1], corner_max[1])
     ax.set_zlim(corner_min[2], corner_max[2])
@@ -494,6 +449,9 @@ def _render_closeup_view(
     fig.tight_layout()
     fig.savefig(output_path, dpi=300)
     plt.close(fig)
+
+
+
 
 
 def _render_local_galleries(
@@ -507,7 +465,7 @@ def _render_local_galleries(
 ) -> None:
     base_phases = sorted({phase for phase in phases if not phase.startswith("intermediate_")})
     intermediate_phases = sorted({phase for phase in phases if phase.startswith("intermediate_")})
-    positions_tree = KDTree(atom_positions)
+    positions_tree = cKDTree(atom_positions)
 
     _render_local_gallery(
         title="Base phases",
@@ -537,7 +495,7 @@ def _render_local_gallery(
     selected_phases: Sequence[str],
     atoms: Sequence[Dict[str, Any]],
     atom_positions: np.ndarray,
-    positions_tree: KDTree,
+    positions_tree: cKDTree,
     global_cfg: Any,
     rng: np.random.Generator,
 ) -> None:
@@ -592,7 +550,7 @@ def _plot_local_neighborhood(
     center_atom: Dict[str, Any],
     atoms: Sequence[Dict[str, Any]],
     atom_positions: np.ndarray,
-    positions_tree: KDTree,
+    positions_tree: cKDTree,
     global_cfg: Any,
     target_count: int,
 ) -> None:
@@ -600,12 +558,12 @@ def _plot_local_neighborhood(
     center_pos = center_atom["position"]
 
     idxs = positions_tree.query_ball_point(center_pos, r=radius)
-    coords = atom_positions[idxs] - center_pos
+    coords = _ensure_point_array(atom_positions[idxs]) - center_pos
 
     # If we have fewer than target_count points, fall back to nearest-neighbour query
     if len(coords) < target_count:
         _, nn_indices = positions_tree.query(center_pos, k=min(target_count, len(atom_positions)))
-        coords = atom_positions[nn_indices] - center_pos
+        coords = _ensure_point_array(atom_positions[np.atleast_1d(nn_indices)]) - center_pos
 
     if len(coords) > target_count:
         coords = coords[:target_count]
@@ -614,14 +572,22 @@ def _plot_local_neighborhood(
         rotation = center_atom["orientation"]
         coords = (rotation.T @ coords.T).T
 
-    ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2], s=25, alpha=0.9)
+    ax.scatter(
+        coords[:, 0],
+        coords[:, 1],
+        coords[:, 2],
+        s=25,
+        alpha=0.9,
+        edgecolors="black",
+        linewidths=0.3,
+    )
 
     if coords.shape[0] > 1:
-        neighbor_tree = KDTree(coords)
+        neighbor_tree = cKDTree(coords)
         drawn_pairs = set()
         k = min(4, coords.shape[0])
         for idx, point in enumerate(coords):
-            distances, neighbor_indices = neighbor_tree.query(point, k=k)
+            _, neighbor_indices = neighbor_tree.query(point, k=k)
             if k == 1:
                 continue
             if np.isscalar(neighbor_indices):
@@ -651,21 +617,107 @@ def _plot_local_neighborhood(
     ax.set_zlim(-limit, limit)
 
 
+def _build_phase_color_map(phases: Sequence[str]) -> Dict[str, Any]:
+    unique_phases = sorted(set(map(str, phases)))
+    if not unique_phases:
+        return {}
+    denom = max(1, len(unique_phases) - 1)
+    return {phase: tuple(map(float, cm.tab20(i / denom))) for i, phase in enumerate(unique_phases)}
+
+
+def _build_grain_color_map(grains: Sequence[Dict[str, Any]]) -> Dict[int, Any]:
+    grain_ids = sorted(
+        {
+            int(grain["grain_id"])
+            for grain in grains
+            if grain.get("grain_id") is not None
+        }
+    )
+    if not grain_ids:
+        return {}
+    cmap = cm.get_cmap("gist_ncar")
+    denom = max(1, len(grain_ids) - 1)
+    return {gid: tuple(map(float, cmap(i / denom))) for i, gid in enumerate(grain_ids)}
+
+
+def _compute_boundary_indices(
+    atom_positions: np.ndarray,
+    grain_ids: np.ndarray,
+    grains: Sequence[Dict[str, Any]],
+) -> Tuple[np.ndarray, np.ndarray]:
+    if atom_positions.size == 0 or grain_ids.size == 0:
+        return np.zeros(len(atom_positions), dtype=bool), np.full(len(atom_positions), -1, dtype=int)
+
+    grain_positions = np.asarray([grain["seed_position"] for grain in grains], dtype=float)
+    num_grains = grain_positions.shape[0]
+    if num_grains < 2:
+        mask = grain_ids < 0
+        return mask, np.full(len(atom_positions), -1, dtype=int)
+
+    tree = cKDTree(grain_positions)
+    _, neighbor_indices = tree.query(atom_positions, k=2)
+    neighbor_indices = np.asarray(neighbor_indices, dtype=int)
+    if neighbor_indices.ndim == 1:
+        neighbor_indices = neighbor_indices[np.newaxis, :]
+
+    second_nearest = neighbor_indices[:, -1]
+    mask = (grain_ids < 0) | (grain_ids >= num_grains)
+    valid = ~mask
+    mask[valid] |= second_nearest[valid] != grain_ids[valid]
+    return mask, second_nearest
+
+
+def _view_from_vector(direction: np.ndarray) -> Tuple[float, float]:
+    vec = np.asarray(direction, dtype=float)
+    if vec.shape != (3,):
+        raise ValueError("direction must be a 3-element vector")
+    norm = np.linalg.norm(vec)
+    if norm == 0.0:
+        return 0.0, 0.0
+    vec = vec / norm
+    azim = float(np.degrees(np.arctan2(vec[1], vec[0])))
+    xy_hypot = float(np.hypot(vec[0], vec[1]))
+    elev = float(np.degrees(np.arctan2(vec[2], xy_hypot)))
+    return elev, azim
+
+
+def _ensure_point_array(points: Any) -> np.ndarray:
+    arr = np.asarray(points, dtype=float)
+    if arr.ndim == 1:
+        if arr.size == 0:
+            return arr.reshape(0, 3)
+        if arr.size % 3 != 0:
+            raise ValueError("Point array must have multiples of three components")
+        return arr.reshape(-1, 3)
+    return arr
+
+
+def _add_axes_border(ax: Any, linewidth: float = 1.0, color: str = "black") -> None:
+    """Ensure a visible border around 3D axes."""
+    try:
+        ax.patch.set_edgecolor(color)
+        ax.patch.set_linewidth(linewidth)
+    except Exception:
+        pass
+    for spine in getattr(ax, "spines", {}).values():
+        spine.set_linewidth(linewidth)
+        spine.set_color(color)
+
+
 def _set_cube_axes(ax: Any, box_size: float) -> None:
     ax.set_xlim(0, box_size)
     ax.set_ylim(0, box_size)
     ax.set_zlim(0, box_size)
 
 
-def _is_boundary_atom(atom: Dict[str, Any], grains: Sequence[Dict[str, Any]], box_size: float) -> bool:
-    if atom["grain_id"] is None:
-        return True
-    grain_positions = np.array([grain["seed_position"] for grain in grains])
-    dists = np.linalg.norm(grain_positions - atom["position"], axis=1)
-    if len(dists) < 2:
-        return False
-    nearest_indices = np.argsort(dists)[:2]
-    return nearest_indices[1] != atom["grain_id"]
+def _diagonal_cut_mask(atom_positions: np.ndarray, box_size: float) -> np.ndarray:
+    """Keep half of the volume by slicing with a plane perpendicular to the long diagonal."""
+    if atom_positions.size == 0:
+        return np.zeros(len(atom_positions), dtype=bool)
+    center = np.full(3, box_size / 2.0)
+    relative = atom_positions - center
+    projection = relative @ _DIAGONAL_DIRECTION
+    return projection <= 0.0
 
 
 __all__ = ["generate_visualizations"]

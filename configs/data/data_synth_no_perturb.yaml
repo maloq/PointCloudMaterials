@@ -1,5 +1,5 @@
 global:
-  L: 78.2973528234                    # Cube side length matching previous target count at rho_target
+  L: 75.0                    # Cube side length matching previous target count at rho_target
   rho_target: 0.25                     # Maintain identical global density
   avg_nn_dist: 1.0                     # Use same nearest-neighbor distance scaling
   grain_count: 8                       # Keep grain tessellation identical
