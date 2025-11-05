@@ -172,6 +172,7 @@ class SyntheticPointCloudDataset(Dataset):
         pre_normalize: bool = True,
         normalize: bool = True,
         max_samples: Optional[int] = None,
+        discard_mixed_phase: bool = False,
     ) -> None:
         super().__init__()
         if not env_dirs:
@@ -185,6 +186,7 @@ class SyntheticPointCloudDataset(Dataset):
         self.pre_normalize = pre_normalize
         self.normalize = normalize
         self.max_samples = max_samples if max_samples is not None and max_samples > 0 else None
+        self.discard_mixed_phase = discard_mixed_phase
 
         # Store as tensors to avoid conversion overhead
         self.samples: List[torch.Tensor] = []
@@ -230,15 +232,35 @@ class SyntheticPointCloudDataset(Dataset):
         atom_to_meta_idx = self._build_efficient_atom_metadata(metadata, env_label, points.shape[0])
         position_tree = cKDTree(points)
 
+        # Build atom-to-phase mapping if needed for phase purity checking
+        atom_phases = None
+        if self.discard_mixed_phase:
+            atom_phases = self._build_atom_phase_map(metadata, points.shape[0])
+
         samples = self._sample_points(points)
         if not samples:
             logger.print(f"No samples generated for {env_label}")
             return
 
+        samples_before = len(self.samples)
+        discarded_mixed_phase = 0
+
         for sample_points, center in samples:
             center = np.asarray(center, dtype=np.float64)
             _, idx = position_tree.query(center.reshape(1, -1), k=1)
             atom_idx = int(idx[0])
+
+            # Check for phase purity if enabled
+            if self.discard_mixed_phase:
+                # Query all atoms within the sampling radius
+                atom_indices = position_tree.query_ball_point(center, self.radius)
+                if len(atom_indices) > 0:
+                    sample_phases = atom_phases[atom_indices]
+                    unique_phases = np.unique(sample_phases)
+                    # Discard if multiple phases are present
+                    if len(unique_phases) > 1:
+                        discarded_mixed_phase += 1
+                        continue
 
             # Look up metadata on-demand
             meta = atom_to_meta_idx[atom_idx]
@@ -256,10 +278,18 @@ class SyntheticPointCloudDataset(Dataset):
             if self.max_samples is not None and len(self.samples) >= self.max_samples:
                 break
 
-        logger.print(
-            f"Ingested {len(samples)} samples from {env_label}; "
-            f"dataset total now {len(self.samples)}"
-        )
+        samples_added = len(self.samples) - samples_before
+        if self.discard_mixed_phase and discarded_mixed_phase > 0:
+            logger.print(
+                f"Ingested {samples_added} samples from {env_label} "
+                f"({discarded_mixed_phase} mixed-phase samples discarded); "
+                f"dataset total now {len(self.samples)}"
+            )
+        else:
+            logger.print(
+                f"Ingested {samples_added} samples from {env_label}; "
+                f"dataset total now {len(self.samples)}"
+            )
 
     def _sample_points(self, points: np.ndarray) -> List[Tuple[np.ndarray, np.ndarray]]:
         if self.sample_type == "regular":
@@ -293,6 +323,38 @@ class SyntheticPointCloudDataset(Dataset):
         if self.normalize:
             return sample_points.astype(np.float32)
         return sample_points
+
+    def _build_atom_phase_map(
+        self,
+        metadata: Dict[str, Any],
+        num_atoms: int,
+    ) -> np.ndarray:
+        """Build efficient atom-to-phase mapping for phase purity checking.
+
+        Returns:
+            Array of shape (num_atoms,) where each element is the phase_id string.
+            Uses object dtype for variable-length strings.
+        """
+        # Initialize all atoms as "unknown" phase
+        atom_phases = np.full(num_atoms, "unknown", dtype=object)
+
+        # Assign phases from grains
+        for grain in metadata.get("grains", []):
+            phase_id = grain["base_phase_id"]
+            atom_indices = np.array(grain.get("atom_indices", []), dtype=np.int32)
+            if len(atom_indices) > 0:
+                valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
+                atom_phases[atom_indices[valid_mask]] = phase_id
+
+        # Assign phases from intermediate regions (overwrites grain assignments)
+        for region in metadata.get("intermediate_regions", []):
+            phase_id = region.get("intermediate_phase_id", "intermediate")
+            atom_indices = np.array(region.get("atom_indices", []), dtype=np.int32)
+            if len(atom_indices) > 0:
+                valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
+                atom_phases[atom_indices[valid_mask]] = phase_id
+
+        return atom_phases
 
     def _build_efficient_atom_metadata(
         self,

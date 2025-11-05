@@ -1,7 +1,7 @@
 kind: synthetic
 data_path: output/synthetic_data/baseline_box_no_perturb
 num_points: 80
-radius: 1.2
+radius: 4.5
 sample_type: regular
 overlap_fraction: 0.5
 n_samples: 0
@@ -13,11 +13,11 @@ normalize: true
 synthetic:
   data_dir: output/synthetic_data/baseline_box_no_perturb
 global:
-  L: 80.0                    # Cube side length matching previous target count at rho_target
+  L: 180.0                    # Cube side length matching previous target count at rho_target
   rho_target: 0.25                     # Maintain identical global density
   avg_nn_dist: 1.0                     # Use same nearest-neighbor distance scaling
   grain_count: 8                       # Keep grain tessellation identical
-  intermediate_layer_thickness_factor: 0.75  # Preserve interface thickness for comparability
+  intermediate_layer_thickness_factor: 3.0  # Preserve interface thickness for comparability
   random_seed: 42                      # Match random seed for structural reproducibility
   output_dir: output/synthetic_data/baseline_box_no_perturb  # Output directory for perturbation-free variant
 
@@ -99,9 +99,9 @@ grain_assignment:
   explicit:
     - crystal_fcc                      # Grain 0
     - crystal_bcc                      # Grain 1
-    - amorphous_repeat                 # Grain 2
+    - amorphous_mixed                  # Grain 2
     - amorphous_random                 # Grain 3
     - crystal_fcc                      # Grain 4
     - amorphous_mixed                  # Grain 5
     - crystal_bcc                      # Grain 6
-    - amorphous_repeat                 # Grain 7
+    - amorphous_random                 # Grain 7

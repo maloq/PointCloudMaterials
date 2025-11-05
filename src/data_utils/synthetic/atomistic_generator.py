@@ -267,6 +267,8 @@ class SyntheticAtomisticDatasetGenerator:
         self._start_time = time.perf_counter()
 
         self.reference_structures: Dict[str, Dict[str, Any]] = {}
+        self.reference_point_clouds: Dict[str, np.ndarray] = {}
+        self.reference_point_count: int = 80
         self.grains: List[Dict[str, Any]] = []
         self.intermediate_regions: Dict[Tuple[int, int], Dict[str, Any]] = {}
         self.interface_candidates: Dict[Tuple[int, int], Dict[str, Any]] = {}
@@ -293,6 +295,10 @@ class SyntheticAtomisticDatasetGenerator:
         for phase_name, phase_cfg in self.phase_cfgs.items():
             recipe = self._build_phase_recipe(phase_cfg)
             self.reference_structures[phase_name] = recipe
+            self.reference_point_clouds[phase_name] = self._build_reference_point_cloud(
+                recipe,
+                target_points=self.reference_point_count,
+            )
         self._progress("Reference structures constructed")
 
     def _build_phase_recipe(self, phase_cfg: PhaseConfig) -> Dict[str, Any]:
@@ -348,8 +354,8 @@ class SyntheticAtomisticDatasetGenerator:
     def _build_amorphous_repeat_recipe(self, phase_cfg: PhaseConfig) -> Dict[str, Any]:
         params = phase_cfg.structural_params
         avg_nn = self.global_cfg.avg_nn_dist
-        cell_size = float(params.get("cell_size", 2.5 * avg_nn))
         n_points = int(params.get("motif_point_count", 12))
+        cell_size = float(params.get("cell_size", 2.5 * avg_nn))
         min_sep = float(params.get("min_pair_dist", 0.8 * avg_nn))
         rng = np.random.default_rng(self.rng.integers(0, 1_000_000))
         motif: List[np.ndarray] = []
@@ -371,6 +377,185 @@ class SyntheticAtomisticDatasetGenerator:
             "cell_size": cell_size,
             "min_pair_dist": min_sep,
         }
+
+    def _build_reference_point_cloud(
+        self,
+        recipe: Dict[str, Any],
+        target_points: int = 80,
+    ) -> np.ndarray:
+        rng = np.random.default_rng(self.rng.integers(0, 1_000_000))
+        phase_type = recipe.get("phase_type", "")
+        if phase_type in {"crystal_fcc", "crystal_bcc", "amorphous_repeat"}:
+            raw_points = self._sample_structured_reference_points(recipe, target_points)
+        elif phase_type == "amorphous_random":
+            raw_points = self._sample_amorphous_reference_points(recipe, target_points, rng)
+        elif phase_type == "amorphous_mixed":
+            raw_points = self._sample_amorphous_mixed_reference_points(recipe, target_points, rng)
+        else:
+            return np.zeros((0, 3), dtype=np.float32)
+        return self._finalize_reference_point_cloud(raw_points, target_points, rng)
+
+    def _sample_structured_reference_points(
+        self,
+        recipe: Dict[str, Any],
+        target_points: int,
+    ) -> np.ndarray:
+        if recipe.get("phase_type") == "amorphous_repeat":
+            cell_vectors = np.asarray(recipe.get("tile_vectors"), dtype=float)
+            motif = np.asarray(recipe.get("motif"), dtype=float)
+            motif_fractional = False
+        else:
+            cell_vectors = np.asarray(recipe.get("lattice_vectors"), dtype=float)
+            motif = np.asarray(recipe.get("motif"), dtype=float)
+            motif_fractional = True
+
+        if cell_vectors.size == 0 or motif.size == 0:
+            return np.zeros((0, 3), dtype=float)
+
+        motif_offsets = motif @ cell_vectors if motif_fractional else motif
+        points_per_cell = motif_offsets.shape[0]
+        if points_per_cell == 0:
+            return np.zeros((0, 3), dtype=float)
+
+        cells_per_dim = max(1, math.ceil((target_points / points_per_cell) ** (1.0 / 3.0)))
+        index_range = range(-cells_per_dim, cells_per_dim + 1)
+
+        positions: List[np.ndarray] = []
+        for i in index_range:
+            base_i = i * cell_vectors[0]
+            for j in index_range:
+                base_j = base_i + j * cell_vectors[1]
+                for k in index_range:
+                    lattice_origin = base_j + k * cell_vectors[2]
+                    for motif_offset in motif_offsets:
+                        positions.append(lattice_origin + motif_offset)
+
+        if not positions:
+            return np.zeros((0, 3), dtype=float)
+        return np.asarray(positions, dtype=float)
+
+    def _sample_amorphous_reference_points(
+        self,
+        recipe: Dict[str, Any],
+        target_points: int,
+        rng: np.random.Generator,
+    ) -> np.ndarray:
+        min_pair = float(recipe.get("min_pair_dist", 0.8 * self.global_cfg.avg_nn_dist))
+        scale = max(self.global_cfg.avg_nn_dist * 4.0, min_pair * 2.0, 1e-3)
+        points: List[np.ndarray] = []
+        attempts = 0
+        max_attempts = max(target_points * 500, 10_000)
+        while len(points) < target_points and attempts < max_attempts:
+            candidate = rng.uniform(-scale, scale, size=3)
+            attempts += 1
+            if not points:
+                points.append(candidate)
+                continue
+            existing = np.asarray(points, dtype=float)
+            dists = np.linalg.norm(existing - candidate, axis=1)
+            if np.min(dists) >= 0.5 * min_pair:
+                points.append(candidate)
+        if not points:
+            return rng.uniform(-scale, scale, size=(target_points, 3))
+        points_array = np.asarray(points, dtype=float)
+        if points_array.shape[0] < target_points:
+            extra_needed = target_points - points_array.shape[0]
+            extras = rng.uniform(-scale, scale, size=(extra_needed, 3))
+            points_array = np.vstack([points_array, extras])
+        return points_array
+
+    def _sample_amorphous_mixed_reference_points(
+        self,
+        recipe: Dict[str, Any],
+        target_points: int,
+        rng: np.random.Generator,
+    ) -> np.ndarray:
+        base_points = self._sample_amorphous_reference_points(recipe, target_points, rng)
+        embed_phase = recipe.get("embedded_crystal")
+        if not embed_phase:
+            return base_points
+        embed_probability = float(recipe.get("embedded_probability", 0.25))
+        if embed_probability <= 0.0:
+            return base_points
+        embed_recipe = self.reference_structures.get(embed_phase)
+        if embed_recipe is None:
+            return base_points
+        embed_fraction = np.clip(embed_probability * 0.5, 0.0, 1.0)
+        embed_count = min(target_points, max(1, int(round(target_points * embed_fraction))))
+        structured = self._sample_structured_reference_points(embed_recipe, max(target_points, embed_count))
+        if structured.size == 0:
+            return base_points
+        if structured.shape[0] > embed_count:
+            dists = np.linalg.norm(structured, axis=1)
+            keep_idx = np.argsort(dists)[:embed_count]
+            structured = structured[keep_idx]
+        elif structured.shape[0] < embed_count:
+            extra_needed = embed_count - structured.shape[0]
+            if extra_needed > 0:
+                choice_idx = rng.choice(structured.shape[0], size=extra_needed, replace=True)
+                jitter_scale = 0.05 * max(self.global_cfg.avg_nn_dist, 1e-6)
+                jitter = rng.normal(scale=jitter_scale, size=(extra_needed, 3))
+                extra = structured[choice_idx] + jitter
+                structured = np.vstack([structured, extra])
+        base_keep = max(target_points - embed_count, 0)
+        if base_points.shape[0] > base_keep:
+            base_points = base_points[:base_keep]
+        elif base_points.shape[0] < base_keep:
+            supplement = self._sample_amorphous_reference_points(recipe, base_keep - base_points.shape[0], rng)
+            base_points = np.vstack([base_points, supplement[: base_keep - base_points.shape[0]]])
+        combined = np.vstack([base_points, structured])
+        if combined.shape[0] < target_points:
+            filler = self._sample_amorphous_reference_points(recipe, target_points - combined.shape[0], rng)
+            combined = np.vstack([combined, filler[: target_points - combined.shape[0]]])
+        return combined
+
+    def _finalize_reference_point_cloud(
+        self,
+        points: np.ndarray,
+        target_points: int,
+        rng: np.random.Generator,
+    ) -> np.ndarray:
+        if points.size == 0:
+            return np.zeros((0, 3), dtype=np.float32)
+        pts = np.asarray(points, dtype=float).reshape(-1, 3)
+        if pts.shape[0] > target_points:
+            dists = np.linalg.norm(pts, axis=1)
+            keep_idx = np.argsort(dists)[:target_points]
+            pts = pts[keep_idx]
+        elif pts.shape[0] < target_points:
+            if pts.shape[0] == 0:
+                return np.zeros((0, 3), dtype=np.float32)
+            extra_count = target_points - pts.shape[0]
+            choice_idx = rng.choice(pts.shape[0], size=extra_count, replace=True)
+            jitter_scale = 0.01 * max(self.global_cfg.avg_nn_dist, 1e-6)
+            jitter = rng.normal(scale=jitter_scale, size=(extra_count, 3))
+            extra = pts[choice_idx] + jitter
+            pts = np.vstack([pts, extra])
+        centroid = pts.mean(axis=0)
+        pts = pts - centroid
+        norms = np.linalg.norm(pts, axis=1)
+        max_norm = float(np.max(norms))
+        if max_norm > 0.0:
+            pts = pts / max_norm
+        else:
+            pts = np.zeros_like(pts)
+        return pts.astype(np.float32)
+
+    def _build_intermediate_point_cloud(
+        self,
+        parent_phase_ids: Tuple[str, str],
+        target_points: int = 80,
+    ) -> np.ndarray:
+        parent_clouds = [
+            self.reference_point_clouds.get(parent_phase_ids[0]),
+            self.reference_point_clouds.get(parent_phase_ids[1]),
+        ]
+        valid_clouds = [pc for pc in parent_clouds if pc is not None and pc.size > 0]
+        if not valid_clouds:
+            return np.zeros((0, 3), dtype=np.float32)
+        combined = np.concatenate(valid_clouds, axis=0)
+        rng = np.random.default_rng(self.rng.integers(0, 1_000_000))
+        return self._finalize_reference_point_cloud(combined, target_points, rng)
 
     # ------------------------------------------------------------------ #
     # Step 2 – grains and base assignment
@@ -861,6 +1046,10 @@ class SyntheticAtomisticDatasetGenerator:
                 "thickness": self.global_cfg.t_layer,
                 "method": "spatial_blend_fullbox",
             }
+            self.reference_point_clouds[phase_id] = self._build_intermediate_point_cloud(
+                ordered,
+                target_points=self.reference_point_count,
+            )
         return phase_id
 
     def _blend_orientations(self, Ra: np.ndarray, Rb: np.ndarray, alpha: float) -> np.ndarray:
@@ -1131,6 +1320,7 @@ class SyntheticAtomisticDatasetGenerator:
         atoms_array = np.array([atom["position"] for atom in final_atoms], dtype=np.float32)
         np.save(output_dir / "atoms.npy", atoms_array)
         np.save(output_dir / "reference_structures.npy", self.reference_structures, allow_pickle=True)
+        np.save(output_dir / "reference_point_clouds.npy", self.reference_point_clouds, allow_pickle=True)
         metadata_path = output_dir / "metadata.json"
         with metadata_path.open("w") as handle:
             json.dump(self.metadata, handle, indent=2)
