@@ -26,7 +26,7 @@ from pathlib import Path
 
 def main():
     # Configuration
-    checkpoint_path = "output/2025-11-05/15-21-37/synth_SPD_FoldingSphereAttnRes_l36_P80_Sinkhorn_256-epoch=04.ckpt"
+    checkpoint_path = "output/2025-11-05/19-00-25/synth_SPD_FoldingSphereAttnRes_l36_P80_Sinkhorn_256-epoch=23.ckpt"
     n_phases = 3  # Expected number of phases for KMeans
     output_dir = "output/spd_analysis"
     cache_dir = "output/spd_analysis/predictions_cache"

@@ -319,11 +319,14 @@ def create_visualization(
     output_path: Path,
     max_points_per_panel: int = 6000,
 ) -> None:
-    """Create 7-panel visualization comparing ground truth and predictions."""
+    """
+    Create 6-panel visualization comparing ground truth and predictions.
+    All requested views are stacked into a single figure.
+    """
     # Extract ground truth from atoms
     atom_phase_labels, atom_grain_labels = extract_ground_truth_labels(atoms, metadata)
 
-    # Sample atoms for ground truth visualization
+    # Sample atoms for ground truth visualization once so every view reuses the same subset
     n_atoms = len(atoms)
     if n_atoms > max_points_per_panel:
         atom_sample_indices = np.random.choice(n_atoms, max_points_per_panel, replace=False)
@@ -334,7 +337,7 @@ def create_visualization(
     atom_phase_sample = atom_phase_labels[atom_sample_indices]
     atom_grain_sample = atom_grain_labels[atom_sample_indices]
 
-    # Sample predictions
+    # Sample predictions (latents)
     n_samples = len(kmeans_labels)
     if n_samples > max_points_per_panel:
         pred_sample_indices = np.random.choice(n_samples, max_points_per_panel, replace=False)
@@ -347,14 +350,94 @@ def create_visualization(
     phase_sample = phase_labels_sample[pred_sample_indices]
     grain_sample = grain_labels_sample[pred_sample_indices]
 
-    fig = plt.figure(figsize=(28, 8))
-    border_width = 72.0 / fig.dpi
+    payload = {
+        "atoms_sample": atoms_sample,
+        "atom_phase_sample": atom_phase_sample,
+        "atom_grain_sample": atom_grain_sample,
+        "coords_sample": coords_sample,
+        "kmeans_sample": kmeans_sample,
+        "hdbscan_sample": hdbscan_sample,
+        "phase_sample": phase_sample,
+        "grain_sample": grain_sample,
+    }
+
+    view_presets = [
+        {"label": "Default View", "elev": None, "azim": None, "diagonal_cut": False},
+        {"label": "High-Left View", "elev": 55, "azim": -35, "diagonal_cut": False},
+        {"label": "Low-Right View", "elev": 15, "azim": 135, "diagonal_cut": False},
+        {"label": "Diagonal Cut View", "elev": 30, "azim": 45, "diagonal_cut": True, "cut_ratio": 0.65},
+    ]
+
+    n_views = len(view_presets)
+    n_panels = 6
+    fig = plt.figure(figsize=(24, 8 * n_views))
     fig.patch.set_facecolor("white")
     fig.patch.set_edgecolor("black")
+    border_width = 72.0 / fig.dpi
     fig.patch.set_linewidth(border_width)
 
+    for row_idx, preset in enumerate(view_presets):
+        row_axes: List[Any] = []
+        for col_idx in range(n_panels):
+            ax = fig.add_subplot(n_views, n_panels, row_idx * n_panels + col_idx + 1, projection="3d")
+            row_axes.append(ax)
+
+        _populate_clustering_panels(
+            axes=row_axes,
+            payload=payload,
+            box_size=box_size,
+            diagonal_cut=preset["diagonal_cut"],
+            cut_ratio=preset.get("cut_ratio", 0.65),
+            title_suffix=f" ({preset['label']})" if preset["label"] else "",
+            border_width=border_width,
+        )
+        _apply_camera_view(row_axes, elev=preset["elev"], azim=preset["azim"])
+
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved combined visualization to {output_path}")
+
+
+def _populate_clustering_panels(
+    axes: List[Any],
+    payload: Dict[str, np.ndarray],
+    box_size: float,
+    diagonal_cut: bool = False,
+    cut_ratio: float = 0.65,
+    title_suffix: str = "",
+    border_width: float = 1.0,
+) -> None:
+    """Populate the standard clustering panels into the provided axes."""
+    atoms_sample = payload["atoms_sample"]
+    atom_phase_sample = payload["atom_phase_sample"]
+    atom_grain_sample = payload["atom_grain_sample"]
+    coords_sample = payload["coords_sample"]
+    kmeans_sample = payload["kmeans_sample"]
+    hdbscan_sample = payload["hdbscan_sample"]
+    phase_sample = payload["phase_sample"]
+    grain_sample = payload["grain_sample"]
+
+    if len(axes) != 6:
+        raise ValueError("Expected exactly 6 axes to populate clustering panels")
+
+    if diagonal_cut:
+        atom_mask = _diagonal_cut_mask(atoms_sample, keep_ratio=cut_ratio)
+        if atom_mask.size and np.any(atom_mask):
+            atoms_sample = atoms_sample[atom_mask]
+            atom_phase_sample = atom_phase_sample[atom_mask]
+            atom_grain_sample = atom_grain_sample[atom_mask]
+
+        coords_mask = _diagonal_cut_mask(coords_sample, keep_ratio=cut_ratio)
+        if coords_mask.size and np.any(coords_mask):
+            coords_sample = coords_sample[coords_mask]
+            kmeans_sample = kmeans_sample[coords_mask]
+            hdbscan_sample = hdbscan_sample[coords_mask]
+            phase_sample = phase_sample[coords_mask]
+            grain_sample = grain_sample[coords_mask]
+
     # Panel 1: Ground truth phases
-    ax1 = fig.add_subplot(1, 7, 1, projection="3d")
+    ax1 = axes[0]
     unique_phases = np.unique(atom_phase_sample)
     phase_colors = _build_color_map(unique_phases, "tab20")
 
@@ -371,12 +454,12 @@ def create_visualization(
             edgecolors="black",
             linewidths=0.2,
         )
-    ax1.set_title("Ground Truth: Phases")
+    ax1.set_title(f"Ground Truth: Phases{title_suffix}")
     _set_cube_axes(ax1, box_size)
     _add_axes_border(ax1, linewidth=border_width)
 
     # Panel 2: Ground truth grains
-    ax2 = fig.add_subplot(1, 7, 2, projection="3d")
+    ax2 = axes[1]
     unique_grains = np.unique(atom_grain_sample[atom_grain_sample >= 0])
     grain_colors = _build_color_map(unique_grains, "gist_ncar")
 
@@ -394,7 +477,6 @@ def create_visualization(
             linewidths=0.2,
         )
 
-    # Show boundaries in different color
     boundary_mask = atom_grain_sample == -1
     if np.any(boundary_mask):
         boundary_points = atoms_sample[boundary_mask]
@@ -407,13 +489,14 @@ def create_visualization(
             linewidths=0.25,
             alpha=0.8,
         )
-    ax2.set_title("Ground Truth: Grains")
+    ax2.set_title(f"Ground Truth: Grains{title_suffix}")
     _set_cube_axes(ax2, box_size)
     _add_axes_border(ax2, linewidth=border_width)
 
     # Panel 3: Ground truth boundaries only
-    ax3 = fig.add_subplot(1, 7, 3, projection="3d")
+    ax3 = axes[2]
     if np.any(boundary_mask):
+        boundary_points = atoms_sample[boundary_mask]
         ax3.scatter(
             boundary_points[:, 0], boundary_points[:, 1], boundary_points[:, 2],
             color="purple",
@@ -424,7 +507,6 @@ def create_visualization(
             alpha=0.8,
         )
     else:
-        # If no boundaries, show intermediate phases
         intermediate_mask = np.array([str(p).startswith("intermediate") for p in atom_phase_sample])
         if np.any(intermediate_mask):
             inter_points = atoms_sample[intermediate_mask]
@@ -437,12 +519,12 @@ def create_visualization(
                 linewidths=0.25,
                 alpha=0.8,
             )
-    ax3.set_title("Ground Truth: Boundaries")
+    ax3.set_title(f"Ground Truth: Boundaries{title_suffix}")
     _set_cube_axes(ax3, box_size)
     _add_axes_border(ax3, linewidth=border_width)
 
     # Panel 4: KMeans predictions
-    ax4 = fig.add_subplot(1, 7, 4, projection="3d")
+    ax4 = axes[3]
     unique_kmeans = np.unique(kmeans_sample)
     kmeans_colors = _build_color_map(unique_kmeans, "tab20")
 
@@ -459,12 +541,12 @@ def create_visualization(
             edgecolors="black",
             linewidths=0.2,
         )
-    ax4.set_title(f"KMeans Clusters (k={len(unique_kmeans)})")
+    ax4.set_title(f"KMeans Clusters (k={len(unique_kmeans)}){title_suffix}")
     _set_cube_axes(ax4, box_size)
     _add_axes_border(ax4, linewidth=border_width)
 
     # Panel 5: HDBSCAN predictions
-    ax5 = fig.add_subplot(1, 7, 5, projection="3d")
+    ax5 = axes[4]
     unique_hdbscan = np.unique(hdbscan_sample)
     hdbscan_colors = _build_color_map(unique_hdbscan, "tab20")
 
@@ -484,29 +566,25 @@ def create_visualization(
             alpha=0.7 if cluster == -1 else 1.0,
         )
     n_clusters = len(unique_hdbscan[unique_hdbscan >= 0])
-    ax5.set_title(f"HDBSCAN Clusters ({n_clusters} + noise)")
+    ax5.set_title(f"HDBSCAN Clusters ({n_clusters} + noise){title_suffix}")
     _set_cube_axes(ax5, box_size)
     _add_axes_border(ax5, linewidth=border_width)
 
     # Panel 6: KMeans-Phase Agreement
-    # Map each KMeans cluster to most common ground truth phase
-    ax6 = fig.add_subplot(1, 7, 6, projection="3d")
+    ax6 = axes[5]
     cluster_to_phase = {}
     for cluster in np.unique(kmeans_sample):
         mask = kmeans_sample == cluster
         if np.any(mask):
-            # Find most common phase in this cluster
             phases_in_cluster = phase_sample[mask]
             unique, counts = np.unique(phases_in_cluster, return_counts=True)
             cluster_to_phase[cluster] = unique[np.argmax(counts)]
 
-    # Color by correctness: green if cluster's dominant phase matches sample's true phase
     correct_mask = np.array([
         cluster_to_phase.get(kmeans_sample[i], None) == phase_sample[i]
         for i in range(len(kmeans_sample))
-    ])
+    ]) if len(kmeans_sample) else np.array([], dtype=bool)
 
-    # Plot correct predictions in green, incorrect in red
     if np.any(correct_mask):
         correct_points = coords_sample[correct_mask]
         ax6.scatter(
@@ -533,85 +611,44 @@ def create_visualization(
             label="Incorrect",
         )
 
-    accuracy = np.sum(correct_mask) / len(correct_mask) * 100
-    ax6.set_title(f"KMeans-Phase Agreement\n({accuracy:.1f}% accuracy)")
-    ax6.legend(loc="upper right", fontsize=8)
+    accuracy = (np.sum(correct_mask) / len(correct_mask) * 100) if len(correct_mask) else 0.0
+    ax6.set_title(f"KMeans-Phase Agreement{title_suffix}\n({accuracy:.1f}% accuracy)")
+    if len(correct_mask):
+        ax6.legend(loc="upper right", fontsize=8)
     _set_cube_axes(ax6, box_size)
     _add_axes_border(ax6, linewidth=border_width)
 
-    # Panel 7: Boundary Detection
-    # Color by whether sample is near a grain boundary (grain_label == -1 or multiple grains nearby)
-    ax7 = fig.add_subplot(1, 7, 7, projection="3d")
 
-    # Ground truth: samples with grain_label == -1 are boundaries
-    is_boundary_gt = grain_sample == -1
-
-    # Predicted boundaries: use HDBSCAN noise points as boundary candidates
-    is_boundary_pred = hdbscan_sample == -1
-
-    # True positives: correctly identified boundaries
-    true_positive = is_boundary_gt & is_boundary_pred
-    # True negatives: correctly identified non-boundaries
-    true_negative = (~is_boundary_gt) & (~is_boundary_pred)
-    # False positives: incorrectly marked as boundary
-    false_positive = (~is_boundary_gt) & is_boundary_pred
-    # False negatives: missed boundaries
-    false_negative = is_boundary_gt & (~is_boundary_pred)
-
-    if np.any(true_positive):
-        ax7.scatter(
-            coords_sample[true_positive, 0],
-            coords_sample[true_positive, 1],
-            coords_sample[true_positive, 2],
-            color="green", s=14, depthshade=True,
-            edgecolors="black", linewidths=0.25,
-            alpha=0.8, label="True Boundary",
+def _apply_camera_view(axes: List[Any], elev: float | None, azim: float | None) -> None:
+    """Apply a consistent camera view across axes."""
+    for ax in axes:
+        current_elev = getattr(ax, "elev", 30)
+        current_azim = getattr(ax, "azim", -60)
+        ax.view_init(
+            elev=current_elev if elev is None else elev,
+            azim=current_azim if azim is None else azim,
         )
 
-    if np.any(false_positive):
-        ax7.scatter(
-            coords_sample[false_positive, 0],
-            coords_sample[false_positive, 1],
-            coords_sample[false_positive, 2],
-            color="orange", s=10, depthshade=True,
-            edgecolors="black", linewidths=0.2,
-            alpha=0.6, label="False Boundary",
-        )
 
-    if np.any(false_negative):
-        ax7.scatter(
-            coords_sample[false_negative, 0],
-            coords_sample[false_negative, 1],
-            coords_sample[false_negative, 2],
-            color="red", s=14, depthshade=True,
-            edgecolors="black", linewidths=0.25,
-            alpha=0.8, label="Missed Boundary",
-        )
+def _diagonal_cut_mask(points: np.ndarray, keep_ratio: float = 0.65) -> np.ndarray:
+    """Return mask that keeps points closer to the origin along the main diagonal."""
+    if points.size == 0:
+        return np.zeros(len(points), dtype=bool)
+    diag_vals = points.sum(axis=1)
+    diag_min = diag_vals.min()
+    diag_max = diag_vals.max()
+    if np.isclose(diag_min, diag_max):
+        return np.ones(len(points), dtype=bool)
 
-    if np.any(true_negative):
-        # Only show a subset of true negatives to avoid clutter
-        tn_indices = np.where(true_negative)[0]
-        if len(tn_indices) > 1000:
-            tn_indices = np.random.choice(tn_indices, 1000, replace=False)
-        ax7.scatter(
-            coords_sample[tn_indices, 0],
-            coords_sample[tn_indices, 1],
-            coords_sample[tn_indices, 2],
-            color="lightgray", s=8, depthshade=True,
-            edgecolors="none", alpha=0.3,
-            label="Bulk (subset)",
-        )
+    ratio = float(np.clip(keep_ratio, 0.0, 1.0))
+    cutoff = diag_min + (diag_max - diag_min) * ratio
+    mask = diag_vals <= cutoff
 
-    boundary_recall = np.sum(true_positive) / np.sum(is_boundary_gt) * 100 if np.sum(is_boundary_gt) > 0 else 0
-    ax7.set_title(f"Boundary Detection\n({boundary_recall:.1f}% recall)")
-    ax7.legend(loc="upper right", fontsize=8)
-    _set_cube_axes(ax7, box_size)
-    _add_axes_border(ax7, linewidth=border_width)
+    if not np.any(mask):
+        cutoff = np.quantile(diag_vals, 0.75)
+        mask = diag_vals <= cutoff
 
-    fig.tight_layout()
-    fig.savefig(output_path, dpi=300, bbox_inches="tight")
-    plt.close(fig)
-    print(f"Saved visualization to {output_path}")
+    return mask
 
 
 def _build_color_map(unique_values: np.ndarray, cmap_name: str = "tab20") -> Dict[Any, Any]:

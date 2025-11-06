@@ -17,7 +17,7 @@ global:
   rho_target: 0.25                     # Maintain identical global density
   avg_nn_dist: 1.0                     # Use same nearest-neighbor distance scaling
   grain_count: 8                       # Keep grain tessellation identical
-  intermediate_layer_thickness_factor: 3.0  # Preserve interface thickness for comparability
+  intermediate_layer_thickness_factor: 5.0  # Preserve interface thickness for comparability
   random_seed: 42                      # Match random seed for structural reproducibility
   output_dir: output/synthetic_data/baseline_box_no_perturb  # Output directory for perturbation-free variant
 
@@ -39,10 +39,10 @@ phases:
     phase_type: crystal_bcc            # BCC crystal phase
     structural_params: {}              # Defaults suffice
     perturbations:
-      sigma_thermal: 0.0
-      p_dropout: 0.0
-      dropout_relax_radius: 0.0
-      dropout_relax_max_fraction: 0.0
+      sigma_thermal: 0.002
+      p_dropout: 0.02
+      dropout_relax_radius: 1.5
+      dropout_relax_max_fraction: 0.35
       rot_bubble_prob: 0.0
       rot_bubble_radius: 0.0
       rot_bubble_angle_deg: 0.0
