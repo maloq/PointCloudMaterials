@@ -23,16 +23,20 @@ class RealPointCloudDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         start_time = time.time()
         self.train_dataset, self.val_dataset = self._setup_real_dataset()
+        # Test dataset is same as val for metrics
+        self.test_dataset = self.val_dataset
 
         if self.max_samples > 0:
             max_train = min(self.max_samples, len(self.train_dataset))
             max_val = min(self.max_samples, len(self.val_dataset))
             self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
             self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+            self.test_dataset = self.val_dataset
 
         elapsed_time = time.time() - start_time
         logger.print(f"Train dataset size: {len(self.train_dataset)}")
         logger.print(f"Val dataset size: {len(self.val_dataset)}")
+        logger.print(f"Test dataset size: {len(self.test_dataset)}")
         logger.print(f"Dataloader took {elapsed_time:.4f} seconds")
 
     def _setup_real_dataset(self):
@@ -85,6 +89,16 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             persistent_workers=True,
         )
 
+    def test_dataloader(self):
+        print(f"Using {self.num_workers} workers for test dataloader")
+        return DataLoader(
+            self.test_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+        )
+
 
 class SyntheticPointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
@@ -97,16 +111,20 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         start_time = time.time()
         self.train_dataset, self.val_dataset = self._build_datasets()
+        # Test dataset is same as val for metrics
+        self.test_dataset = self.val_dataset
 
         if self.max_samples > 0:
             max_train = min(self.max_samples, len(self.train_dataset))
             max_val = min(self.max_samples, len(self.val_dataset))
             self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
             self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+            self.test_dataset = self.val_dataset
 
         elapsed_time = time.time() - start_time
         logger.print(f"Synth train dataset size: {len(self.train_dataset)}")
         logger.print(f"Synth val dataset size: {len(self.val_dataset)}")
+        logger.print(f"Synth test dataset size: {len(self.test_dataset)}")
         logger.print(f"Synth dataloader prep took {elapsed_time:.4f} seconds")
 
     def _build_datasets(self):
@@ -205,6 +223,15 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             persistent_workers=True,
         )
 
+    def test_dataloader(self):
+        return DataLoader(
+            self.test_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+        )
+
 
 class PointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
@@ -224,6 +251,9 @@ class PointCloudDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return self.impl.val_dataloader()
+
+    def test_dataloader(self):
+        return self.impl.test_dataloader()
 
 
 # Module-level helper
