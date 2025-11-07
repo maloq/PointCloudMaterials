@@ -53,9 +53,8 @@ class ShapePoseDisentanglement(pl.LightningModule):
             "test": {"latents": [], "phase": [], "reconstructions": [], "canonicals": [], "rotations": [], "originals": []},
         }
 
-        # Test evaluation interval (run expensive metrics every N epochs)
-        self.test_epoch_interval = cfg.get("test_epoch_interval", 1)
-        # Maximum samples to use for test metrics (to limit memory usage)
+        # Maximum samples to use for metrics caches (to limit memory usage)
+        self.max_supervised_samples = cfg.get("max_supervised_samples", 8192)
         self.max_test_samples = cfg.get("max_test_samples", 1000)
         # Enable/disable expensive metrics (equivariance, reconstruction consistency)
         self.enable_expensive_metrics = cfg.get("enable_expensive_metrics", True)
@@ -121,10 +120,10 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         # Metrics after rotation (used for loss)
         emd_after, _      = sinkhorn_distance(recon_f32.contiguous(), pc_f32)
-        chamfer_after, _  = chamfer_distance(recon_f32, pc_f32)
 
         # Metrics before rotation (diagnostics only)
         with torch.no_grad():
+            chamfer_after, _  = chamfer_distance(recon_f32, pc_f32)
             emd_before, _     = sinkhorn_distance(cano_f32.contiguous(), pc_f32)
             chamfer_before, _ = chamfer_distance(cano_f32, pc_f32)
 
@@ -145,10 +144,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if False:
             loss += float(self.pdist_loss_scale) * loss_pd
             self._log_metric(stage, "pdist_scaled", float(self.pdist_loss_scale) * loss_pd, prog_bar=False)
-        # if self.rotation_loss_scale > 0:
-        if False:
-            loss += float(self.rotation_loss_scale) * loss_rot
-            self._log_metric(stage, "rot_loss_scaled", float(self.rotation_loss_scale) * loss_rot, prog_bar=False)
+      
         if self.kl_latent_loss_scale > 0:
             kl_loss = kl_latent_regularizer(inv_z)
             loss += self.kl_latent_loss_scale * kl_loss
@@ -199,12 +195,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         self._log_supervised_metrics("val")
         super().on_validation_epoch_end()
 
-        # Trigger test evaluation every N epochs (skip during sanity check)
-        if self.trainer.sanity_checking:
-            return
-        if (self.current_epoch + 1) % self.test_epoch_interval == 0:
-            if self.trainer is not None and self.trainer.datamodule is not None:
-                self.trainer.test(self, dataloaders=self.trainer.datamodule.test_dataloader(), verbose=False)
+        # Validation should not trigger implicit test runs; use trainer.test separately when needed.
 
     def on_test_epoch_start(self) -> None:
         super().on_test_epoch_start()
@@ -221,6 +212,20 @@ class ShapePoseDisentanglement(pl.LightningModule):
         for key in cache:
             cache[key].clear()
 
+    def _cache_limit_for_stage(self, stage: str):
+        if stage == "test":
+            return self.max_test_samples
+        if stage in {"train", "val"}:
+            return self.max_supervised_samples
+        return None
+
+    @staticmethod
+    def _cached_sample_count(cache: dict) -> int:
+        latents = cache.get("latents") if cache is not None else None
+        if not latents:
+            return 0
+        return sum(t.shape[0] for t in latents)
+
     def _cache_supervised_batch(self, stage: str, inv_z: torch.Tensor, labels: dict,
                                  recon: torch.Tensor = None, cano: torch.Tensor = None,
                                  rot: torch.Tensor = None, pc: torch.Tensor = None) -> None:
@@ -228,35 +233,52 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if cache is None:
             return
 
-        # Check if we've reached the sample limit (for memory efficiency)
-        if stage == "test" and len(cache["latents"]) > 0:
-            total_samples = sum(len(batch) for batch in cache["latents"])
-            if total_samples >= self.max_test_samples:
+        limit = self._cache_limit_for_stage(stage)
+        remaining = None
+        if limit is not None and limit > 0:
+            cached = self._cached_sample_count(cache)
+            remaining = int(limit - cached)
+            if remaining <= 0:
                 return
 
-        cache["latents"].append(inv_z.detach().to(torch.float32).cpu())
-
-        # Only cache full point cloud data for test stage to save memory
-        if stage == "test":
-            if recon is not None:
-                cache["reconstructions"].append(recon.detach().to(torch.float32).cpu())
-            if cano is not None:
-                cache["canonicals"].append(cano.detach().to(torch.float32).cpu())
-            if rot is not None:
-                cache["rotations"].append(rot.detach().to(torch.float32).cpu())
-            if pc is not None:
-                cache["originals"].append(pc.detach().to(torch.float32).cpu())
+        batch_size = int(inv_z.shape[0])
+        effective_batch = batch_size if remaining is None else min(batch_size, remaining)
+        if effective_batch <= 0:
+            return
 
         phase = labels.get("phase")
         if phase is None:
             return
         if not torch.is_tensor(phase):
             phase = torch.as_tensor(phase)
-        cache["phase"].append(phase.detach().view(-1).cpu())
+        phase = phase.detach().view(-1)
+        effective_batch = min(effective_batch, phase.shape[0])
+        if effective_batch <= 0:
+            return
+
+        cache["latents"].append(inv_z[:effective_batch].detach().to(torch.float32).cpu())
+
+        # Only cache full point cloud data for test stage to save memory
+        if stage == "test":
+            if recon is not None:
+                cache["reconstructions"].append(recon[:effective_batch].detach().to(torch.float32).cpu())
+            if cano is not None:
+                cache["canonicals"].append(cano[:effective_batch].detach().to(torch.float32).cpu())
+            if rot is not None:
+                cache["rotations"].append(rot[:effective_batch].detach().to(torch.float32).cpu())
+            if pc is not None:
+                cache["originals"].append(pc[:effective_batch].detach().to(torch.float32).cpu())
+
+        cache["phase"].append(phase[:effective_batch].cpu())
 
     def _log_supervised_metrics(self, stage: str) -> None:
         cache = self._supervised_cache.get(stage)
-        if not cache or not cache["latents"] or not cache["phase"]:
+        if cache is None:
+            return
+
+        if not cache["latents"] or not cache["phase"]:
+            for key in cache:
+                cache[key].clear()
             return
 
         latents = torch.cat(cache["latents"], dim=0).numpy()

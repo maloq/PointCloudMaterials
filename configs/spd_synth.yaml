@@ -7,7 +7,7 @@ wandb_mode: online
 model_type: spd
 latent_size: 36
 encoder: 
-  name: VN_DGCNN
+  name: PnE_VN # VN_DGCNN
   kwargs:
     latent_size: ${latent_size}
     # hidden_dim1: 360
@@ -24,14 +24,14 @@ decoder:
     n_shells: 2
     R1: 0.5
     R2: 1.0
-    hidden_dim: 512
-    R_att: 1.0
+    hidden_dim: 256
+    R_att: 0.5
     learnable_template: False
 
 rot_net:
   name: Rot6DHead
   kwargs:
-    hidden: 256
+    hidden: 128
     use_attention: True
 
 rotation_mode: sixd_head
