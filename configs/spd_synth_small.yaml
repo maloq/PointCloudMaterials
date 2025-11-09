@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_no_perturb
+  - data: data_synth_small_crystals
 project_name: pointnet
 experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online
@@ -52,7 +52,7 @@ sinkhorn_blur_schedule:
 max_samples: 0  # no limit
 torch_compile: True
 
-learning_rate: 0.004
+learning_rate: 0.005
 batch_size: 1500
 
 enable_swa: False
@@ -75,7 +75,7 @@ kabsch_rotation_loss_scale: 0.000
 
 # Curriculum learning settings
 curriculum_learning:
-  enable: True  # Set to True to enable curriculum learning
+  enable: False  # Set to True to enable curriculum learning
   start_fraction: 0.0  # Starting amorphous fraction (0.0 = no amorphous samples)
   end_fraction: 1.0  # Final amorphous fraction (1.0 = all amorphous samples included)
   start_epoch: 3  # Epoch to start increasing amorphous fraction

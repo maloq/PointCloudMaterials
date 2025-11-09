@@ -1637,7 +1637,7 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="Generate synthetic atomistic datasets from YAML config.")
-    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_no_perturb.yaml",
+    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_small_crystals.yaml",
                         help="Path to YAML configuration file")
     parser.add_argument("--quiet", action="store_true", help="Disable progress printing")
     parser.add_argument("--skip-viz", action="store_true", help="Skip visualization generation")

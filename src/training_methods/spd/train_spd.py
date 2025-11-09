@@ -117,7 +117,7 @@ def train(cfg: DictConfig):
     trainer.test(model, dm, ckpt_path='best')
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth_small')
 def main(cfg: DictConfig):
     train(cfg)
 

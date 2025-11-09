@@ -26,14 +26,14 @@ from pathlib import Path
 
 def main():
     # Configuration
-    checkpoint_path = "output/2025-11-09/14-26-05/synth_SPD_FoldingSphereAttnRes_l36_P80_Sinkhorn_1024-epoch=11.ckpt"
+    checkpoint_path = "output/2025-11-09/20-17-35/synth_SPD_FoldingSphereAttnRes_l48_P80_sinkhorn+chamfer_1500-epoch=15.ckpt"
     n_phases = 3  # Expected number of phases for KMeans
     output_dir = "output/spd_analysis"
     cache_dir = "output/spd_analysis/predictions_cache"
     max_samples = None  # Set to limit number of samples (e.g., 1000), or None for all
 
     # Path to reference point clouds (set to None to skip)
-    reference_structures_path = "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
+    reference_structures_path = "output/synthetic_data/small_crystals/reference_point_clouds.npy"
 
     # Step 1: Extract latents (or load from cache)
     print("\n=== Step 1: Extracting latents from synthetic data ===")

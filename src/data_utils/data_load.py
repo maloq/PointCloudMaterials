@@ -135,7 +135,7 @@ class PointCloudDataset(Dataset):
             self.samples = [pc_normalize(s, self.radius).astype(np.float32) for s in self.samples]
         elif not normalize:
             print("Point Cloud normalization skipped")
-        # logger.info(f"Point set shape: {self.samples[0].shape}")
+        logger.info(f"Point set shape: {self.samples[0].shape}")
 
     def __len__(self):
         return len(self.samples)

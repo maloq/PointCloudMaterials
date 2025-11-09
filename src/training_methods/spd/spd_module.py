@@ -10,8 +10,9 @@ sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
 from src.utils.optimizer_utils import get_optimizers_and_scheduler
+from src.utils.model_utils import load_supervised_checkpoint
 from src.loss.reconstruction_loss import kl_latent_regularizer, rotation_geodesic_kabsch_loss
-from src.loss.pdist_loss import pairwise_distance_loss
+from src.loss.pdist_loss import pairwise_distance_loss, angle_triad_loss, rdf_loss
 from src.training_methods.spd.rot_heads import build_rot_head, kabsch_rotation
 from src.training_methods.spd.spd_metrics import (
     compute_embedding_quality_metrics,
@@ -20,19 +21,23 @@ from src.training_methods.spd.spd_metrics import (
     test_rotation_equivariance_sample,
     test_reconstruction_consistency_sample,
 )
-from omegaconf import DictConfig, ListConfig
+from omegaconf import DictConfig, ListConfig, OmegaConf
 from omegaconf.base import ContainerMetadata
 
 
-# Loss Function Registry
-LOSS_FUNCTIONS = {
-    "sinkhorn": lambda pred, target: sinkhorn_distance(pred.contiguous(), target),
-    "chamfer": lambda pred, target: chamfer_distance(pred, target),
-    "chamfer+sinkhorn": lambda pred, target: (
-        chamfer_distance(pred, target)[0] + sinkhorn_distance(pred.contiguous(), target)[0],
-        None
-    ),
-}
+# Supported reconstruction loss components (can be combined via '+')
+LOSS_COMPONENTS = (
+    "sinkhorn",
+    "chamfer",
+    "pairwise_sorted",
+    "pairwise_hist",
+    "angle_sorted",
+    "angle_sorted_cos",
+    "angle_hist",
+    "angle_hist_cos",
+    "rdf_pdf",
+    "rdf_gr",
+)
 
 
 class ShapePoseDisentanglement(pl.LightningModule):
@@ -55,15 +60,29 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if cfg.load_supervised_checkpoint:
             self._load_supervised_checkpoint(cfg)
 
-        loss_name = cfg.loss.lower()
-        if loss_name not in LOSS_FUNCTIONS:
-            raise ValueError(f"Unknown loss function: {loss_name}. Available: {list(LOSS_FUNCTIONS.keys())}")
-        self.recon_loss_fn = LOSS_FUNCTIONS[loss_name]
-        self.loss_name = loss_name
+        raw_loss = cfg.loss
+        if isinstance(raw_loss, (list, tuple, ListConfig)):
+            loss_components = [str(part).strip().lower() for part in raw_loss if str(part).strip()]
+        else:
+            loss_components = [part.strip().lower() for part in str(raw_loss).split("+") if part.strip()]
+        if not loss_components:
+            raise ValueError("At least one loss component must be specified")
+        unknown = [name for name in loss_components if name not in LOSS_COMPONENTS]
+        if unknown:
+            raise ValueError(
+                f"Unknown loss component(s): {unknown}. Available components: {list(LOSS_COMPONENTS)}"
+            )
+        self.loss_components = loss_components
+        self.loss_name = "+".join(loss_components)
+        self._sinkhorn_blur_schedule = self._init_sinkhorn_blur_schedule(cfg)
+        raw_loss_params = getattr(cfg, "loss_params", None)
+        if raw_loss_params is not None:
+            self.loss_params = OmegaConf.to_container(raw_loss_params, resolve=True)
+        else:
+            self.loss_params = {}
 
-        # Loss scales (optional with defaults)
-        self.ortho_scale = cfg.ortho_scale if hasattr(cfg, 'ortho_scale') else 0.01
-        self.kl_latent_loss_scale = cfg.kl_latent_loss_scale if hasattr(cfg, 'kl_latent_loss_scale') else 0.0
+        self.ortho_scale = cfg.ortho_scale
+        self.kl_latent_loss_scale = cfg.kl_latent_loss_scale
         self._supervised_cache = {
             "train": {"latents": [], "phase": []},
             "val": {"latents": [], "phase": []},
@@ -87,6 +106,115 @@ class ShapePoseDisentanglement(pl.LightningModule):
             if os.path.exists(ref_path):
                 self.reference_pcs = np.load(ref_path, allow_pickle=True).item()
 
+    def _init_sinkhorn_blur_schedule(self, cfg):
+        schedule_cfg = cfg.sinkhorn_blur_schedule
+        start = float(schedule_cfg.start)
+        end = float(schedule_cfg.end)
+        start_epoch = int(schedule_cfg.start_epoch)
+        duration = int(schedule_cfg.duration_epochs)
+        enabled = bool(schedule_cfg.enable)
+        return {
+            "enabled": enabled,
+            "start": start,
+            "end": end,
+            "start_epoch": max(0, start_epoch),
+            "duration_epochs": duration,
+        }
+
+    def _current_sinkhorn_blur(self) -> float:
+        schedule = getattr(self, "_sinkhorn_blur_schedule", None)
+        if not schedule:
+            return 0.02
+
+        start = float(schedule["start"])
+        if not schedule.get("enabled", False):
+            return start
+
+        duration = int(schedule["duration_epochs"])
+        if duration <= 1:
+            return float(schedule["end"])
+
+        epoch = max(0, int(self.current_epoch))
+        start_epoch = int(schedule["start_epoch"])
+        elapsed = max(0, epoch - start_epoch)
+        max_elapsed = duration - 1
+        if elapsed >= max_elapsed:
+            return float(schedule["end"])
+
+        alpha = elapsed / max_elapsed
+        return float(start + alpha * (schedule["end"] - start))
+
+    def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
+        if component == "sinkhorn":
+            val, _ = sinkhorn_distance(pred.contiguous(), target, blur=sinkhorn_blur)
+            return val
+        if component == "chamfer":
+            val, _ = chamfer_distance(pred, target)
+            return val
+        if component in {"pairwise_sorted", "pairwise_hist"}:
+            mode = "hist" if component.endswith("hist") else "sorted"
+            hist_bins = self._loss_param("pairwise", "hist_bins", 64)
+            hist_sigma = self._loss_param("pairwise", "hist_sigma", None)
+            reduction = self._loss_param("pairwise", "reduction", "mean")
+            return pairwise_distance_loss(
+                pred,
+                target,
+                mode=mode,
+                hist_bins=hist_bins,
+                hist_sigma=hist_sigma,
+                reduction=reduction,
+            )
+        if component.startswith("angle_"):
+            mode = "hist" if "hist" in component else "sorted"
+            k = self._loss_param("angle", "k", 8)
+            bins = self._loss_param("angle", "bins", 72)
+            sigma = self._loss_param("angle", "sigma", None)
+            base_graph = self._loss_param("angle", "base_graph", "x")
+            reduction = self._loss_param("angle", "reduction", "mean")
+            use_cos_param = self._loss_param("angle", "use_cos", None)
+            if use_cos_param is None:
+                use_cos = component.endswith("_cos")
+            else:
+                use_cos = bool(use_cos_param)
+            return angle_triad_loss(
+                pred,
+                target,
+                k=k,
+                mode=mode,
+                bins=bins,
+                sigma=sigma,
+                base_graph=base_graph,
+                use_cos=use_cos,
+                reduction=reduction,
+            )
+        if component in {"rdf_pdf", "rdf_gr"}:
+            bins = self._loss_param("rdf", "bins", 64)
+            r_max = self._loss_param("rdf", "r_max", None)
+            sigma = self._loss_param("rdf", "sigma", None)
+            volume = self._loss_param("rdf", "volume", None)
+            normalize_mode = "gr" if component.endswith("gr") else "pdf"
+            reduction = self._loss_param("rdf", "reduction", "mean")
+            return rdf_loss(
+                pred,
+                target,
+                bins=bins,
+                r_max=r_max,
+                sigma=sigma,
+                volume=volume,
+                normalize_mode=normalize_mode,
+                reduction=reduction,
+            )
+        raise ValueError(f"Unsupported reconstruction loss component: {component}")
+
+    def _reconstruction_loss(self, pred, target, sinkhorn_blur):
+        total_loss = None
+        for component in self.loss_components:
+            comp_val = self._component_reconstruction_loss(component, pred, target, sinkhorn_blur)
+            total_loss = comp_val if total_loss is None else (total_loss + comp_val)
+        if total_loss is None:
+            raise RuntimeError("No reconstruction loss components were applied")
+        return total_loss, None
+
     def _load_supervised_checkpoint(self, cfg):
         """Load pretrained supervised encoder and rotation network from checkpoint."""
         checkpoint_path = cfg.supervised_checkpoint_path if hasattr(cfg, 'supervised_checkpoint_path') else None
@@ -98,75 +226,8 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 print("Warning: No supervised checkpoint path specified and auto-discovery failed")
                 return
 
-        if not os.path.exists(checkpoint_path):
-            print(f"Warning: Supervised checkpoint not found at {checkpoint_path}")
-            return
-
-        print(f"Loading supervised checkpoint from: {checkpoint_path}")
-
-        # Load checkpoint
-        checkpoint = None
-        # Prefer safe loading with allowlisted OmegaConf globals (PyTorch >= 2.6)
-        safe_ctx = getattr(getattr(torch, "serialization", object), "safe_globals", None)
-        if callable(safe_ctx) and (DictConfig is not None or ListConfig is not None or ContainerMetadata is not None):
-            allowlist = [c for c in (DictConfig, ListConfig, ContainerMetadata) if c is not None]
-            try:
-                with torch.serialization.safe_globals(allowlist):
-                    checkpoint = torch.load(checkpoint_path, map_location='cpu')
-            except Exception as e:
-                print(f"Safe checkpoint load failed ({e}). Falling back to full unpickling.")
-
-        if checkpoint is None:
-            # Last resort: allow full unpickling. Only do this for trusted checkpoints.
-            try:
-                checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
-            except TypeError:
-                # Older torch without weights_only argument
-                checkpoint = torch.load(checkpoint_path, map_location='cpu')
-
-        # Extract encoder state dict
-        encoder_state = {}
-        for key, value in checkpoint['state_dict'].items():
-            if key.startswith('encoder.'):
-                new_key = key.replace('encoder.', '')
-                encoder_state[new_key] = value
-
-        # Load encoder weights
-        if encoder_state:
-            missing_keys, unexpected_keys = self.encoder.load_state_dict(encoder_state, strict=False)
-            print(f"Loaded encoder weights from supervised checkpoint")
-            if missing_keys:
-                print(f"  Missing keys: {missing_keys[:5]}{'...' if len(missing_keys) > 5 else ''}")
-            if unexpected_keys:
-                print(f"  Unexpected keys: {unexpected_keys[:5]}{'...' if len(unexpected_keys) > 5 else ''}")
-        else:
-            print("Warning: No encoder weights found in checkpoint")
-
-        # Extract rotation network state dict (if using rot_head mode)
-        if self.rot_net is not None:
-            rot_net_state = {}
-            for key, value in checkpoint['state_dict'].items():
-                if key.startswith('rot_net.'):
-                    new_key = key.replace('rot_net.', '')
-                    rot_net_state[new_key] = value
-
-            # Load rotation network weights
-            if rot_net_state:
-                missing_keys, unexpected_keys = self.rot_net.load_state_dict(rot_net_state, strict=False)
-                print(f"Loaded rotation network weights from supervised checkpoint")
-                if missing_keys:
-                    print(f"  Missing keys: {missing_keys[:5]}{'...' if len(missing_keys) > 5 else ''}")
-                if unexpected_keys:
-                    print(f"  Unexpected keys: {unexpected_keys[:5]}{'...' if len(unexpected_keys) > 5 else ''}")
-            else:
-                print("Warning: No rotation network weights found in checkpoint")
-
-        if 'hyper_parameters' in checkpoint:
-            hparams = checkpoint['hyper_parameters']
-            print(f"Checkpoint hyperparameters:")
-            print(f"  Encoder: {hparams.get('encoder', {}).get('name', 'unknown')}")
-            print(f"  Latent size: {hparams.get('latent_size', 'unknown')}")
-            print(f"  Learning rate: {hparams.get('learning_rate', 'unknown')}")
+        # Delegate to utility function
+        load_supervised_checkpoint(checkpoint_path, self.encoder, self.rot_net)
 
     def _find_best_supervised_checkpoint(self, cfg):
         """Auto-discover best supervised checkpoint from lightning_logs directory."""
@@ -239,19 +300,30 @@ class ShapePoseDisentanglement(pl.LightningModule):
         for name, value in metrics.items():
             self._log_metric(stage, name, value, prog_bar=(name in prog_bar_keys))
 
+    def _loss_param(self, section: str, key: str, default=None):
+        params = getattr(self, "loss_params", None)
+        if not isinstance(params, dict):
+            return default
+        if section:
+            section_params = params.get(section)
+            if isinstance(section_params, dict) and key in section_params:
+                return section_params[key]
+        return params.get(key, default)
+
     @staticmethod
     def _to_f32(*tensors):
         """Convert multiple tensors to float32 at once."""
         return tuple(t.to(torch.float32) for t in tensors)
 
     def _compute_losses(self, recon, cano, rot, pc, inv_z):
-        """Compute all losses in one place, return dict."""
+        """Compute all losses and return (loss_dict, current_sinkhorn_blur)."""
         recon_f32, cano_f32, pc_f32 = self._to_f32(recon, cano, pc)
+        sinkhorn_blur = self._current_sinkhorn_blur()
 
         losses = {}
 
         # Main reconstruction loss (configurable)
-        losses['recon'], _ = self.recon_loss_fn(recon_f32, pc_f32)
+        losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
 
         # Orthogonality loss for rotation matrix
         losses['ortho'] = torch.mean((rot.transpose(1, 2).float() @ rot.float()
@@ -260,15 +332,15 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Diagnostic metrics (no grad)
         with torch.no_grad():
             losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32)
-            losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32)
-            losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32)
+            losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+            losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32)
 
         # KL regularization (optional)
         if self.kl_latent_loss_scale > 0:
             losses['kl'] = kl_latent_regularizer(inv_z)
 
-        return losses
+        return losses, sinkhorn_blur
 
 
     def _step(self, batch, batch_idx, stage: str):
@@ -283,7 +355,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             self._cache_supervised_batch(stage, inv_z, labels, recon, cano, rot, pc)
 
         # Compute all losses
-        losses = self._compute_losses(recon, cano, rot, pc, inv_z)
+        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z)
 
         # Build total loss
         total_loss = losses['recon'] + self.ortho_scale * losses['ortho']
@@ -303,6 +375,8 @@ class ShapePoseDisentanglement(pl.LightningModule):
         }
         if 'kl' in losses:
             metrics_to_log['kl_loss'] = losses['kl']
+        if sinkhorn_blur is not None:
+            metrics_to_log['sinkhorn_blur'] = float(sinkhorn_blur)
 
         # Log all metrics
         self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'})

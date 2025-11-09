@@ -43,19 +43,16 @@ def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarra
 
     # Classification accuracy (train simple classifier) - EXPENSIVE, test only
     if include_expensive and len(np.unique(motif_labels)) > 1 and len(Z_inv) >= 10:
-        try:
-            clf = LogisticRegression(max_iter=1000, random_state=42)
-            scores = cross_val_score(clf, Z_inv, motif_labels, cv=min(5, len(Z_inv)))
-            metrics['classification_accuracy'] = float(scores.mean())
-        except Exception:
-            pass
+
+        clf = LogisticRegression(max_iter=1000, random_state=42)
+        scores = cross_val_score(clf, Z_inv, motif_labels, cv=min(5, len(Z_inv)))
+        metrics['classification_accuracy'] = float(scores.mean())
+
 
     # Silhouette score (if labels available) - EXPENSIVE, test only
     if include_expensive and len(np.unique(motif_labels)) > 1 and len(Z_inv) >= 2:
-        try:
-            metrics['silhouette_score'] = float(silhouette_score(Z_inv, motif_labels))
-        except Exception:
-            pass
+        metrics['silhouette_score'] = float(silhouette_score(Z_inv, motif_labels))
+
 
     # Intra vs inter class distances
     intra_distances = []
@@ -189,11 +186,9 @@ def compute_reconstruction_emd_per_phase(originals: np.ndarray, reconstructions:
         if len(phase_orig) == 0:
             continue
 
-        try:
-            emd, _ = sinkhorn_distance(phase_recon.contiguous(), phase_orig)
-            metrics[f'emd_phase_{int(phase)}'] = float(emd.item())
-        except Exception:
-            pass
+        emd, _ = sinkhorn_distance(phase_recon.contiguous(), phase_orig)
+        metrics[f'emd_phase_{int(phase)}'] = float(emd.item())
+
 
     return metrics
 
@@ -231,31 +226,29 @@ def test_rotation_equivariance_sample(model, reference_pcs: dict, phase_labels: 
             X_base_t = torch.from_numpy(X_base).float().to(model.device).unsqueeze(0)  # (1, N_points, 3)
 
             # Get prediction for original
-            try:
-                _, _, _, R_pred_orig = model(X_base_t)
-                R_pred_orig_np = R_pred_orig[0].cpu().numpy()
+            _, _, _, R_pred_orig = model(X_base_t)
+            R_pred_orig_np = R_pred_orig[0].cpu().numpy()
 
-                # Test with random rotations
-                for _ in range(min(n_test_rotations, max_samples_per_phase)):
-                    R_test = random_rotation_matrix()
+            # Test with random rotations
+            for _ in range(min(n_test_rotations, max_samples_per_phase)):
+                R_test = random_rotation_matrix()
 
-                    # Apply known rotation to input
-                    X_rotated = (R_test @ X_base.T).T  # (N_points, 3)
-                    X_rotated_t = torch.from_numpy(X_rotated).float().to(model.device).unsqueeze(0)
+                # Apply known rotation to input
+                X_rotated = (R_test @ X_base.T).T  # (N_points, 3)
+                X_rotated_t = torch.from_numpy(X_rotated).float().to(model.device).unsqueeze(0)
 
-                    # Get prediction for rotated input
-                    _, _, _, R_pred_rot = model(X_rotated_t)
-                    R_pred_rot_np = R_pred_rot[0].cpu().numpy()
+                # Get prediction for rotated input
+                _, _, _, R_pred_rot = model(X_rotated_t)
+                R_pred_rot_np = R_pred_rot[0].cpu().numpy()
 
-                    # Key test: R_pred_rot should equal R_test @ R_pred_orig
-                    R_expected = R_test @ R_pred_orig_np
+                # Key test: R_pred_rot should equal R_test @ R_pred_orig
+                R_expected = R_test @ R_pred_orig_np
 
-                    # Geodesic distance
-                    angle_error_deg = rotation_geodesic_distance_np(R_pred_rot_np, R_expected)
-                    metrics['equivariance_errors'].append(angle_error_deg)
+                # Geodesic distance
+                angle_error_deg = rotation_geodesic_distance_np(R_pred_rot_np, R_expected)
+                metrics['equivariance_errors'].append(angle_error_deg)
 
-            except Exception:
-                pass
+
 
     if metrics['equivariance_errors']:
         metrics['equivariance_mean_deg'] = float(np.mean(metrics['equivariance_errors']))
@@ -306,14 +299,12 @@ def test_reconstruction_consistency_sample(model, reference_pcs: dict, phase_lab
                 X_rotated = (R_test @ X_base.T).T
                 X_rotated_t = torch.from_numpy(X_rotated).float().to(model.device).unsqueeze(0)
 
-                try:
-                    _, recon, _, _ = model(X_rotated_t)
+                _, recon, _, _ = model(X_rotated_t)
 
-                    # Compute reconstruction error
-                    emd, _ = sinkhorn_distance(recon.contiguous(), X_rotated_t)
-                    reconstruction_errors.append(float(emd.item()))
-                except Exception:
-                    pass
+                # Compute reconstruction error
+                emd, _ = sinkhorn_distance(recon.contiguous(), X_rotated_t)
+                reconstruction_errors.append(float(emd.item()))
+
 
             if reconstruction_errors:
                 reconstruction_errors_all.extend(reconstruction_errors)

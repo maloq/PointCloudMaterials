@@ -35,11 +35,17 @@ rot_net:
 rotation_mode: sixd_head
 
 loss: Sinkhorn
+sinkhorn_blur_schedule:
+  enable: true
+  start: 0.1
+  end: 0.01
+  start_epoch: 0
+  duration_epochs: ${epochs}
 max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.004
-batch_size: 2048  # if neighbor_loss_scale>0, then neighbor_pair_batch_size added to batch_size
+batch_size: 2048  
 
 enable_swa: False
 swa_epoch_start: 1000 

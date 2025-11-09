@@ -1,6 +1,8 @@
 import torch
 import os
-from typing import Tuple
+from typing import Tuple, Optional
+from omegaconf import DictConfig, ListConfig
+from omegaconf.base import ContainerMetadata
 
 
 def resolve_config_path(checkpoint_path: str) -> Tuple[str, str]:
@@ -80,3 +82,88 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
         pass
 
     return model
+
+
+def load_supervised_checkpoint(checkpoint_path: str, encoder, rot_net=None):
+    """
+    Load pretrained supervised encoder and rotation network from checkpoint.
+    
+    Args:
+        checkpoint_path (str): Path to the checkpoint file
+        encoder: Encoder model to load weights into
+        rot_net: Optional rotation network to load weights into
+        
+    Returns:
+        dict: The loaded checkpoint dictionary
+    """
+    if not os.path.exists(checkpoint_path):
+        print(f"Warning: Supervised checkpoint not found at {checkpoint_path}")
+        return None
+
+    print(f"Loading supervised checkpoint from: {checkpoint_path}")
+
+    # Load checkpoint
+    checkpoint = None
+    # Prefer safe loading with allowlisted OmegaConf globals (PyTorch >= 2.6)
+    safe_ctx = getattr(getattr(torch, "serialization", object), "safe_globals", None)
+    if callable(safe_ctx) and (DictConfig is not None or ListConfig is not None or ContainerMetadata is not None):
+        allowlist = [c for c in (DictConfig, ListConfig, ContainerMetadata) if c is not None]
+        try:
+            with torch.serialization.safe_globals(allowlist):
+                checkpoint = torch.load(checkpoint_path, map_location='cpu')
+        except Exception as e:
+            print(f"Safe checkpoint load failed ({e}). Falling back to full unpickling.")
+
+    if checkpoint is None:
+        # Last resort: allow full unpickling. Only do this for trusted checkpoints.
+        try:
+            checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
+        except TypeError:
+            # Older torch without weights_only argument
+            checkpoint = torch.load(checkpoint_path, map_location='cpu')
+
+    # Extract encoder state dict
+    encoder_state = {}
+    for key, value in checkpoint['state_dict'].items():
+        if key.startswith('encoder.'):
+            new_key = key.replace('encoder.', '')
+            encoder_state[new_key] = value
+
+    # Load encoder weights
+    if encoder_state:
+        missing_keys, unexpected_keys = encoder.load_state_dict(encoder_state, strict=False)
+        print(f"Loaded encoder weights from supervised checkpoint")
+        if missing_keys:
+            print(f"  Missing keys: {missing_keys[:5]}{'...' if len(missing_keys) > 5 else ''}")
+        if unexpected_keys:
+            print(f"  Unexpected keys: {unexpected_keys[:5]}{'...' if len(unexpected_keys) > 5 else ''}")
+    else:
+        print("Warning: No encoder weights found in checkpoint")
+
+    # Extract rotation network state dict (if using rot_head mode)
+    if rot_net is not None:
+        rot_net_state = {}
+        for key, value in checkpoint['state_dict'].items():
+            if key.startswith('rot_net.'):
+                new_key = key.replace('rot_net.', '')
+                rot_net_state[new_key] = value
+
+        # Load rotation network weights
+        if rot_net_state:
+            missing_keys, unexpected_keys = rot_net.load_state_dict(rot_net_state, strict=False)
+            print(f"Loaded rotation network weights from supervised checkpoint")
+            if missing_keys:
+                print(f"  Missing keys: {missing_keys[:5]}{'...' if len(missing_keys) > 5 else ''}")
+            if unexpected_keys:
+                print(f"  Unexpected keys: {unexpected_keys[:5]}{'...' if len(unexpected_keys) > 5 else ''}")
+        else:
+            print("Warning: No rotation network weights found in checkpoint")
+
+    if 'hyper_parameters' in checkpoint:
+        hparams = checkpoint['hyper_parameters']
+        print(f"Checkpoint hyperparameters:")
+        print(f"  Encoder: {hparams.get('encoder', {}).get('name', 'unknown')}")
+        print(f"  Latent size: {hparams.get('latent_size', 'unknown')}")
+        print(f"  Learning rate: {hparams.get('learning_rate', 'unknown')}")
+
+    return checkpoint

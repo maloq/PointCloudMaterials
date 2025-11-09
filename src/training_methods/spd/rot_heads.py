@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from contextlib import nullcontext
 from typing import Any, Dict
 
 
@@ -33,6 +34,26 @@ def _orthogonalize(mat: torch.Tensor) -> torch.Tensor:
     return (u @ v.transpose(-1, -2)).to(orig_dtype)
 
 
+def _autocast_disabled_context(tensor: torch.Tensor):
+    """Return a context manager that disables autocast when it is active."""
+    device_type = tensor.device.type
+    if device_type == "cuda" and torch.is_autocast_enabled():
+        return torch.autocast(device_type=device_type, enabled=False)
+    if device_type == "cpu" and hasattr(torch, "is_autocast_cpu_enabled") and torch.is_autocast_cpu_enabled():
+        return torch.autocast(device_type=device_type, enabled=False)
+    return nullcontext()
+
+
+def _det3x3(mat: torch.Tensor) -> torch.Tensor:
+    """Fast batched determinant for 3x3 matrices using triple product.
+    Expects `mat` of shape (..., 3, 3) in float32.
+    """
+    a = mat[..., 0, :]
+    b = mat[..., 1, :]
+    c = mat[..., 2, :]
+    return torch.sum(torch.cross(a, b, dim=-1) * c, dim=-1)
+
+
 def kabsch_rotation(cano: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     """
     Compute optimal rotation aligning canonical output to target using Kabsch algorithm.
@@ -40,34 +61,24 @@ def kabsch_rotation(cano: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         cano: predicted canonical points (B, N, 3) or (B, 3, N)
         target: reference points (matching shape permutations)
     """
-    def _ensure_points_last_dim(points: torch.Tensor) -> torch.Tensor:
-        if points.ndim != 3:
-            raise ValueError(f"Expected point cloud of shape (B, N, 3) or (B, 3, N), got {points.shape}")
-        if points.shape[-1] == 3:
-            return points
-        if points.shape[1] == 3:
-            return points.transpose(1, 2).contiguous()
-        raise ValueError(f"Cannot interpret point cloud shape {points.shape}")
 
-    target_points = _ensure_points_last_dim(target).to(dtype=cano.dtype, device=cano.device)
-    cano_points = _ensure_points_last_dim(cano).to(torch.float32)
-    target_points32 = target_points.to(torch.float32)
+    with _autocast_disabled_context(cano):
+        orig_dtype = cano.dtype
+        target_points = target.to(dtype=torch.float32, device=cano.device)
+        cano_points = cano.to(torch.float32)
 
-    cano_centered = cano_points - cano_points.mean(dim=1, keepdim=True)
-    target_centered = target_points32 - target_points32.mean(dim=1, keepdim=True)
+        cano_centered = cano_points - cano_points.mean(dim=1, keepdim=True)
+        target_centered = target_points - target_points.mean(dim=1, keepdim=True)
 
-    cov = cano_centered.transpose(1, 2) @ target_centered
-    U, _, Vh = torch.linalg.svd(cov, full_matrices=False)
-    R = Vh.transpose(-1, -2) @ U.transpose(-1, -2)
+        cov = cano_centered.transpose(1, 2) @ target_centered
+        U, _, Vh = torch.linalg.svd(cov, full_matrices=False)
+        # Diagonal fix: R = Vh^T * diag(1,1,s) * U^T, where s = sign(det(VU^T)) == sign(det(cov)).
+        s = torch.sign(_det3x3(cov))
+        Sfix = torch.eye(3, device=cov.device, dtype=cov.dtype).expand(cov.shape[0], -1, -1).clone()
+        Sfix[:, -1, -1] = torch.where(s < 0, torch.tensor(-1.0, dtype=cov.dtype, device=cov.device), torch.tensor(1.0, dtype=cov.dtype, device=cov.device))
+        R = Vh.transpose(-1, -2) @ Sfix @ U.transpose(-1, -2)
 
-    det = torch.linalg.det(R)
-    neg_mask = det < 0
-    if torch.any(neg_mask):
-        Vh_adjusted = Vh.clone()
-        Vh_adjusted[neg_mask, -1, :] *= -1
-        R = Vh_adjusted.transpose(-1, -2) @ U.transpose(-1, -2)
-
-    return R.to(dtype=cano.dtype)
+        return R.to(dtype=orig_dtype)
 
 
 class _BaseRotHead(nn.Module):
