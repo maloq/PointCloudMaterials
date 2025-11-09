@@ -5,9 +5,14 @@ experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_$
 wandb_mode: online
 
 model_type: spd
-latent_size: 36
+latent_size: 48
+
+# Optional: Load pretrained supervised encoder
+load_supervised_checkpoint: False  # Set to True to load pretrained weights
+supervised_checkpoint_path: output/supervised_encoder/2025-11-07/19-36-50/supervised_encoder_VN_DGCNN_l36_bs1024_lr0.0060_rotsixd_head_loss_epochloss_epoch=00.ckpt
+
 encoder: 
-  name: PnE_VN # VN_DGCNN
+  name: VN_DGCNN # PnE_VN
   kwargs:
     latent_size: ${latent_size}
     # hidden_dim1: 360
@@ -24,14 +29,14 @@ decoder:
     n_shells: 2
     R1: 0.5
     R2: 1.0
-    hidden_dim: 256
+    hidden_dim: 400
     R_att: 0.5
     learnable_template: False
 
 rot_net:
   name: Rot6DHead
   kwargs:
-    hidden: 128
+    hidden: 256
     use_attention: True
 
 rotation_mode: sixd_head
@@ -41,20 +46,29 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.004
-batch_size: 1024
+batch_size: 1424
 
 enable_swa: False
 swa_epoch_start: 1000 
 epochs: 24
 
 gpu: True
-devices: 0
+devices: [0]
+ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 
-decay_rate: 0.0004 
+decay_rate: 0.0004
 kl_latent_loss_scale: 0.02
 pdist_loss_scale: 0.00
 kabsch_rotation_loss_scale: 0.000
+
+# Curriculum learning settings
+curriculum_learning:
+  enable: True  # Set to True to enable curriculum learning
+  start_fraction: 0.0  # Starting amorphous fraction (0.0 = no amorphous samples)
+  end_fraction: 1.0  # Final amorphous fraction (1.0 = all amorphous samples included)
+  start_epoch: 3  # Epoch to start increasing amorphous fraction
+  end_epoch: 11  # Epoch to reach end_fraction (null = use max_epochs)

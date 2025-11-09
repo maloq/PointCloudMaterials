@@ -6,8 +6,9 @@ import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.strategies import DDPStrategy
 from datetime import datetime
-from omegaconf import DictConfig
+from omegaconf import DictConfig, ListConfig
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 import wandb
 
@@ -15,6 +16,7 @@ import wandb
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
+from src.training_methods.spd.curriculum_callback import CurriculumLearningCallback
 from src.data_utils.data_module import (
     RealPointCloudDataModule,
     SyntheticPointCloudDataModule,
@@ -46,8 +48,7 @@ def train(cfg: DictConfig):
     run_dir = get_rundir_name()
     wandb_logger = init_wandb(cfg, run_dir)
 
-    data_kind = getattr(cfg.data, "kind", "off")
-    if data_kind == "synthetic":
+    if cfg.data.kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
     else:
         dm = RealPointCloudDataModule(cfg)
@@ -63,19 +64,57 @@ def train(cfg: DictConfig):
 
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
-    trainer = pl.Trainer(
+    # Set up curriculum learning callback if enabled
+    callbacks = [checkpoint_callback, lr_monitor]
+    if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
+        curriculum_callback = CurriculumLearningCallback(
+            start_fraction=cfg.curriculum_learning.start_fraction,
+            end_fraction=cfg.curriculum_learning.end_fraction,
+            start_epoch=cfg.curriculum_learning.start_epoch,
+            end_epoch=cfg.curriculum_learning.end_epoch,
+        )
+        callbacks.append(curriculum_callback)
+        logger.print("Curriculum learning callback enabled")
+
+    if isinstance(cfg.devices, ListConfig):
+        devices = list(cfg.devices)
+    elif isinstance(cfg.devices, (list, tuple)):
+        devices = list(cfg.devices) if len(cfg.devices) > 0 else [0]
+    else:
+        devices = [0]
+
+    ddp_strategy = None
+    if cfg.gpu and len(devices) > 1 and cfg.ddp_find_unused_parameters:
+        ddp_strategy = DDPStrategy(find_unused_parameters=True)
+
+    trainer_kwargs = dict(
         default_root_dir=run_dir,
         max_epochs=cfg.epochs,
         accelerator='gpu' if cfg.gpu else 'cpu',
-        devices=[0],
+        devices=devices,
         logger=wandb_logger,
-        callbacks=[checkpoint_callback, lr_monitor],
+        callbacks=callbacks,
         log_every_n_steps=cfg.log_every_n_steps,
         precision='bf16-mixed',
         benchmark=True,
     )
 
+    # Reload dataloaders every epoch when curriculum learning is active
+    # This is necessary because the dataset size changes between epochs
+    if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
+        trainer_kwargs["reload_dataloaders_every_n_epochs"] = 1
+        logger.print("Dataloader will be reloaded every epoch for curriculum learning")
+
+    if ddp_strategy is not None:
+        trainer_kwargs["strategy"] = ddp_strategy
+
+    trainer = pl.Trainer(**trainer_kwargs)
+
     trainer.fit(model, dm)
+
+    # Run test after training completes
+    logger.print("Starting test phase...")
+    trainer.test(model, dm, ckpt_path='best')
 
 
 @hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')

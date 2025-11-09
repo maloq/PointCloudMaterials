@@ -42,6 +42,11 @@ from src.data_utils.data_load import SyntheticPointCloudDataset
 from src.data_utils.prepare_data import get_regular_samples, get_random_samples
 
 
+REFERENCE_POINT_CLOUDS_DEFAULT = Path(
+    "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
+)
+
+
 def load_synthetic_environment_data(env_dir: str) -> Tuple[np.ndarray, Dict[str, Any]]:
     """Load synthetic environment data and metadata."""
     env_path = Path(env_dir)
@@ -687,132 +692,20 @@ def _add_axes_border(ax: Any, linewidth: float = 1.0, color: str = "black") -> N
         spine.set_color(color)
 
 
-def generate_reference_point_cloud(
-    structure_def: Dict[str, Any],
-    target_count: int = 64,
-    box_size: float = 10.0,
-) -> np.ndarray:
-    """
-    Generate a small point cloud sample from a reference structure definition.
-
-    For crystalline structures, generates atoms in a small box, then centers and normalizes.
-    For amorphous structures, generates random points and normalizes.
-
-    The output is centered (mean at origin) and normalized by box_size to match
-    the preprocessing in PointCloudDataset/SyntheticPointCloudDataset.
-
-    Args:
-        structure_def: Structure definition from reference_structures.npy
-        target_count: Target number of atoms to generate
-        box_size: Size of the region to fill with atoms (used for normalization)
-
-    Returns:
-        Point cloud array of shape (N, 3), centered and normalized
-    """
-    phase_type = structure_def.get("phase_type")
-
-    if phase_type in ["crystal_fcc", "crystal_bcc", "amorphous_repeat"]:
-        # For structured phases, tile the lattice/motif
-        if phase_type == "amorphous_repeat":
-            cell_vectors = np.array(structure_def["tile_vectors"], dtype=float)
-            motif = np.array(structure_def["motif"], dtype=float)
-            motif_fractional = False
-        else:
-            cell_vectors = np.array(structure_def["lattice_vectors"], dtype=float)
-            motif = np.array(structure_def["motif"], dtype=float)
-            motif_fractional = True
-
-        # Convert motif to Cartesian coordinates
-        if motif_fractional:
-            motif_coords = motif @ cell_vectors
-        else:
-            motif_coords = motif
-
-        # Determine how many cells needed
-        cell_size = np.linalg.norm(cell_vectors[0])
-        n_cells_per_dim = max(1, int(np.ceil(box_size / cell_size)))
-
-        positions = []
-        for i in range(-n_cells_per_dim, n_cells_per_dim + 1):
-            for j in range(-n_cells_per_dim, n_cells_per_dim + 1):
-                for k in range(-n_cells_per_dim, n_cells_per_dim + 1):
-                    lattice_origin = i * cell_vectors[0] + j * cell_vectors[1] + k * cell_vectors[2]
-                    for motif_offset in motif_coords:
-                        pos = lattice_origin + motif_offset
-                        # Keep atoms within box
-                        if np.all(np.abs(pos) <= box_size / 2):
-                            positions.append(pos)
-
-        positions = np.array(positions, dtype=float) if positions else np.zeros((0, 3), dtype=float)
-
-        # Center and subsample if needed
-        if len(positions) > 0:
-            positions = positions - positions.mean(axis=0)
-            if len(positions) > target_count:
-                # Keep central atoms
-                dists = np.linalg.norm(positions, axis=1)
-                indices = np.argsort(dists)[:target_count]
-                positions = positions[indices]
-
-        # Normalize by box_size to match PointCloudDataset behavior
-        if len(positions) > 0:
-            positions = positions / box_size
-
-        return positions
-
-    elif phase_type in ["amorphous_random", "amorphous_mixed"]:
-        # For amorphous, generate random points with minimum separation
-        min_pair_dist = structure_def.get("min_pair_dist", 1.0)
-        positions = []
-        rng = np.random.default_rng(42)  # Fixed seed for reproducibility
-
-        max_attempts = target_count * 100
-        attempts = 0
-
-        while len(positions) < target_count and attempts < max_attempts:
-            candidate = rng.uniform(-box_size / 2, box_size / 2, size=3)
-            attempts += 1
-
-            # Check minimum distance
-            if len(positions) == 0:
-                positions.append(candidate)
-                continue
-
-            dists = np.linalg.norm(np.array(positions) - candidate, axis=1)
-            if np.min(dists) >= min_pair_dist:
-                positions.append(candidate)
-
-        positions_array = np.array(positions, dtype=float) if positions else np.zeros((0, 3), dtype=float)
-
-        # Normalize by box_size to match PointCloudDataset behavior
-        if len(positions_array) > 0:
-            positions_array = positions_array / box_size
-
-        return positions_array
-
-    else:
-        # Unknown or intermediate phase type
-        return np.zeros((0, 3), dtype=float)
-
-
 def visualize_reference_structures(
     checkpoint_path: str,
     reference_structures_path: str,
     output_path: Path,
     cuda_device: int = 0,
-    target_atoms: int = 64,
-    box_size: float = 10.0,
 ) -> None:
     """
     Create visualization of reference structures, their reconstructions, and latent space.
 
     Args:
         checkpoint_path: Path to trained SPD model checkpoint
-        reference_structures_path: Path to reference_structures.npy file
+        reference_structures_path: Path to reference_point_clouds.npy file
         output_path: Path to save visualization
         cuda_device: CUDA device ID
-        target_atoms: Number of atoms to generate for each structure
-        box_size: Size of region to generate atoms in
     """
     from sklearn.decomposition import PCA
 
@@ -820,37 +713,46 @@ def visualize_reference_structures(
     model, cfg, device = load_spd_model(checkpoint_path, cuda_device=cuda_device)
     model.eval()
 
-    print(f"Loading reference structures from {reference_structures_path}")
-    ref_structures = np.load(reference_structures_path, allow_pickle=True).item()
+    print(f"Loading reference point clouds from {reference_structures_path}")
+    ref_point_clouds = np.load(reference_structures_path, allow_pickle=True).item()
 
-    # Filter out intermediate phases (only visualize base phases)
-    base_structures = {
-        name: struct for name, struct in ref_structures.items()
-        if not name.startswith("intermediate_")
-    }
+    if not isinstance(ref_point_clouds, dict) or len(ref_point_clouds) == 0:
+        print("No reference point clouds found in the provided file")
+        return
 
-    print(f"Found {len(base_structures)} base phase structures")
+    structure_names: List[str] = []
+    point_clouds: List[np.ndarray] = []
 
-    # Generate point clouds and pass through model
-    structure_names = sorted(base_structures.keys())
-    point_clouds = []
-    latents_list = []
-    reconstructions_list = []
+    for name in sorted(ref_point_clouds.keys()):
+        if name.startswith("intermediate_"):
+            continue
+
+        pc = np.asarray(ref_point_clouds[name], dtype=float)
+        if pc.ndim != 2 or pc.shape[1] != 3:
+            print(f"    Warning: Invalid point cloud shape for {name}, skipping")
+            continue
+        if len(pc) == 0:
+            print(f"    Warning: Empty point cloud for {name}, skipping")
+            continue
+
+        pc_centered = pc - pc.mean(axis=0, keepdims=True)
+        point_clouds.append(pc_centered)
+        structure_names.append(name)
+
+    if len(point_clouds) == 0:
+        print("No valid structures to visualize")
+        return
+
+    print(f"Found {len(structure_names)} reference structures")
+
+    latents_list: List[np.ndarray] = []
+    reconstructions_list: List[np.ndarray] = []
+    recon_names: List[str] = []
 
     # Use the device from load_spd_model
     with torch.no_grad():
-        for name in structure_names:
-            struct_def = base_structures[name]
+        for name, pc in zip(structure_names, point_clouds):
             print(f"  Processing {name}...")
-
-            # Generate point cloud
-            pc = generate_reference_point_cloud(struct_def, target_atoms, box_size)
-
-            if len(pc) == 0:
-                print(f"    Warning: Could not generate point cloud for {name}, skipping")
-                continue
-
-            point_clouds.append(pc)
 
             # Convert to tensor and add batch dimension
             pc_tensor = torch.from_numpy(pc).float().unsqueeze(0).to(device)
@@ -862,13 +764,10 @@ def visualize_reference_structures(
 
                 latents_list.append(inv_z.cpu().numpy()[0])
                 reconstructions_list.append(recon.cpu().numpy()[0])
+                recon_names.append(name)
             except Exception as e:
                 print(f"    Warning: Model inference failed for {name}: {e}")
                 continue
-
-    if len(point_clouds) == 0:
-        print("No valid structures to visualize")
-        return
 
     print(f"Successfully processed {len(point_clouds)} structures")
 
@@ -882,10 +781,13 @@ def visualize_reference_structures(
     fig.patch.set_linewidth(border_width)
 
     # Row 1: Original structures
-    # Note: points are normalized by box_size, so they're in range ~[-0.5, 0.5]
-    viz_limit = 0.6  # Slightly larger than 0.5 for better visualization
+    if point_clouds:
+        max_extent = max(np.max(np.abs(pc)) for pc in point_clouds)
+        viz_limit = max(0.6, float(max_extent) * 1.1)
+    else:
+        viz_limit = 0.6
 
-    for col, (name, pc) in enumerate(zip(structure_names[:len(point_clouds)], point_clouds)):
+    for col, (name, pc) in enumerate(zip(structure_names, point_clouds)):
         ax = fig.add_subplot(3, n_structures, col + 1, projection="3d")
 
         ax.scatter(
@@ -901,7 +803,7 @@ def visualize_reference_structures(
         ax.set_zlim(-viz_limit, viz_limit)
 
     # Row 2: Reconstructions
-    for col, (name, recon) in enumerate(zip(structure_names[:len(reconstructions_list)], reconstructions_list)):
+    for col, (name, recon) in enumerate(zip(recon_names, reconstructions_list)):
         ax = fig.add_subplot(3, n_structures, n_structures + col + 1, projection="3d")
 
         ax.scatter(
@@ -937,9 +839,9 @@ def visualize_reference_structures(
         ax = fig.add_subplot(3, n_structures, 2 * n_structures + n_structures // 2 + 1, projection="3d")
 
         # Use different colors for each structure
-        colors = cm.tab20(np.linspace(0, 1, len(structure_names[:len(latents_3d)])))
+        colors = cm.tab20(np.linspace(0, 1, len(recon_names[:len(latents_3d)])))
 
-        for i, (name, latent_pt, color) in enumerate(zip(structure_names[:len(latents_3d)], latents_3d, colors)):
+        for i, (name, latent_pt, color) in enumerate(zip(recon_names[:len(latents_3d)], latents_3d, colors)):
             ax.scatter(
                 latent_pt[0], latent_pt[1], latent_pt[2],
                 s=200, alpha=0.9,
@@ -1017,8 +919,8 @@ def main():
     parser.add_argument(
         "--reference-structures",
         type=str,
-        default=None,
-        help="Path to reference_structures.npy (optional, for reference structure visualization)",
+        default=str(REFERENCE_POINT_CLOUDS_DEFAULT),
+        help="Path to reference_point_clouds.npy (set empty string to skip reference structure visualization)",
     )
 
     args = parser.parse_args()
@@ -1074,15 +976,14 @@ def main():
     )
 
     # Step 4: Reference structures visualization (if provided)
-    if args.reference_structures:
+    reference_structures_path = (args.reference_structures or "").strip()
+    if reference_structures_path:
         print("\n=== Step 4: Creating Reference Structures Visualization ===")
         visualize_reference_structures(
             checkpoint_path=args.checkpoint,
-            reference_structures_path=args.reference_structures,
+            reference_structures_path=reference_structures_path,
             output_path=output_dir / "reference_structures_analysis.png",
             cuda_device=args.cuda_device,
-            target_atoms=64,
-            box_size=10.0,
         )
 
     print("\n=== Done! ===")

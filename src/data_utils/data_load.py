@@ -522,10 +522,20 @@ class SyntheticPointCloudDataset(Dataset):
 
         return atom_meta
 
+    @staticmethod
+    def _group_phase(phase_id: str) -> str:
+        """Group amorphous phases (but not intermediate) into one class."""
+        if phase_id.startswith('amorphous_') and not phase_id.startswith('intermediate_'):
+            return 'amorphous'
+        return phase_id
+
     def _encode_phase(self, phase_id: str) -> int:
-        if phase_id not in self._phase_to_idx:
-            self._phase_to_idx[phase_id] = len(self._phase_to_idx)
-        return self._phase_to_idx[phase_id]
+        # Apply phase grouping
+        grouped_phase_id = self._group_phase(phase_id)
+
+        if grouped_phase_id not in self._phase_to_idx:
+            self._phase_to_idx[grouped_phase_id] = len(self._phase_to_idx)
+        return self._phase_to_idx[grouped_phase_id]
 
     def _encode_grain(self, grain_key: Tuple[str, str]) -> int:
         if grain_key[1] == "unknown":
@@ -554,6 +564,97 @@ class SyntheticPointCloudDataset(Dataset):
         return pc_tensor, phase_tensor, grain_tensor, orientation_tensor, quaternion_tensor
  
  
+class CurriculumLearningDataset(Dataset):
+    """Wrapper dataset that filters samples based on amorphous fraction for curriculum learning.
+
+    This dataset wraps a SyntheticPointCloudDataset and dynamically filters samples to include
+    only a specified fraction of amorphous samples. This enables curriculum learning where
+    the model starts training with only crystalline samples and gradually introduces amorphous ones.
+
+    Args:
+        dataset: The underlying SyntheticPointCloudDataset (or Subset of one)
+        amorphous_fraction: Fraction of amorphous samples to include (0.0 to 1.0)
+    """
+
+    def __init__(self, dataset, amorphous_fraction: float = 1.0):
+        self.dataset = dataset
+        self._amorphous_fraction = amorphous_fraction
+
+        # Handle Subset objects from train/val split
+        self.base_dataset = dataset
+        self.subset_indices = None
+        if hasattr(dataset, 'dataset') and hasattr(dataset, 'indices'):
+            # This is a Subset object from random_split
+            self.base_dataset = dataset.dataset
+            self.subset_indices = dataset.indices
+
+        self._update_indices()
+
+    def _update_indices(self):
+        """Update the list of valid indices based on current amorphous fraction."""
+        crystalline_indices = []
+        amorphous_indices = []
+
+        # Determine which indices to iterate over
+        if self.subset_indices is not None:
+            # We're wrapping a Subset - only consider indices in the subset
+            indices_to_check = self.subset_indices
+        else:
+            # We're wrapping the full dataset
+            indices_to_check = range(len(self.base_dataset))
+
+        # Separate indices by phase type
+        for idx in indices_to_check:
+            phase_label = self.base_dataset._phase_labels[idx]
+            # Get the phase name from the index
+            phase_name = None
+            for name, phase_idx in self.base_dataset._phase_to_idx.items():
+                if phase_idx == phase_label:
+                    phase_name = name
+                    break
+
+            # Check if this is an amorphous phase
+            if phase_name and phase_name == 'amorphous':
+                amorphous_indices.append(idx)
+            else:
+                crystalline_indices.append(idx)
+
+        # Calculate how many amorphous samples to include
+        num_amorphous_to_include = int(len(amorphous_indices) * self._amorphous_fraction)
+
+        # Combine indices: all crystalline + fraction of amorphous
+        self._valid_indices = crystalline_indices + amorphous_indices[:num_amorphous_to_include]
+
+        logger.print(
+            f"CurriculumLearning: amorphous_fraction={self._amorphous_fraction:.3f}, "
+            f"crystalline={len(crystalline_indices)}, "
+            f"amorphous={num_amorphous_to_include}/{len(amorphous_indices)}, "
+            f"total={len(self._valid_indices)}"
+        )
+
+    @property
+    def amorphous_fraction(self) -> float:
+        """Get current amorphous fraction."""
+        return self._amorphous_fraction
+
+    @amorphous_fraction.setter
+    def amorphous_fraction(self, value: float):
+        """Set amorphous fraction and update indices."""
+        if not 0.0 <= value <= 1.0:
+            raise ValueError(f"amorphous_fraction must be in [0, 1], got {value}")
+        if value != self._amorphous_fraction:
+            self._amorphous_fraction = value
+            self._update_indices()
+
+    def __len__(self) -> int:
+        return len(self._valid_indices)
+
+    def __getitem__(self, index: int):
+        # Map the index to the actual dataset index
+        actual_idx = self._valid_indices[index]
+        return self.base_dataset[actual_idx]
+
+
 class SoapCoordDataset(Dataset):
     """
     PyTorch Dataset over one or more Parquet files that contain:

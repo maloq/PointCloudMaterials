@@ -1,7 +1,11 @@
 import torch
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
-from src.data_utils.data_load import PointCloudDataset, SyntheticPointCloudDataset
+from src.data_utils.data_load import (
+    PointCloudDataset,
+    SyntheticPointCloudDataset,
+    CurriculumLearningDataset,
+)
 import time
 import logging
 from pathlib import Path
@@ -108,11 +112,26 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         self.num_workers = cfg.num_workers
         self.max_samples = cfg.max_samples
 
+        # Curriculum learning settings
+        self.enable_curriculum = hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable
+        if self.enable_curriculum:
+            self.curriculum_learning = cfg.curriculum_learning
+        self._phase_info_logged = False
+
     def setup(self, stage=None):
         start_time = time.time()
         self.train_dataset, self.val_dataset = self._build_datasets()
         # Test dataset is same as val for metrics
         self.test_dataset = self.val_dataset
+
+        # Apply curriculum learning wrapper to train dataset BEFORE max_samples limiting
+        if self.enable_curriculum:
+            start_fraction = self.curriculum_learning.start_fraction
+            logger.print(f"Curriculum learning enabled with start_fraction={start_fraction}")
+            self.train_dataset = CurriculumLearningDataset(
+                self.train_dataset,
+                amorphous_fraction=start_fraction
+            )
 
         if self.max_samples > 0:
             max_train = min(self.max_samples, len(self.train_dataset))
@@ -120,6 +139,9 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
             self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
             self.test_dataset = self.val_dataset
+
+        if (stage is None or stage == 'fit') and not self._phase_info_logged:
+            self._log_phase_mapping()
 
         elapsed_time = time.time() - start_time
         logger.print(f"Synth train dataset size: {len(self.train_dataset)}")
@@ -204,6 +226,10 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         return value
 
     def train_dataloader(self):
+        # Disable persistent workers when curriculum learning is active
+        # because dataset size changes between epochs
+        use_persistent = not self.enable_curriculum and self.num_workers > 0
+
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
@@ -211,7 +237,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             shuffle=True,
             drop_last=True,
             pin_memory=True,
-            persistent_workers=True,
+            persistent_workers=use_persistent,
         )
 
     def val_dataloader(self):
@@ -231,6 +257,39 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             pin_memory=True,
             persistent_workers=True,
         )
+
+    def _resolve_synthetic_dataset(self):
+        dataset = getattr(self, 'train_dataset', None)
+        visited = set()
+        while dataset is not None and id(dataset) not in visited:
+            visited.add(id(dataset))
+            if isinstance(dataset, SyntheticPointCloudDataset):
+                return dataset
+            next_dataset = getattr(dataset, 'dataset', None)
+            if next_dataset is not None and next_dataset is not dataset:
+                dataset = next_dataset
+                continue
+            base_dataset = getattr(dataset, 'base_dataset', None)
+            if base_dataset is not None and base_dataset is not dataset:
+                dataset = base_dataset
+                continue
+            break
+        return None
+
+    def _log_phase_mapping(self):
+        base_dataset = self._resolve_synthetic_dataset()
+        if base_dataset is None or not hasattr(base_dataset, '_phase_to_idx'):
+            logger.print("Synthetic phase mapping unavailable; dataset not initialized yet")
+            return
+
+        if not base_dataset._phase_to_idx:
+            logger.print("Synthetic dataset did not expose any phase labels")
+            return
+
+        logger.print("Synthetic phase labels:")
+        for phase_name, phase_idx in sorted(base_dataset._phase_to_idx.items(), key=lambda item: item[1]):
+            logger.print(f"  Phase {phase_idx}: {phase_name}")
+        self._phase_info_logged = True
 
 
 class PointCloudDataModule(pl.LightningDataModule):

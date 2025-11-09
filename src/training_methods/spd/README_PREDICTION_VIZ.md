@@ -62,7 +62,7 @@ python src/training_methods/spd/predict_and_visualize.py \
 - `--force-recompute`: Force recomputation even if cache exists
 - `--cuda-device`: CUDA device ID (default: 0)
 - `--max-samples`: Maximum number of samples to process (default: None = all)
-- `--reference-structures`: Path to reference_structures.npy for structure analysis (optional)
+- `--reference-structures`: Path to reference_point_clouds.npy for structure analysis (optional)
 
 ### Python API
 
@@ -102,11 +102,9 @@ create_visualization(
 # Step 4: (Optional) Visualize reference structures
 visualize_reference_structures(
     checkpoint_path="path/to/checkpoint.ckpt",
-    reference_structures_path="path/to/reference_structures.npy",
+    reference_structures_path="path/to/reference_point_clouds.npy",
     output_path=Path("output/reference_structures_analysis.png"),
     cuda_device=0,
-    target_atoms=64,
-    box_size=10.0,
 )
 ```
 
