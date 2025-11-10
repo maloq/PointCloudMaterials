@@ -57,7 +57,7 @@ batch_size: 1500
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 16
+epochs: 100
 
 gpu: True
 devices: [0]
@@ -78,5 +78,5 @@ curriculum_learning:
   enable: True  # Set to True to enable curriculum learning
   start_fraction: 0.0  # Starting amorphous fraction (0.0 = no amorphous samples)
   end_fraction: 1.0  # Final amorphous fraction (1.0 = all amorphous samples included)
-  start_epoch: 3  # Epoch to start increasing amorphous fraction
-  end_epoch: 11  # Epoch to reach end_fraction (null = use max_epochs)
+  start_epoch: 10  # Epoch to start increasing amorphous fraction
+  end_epoch: 50  # Epoch to reach end_fraction (null = use max_epochs)

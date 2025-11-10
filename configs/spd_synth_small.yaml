@@ -5,7 +5,7 @@ experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_$
 wandb_mode: online
 
 model_type: spd
-latent_size: 48
+latent_size: 72
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False  # Set to True to load pretrained weights
@@ -20,18 +20,45 @@ encoder:
     # blocks: [2, 2, 2]
     # bottleneck_ratio: 0.5
     
+
 decoder: 
-  name: FoldingSphereAttnRes
+  name: MoETemplate
   kwargs: 
     latent_size: ${latent_size}
     num_points: ${data.num_points}
-    dropout_rate: 0.1
-    n_shells: 2
-    R1: 0.5
-    R2: 1.0
-    hidden_dim: 400
-    R_att: 0.5
-    learnable_template: False
+    n_experts: 2
+    topk: 1
+    gate_temp: 0.7
+    gate_hidden: 256
+    use_residual: True
+    lattice_kwargs:
+      basis_size: 4        # covers FCC (4) and BCC (2) comfortably
+      replicate_radius: 2  # (2r+1)^3=125 cells -> plenty to crop 80 pts
+      hidden: 256
+    amorphous_kwargs:
+      hidden: 256
+      noise_std: 0.01      # small; keeps mode sharp
+    residual_kwargs:
+      k: 12                # FCC first shell is 12; works well for both
+      n_layers: 2
+      hidden_ctx: 64
+      edge_hidden: 64
+      step_size: 0.6
+
+
+
+# decoder: 
+#   name: FoldingSphereAttnRes
+#   kwargs: 
+#     latent_size: ${latent_size}
+#     num_points: ${data.num_points}
+#     dropout_rate: 0.1
+#     n_shells: 2
+#     R1: 0.5
+#     R2: 1.0
+#     hidden_dim: 400
+#     R_att: 0.5
+#     learnable_template: False
 
 rot_net:
   name: Rot6DHead
@@ -41,7 +68,7 @@ rot_net:
 
 rotation_mode: sixd_head
 
-loss: sinkhorn+chamfer
+loss: sinkhorn
 sinkhorn_blur: 0.1
 sinkhorn_blur_schedule:
   enable: true
@@ -57,7 +84,7 @@ batch_size: 1500
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 16
+epochs: 150
 
 gpu: True
 devices: [0]

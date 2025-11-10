@@ -6,8 +6,17 @@ This script demonstrates how to:
 2. Extract latent representations from synthetic training data
 3. Perform clustering analysis (KMeans and HDBSCAN)
 4. Create visualizations comparing ground truth and predictions
+5. Compare reference structures with actual dataset samples (NEW!)
 
 The script automatically loads synthetic data from the model's config.
+
+NEW FEATURES:
+- Compare reference structures (from reference_point_clouds.npy) with actual dataset samples
+- Visualize preprocessing at each step with diagnostic output
+- 4-row visualization: Originals, Canonicals, Reconstructions, Latent space
+- Color-coded: Blue=Reference, Green=Dataset, Purple=Canonical, Orange=Reconstruction
+
+Use this to investigate preprocessing inconsistencies or reference structure issues.
 """
 
 import os
@@ -20,20 +29,46 @@ from src.training_methods.spd.predict_and_visualize import (
     perform_clustering,
     create_visualization,
     visualize_reference_structures,
+    create_synthetic_dataset_with_coords,
 )
 from pathlib import Path
 
 
 def main():
-    # Configuration
-    checkpoint_path = "output/2025-11-09/20-17-35/synth_SPD_FoldingSphereAttnRes_l48_P80_sinkhorn+chamfer_1500-epoch=15.ckpt"
-    n_phases = 3  # Expected number of phases for KMeans
+    # ========================================================================
+    # CONFIGURATION - Edit these paths to match your setup
+    # ========================================================================
+
+    # Path to your trained model checkpoint
+    checkpoint_path = "output/2025-11-09/21-21-24/synth_SPD_FoldingSphereAttnRes_l48_P80_sinkhorn+chamfer_1500-epoch=74.ckpt"
+
+    # Expected number of phases for KMeans clustering
+    n_phases = 3
+
+    # Output directory for all visualizations
     output_dir = "output/spd_analysis"
     cache_dir = "output/spd_analysis/predictions_cache"
-    max_samples = None  # Set to limit number of samples (e.g., 1000), or None for all
 
-    # Path to reference point clouds (set to None to skip)
-    reference_structures_path = "output/synthetic_data/small_crystals/reference_point_clouds.npy"
+    # Number of samples to process (None = all samples)
+    max_samples = None  # Set to e.g., 1000 for faster testing
+
+    # Path to reference point clouds (set to None to skip reference analysis)
+    reference_structures_path = "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
+
+    # ========================================================================
+    # COMPARISON SETTINGS - For investigating preprocessing issues
+    # ========================================================================
+
+    # Compare reference structures with actual dataset samples
+    # This helps identify preprocessing inconsistencies
+    compare_with_dataset = True  # Set to False for faster execution
+
+    # Limit dataset samples for comparison (to avoid memory issues)
+    max_samples_for_comparison = 5000
+
+    # ========================================================================
+    # PIPELINE EXECUTION
+    # ========================================================================
 
     # Step 1: Extract latents (or load from cache)
     print("\n=== Step 1: Extracting latents from synthetic data ===")
@@ -80,16 +115,48 @@ def main():
     # Step 4: Create reference structures visualization (optional)
     if reference_structures_path:
         print("\n=== Step 4: Creating reference structures visualization ===")
+
+        # Create dataset for comparison if requested
+        dataset_for_viz = None
+        if compare_with_dataset:
+            print(f"Creating dataset for comparison (max {max_samples_for_comparison} samples)...")
+            # Get environment directories from the loaded config
+            env_dirs = None
+            if hasattr(cfg.data, 'env_dirs'):
+                env_dirs = cfg.data.env_dirs
+            elif hasattr(cfg.data, 'data_path'):
+                env_dirs = [cfg.data.data_path] if isinstance(cfg.data.data_path, str) else cfg.data.data_path
+
+            if env_dirs:
+                dataset_for_viz, _ = create_synthetic_dataset_with_coords(
+                    env_dirs, cfg, max_samples=max_samples_for_comparison
+                )
+                print(f"Dataset created with {len(dataset_for_viz)} samples")
+            else:
+                print("Warning: Could not determine environment directories for dataset comparison")
+
         visualize_reference_structures(
             checkpoint_path=checkpoint_path,
             reference_structures_path=reference_structures_path,
             output_path=output_path / "reference_structures_analysis.png",
             cuda_device=0,
+            dataset=dataset_for_viz,
+            compare_with_dataset=compare_with_dataset,
         )
-        print(f"Reference structures visualization saved to {output_path / 'reference_structures_analysis.png'}")
+
+        comparison_note = " (with dataset comparison)" if compare_with_dataset else ""
+        print(f"Reference structures visualization{comparison_note} saved to {output_path / 'reference_structures_analysis.png'}")
 
     print(f"\n=== Done! ===")
     print(f"All outputs saved to {output_path}")
+    print("\nVisualization includes:")
+    print("  - Clustering visualization: Ground truth vs KMeans vs HDBSCAN")
+    if reference_structures_path:
+        if compare_with_dataset:
+            print("  - Reference structures analysis: Reference (blue) vs Dataset samples (green)")
+            print("    Shows: Originals, Canonicals, Reconstructions, and Latent space")
+        else:
+            print("  - Reference structures analysis: Reference structures only")
 
 
 if __name__ == "__main__":

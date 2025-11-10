@@ -38,13 +38,52 @@ from tqdm import tqdm
 sys.path.append(os.getcwd())
 
 from src.training_methods.spd.eval_spd import load_spd_model
-from src.data_utils.data_load import SyntheticPointCloudDataset
+from src.data_utils.data_load import SyntheticPointCloudDataset, pc_normalize
 from src.data_utils.prepare_data import get_regular_samples, get_random_samples
 
 
 REFERENCE_POINT_CLOUDS_DEFAULT = Path(
     "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
 )
+
+
+def extract_actual_dataset_samples(
+    dataset: SyntheticPointCloudDataset,
+    num_samples_per_phase: int = 3,
+) -> Dict[str, List[np.ndarray]]:
+    """Extract actual samples from the synthetic dataset, organized by phase.
+
+    Returns:
+        Dictionary mapping phase names to lists of point clouds (as numpy arrays).
+    """
+    phase_samples: Dict[str, List[np.ndarray]] = {}
+
+    # Get phase index to name mapping
+    idx_to_phase = {idx: name for name, idx in dataset._phase_to_idx.items()}
+
+    # Track samples collected per phase
+    phase_counts: Dict[str, int] = {name: 0 for name in idx_to_phase.values()}
+
+    for i in range(len(dataset)):
+        # Check if we've collected enough samples for all phases
+        if all(count >= num_samples_per_phase for count in phase_counts.values()):
+            break
+
+        phase_idx = dataset._phase_labels[i]
+        phase_name = idx_to_phase.get(phase_idx, f"unknown_{phase_idx}")
+
+        if phase_counts[phase_name] < num_samples_per_phase:
+            # Get the raw tensor (already normalized by dataset)
+            pc_tensor = dataset.samples[i]
+            pc_numpy = pc_tensor.numpy()
+
+            if phase_name not in phase_samples:
+                phase_samples[phase_name] = []
+
+            phase_samples[phase_name].append(pc_numpy)
+            phase_counts[phase_name] += 1
+
+    return phase_samples
 
 
 def load_synthetic_environment_data(env_dir: str) -> Tuple[np.ndarray, Dict[str, Any]]:
@@ -697,21 +736,32 @@ def visualize_reference_structures(
     reference_structures_path: str,
     output_path: Path,
     cuda_device: int = 0,
+    dataset: Optional[SyntheticPointCloudDataset] = None,
+    compare_with_dataset: bool = True,
 ) -> None:
     """
     Create visualization of reference structures, their reconstructions, and latent space.
+    Optionally compare with actual dataset samples.
 
     Args:
         checkpoint_path: Path to trained SPD model checkpoint
         reference_structures_path: Path to reference_point_clouds.npy file
         output_path: Path to save visualization
         cuda_device: CUDA device ID
+        dataset: Optional dataset to extract actual samples for comparison
+        compare_with_dataset: Whether to add dataset samples to visualization
     """
     from sklearn.decomposition import PCA
 
     print(f"Loading checkpoint from {checkpoint_path}")
     model, cfg, device = load_spd_model(checkpoint_path, cuda_device=cuda_device)
     model.eval()
+
+    # Get the radius used for dataset normalization - CRITICAL for correct preprocessing!
+    radius = float(cfg.data.radius) if hasattr(cfg.data, 'radius') else None
+    print(f"Model training radius: {radius}")
+    if radius is None:
+        print("WARNING: Could not determine radius from config. Using max_norm normalization.")
 
     print(f"Loading reference point clouds from {reference_structures_path}")
     ref_point_clouds = np.load(reference_structures_path, allow_pickle=True).item()
@@ -722,7 +772,11 @@ def visualize_reference_structures(
 
     structure_names: List[str] = []
     point_clouds: List[np.ndarray] = []
+    source_types: List[str] = []  # Track whether from reference or dataset
 
+    # Load reference structures
+    print("\n=== Processing Reference Structures ===")
+    print("APPLYING FIX: Normalizing by radius (not max_norm) to match dataset preprocessing")
     for name in sorted(ref_point_clouds.keys()):
         if name.startswith("intermediate_"):
             continue
@@ -735,24 +789,78 @@ def visualize_reference_structures(
             print(f"    Warning: Empty point cloud for {name}, skipping")
             continue
 
+        # DIAGNOSTIC: Check original state
+        mean_before = pc.mean(axis=0)
+        max_norm_before = np.max(np.linalg.norm(pc, axis=1))
+        print(f"  {name} [BEFORE]: mean={mean_before}, max_norm={max_norm_before:.4f}")
+
+        # FIX: Apply the SAME preprocessing as dataset samples
+        # Reference structures are normalized to max_norm=1.0, but the model was trained
+        # on dataset samples normalized by RADIUS. This mismatch causes reconstruction issues!
+
+        # 1. Center (re-center to ensure mean=0)
         pc_centered = pc - pc.mean(axis=0, keepdims=True)
-        point_clouds.append(pc_centered)
-        structure_names.append(name)
+
+        # 2. Apply radius normalization (like dataset samples do via pc_normalize)
+        if radius is not None:
+            pc_normalized = pc_normalize(pc_centered, radius)
+        else:
+            # Fallback to max_norm normalization if radius not available
+            pc_normalized = pc_normalize(pc_centered, None)
+
+        # DIAGNOSTIC: Check after preprocessing
+        mean_after = pc_normalized.mean(axis=0)
+        max_norm_after = np.max(np.linalg.norm(pc_normalized, axis=1))
+        scale_factor = max_norm_before / max_norm_after if max_norm_after > 0 else 1.0
+        print(f"  {name} [AFTER]:  mean={mean_after}, max_norm={max_norm_after:.4f}, scale_factor={scale_factor:.4f}")
+
+        point_clouds.append(pc_normalized)
+        structure_names.append(f"ref_{name}")
+        source_types.append("reference")
 
     if len(point_clouds) == 0:
         print("No valid structures to visualize")
         return
 
-    print(f"Found {len(structure_names)} reference structures")
+    print(f"\nLoaded {len(structure_names)} reference structures")
+
+    # Add actual dataset samples if requested
+    if compare_with_dataset and dataset is not None:
+        print("\n=== Extracting Actual Dataset Samples ===")
+        dataset_samples = extract_actual_dataset_samples(dataset, num_samples_per_phase=2)
+
+        for phase_name, samples_list in sorted(dataset_samples.items()):
+            for idx, sample_pc in enumerate(samples_list):
+                # Dataset samples are already preprocessed (centered and normalized)
+                mean_ds = sample_pc.mean(axis=0)
+                max_norm_ds = np.max(np.linalg.norm(sample_pc, axis=1))
+                print(f"  {phase_name}_sample{idx}: mean={mean_ds}, max_norm={max_norm_ds:.4f}")
+
+                point_clouds.append(sample_pc)
+                structure_names.append(f"ds_{phase_name}_{idx}")
+                source_types.append("dataset")
+
+        print(f"Added {sum(len(v) for v in dataset_samples.values())} dataset samples")
+
+    print(f"\nTotal structures to process: {len(structure_names)}")
 
     latents_list: List[np.ndarray] = []
     reconstructions_list: List[np.ndarray] = []
+    canonicals_list: List[np.ndarray] = []
+    originals_list: List[np.ndarray] = []  # Store successfully processed originals
     recon_names: List[str] = []
+    recon_source_types: List[str] = []
 
     # Use the device from load_spd_model
+    print("\n=== Running Model Inference ===")
     with torch.no_grad():
-        for name, pc in zip(structure_names, point_clouds):
-            print(f"  Processing {name}...")
+        for name, pc, source_type in zip(structure_names, point_clouds, source_types):
+            print(f"  Processing {name} ({source_type})...")
+
+            # DIAGNOSTIC: Check preprocessing before model
+            mean_pre = pc.mean(axis=0)
+            max_norm_pre = np.max(np.linalg.norm(pc, axis=1))
+            print(f"    Before model: mean={mean_pre}, max_norm={max_norm_pre:.4f}")
 
             # Convert to tensor and add batch dimension
             pc_tensor = torch.from_numpy(pc).float().unsqueeze(0).to(device)
@@ -762,49 +870,96 @@ def visualize_reference_structures(
             try:
                 inv_z, recon, cano, rot = model(pc_tensor)
 
+                recon_np = recon.cpu().numpy()[0]
+                cano_np = cano.cpu().numpy()[0]
+
+                # DIAGNOSTIC: Check reconstruction statistics
+                mean_recon = recon_np.mean(axis=0)
+                max_norm_recon = np.max(np.linalg.norm(recon_np, axis=1))
+                print(f"    Reconstruction: mean={mean_recon}, max_norm={max_norm_recon:.4f}")
+
                 latents_list.append(inv_z.cpu().numpy()[0])
-                reconstructions_list.append(recon.cpu().numpy()[0])
+                reconstructions_list.append(recon_np)
+                canonicals_list.append(cano_np)
+                originals_list.append(pc)  # Store the original that was successfully processed
                 recon_names.append(name)
+                recon_source_types.append(source_type)
             except Exception as e:
                 print(f"    Warning: Model inference failed for {name}: {e}")
+                import traceback
+                traceback.print_exc()
                 continue
 
-    print(f"Successfully processed {len(point_clouds)} structures")
+    print(f"\nSuccessfully processed {len(recon_names)} structures")
 
     # Create visualization
-    n_structures = len(point_clouds)
-    fig = plt.figure(figsize=(4 * n_structures, 12))
+    n_structures = len(recon_names)
+    if n_structures == 0:
+        print("No structures to visualize")
+        return
+
+    # Use 4 rows: originals, canonicals, reconstructions, latent space
+    fig = plt.figure(figsize=(4 * n_structures, 16))
 
     border_width = 72.0 / fig.dpi
     fig.patch.set_facecolor("white")
     fig.patch.set_edgecolor("black")
     fig.patch.set_linewidth(border_width)
 
-    # Row 1: Original structures
-    if point_clouds:
-        max_extent = max(np.max(np.abs(pc)) for pc in point_clouds)
+    # Determine visualization limits
+    all_points = originals_list + reconstructions_list + canonicals_list
+    if all_points:
+        max_extent = max(np.max(np.abs(pc)) for pc in all_points)
         viz_limit = max(0.6, float(max_extent) * 1.1)
     else:
         viz_limit = 0.6
 
-    for col, (name, pc) in enumerate(zip(structure_names, point_clouds)):
-        ax = fig.add_subplot(3, n_structures, col + 1, projection="3d")
+    # Color coding: blue for reference, green for dataset
+    color_map = {"reference": "blue", "dataset": "green"}
 
+    # Row 1: Original structures
+    for col, (name, pc, source_type) in enumerate(zip(recon_names, originals_list, recon_source_types)):
+        ax = fig.add_subplot(4, n_structures, col + 1, projection="3d")
+
+        color = color_map.get(source_type, "gray")
         ax.scatter(
             pc[:, 0], pc[:, 1], pc[:, 2],
             s=25, alpha=0.9,
             edgecolors="black",
             linewidths=0.3,
+            c=color,
         )
 
-        ax.set_title(f"{name}\n(Original)")
+        # Shorten name for display
+        display_name = name.replace("ref_", "").replace("ds_", "")
+        source_label = "REF" if source_type == "reference" else "DS"
+        ax.set_title(f"[{source_label}] {display_name}\n(Original)", fontsize=8)
         ax.set_xlim(-viz_limit, viz_limit)
         ax.set_ylim(-viz_limit, viz_limit)
         ax.set_zlim(-viz_limit, viz_limit)
 
-    # Row 2: Reconstructions
-    for col, (name, recon) in enumerate(zip(recon_names, reconstructions_list)):
-        ax = fig.add_subplot(3, n_structures, n_structures + col + 1, projection="3d")
+    # Row 2: Canonical (before rotation)
+    for col, (name, cano, source_type) in enumerate(zip(recon_names, canonicals_list, recon_source_types)):
+        ax = fig.add_subplot(4, n_structures, n_structures + col + 1, projection="3d")
+
+        ax.scatter(
+            cano[:, 0], cano[:, 1], cano[:, 2],
+            s=25, alpha=0.9,
+            edgecolors="black",
+            linewidths=0.3,
+            c="purple",
+        )
+
+        display_name = name.replace("ref_", "").replace("ds_", "")
+        source_label = "REF" if source_type == "reference" else "DS"
+        ax.set_title(f"[{source_label}] {display_name}\n(Canonical)", fontsize=8)
+        ax.set_xlim(-viz_limit, viz_limit)
+        ax.set_ylim(-viz_limit, viz_limit)
+        ax.set_zlim(-viz_limit, viz_limit)
+
+    # Row 3: Reconstructions
+    for col, (name, recon, source_type) in enumerate(zip(recon_names, reconstructions_list, recon_source_types)):
+        ax = fig.add_subplot(4, n_structures, 2 * n_structures + col + 1, projection="3d")
 
         ax.scatter(
             recon[:, 0], recon[:, 1], recon[:, 2],
@@ -814,12 +969,14 @@ def visualize_reference_structures(
             c="orange",
         )
 
-        ax.set_title(f"{name}\n(Reconstruction)")
+        display_name = name.replace("ref_", "").replace("ds_", "")
+        source_label = "REF" if source_type == "reference" else "DS"
+        ax.set_title(f"[{source_label}] {display_name}\n(Reconstruction)", fontsize=8)
         ax.set_xlim(-viz_limit, viz_limit)
         ax.set_ylim(-viz_limit, viz_limit)
         ax.set_zlim(-viz_limit, viz_limit)
 
-    # Row 3: Latent space visualization (PCA to 3D)
+    # Row 4: Latent space visualization (PCA to 3D)
     if len(latents_list) > 1:
         latents_array = np.array(latents_list)
 
@@ -835,34 +992,42 @@ def visualize_reference_structures(
                 mode='constant'
             )
 
-        # Create a single plot for latent space
-        ax = fig.add_subplot(3, n_structures, 2 * n_structures + n_structures // 2 + 1, projection="3d")
+        # Create a single plot for latent space centered in the bottom row
+        ax = fig.add_subplot(4, n_structures, 3 * n_structures + n_structures // 2 + 1, projection="3d")
 
-        # Use different colors for each structure
-        colors = cm.tab20(np.linspace(0, 1, len(recon_names[:len(latents_3d)])))
+        # Color by source type: blue for reference, green for dataset
+        for i, (name, latent_pt, source_type) in enumerate(zip(recon_names[:len(latents_3d)], latents_3d, recon_source_types)):
+            color = color_map.get(source_type, "gray")
+            marker = 'o' if source_type == "reference" else '^'
+            display_name = name.replace("ref_", "").replace("ds_", "")
 
-        for i, (name, latent_pt, color) in enumerate(zip(recon_names[:len(latents_3d)], latents_3d, colors)):
             ax.scatter(
                 latent_pt[0], latent_pt[1], latent_pt[2],
                 s=200, alpha=0.9,
                 edgecolors="black",
                 linewidths=2,
-                c=[color],
-                label=name,
+                c=color,
+                marker=marker,
+                label=display_name,
             )
 
-        ax.set_title("Latent Space (PCA)")
-        ax.legend(loc="upper left", fontsize=8)
+        ax.set_title("Latent Space (PCA)\nBlue=Reference, Green=Dataset", fontsize=10)
+        ax.legend(loc="upper left", fontsize=6, ncol=2)
         ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%})")
         ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%})" if len(pca.explained_variance_ratio_) > 1 else "PC2")
         ax.set_zlabel(f"PC3 ({pca.explained_variance_ratio_[2]:.1%})" if len(pca.explained_variance_ratio_) > 2 else "PC3")
 
-    fig.suptitle("Reference Structure Analysis", fontsize=16, fontweight="bold")
+    title = "Reference Structure Analysis"
+    if compare_with_dataset and dataset is not None:
+        title += " (with Dataset Samples)"
+    fig.suptitle(title, fontsize=16, fontweight="bold")
     fig.tight_layout()
     fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
 
-    print(f"Visualization saved to {output_path}")
+    print(f"\nVisualization saved to {output_path}")
+    print("Legend: REF=Reference structure, DS=Dataset sample")
+    print("Colors: Blue=Reference, Green=Dataset, Purple=Canonical, Orange=Reconstruction")
 
 
 def main():
@@ -922,6 +1087,18 @@ def main():
         default=str(REFERENCE_POINT_CLOUDS_DEFAULT),
         help="Path to reference_point_clouds.npy (set empty string to skip reference structure visualization)",
     )
+    parser.add_argument(
+        "--compare-with-dataset",
+        action="store_true",
+        default=True,
+        help="Compare reference structures with actual dataset samples (default: True)",
+    )
+    parser.add_argument(
+        "--no-compare-with-dataset",
+        action="store_false",
+        dest="compare_with_dataset",
+        help="Disable comparison with dataset samples",
+    )
 
     args = parser.parse_args()
 
@@ -979,11 +1156,19 @@ def main():
     reference_structures_path = (args.reference_structures or "").strip()
     if reference_structures_path:
         print("\n=== Step 4: Creating Reference Structures Visualization ===")
+        # Re-create dataset for structure extraction if needed
+        dataset_for_viz = None
+        if args.compare_with_dataset:
+            print("Creating dataset for comparison (max 5000 samples)...")
+            dataset_for_viz, _ = create_synthetic_dataset_with_coords(env_dirs, cfg, max_samples=5000)
+
         visualize_reference_structures(
             checkpoint_path=args.checkpoint,
             reference_structures_path=reference_structures_path,
             output_path=output_dir / "reference_structures_analysis.png",
             cuda_device=args.cuda_device,
+            dataset=dataset_for_viz,
+            compare_with_dataset=args.compare_with_dataset,
         )
 
     print("\n=== Done! ===")

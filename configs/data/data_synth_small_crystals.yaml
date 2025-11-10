@@ -13,7 +13,7 @@ normalize: true
 synthetic:
   data_dir: output/synthetic_data/small_crystals
 global:
-  L: 90.0                    # Cube side length matching previous target count at rho_target
+  L: 100.0                    # Cube side length matching previous target count at rho_target
   rho_target: 0.25                     # Maintain identical global density
   avg_nn_dist: 1.0                     # Use same nearest-neighbor distance scaling
   grain_count: 8                       # Keep grain tessellation identical
