@@ -1,0 +1,76 @@
+defaults:
+  - data: data_synth_no_perturb
+project_name: pointnet
+experiment_name: synth_SPD_VN_EQ_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
+wandb_mode: online
+
+model_type: spd
+latent_size: 96  # Number of VN channels for equivariant latent
+
+# Optional: Load pretrained supervised encoder
+load_supervised_checkpoint: False
+
+# VN Encoder - produces equivariant latent (B, latent_size, 3)
+encoder:
+  name: VN_DGCNN
+  kwargs:
+    latent_size: ${latent_size}
+
+# VN Equivariant Decoder - takes equivariant latent (B, latent_size, 3)
+# Returns point cloud (B, num_points, 3) while preserving SO(3) equivariance
+decoder:
+  name: VN_Equivariant  # Simple fully equivariant decoder (recommended)
+  # name: VN_Equivariant_Grid  # Grid-based decoder (slight equivariance approximation)
+  # name: VN_Equivariant_Folding  # Two-stage folding decoder (slight equivariance approximation)
+  kwargs:
+    latent_size: ${latent_size}
+    num_points: ${data.num_points}
+    hidden_dims: [512, 256, 256]  # Hidden layer dimensions
+    use_batchnorm: True
+    negative_slope: 0.1
+
+# IMPORTANT: Use eq_decoder rotation mode for VN equivariant decoder
+# This mode:
+# - Uses decoder(eq_z) instead of decoder(inv_z)
+# - Returns identity rotation (no rotation head needed)
+# - Canonical and reconstruction are the same
+rotation_mode: eq_decoder
+
+# No rotation head needed for eq_decoder mode
+rot_net: null
+
+loss: sinkhorn
+sinkhorn_blur: 0.1
+sinkhorn_blur_schedule:
+  enable: true
+  start: 0.1
+  end: 0.01
+  start_epoch: 0
+  duration_epochs: ${epochs}
+
+learning_rate: 0.004
+batch_size: 512
+
+enable_swa: False
+swa_epoch_start: 1000
+epochs: 100
+
+gpu: True
+devices: [0]
+ddp_find_unused_parameters: True
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+
+decay_rate: 0.0004
+kl_latent_loss_scale: 0.02
+ortho_scale: 0.01  # Will be zero for eq_decoder mode (identity rotation)
+max_samples: 0
+# Curriculum learning settings
+curriculum_learning:
+  enable: True
+  start_fraction: 0.0
+  end_fraction: 1.0
+  start_epoch: 10
+  end_epoch: 50

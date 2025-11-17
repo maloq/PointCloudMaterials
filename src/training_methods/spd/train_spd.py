@@ -16,7 +16,7 @@ import wandb
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-from src.training_methods.spd.curriculum_callback import CurriculumLearningCallback
+from src.utils.curriculum_callback import CurriculumLearningCallback
 from src.data_utils.data_module import (
     RealPointCloudDataModule,
     SyntheticPointCloudDataModule,
@@ -117,7 +117,7 @@ def train(cfg: DictConfig):
     trainer.test(model, dm, ckpt_path='best')
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth_small')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')
 def main(cfg: DictConfig):
     train(cfg)
 

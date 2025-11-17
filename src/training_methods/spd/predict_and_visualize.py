@@ -1,25 +1,26 @@
 """
 Prediction and visualization pipeline for SPD models with synthetic data.
 
-This script:
-1. Loads a trained SPD model from checkpoint
-2. Loads the synthetic training data from the model's config
-3. Extracts latent representations with ground truth labels
-4. Performs clustering analysis (KMeans and HDBSCAN)
-5. Creates comprehensive visualizations comparing:
-   - Ground truth phases (from metadata)
-   - Ground truth grains (from metadata)
-   - Ground truth grain boundaries (from metadata)
-   - Predicted clusters (KMeans)
-   - Predicted clusters (HDBSCAN)
+This script demonstrates how to:
+1. Load a trained SPD model from checkpoint
+2. Extract latent representations from synthetic training data
+3. Perform clustering analysis (KMeans and HDBSCAN)
+4. Create visualizations comparing ground truth and predictions
+5. Compare reference structures with actual dataset samples
 
-All ground truth visualization uses the actual synthetic atomistic data with
-the same visual style as src/data_utils/synthetic/visualization.py
+The script automatically loads synthetic data from the model's config.
+
+Features:
+- Compare reference structures (from reference_point_clouds.npy) with actual dataset samples
+- Visualize preprocessing at each step with diagnostic output
+- 4-row visualization: Originals, Canonicals, Reconstructions, Latent space
+- Color-coded: Blue=Reference, Green=Dataset, Purple=Canonical, Orange=Reconstruction
+
+Use this to investigate preprocessing inconsistencies or reference structure issues.
 """
 
 from __future__ import annotations
 
-import argparse
 import json
 import os
 import sys
@@ -40,11 +41,6 @@ sys.path.append(os.getcwd())
 from src.training_methods.spd.eval_spd import load_spd_model
 from src.data_utils.data_load import SyntheticPointCloudDataset, pc_normalize
 from src.data_utils.prepare_data import get_regular_samples, get_random_samples
-
-
-REFERENCE_POINT_CLOUDS_DEFAULT = Path(
-    "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
-)
 
 
 def extract_actual_dataset_samples(
@@ -736,7 +732,7 @@ def visualize_reference_structures(
     reference_structures_path: str,
     output_path: Path,
     cuda_device: int = 0,
-    dataset: Optional[SyntheticPointCloudDataset] = None,
+    dataset = None,
     compare_with_dataset: bool = True,
 ) -> None:
     """
@@ -1031,115 +1027,69 @@ def visualize_reference_structures(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Predict and visualize SPD model latent space clustering on synthetic data"
-    )
-    parser.add_argument(
-        "--checkpoint",
-        type=str,
-        required=True,
-        help="Path to model checkpoint (.ckpt file)",
-    )
-    parser.add_argument(
-        "--n-phases",
-        type=int,
-        default=3,
-        help="Number of phases for KMeans clustering (default: 3)",
-    )
-    parser.add_argument(
-        "--box-size",
-        type=float,
-        default=None,
-        help="Size of simulation box (default: inferred from config)",
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=str,
-        default="output/spd_predictions",
-        help="Directory to save outputs",
-    )
-    parser.add_argument(
-        "--cache-dir",
-        type=str,
-        default="output/spd_analysis/predictions_cache",
-        help="Directory for caching predictions",
-    )
-    parser.add_argument(
-        "--force-recompute",
-        action="store_true",
-        help="Force recomputation even if cache exists",
-    )
-    parser.add_argument(
-        "--cuda-device",
-        type=int,
-        default=0,
-        help="CUDA device ID (default: 0)",
-    )
-    parser.add_argument(
-        "--max-samples",
-        type=int,
-        default=None,
-        help="Maximum number of samples to process",
-    )
-    parser.add_argument(
-        "--reference-structures",
-        type=str,
-        default=str(REFERENCE_POINT_CLOUDS_DEFAULT),
-        help="Path to reference_point_clouds.npy (set empty string to skip reference structure visualization)",
-    )
-    parser.add_argument(
-        "--compare-with-dataset",
-        action="store_true",
-        default=True,
-        help="Compare reference structures with actual dataset samples (default: True)",
-    )
-    parser.add_argument(
-        "--no-compare-with-dataset",
-        action="store_false",
-        dest="compare_with_dataset",
-        help="Disable comparison with dataset samples",
-    )
+    # ========================================================================
+    # CONFIGURATION - Edit these paths to match your setup
+    # ========================================================================
 
-    args = parser.parse_args()
+    # Path to your trained model checkpoint
+    checkpoint_path = "output/2025-11-09/21-21-24/synth_SPD_FoldingSphereAttnRes_l48_P80_sinkhorn+chamfer_1500-epoch=74.ckpt"
 
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Expected number of phases for KMeans clustering
+    n_phases = 3
 
-    # Step 1: Load predictions (or compute and cache)
-    print("\n=== Step 1: Loading/Computing Predictions ===")
+    # Output directory for all visualizations
+    output_dir = "output/spd_analysis"
+    cache_dir = "output/spd_analysis/predictions_cache"
+
+    # Number of samples to process (None = all samples)
+    max_samples = None  # Set to e.g., 1000 for faster testing
+
+    # Path to reference point clouds (set to None to skip reference analysis)
+    reference_structures_path = "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
+
+    # ========================================================================
+    # COMPARISON SETTINGS - For investigating preprocessing issues
+    # ========================================================================
+
+    # Compare reference structures with actual dataset samples
+    # This helps identify preprocessing inconsistencies
+    compare_with_dataset = True  # Set to False for faster execution
+
+    # Limit dataset samples for comparison (to avoid memory issues)
+    max_samples_for_comparison = 5000
+
+    # ========================================================================
+    # PIPELINE EXECUTION
+    # ========================================================================
+
+    # Step 1: Extract latents (or load from cache)
+    print("\n=== Step 1: Extracting latents from synthetic data ===")
     (latents, sample_coords, phase_labels, grain_labels,
      model, cfg, atoms, metadata) = predict_and_cache(
-        checkpoint_path=args.checkpoint,
-        cuda_device=args.cuda_device,
-        cache_dir=args.cache_dir,
-        force_recompute=args.force_recompute,
-        max_samples=args.max_samples,
+        checkpoint_path=checkpoint_path,
+        cuda_device=0,
+        cache_dir=cache_dir,
+        force_recompute=False,  # Set to True to recompute
+        max_samples=max_samples,
     )
 
     print(f"Latents shape: {latents.shape}")
     print(f"Sample coords shape: {sample_coords.shape}")
     print(f"Phase labels shape: {phase_labels.shape}")
+    print(f"Atoms shape: {atoms.shape}")
 
     # Step 2: Perform clustering
-    print("\n=== Step 2: Clustering ===")
-    kmeans_labels, hdbscan_labels = perform_clustering(latents, args.n_phases)
-
-    # Save cluster assignments
-    cluster_file = output_dir / "cluster_assignments.npz"
-    np.savez_compressed(
-        cluster_file,
-        kmeans=kmeans_labels,
-        hdbscan=hdbscan_labels,
-    )
-    print(f"Saved cluster assignments to {cluster_file}")
+    print("\n=== Step 2: Performing clustering ===")
+    kmeans_labels, hdbscan_labels = perform_clustering(latents, n_phases)
 
     # Step 3: Create visualization
-    print("\n=== Step 3: Creating Visualization ===")
-    box_size = args.box_size
-    if box_size is None:
-        box_size = metadata.get("box_size", getattr(cfg.data, "L", 100.0))
+    print("\n=== Step 3: Creating visualization ===")
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
 
-    viz_file = output_dir / "clustering_visualization.png"
+    # Infer box size from metadata
+    box_size = metadata.get("box_size", 160.0)
+
     create_visualization(
         atoms=atoms,
         metadata=metadata,
@@ -1149,30 +1099,56 @@ def main():
         kmeans_labels=kmeans_labels,
         hdbscan_labels=hdbscan_labels,
         box_size=box_size,
-        output_path=viz_file,
+        output_path=output_path / "clustering_visualization.png",
     )
 
-    # Step 4: Reference structures visualization (if provided)
-    reference_structures_path = (args.reference_structures or "").strip()
+    print(f"\nClustering visualization saved to {output_path / 'clustering_visualization.png'}")
+
+    # Step 4: Create reference structures visualization (optional)
     if reference_structures_path:
-        print("\n=== Step 4: Creating Reference Structures Visualization ===")
-        # Re-create dataset for structure extraction if needed
+        print("\n=== Step 4: Creating reference structures visualization ===")
+
+        # Create dataset for comparison if requested
         dataset_for_viz = None
-        if args.compare_with_dataset:
-            print("Creating dataset for comparison (max 5000 samples)...")
-            dataset_for_viz, _ = create_synthetic_dataset_with_coords(env_dirs, cfg, max_samples=5000)
+        if compare_with_dataset:
+            print(f"Creating dataset for comparison (max {max_samples_for_comparison} samples)...")
+            # Get environment directories from the loaded config
+            env_dirs = None
+            if hasattr(cfg.data, 'env_dirs'):
+                env_dirs = cfg.data.env_dirs
+            elif hasattr(cfg.data, 'data_path'):
+                env_dirs = [cfg.data.data_path] if isinstance(cfg.data.data_path, str) else cfg.data.data_path
+
+            if env_dirs:
+                dataset_for_viz, _ = create_synthetic_dataset_with_coords(
+                    env_dirs, cfg, max_samples=max_samples_for_comparison
+                )
+                print(f"Dataset created with {len(dataset_for_viz)} samples")
+            else:
+                print("Warning: Could not determine environment directories for dataset comparison")
 
         visualize_reference_structures(
-            checkpoint_path=args.checkpoint,
+            checkpoint_path=checkpoint_path,
             reference_structures_path=reference_structures_path,
-            output_path=output_dir / "reference_structures_analysis.png",
-            cuda_device=args.cuda_device,
+            output_path=output_path / "reference_structures_analysis.png",
+            cuda_device=0,
             dataset=dataset_for_viz,
-            compare_with_dataset=args.compare_with_dataset,
+            compare_with_dataset=compare_with_dataset,
         )
 
-    print("\n=== Done! ===")
-    print(f"Results saved to {output_dir}")
+        comparison_note = " (with dataset comparison)" if compare_with_dataset else ""
+        print(f"Reference structures visualization{comparison_note} saved to {output_path / 'reference_structures_analysis.png'}")
+
+    print(f"\n=== Done! ===")
+    print(f"All outputs saved to {output_path}")
+    print("\nVisualization includes:")
+    print("  - Clustering visualization: Ground truth vs KMeans vs HDBSCAN")
+    if reference_structures_path:
+        if compare_with_dataset:
+            print("  - Reference structures analysis: Reference (blue) vs Dataset samples (green)")
+            print("    Shows: Originals, Canonicals, Reconstructions, and Latent space")
+        else:
+            print("  - Reference structures analysis: Reference structures only")
 
 
 if __name__ == "__main__":

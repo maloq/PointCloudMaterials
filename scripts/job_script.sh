@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=SPD_synth        # Name of your job
+#SBATCH --job-name=SPD_s96b        # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
 #SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
@@ -23,5 +23,5 @@ export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run the Python script
 # srun python src/training_methods/spd/train_spd.py --config-name spd
-srun python src/training_methods/spd/train_spd.py --config-name spd_synth
+srun python src/training_methods/spd/train_spd.py --config-name spd_vn_equivariant
 echo "Job finished at: $(date)"
