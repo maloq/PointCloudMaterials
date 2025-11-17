@@ -1032,7 +1032,7 @@ def main():
     # ========================================================================
 
     # Path to your trained model checkpoint
-    checkpoint_path = "output/2025-11-09/21-21-24/synth_SPD_FoldingSphereAttnRes_l48_P80_sinkhorn+chamfer_1500-epoch=74.ckpt"
+    checkpoint_path = "output/2025-11-14/04-09-11/synth_SPD_VN_EQ_l96_P80_sinkhorn_512-epoch=74.ckpt"
 
     # Expected number of phases for KMeans clustering
     n_phases = 3
