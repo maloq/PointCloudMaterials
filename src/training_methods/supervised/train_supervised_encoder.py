@@ -1,22 +1,16 @@
 import os
 import sys
-import time
 import hydra
 import torch
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
-from pytorch_lightning.strategies import DDPStrategy
 from datetime import datetime
-from omegaconf import DictConfig, ListConfig
+from omegaconf import DictConfig
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
-import wandb
-
 
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.spd.supervised_encoder_module import SupervisedEncoder
-from src.data_utils.data_module import SyntheticPointCloudDataModule
+from src.training_methods.spd.train_spd import train_model
 
 torch.set_float32_matmul_precision('medium')
 
@@ -28,18 +22,6 @@ def get_rundir_name() -> str:
     now = datetime.now()
     return str(f"output/supervised_encoder/{now:%Y-%m-%d}/{now:%H-%M-%S}")
 
-
-@rank_zero_only
-def init_wandb(cfg: DictConfig, run_dir):
-    os.environ['WANDB_MODE'] = cfg.wandb_mode
-    os.environ['WANDB_DIR'] = 'output/wandb'
-    os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
-    os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
-    wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
-    return WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
-                       project=cfg.project_name,
-                       name=cfg.experiment_name,
-                       log_model=False)
 
 
 def get_checkpoint_filename(cfg: DictConfig) -> str:
@@ -59,13 +41,6 @@ def get_checkpoint_filename(cfg: DictConfig) -> str:
 def train(cfg: DictConfig):
     logger.print(f"Starting supervised encoder pretraining in {os.getcwd()}")
     run_dir = get_rundir_name()
-    wandb_logger = init_wandb(cfg, run_dir)
-
-    # Use synthetic data module
-    dm = SyntheticPointCloudDataModule(cfg)
-
-    # Build model
-    model = SupervisedEncoder(cfg)
 
     # Checkpoint callback with hyperparameters in filename
     checkpoint_filename = get_checkpoint_filename(cfg)
@@ -86,25 +61,15 @@ def train(cfg: DictConfig):
         mode='min',
     )
 
-    lr_monitor = LearningRateMonitor(logging_interval='step')
-
-
-
-    trainer_kwargs = dict(
-        default_root_dir=run_dir,
-        max_epochs=cfg.epochs,
-        accelerator='gpu' if cfg.gpu else 'cpu',
+    # Train using shared training logic
+    trainer, model, dm, checkpoint_cbs = train_model(
+        cfg,
+        SupervisedEncoder,
+        run_dir=run_dir,
+        checkpoint_callbacks=[checkpoint_callback, checkpoint_callback_loss],
         devices=[0],
-        logger=wandb_logger,
-        callbacks=[checkpoint_callback, checkpoint_callback_loss, lr_monitor],
-        log_every_n_steps=cfg.log_every_n_steps,
-        precision='bf16-mixed',
-        benchmark=True,
+        run_test=False  # Supervised encoder doesn't run test phase
     )
-    trainer = pl.Trainer(**trainer_kwargs)
-
-    # Train
-    trainer.fit(model, dm)
 
     logger.print(f"Training completed. Checkpoints saved to {run_dir}")
     logger.print(f"Best checkpoint (accuracy): {checkpoint_callback.best_model_path}")

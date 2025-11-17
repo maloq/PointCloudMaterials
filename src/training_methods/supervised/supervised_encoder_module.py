@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score, f1_score
 
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
-from src.utils.optimizer_utils import get_optimizers_and_scheduler
+from src.utils.spd_utils import get_optimizers_and_scheduler
 from src.training_methods.spd.rot_heads import build_rot_head
 from src.loss.reconstruction_loss import chamfer_distance as _cd_fn
 

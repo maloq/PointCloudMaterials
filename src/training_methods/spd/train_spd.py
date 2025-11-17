@@ -43,29 +43,49 @@ def init_wandb(cfg: DictConfig, run_dir):
                        log_model=False)
 
 
-def train(cfg: DictConfig):
+def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks=None,
+                devices=None, run_test=True):
+    """
+    Generic training function that can be used with any PyTorch Lightning model.
+
+    Args:
+        cfg: Hydra configuration
+        model_class: The model class to instantiate (e.g., ShapePoseDisentanglement, EquivariantAutoencoder)
+        run_dir: Optional custom output directory (default: auto-generated from timestamp)
+        checkpoint_callbacks: Optional list of checkpoint callbacks (default: single checkpoint monitoring val/loss)
+        devices: Optional device list (default: from cfg.devices or [0])
+        run_test: Whether to run test phase after training (default: True)
+
+    Returns:
+        tuple: (trainer, model, datamodule, checkpoint_callbacks) for post-training processing
+    """
     logger.print(f"Starting in {os.getcwd()}")
-    run_dir = get_rundir_name()
+
+    if run_dir is None:
+        run_dir = get_rundir_name()
+
     wandb_logger = init_wandb(cfg, run_dir)
 
     if cfg.data.kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
     else:
         dm = RealPointCloudDataModule(cfg)
-    model = ShapePoseDisentanglement(cfg)
+    model = model_class(cfg)
 
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=run_dir,
-        monitor='val/loss',
-        filename=f'{cfg.experiment_name}-{{epoch:02d}}',
-        save_top_k=3,
-        mode='min',
-    )
+    # Set up checkpoint callbacks
+    if checkpoint_callbacks is None:
+        checkpoint_callbacks = [ModelCheckpoint(
+            dirpath=run_dir,
+            monitor='val/loss',
+            filename=f'{cfg.experiment_name}-{{epoch:02d}}',
+            save_top_k=3,
+            mode='min',
+        )]
 
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
     # Set up curriculum learning callback if enabled
-    callbacks = [checkpoint_callback, lr_monitor]
+    callbacks = list(checkpoint_callbacks) + [lr_monitor]
     if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
         curriculum_callback = CurriculumLearningCallback(
             start_fraction=cfg.curriculum_learning.start_fraction,
@@ -76,15 +96,17 @@ def train(cfg: DictConfig):
         callbacks.append(curriculum_callback)
         logger.print("Curriculum learning callback enabled")
 
-    if isinstance(cfg.devices, ListConfig):
-        devices = list(cfg.devices)
-    elif isinstance(cfg.devices, (list, tuple)):
-        devices = list(cfg.devices) if len(cfg.devices) > 0 else [0]
-    else:
-        devices = [0]
+    # Set up devices
+    if devices is None:
+        if isinstance(cfg.devices, ListConfig):
+            devices = list(cfg.devices)
+        elif isinstance(cfg.devices, (list, tuple)):
+            devices = list(cfg.devices) if len(cfg.devices) > 0 else [0]
+        else:
+            devices = [0]
 
     ddp_strategy = None
-    if cfg.gpu and len(devices) > 1 and cfg.ddp_find_unused_parameters:
+    if cfg.gpu and len(devices) > 1 and hasattr(cfg, 'ddp_find_unused_parameters') and cfg.ddp_find_unused_parameters:
         ddp_strategy = DDPStrategy(find_unused_parameters=True)
 
     trainer_kwargs = dict(
@@ -113,8 +135,16 @@ def train(cfg: DictConfig):
     trainer.fit(model, dm)
 
     # Run test after training completes
-    logger.print("Starting test phase...")
-    trainer.test(model, dm, ckpt_path='best')
+    if run_test:
+        logger.print("Starting test phase...")
+        trainer.test(model, dm, ckpt_path='best')
+
+    return trainer, model, dm, checkpoint_callbacks
+
+
+def train(cfg: DictConfig):
+    """SPD-specific training function."""
+    train_model(cfg, ShapePoseDisentanglement)
 
 
 @hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')

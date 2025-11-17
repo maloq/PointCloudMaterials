@@ -106,6 +106,28 @@ def identity_rotation(batch_size: int, device, dtype) -> torch.Tensor:
     return eye.unsqueeze(0).expand(batch_size, -1, -1)
 
 
+def order_points_for_kabsch(points: torch.Tensor) -> torch.Tensor:
+    """
+    Provide a deterministic ordering of points (by radial distance to centroid)
+    so that Kabsch correspondences become permutation agnostic.
+    """
+    if points.dim() != 3:
+        raise ValueError(f"Point tensor must be 3D (B, N, 3). Got shape {tuple(points.shape)}")
+    if points.size(-1) != 3:
+        if points.size(1) == 3:
+            points = points.transpose(1, 2)
+        else:
+            raise ValueError(f"Point tensor must have 3 coordinates. Got shape {tuple(points.shape)}")
+
+    pts_bn3 = points
+    pts_for_order = pts_bn3.detach() if pts_bn3.requires_grad else pts_bn3
+    centered = pts_for_order - pts_for_order.mean(dim=1, keepdim=True)
+    radii = centered.norm(dim=-1)
+    order = torch.argsort(radii, dim=1)
+    ordered = torch.gather(pts_bn3, 1, order.unsqueeze(-1).expand(-1, -1, 3))
+    return ordered
+
+
 def rotation_geodesic(pred: torch.Tensor, target: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
     """
     Mean geodesic angle (radians) between predicted and ground-truth rotations.

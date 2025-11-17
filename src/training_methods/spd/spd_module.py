@@ -26,6 +26,7 @@ from src.utils.spd_utils import (
     init_sinkhorn_blur_schedule,
     get_current_sinkhorn_blur,
     get_optimizers_and_scheduler,
+    order_points_for_kabsch,
 )
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from omegaconf.base import ContainerMetadata
@@ -197,9 +198,10 @@ class ShapePoseDisentanglement(pl.LightningModule):
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
             recon = cano
         elif self.rotation_mode == "inv_kabsch":
-            # TODO: Not implemented correctly, check if order of points is affecting the result
             cano = self.decoder(inv_z)
-            rot = kabsch_rotation(cano, pc)
+            cano_ordered = order_points_for_kabsch(cano)
+            pc_ordered = order_points_for_kabsch(pc)
+            rot = kabsch_rotation(cano_ordered, pc_ordered)
             recon = self._apply_rotation(cano, rot)
         else:  # rot head modes
             cano = self.decoder(inv_z)
