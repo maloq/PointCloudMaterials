@@ -4,28 +4,22 @@ import pytorch_lightning as pl
 
 import sys,os
 import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, silhouette_score
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
-from src.utils.model_utils import load_supervised_checkpoint, find_best_supervised_checkpoint
+from src.utils.optimizer_utils import get_optimizers_and_scheduler
+from src.utils.model_utils import load_supervised_checkpoint
 from src.loss.reconstruction_loss import kl_latent_regularizer, rotation_geodesic_kabsch_loss
 from src.loss.pdist_loss import pairwise_distance_loss, angle_triad_loss, rdf_loss
 from src.training_methods.spd.rot_heads import build_rot_head, kabsch_rotation
-from src.utils.spd_metrics import (
+from src.training_methods.utils.spd_metrics import (
     compute_embedding_quality_metrics,
     compute_canonical_consistency_metrics,
     compute_reconstruction_emd_per_phase,
     test_rotation_equivariance_sample,
     test_reconstruction_consistency_sample,
-    compute_cluster_metrics,
-)
-from src.utils.spd_utils import (
-    to_float32,
-    rotation_geodesic,
-    cached_sample_count,
-    init_sinkhorn_blur_schedule,
-    get_current_sinkhorn_blur,
-    get_optimizers_and_scheduler,
 )
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from omegaconf.base import ContainerMetadata
@@ -37,12 +31,12 @@ LOSS_COMPONENTS = (
     "chamfer",
     "pairwise_sorted",
     "pairwise_hist",
-    # "angle_sorted",
-    # "angle_sorted_cos",
-    # "angle_hist",
-    # "angle_hist_cos",
-    # "rdf_pdf",
-    # "rdf_gr",
+    "angle_sorted",
+    "angle_sorted_cos",
+    "angle_hist",
+    "angle_hist_cos",
+    "rdf_pdf",
+    "rdf_gr",
 )
 
 
@@ -80,7 +74,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             )
         self.loss_components = loss_components
         self.loss_name = "+".join(loss_components)
-        self._sinkhorn_blur_schedule = init_sinkhorn_blur_schedule(cfg)
+        self._sinkhorn_blur_schedule = self._init_sinkhorn_blur_schedule(cfg)
         raw_loss_params = getattr(cfg, "loss_params", None)
         if raw_loss_params is not None:
             self.loss_params = OmegaConf.to_container(raw_loss_params, resolve=True)
@@ -112,6 +106,44 @@ class ShapePoseDisentanglement(pl.LightningModule):
             if os.path.exists(ref_path):
                 self.reference_pcs = np.load(ref_path, allow_pickle=True).item()
 
+    def _init_sinkhorn_blur_schedule(self, cfg):
+        schedule_cfg = cfg.sinkhorn_blur_schedule
+        start = float(schedule_cfg.start)
+        end = float(schedule_cfg.end)
+        start_epoch = int(schedule_cfg.start_epoch)
+        duration = int(schedule_cfg.duration_epochs)
+        enabled = bool(schedule_cfg.enable)
+        return {
+            "enabled": enabled,
+            "start": start,
+            "end": end,
+            "start_epoch": max(0, start_epoch),
+            "duration_epochs": duration,
+        }
+
+    def _current_sinkhorn_blur(self) -> float:
+        schedule = getattr(self, "_sinkhorn_blur_schedule", None)
+        if not schedule:
+            return 0.02
+
+        start = float(schedule["start"])
+        if not schedule.get("enabled", False):
+            return start
+
+        duration = int(schedule["duration_epochs"])
+        if duration <= 1:
+            return float(schedule["end"])
+
+        epoch = max(0, int(self.current_epoch))
+        start_epoch = int(schedule["start_epoch"])
+        elapsed = max(0, epoch - start_epoch)
+        max_elapsed = duration - 1
+        if elapsed >= max_elapsed:
+            return float(schedule["end"])
+
+        alpha = elapsed / max_elapsed
+        return float(start + alpha * (schedule["end"] - start))
+
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
             val, _ = sinkhorn_distance(pred.contiguous(), target, blur=sinkhorn_blur)
@@ -132,7 +164,46 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 hist_sigma=hist_sigma,
                 reduction=reduction,
             )
-
+        if component.startswith("angle_"):
+            mode = "hist" if "hist" in component else "sorted"
+            k = self._loss_param("angle", "k", 8)
+            bins = self._loss_param("angle", "bins", 72)
+            sigma = self._loss_param("angle", "sigma", None)
+            base_graph = self._loss_param("angle", "base_graph", "x")
+            reduction = self._loss_param("angle", "reduction", "mean")
+            use_cos_param = self._loss_param("angle", "use_cos", None)
+            if use_cos_param is None:
+                use_cos = component.endswith("_cos")
+            else:
+                use_cos = bool(use_cos_param)
+            return angle_triad_loss(
+                pred,
+                target,
+                k=k,
+                mode=mode,
+                bins=bins,
+                sigma=sigma,
+                base_graph=base_graph,
+                use_cos=use_cos,
+                reduction=reduction,
+            )
+        if component in {"rdf_pdf", "rdf_gr"}:
+            bins = self._loss_param("rdf", "bins", 64)
+            r_max = self._loss_param("rdf", "r_max", None)
+            sigma = self._loss_param("rdf", "sigma", None)
+            volume = self._loss_param("rdf", "volume", None)
+            normalize_mode = "gr" if component.endswith("gr") else "pdf"
+            reduction = self._loss_param("rdf", "reduction", "mean")
+            return rdf_loss(
+                pred,
+                target,
+                bins=bins,
+                r_max=r_max,
+                sigma=sigma,
+                volume=volume,
+                normalize_mode=normalize_mode,
+                reduction=reduction,
+            )
         raise ValueError(f"Unsupported reconstruction loss component: {component}")
 
     def _reconstruction_loss(self, pred, target, sinkhorn_blur):
@@ -150,7 +221,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         if checkpoint_path is None:
             # Auto-discover the best checkpoint from lightning_logs
-            checkpoint_path = find_best_supervised_checkpoint(cfg)
+            checkpoint_path = self._find_best_supervised_checkpoint(cfg)
             if checkpoint_path is None:
                 print("Warning: No supervised checkpoint path specified and auto-discovery failed")
                 return
@@ -158,27 +229,31 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Delegate to utility function
         load_supervised_checkpoint(checkpoint_path, self.encoder, self.rot_net)
 
-    @staticmethod
-    def _unpack_batch(batch):
-        if not isinstance(batch, (tuple, list)):
-            return batch, {}
-        pc = batch[0]
-        labels = {}
-        labels["phase"] = batch[1]
-        labels["grain"] = batch[2]
-        labels["orientation"] = batch[3]
-        labels["quaternion"] = batch[4]
-        return pc, labels
+    def _find_best_supervised_checkpoint(self, cfg):
+        """Auto-discover best supervised checkpoint from lightning_logs directory."""
+        # Try to find checkpoints directory
+        base_dirs = ['lightning_logs', 'outputs/supervised_encoder']
 
-    @staticmethod
-    def _apply_rotation(points: torch.Tensor, rot: torch.Tensor) -> torch.Tensor:
-        """Apply rotation matrices to batched point clouds."""
-        return (rot @ points.transpose(1, 2)).transpose(1, 2).contiguous()
+        for base_dir in base_dirs:
+            if not os.path.exists(base_dir):
+                continue
 
-    @staticmethod
-    def _identity_rotation(batch_size: int, device, dtype) -> torch.Tensor:
-        eye = torch.eye(3, device=device, dtype=dtype)
-        return eye.unsqueeze(0).expand(batch_size, -1, -1)
+            # Find all checkpoint files
+            checkpoint_files = []
+            for root, dirs, files in os.walk(base_dir):
+                for file in files:
+                    if file.endswith('.ckpt'):
+                        checkpoint_files.append(os.path.join(root, file))
+
+            if not checkpoint_files:
+                continue
+
+            # Sort by modification time and return the most recent
+            checkpoint_files.sort(key=os.path.getmtime, reverse=True)
+            print(f"Auto-discovered checkpoint: {checkpoint_files[0]}")
+            return checkpoint_files[0]
+
+        return None
 
     def forward(self, pc: torch.Tensor):
         inv_z, eq_z, _ = self.encoder(pc)
@@ -188,7 +263,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
     def _decode_with_rotation(self, inv_z, eq_z, pc):
         """Decode and compute rotation based on configured mode."""
         if self.rotation_mode == "eq_decoder":
-            print("Not standart use of SPD. Z_inv is not used.")
             cano = self.decoder(eq_z)
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
             recon = cano
@@ -197,7 +271,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
             recon = cano
         elif self.rotation_mode == "inv_kabsch":
-            # TODO: Not implemented correctly, check if order of points is affecting the result
             cano = self.decoder(inv_z)
             rot = kabsch_rotation(cano, pc)
             recon = self._apply_rotation(cano, rot)
@@ -237,10 +310,15 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 return section_params[key]
         return params.get(key, default)
 
+    @staticmethod
+    def _to_f32(*tensors):
+        """Convert multiple tensors to float32 at once."""
+        return tuple(t.to(torch.float32) for t in tensors)
+
     def _compute_losses(self, recon, cano, rot, pc, inv_z):
         """Compute all losses and return (loss_dict, current_sinkhorn_blur)."""
-        recon_f32, cano_f32, pc_f32 = to_float32(recon, cano, pc)
-        sinkhorn_blur = get_current_sinkhorn_blur(self._sinkhorn_blur_schedule, self.current_epoch)
+        recon_f32, cano_f32, pc_f32 = self._to_f32(recon, cano, pc)
+        sinkhorn_blur = self._current_sinkhorn_blur()
 
         losses = {}
 
@@ -306,7 +384,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Optional rotation geodesic when ground truth is available
         if rot is not None and labels.get("orientation") is not None:
             gt_rot = labels["orientation"].to(device=rot.device, dtype=torch.float32)
-            geodesic = rotation_geodesic(rot.to(torch.float32), gt_rot)
+            geodesic = self._rotation_geodesic(rot.to(torch.float32), gt_rot)
             self._log_metric(stage, "rot_geodesic_deg", geodesic * (180.0 / torch.pi), prog_bar=False)
 
         return total_loss
@@ -368,6 +446,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
             return self.max_supervised_samples
         return None
 
+    @staticmethod
+    def _cached_sample_count(cache: dict) -> int:
+        latents = cache.get("latents") if cache is not None else None
+        if not latents:
+            return 0
+        return sum(t.shape[0] for t in latents)
+
     def _cache_supervised_batch(self, stage: str, inv_z: torch.Tensor, labels: dict,
                                  recon: torch.Tensor = None, cano: torch.Tensor = None,
                                  rot: torch.Tensor = None, pc: torch.Tensor = None) -> None:
@@ -378,7 +463,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         limit = self._cache_limit_for_stage(stage)
         remaining = None
         if limit is not None and limit > 0:
-            cached = cached_sample_count(cache)
+            cached = self._cached_sample_count(cache)
             remaining = int(limit - cached)
             if remaining <= 0:
                 return
@@ -427,7 +512,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         labels = torch.cat(cache["phase"], dim=0).numpy()
 
         # Original clustering metrics
-        metrics = compute_cluster_metrics(latents, labels, stage)
+        metrics = self._compute_cluster_metrics(latents, labels, stage)
         if metrics:
             for name, value in metrics.items():
                 self._log_metric(
@@ -565,3 +650,56 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Clear cache
         for key in cache:
             cache[key].clear()
+
+    @staticmethod
+    def _compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray, stage: str):
+        metrics = {}
+        unique = np.unique(labels)
+        if unique.size >= 2 and latents.shape[0] >= unique.size:
+            try:
+                assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
+                metrics["ARI"] = float(adjusted_rand_score(labels, assignments))
+                metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
+            except Exception:
+                pass
+        if stage == "val" and latents.shape[0] >= 3:
+            try:
+                assignments_k3 = KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(latents)
+                if np.unique(assignments_k3).size > 1:
+                    metrics["Silhouette"] = float(silhouette_score(latents, assignments_k3))
+            except Exception:
+                pass
+        return metrics or None
+
+
+    @staticmethod
+    def _rotation_geodesic(pred: torch.Tensor, target: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
+        """Mean geodesic angle (radians) between predicted and ground-truth rotations."""
+        if pred.shape != target.shape:
+            raise ValueError(f"Rotation shapes must match (got {pred.shape} vs {target.shape})")
+        delta = pred.transpose(-1, -2) @ target
+        trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1)
+        cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + eps, 1.0 - eps)
+        return torch.arccos(cos_theta).mean()
+
+    @staticmethod
+    def _unpack_batch(batch):
+        if not isinstance(batch, (tuple, list)):
+            return batch, {}
+        pc = batch[0]
+        labels = {}
+        labels["phase"] = batch[1]
+        labels["grain"] = batch[2]
+        labels["orientation"] = batch[3]
+        labels["quaternion"] = batch[4]
+        return pc, labels
+
+    @staticmethod
+    def _apply_rotation(points: torch.Tensor, rot: torch.Tensor) -> torch.Tensor:
+        """Apply rotation matrices to batched point clouds."""
+        return (rot @ points.transpose(1, 2)).transpose(1, 2).contiguous()
+
+    @staticmethod
+    def _identity_rotation(batch_size: int, device, dtype) -> torch.Tensor:
+        eye = torch.eye(3, device=device, dtype=dtype)
+        return eye.unsqueeze(0).expand(batch_size, -1, -1)

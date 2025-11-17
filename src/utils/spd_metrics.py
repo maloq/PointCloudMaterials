@@ -5,9 +5,10 @@ Includes embedding quality, rotation equivariance, and reconstruction consistenc
 
 import numpy as np
 import torch
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, adjusted_rand_score, normalized_mutual_info_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
+from sklearn.cluster import KMeans
 from scipy.spatial.distance import pdist, cdist
 from scipy.spatial.transform import Rotation
 
@@ -25,6 +26,37 @@ def rotation_geodesic_distance_np(R1: np.ndarray, R2: np.ndarray, eps: float = 1
     trace = np.trace(R_error)
     angle_rad = np.arccos(np.clip((trace - 1) / 2, -1 + eps, 1 - eps))
     return np.rad2deg(angle_rad)
+
+
+def compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray, stage: str) -> dict:
+    """
+    Compute clustering metrics (ARI, NMI, Silhouette).
+
+    Args:
+        latents: (N, d) latent embeddings
+        labels: (N,) ground truth labels
+        stage: Stage name (e.g., 'train', 'val', 'test')
+
+    Returns:
+        Dictionary of clustering metrics, or None if metrics cannot be computed
+    """
+    metrics = {}
+    unique = np.unique(labels)
+    if unique.size >= 2 and latents.shape[0] >= unique.size:
+        try:
+            assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
+            metrics["ARI"] = float(adjusted_rand_score(labels, assignments))
+            metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
+        except Exception:
+            pass
+    if stage == "val" and latents.shape[0] >= 3:
+        try:
+            assignments_k3 = KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(latents)
+            if np.unique(assignments_k3).size > 1:
+                metrics["Silhouette"] = float(silhouette_score(latents, assignments_k3))
+        except Exception:
+            pass
+    return metrics or None
 
 
 def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarray, include_expensive: bool = False) -> dict:

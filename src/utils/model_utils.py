@@ -167,3 +167,38 @@ def load_supervised_checkpoint(checkpoint_path: str, encoder, rot_net=None):
         print(f"  Learning rate: {hparams.get('learning_rate', 'unknown')}")
 
     return checkpoint
+
+
+def find_best_supervised_checkpoint(cfg) -> Optional[str]:
+    """
+    Auto-discover best supervised checkpoint from lightning_logs directory.
+
+    Args:
+        cfg: Configuration object (unused but kept for compatibility)
+
+    Returns:
+        Path to the most recent checkpoint, or None if not found
+    """
+    # Try to find checkpoints directory
+    base_dirs = ['lightning_logs', 'outputs/supervised_encoder']
+
+    for base_dir in base_dirs:
+        if not os.path.exists(base_dir):
+            continue
+
+        # Find all checkpoint files
+        checkpoint_files = []
+        for root, dirs, files in os.walk(base_dir):
+            for file in files:
+                if file.endswith('.ckpt'):
+                    checkpoint_files.append(os.path.join(root, file))
+
+        if not checkpoint_files:
+            continue
+
+        # Sort by modification time and return the most recent
+        checkpoint_files.sort(key=os.path.getmtime, reverse=True)
+        print(f"Auto-discovered checkpoint: {checkpoint_files[0]}")
+        return checkpoint_files[0]
+
+    return None

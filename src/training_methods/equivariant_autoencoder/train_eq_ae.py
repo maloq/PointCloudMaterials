@@ -1,0 +1,126 @@
+import os
+import sys
+import time
+import hydra
+import torch
+import pytorch_lightning as pl
+from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.strategies import DDPStrategy
+from datetime import datetime
+from omegaconf import DictConfig, ListConfig
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
+import wandb
+
+
+sys.path.append(os.getcwd())
+from src.utils.logging_config import setup_logging
+from src.training_methods.spd.spd_module import ShapePoseDisentanglement
+from src.utils.curriculum_callback import CurriculumLearningCallback
+from src.data_utils.data_module import (
+    RealPointCloudDataModule,
+    SyntheticPointCloudDataModule,
+)
+torch.set_float32_matmul_precision('medium')
+
+logger = setup_logging()
+
+@rank_zero_only
+def get_rundir_name() -> str:
+    now = datetime.now()
+    return str(f"output/{now:%Y-%m-%d}/{now:%H-%M-%S}")
+
+@rank_zero_only
+def init_wandb(cfg: DictConfig, run_dir):
+    os.environ['WANDB_MODE'] = cfg.wandb_mode
+    os.environ['WANDB_DIR'] = 'output/wandb'
+    os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
+    os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
+    wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
+    return WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
+                       project=cfg.project_name,
+                       name=cfg.experiment_name,
+                       log_model=False)
+
+
+def train(cfg: DictConfig):
+    logger.print(f"Starting in {os.getcwd()}")
+    run_dir = get_rundir_name()
+    wandb_logger = init_wandb(cfg, run_dir)
+
+    if cfg.data.kind == "synthetic":
+        dm = SyntheticPointCloudDataModule(cfg)
+    else:
+        dm = RealPointCloudDataModule(cfg)
+    model = ShapePoseDisentanglement(cfg)
+
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=run_dir,
+        monitor='val/loss',
+        filename=f'{cfg.experiment_name}-{{epoch:02d}}',
+        save_top_k=3,
+        mode='min',
+    )
+
+    lr_monitor = LearningRateMonitor(logging_interval='step')
+
+    # Set up curriculum learning callback if enabled
+    callbacks = [checkpoint_callback, lr_monitor]
+    if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
+        curriculum_callback = CurriculumLearningCallback(
+            start_fraction=cfg.curriculum_learning.start_fraction,
+            end_fraction=cfg.curriculum_learning.end_fraction,
+            start_epoch=cfg.curriculum_learning.start_epoch,
+            end_epoch=cfg.curriculum_learning.end_epoch,
+        )
+        callbacks.append(curriculum_callback)
+        logger.print("Curriculum learning callback enabled")
+
+    if isinstance(cfg.devices, ListConfig):
+        devices = list(cfg.devices)
+    elif isinstance(cfg.devices, (list, tuple)):
+        devices = list(cfg.devices) if len(cfg.devices) > 0 else [0]
+    else:
+        devices = [0]
+
+    ddp_strategy = None
+    if cfg.gpu and len(devices) > 1 and cfg.ddp_find_unused_parameters:
+        ddp_strategy = DDPStrategy(find_unused_parameters=True)
+
+    trainer_kwargs = dict(
+        default_root_dir=run_dir,
+        max_epochs=cfg.epochs,
+        accelerator='gpu' if cfg.gpu else 'cpu',
+        devices=devices,
+        logger=wandb_logger,
+        callbacks=callbacks,
+        log_every_n_steps=cfg.log_every_n_steps,
+        precision='bf16-mixed',
+        benchmark=True,
+    )
+
+    # Reload dataloaders every epoch when curriculum learning is active
+    # This is necessary because the dataset size changes between epochs
+    if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
+        trainer_kwargs["reload_dataloaders_every_n_epochs"] = 1
+        logger.print("Dataloader will be reloaded every epoch for curriculum learning")
+
+    if ddp_strategy is not None:
+        trainer_kwargs["strategy"] = ddp_strategy
+
+    trainer = pl.Trainer(**trainer_kwargs)
+
+    trainer.fit(model, dm)
+
+    # Run test after training completes
+    logger.print("Starting test phase...")
+    trainer.test(model, dm, ckpt_path='best')
+
+
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')
+def main(cfg: DictConfig):
+    train(cfg)
+
+if __name__ == '__main__':
+    sys.argv.append('hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}')
+    main()
