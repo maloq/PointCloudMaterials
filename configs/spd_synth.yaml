@@ -15,7 +15,7 @@ encoder:
   name: VN_DGCNN_Refined # PnE_VN
   kwargs:
     latent_size: ${latent_size}
-    feature_dims: [128, 128, 128, 256, 512]
+    feature_dims: [128, 256, 256, 256, 512]
     # hidden_dim1: 360
     # hidden_dim2: 720
     # blocks: [2, 2, 2]
@@ -29,6 +29,12 @@ decoder:
     num_points: ${data.num_points}
     vq_size: 128
     use_vq: True
+    router_hidden: 128
+    transformer_hidden: 128
+    transformer_layers: 3
+    transformer_heads: 6
+    lattice_hidden: 128
+    amorphous_hidden: 128
 
 rot_net:
   name: vn_rotation_head

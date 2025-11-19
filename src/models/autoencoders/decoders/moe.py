@@ -240,7 +240,14 @@ class VQMoEDecoder(nn.Module):
                  num_points=80, 
                  latent_size=48, 
                  vq_size=128, # Size of codebook (number of motifs)
-                 use_vq=True):
+                 use_vq=True,
+                 router_hidden=64,
+                 transformer_hidden=64,
+                 transformer_layers=2,
+                 transformer_heads=4,
+                 lattice_hidden=64,
+                 amorphous_hidden=64,                 
+                 ):
         super().__init__()
         
         self.use_vq = use_vq
@@ -250,14 +257,14 @@ class VQMoEDecoder(nn.Module):
             self.vq = VectorQuantizer(num_embeddings=vq_size, embedding_dim=latent_size)
         
         # 2. Experts
-        self.expert_lattice = DifferentiableLatticeExpert(latent_size, num_points)
-        self.expert_amorphous = AmorphousExpert(latent_size, num_points) # Your existing one is fine
+        self.expert_lattice = DifferentiableLatticeExpert(latent_size, num_points, hidden=lattice_hidden)
+        self.expert_amorphous = AmorphousExpert(latent_size, num_points, hidden=amorphous_hidden) # Your existing one is fine
         
         # 3. Gated Router (Gumbel Softmax)
-        self.router = mlp([latent_size, 64, 2], bn=False)
+        self.router = mlp([latent_size, router_hidden, 2], bn=False)
         
         # 4. Transformer Refiner (Global context)
-        self.refiner = TransformerRefiner(latent_size)
+        self.refiner = TransformerRefiner(latent_size, hidden_dim=transformer_hidden, n_layers=transformer_layers)
 
     def forward(self, z):
         # z: (B, D)
