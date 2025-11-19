@@ -437,7 +437,7 @@ def test_rotation_equivariance_sample(model, reference_pcs: dict, phase_labels: 
             X_base_t = torch.from_numpy(X_base).float().to(model.device).unsqueeze(0)  # (1, N_points, 3)
 
             # Get prediction for original
-            _, _, _, R_pred_orig = model(X_base_t)
+            _, _, _, R_pred_orig, _ = model(X_base_t)
             R_pred_orig_np = R_pred_orig[0].cpu().numpy()
 
             # Test with random rotations
@@ -449,7 +449,7 @@ def test_rotation_equivariance_sample(model, reference_pcs: dict, phase_labels: 
                 X_rotated_t = torch.from_numpy(X_rotated).float().to(model.device).unsqueeze(0)
 
                 # Get prediction for rotated input
-                _, _, _, R_pred_rot = model(X_rotated_t)
+                _, _, _, R_pred_rot, _ = model(X_rotated_t)
                 R_pred_rot_np = R_pred_rot[0].cpu().numpy()
 
                 # Key test: R_pred_rot should equal R_test @ R_pred_orig
@@ -510,7 +510,7 @@ def test_reconstruction_consistency_sample(model, reference_pcs: dict, phase_lab
                 X_rotated = (R_test @ X_base.T).T
                 X_rotated_t = torch.from_numpy(X_rotated).float().to(model.device).unsqueeze(0)
 
-                _, recon, _, _ = model(X_rotated_t)
+                _, recon, _, _, _ = model(X_rotated_t)
 
                 # Compute reconstruction error
                 emd, _ = sinkhorn_distance(recon.contiguous(), X_rotated_t)

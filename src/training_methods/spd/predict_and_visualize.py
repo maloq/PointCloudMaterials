@@ -131,7 +131,7 @@ def extract_latents_with_ground_truth(
     with torch.inference_mode():
         for batch in tqdm(dataloader, desc="Extracting latents"):
             points, phase, grain, _, _ = batch
-            inv_z, _, _, _ = model(points.to(device))
+            inv_z, _, _, _, _ = model(points.to(device))
             latents_list.append(inv_z.detach().cpu().numpy())
             phase_list.append(phase.detach().cpu().numpy())
             grain_list.append(grain.detach().cpu().numpy())
@@ -250,13 +250,13 @@ def perform_clustering(
 
 def main():
     # Configuration
-    checkpoint_path = "output/2025-11-14/04-09-11/synth_SPD_VN_EQ_l96_P80_sinkhorn_512-epoch=74.ckpt"
+    checkpoint_path = "output/2025-11-19/15-32-07/synth_SPD_VQMoE_l96_P80_sinkhorn_512-epoch=24.ckpt"
     n_phases = 3
     output_dir = "output/spd_analysis"
     cache_dir = "output/spd_analysis/predictions_cache"
     max_samples = None
     run_hdbscan = False
-    dbscan_max_samples = 20000  # Prevent DBSCAN from loading all samples into memory
+    dbscan_max_samples = 100000  # Prevent DBSCAN from loading all samples into memory
     reference_structures_path = "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
     compare_with_dataset = True
     max_samples_for_comparison = 5000

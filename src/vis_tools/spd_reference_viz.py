@@ -145,7 +145,7 @@ def visualize_reference_structures(
             pc_tensor = torch.from_numpy(pc).float().unsqueeze(0).to(device)
 
             try:
-                inv_z, recon, cano, rot = model(pc_tensor)
+                inv_z, recon, cano, rot, _ = model(pc_tensor)
 
                 recon_np = recon.cpu().numpy()[0]
                 cano_np = cano.cpu().numpy()[0]

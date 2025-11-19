@@ -103,7 +103,7 @@ def predict_reconstructions(
     for batch in dataloader:
         pts = batch[0] if isinstance(batch, (list, tuple)) else batch
         pts = _prepare_batch(pts, device)
-        _, reco, _, _ = model(pts)  # reco: (B, 3, N)
+        _, reco, _, _, _ = model(pts)  # reco: (B, 3, N)
         originals.append(_to_numpy(pts))
         recos.append(_to_numpy(reco.permute(0, 2, 1)))  # -> (B, N, 3)
 
@@ -120,7 +120,7 @@ def predict_latents(
     latents = []
     for batch in dataloader:
         pts = batch[0] if isinstance(batch, (list, tuple)) else batch
-        inv_z, _, _, _ = model(_prepare_batch(pts, device))
+        inv_z, _, _, _, _ = model(_prepare_batch(pts, device))
         latents.append(_to_numpy(inv_z))
     return np.concatenate(latents, axis=0)
 
