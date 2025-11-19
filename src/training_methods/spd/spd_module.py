@@ -486,16 +486,17 @@ class ShapePoseDisentanglement(pl.LightningModule):
             for name, value in metrics.items():
                 self._log_metric(stage, f"phase/{name.lower()}", value, on_step=False, on_epoch=True)
 
-        # Embedding quality metrics (lightweight only)
-        try:
-            emb_metrics = compute_embedding_quality_metrics(latents_sub, labels_sub, include_expensive=False)
-            for name, value in emb_metrics.items():
-                if stage == "val":
-                    self._log_metric("val_embeddings", name, value, on_step=False, on_epoch=True)
-                else:
-                    self._log_metric(stage, f"embedding/{name}", value, on_step=False, on_epoch=True)
-        except Exception as e:
-            print(f"Error computing embedding quality metrics: {e}")
+        # Embedding quality metrics (lightweight only) - skip for train stage
+        if stage != "train":
+            try:
+                emb_metrics = compute_embedding_quality_metrics(latents_sub, labels_sub, include_expensive=False)
+                for name, value in emb_metrics.items():
+                    if stage == "val":
+                        self._log_metric("val_embeddings", name, value, on_step=False, on_epoch=True)
+                    else:
+                        self._log_metric(stage, f"embedding/{name}", value, on_step=False, on_epoch=True)
+            except Exception as e:
+                print(f"Error computing embedding quality metrics: {e}")
 
         # Symmetry-aware rotational metrics (if rotations available)
         if cache.get("rotations") and cache.get("gt_rotations"):
