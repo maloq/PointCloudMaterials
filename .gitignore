@@ -4,7 +4,7 @@ lightning_logs
 checkpoints
 output
 wandb
-
+.claude
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

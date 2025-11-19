@@ -4,6 +4,7 @@ import pytorch_lightning as pl
 
 import sys,os
 import numpy as np
+import wandb
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
@@ -18,6 +19,8 @@ from src.utils.spd_metrics import (
     test_rotation_equivariance_sample,
     test_reconstruction_consistency_sample,
     compute_cluster_metrics,
+    compute_symmetry_aware_rot_metric,
+    compute_global_aligned_rot_metric,
 )
 from src.utils.spd_utils import (
     to_float32,
@@ -92,8 +95,8 @@ class ShapePoseDisentanglement(pl.LightningModule):
         self.kl_latent_loss_scale = cfg.kl_latent_loss_scale
         self._supervised_cache = {
             "train": {"latents": [], "phase": []},
-            "val": {"latents": [], "phase": []},
-            "test": {"latents": [], "phase": [], "reconstructions": [], "canonicals": [], "rotations": [], "originals": []},
+            "val": {"latents": [], "phase": [], "rotations": [], "gt_rotations": []},
+            "test": {"latents": [], "phase": [], "reconstructions": [], "canonicals": [], "rotations": [], "originals": [], "gt_rotations": []},
         }
 
         # Maximum samples to use for metrics caches (to limit memory usage) - optional with defaults
@@ -181,33 +184,48 @@ class ShapePoseDisentanglement(pl.LightningModule):
         eye = torch.eye(3, device=device, dtype=dtype)
         return eye.unsqueeze(0).expand(batch_size, -1, -1)
 
+    def _unpack_decoder_output(self, output):
+        """Helper to handle decoders that return auxiliary info (like VQ loss)."""
+        if isinstance(output, tuple):
+            # Assuming (pts, vq_loss, ...)
+            pts = output[0]
+            aux_loss = output[1] if len(output) > 1 else 0.0
+            return pts, aux_loss
+        return output, 0.0
+
     def forward(self, pc: torch.Tensor):
         inv_z, eq_z, _ = self.encoder(pc)
-        cano, rot, recon = self._decode_with_rotation(inv_z, eq_z, pc)
-        return inv_z, recon, cano, rot
+        cano, rot, recon, vq_loss = self._decode_with_rotation(inv_z, eq_z, pc)
+        return inv_z, recon, cano, rot, vq_loss
 
     def _decode_with_rotation(self, inv_z, eq_z, pc):
         """Decode and compute rotation based on configured mode."""
+        vq_loss = 0.0
+        
         if self.rotation_mode == "eq_decoder":
             print("Not standart use of SPD. Z_inv is not used.")
-            cano = self.decoder(eq_z)
+            out = self.decoder(eq_z)
+            cano, vq_loss = self._unpack_decoder_output(out)
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
             recon = cano
         elif self.rotation_mode == "inv_no_rot":
-            cano = self.decoder(inv_z)
+            out = self.decoder(inv_z)
+            cano, vq_loss = self._unpack_decoder_output(out)
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
             recon = cano
         elif self.rotation_mode == "inv_kabsch":
-            cano = self.decoder(inv_z)
+            out = self.decoder(inv_z)
+            cano, vq_loss = self._unpack_decoder_output(out)
             cano_ordered = order_points_for_kabsch(cano)
             pc_ordered = order_points_for_kabsch(pc)
             rot = kabsch_rotation(cano_ordered, pc_ordered)
             recon = self._apply_rotation(cano, rot)
         else:  # rot head modes
-            cano = self.decoder(inv_z)
+            out = self.decoder(inv_z)
+            cano, vq_loss = self._unpack_decoder_output(out)
             rot = self.rot_net(eq_z)
             recon = self._apply_rotation(cano, rot)
-        return cano, rot, recon
+        return cano, rot, recon, vq_loss
 
     def _log_metric(self, stage: str, name: str, value, *, on_step=None, on_epoch=None, legacy: bool = True, **kwargs) -> None:
         """Helper to keep WandB charts grouped by stage while preserving legacy metric keys."""
@@ -217,8 +235,9 @@ class ShapePoseDisentanglement(pl.LightningModule):
             on_epoch = stage != "train"
 
         log_kwargs = dict(kwargs)
-        if "sync_dist" not in log_kwargs and stage != "train":
-            log_kwargs["sync_dist"] = True
+        if "sync_dist" not in log_kwargs:
+            if stage != "train" or on_epoch:
+                log_kwargs["sync_dist"] = True
 
         log_name = f"{stage}/{name}"
         self.log(log_name, value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
@@ -239,7 +258,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 return section_params[key]
         return params.get(key, default)
 
-    def _compute_losses(self, recon, cano, rot, pc, inv_z):
+    def _compute_losses(self, recon, cano, rot, pc, inv_z, vq_loss=0.0):
         """Compute all losses and return (loss_dict, current_sinkhorn_blur)."""
         recon_f32, cano_f32, pc_f32 = to_float32(recon, cano, pc)
         sinkhorn_blur = get_current_sinkhorn_blur(self._sinkhorn_blur_schedule, self.current_epoch)
@@ -261,8 +280,15 @@ class ShapePoseDisentanglement(pl.LightningModule):
             losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32)
 
         # KL regularization (optional)
+        # KL regularization (optional)
         if self.kl_latent_loss_scale > 0:
             losses['kl'] = kl_latent_regularizer(inv_z)
+
+        # VQ Loss
+        if isinstance(vq_loss, torch.Tensor):
+            losses['vq'] = vq_loss
+        elif vq_loss > 0:
+            losses['vq'] = torch.tensor(vq_loss, device=self.device, dtype=self.dtype)
 
         return losses, sinkhorn_blur
 
@@ -272,19 +298,21 @@ class ShapePoseDisentanglement(pl.LightningModule):
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
 
         # Forward pass
-        inv_z, recon, cano, rot = self(pc)
+        inv_z, recon, cano, rot, vq_loss = self(pc)
 
         # Cache for metrics if needed
         if stage in self._supervised_cache:
             self._cache_supervised_batch(stage, inv_z, labels, recon, cano, rot, pc)
 
         # Compute all losses
-        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z)
+        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss)
 
         # Build total loss
         total_loss = losses['recon'] + self.ortho_scale * losses['ortho']
         if 'kl' in losses:
             total_loss += self.kl_latent_loss_scale * losses['kl']
+        if 'vq' in losses:
+            total_loss += losses['vq']
         total_loss = total_loss.to(self.dtype)
 
         # Prepare metrics for logging
@@ -299,6 +327,8 @@ class ShapePoseDisentanglement(pl.LightningModule):
         }
         if 'kl' in losses:
             metrics_to_log['kl_loss'] = losses['kl']
+        if 'vq' in losses:
+            metrics_to_log['vq_loss'] = losses['vq']
         if sinkhorn_blur is not None:
             metrics_to_log['sinkhorn_blur'] = float(sinkhorn_blur)
 
@@ -330,7 +360,15 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if is_start:
             self._reset_supervised_cache(stage)
         else:
-            self._log_supervised_metrics(stage)
+            if stage == "val":
+                self._log_validation_metrics()
+            elif stage == "test":
+                self._log_test_metrics()
+            # Train metrics are usually logged per step or handled differently, 
+            # but if we wanted epoch-level train metrics, we could add them here.
+            if stage == "train":
+                 self._log_validation_metrics(stage="train")
+
 
     def on_train_epoch_start(self) -> None:
         super().on_train_epoch_start()
@@ -402,168 +440,203 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         cache["latents"].append(inv_z[:effective_batch].detach().to(torch.float32).cpu())
 
+        # Cache rotations for val and test
+        if stage in ["val", "test"]:
+            if rot is not None:
+                cache["rotations"].append(rot[:effective_batch].detach().to(torch.float32).cpu())
+            if labels.get("orientation") is not None:
+                cache["gt_rotations"].append(labels["orientation"][:effective_batch].detach().to(torch.float32).cpu())
+
         # Only cache full point cloud data for test stage to save memory
         if stage == "test":
             if recon is not None:
                 cache["reconstructions"].append(recon[:effective_batch].detach().to(torch.float32).cpu())
             if cano is not None:
                 cache["canonicals"].append(cano[:effective_batch].detach().to(torch.float32).cpu())
-            if rot is not None:
-                cache["rotations"].append(rot[:effective_batch].detach().to(torch.float32).cpu())
             if pc is not None:
                 cache["originals"].append(pc[:effective_batch].detach().to(torch.float32).cpu())
 
         cache["phase"].append(phase[:effective_batch].cpu())
 
-    def _log_supervised_metrics(self, stage: str) -> None:
+    def _log_validation_metrics(self, stage="val") -> None:
+        """
+        Compute and log lightweight metrics for validation/train.
+        Uses subsampling to ensure speed.
+        """
         cache = self._supervised_cache.get(stage)
-        if cache is None:
-            return
-
-        if not cache["latents"] or not cache["phase"]:
-            for key in cache:
-                cache[key].clear()
+        if not cache or not cache["latents"] or not cache["phase"]:
             return
 
         latents = torch.cat(cache["latents"], dim=0).numpy()
         labels = torch.cat(cache["phase"], dim=0).numpy()
 
-        # Original clustering metrics
-        metrics = compute_cluster_metrics(latents, labels, stage)
+        # Subsample for expensive metrics if dataset is large
+        MAX_VAL_SAMPLES = 2048
+        if len(latents) > MAX_VAL_SAMPLES:
+            indices = np.random.choice(len(latents), MAX_VAL_SAMPLES, replace=False)
+            latents_sub = latents[indices]
+            labels_sub = labels[indices]
+        else:
+            latents_sub = latents
+            labels_sub = labels
+
+        # Clustering metrics
+        metrics = compute_cluster_metrics(latents_sub, labels_sub, stage)
         if metrics:
             for name, value in metrics.items():
-                self._log_metric(
-                    stage,
-                    f"phase/{name.lower()}",
-                    value,
-                    prog_bar=False,
-                    on_step=False,
-                    on_epoch=True,
-                    sync_dist=True,
-                )
+                self._log_metric(stage, f"phase/{name.lower()}", value, on_step=False, on_epoch=True)
 
-        # Embedding quality metrics (lightweight ones for all stages, expensive ones for test only)
+        # Embedding quality metrics (lightweight only)
         try:
-            emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=(stage == "test"))
+            emb_metrics = compute_embedding_quality_metrics(latents_sub, labels_sub, include_expensive=False)
             for name, value in emb_metrics.items():
-                self._log_metric(
-                    stage,
-                    f"embedding/{name}",
-                    value,
-                    prog_bar=False,
-                    on_step=False,
-                    on_epoch=True,
-                    sync_dist=True,
-                )
+                if stage == "val":
+                    self._log_metric("val_embeddings", name, value, on_step=False, on_epoch=True)
+                else:
+                    self._log_metric(stage, f"embedding/{name}", value, on_step=False, on_epoch=True)
         except Exception as e:
             print(f"Error computing embedding quality metrics: {e}")
 
-        # Canonical consistency metrics (test only - expensive pairwise comparisons)
-        if stage == "test" and cache["canonicals"] and len(cache["canonicals"]) > 0:
+        # Symmetry-aware rotational metrics (if rotations available)
+        if cache.get("rotations") and cache.get("gt_rotations"):
             try:
-                canonicals = torch.cat(cache["canonicals"], dim=0).numpy()
-                max_samples_consistency = min(1000, len(canonicals))
-                if len(canonicals) > max_samples_consistency:
-                    indices = np.random.choice(len(canonicals), max_samples_consistency, replace=False)
-                    canonicals_subsample = canonicals[indices]
-                    latents_subsample = latents[indices]
-                    labels_subsample = labels[indices]
+                pred_rots = torch.cat(cache["rotations"], dim=0).numpy()
+                gt_rots = torch.cat(cache["gt_rotations"], dim=0).numpy()
+                
+                # Subsample if needed
+                if len(pred_rots) > MAX_VAL_SAMPLES:
+                    indices = np.random.choice(len(pred_rots), MAX_VAL_SAMPLES, replace=False)
+                    pred_rots = pred_rots[indices]
+                    gt_rots = gt_rots[indices]
+                    labels_rot = labels[indices]
                 else:
-                    canonicals_subsample = canonicals
-                    latents_subsample = latents
-                    labels_subsample = labels
+                    labels_rot = labels
 
-                consistency_metrics = compute_canonical_consistency_metrics(
-                    canonicals_subsample, latents_subsample, labels_subsample
+                # Symmetry-aware metric (assuming phases 0 and 1 are cubic crystals)
+                sym_metrics = compute_symmetry_aware_rot_metric(
+                    pred_rots, gt_rots, labels_rot, symmetry_phases=[0, 1]
                 )
-                for name, value in consistency_metrics.items():
-                    self._log_metric(
-                        stage,
-                        f"consistency/{name}",
-                        value,
-                        prog_bar=False,
-                        on_step=False,
-                        on_epoch=True,
-                        sync_dist=True,
-                    )
-
-                # Clear memory
-                del canonicals, canonicals_subsample, latents_subsample, labels_subsample
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
+                # Log average error
+                avg_error = np.mean(list(sym_metrics.values()))
+                self._log_metric(stage, "rot_sym/avg_error", avg_error, on_step=False, on_epoch=True)
+                
             except Exception as e:
-                print(f"Error computing canonical consistency metrics: {e}")
+                print(f"Error computing validation rotation metrics: {e}")
 
-        # Reconstruction EMD per phase
-        if stage == "test" and cache["originals"] and cache["reconstructions"] and len(cache["originals"]) > 0:
+        # Clear cache to free memory
+        self._reset_supervised_cache(stage)
+
+    def _log_per_phase_metrics(self, stage: str, metric_name: str, phase_metrics: dict) -> None:
+        """Log per-phase metrics as scalars."""
+        for key, value in phase_metrics.items():
+            # key is typically something like "metric_phase_0" or just "phase_0" depending on metric
+            # We want to log as stage/metric_name/phase_X
+            
+            # Try to extract phase ID
             try:
-                originals = torch.cat(cache["originals"], dim=0).numpy()
-                reconstructions = torch.cat(cache["reconstructions"], dim=0).numpy()
-                emd_metrics = compute_reconstruction_emd_per_phase(originals, reconstructions, labels)
-                for name, value in emd_metrics.items():
-                    self._log_metric(
-                        stage,
-                        f"phase/{name}",
-                        value,
-                        prog_bar=False,
-                        on_step=False,
-                        on_epoch=True,
-                        sync_dist=True,
-                    )
-
-                # Clear memory
-                del originals, reconstructions
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
+                if "phase_" in key:
+                    phase_id = key.split("phase_")[-1]
+                    log_name = f"{metric_name}/phase_{phase_id}"
+                else:
+                    # Fallback if no phase in key (shouldn't happen for these metrics but safe fallback)
+                    log_name = f"{metric_name}/{key}"
+                
+                self._log_metric(stage, log_name, value, on_step=False, on_epoch=True)
             except Exception as e:
-                print(f"Error computing reconstruction EMD per phase: {e}")
+                print(f"Error logging metric {key}: {e}")
 
-        # Rotation equivariance and reconstruction consistency tests (test only - expensive forward passes)
-        if stage == "test" and self.reference_pcs is not None and self.enable_expensive_metrics:
-            try:
-                # Reduced number of rotations for memory efficiency
-                equivariance_metrics = test_rotation_equivariance_sample(
-                    self, self.reference_pcs, labels, n_test_rotations=5, max_samples_per_phase=3
-                )
-                for name, value in equivariance_metrics.items():
-                    self._log_metric(
-                        stage,
-                        f"equivariance/{name}",
-                        value,
-                        prog_bar=False,
-                        on_step=False,
-                        on_epoch=True,
-                        sync_dist=True,
-                    )
+    def _log_test_metrics(self) -> None:
+        """
+        Compute and log comprehensive metrics for the test stage.
+        """
+        stage = "test"
+        cache = self._supervised_cache.get(stage)
+        if not cache or not cache["latents"] or not cache["phase"]:
+            return
 
-                # Clear memory after equivariance tests
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-            except Exception as e:
-                print(f"Error computing rotation equivariance metrics: {e}")
+        latents = torch.cat(cache["latents"], dim=0).numpy()
+        labels = torch.cat(cache["phase"], dim=0).numpy()
 
-            try:
-                # Reduced number of rotations for memory efficiency
-                recon_consistency_metrics = test_reconstruction_consistency_sample(
-                    self, self.reference_pcs, labels, n_rotations=5, max_samples_per_phase=2
-                )
-                for name, value in recon_consistency_metrics.items():
-                    self._log_metric(
-                        stage,
-                        f"recon_consistency/{name}",
-                        value,
-                        prog_bar=False,
-                        on_step=False,
-                        on_epoch=True,
-                        sync_dist=True,
-                    )
+        # 1. Clustering & Embedding Quality (Full Test Set)
+        metrics = compute_cluster_metrics(latents, labels, stage)
+        if metrics:
+            for name, value in metrics.items():
+                self._log_metric(stage, f"phase/{name.lower()}", value, on_step=False, on_epoch=True)
 
-                # Clear memory after reconstruction tests
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-            except Exception as e:
-                print(f"Error computing reconstruction consistency metrics: {e}")
+        emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=True)
+        for name, value in emb_metrics.items():
+            self._log_metric(stage, f"embedding/{name}", value, on_step=False, on_epoch=True)
+
+        # 2. Canonical Consistency
+        if cache["canonicals"]:
+            canonicals = torch.cat(cache["canonicals"], dim=0).numpy()
+            # Subsample for pairwise consistency to avoid O(N^2) explosion
+            MAX_CONSISTENCY_SAMPLES = 1000
+            if len(canonicals) > MAX_CONSISTENCY_SAMPLES:
+                indices = np.random.choice(len(canonicals), MAX_CONSISTENCY_SAMPLES, replace=False)
+                canonicals_sub = canonicals[indices]
+                latents_sub = latents[indices]
+                labels_sub = labels[indices]
+            else:
+                canonicals_sub = canonicals
+                latents_sub = latents
+                labels_sub = labels
+
+            consistency_metrics = compute_canonical_consistency_metrics(
+                canonicals_sub, latents_sub, labels_sub
+            )
+            # Log scalar metrics for variance
+            self._log_per_phase_metrics(stage, "canonical_pose_variance", 
+                                  {k: v for k, v in consistency_metrics.items() if "variance" in k})
+
+        # 3. Reconstruction EMD per Phase
+        if cache["originals"] and cache["reconstructions"]:
+            originals = torch.cat(cache["originals"], dim=0).numpy()
+            reconstructions = torch.cat(cache["reconstructions"], dim=0).numpy()
+            emd_metrics = compute_reconstruction_emd_per_phase(originals, reconstructions, labels)
+            self._log_per_phase_metrics(stage, "reconstruction_emd", emd_metrics)
+
+        # 4. Rotational Metrics (Global & Symmetry-Aware)
+        if cache["rotations"] and cache["gt_rotations"]:
+            pred_rots = torch.cat(cache["rotations"], dim=0).numpy()
+            gt_rots = torch.cat(cache["gt_rotations"], dim=0).numpy()
+
+            # Global alignment
+            global_metrics = compute_global_aligned_rot_metric(pred_rots, gt_rots, labels)
+            self._log_per_phase_metrics(stage, "rot_global_error", global_metrics)
+
+            # Symmetry-aware (phases 0 and 1 are cubic)
+            sym_metrics = compute_symmetry_aware_rot_metric(
+                pred_rots, gt_rots, labels, symmetry_phases=[0, 1]
+            )
+            self._log_per_phase_metrics(stage, "rot_sym_error", sym_metrics)
+
+        # 5. Expensive Forward-Pass Tests (Equivariance & Consistency)
+        if self.reference_pcs is not None:
+            self._run_expensive_test_metrics(stage, labels)
 
         # Clear cache
-        for key in cache:
-            cache[key].clear()
+        self._reset_supervised_cache(stage)
+
+    def _run_expensive_test_metrics(self, stage, labels):
+        """Helper for running expensive forward-pass based metrics."""
+        # Rotation Equivariance
+        equivariance_metrics = test_rotation_equivariance_sample(
+            self, self.reference_pcs, labels, n_test_rotations=5, max_samples_per_phase=3
+        )
+        for name, value in equivariance_metrics.items():
+            self._log_metric(stage, f"equivariance/{name}", value, on_step=False, on_epoch=True)
+        
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+        # Reconstruction Consistency
+        recon_consistency_metrics = test_reconstruction_consistency_sample(
+            self, self.reference_pcs, labels, n_rotations=5, max_samples_per_phase=2
+        )
+        # Log scalar metrics for mean consistency
+        self._log_per_phase_metrics(stage, "recon_consistency_mean", 
+                              {k: v for k, v in recon_consistency_metrics.items() if "mean" in k})
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()

@@ -537,7 +537,7 @@ def knn(x: torch.Tensor, k: int) -> torch.Tensor:
 def get_graph_feature(x: torch.Tensor, k: int = 20, idx: torch.Tensor | None = None, x_coord: torch.Tensor | None = None):
     batch_size = x.size(0)
     num_points = x.size(3)
-    x = x.view(batch_size, -1, num_points)
+    x = x.reshape(batch_size, -1, num_points)
 
     if idx is None:
         if x_coord is None:
@@ -565,7 +565,8 @@ def get_graph_feature(x: torch.Tensor, k: int = 20, idx: torch.Tensor | None = N
 def get_graph_feature_cross(x: torch.Tensor, k: int = 20, idx: torch.Tensor | None = None):
     batch_size = x.size(0)
     num_points = x.size(3)
-    x = x.view(batch_size, -1, num_points)
+    x = x.reshape(batch_size, -1, num_points)
+
     if idx is None:
         idx = knn(x, k=k)
     device = x.device
@@ -582,6 +583,132 @@ def get_graph_feature_cross(x: torch.Tensor, k: int = 20, idx: torch.Tensor | No
     feature = torch.cat((feature - x, x, cross), dim=3).permute(0, 3, 4, 1, 2).contiguous()
     return feature
 
+
+
+class VNRobustInvariantHead(nn.Module):
+    """
+    Robustly extracts invariant features from equivariant vectors (B, C, 3).
+    Uses vector norms and projections onto the global mean direction.
+    """
+    def __init__(self, in_channels: int, out_channels: int):
+        super().__init__()
+        input_dim = in_channels * 2 
+        self.mlp = nn.Sequential(
+            nn.Linear(input_dim, out_channels),
+            nn.BatchNorm1d(out_channels),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(out_channels, out_channels)
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: (B, C, 3)
+        
+        # 1. Norms (Invariant)
+        norms = torch.norm(x, dim=-1) # (B, C)
+        
+        # 2. Projection onto global mean direction (Invariant relative to cloud)
+        global_dir = x.mean(dim=1, keepdim=True) # (B, 1, 3)
+        global_dir = F.normalize(global_dir, dim=-1, eps=1e-6)
+        projections = (x * global_dir).sum(dim=-1) # (B, C)
+        
+        combined = torch.cat([norms, projections], dim=1) # (B, 2*C)
+        return self.mlp(combined)
+
+
+@register_encoder("VN_DGCNN_Refined")
+class VNDGCNNEncoderRefined(Encoder):
+    def __init__(
+        self,
+        latent_size: int = 256,
+        n_knn: int = 20,
+        pooling: str = 'mean',
+        feature_dims: tuple[int, int, int, int, int] = (64, 64, 128, 256, 512),
+        use_batchnorm: bool = True,
+    ):
+        super().__init__()
+        self.n_knn = n_knn
+        self.pooling = pooling
+
+        c1, c2, c3, c4, c5 = [max(1, dim // 3) for dim in feature_dims]
+
+        self.conv1 = VNLinearLeakyReLU(2, c1, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        self.conv2 = VNLinearLeakyReLU(c1 * 2, c2, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        self.conv3 = VNLinearLeakyReLU(c2 * 2, c3, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        self.conv4 = VNLinearLeakyReLU(c3 * 2, c4, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        
+        concat_channels = c1 + c2 + c3 + c4
+        self.conv5 = VNLinearLeakyReLU(concat_channels, c5, dim=4, negative_slope=0.2, use_batchnorm=use_batchnorm)
+
+        if pooling == 'max':
+            self.pool_layer = VNMaxPool(1) # Dummy dim
+        else:
+            self.pool_layer = mean_pool
+
+        # Projection for Z_eq (B, latent, 3)
+        # latent_size must be divisible by 3 to map from VN channels
+        assert latent_size % 3 == 0
+        self.eq_projector = VNLinear(c5, latent_size)
+
+        # Head for Z_inv (B, latent)
+        self.inv_head = VNRobustInvariantHead(c5, latent_size)
+
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        # Input x: (B, 3, N)
+        # We treat it as 1 channel of 3D vectors.
+        # Shape required for get_graph_feature: (B, C, 3, N).
+        
+        # Input x: (B, N, 3) -> (B, 3, N)
+        x = x.permute(0, 2, 1)
+        
+        batch_size = x.size(0)
+        x = x.unsqueeze(1) # (B, 1, 3, N)
+
+        # Layer 1
+        x_graph = get_graph_feature(x, k=self.n_knn) # (B, 2*1, 3, N, k)
+        x = self.conv1(x_graph) # (B, c1, 3, N, k)
+        x1 = x.mean(dim=-1) # Pool neighbors -> (B, c1, 3, N)
+
+        # Layer 2
+        x_graph = get_graph_feature(x1, k=self.n_knn)
+        x = self.conv2(x_graph)
+        x2 = x.mean(dim=-1)
+
+        # Layer 3
+        x_graph = get_graph_feature(x2, k=self.n_knn)
+        x = self.conv3(x_graph)
+        x3 = x.mean(dim=-1)
+
+        # Layer 4
+        x_graph = get_graph_feature(x3, k=self.n_knn)
+        x = self.conv4(x_graph)
+        x4 = x.mean(dim=-1)
+
+        # Global Aggregation
+        x_concat = torch.cat((x1, x2, x3, x4), dim=1) # (B, sum(c), 3, N)
+        x = self.conv5(x_concat) # (B, c5, 3, N)
+
+        # Global Pooling
+        if self.pooling == 'max':
+             # VNMaxPool expects (B, C, 3) usually, here we have N points.
+             # We treat N as the dimension to pool over.
+             # Reshape to (B, c5, N, 3) for standard VN pool logic or just use standard logic
+             x_pooled = self.pool_layer(x.transpose(2, 3)).transpose(2, 3) # Pool over N
+             # Note: VNMaxPool implementation provided previously pools dim -1 (3).
+             # We want to pool over N.
+             # Let's stick to Mean Pool for stability with crystals.
+             x_mean = x.mean(dim=-1) # (B, c5, 3)
+        else:
+             x_mean = x.mean(dim=-1) # (B, c5, 3)
+
+        # Outputs
+        
+        # 1. Equivariant Embedding (for Rotation Head)
+        z_eq = self.eq_projector(x_mean) # (B, latent/3, 3)
+
+        # 2. Invariant Embedding (for Decoder/Clustering)
+        z_inv = self.inv_head(x_mean) # (B, latent)
+
+        return z_inv, z_eq, None
 
 __all__ = [
     "PointNetEncoderVN",

@@ -125,6 +125,11 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     # This is necessary because the dataset size changes between epochs
     if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
         trainer_kwargs["reload_dataloaders_every_n_epochs"] = 1
+        # Disable automatic DistributedSampler when using curriculum learning
+        # because the dataset size changes and DistributedSampler expects fixed size
+        if len(devices) > 1:
+            trainer_kwargs["use_distributed_sampler"] = False
+            logger.print("Disabled automatic DistributedSampler for curriculum learning")
         logger.print("Dataloader will be reloaded every epoch for curriculum learning")
 
     if ddp_strategy is not None:

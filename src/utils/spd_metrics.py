@@ -13,6 +13,182 @@ from scipy.spatial.distance import pdist, cdist
 from scipy.spatial.transform import Rotation
 
 from src.loss.reconstruction_loss import sinkhorn_distance
+from src.training_methods.spd.rot_heads import kabsch_rotation
+
+
+def get_cubic_symmetry_matrices() -> np.ndarray:
+    """
+    Generate the 24 rotation matrices of the octahedral (cubic) symmetry group.
+    Returns:
+        (24, 3, 3) numpy array
+    """
+    # Basic 90 degree rotations
+    s1 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    s2 = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+    s3 = np.array([[-1, 0, 0], [0, -1, 0], [0, 0, 1]])
+    s4 = np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])
+    
+    base_rots = [s1, s2, s3, s4]
+    
+    # Permutations of axes
+    perms = [
+        np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
+        np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]]),
+        np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]]),
+        np.array([[0, 1, 0], [1, 0, 0], [0, 0, -1]]),
+        np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]]),
+        np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]])
+    ]
+    
+    # Generate all 24 by combining
+    symmetries = []
+    # This is a simplified construction. A robust way is to generate all signed permutations
+    # with determinant +1.
+    # Let's use a generator approach to be sure.
+    
+    # All signed permutations of identity
+    import itertools
+    for p in itertools.permutations([0, 1, 2]):
+        for signs in itertools.product([-1, 1], repeat=3):
+            mat = np.zeros((3, 3))
+            mat[0, p[0]] = signs[0]
+            mat[1, p[1]] = signs[1]
+            mat[2, p[2]] = signs[2]
+            if np.linalg.det(mat) > 0:
+                symmetries.append(mat)
+                
+    return np.array(symmetries)
+
+
+def compute_global_aligned_rot_metric(pred_rots: np.ndarray, gt_rots: np.ndarray, 
+                                     phase_labels: np.ndarray) -> dict:
+    """
+    Compute geodesic error after globally aligning the predicted frame to the GT frame per phase.
+    This removes the penalty for the network learning a consistent but rotated canonical frame.
+    
+    Args:
+        pred_rots: (N, 3, 3) predicted rotation matrices
+        gt_rots: (N, 3, 3) ground truth rotation matrices
+        phase_labels: (N,) phase labels
+        
+    Returns:
+        Dictionary of aligned metrics per phase
+    """
+    metrics = {}
+    
+    # Convert to torch for kabsch helper
+    pred_rots_t = torch.from_numpy(pred_rots).float()
+    gt_rots_t = torch.from_numpy(gt_rots).float()
+    
+    for phase in np.unique(phase_labels):
+        mask = phase_labels == phase
+        if np.sum(mask) < 3:
+            continue
+            
+        phase_pred = pred_rots_t[mask]
+        phase_gt = gt_rots_t[mask]
+        
+        # We want to find R_align such that R_align @ R_pred ~ R_gt
+        # This is equivalent to finding R_align that aligns the "frame vectors"
+        # But a simpler way is to treat the rotation matrices as point clouds in R9? No.
+        # Correct way: 
+        # We want R_align s.t. R_align * R_pred_i \approx R_gt_i
+        # => R_align \approx R_gt_i * R_pred_i^T
+        # So we want the "average" rotation of (R_gt_i * R_pred_i^T)
+        
+        diffs = torch.bmm(phase_gt, phase_pred.transpose(1, 2)) # (N, 3, 3)
+        
+        # Average rotation can be found by SVD of the sum of matrices
+        avg_diff = diffs.mean(dim=0) # (3, 3)
+        
+        # Project back to SO(3)
+        U, _, Vh = torch.linalg.svd(avg_diff.unsqueeze(0))
+        R_align = torch.bmm(U, Vh).squeeze(0)
+        
+        # Ensure det is +1
+        if torch.det(R_align) < 0:
+            # This is rare for average of rotations but possible
+            U, S, Vh = torch.linalg.svd(avg_diff.unsqueeze(0))
+            S_fix = torch.diag(torch.tensor([1.0, 1.0, -1.0], device=avg_diff.device))
+            R_align = U @ S_fix @ Vh
+            R_align = R_align.squeeze(0)
+            
+        # Apply alignment
+        # R_aligned = R_align @ R_pred
+        phase_pred_aligned = torch.matmul(R_align.unsqueeze(0), phase_pred)
+        
+        # Compute geodesic error
+        # trace(R_aligned^T @ R_gt)
+        delta = torch.bmm(phase_pred_aligned.transpose(1, 2), phase_gt)
+        trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1)
+        cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + 1e-6, 1.0 - 1e-6)
+        errors = torch.arccos(cos_theta) * (180.0 / np.pi)
+        
+        metrics[f'rot_aligned_error_phase_{int(phase)}'] = float(errors.mean())
+        
+    return metrics
+
+
+def compute_symmetry_aware_rot_metric(pred_rots: np.ndarray, gt_rots: np.ndarray, 
+                                     phase_labels: np.ndarray,
+                                     symmetry_phases: list = None) -> dict:
+    """
+    Compute geodesic error allowing for symmetry operations.
+    min_S dist(R_pred, R_gt @ S)
+    
+    Args:
+        pred_rots: (N, 3, 3)
+        gt_rots: (N, 3, 3)
+        phase_labels: (N,)
+        symmetry_phases: List of phase IDs (ints) to apply cubic symmetry to.
+                         If None, applies to all.
+    """
+    metrics = {}
+    symmetries = torch.from_numpy(get_cubic_symmetry_matrices()).float() # (24, 3, 3)
+    
+    pred_rots_t = torch.from_numpy(pred_rots).float()
+    gt_rots_t = torch.from_numpy(gt_rots).float()
+    
+    for phase in np.unique(phase_labels):
+        mask = phase_labels == phase
+        if np.sum(mask) == 0:
+            continue
+            
+        phase_pred = pred_rots_t[mask] # (B, 3, 3)
+        phase_gt = gt_rots_t[mask]     # (B, 3, 3)
+        
+        if symmetry_phases is None or phase in symmetry_phases:
+            # Apply all 24 symmetries to GT: R_gt_sym = R_gt @ S
+            # Shape: (B, 24, 3, 3)
+            phase_gt_expanded = phase_gt.unsqueeze(1) # (B, 1, 3, 3)
+            symmetries_expanded = symmetries.unsqueeze(0) # (1, 24, 3, 3)
+            
+            # (B, 1, 3, 3) @ (1, 24, 3, 3) -> (B, 24, 3, 3)
+            targets = torch.matmul(phase_gt_expanded, symmetries_expanded)
+            
+            # Compute distance to all 24 targets
+            # R_pred: (B, 3, 3) -> (B, 1, 3, 3)
+            preds = phase_pred.unsqueeze(1)
+            
+            # delta = preds^T @ targets
+            delta = torch.matmul(preds.transpose(-1, -2), targets) # (B, 24, 3, 3)
+            trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1) # (B, 24)
+            cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + 1e-6, 1.0 - 1e-6)
+            errors = torch.arccos(cos_theta) * (180.0 / np.pi) # (B, 24)
+            
+            min_errors, _ = errors.min(dim=1) # (B,)
+            metrics[f'rot_sym_error_phase_{int(phase)}'] = float(min_errors.mean())
+        else:
+            # Standard geodesic
+            delta = torch.bmm(phase_pred.transpose(1, 2), phase_gt)
+            trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1)
+            cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + 1e-6, 1.0 - 1e-6)
+            errors = torch.arccos(cos_theta) * (180.0 / np.pi)
+            metrics[f'rot_sym_error_phase_{int(phase)}'] = float(errors.mean())
+            
+    return metrics
+
+
 
 
 def random_rotation_matrix():
@@ -75,7 +251,9 @@ def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarra
 
     # Classification accuracy (train simple classifier) - EXPENSIVE, test only
     if include_expensive and len(np.unique(motif_labels)) > 1 and len(Z_inv) >= 10:
-
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.model_selection import cross_val_score
+        
         clf = LogisticRegression(max_iter=1000, random_state=42)
         scores = cross_val_score(clf, Z_inv, motif_labels, cv=min(5, len(Z_inv)))
         metrics['classification_accuracy'] = float(scores.mean())
@@ -83,6 +261,7 @@ def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarra
 
     # Silhouette score (if labels available) - EXPENSIVE, test only
     if include_expensive and len(np.unique(motif_labels)) > 1 and len(Z_inv) >= 2:
+        from sklearn.metrics import silhouette_score
         metrics['silhouette_score'] = float(silhouette_score(Z_inv, motif_labels))
 
 

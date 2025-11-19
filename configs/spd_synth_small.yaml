@@ -12,9 +12,10 @@ load_supervised_checkpoint: False  # Set to True to load pretrained weights
 supervised_checkpoint_path: output/supervised_encoder/2025-11-07/19-36-50/supervised_encoder_VN_DGCNN_l36_bs1024_lr0.0060_rotsixd_head_loss_epochloss_epoch=00.ckpt
 
 encoder: 
-  name: VN_DGCNN # PnE_VN
+  name: VN_DGCNN_Refined # PnE_VN
   kwargs:
     latent_size: ${latent_size}
+    feature_dims: [64, 128, 128, 256, 512]
     # hidden_dim1: 360
     # hidden_dim2: 720
     # blocks: [2, 2, 2]
@@ -22,28 +23,12 @@ encoder:
     
 
 decoder: 
-  name: MoETemplate
+  name: VQMoE
   kwargs: 
     latent_size: ${latent_size}
     num_points: ${data.num_points}
-    n_experts: 2
-    topk: 1
-    gate_temp: 0.7
-    gate_hidden: 256
-    use_residual: True
-    lattice_kwargs:
-      basis_size: 4        
-      replicate_radius: 2  
-      hidden: 256
-    amorphous_kwargs:
-      hidden: 256
-      noise_std: 0.01     
-    residual_kwargs:
-      k: 12               
-      n_layers: 2
-      hidden_ctx: 64
-      edge_hidden: 64
-      step_size: 0.6
+    vq_size: 128
+    use_vq: True
 
 
 
@@ -61,7 +46,7 @@ decoder:
 #     learnable_template: False
 
 rot_net:
-  name: Rot6DHead
+  name: vn_rotation_head
   kwargs:
     hidden: 256
     use_attention: True
@@ -69,10 +54,10 @@ rot_net:
 rotation_mode: sixd_head
 
 loss: sinkhorn
-sinkhorn_blur: 0.1
+sinkhorn_blur: 0.05
 sinkhorn_blur_schedule:
   enable: true
-  start: 0.1
+  start: 0.05
   end: 0.01
   start_epoch: 0
   duration_epochs: ${epochs}
@@ -80,15 +65,15 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.005
-batch_size: 1500
+batch_size: 128
 
 enable_swa: False
 swa_epoch_start: 1000 
 epochs: 150
 
 gpu: True
-devices: [0]
-ddp_find_unused_parameters: True
+devices: [0, 1]
+ddp_find_unused_parameters: False
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5

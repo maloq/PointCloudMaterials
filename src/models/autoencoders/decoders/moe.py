@@ -9,7 +9,6 @@ from ..base import Decoder
 from ..registry import register_decoder
 
 
-# ----- Small helpers -----
 def mlp(sizes: List[int], act=nn.ReLU, bn: bool = True, last_bn: bool = False) -> nn.Sequential:
     layers = []
     for i in range(len(sizes) - 1):
@@ -24,16 +23,11 @@ def mlp(sizes: List[int], act=nn.ReLU, bn: bool = True, last_bn: bool = False) -
     return nn.Sequential(*layers)
 
 
-def safe_softplus(x, beta=1.0):
-    # Slightly “softer” softplus to avoid exploding gradients on large positives
-    return F.softplus(x, beta=beta)
-
-
 def spherical_fibonacci_points(n: int, device: torch.device) -> torch.Tensor:
     """
     Deterministic quasi-uniform directions on S^2. Returns (n, 3).
     """
-    # https://doi.org/10.1145/206558.206560
+
     i = torch.arange(n, dtype=torch.float32, device=device) + 0.5
     phi = 2.0 * math.pi * i / ((1.0 + 5.0 ** 0.5) * 0.5)  # 2π i / φ
     cos_theta = 1.0 - 2.0 * i / n
@@ -43,6 +37,7 @@ def spherical_fibonacci_points(n: int, device: torch.device) -> torch.Tensor:
     z = cos_theta
     dirs = torch.stack([x, y, z], dim=-1)  # (n, 3)
     return dirs
+
 
 
 def knn(x: torch.Tensor, k: int) -> torch.Tensor:
@@ -61,85 +56,59 @@ def knn(x: torch.Tensor, k: int) -> torch.Tensor:
     return idx  # (B, N, k)
 
 
-# ----- Experts -----
-class LatticeExpert(nn.Module):
-    """
-    Decodes a lattice template in canonical pose:
-      - Upper-triangular cell matrix A (positive diagonal via softplus)
-      - Small basis of M fractional coordinates in [0,1)^3
-      - Replicates basis over a [-r..r]^3 integer grid, maps with A, then crops N nearest to origin.
-    """
-    def __init__(
-        self,
-        latent_size: int,
-        num_points: int,
-        basis_size: int = 4,
-        replicate_radius: int = 2,
-        hidden: int = 256,
-    ):
+class GatedRouter(nn.Module):
+    def __init__(self, input_dim, n_experts, hidden=256):
         super().__init__()
-        self.n = num_points
-        self.m = basis_size
-        self.r = replicate_radius
+        self.net = mlp([input_dim, hidden, hidden, n_experts], bn=True, last_bn=False)
 
-        # Predict upper-triangular A params and a global scale
-        self.head_A = mlp([latent_size, hidden, hidden, 7], bn=True)
-        # Predict M basis fractional coords in [0,1)
-        self.head_basis = mlp([latent_size, hidden, hidden, self.m * 3], bn=True)
+    def forward(self, z, hard=False):
+        logits = self.net(z)
+        # Gumbel-Softmax allows differentiable "hard" selection
+        # distinct_prob forces the network to choose ONE expert, not a mix.
+        if self.training:
+            weights = F.gumbel_softmax(logits, tau=1.0, hard=hard)
+        else:
+            # Inference: Hard argmax
+            idx = torch.argmax(logits, dim=-1)
+            weights = F.one_hot(idx, num_classes=logits.size(-1)).float()
+        return weights
 
-        # Precompute integer translations
-        t = torch.arange(-self.r, self.r + 1)
-        grid = torch.stack(torch.meshgrid(t, t, t, indexing="ij"), dim=-1).reshape(-1, 3)  # (T,3)
-        self.register_buffer("translations", grid.float(), persistent=False)  # (T,3)
 
-    def forward(self, z: torch.Tensor) -> torch.Tensor:
-        """
-        z: (B, D)  ->  pts: (B, N, 3) in canonical pose
-        """
-        B = z.size(0)
+class VectorQuantizer(nn.Module):
+    def __init__(self, num_embeddings, embedding_dim, commitment_cost=0.25):
+        super().__init__()
+        self.embedding_dim = embedding_dim
+        self.num_embeddings = num_embeddings
+        self.commitment_cost = commitment_cost
+        
+        # The codebook
+        self.embeddings = nn.Embedding(self.num_embeddings, self.embedding_dim)
+        self.embeddings.weight.data.uniform_(-1/self.num_embeddings, 1/self.num_embeddings)
 
-        # A params: [a11, a22, a33, a12, a13, a23, log_scale]
-        a_params = self.head_A(z)  # (B,7)
-        a11 = safe_softplus(a_params[:, 0]) + 1e-3
-        a22 = safe_softplus(a_params[:, 1]) + 1e-3
-        a33 = safe_softplus(a_params[:, 2]) + 1e-3
-        a12, a13, a23 = a_params[:, 3], a_params[:, 4], a_params[:, 5]
-        scale = safe_softplus(a_params[:, 6]) + 0.3  # keep cells not too tiny
-
-        # Upper triangular A, shape (B,3,3)
-        A = torch.zeros(B, 3, 3, device=z.device, dtype=z.dtype)
-        A[:, 0, 0] = a11
-        A[:, 0, 1] = a12
-        A[:, 0, 2] = a13
-        A[:, 1, 1] = a22
-        A[:, 1, 2] = a23
-        A[:, 2, 2] = a33
-        A = A * scale.unsqueeze(-1).unsqueeze(-1)
-
-        # Basis fractional coords in [0,1)
-        basis = torch.sigmoid(self.head_basis(z)).view(B, self.m, 3)  # (B,M,3)
-
-        # Replicate basis over integer grid
-        T = self.translations.shape[0]
-        trans = self.translations.view(1, T, 1, 3)  # (1,T,1,3)
-        basis_exp = basis.view(B, 1, self.m, 3)     # (B,1,M,3)
-        # Fractional coords shifted by integer translations
-        frac = trans + basis_exp                    # (B,T,M,3)
-        frac = frac.view(B, T * self.m, 3)          # (B, TM, 3)
-
-        # Map to real coords: X = frac @ A
-        X = torch.einsum("bqc,bcd->bqd", frac, A)   # (B, TM, 3)
-
-        # Crop N nearest to origin
-        d2 = (X ** 2).sum(-1)                       # (B, TM)
-        _, idx = torch.topk(d2, k=self.n, dim=-1, largest=False, sorted=False)  # (B,N)
-        batch_idx = torch.arange(B, device=z.device).unsqueeze(-1).expand(B, self.n)
-        pts = X[batch_idx, idx, :]                  # (B,N,3)
-
-        # Center to zero mean (optional but typically desired)
-        pts = pts - pts.mean(dim=1, keepdim=True)
-        return pts
-
+    def forward(self, z):
+        # z: (B, D)
+        # Calculate distances
+        distances = (torch.sum(z**2, dim=1, keepdim=True) 
+                    + torch.sum(self.embeddings.weight**2, dim=1)
+                    - 2 * torch.matmul(z, self.embeddings.weight.t()))
+            
+        # Encoding
+        encoding_indices = torch.argmin(distances, dim=1).unsqueeze(1)
+        encodings = torch.zeros(encoding_indices.shape[0], self.num_embeddings, device=z.device)
+        encodings.scatter_(1, encoding_indices, 1)
+        
+        # Quantize
+        quantized = torch.matmul(encodings, self.embeddings.weight)
+        
+        # Loss
+        e_latent_loss = F.mse_loss(quantized.detach(), z)
+        q_latent_loss = F.mse_loss(quantized, z.detach())
+        loss = q_latent_loss + self.commitment_cost * e_latent_loss
+        
+        # Straight Through Estimator
+        quantized = z + (quantized - z).detach()
+        
+        return quantized, loss, encoding_indices
 
 class AmorphousExpert(nn.Module):
     """
@@ -180,8 +149,8 @@ class AmorphousExpert(nn.Module):
         B = z.size(0)
         self._ensure_dirs(z.device)
 
-        r = safe_softplus(self.head_r(z)) + 1e-4     # (B,N)
-        s = safe_softplus(self.head_scale(z)).clamp_min(0.1)  # (B,1)
+        r = F.softplus(self.head_r(z), beta=1.0) + 1e-4     # (B,N)
+        s = F.softplus(self.head_scale(z), beta=1.0).clamp_min(0.1)  # (B,1)
 
         dirs = self._dirs.unsqueeze(0).expand(B, -1, -1)      # (B,N,3)
         pts = dirs * r.unsqueeze(-1) * s.unsqueeze(-1)        # (B,N,3)
@@ -194,185 +163,141 @@ class AmorphousExpert(nn.Module):
         return pts
 
 
-# ----- Equivariant residual refiner -----
-class EquivariantRefiner(nn.Module):
+class TransformerRefiner(nn.Module):
     """
-    Updates points by message passing with scalar edge weights over relative vectors:
-        Δx_i = sum_j w_ij * (x_j - x_i)
-    w_ij = MLP([||x_i - x_j||, global_context(z)])  -> scalar
-
-    This is E(3)-equivariant (vectors transform correctly; scalars are invariant).
+    Replaces KNN GNN with a Transformer. 
+    Global attention is critical for crystals to align periodic boundaries.
     """
-    def __init__(
-        self,
-        latent_size: int,
-        hidden_ctx: int = 64,
-        edge_hidden: int = 64,
-        k: int = 12,
-        n_layers: int = 2,
-        step_size: float = 1.0,
-    ):
+    def __init__(self, latent_dim, hidden_dim=128, n_heads=4, n_layers=2):
         super().__init__()
-        self.k = k
-        self.n_layers = n_layers
-        self.step_size = step_size
+        self.embedding = nn.Linear(3, hidden_dim)
+        
+        # Conditional Layer Norm or AdaGN is better, but concatenation is simple
+        self.z_proj = nn.Linear(latent_dim, hidden_dim)
+        
+        encoder_layer = nn.TransformerEncoderLayer(d_model=hidden_dim, nhead=n_heads, dim_feedforward=256, batch_first=True)
+        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=n_layers)
+        
+        self.out_proj = nn.Linear(hidden_dim, 3)
 
-        self.ctx = mlp([latent_size, hidden_ctx], bn=False)
-        # Edge MLP takes [dist, ctx] → weight
-        self.edge_mlp = mlp([1 + hidden_ctx, edge_hidden, edge_hidden, 1], bn=False)
-
-    def forward(self, x: torch.Tensor, z: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        x: (B,N,3), z: (B,D) -> x_refined: (B,N,3), residual_norm: (B,)
-        """
+    def forward(self, x, z):
+        # x: (B, N, 3)
+        # z: (B, D)
         B, N, _ = x.shape
-        ctx = self.ctx(z)  # (B,C)
-        residual_accum = 0.0
-        for _ in range(self.n_layers):
-            idx = knn(x, self.k)  # (B,N,k)
-            # Gather neighbor positions
-            batch_idx = torch.arange(B, device=x.device).view(B, 1, 1).expand_as(idx)
-            nbrs = x[batch_idx, idx, :]  # (B,N,k,3)
-            xi = x.unsqueeze(2)          # (B,N,1,3)
-            rij = nbrs - xi              # (B,N,k,3)
-            dij = torch.norm(rij + 1e-12, dim=-1, keepdim=True)  # (B,N,k,1)
+        
+        h = self.embedding(x) # (B, N, H)
+        z_feat = self.z_proj(z).unsqueeze(1) # (B, 1, H)
+        
+        # Add Z context to every point token
+        h = h + z_feat 
+        
+        # Self-attention captures global symmetry
+        h = self.transformer(h)
+        
+        delta = self.out_proj(h)
+        return x + delta, delta.norm(dim=-1).mean(dim=-1) # Return refined X and residual magnitude
 
-            # Build edge features: [dist, ctx]
-            c = ctx.unsqueeze(1).unsqueeze(2)  # (B,1,1,C)
-            c = c.expand(B, N, self.k, -1)
-            edge_feat = torch.cat([dij, c], dim=-1)  # (B,N,k,1+C)
-            w = self.edge_mlp(edge_feat).squeeze(-1)  # (B,N,k)
-            w = torch.tanh(w)  # keep weights bounded
-
-            # Normalize over neighbors
-            w = w / (w.abs().sum(dim=-1, keepdim=True) + 1e-8)  # (B,N,k)
-
-            # Δx_i
-            delta = (w.unsqueeze(-1) * rij).sum(dim=2)  # (B,N,3)
-            x = x + self.step_size * delta
-            residual_accum = residual_accum + (delta ** 2).sum(dim=(1, 2))  # (B,)
-
-        residual_norm = torch.sqrt(residual_accum + 1e-12)  # (B,)
-        # Re-center
-        x = x - x.mean(dim=1, keepdim=True)
-        return x, residual_norm
-
-
-# ----- MoE Decoder (main class) -----
-@register_decoder("MoETemplate")
-class MoETemplateResidualDecoder(Decoder):
+class DifferentiableLatticeExpert(nn.Module):
     """
-    Mixture-of-Experts template decoder with equivariant residual refinement.
-
-    Args:
-        num_points: N
-        latent_size: D (size of z_inv)
-        n_experts: number of experts (2 or 3 supported here)
-        topk: how many experts can be active per sample
-        gate_hidden: hidden size for gate MLP
-        gate_temp: temperature for softmax (lower => peakier)
-        use_residual: enable residual refiner
-        residual_kwargs: dict forwarded to EquivariantRefiner
-        lattice_kwargs, amorphous_kwargs: dicts forwarded to experts
+    Improved Lattice Expert. 
+    Instead of cropping (non-differentiable selection), we fold a fixed 
+    grid into the desired shape.
     """
-    def __init__(
-        self,
-        num_points: int,
-        latent_size: int,
-        n_experts: int = 2,              # {Lattice, Amorphous} by default
-        topk: int = 2,
-        gate_hidden: int = 256,
-        gate_temp: float = 1.0,
-        use_residual: bool = True,
-        lattice_kwargs: Optional[dict] = None,
-        amorphous_kwargs: Optional[dict] = None,
-        residual_kwargs: Optional[dict] = None,
-    ):
+    def __init__(self, latent_size, num_points, hidden=256):
         super().__init__()
-        assert n_experts in (2, 3), "Only 2 or 3 experts supported in this implementation."
-        assert 1 <= topk <= n_experts
-
         self.n = num_points
-        self.d = latent_size
-        self.n_experts = n_experts
-        self.topk = topk
-        self.gate_temp = gate_temp
-        self.use_residual = use_residual
+        
+        # 1. Learn the primitive unit cell basis vectors (3 vectors)
+        self.head_basis = mlp([latent_size, hidden, 9], bn=True)
+        
+        # 2. Learn a displacement field for a fixed grid to handle N points
+        # We start with a cube grid of N points
+        side = int(math.ceil(num_points**(1/3)))
+        t = torch.linspace(0, 1, side)
+        grid = torch.stack(torch.meshgrid(t, t, t, indexing='ij'), dim=-1).reshape(-1, 3)
+        grid = grid[:num_points] # Take exactly N points
+        self.register_buffer("base_grid", grid) # (N, 3)
 
-        lattice_kwargs = lattice_kwargs or {}
-        amorphous_kwargs = amorphous_kwargs or {}
-        residual_kwargs = residual_kwargs or {}
+    def forward(self, z):
+        B = z.shape[0]
+        
+        # Predict Basis Matrix B (Transformation from unit cube to Crystal Cell)
+        basis = self.head_basis(z).view(B, 3, 3) # (B, 3, 3)
+        
+        # Apply lattice transformation to the base grid
+        # This ensures all points move COHERENTLY respecting the predicted symmetry
+        base_grid = self.base_grid.unsqueeze(0).expand(B, -1, -1) # (B, N, 3)
+        
+        # X_crystal = Grid @ Basis
+        pts = torch.bmm(base_grid, basis)
+        
+        pts = pts - pts.mean(dim=1, keepdim=True)
+        return pts
 
-        # Experts
-        self.lattice = LatticeExpert(latent_size, num_points, **lattice_kwargs)
-        self.amorphous = AmorphousExpert(latent_size, num_points, **amorphous_kwargs)
-        self.mlp_fallback = None
-        if n_experts == 3:
-            # A tiny fallback MLP expert (acts like a low-capacity folding)
-            self.mlp_fallback = mlp([latent_size, 256, 256, num_points * 3], bn=True)
+@register_decoder("VQMoE")
+class VQMoEDecoder(nn.Module):
+    def __init__(self, 
+                 num_points=80, 
+                 latent_size=48, 
+                 vq_size=128, # Size of codebook (number of motifs)
+                 use_vq=True):
+        super().__init__()
+        
+        self.use_vq = use_vq
+        
+        # 1. VQ-VAE Layer
+        if self.use_vq:
+            self.vq = VectorQuantizer(num_embeddings=vq_size, embedding_dim=latent_size)
+        
+        # 2. Experts
+        self.expert_lattice = DifferentiableLatticeExpert(latent_size, num_points)
+        self.expert_amorphous = AmorphousExpert(latent_size, num_points) # Your existing one is fine
+        
+        # 3. Gated Router (Gumbel Softmax)
+        self.router = mlp([latent_size, 64, 2], bn=False)
+        
+        # 4. Transformer Refiner (Global context)
+        self.refiner = TransformerRefiner(latent_size)
 
-        # Gating network
-        self.gate = mlp([latent_size, gate_hidden, gate_hidden, n_experts], bn=True, last_bn=False)
+    def forward(self, z):
+        # z: (B, D)
+        
+        # 1. VQ Bottleneck
+        vq_loss = torch.tensor(0.0, device=z.device)
+        if self.use_vq:
+            # z_q is the "clean" motif embedding
+            z_q, vq_loss, indices = self.vq(z)
+            
+            # Structure branch sees the Clean Motif (z_q)
+            # Refiner sees the specific noise (z) or z_q depending on strategy.
+            # Usually passing 'z' to refiner allows it to model the noise.
+            z_structure = z_q
+        else:
+            z_structure = z
 
-        # Residual refiner (equivariant)
-        self.refiner = None
-        if use_residual:
-            self.refiner = EquivariantRefiner(latent_size, **residual_kwargs)
-
-        # Expose some useful stats from last forward (optional)
-        self.last_aux = {}
-
-    def _mix(self, z: torch.Tensor, templates: List[torch.Tensor]) -> Tuple[torch.Tensor, dict]:
-        """
-        Args:
-            z: (B,D)
-            templates: list of expert outputs, each (B,N,3), length = n_experts
-        Returns:
-            mixed: (B,N,3)
-            aux: dict with 'weights' (B,K), 'topk_idx' (B,topk)
-        """
-        B = z.size(0)
-        logits = self.gate(z)  # (B, K)
-        K = logits.size(1)
-
-        # Top-k mask
-        topk_vals, topk_idx = torch.topk(logits, k=self.topk, dim=-1)  # (B, topk)
-        mask = torch.zeros_like(logits).scatter_(1, topk_idx, 1.0)
-        weights = F.softmax(logits / self.gate_temp, dim=-1) * mask
-        weights = weights / (weights.sum(dim=-1, keepdim=True) + 1e-8)  # renormalize
-
-        # Stack templates and mix with weights
-        T = torch.stack(templates, dim=1)  # (B, K, N, 3)
-        mixed = torch.einsum("bk,bknc->bnc", weights, T)  # (B,N,3)
-
-        aux = {"weights": weights.detach(), "topk_idx": topk_idx.detach()}
-        return mixed, aux
-
-    def forward(self, z: torch.Tensor) -> torch.Tensor:
-        """
-        z: (B, D) -> (B, N, 3)
-        """
-        # Expert templates
-        outs = [self.lattice(z), self.amorphous(z)]
-        if self.n_experts == 3:
-            mlp_pts = self.mlp_fallback(z).view(z.size(0), self.n, 3)
-            mlp_pts = mlp_pts - mlp_pts.mean(dim=1, keepdim=True)
-            outs.append(mlp_pts)
-
-        mixed, aux = self._mix(z, outs)
-
-        # Residual refinement
-        residual_norm = None
-        if self.use_residual and self.refiner is not None:
-            mixed, residual_norm = self.refiner(mixed, z)
-
-        # Save some diagnostics for external regularization/monitoring
-        self.last_aux = {
-            **aux,
-            "residual_norm": residual_norm.detach() if residual_norm is not None else None,
-        }
-
-        return mixed
+        # 2. Generate Templates
+        out_lattice = self.expert_lattice(z_structure)
+        out_amorphous = self.expert_amorphous(z_structure)
+        
+        # 3. Hard Gating (Gumbel Softmax)
+        # During training, this samples. During eval, it argmaxes.
+        # This prevents "averaging" coordinates.
+        logits = self.router(z_structure)
+        weights = F.gumbel_softmax(logits, tau=1.0, hard=True) # (B, 2)
+        
+        # Select output without blending positions
+        # weights[:, 0] is (B,), expand to (B, N, 3)
+        w_lat = weights[:, 0].view(-1, 1, 1)
+        w_amo = weights[:, 1].view(-1, 1, 1)
+        
+        mixed = w_lat * out_lattice + w_amo * out_amorphous
+        
+        # 4. Refine
+        # The refiner adds the "Continuity" and small perturbations.
+        # It takes the generated template and the original (possibly noisy) Z.
+        final_pts, residual_mag = self.refiner(mixed, z)
+        
+        return final_pts, vq_loss, weights
 
 
 # ----- Minimal sanity check -----
