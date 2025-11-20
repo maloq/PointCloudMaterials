@@ -68,7 +68,7 @@ def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
     return quat / norm
 
 
-def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords):
+def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords, sampling_method="drop_farthest"):
     """
     Read an OFF file and sample points from it.
     """
@@ -81,13 +81,15 @@ def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fractio
                                             size=radius,
                                             n_points=n_points,
                                             overlap_fraction=overlap_fraction,
-                                            return_coords=return_coords)
+                                            return_coords=return_coords,
+                                            sampling_method=sampling_method)
         elif sample_type == 'random':
             samples = get_random_samples(points,
                                             n_samples=n_samples,
                                             size=radius,
                                             n_points=n_points,
-                                            return_coords=return_coords)
+                                            return_coords=return_coords,
+                                            sampling_method=sampling_method)
         else:
             raise ValueError(f"Invalid sample type: {sample_type}")
     if samples:
@@ -107,7 +109,8 @@ class PointCloudDataset(Dataset):
                  n_samples=1000,
                  num_points=100,
                  pre_normalize=True,
-                 normalize=True ):
+                 normalize=True,
+                 sampling_method="drop_farthest"):
         """Initialize the dataset with samples from OFF files.
         Args:
             root: Path to directory containing OFF files
@@ -124,7 +127,8 @@ class PointCloudDataset(Dataset):
                                                 overlap_fraction,
                                                 sample_type,
                                                 n_samples,
-                                                return_coords)
+                                                return_coords,
+                                                sampling_method)
         if self.return_coords:
             self.samples, self.coords = zip(*self.samples)
             self.samples = list(self.samples)
@@ -173,6 +177,7 @@ class SyntheticPointCloudDataset(Dataset):
         normalize: bool = True,
         max_samples: Optional[int] = None,
         discard_mixed_phase: bool = False,
+        sampling_method: str = "drop_farthest",
     ) -> None:
         super().__init__()
         if not env_dirs:
@@ -187,6 +192,8 @@ class SyntheticPointCloudDataset(Dataset):
         self.normalize = normalize
         self.max_samples = max_samples if max_samples is not None and max_samples > 0 else None
         self.discard_mixed_phase = discard_mixed_phase
+        self.sampling_method = sampling_method
+
 
         # Store as tensors to avoid conversion overhead
         self.samples: List[torch.Tensor] = []
@@ -302,6 +309,7 @@ class SyntheticPointCloudDataset(Dataset):
                 n_points=self.num_points,
                 max_samples=max_samples,
                 drop_edge_samples=self.drop_edge_samples,
+                sampling_method=self.sampling_method,
             )
         elif self.sample_type == "random":
             if self.n_samples <= 0:
@@ -312,6 +320,7 @@ class SyntheticPointCloudDataset(Dataset):
                 size=self.radius,
                 n_points=self.num_points,
                 return_coords=True,
+                sampling_method=self.sampling_method,
             )
         else:
             raise ValueError(f"Invalid sample type: {self.sample_type!r}")

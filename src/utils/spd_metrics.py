@@ -5,7 +5,7 @@ Includes embedding quality, rotation equivariance, and reconstruction consistenc
 
 import numpy as np
 import torch
-from sklearn.metrics import silhouette_score, adjusted_rand_score, normalized_mutual_info_score
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.cluster import KMeans
@@ -225,13 +225,6 @@ def compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray, stage: str)
             metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
         except Exception:
             pass
-    if stage == "val" and latents.shape[0] >= 3:
-        try:
-            assignments_k3 = KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(latents)
-            if np.unique(assignments_k3).size > 1:
-                metrics["Silhouette"] = float(silhouette_score(latents, assignments_k3))
-        except Exception:
-            pass
     return metrics or None
 
 
@@ -259,10 +252,6 @@ def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarra
         metrics['classification_accuracy'] = float(scores.mean())
 
 
-    # Silhouette score (if labels available) - EXPENSIVE, test only
-    if include_expensive and len(np.unique(motif_labels)) > 1 and len(Z_inv) >= 2:
-        from sklearn.metrics import silhouette_score
-        metrics['silhouette_score'] = float(silhouette_score(Z_inv, motif_labels))
 
 
     # Intra vs inter class distances

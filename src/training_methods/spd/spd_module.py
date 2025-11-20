@@ -63,7 +63,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         self.encoder_latent_size = encoder_kwargs.get('latent_size', self.hparams.latent_size)
 
         self.rotation_mode = str(cfg.rotation_mode).lower()
-        self._use_rot_head = self.rotation_mode in {"sixd_head", "matrix_head"}
+        self._use_rot_head = self.rotation_mode in {"sixd_head", "matrix_head", "vn_rotation_head"}
         self.rot_net = build_rot_head(cfg, in_features=self.encoder_latent_size * 3) if self._use_rot_head else None
 
         # Load pretrained supervised encoder if specified
@@ -115,6 +115,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
             ref_path = os.path.join(cfg.synthetic.data_dir, 'reference_point_clouds.npy')
             if os.path.exists(ref_path):
                 self.reference_pcs = np.load(ref_path, allow_pickle=True).item()
+
+        # Augmentation parameters
+        self.aug_noise_scale = 0.0
+        self.aug_rotation_scale = 0.0
+        if hasattr(cfg, 'augmentation'):
+            self.aug_noise_scale = cfg.augmentation.noise_scale
+            self.aug_rotation_scale = cfg.augmentation.rotation_scale
 
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
@@ -227,7 +234,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             recon = self._apply_rotation(cano, rot)
         return cano, rot, recon, vq_loss
 
-    def _log_metric(self, stage: str, name: str, value, *, on_step=None, on_epoch=None, legacy: bool = True, **kwargs) -> None:
+    def _log_metric(self, stage: str, name: str, value, *, on_step=None, on_epoch=None, legacy: bool = True, batch_size=None, **kwargs) -> None:
         """Helper to keep WandB charts grouped by stage while preserving legacy metric keys."""
         if on_step is None:
             on_step = stage == "train"
@@ -238,15 +245,18 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if "sync_dist" not in log_kwargs:
             if stage != "train" or on_epoch:
                 log_kwargs["sync_dist"] = True
+        
+        if batch_size is not None:
+            log_kwargs["batch_size"] = batch_size
 
         log_name = f"{stage}/{name}"
         self.log(log_name, value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
 
-    def _log_metrics(self, stage: str, metrics: dict, prog_bar_keys=None):
+    def _log_metrics(self, stage: str, metrics: dict, prog_bar_keys=None, batch_size=None):
         """Log multiple metrics at once."""
         prog_bar_keys = prog_bar_keys or set()
         for name, value in metrics.items():
-            self._log_metric(stage, name, value, prog_bar=(name in prog_bar_keys))
+            self._log_metric(stage, name, value, prog_bar=(name in prog_bar_keys), batch_size=batch_size)
 
     def _loss_param(self, section: str, key: str, default=None):
         params = getattr(self, "loss_params", None)
@@ -258,7 +268,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 return section_params[key]
         return params.get(key, default)
 
-    def _compute_losses(self, recon, cano, rot, pc, inv_z, vq_loss=0.0):
+    def _compute_losses(self, recon, cano, rot, pc, inv_z, vq_loss=0.0, labels=None):
         """Compute all losses and return (loss_dict, current_sinkhorn_blur)."""
         recon_f32, cano_f32, pc_f32 = to_float32(recon, cano, pc)
         sinkhorn_blur = get_current_sinkhorn_blur(self._sinkhorn_blur_schedule, self.current_epoch)
@@ -272,12 +282,29 @@ class ShapePoseDisentanglement(pl.LightningModule):
         losses['ortho'] = torch.mean((rot.transpose(1, 2).float() @ rot.float()
                                       - torch.eye(3, device=self.device)) ** 2)
 
-        # Diagnostic metrics (no grad)
-        with torch.no_grad():
-            losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32)
-            losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-            losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32)
+        # Existing diagnostic metrics
+        losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32)
+        losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+        
+        # "Before rotation" metrics
+        # 1. Pred Canonical vs Input (Rotated) - previously 'emd_before'
+        losses['emd_pred_canonical_vs_input'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+        losses['chamfer_pred_canonical_vs_input'], _ = chamfer_distance(cano_f32, pc_f32)
+
+        if labels is not None and labels.get("orientation") is not None:
+            gt_rot = labels["orientation"].to(device=self.device, dtype=torch.float32)
+            # pc_unrotated_gt = R_gt^T @ pc (The original object in canonical frame)
+            pc_unrotated_gt = (gt_rot.transpose(1, 2) @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
+            
+            # 2. Pred Canonical vs GT Canonical (Original Unrotated) - Requested "distance between original and canonical"
+            losses['emd_pred_canonical_vs_gt_canonical'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_unrotated_gt, blur=sinkhorn_blur)
+            losses['chamfer_pred_canonical_vs_gt_canonical'], _ = chamfer_distance(cano_f32, pc_unrotated_gt)
+            
+            # 3. Rotation Correctness: dist(R_pred^T @ pc, GT_Canonical)
+            # Checks if predicted rotation correctly maps input back to initial position
+            if rot is not None:
+                pc_derotated = (rot.transpose(1, 2).float() @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
+                losses['rot_correctness'], _ = chamfer_distance(pc_derotated, pc_unrotated_gt)
 
         # KL regularization (optional)
         # KL regularization (optional)
@@ -293,9 +320,48 @@ class ShapePoseDisentanglement(pl.LightningModule):
         return losses, sinkhorn_blur
 
 
+    def _apply_augmentations(self, pc, labels):
+        """Apply noise and rotation augmentations."""
+        # Noise
+        if self.aug_noise_scale > 0:
+            noise = torch.randn_like(pc) * self.aug_noise_scale
+            pc = pc + noise
+        
+        # Rotation
+        if self.aug_rotation_scale > 0:
+            # Generate random rotations
+            B = pc.shape[0]
+            # Simple random rotation generation in torch
+            # Sample random unit vectors for axis and random angle
+            # Or just use QR decomposition of random normal matrix
+            rand_mat = torch.randn(B, 3, 3, device=pc.device, dtype=pc.dtype)
+            q, r = torch.linalg.qr(rand_mat)
+            d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
+            q *= d.unsqueeze(-1)
+            # Ensure det is 1 (rotation, not reflection)
+            det = torch.det(q)
+            mask = det < 0
+            if mask.any():
+                q[mask, :, 0] *= -1
+            
+            rot_aug = q
+            
+            # Apply rotation
+            pc = (rot_aug @ pc.transpose(1, 2)).transpose(1, 2).contiguous()
+            
+            # Update ground truth orientation
+            if labels.get("orientation") is not None:
+                # New orientation = R_aug @ Old_orientation
+                labels["orientation"] = rot_aug @ labels["orientation"]
+                
+        return pc, labels
+
     def _step(self, batch, batch_idx, stage: str):
         pc, labels = self._unpack_batch(batch)
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
+
+        if stage == "train":
+            pc, labels = self._apply_augmentations(pc, labels)
 
         # Forward pass
         inv_z, recon, cano, rot, vq_loss = self(pc)
@@ -305,7 +371,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             self._cache_supervised_batch(stage, inv_z, labels, recon, cano, rot, pc)
 
         # Compute all losses
-        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss)
+        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss, labels=labels)
 
         # Build total loss
         total_loss = losses['recon'] + self.ortho_scale * losses['ortho']
@@ -320,11 +386,17 @@ class ShapePoseDisentanglement(pl.LightningModule):
             'loss': total_loss,
             f'{self.loss_name}_loss': losses['recon'],
             'emd': losses['emd_after'],
-            'emd_before_rot': losses['emd_before'],
+            'emd_before_rot': losses['emd_pred_canonical_vs_input'],
             'chamfer': losses['chamfer_after'],
-            'chamfer_before_rot': losses['chamfer_before'],
+            'chamfer_before_rot': losses['chamfer_pred_canonical_vs_input'],
             'ortho': losses['ortho'],
         }
+        if 'emd_pred_canonical_vs_gt_canonical' in losses:
+            metrics_to_log['emd_canonical_gt'] = losses['emd_pred_canonical_vs_gt_canonical']
+        if 'chamfer_pred_canonical_vs_gt_canonical' in losses:
+            metrics_to_log['chamfer_canonical_gt'] = losses['chamfer_pred_canonical_vs_gt_canonical']
+        if 'rot_correctness' in losses:
+            metrics_to_log['rot_correctness'] = losses['rot_correctness']
         if 'kl' in losses:
             metrics_to_log['kl_loss'] = losses['kl']
         if 'vq' in losses:
@@ -333,7 +405,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             metrics_to_log['sinkhorn_blur'] = float(sinkhorn_blur)
 
         # Log all metrics
-        self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'})
+        self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'}, batch_size=pc.shape[0])
 
         # Optional rotation geodesic when ground truth is available
         if rot is not None and labels.get("orientation") is not None:

@@ -6,6 +6,7 @@ import pytorch_lightning as pl
 from omegaconf import OmegaConf
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.strategies import DDPStrategy
 
 # Add src to path
 sys.path.append(os.getcwd())
@@ -68,10 +69,12 @@ def run_experiment(args):
     logger = WandbLogger(project="spd_modelnet_experiments", name=exp_name, offline=args.dry_run)
     
     # Trainer
+    num_devices = 2
     trainer = pl.Trainer(
         max_epochs=cfg.max_epochs,
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
-        devices=1,
+        devices=num_devices,
+        strategy=DDPStrategy(find_unused_parameters=True) if num_devices > 1 else "auto",
         logger=logger,
         limit_train_batches=limit_train_batches,
         limit_val_batches=limit_val_batches,
@@ -83,16 +86,22 @@ def run_experiment(args):
         ]
     )
     
-    # Train
-    trainer.fit(model, datamodule=dm)
-    
-    # Test
-    trainer.test(model, datamodule=dm)
-    
-    # Visualize
-    print("Generating visualizations...")
-    vis_dir = os.path.join("visualizations", exp_name)
-    visualize_reconstructions(model, dm, vis_dir, num_instances=5)
+    try:
+        # Train
+        trainer.fit(model, datamodule=dm)
+        
+        # Test
+        trainer.test(model, datamodule=dm)
+    except KeyboardInterrupt:
+        print("\nTraining interrupted by user. Proceeding to visualization...")
+    finally:
+        # Visualize
+        print("Generating visualizations...")
+        vis_dir = os.path.join("output", "modelnet_visualizations", exp_name)
+        try:
+            visualize_reconstructions(model, dm, vis_dir, num_instances=10)
+        except Exception as e:
+            print(f"Failed to generate visualizations: {e}")
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import os
 
-def visualize_reconstructions(model, datamodule, save_dir, num_instances=5):
+def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
     """
     Visualizes reconstructions for a few instances per class.
     Generates an image with 3 columns: Input, Canonical, Reconstruction.

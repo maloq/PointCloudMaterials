@@ -122,6 +122,25 @@ def drop_points_farthest(points: np.ndarray, n_points: int) -> np.ndarray:
         idx = np.random.choice(len(points), num_to_add, replace=True)
         new_points = 2 * center - points[idx]
         return np.vstack((points, new_points))
+
+
+def drop_points_fps(points: np.ndarray, n_points: int) -> np.ndarray:
+    """Adjust points to have exactly n_points using Farthest Point Sampling.
+
+    If len(points) > n_points, use FPS to select a subset that preserves shape.
+    If len(points) < n_points, add points symmetrically with respect to the center.
+    """
+    if len(points) == n_points:
+        return points
+    elif len(points) > n_points:
+        return farthest_point_sample(points, n_points)
+    else:
+        # Same upsampling strategy as drop_points_farthest
+        center = np.mean(points, axis=0)
+        num_to_add = n_points - len(points)
+        idx = np.random.choice(len(points), num_to_add, replace=True)
+        new_points = 2 * center - points[idx]
+        return np.vstack((points, new_points))
   
 
 def get_min_max_coords(points: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -148,7 +167,7 @@ def calculate_center(min_coords, stride, i, j, k, size):
     return center
 
 
-def process_sample(points, tree, center, size, n_points):
+def process_sample(points, tree, center, size, n_points, sampling_method="drop_farthest"):
  
     radius = size
     indices = tree.query_ball_point(center, radius)
@@ -159,7 +178,14 @@ def process_sample(points, tree, center, size, n_points):
     distances = np.linalg.norm(sample_points - center, axis=1)
     mask = distances <= size
     sample_points = sample_points[mask]
-    drop_func = drop_points_farthest
+    
+    if sampling_method == "fps":
+        drop_func = drop_points_fps
+    elif sampling_method == "drop_farthest":
+        drop_func = drop_points_farthest
+    else:
+        raise ValueError(f"Unknown sampling method: {sampling_method}")
+
     if len(sample_points) > n_points:
         dropped = len(sample_points) - n_points
     else:
@@ -179,7 +205,8 @@ def generate_samples(
     n_points: int,
     return_coords: bool,
     max_samples: int,
-    drop_edge_samples: bool = True
+    drop_edge_samples: bool = True,
+    sampling_method: str = "drop_farthest"
 ) -> Tuple[List, int, int]:
     samples = []
     added_points = dropped_points = 0
@@ -214,7 +241,7 @@ def generate_samples(
                 _, nearest_index = tree.query(computed_center)
                 center = points[nearest_index]
                 # Proceed as before using the adjusted center.
-                sample_points, add, drop = process_sample(points, tree, center, size, n_points)
+                sample_points, add, drop = process_sample(points, tree, center, size, n_points, sampling_method)
                 added_points += add
                 dropped_points += drop
                 if sample_points is not None:
@@ -236,7 +263,8 @@ def get_regular_samples(
     return_coords: bool = False,
     n_points: int = 100,
     max_samples: int = 2e32,
-    drop_edge_samples: bool = True
+    drop_edge_samples: bool = True,
+    sampling_method: str = "drop_farthest"
 ) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
     """
     Divide point cloud into regular samples covering the entire data space with optional overlap.
@@ -317,7 +345,7 @@ def get_regular_samples(
 
     samples, added_points, dropped_points = generate_samples(
         points, tree, min_center, stride, size, dims, 
-        n_points, return_coords, max_samples, drop_edge_samples
+        n_points, return_coords, max_samples, drop_edge_samples, sampling_method
     )
 
     if len(samples) > 0:
@@ -349,6 +377,7 @@ def get_random_samples(
     size: float,
     n_points: int,
     return_coords: bool = False,
+    sampling_method: str = "drop_farthest"
 ) -> List[np.ndarray]:
     """Same as get_regular_samples but with random center points.
     
@@ -378,7 +407,7 @@ def get_random_samples(
         )
         center = np.asarray(center, dtype=np.float64)
         
-        sample_points, add, drop = process_sample(points, tree, center, size, n_points)
+        sample_points, add, drop = process_sample(points, tree, center, size, n_points, sampling_method)
         if sample_points is not None:
             sample_points = sample_points - center
             if return_coords:

@@ -1,41 +1,46 @@
 # Base configuration for ModelNet40 experiments
 batch_size: 128
-num_workers: 4
-max_epochs: 100
-latent_size: 126
+num_workers: 6
+max_epochs: 600
+latent_size: 240
 ortho_scale: 1.0
 kl_latent_loss_scale: 0.01
-learning_rate: 1e-3
+learning_rate: 0.004
 decay_rate: 1e-4
-scheduler_name: "Step"
+scheduler_name: "Cosine"
 scheduler_gamma: 0.5
 enable_swa: False
 swa_epoch_start: 50
-epochs: 100
-rotation_mode: "sixd_head"
+epochs: 600
+rotation_mode: "vn_rotation_head"
 load_supervised_checkpoint: False
 loss: "chamfer"
 max_supervised_samples: 2048
 max_test_samples: 1000
 enable_expensive_metrics: True
 
+augmentation:
+  noise_scale: 0.05
+  rotation_scale: 0.5
+
 data:
   data_path: "datasets/ModelNet40"
   metadata_file: "datasets/metadata_modelnet40.csv"
-  num_points: 1024
+  num_points: 512
+  sampling_method: "fps"
 
 encoder:
   name: "PnE_VN"
   kwargs:
-    latent_size: 126
+    latent_size: 240
     n_knn: 20
     pooling: "mean"
 
 decoder:
   name: "Folding"
   kwargs:
-    num_points: 1024
-    latent_size: 126
+    num_points: 512
+    latent_size: 240
     hidden_dim: 512
 
 rot_net:

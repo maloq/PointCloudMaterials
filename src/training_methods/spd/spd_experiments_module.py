@@ -94,7 +94,7 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             metrics_to_log['kabsch_consistency_deg'] = kabsch_error * (180.0 / np.pi)
 
         # Log all metrics
-        self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'})
+        self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'}, batch_size=pc.shape[0])
 
         return total_loss
 
