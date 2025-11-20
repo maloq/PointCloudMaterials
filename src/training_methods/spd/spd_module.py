@@ -116,13 +116,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
             if os.path.exists(ref_path):
                 self.reference_pcs = np.load(ref_path, allow_pickle=True).item()
 
-        # Augmentation parameters
-        self.aug_noise_scale = 0.0
-        self.aug_rotation_scale = 0.0
-        if hasattr(cfg, 'augmentation'):
-            self.aug_noise_scale = cfg.augmentation.noise_scale
-            self.aug_rotation_scale = cfg.augmentation.rotation_scale
-
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
             val, _ = sinkhorn_distance(pred.contiguous(), target, blur=sinkhorn_blur)
@@ -282,32 +275,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
         losses['ortho'] = torch.mean((rot.transpose(1, 2).float() @ rot.float()
                                       - torch.eye(3, device=self.device)) ** 2)
 
-        # Existing diagnostic metrics
-        losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32)
-        losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-        
-        # "Before rotation" metrics
-        # 1. Pred Canonical vs Input (Rotated) - previously 'emd_before'
-        losses['emd_pred_canonical_vs_input'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-        losses['chamfer_pred_canonical_vs_input'], _ = chamfer_distance(cano_f32, pc_f32)
+        # Diagnostic metrics (no grad)
+        with torch.no_grad():
+            losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32)
+            losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+            losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32)
 
-        if labels is not None and labels.get("orientation") is not None:
-            gt_rot = labels["orientation"].to(device=self.device, dtype=torch.float32)
-            # pc_unrotated_gt = R_gt^T @ pc (The original object in canonical frame)
-            pc_unrotated_gt = (gt_rot.transpose(1, 2) @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
-            
-            # 2. Pred Canonical vs GT Canonical (Original Unrotated) - Requested "distance between original and canonical"
-            losses['emd_pred_canonical_vs_gt_canonical'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_unrotated_gt, blur=sinkhorn_blur)
-            losses['chamfer_pred_canonical_vs_gt_canonical'], _ = chamfer_distance(cano_f32, pc_unrotated_gt)
-            
-            # 3. Rotation Correctness: dist(R_pred^T @ pc, GT_Canonical)
-            # Checks if predicted rotation correctly maps input back to initial position
-            if rot is not None:
-                pc_derotated = (rot.transpose(1, 2).float() @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
-                losses['rot_correctness'], _ = chamfer_distance(pc_derotated, pc_unrotated_gt)
-
-        # KL regularization (optional)
-        # KL regularization (optional)
         if self.kl_latent_loss_scale > 0:
             losses['kl'] = kl_latent_regularizer(inv_z)
 
@@ -317,51 +291,12 @@ class ShapePoseDisentanglement(pl.LightningModule):
         elif vq_loss > 0:
             losses['vq'] = torch.tensor(vq_loss, device=self.device, dtype=self.dtype)
 
-        return losses, sinkhorn_blur
 
 
-    def _apply_augmentations(self, pc, labels):
-        """Apply noise and rotation augmentations."""
-        # Noise
-        if self.aug_noise_scale > 0:
-            noise = torch.randn_like(pc) * self.aug_noise_scale
-            pc = pc + noise
-        
-        # Rotation
-        if self.aug_rotation_scale > 0:
-            # Generate random rotations
-            B = pc.shape[0]
-            # Simple random rotation generation in torch
-            # Sample random unit vectors for axis and random angle
-            # Or just use QR decomposition of random normal matrix
-            rand_mat = torch.randn(B, 3, 3, device=pc.device, dtype=pc.dtype)
-            q, r = torch.linalg.qr(rand_mat)
-            d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
-            q *= d.unsqueeze(-1)
-            # Ensure det is 1 (rotation, not reflection)
-            det = torch.det(q)
-            mask = det < 0
-            if mask.any():
-                q[mask, :, 0] *= -1
-            
-            rot_aug = q
-            
-            # Apply rotation
-            pc = (rot_aug @ pc.transpose(1, 2)).transpose(1, 2).contiguous()
-            
-            # Update ground truth orientation
-            if labels.get("orientation") is not None:
-                # New orientation = R_aug @ Old_orientation
-                labels["orientation"] = rot_aug @ labels["orientation"]
-                
-        return pc, labels
 
     def _step(self, batch, batch_idx, stage: str):
         pc, labels = self._unpack_batch(batch)
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
-
-        if stage == "train":
-            pc, labels = self._apply_augmentations(pc, labels)
 
         # Forward pass
         inv_z, recon, cano, rot, vq_loss = self(pc)
@@ -371,7 +306,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             self._cache_supervised_batch(stage, inv_z, labels, recon, cano, rot, pc)
 
         # Compute all losses
-        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss, labels=labels)
+        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss)
 
         # Build total loss
         total_loss = losses['recon'] + self.ortho_scale * losses['ortho']
@@ -388,15 +323,9 @@ class ShapePoseDisentanglement(pl.LightningModule):
             'emd': losses['emd_after'],
             'emd_before_rot': losses['emd_pred_canonical_vs_input'],
             'chamfer': losses['chamfer_after'],
-            'chamfer_before_rot': losses['chamfer_pred_canonical_vs_input'],
+            'chamfer_before_rot': losses['chamfer_before'],
             'ortho': losses['ortho'],
         }
-        if 'emd_pred_canonical_vs_gt_canonical' in losses:
-            metrics_to_log['emd_canonical_gt'] = losses['emd_pred_canonical_vs_gt_canonical']
-        if 'chamfer_pred_canonical_vs_gt_canonical' in losses:
-            metrics_to_log['chamfer_canonical_gt'] = losses['chamfer_pred_canonical_vs_gt_canonical']
-        if 'rot_correctness' in losses:
-            metrics_to_log['rot_correctness'] = losses['rot_correctness']
         if 'kl' in losses:
             metrics_to_log['kl_loss'] = losses['kl']
         if 'vq' in losses:

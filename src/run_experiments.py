@@ -83,7 +83,8 @@ def run_experiment(args):
         log_every_n_steps=1,
         callbacks=[
             ModelCheckpoint(monitor="val/loss", mode="min", save_last=True)
-        ]
+        ],
+        precision="bf16-mixed",
     )
     
     try:

@@ -36,6 +36,92 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         
         return pc, labels
 
+    def __init__(self, cfg):
+        super().__init__(cfg)
+        
+        # Augmentation parameters for ModelNet experiments
+        self.aug_noise_scale = 0.0
+        self.aug_rotation_scale = 0.0
+        if hasattr(cfg, 'augmentation'):
+            self.aug_noise_scale = cfg.augmentation.noise_scale
+            self.aug_rotation_scale = cfg.augmentation.rotation_scale
+
+    def _apply_augmentations(self, pc, labels):
+        """Apply noise and rotation augmentations."""
+        # Noise
+        if self.aug_noise_scale > 0:
+            noise = torch.randn_like(pc) * self.aug_noise_scale
+            pc = pc + noise
+        
+        # Rotation
+        if self.aug_rotation_scale > 0:
+            # Generate random rotations
+            B = pc.shape[0]
+            rand_mat = torch.randn(B, 3, 3, device=pc.device, dtype=pc.dtype)
+            q, r = torch.linalg.qr(rand_mat)
+            d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
+            q *= d.unsqueeze(-1)
+            # Ensure det is 1 (rotation, not reflection)
+            det = torch.det(q)
+            mask = det < 0
+            if mask.any():
+                q[mask, :, 0] *= -1
+            
+            rot_aug = q
+            
+            # Apply rotation
+            pc = (rot_aug @ pc.transpose(1, 2)).transpose(1, 2).contiguous()
+            
+            # Update ground truth orientation
+            if labels.get("orientation") is None:
+                # If no orientation exists, assume identity (input was canonical)
+                labels["orientation"] = torch.eye(3, device=pc.device, dtype=pc.dtype).unsqueeze(0).expand(pc.shape[0], -1, -1)
+            
+            # New orientation = R_aug @ Old_orientation
+            labels["orientation"] = rot_aug @ labels["orientation"]
+                
+        return pc, labels
+
+    def _compute_losses(self, recon, cano, rot, pc, inv_z, vq_loss=0.0, labels=None):
+        """Override to add new metrics for ModelNet experiments."""
+        # Call parent to get base losses
+        losses, sinkhorn_blur = super()._compute_losses(recon, cano, rot, pc, inv_z, vq_loss)
+        
+        from src.utils.spd_utils import to_float32
+        from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
+        
+        recon_f32, cano_f32, pc_f32 = to_float32(recon, cano, pc)
+        
+        # Add new metrics within no_grad context
+        with torch.no_grad():
+            # "Before rotation" metrics
+            losses['emd_pred_canonical_vs_input'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+            losses['chamfer_pred_canonical_vs_input'], _ = chamfer_distance(cano_f32, pc_f32)
+
+            if labels is not None:
+                gt_rot = labels.get("orientation")
+                
+                # If no orientation provided, assume identity (input is canonical)
+                if gt_rot is None:
+                    B = pc_f32.shape[0]
+                    gt_rot = torch.eye(3, device=self.device, dtype=torch.float32).unsqueeze(0).expand(B, -1, -1)
+                else:
+                    gt_rot = gt_rot.to(device=self.device, dtype=torch.float32)
+                
+                # pc_unrotated_gt = R_gt^T @ pc (The original object in canonical frame)
+                pc_unrotated_gt = (gt_rot.transpose(1, 2) @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
+                
+                # Pred Canonical vs GT Canonical
+                losses['emd_pred_canonical_vs_gt_canonical'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_unrotated_gt, blur=sinkhorn_blur)
+                losses['chamfer_pred_canonical_vs_gt_canonical'], _ = chamfer_distance(cano_f32, pc_unrotated_gt)
+                
+                # Rotation Correctness
+                if rot is not None:
+                    pc_derotated = (rot.transpose(1, 2).float() @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
+                    losses['rot_correctness'], _ = chamfer_distance(pc_derotated, pc_unrotated_gt)
+        
+        return losses, sinkhorn_blur
+
     def _compute_kabsch_consistency(self, cano, pc, rot):
         """
         Compute consistency between predicted rotation and Kabsch rotation
@@ -58,6 +144,9 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         pc, labels = self._unpack_batch(batch)
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
 
+        if stage == "train":
+            pc, labels = self._apply_augmentations(pc, labels)
+
         # Forward pass
         inv_z, recon, cano, rot, vq_loss = self(pc)
 
@@ -65,8 +154,8 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         if stage in self._supervised_cache:
             self._cache_supervised_batch(stage, inv_z, labels, recon, cano, rot, pc)
 
-        # Compute all losses
-        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss)
+        # Compute all losses (calls overridden _compute_losses with new metrics)
+        losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss, labels=labels)
 
         # Build total loss
         total_loss = losses['recon'] + self.ortho_scale * losses['ortho']
@@ -81,8 +170,16 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             'loss': total_loss,
             f'{self.loss_name}_loss': losses['recon'],
             'emd': losses['emd_after'],
+            'emd_before_rot': losses.get('emd_pred_canonical_vs_input', 0.0),
+            'chamfer_before_rot': losses.get('chamfer_pred_canonical_vs_input', 0.0),
             'ortho': losses['ortho'],
         }
+        if 'emd_pred_canonical_vs_gt_canonical' in losses:
+            metrics_to_log['emd_canonical_gt'] = losses['emd_pred_canonical_vs_gt_canonical']
+        if 'chamfer_pred_canonical_vs_gt_canonical' in losses:
+            metrics_to_log['chamfer_canonical_gt'] = losses['chamfer_pred_canonical_vs_gt_canonical']
+        if 'rot_correctness' in losses:
+            metrics_to_log['rot_correctness'] = losses['rot_correctness']
         if 'kl' in losses:
             metrics_to_log['kl_loss'] = losses['kl']
         if 'vq' in losses:

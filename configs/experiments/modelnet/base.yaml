@@ -14,14 +14,14 @@ swa_epoch_start: 50
 epochs: 600
 rotation_mode: "vn_rotation_head"
 load_supervised_checkpoint: False
-loss: "chamfer"
+loss: "chamfer+sinkhorn"
 max_supervised_samples: 2048
 max_test_samples: 1000
 enable_expensive_metrics: True
 
 augmentation:
-  noise_scale: 0.05
-  rotation_scale: 0.5
+  noise_scale: 0.02  # Disabled by default
+  rotation_scale: 1.0  # Disabled by default
 
 data:
   data_path: "datasets/ModelNet40"
@@ -29,19 +29,26 @@ data:
   num_points: 512
   sampling_method: "fps"
 
-encoder:
-  name: "PnE_VN"
+# encoder:
+#   name: "VN_DGCNN_Refined"
+#   kwargs:
+#     latent_size: 240
+#     n_knn: 20
+#     pooling: "mean"
+
+encoder: 
+  name: VN_DGCNN_Refined # PnE_VN
   kwargs:
-    latent_size: 240
-    n_knn: 20
-    pooling: "mean"
+    latent_size: ${latent_size}
+    feature_dims: [64, 128, 128, 256, 512]
+
 
 decoder:
   name: "Folding"
   kwargs:
     num_points: 512
-    latent_size: 240
-    hidden_dim: 512
+    latent_size: ${latent_size}
+    hidden_dim: 720
 
 rot_net:
   name: "vn_rotation_head"
