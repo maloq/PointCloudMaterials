@@ -1,0 +1,5 @@
+# Experiment 0: Baseline (Single Class)
+# Class: airplane
+
+data:
+  classes: ["airplane"]

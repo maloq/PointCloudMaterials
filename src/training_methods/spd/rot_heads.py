@@ -13,68 +13,41 @@ from src.models.autoencoders.encoders.vn import VNLinearLeakyReLU, VNLinear, VNM
 
 def gram_schmidt_rotation(vectors: torch.Tensor) -> torch.Tensor:
     """
-    Converts 2 vectors (B, 2, 3) into a Rotation Matrix (B, 3, 3)
-    using Gram-Schmidt orthogonalization.
-    v1 becomes the X-axis (or first col), v2 helps define the Y-axis.
+    Converts (B, 2, 3) vectors into a Rotation Matrix (B, 3, 3).
+    v1 -> X-axis, v2 -> defines XY plane.
     """
-    v1 = vectors[:, 0, :]  # (B, 3)
-    v2 = vectors[:, 1, :]  # (B, 3)
+    v1 = vectors[:, 0, :]
+    v2 = vectors[:, 1, :]
 
-    # Normalize v1 -> x_axis
     x_axis = F.normalize(v1, dim=-1, eps=1e-6)
-
-    # Project v2 onto plane perpendicular to v1
-    # v2_new = v2 - (v2 . x_axis) * x_axis
+    
     dot = (v2 * x_axis).sum(dim=-1, keepdim=True)
     y_axis = v2 - dot * x_axis
     y_axis = F.normalize(y_axis, dim=-1, eps=1e-6)
 
-    # z_axis = x cross y
     z_axis = torch.cross(x_axis, y_axis, dim=-1)
 
-    # Stack columns
-    R = torch.stack([x_axis, y_axis, z_axis], dim=-1) # (B, 3, 3)
-    return R
+    return torch.stack([x_axis, y_axis, z_axis], dim=-1)
 
 
 class VNRotationHead(nn.Module):
     """
     Strictly Equivariant Rotation Head.
-    Uses Vector Neurons to reduce features to 2 vectors, then builds R.
+    consumes (B, C, 3) equivariant features and produces (B, 3, 3) Rotation Matrix.
     """
     def __init__(self, in_features: int, hidden: int = 128, **kwargs):
         super().__init__()
-        
         in_channels = in_features // 3
-        hidden_channels = hidden
-
-        # Reduce equivariant features down to 2 vectors per sample
         self.net = nn.Sequential(
-            VNLinearLeakyReLU(in_channels, hidden_channels, dim=3),
-            VNLinearLeakyReLU(hidden_channels, hidden_channels, dim=3),
-            # Final projection to exactly 2 vectors (the "basis" candidates)
-            VNLinear(hidden_channels, 2) 
+            VNLinearLeakyReLU(in_channels, hidden, dim=3, use_batchnorm=False),
+            VNLinearLeakyReLU(hidden, hidden, dim=3, use_batchnorm=False),
+            VNLinear(hidden, 2) 
         )
 
     def forward(self, eq_z: torch.Tensor) -> torch.Tensor:
-        """
-        Args:
-            eq_z: (B, C, 3) - The pooled equivariant embedding from Encoder
-        Returns:
-            R: (B, 3, 3) - Rotation matrix
-        """
-        # eq_z is (B, C, 3). VN layers expect (B, C, 3) or (B, 1, C, 3) depending on impl.
-        # Based on your vn.py, VNLinear expects (B, C, 3).
-        
-        # 1. Predict 2 vectors using VN layers
-        # Output shape: (B, 2, 3)
-        vectors = self.net(eq_z)
-        
-        # 2. Gram-Schmidt to get valid Rotation Matrix
-        R = gram_schmidt_rotation(vectors)
-        
-        return R
-
+        # eq_z: (B, C, 3)
+        vectors = self.net(eq_z) # (B, 2, 3)
+        return gram_schmidt_rotation(vectors)
 
 def sixd_to_so3(x: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
     """

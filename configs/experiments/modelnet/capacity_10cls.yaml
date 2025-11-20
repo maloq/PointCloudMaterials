@@ -1,0 +1,4 @@
+# Experiment 3: Capacity (10 classes)
+
+data:
+  classes: ["chair", "airplane", "car", "lamp", "table", "bottle", "sofa", "monitor", "bed", "bench"]
