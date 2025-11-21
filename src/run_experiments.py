@@ -13,8 +13,14 @@ sys.path.append(os.getcwd())
 
 from src.data_utils.modelnet_loader import ModelNetDataModule
 from src.training_methods.spd.spd_experiments_module import SPDExperimentsModule
-torch.set_float32_matmul_precision('medium')
+torch.set_float32_matmul_precision('high')
 from src.utils.visualization import visualize_reconstructions
+
+def update_config_for_fast_data(cfg):
+    """Update config to use fast data path if not already set."""
+    if not hasattr(cfg.data, 'fast_data_path'):
+        cfg.data.fast_data_path = 'datasets/ModelNet40_fast'
+    return cfg
 
 def load_config(experiment_name, n_classes=None):
     base_cfg = OmegaConf.load("configs/experiments/modelnet/base.yaml")
@@ -59,8 +65,18 @@ def run_experiment(args):
     print(f"Running Experiment: {exp_name}")
     print(f"Classes: {cfg.data.classes}")
 
-    # Initialize Data Module
-    dm = ModelNetDataModule(cfg)
+    # Update config for fast data if needed
+    if not args.slow_data:
+        cfg = update_config_for_fast_data(cfg)
+
+    # Initialize Data Module - use fast loader by default
+    if args.slow_data:
+        print("Using Original Data Loader")
+        dm = ModelNetDataModule(cfg)
+    else:
+        from src.data_utils.modelnet_fast_loader import ModelNetFastDataModule
+        print("Using Fast Data Loader")
+        dm = ModelNetFastDataModule(cfg)
     
     # Initialize Model
     model = SPDExperimentsModule(cfg)
@@ -69,7 +85,7 @@ def run_experiment(args):
     logger = WandbLogger(project="spd_modelnet_experiments", name=exp_name, offline=args.dry_run)
     
     # Trainer
-    num_devices = 2
+    num_devices = 4
     trainer = pl.Trainer(
         max_epochs=cfg.max_epochs,
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
@@ -79,12 +95,12 @@ def run_experiment(args):
         limit_train_batches=limit_train_batches,
         limit_val_batches=limit_val_batches,
         limit_test_batches=limit_val_batches,
-        check_val_every_n_epoch=1,
+        check_val_every_n_epoch=10,
         log_every_n_steps=1,
         callbacks=[
             ModelCheckpoint(monitor="val/loss", mode="min", save_last=True)
         ],
-        precision="bf16-mixed",
+        precision="32-true",
     )
     
     try:
@@ -104,7 +120,6 @@ def run_experiment(args):
         except Exception as e:
             print(f"Failed to generate visualizations: {e}")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment", type=str, required=True, 
@@ -114,6 +129,8 @@ if __name__ == "__main__":
                         help="Number of classes for capacity experiment (3, 5, 10, 20)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Run a short dry run for verification")
+    parser.add_argument("--slow-data", action="store_true",
+                        help="Use the original slow dataset loader (default: use fast pre-converted dataset)")
     
     args = parser.parse_args()
     run_experiment(args)

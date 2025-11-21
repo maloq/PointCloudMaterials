@@ -291,7 +291,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         elif vq_loss > 0:
             losses['vq'] = torch.tensor(vq_loss, device=self.device, dtype=self.dtype)
 
-
+        return losses, sinkhorn_blur
 
 
     def _step(self, batch, batch_idx, stage: str):
@@ -321,7 +321,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             'loss': total_loss,
             f'{self.loss_name}_loss': losses['recon'],
             'emd': losses['emd_after'],
-            'emd_before_rot': losses['emd_pred_canonical_vs_input'],
+            'emd_before_rot': losses['emd_before'],
             'chamfer': losses['chamfer_after'],
             'chamfer_before_rot': losses['chamfer_before'],
             'ortho': losses['ortho'],

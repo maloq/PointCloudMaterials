@@ -1,17 +1,17 @@
 # Base configuration for ModelNet40 experiments
-batch_size: 128
+batch_size: 32
 num_workers: 6
 max_epochs: 600
-latent_size: 240
-ortho_scale: 1.0
-kl_latent_loss_scale: 0.01
-learning_rate: 0.004
+latent_size: 420
+ortho_scale: 0.0
+kl_latent_loss_scale: 0.0
+learning_rate: 0.0005
 decay_rate: 1e-4
 scheduler_name: "Cosine"
 scheduler_gamma: 0.5
 enable_swa: False
 swa_epoch_start: 50
-epochs: 600
+epochs: ${max_epochs}
 rotation_mode: "vn_rotation_head"
 load_supervised_checkpoint: False
 loss: "chamfer+sinkhorn"
@@ -20,13 +20,13 @@ max_test_samples: 1000
 enable_expensive_metrics: True
 
 augmentation:
-  noise_scale: 0.02  # Disabled by default
-  rotation_scale: 1.0  # Disabled by default
+  noise_scale: 0.01  
+  rotation_scale: 1.0
 
 data:
   data_path: "datasets/ModelNet40"
   metadata_file: "datasets/metadata_modelnet40.csv"
-  num_points: 512
+  num_points: 1600
   sampling_method: "fps"
 
 # encoder:
@@ -35,20 +35,24 @@ data:
 #     latent_size: 240
 #     n_knn: 20
 #     pooling: "mean"
+#     feature_dims: [64, 64, 128, 256, 512]
 
 encoder: 
   name: VN_DGCNN_Refined # PnE_VN
   kwargs:
     latent_size: ${latent_size}
-    feature_dims: [64, 128, 128, 256, 512]
+    feature_dims: [128, 128, 256, 512, 1024]
+    pooling: "max"
 
 
 decoder:
-  name: "Folding"
+  name: "FoldingTwoStepAttn"
   kwargs:
-    num_points: 512
+    num_points: ${data.num_points}
     latent_size: ${latent_size}
-    hidden_dim: 720
+    hidden_dim: 512
+    attn_dim: 256
+    R_att: 0.30
 
 rot_net:
   name: "vn_rotation_head"

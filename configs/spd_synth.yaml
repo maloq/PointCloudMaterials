@@ -42,7 +42,7 @@ rot_net:
     hidden: 256
     use_attention: True
 
-rotation_mode: sixd_head
+rotation_mode: vn_rotation_head
 
 loss: sinkhorn
 sinkhorn_blur: 0.05
@@ -63,7 +63,7 @@ swa_epoch_start: 1000
 epochs: 25
 
 gpu: True
-devices: [0, 1]
+devices: [0, 1, 2, 3]
 ddp_find_unused_parameters: False
 log_every_n_steps: 5
 num_workers: 6

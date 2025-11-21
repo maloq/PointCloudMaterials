@@ -102,7 +102,7 @@ class VNMaxPool(nn.Module):
         d = self.map_to_dir(x.transpose(1, -1)).transpose(1, -1)
         dotprod = (x * d).sum(2, keepdim=True)
         idx = dotprod.max(dim=-1, keepdim=False)[1]
-        index_tuple = torch.meshgrid([torch.arange(j) for j in x.size()[:-1]], indexing='ij') + (idx,)
+        index_tuple = torch.meshgrid([torch.arange(j, device=x.device) for j in x.size()[:-1]], indexing='ij') + (idx,)
         return x[index_tuple]
 
 
@@ -640,7 +640,7 @@ class VNDGCNNEncoderRefined(Encoder):
         self.conv5 = VNLinearLeakyReLU(concat_channels, c5, dim=4, negative_slope=0.2, use_batchnorm=use_batchnorm)
 
         if pooling == 'max':
-            self.pool_layer = VNMaxPool(1) # Dummy dim
+            self.pool_layer = VNMaxPool(c5) 
         else:
             self.pool_layer = mean_pool
 
@@ -689,14 +689,8 @@ class VNDGCNNEncoderRefined(Encoder):
 
         # Global Pooling
         if self.pooling == 'max':
-             # VNMaxPool expects (B, C, 3) usually, here we have N points.
-             # We treat N as the dimension to pool over.
-             # Reshape to (B, c5, N, 3) for standard VN pool logic or just use standard logic
-             x_pooled = self.pool_layer(x.transpose(2, 3)).transpose(2, 3) # Pool over N
-             # Note: VNMaxPool implementation provided previously pools dim -1 (3).
-             # We want to pool over N.
-             # Let's stick to Mean Pool for stability with crystals.
-             x_mean = x.mean(dim=-1) # (B, c5, 3)
+             # VNMaxPool pools over the last dimension (N)
+             x_mean = self.pool_layer(x) # (B, c5, 3)
         else:
              x_mean = x.mean(dim=-1) # (B, c5, 3)
 

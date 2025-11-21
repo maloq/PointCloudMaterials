@@ -8,7 +8,7 @@ sys.path.append(os.getcwd())
 from src.training_methods.equivariant_autoencoder.eq_ae_module import EquivariantAutoencoder
 from src.training_methods.spd.train_spd import train_model
 
-torch.set_float32_matmul_precision('medium')
+torch.set_float32_matmul_precision('high')
 
 
 def train(cfg: DictConfig):

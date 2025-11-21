@@ -21,7 +21,7 @@ from src.data_utils.data_module import (
     RealPointCloudDataModule,
     SyntheticPointCloudDataModule,
 )
-torch.set_float32_matmul_precision('medium')
+torch.set_float32_matmul_precision('high')
 
 logger = setup_logging()
 

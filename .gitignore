@@ -3,6 +3,7 @@ log
 lightning_logs
 checkpoints
 output
+spd_modelnet_experiments
 wandb
 .claude
 # Byte-compiled / optimized / DLL files

@@ -8,6 +8,7 @@ from typing import Optional, List, Union
 from src.data_utils.prepare_data import read_off_file, farthest_point_sample, drop_points_farthest
 from concurrent.futures import as_completed
 
+
 class ModelNetDataset(Dataset):
     def __init__(self, 
                  root_dir: str, 
@@ -18,6 +19,7 @@ class ModelNetDataset(Dataset):
                  cache: bool = True,
                  preload: bool = True,
                  sampling_method: str = "fps"):
+
         """
         Args:
             root_dir: Path to ModelNet40 root directory.
@@ -32,6 +34,7 @@ class ModelNetDataset(Dataset):
         self.n_points = n_points
         self.cache = cache
         self.preload = preload
+
         self.sampling_method = sampling_method
         
         # Load metadata
@@ -51,7 +54,9 @@ class ModelNetDataset(Dataset):
         self.idx_to_class = {i: cls for cls, i in self.class_to_idx.items()}
 
         self.data = [None] * len(self.metadata)
+        
         if self.preload:
+
             print(f"Preloading {len(self.metadata)} {split} samples into RAM using {os.cpu_count()} workers...")
             from concurrent.futures import ThreadPoolExecutor
             try:
@@ -75,7 +80,7 @@ class ModelNetDataset(Dataset):
                         self.data[idx] = (torch.zeros((self.n_points, 3)), 0, "error")
             
             print("Preloading complete.")
-        
+
     def _load_sample(self, idx):
         row = self.metadata.iloc[idx]
         rel_path = row['object_path']
@@ -124,27 +129,37 @@ class ModelNetDataset(Dataset):
             return self.data[idx]
         return self._load_sample(idx)
 
+
 class ModelNetDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
         self.cfg = cfg
+
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
         self.data_path = cfg.data.data_path
         self.metadata_file = cfg.data.metadata_file
         self.classes = getattr(cfg.data, 'classes', None)
+        if self.classes is not None:
+            self.classes = list(self.classes)
+
         self.n_points = getattr(cfg.data, 'num_points', 1024)
+
         self.sampling_method = getattr(cfg.data, 'sampling_method', 'fps')
         
     def setup(self, stage=None):
-        self.train_dataset = ModelNetDataset(
-            root_dir=self.data_path,
-            metadata_file=self.metadata_file,
-            split='train',
-            classes=self.classes,
-            n_points=self.n_points,
-            sampling_method=self.sampling_method
-        )
+        # Only create train dataset if not in test stage
+        if stage != 'test':
+            self.train_dataset = ModelNetDataset(
+                root_dir=self.data_path,
+                metadata_file=self.metadata_file,
+                split='train',
+                classes=self.classes,
+                n_points=self.n_points,
+                sampling_method=self.sampling_method
+            )
+        
+        # Always create val/test dataset
         self.val_dataset = ModelNetDataset(
             root_dir=self.data_path,
             metadata_file=self.metadata_file,
@@ -153,14 +168,19 @@ class ModelNetDataModule(pl.LightningDataModule):
             n_points=self.n_points,
             sampling_method=self.sampling_method
         )
+
         self.test_dataset = self.val_dataset
         
-        print(f"ModelNet Train size: {len(self.train_dataset)}")
+        # Print dataset sizes
+        if stage != 'test':
+            print(f"ModelNet Train size: {len(self.train_dataset)}")
         print(f"ModelNet Val/Test size: {len(self.val_dataset)}")
         if self.classes:
             print(f"Classes: {self.classes}")
         else:
-            print(f"Classes: All {len(self.train_dataset.class_to_idx)}")
+            # Get class count from available dataset
+            dataset = self.val_dataset if stage == 'test' else self.train_dataset
+            print(f"Classes: All {len(dataset.class_to_idx)}")
 
     def train_dataloader(self):
         return DataLoader(

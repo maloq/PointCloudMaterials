@@ -12,7 +12,7 @@ from src.utils.logging_config import setup_logging
 from src.training_methods.spd.supervised_encoder_module import SupervisedEncoder
 from src.training_methods.spd.train_spd import train_model
 
-torch.set_float32_matmul_precision('medium')
+torch.set_float32_matmul_precision('high')
 
 logger = setup_logging()
 

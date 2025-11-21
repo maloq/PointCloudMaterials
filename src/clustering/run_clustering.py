@@ -112,11 +112,9 @@ def _best_binary_assignment(cluster_labels: np.ndarray, true_labels: np.ndarray)
 def evaluate_clustering(cluster_labels: np.ndarray, true_labels: np.ndarray) -> dict:
     """Return Accuracy / ARI / NMI together with mapped labels.
 
-    **Note**: Any *noise* points marked as -1 (e.g. by HDBSCAN) are ignored
-    when computing the metrics.
     """
-    keep = cluster_labels != -1
-    if keep.sum() < len(cluster_labels):  # some noise present
+    keep = cluster_labels
+    if keep.sum() < len(cluster_labels):  
         cluster_labels = cluster_labels[keep]
         true_labels = true_labels[keep]
 
