@@ -119,6 +119,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         log_every_n_steps=cfg.log_every_n_steps,
         precision='bf16-mixed',
         benchmark=True,
+        check_val_every_n_epoch=4,
     )
 
     # Reload dataloaders every epoch when curriculum learning is active
@@ -152,7 +153,7 @@ def train(cfg: DictConfig):
     train_model(cfg, ShapePoseDisentanglement)
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth_small')
 def main(cfg: DictConfig):
     train(cfg)
 

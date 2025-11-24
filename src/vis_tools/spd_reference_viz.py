@@ -1,15 +1,40 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 from src.training_methods.spd.eval_spd import load_spd_model
-from src.data_utils.data_load import pc_normalize, SyntheticPointCloudDataset
+from src.data_utils.data_load import SyntheticPointCloudDataset
+
+
+# Color palette for phases
+PHASE_COLORS = {
+    0: "#e41a1c",  # red
+    1: "#377eb8",  # blue
+    2: "#4daf4a",  # green
+    3: "#984ea3",  # purple
+    4: "#ff7f00",  # orange
+    5: "#ffff33",  # yellow
+    6: "#a65628",  # brown
+    7: "#f781bf",  # pink
+}
+
+PHASE_MARKERS = {
+    0: "o",  # circle
+    1: "s",  # square
+    2: "^",  # triangle up
+    3: "D",  # diamond
+    4: "v",  # triangle down
+    5: "p",  # pentagon
+    6: "h",  # hexagon
+    7: "*",  # star
+}
 
 
 def extract_actual_dataset_samples(
@@ -36,107 +61,58 @@ def extract_actual_dataset_samples(
     return phase_samples
 
 
-def visualize_reference_structures(
+def visualize_dataset_samples(
     checkpoint_path: str,
-    reference_structures_path: str,
     output_path: Path,
+    dataset: SyntheticPointCloudDataset,
     cuda_device: int = 0,
-    dataset: SyntheticPointCloudDataset | None = None,
-    compare_with_dataset: bool = True,
+    num_samples_per_phase: int = 2,
 ) -> None:
     """
-    Create visualization of reference structures, their reconstructions, and latent space.
-    Optionally compare with actual dataset samples.
+    Create visualization of dataset samples and their reconstructions.
     """
     print(f"Loading checkpoint from {checkpoint_path}")
     model, cfg, device = load_spd_model(checkpoint_path, cuda_device=cuda_device)
     model.eval()
 
-    radius = float(cfg.data.radius) if hasattr(cfg.data, "radius") else None
-    print(f"Model training radius: {radius}")
-    if radius is None:
-        print("WARNING: Could not determine radius from config. Using max_norm normalization.")
-
-    print(f"Loading reference point clouds from {reference_structures_path}")
-    ref_point_clouds = np.load(reference_structures_path, allow_pickle=True).item()
-
-    if not isinstance(ref_point_clouds, dict) or len(ref_point_clouds) == 0:
-        print("No reference point clouds found in the provided file")
-        return
-
     structure_names: List[str] = []
     point_clouds: List[np.ndarray] = []
-    source_types: List[str] = []
+    phase_indices: List[int] = []
 
-    print("\n=== Processing Reference Structures ===")
-    print("APPLYING FIX: Normalizing by radius (not max_norm) to match dataset preprocessing")
-    for name in sorted(ref_point_clouds.keys()):
-        if name.startswith("intermediate_"):
-            continue
+    print("\n=== Extracting Dataset Samples ===")
+    dataset_samples = extract_actual_dataset_samples(dataset, num_samples_per_phase=num_samples_per_phase)
 
-        pc = np.asarray(ref_point_clouds[name], dtype=float)
-        if pc.ndim != 2 or pc.shape[1] != 3:
-            print(f"    Warning: Invalid point cloud shape for {name}, skipping")
-            continue
-        if len(pc) == 0:
-            print(f"    Warning: Empty point cloud for {name}, skipping")
-            continue
+    # Get phase name to index mapping
+    phase_name_to_idx = {name: idx for idx, name in enumerate(sorted(dataset_samples.keys()))}
 
-        mean_before = pc.mean(axis=0)
-        max_norm_before = np.max(np.linalg.norm(pc, axis=1))
-        print(f"  {name} [BEFORE]: mean={mean_before}, max_norm={max_norm_before:.4f}")
+    for phase_name, samples_list in sorted(dataset_samples.items()):
+        for idx, sample_pc in enumerate(samples_list):
+            mean_ds = sample_pc.mean(axis=0)
+            max_norm_ds = np.max(np.linalg.norm(sample_pc, axis=1))
+            print(f"  {phase_name}_sample{idx}: mean={mean_ds}, max_norm={max_norm_ds:.4f}")
 
-        pc_centered = pc - pc.mean(axis=0, keepdims=True)
+            point_clouds.append(sample_pc)
+            structure_names.append(f"{phase_name}_{idx}")
+            phase_indices.append(phase_name_to_idx[phase_name])
 
-        if radius is not None:
-            pc_normalized = pc_normalize(pc_centered, radius)
-        else:
-            pc_normalized = pc_normalize(pc_centered, None)
-
-        mean_after = pc_normalized.mean(axis=0)
-        max_norm_after = np.max(np.linalg.norm(pc_normalized, axis=1))
-        scale_factor = max_norm_before / max_norm_after if max_norm_after > 0 else 1.0
-        print(f"  {name} [AFTER]:  mean={mean_after}, max_norm={max_norm_after:.4f}, scale_factor={scale_factor:.4f}")
-
-        point_clouds.append(pc_normalized)
-        structure_names.append(f"ref_{name}")
-        source_types.append("reference")
+    print(f"Extracted {len(point_clouds)} dataset samples")
 
     if len(point_clouds) == 0:
         print("No valid structures to visualize")
         return
 
-    print(f"\nLoaded {len(structure_names)} reference structures")
-
-    if compare_with_dataset and dataset is not None:
-        print("\n=== Extracting Actual Dataset Samples ===")
-        dataset_samples = extract_actual_dataset_samples(dataset, num_samples_per_phase=2)
-
-        for phase_name, samples_list in sorted(dataset_samples.items()):
-            for idx, sample_pc in enumerate(samples_list):
-                mean_ds = sample_pc.mean(axis=0)
-                max_norm_ds = np.max(np.linalg.norm(sample_pc, axis=1))
-                print(f"  {phase_name}_sample{idx}: mean={mean_ds}, max_norm={max_norm_ds:.4f}")
-
-                point_clouds.append(sample_pc)
-                structure_names.append(f"ds_{phase_name}_{idx}")
-                source_types.append("dataset")
-
-        print(f"Added {sum(len(v) for v in dataset_samples.values())} dataset samples")
-
     print(f"\nTotal structures to process: {len(structure_names)}")
 
-    latents_list: List[np.ndarray] = []
     reconstructions_list: List[np.ndarray] = []
     canonicals_list: List[np.ndarray] = []
     originals_list: List[np.ndarray] = []
     recon_names: List[str] = []
-    recon_source_types: List[str] = []
+    recon_phase_indices: List[int] = []
 
     print("\n=== Running Model Inference ===")
     with torch.no_grad():
-        for name, pc, source_type in zip(structure_names, point_clouds, source_types):
-            print(f"  Processing {name} ({source_type})...")
+        for name, pc, phase_idx in zip(structure_names, point_clouds, phase_indices):
+            print(f"  Processing {name}...")
 
             mean_pre = pc.mean(axis=0)
             max_norm_pre = np.max(np.linalg.norm(pc, axis=1))
@@ -154,12 +130,11 @@ def visualize_reference_structures(
                 max_norm_recon = np.max(np.linalg.norm(recon_np, axis=1))
                 print(f"    Reconstruction: mean={mean_recon}, max_norm={max_norm_recon:.4f}")
 
-                latents_list.append(inv_z.cpu().numpy()[0])
                 reconstructions_list.append(recon_np)
                 canonicals_list.append(cano_np)
                 originals_list.append(pc)
                 recon_names.append(name)
-                recon_source_types.append(source_type)
+                recon_phase_indices.append(phase_idx)
             except Exception as e:
                 print(f"    Warning: Model inference failed for {name}: {e}")
                 import traceback
@@ -174,7 +149,7 @@ def visualize_reference_structures(
         print("No structures to visualize")
         return
 
-    fig = plt.figure(figsize=(4 * n_structures, 16))
+    fig = plt.figure(figsize=(4 * n_structures, 12))
 
     border_width = 72.0 / fig.dpi
     fig.patch.set_facecolor("white")
@@ -188,27 +163,24 @@ def visualize_reference_structures(
     else:
         viz_limit = 0.6
 
-    color_map = {"reference": "blue", "dataset": "green"}
-
-    for col, (name, pc, source_type) in enumerate(zip(recon_names, originals_list, recon_source_types)):
-        ax = fig.add_subplot(4, n_structures, col + 1, projection="3d")
+    for col, (name, pc, phase_idx) in enumerate(zip(recon_names, originals_list, recon_phase_indices)):
+        ax = fig.add_subplot(3, n_structures, col + 1, projection="3d")
+        color = PHASE_COLORS.get(phase_idx, "gray")
 
         ax.scatter(
             pc[:, 0], pc[:, 1], pc[:, 2],
             s=25, alpha=0.9,
             edgecolors="black",
             linewidths=0.3,
-            c=color_map.get(source_type, "gray"),
+            c=color,
         )
-        display_name = name.replace("ref_", "").replace("ds_", "")
-        source_label = "REF" if source_type == "reference" else "DS"
-        ax.set_title(f"[{source_label}] {display_name}\n(Original)", fontsize=8)
+        ax.set_title(f"{name}\n(Original)", fontsize=8)
         ax.set_xlim(-viz_limit, viz_limit)
         ax.set_ylim(-viz_limit, viz_limit)
         ax.set_zlim(-viz_limit, viz_limit)
 
-    for col, (name, cano, source_type) in enumerate(zip(recon_names, canonicals_list, recon_source_types)):
-        ax = fig.add_subplot(4, n_structures, n_structures + col + 1, projection="3d")
+    for col, (name, cano) in enumerate(zip(recon_names, canonicals_list)):
+        ax = fig.add_subplot(3, n_structures, n_structures + col + 1, projection="3d")
 
         ax.scatter(
             cano[:, 0], cano[:, 1], cano[:, 2],
@@ -218,15 +190,13 @@ def visualize_reference_structures(
             c="purple",
         )
 
-        display_name = name.replace("ref_", "").replace("ds_", "")
-        source_label = "REF" if source_type == "reference" else "DS"
-        ax.set_title(f"[{source_label}] {display_name}\n(Canonical)", fontsize=8)
+        ax.set_title(f"{name}\n(Canonical)", fontsize=8)
         ax.set_xlim(-viz_limit, viz_limit)
         ax.set_ylim(-viz_limit, viz_limit)
         ax.set_zlim(-viz_limit, viz_limit)
 
-    for col, (name, recon, source_type) in enumerate(zip(recon_names, reconstructions_list, recon_source_types)):
-        ax = fig.add_subplot(4, n_structures, 2 * n_structures + col + 1, projection="3d")
+    for col, (name, recon) in enumerate(zip(recon_names, reconstructions_list)):
+        ax = fig.add_subplot(3, n_structures, 2 * n_structures + col + 1, projection="3d")
 
         ax.scatter(
             recon[:, 0], recon[:, 1], recon[:, 2],
@@ -236,60 +206,135 @@ def visualize_reference_structures(
             c="orange",
         )
 
-        display_name = name.replace("ref_", "").replace("ds_", "")
-        source_label = "REF" if source_type == "reference" else "DS"
-        ax.set_title(f"[{source_label}] {display_name}\n(Reconstruction)", fontsize=8)
+        ax.set_title(f"{name}\n(Reconstruction)", fontsize=8)
         ax.set_xlim(-viz_limit, viz_limit)
         ax.set_ylim(-viz_limit, viz_limit)
         ax.set_zlim(-viz_limit, viz_limit)
 
-    if len(latents_list) > 1:
-        latents_array = np.array(latents_list)
-
-        pca = PCA(n_components=min(3, latents_array.shape[1]))
-        latents_3d = pca.fit_transform(latents_array)
-
-        if latents_3d.shape[1] < 3:
-            latents_3d = np.pad(
-                latents_3d,
-                ((0, 0), (0, 3 - latents_3d.shape[1])),
-                mode="constant",
-            )
-
-        ax = fig.add_subplot(4, n_structures, 3 * n_structures + n_structures // 2 + 1, projection="3d")
-
-        for name, latent_pt, source_type in zip(recon_names[:len(latents_3d)], latents_3d, recon_source_types):
-            color = color_map.get(source_type, "gray")
-            marker = "o" if source_type == "reference" else "^"
-            display_name = name.replace("ref_", "").replace("ds_", "")
-
-            ax.scatter(
-                latent_pt[0], latent_pt[1], latent_pt[2],
-                s=200, alpha=0.9,
-                edgecolors="black",
-                linewidths=2,
-                c=color,
-                marker=marker,
-                label=display_name,
-            )
-
-        ax.set_title("Latent Space (PCA)\nBlue=Reference, Green=Dataset", fontsize=10)
-        ax.legend(loc="upper left", fontsize=6, ncol=2)
-        ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%})")
-        ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%})" if len(pca.explained_variance_ratio_) > 1 else "PC2")
-        ax.set_zlabel(f"PC3 ({pca.explained_variance_ratio_[2]:.1%})" if len(pca.explained_variance_ratio_) > 2 else "PC3")
-
-    title = "Reference Structure Analysis"
-    if compare_with_dataset and dataset is not None:
-        title += " (with Dataset Samples)"
-    fig.suptitle(title, fontsize=16, fontweight="bold")
+    fig.suptitle("Dataset Samples Analysis", fontsize=16, fontweight="bold")
     fig.tight_layout()
     fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
 
     print(f"\nVisualization saved to {output_path}")
-    print("Legend: REF=Reference structure, DS=Dataset sample")
-    print("Colors: Blue=Reference, Green=Dataset, Purple=Canonical, Orange=Reconstruction")
+    print("Colors: Phase-colored=Original, Purple=Canonical, Orange=Reconstruction")
 
 
-__all__ = ["visualize_reference_structures"]
+def visualize_latent_space(
+    latents: np.ndarray,
+    phase_labels: np.ndarray,
+    output_path: Path,
+    phase_names: Optional[Dict[int, str]] = None,
+    tsne_max_samples: int = 20000,
+    random_state: int = 42,
+) -> None:
+    """
+    Create PCA and t-SNE visualizations of the latent space.
+    
+    Args:
+        latents: Latent representations (N, D)
+        phase_labels: Phase labels for each sample (N,)
+        output_path: Path to save the visualization
+        phase_names: Optional mapping from phase index to name
+        tsne_max_samples: Maximum samples for t-SNE (default 20k)
+        random_state: Random seed for reproducibility
+    """
+    print(f"\n=== Visualizing Latent Space ===")
+    print(f"Total samples: {len(latents)}, Latent dim: {latents.shape[1]}")
+    
+    unique_phases = np.unique(phase_labels)
+    n_phases = len(unique_phases)
+    print(f"Found {n_phases} unique phases: {unique_phases}")
+    
+    if phase_names is None:
+        phase_names = {i: f"Phase {i}" for i in unique_phases}
+    
+    # PCA on full dataset
+    print("Computing PCA...")
+    pca = PCA(n_components=min(3, latents.shape[1]))
+    latents_pca = pca.fit_transform(latents)
+    
+    if latents_pca.shape[1] < 2:
+        latents_pca = np.pad(latents_pca, ((0, 0), (0, 2 - latents_pca.shape[1])), mode="constant")
+    
+    print(f"PCA explained variance: {pca.explained_variance_ratio_}")
+    
+    # t-SNE on subset
+    n_samples = len(latents)
+    if n_samples > tsne_max_samples:
+        print(f"Subsampling to {tsne_max_samples} samples for t-SNE...")
+        rng = np.random.default_rng(random_state)
+        subset_idx = rng.choice(n_samples, size=tsne_max_samples, replace=False)
+        latents_subset = latents[subset_idx]
+        phase_labels_subset = phase_labels[subset_idx]
+    else:
+        subset_idx = np.arange(n_samples)
+        latents_subset = latents
+        phase_labels_subset = phase_labels
+    
+    print(f"Computing t-SNE on {len(latents_subset)} samples...")
+    tsne = TSNE(n_components=2, random_state=random_state, perplexity=min(30, len(latents_subset) - 1))
+    latents_tsne = tsne.fit_transform(latents_subset)
+    
+    # Create figure with 2 subplots
+    fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+    
+    # PCA plot (2D)
+    ax_pca = axes[0]
+    for phase_idx in unique_phases:
+        mask = phase_labels == phase_idx
+        color = PHASE_COLORS.get(phase_idx % len(PHASE_COLORS), "gray")
+        marker = PHASE_MARKERS.get(phase_idx % len(PHASE_MARKERS), "o")
+        label = phase_names.get(phase_idx, f"Phase {phase_idx}")
+        
+        ax_pca.scatter(
+            latents_pca[mask, 0],
+            latents_pca[mask, 1],
+            c=color,
+            marker=marker,
+            s=15,
+            alpha=0.6,
+            label=label,
+            edgecolors="none",
+        )
+    
+    ax_pca.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%})")
+    ax_pca.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%})" if len(pca.explained_variance_ratio_) > 1 else "PC2")
+    ax_pca.set_title(f"PCA of Latent Space\n({len(latents)} samples)", fontsize=12, fontweight="bold")
+    ax_pca.legend(loc="best", fontsize=9)
+    ax_pca.grid(True, alpha=0.3)
+    
+    # t-SNE plot
+    ax_tsne = axes[1]
+    for phase_idx in unique_phases:
+        mask = phase_labels_subset == phase_idx
+        color = PHASE_COLORS.get(phase_idx % len(PHASE_COLORS), "gray")
+        marker = PHASE_MARKERS.get(phase_idx % len(PHASE_MARKERS), "o")
+        label = phase_names.get(phase_idx, f"Phase {phase_idx}")
+        
+        ax_tsne.scatter(
+            latents_tsne[mask, 0],
+            latents_tsne[mask, 1],
+            c=color,
+            marker=marker,
+            s=15,
+            alpha=0.6,
+            label=label,
+            edgecolors="none",
+        )
+    
+    ax_tsne.set_xlabel("t-SNE 1")
+    ax_tsne.set_ylabel("t-SNE 2")
+    ax_tsne.set_title(f"t-SNE of Latent Space\n({len(latents_subset)} samples)", fontsize=12, fontweight="bold")
+    ax_tsne.legend(loc="best", fontsize=9)
+    ax_tsne.grid(True, alpha=0.3)
+    
+    fig.suptitle("Latent Space Visualization", fontsize=14, fontweight="bold")
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    
+    print(f"Latent space visualization saved to {output_path}")
+
+
+__all__ = ["visualize_dataset_samples", "visualize_latent_space"]

@@ -21,7 +21,7 @@ from src.data_utils.data_load import SyntheticPointCloudDataset
 from src.data_utils.prepare_data import get_regular_samples
 from src.training_methods.spd.eval_spd import load_spd_model
 from src.vis_tools.spd_clustering_viz import create_visualization
-from src.vis_tools.spd_reference_viz import visualize_reference_structures
+from src.vis_tools.spd_reference_viz import visualize_dataset_samples, visualize_latent_space
 
 
 def load_synthetic_environment_data(env_dir: str) -> Tuple[np.ndarray, Dict[str, Any]]:
@@ -250,16 +250,14 @@ def perform_clustering(
 
 def main():
     # Configuration
-    checkpoint_path = "output/2025-11-19/15-32-07/synth_SPD_VQMoE_l96_P80_sinkhorn_512-epoch=24.ckpt"
+    checkpoint_path = "output/2025-11-24/19-57-52/synth_SPD_VQMoE_l240_P280_sinkhorn+chamfer_256-epoch=59.ckpt"
     n_phases = 3
     output_dir = "output/spd_analysis"
     cache_dir = "output/spd_analysis/predictions_cache"
     max_samples = None
     run_hdbscan = False
     dbscan_max_samples = 100000  # Prevent DBSCAN from loading all samples into memory
-    reference_structures_path = "output/synthetic_data/baseline_box_no_perturb/reference_point_clouds.npy"
-    compare_with_dataset = True
-    max_samples_for_comparison = 5000
+    max_samples_for_visualization = 5000
 
     # Extract latents
     print("\n=== Step 1: Extracting latents ===")
@@ -292,24 +290,31 @@ def main():
     )
     print(f"Saved: {output_path / 'clustering_visualization.png'}")
 
-    # Reference structures
-    if reference_structures_path:
-        print("\n=== Step 4: Reference structures ===")
-        dataset_viz = None
+    # Dataset samples visualization
+    print("\n=== Step 4: Dataset samples visualization ===")
+    print(f"Creating dataset for visualization ({max_samples_for_visualization} samples)...")
+    dataset_viz, _ = create_synthetic_dataset_with_coords(
+        get_env_dirs(cfg), cfg, max_samples_for_visualization
+    )
+    print(f"Created dataset with {len(dataset_viz)} samples")
 
-        if compare_with_dataset:
-            print(f"Creating dataset for comparison ({max_samples_for_comparison} samples)...")
-            dataset_viz, _ = create_synthetic_dataset_with_coords(
-                get_env_dirs(cfg), cfg, max_samples_for_comparison
-            )
-            print(f"Created dataset with {len(dataset_viz)} samples")
+    visualize_dataset_samples(
+        checkpoint_path,
+        output_path / "dataset_samples_analysis.png",
+        dataset=dataset_viz,
+        cuda_device=0,
+    )
+    print(f"Saved: {output_path / 'dataset_samples_analysis.png'}")
 
-        visualize_reference_structures(
-            checkpoint_path, reference_structures_path,
-            output_path / "reference_structures_analysis.png",
-            cuda_device=0, dataset=dataset_viz, compare_with_dataset=compare_with_dataset,
-        )
-        print(f"Saved: {output_path / 'reference_structures_analysis.png'}")
+    # Latent space visualization (PCA + t-SNE)
+    print("\n=== Step 5: Latent space visualization ===")
+    visualize_latent_space(
+        latents=latents,
+        phase_labels=phases,
+        output_path=output_path / "latent_space_visualization.png",
+        tsne_max_samples=20000,
+    )
+    print(f"Saved: {output_path / 'latent_space_visualization.png'}")
 
     print(f"\n=== Done! All outputs in {output_path} ===")
 

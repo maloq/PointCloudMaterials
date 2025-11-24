@@ -10,7 +10,9 @@ wandb
 __pycache__/
 *.py[cod]
 *$py.class
-
+scpt.py
+cache
+*.png
 # C extensions
 *.so
 

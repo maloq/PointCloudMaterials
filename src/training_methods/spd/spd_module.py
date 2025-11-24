@@ -8,9 +8,9 @@ import wandb
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
+from src.loss.pdist_loss import compute_pdist_loss
 from src.utils.model_utils import load_supervised_checkpoint, find_best_supervised_checkpoint
 from src.loss.reconstruction_loss import kl_latent_regularizer, rotation_geodesic_kabsch_loss
-from src.loss.pdist_loss import pairwise_distance_loss, angle_triad_loss, rdf_loss
 from src.training_methods.spd.rot_heads import build_rot_head, kabsch_rotation
 from src.utils.spd_metrics import (
     compute_embedding_quality_metrics,
@@ -39,14 +39,7 @@ from omegaconf.base import ContainerMetadata
 LOSS_COMPONENTS = (
     "sinkhorn",
     "chamfer",
-    "pairwise_sorted",
-    "pairwise_hist",
-    # "angle_sorted",
-    # "angle_sorted_cos",
-    # "angle_hist",
-    # "angle_hist_cos",
-    # "rdf_pdf",
-    # "rdf_gr",
+    "pdist",
 )
 
 
@@ -93,6 +86,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         self.ortho_scale = cfg.ortho_scale
         self.kl_latent_loss_scale = cfg.kl_latent_loss_scale
+        self.pdist_scale = cfg.pdist_scale if hasattr(cfg, 'pdist_scale') else 1.0
         self._supervised_cache = {
             "train": {"latents": [], "phase": []},
             "val": {"latents": [], "phase": [], "rotations": [], "gt_rotations": []},
@@ -123,21 +117,22 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if component == "chamfer":
             val, _ = chamfer_distance(pred, target)
             return val
-        if component in {"pairwise_sorted", "pairwise_hist"}:
-            mode = "hist" if component.endswith("hist") else "sorted"
-            hist_bins = self._loss_param("pairwise", "hist_bins", 64)
-            hist_sigma = self._loss_param("pairwise", "hist_sigma", None)
-            reduction = self._loss_param("pairwise", "reduction", "mean")
-            return pairwise_distance_loss(
-                pred,
-                target,
-                mode=mode,
-                hist_bins=hist_bins,
-                hist_sigma=hist_sigma,
-                reduction=reduction,
-            )
-
+        if component == "pdist":
+            val = self._compute_pdist(pred, target)
+            return val * self.pdist_scale
         raise ValueError(f"Unsupported reconstruction loss component: {component}")
+    
+    def _compute_pdist(self, pred, target):
+        """Compute pairwise distance loss with configurable parameters from loss_params."""
+        return compute_pdist_loss(
+            pred, target,
+            mode=self._loss_param("pdist", "mode", "sampled"),
+            n_samples=self._loss_param("pdist", "n_samples", 256),
+            k=self._loss_param("pdist", "k", 16),
+            normalize=self._loss_param("pdist", "normalize", True),
+            p=self._loss_param("pdist", "p", 2),
+            squared=self._loss_param("pdist", "squared", False),
+        )
 
     def _reconstruction_loss(self, pred, target, sinkhorn_blur):
         total_loss = None
@@ -281,6 +276,10 @@ class ShapePoseDisentanglement(pl.LightningModule):
             losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32)
+            # Pairwise distance metrics (unscaled, for diagnostics)
+            if "pdist" in self.loss_components:
+                losses['pdist_after'] = self._compute_pdist(recon_f32, pc_f32)
+                losses['pdist_before'] = self._compute_pdist(cano_f32, pc_f32)
 
         if self.kl_latent_loss_scale > 0:
             losses['kl'] = kl_latent_regularizer(inv_z)
@@ -332,6 +331,9 @@ class ShapePoseDisentanglement(pl.LightningModule):
             metrics_to_log['vq_loss'] = losses['vq']
         if sinkhorn_blur is not None:
             metrics_to_log['sinkhorn_blur'] = float(sinkhorn_blur)
+        if 'pdist_after' in losses:
+            metrics_to_log['pdist'] = losses['pdist_after']
+            metrics_to_log['pdist_before_rot'] = losses['pdist_before']
 
         # Log all metrics
         self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'}, batch_size=pc.shape[0])

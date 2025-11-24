@@ -1,0 +1,76 @@
+global:
+  # Box size (Angstroms). 50A is large enough to hold liquid + distinct nuclei.
+  L: 300.0
+  
+  # Target Number Density (atoms/A^3).
+  # Solid Al (FCC, a=4.05) density is ~0.0602.
+  # Liquid Al is ~93% of solid density approx 0.056.
+  rho_target: 0.056
+  
+  # Average Nearest Neighbor Distance (Angstroms).
+  # For Al FCC: a = 4.05 -> d_nn = 4.05 / sqrt(2) = 2.86
+  avg_nn_dist: 2.86
+  
+  # We use 1 "grain" because the grain here is the bulk liquid box 
+  # that contains the nuclei inside it.
+  grain_count: 1
+  
+  # Random Seed for reproducibility
+  random_seed: 12345
+  
+  # Output directory
+  output_dir: "output/Al_crystallization_data"
+
+  # Physics Constraints
+  # Max elastic strain (1.5%) to simulate thermal stress in the nuclei
+  max_elastic_strain: 0.015 
+  
+  # Overlap pruning threshold (Angstroms).
+  # ~60% of NN dist is a safe limit to prevent explosion before MD relaxation.
+  min_physical_dist: 1.7
+
+phases:
+  # --- Phase 1: The Melt (Matrix) ---
+  # This is the main container. It generates a liquid and inserts seeds.
+  aluminum_melt:
+    name: "Al_Melt"
+    phase_type: "liquid_with_nuclei" 
+    chemical_symbol: "Al"
+    
+    structural_params:
+      # Configuration for the nuclei insertion
+      nucleus_count: 2            # Insert 2 distinct nuclei
+      nucleus_radius_min: 6.0     # Min radius (Angstroms) ~ 10-15 atoms
+      nucleus_radius_max: 10.0    # Max radius (Angstroms) ~ 50-60 atoms
+      nucleus_phase: "solid_fcc"  # Must match the key below
+      
+    perturbations:
+      # Thermal noise for the liquid (High temp ~900K)
+      sigma_thermal: 0.25
+
+  # --- Phase 2: The Crystal Nucleus ---
+  # This definition describes what the nuclei look like.
+  solid_fcc:
+    name: "Al_FCC"
+    phase_type: "crystal_fcc"
+    chemical_symbol: "Al"
+    
+    perturbations:
+      # Thermal noise for the solid (nuclei are hot but solid)
+      sigma_thermal: 0.15
+      
+      # Probability of generating a Stacking Fault (Planar Slip).
+      # Al has high Stacking Fault Energy (SFE), so defects are rarer than Cu.
+      # We set a low prob (1%) to teach the model that defects *can* exist.
+      planar_fault_prob: 0.01 
+
+grain_assignment:
+  # We explicitly tell the generator that our single "grain" (the box)
+  # consists of the nucleated liquid phase.
+  mode: "explicit"
+  explicit: 
+    - "aluminum_melt"
+    - "solid_fcc"
+    - "aluminum_melt"
+    - "solid_fcc"
+    - "aluminum_melt"

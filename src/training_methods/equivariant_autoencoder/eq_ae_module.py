@@ -7,7 +7,6 @@ import numpy as np
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance, kl_latent_regularizer
-from src.loss.pdist_loss import pairwise_distance_loss
 from src.utils.spd_metrics import (
     compute_embedding_quality_metrics,
     compute_canonical_consistency_metrics,
@@ -93,18 +92,6 @@ class EquivariantAutoencoder(pl.LightningModule):
         if component == "chamfer":
             val, _ = chamfer_distance(pred, target)
             return val
-        if component in {"pairwise_sorted", "pairwise_hist"}:
-            mode = "hist" if component.endswith("hist") else "sorted"
-            hist_bins = self._loss_param("pairwise", "hist_bins", 64)
-            hist_sigma = self._loss_param("pairwise", "hist_sigma", None)
-            reduction = self._loss_param("pairwise", "reduction", "mean")
-            return pairwise_distance_loss(
-                pred,
-                target,
-                mode=mode,
-                hist_bins=hist_bins,
-                hist_sigma=hist_sigma,
-                reduction=reduction,
             )
 
         raise ValueError(f"Unsupported reconstruction loss component: {component}")

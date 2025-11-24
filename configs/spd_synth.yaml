@@ -5,7 +5,7 @@ experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_$
 wandb_mode: online
 
 model_type: spd
-latent_size: 96
+latent_size: 240
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False  # Set to True to load pretrained weights
@@ -15,11 +15,8 @@ encoder:
   name: VN_DGCNN_Refined # PnE_VN
   kwargs:
     latent_size: ${latent_size}
-    feature_dims: [128, 256, 256, 256, 512]
-    # hidden_dim1: 360
-    # hidden_dim2: 720
-    # blocks: [2, 2, 2]
-    # bottleneck_ratio: 0.5
+    feature_dims: [128, 128, 256, 512, 1024]
+    pooling: "max"
     
 
 decoder: 
@@ -29,12 +26,12 @@ decoder:
     num_points: ${data.num_points}
     vq_size: 128
     use_vq: True
-    router_hidden: 128
-    transformer_hidden: 128
+    router_hidden: 256
+    transformer_hidden: 256
     transformer_layers: 3
     transformer_heads: 6
-    lattice_hidden: 128
-    amorphous_hidden: 128
+    lattice_hidden: 256
+    amorphous_hidden: 256
 
 rot_net:
   name: vn_rotation_head
@@ -44,7 +41,7 @@ rot_net:
 
 rotation_mode: vn_rotation_head
 
-loss: sinkhorn
+loss: sinkhorn+chamfer
 sinkhorn_blur: 0.05
 sinkhorn_blur_schedule:
   enable: true
@@ -56,15 +53,15 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.005
-batch_size: 512
+batch_size: 380
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 25
+epochs: 900
 
 gpu: True
-devices: [0, 1, 2, 3]
-ddp_find_unused_parameters: False
+devices: [0]
+ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
