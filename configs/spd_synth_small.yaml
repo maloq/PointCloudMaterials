@@ -24,16 +24,18 @@ encoder:
     
 
 decoder: 
-  name: VQMoE
+  name: VQMoE_v2
   kwargs: 
     latent_size: ${latent_size}
     num_points: ${data.num_points}
     vq_size: 128
-    use_vq: True
+    force_crystal: True
+    use_refiner: False
+    use_vq: False
     router_hidden: 256
     transformer_hidden: 256
     transformer_layers: 4
-    transformer_heads: 6
+    transformer_heads: 4
     lattice_hidden: 256
     amorphous_hidden: 128
 
@@ -45,8 +47,8 @@ rot_net:
 
 rotation_mode: vn_rotation_head
 
-loss: sinkhorn+pdist
-pdist_scale: 0.1  # weight for pdist component
+loss: chamfer+pdist
+pdist_scale: 1.0  # weight for pdist component
 loss_params:
   pdist:
     mode: full  # 'full', 'sampled', or 'local'
@@ -66,7 +68,7 @@ sinkhorn_blur_schedule:
 max_samples: 0  # no limit
 torch_compile: True
 
-learning_rate: 0.006
+learning_rate: 0.003
 batch_size: 256
 
 enable_swa: False
@@ -74,8 +76,8 @@ swa_epoch_start: 1000
 epochs: 60
 
 gpu: True
-devices: [0]
-ddp_find_unused_parameters: False
+devices: [0,1,2]
+ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5

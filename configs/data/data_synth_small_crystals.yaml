@@ -1,7 +1,7 @@
 kind: synthetic
 data_path: output/synthetic_data/small_crystals
-num_points: 280
-radius: 6.75
+num_points: 80
+radius: 4.5
 sample_type: regular
 overlap_fraction: 0.5
 n_samples: 0
