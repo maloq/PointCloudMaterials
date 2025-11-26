@@ -1,11 +1,11 @@
 defaults:
-  - data: data_synth_small_crystals
+  - data: data_synth_polycrystalline
 project_name: pointnet
 experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online
 
 model_type: spd
-latent_size: 240
+latent_size: 513
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False  # Set to True to load pretrained weights
@@ -29,15 +29,16 @@ decoder:
     latent_size: ${latent_size}
     num_points: ${data.num_points}
     vq_size: 128
-    force_crystal: True
-    use_refiner: False
+    force_crystal: False
+    use_refiner: True
     use_vq: False
     router_hidden: 256
-    transformer_hidden: 256
-    transformer_layers: 4
+    transformer_hidden: 512
+    transformer_layers: 8
     transformer_heads: 4
     lattice_hidden: 256
     amorphous_hidden: 128
+    max_refinement_displacement: 0.5
 
 rot_net:
   name: vn_rotation_head
@@ -47,8 +48,8 @@ rot_net:
 
 rotation_mode: vn_rotation_head
 
-loss: chamfer+pdist
-pdist_scale: 1.0  # weight for pdist component
+loss: chamfer
+pdist_scale: 0.0  # weight for pdist component
 loss_params:
   pdist:
     mode: full  # 'full', 'sampled', or 'local'
@@ -56,6 +57,8 @@ loss_params:
     k: 16          # for local mode
     normalize: true
     p: 2           # norm type (1=L1, 2=L2)
+    squared: false
+  chamfer:
     squared: false
 
 sinkhorn_blur: 0.05
@@ -68,15 +71,16 @@ sinkhorn_blur_schedule:
 max_samples: 0  # no limit
 torch_compile: True
 
-learning_rate: 0.003
+learning_rate: 0.0005
 batch_size: 256
+gradient_clip_val: 0.5
 
 enable_swa: False
 swa_epoch_start: 1000 
 epochs: 60
 
 gpu: True
-devices: [0,1,2]
+devices: [0]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6

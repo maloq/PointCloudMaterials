@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
+from scipy.spatial import Delaunay, cKDTree
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
@@ -61,15 +62,84 @@ def extract_actual_dataset_samples(
     return phase_samples
 
 
+def draw_edges_on_ax(
+    ax,
+    coords: np.ndarray,
+    edge_type: Literal['delaunay', 'knn', None] = 'delaunay',
+    knn_k: int = 4,
+    edge_color: str = '#555555',
+    edge_alpha: float = 0.3,
+    edge_linewidth: float = 0.4,
+) -> None:
+    """Draw edges on a 3D matplotlib axis.
+    
+    Args:
+        ax: Matplotlib 3D axis
+        coords: (N, 3) point coordinates
+        edge_type: 'delaunay', 'knn', or None
+        knn_k: Number of neighbors for KNN edges
+        edge_color: Edge line color
+        edge_alpha: Edge transparency
+        edge_linewidth: Edge line width
+    """
+    if edge_type is None or len(coords) < 4:
+        return
+    
+    drawn = set()
+    
+    if edge_type == 'delaunay':
+        try:
+            tri = Delaunay(coords)
+            for simplex in tri.simplices:
+                for i in range(4):
+                    for j in range(i + 1, 4):
+                        edge = (min(simplex[i], simplex[j]), max(simplex[i], simplex[j]))
+                        if edge not in drawn:
+                            drawn.add(edge)
+                            p1, p2 = coords[edge[0]], coords[edge[1]]
+                            ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
+                                   color=edge_color, linewidth=edge_linewidth, alpha=edge_alpha)
+        except Exception:
+            # Fallback to KNN if Delaunay fails
+            edge_type = 'knn'
+    
+    if edge_type == 'knn':
+        tree = cKDTree(coords)
+        k = min(knn_k + 1, len(coords))
+        
+        for i, point in enumerate(coords):
+            _, indices = tree.query(point, k=k)
+            indices = np.atleast_1d(indices)
+            for j in indices:
+                if j != i:
+                    edge = (min(i, j), max(i, j))
+                    if edge not in drawn:
+                        drawn.add(edge)
+                        p1, p2 = coords[i], coords[j]
+                        ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
+                               color=edge_color, linewidth=edge_linewidth, alpha=edge_alpha)
+
+
 def visualize_dataset_samples(
     checkpoint_path: str,
     output_path: Path,
     dataset: SyntheticPointCloudDataset,
     cuda_device: int = 0,
     num_samples_per_phase: int = 2,
+    edge_type: Optional[Literal['delaunay', 'knn']] = None,
+    knn_k: int = 4,
 ) -> None:
     """
     Create visualization of dataset samples and their reconstructions.
+    
+    Args:
+        checkpoint_path: Path to model checkpoint
+        output_path: Path to save visualization
+        dataset: Synthetic dataset
+        cuda_device: GPU device index
+        num_samples_per_phase: Number of samples per phase to visualize
+        edge_type: Edge type for visualization ('delaunay', 'knn', or None)
+        knn_k: Number of neighbors for KNN edges
     """
     print(f"Loading checkpoint from {checkpoint_path}")
     model, cfg, device = load_spd_model(checkpoint_path, cuda_device=cuda_device)
@@ -167,6 +237,11 @@ def visualize_dataset_samples(
         ax = fig.add_subplot(3, n_structures, col + 1, projection="3d")
         color = PHASE_COLORS.get(phase_idx, "gray")
 
+        # Draw edges first (behind points)
+        if edge_type:
+            draw_edges_on_ax(ax, pc, edge_type=edge_type, knn_k=knn_k, 
+                           edge_color='#333333', edge_alpha=0.25)
+
         ax.scatter(
             pc[:, 0], pc[:, 1], pc[:, 2],
             s=25, alpha=0.9,
@@ -181,6 +256,11 @@ def visualize_dataset_samples(
 
     for col, (name, cano) in enumerate(zip(recon_names, canonicals_list)):
         ax = fig.add_subplot(3, n_structures, n_structures + col + 1, projection="3d")
+
+        # Draw edges first (behind points)
+        if edge_type:
+            draw_edges_on_ax(ax, cano, edge_type=edge_type, knn_k=knn_k,
+                           edge_color='#663399', edge_alpha=0.25)
 
         ax.scatter(
             cano[:, 0], cano[:, 1], cano[:, 2],
@@ -197,6 +277,11 @@ def visualize_dataset_samples(
 
     for col, (name, recon) in enumerate(zip(recon_names, reconstructions_list)):
         ax = fig.add_subplot(3, n_structures, 2 * n_structures + col + 1, projection="3d")
+
+        # Draw edges first (behind points)
+        if edge_type:
+            draw_edges_on_ax(ax, recon, edge_type=edge_type, knn_k=knn_k,
+                           edge_color='#cc5500', edge_alpha=0.25)
 
         ax.scatter(
             recon[:, 0], recon[:, 1], recon[:, 2],

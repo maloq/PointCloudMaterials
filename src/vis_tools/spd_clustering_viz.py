@@ -90,7 +90,7 @@ def create_visualization(
     n_views = len(view_presets)
     include_dbscan = dbscan_sample is not None
     include_hdbscan = hdbscan_sample is not None
-    n_panels = 5 + int(include_dbscan) + int(include_hdbscan)
+    n_panels = 4 + int(include_dbscan) + int(include_hdbscan)  # Removed phase agreement panel
     fig = plt.figure(figsize=(4 * n_panels, 8 * n_views))
     fig.patch.set_facecolor("white")
     fig.patch.set_edgecolor("black")
@@ -144,7 +144,7 @@ def _populate_clustering_panels(
     phase_sample = payload["phase_sample"]
     grain_sample = payload["grain_sample"]
 
-    expected_axes = 5 + int(include_dbscan) + int(include_hdbscan)
+    expected_axes = 4 + int(include_dbscan) + int(include_hdbscan)  # Removed phase agreement panel
     if len(axes) != expected_axes:
         raise ValueError(f"Expected {expected_axes} axes, received {len(axes)}")
 
@@ -302,53 +302,6 @@ def _populate_clustering_panels(
             title_suffix=title_suffix,
             border_width=border_width,
         )
-
-    ax_acc = axes[axis_idx]
-    cluster_to_phase = {}
-    for cluster in np.unique(kmeans_sample):
-        mask = kmeans_sample == cluster
-        if np.any(mask):
-            phases_in_cluster = phase_sample[mask]
-            unique, counts = np.unique(phases_in_cluster, return_counts=True)
-            cluster_to_phase[cluster] = unique[np.argmax(counts)]
-
-    correct_mask = np.array([
-        cluster_to_phase.get(kmeans_sample[i], None) == phase_sample[i]
-        for i in range(len(kmeans_sample))
-    ]) if len(kmeans_sample) else np.array([], dtype=bool)
-
-    if np.any(correct_mask):
-        correct_points = coords_sample[correct_mask]
-        ax_acc.scatter(
-            correct_points[:, 0], correct_points[:, 1], correct_points[:, 2],
-            color="green",
-            s=12,
-            depthshade=True,
-            edgecolors="black",
-            linewidths=0.2,
-            alpha=0.8,
-            label="Correct",
-        )
-
-    if np.any(~correct_mask):
-        incorrect_points = coords_sample[~correct_mask]
-        ax_acc.scatter(
-            incorrect_points[:, 0], incorrect_points[:, 1], incorrect_points[:, 2],
-            color="red",
-            s=12,
-            depthshade=True,
-            edgecolors="black",
-            linewidths=0.2,
-            alpha=0.8,
-            label="Incorrect",
-        )
-
-    accuracy = (np.sum(correct_mask) / len(correct_mask) * 100) if len(correct_mask) else 0.0
-    ax_acc.set_title(f"KMeans-Phase Agreement{title_suffix}\n({accuracy:.1f}% accuracy)")
-    if len(correct_mask):
-        ax_acc.legend(loc="upper right", fontsize=8)
-    _set_cube_axes(ax_acc, box_size)
-    _add_axes_border(ax_acc, linewidth=border_width)
 
 
 def _plot_density_clusters(

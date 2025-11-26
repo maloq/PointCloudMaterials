@@ -16,7 +16,7 @@ def train(cfg: DictConfig):
     train_model(cfg, EquivariantAutoencoder)
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_vn_equivariant.yaml')
 def main(cfg: DictConfig):
     train(cfg)
 

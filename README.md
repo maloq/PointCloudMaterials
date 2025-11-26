@@ -1,10 +1,9 @@
 # Pytorch Implementation of PointNet
 
-# Create a new environment
+# Create a new uv environment:
 
-conda create -n pointnet python=3.12 -y
-conda activate pointnet
-conda install pytorch torchvision pytorch-cuda=12.1 -c pytorch -c nvidia -y
+uv pip install torch torchvision \
+  --index-url https://download.pytorch.org/whl/cu130
 
 # install pytorch3d
 

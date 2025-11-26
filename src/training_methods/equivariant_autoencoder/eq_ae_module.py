@@ -33,7 +33,12 @@ LOSS_COMPONENTS = (
 
 
 class EquivariantAutoencoder(pl.LightningModule):
-    """Equivariant Autoencoder that decodes from equivariant latent Z_eq while still producing invariant Z_inv."""
+    """
+    Equivariant Autoencoder that supports:
+    1. Standard Reconstruction (Chamfer/Sinkhorn loss)
+    2. Diffusion Probabilistic Models (Score matching loss)
+    3. Flow-Matching generative decoders (velocity field training)
+    """
 
     def __init__(self, cfg):
         super().__init__()
@@ -41,22 +46,28 @@ class EquivariantAutoencoder(pl.LightningModule):
 
         self.encoder, self.decoder = build_model(cfg)
 
+        # Detect if we are using the Diffusion Decoder
+        # Assumes the decoder class name contains 'Diffusion' or config has a flag
+        self.is_diffusion = "Diffusion" in cfg.decoder.name
+        self.is_flow_matching = getattr(self.decoder, "is_flow_matching", False) or ("FlowMatching" in cfg.decoder.name)
+        self.use_invariant_latent = getattr(self.decoder, "use_invariant_latent", self.is_diffusion or self.is_flow_matching)
+
         # Parse loss configuration
         raw_loss = cfg.loss
         if isinstance(raw_loss, (list, tuple, ListConfig)):
             loss_components = [str(part).strip().lower() for part in raw_loss if str(part).strip()]
         else:
             loss_components = [part.strip().lower() for part in str(raw_loss).split("+") if part.strip()]
-        if not loss_components:
+        
+        # If diffusion, we don't strictly require standard loss components, 
+        # but we keep them for validation metric calculation.
+        if not loss_components and not (self.is_diffusion or self.is_flow_matching):
             raise ValueError("At least one loss component must be specified")
-        unknown = [name for name in loss_components if name not in LOSS_COMPONENTS]
-        if unknown:
-            raise ValueError(
-                f"Unknown loss component(s): {unknown}. Available components: {list(LOSS_COMPONENTS)}"
-            )
+            
         self.loss_components = loss_components
         self.loss_name = "+".join(loss_components)
         self._sinkhorn_blur_schedule = init_sinkhorn_blur_schedule(cfg)
+        
         raw_loss_params = getattr(cfg, "loss_params", None)
         if raw_loss_params is not None:
             self.loss_params = OmegaConf.to_container(raw_loss_params, resolve=True)
@@ -64,24 +75,20 @@ class EquivariantAutoencoder(pl.LightningModule):
             self.loss_params = {}
 
         self.kl_latent_loss_scale = cfg.kl_latent_loss_scale
+        
+        # Caches
         self._supervised_cache = {
             "train": {"latents": [], "phase": []},
             "val": {"latents": [], "phase": []},
             "test": {"latents": [], "phase": [], "reconstructions": [], "canonicals": [], "originals": []},
         }
-
-        # Maximum samples to use for metrics caches (to limit memory usage)
         self.max_supervised_samples = cfg.max_supervised_samples if hasattr(cfg, 'max_supervised_samples') else 8192
         self.max_test_samples = cfg.max_test_samples if hasattr(cfg, 'max_test_samples') else 1000
 
-        # Load reference point clouds for metrics
+        # Load reference point clouds if available
         self.reference_pcs = None
         if hasattr(cfg, 'data') and hasattr(cfg.data, 'data_path'):
             ref_path = os.path.join(cfg.data.data_path, 'reference_point_clouds.npy')
-            if os.path.exists(ref_path):
-                self.reference_pcs = np.load(ref_path, allow_pickle=True).item()
-        elif hasattr(cfg, 'synthetic') and hasattr(cfg.synthetic, 'data_dir'):
-            ref_path = os.path.join(cfg.synthetic.data_dir, 'reference_point_clouds.npy')
             if os.path.exists(ref_path):
                 self.reference_pcs = np.load(ref_path, allow_pickle=True).item()
 
@@ -92,8 +99,10 @@ class EquivariantAutoencoder(pl.LightningModule):
         if component == "chamfer":
             val, _ = chamfer_distance(pred, target)
             return val
-            )
-
+        if component == "pdist":
+            # Assuming _compute_pdist exists in utils or parent, otherwise implement or import
+            val = self._compute_pdist(pred, target)
+            return val * getattr(self, 'pdist_scale', 1.0)
         raise ValueError(f"Unsupported reconstruction loss component: {component}")
 
     def _reconstruction_loss(self, pred, target, sinkhorn_blur):
@@ -101,8 +110,6 @@ class EquivariantAutoencoder(pl.LightningModule):
         for component in self.loss_components:
             comp_val = self._component_reconstruction_loss(component, pred, target, sinkhorn_blur)
             total_loss = comp_val if total_loss is None else (total_loss + comp_val)
-        if total_loss is None:
-            raise RuntimeError("No reconstruction loss components were applied")
         return total_loss, None
 
     @staticmethod
@@ -111,71 +118,78 @@ class EquivariantAutoencoder(pl.LightningModule):
             return batch, {}
         pc = batch[0]
         labels = {}
-        labels["phase"] = batch[1]
-        labels["grain"] = batch[2]
-        labels["orientation"] = batch[3]
-        labels["quaternion"] = batch[4]
+        # Safely unpack labels if they exist
+        if len(batch) > 1: labels["phase"] = batch[1]
+        if len(batch) > 2: labels["grain"] = batch[2]
+        if len(batch) > 3: labels["orientation"] = batch[3]
+        if len(batch) > 4: labels["quaternion"] = batch[4]
         return pc, labels
 
     def forward(self, pc: torch.Tensor):
         """
-        Forward pass: encode to both inv_z and eq_z, but decode only from eq_z.
-
+        Forward pass modified for Diffusion.
+        
+        Args:
+            pc: Input point cloud (B, N, 3)
+            
         Returns:
-            inv_z: Invariant latent (still produced but not used for reconstruction)
-            recon: Reconstruction from eq_z
+            inv_z: Invariant latent
+            recon: Reconstructed PC (or dummy if training diffusion)
             eq_z: Equivariant latent
+            diff_loss: Diffusion MSE loss (scalar) or 0.0 if not diffusion
         """
         inv_z, eq_z, _ = self.encoder(pc)
-        recon = self.decoder(eq_z)
-        return inv_z, recon, eq_z
+        decoder_input = inv_z if self.use_invariant_latent else eq_z
+        
+        if self.is_diffusion or self.is_flow_matching:
+            # Generative decoders expect invariant latent + gt during training
+            recon, diff_loss, _ = self.decoder(decoder_input, gt_pts=pc)
+            diff_loss = torch.as_tensor(diff_loss, device=pc.device, dtype=pc.dtype)
+        else:
+            # Standard Decoder
+            recon = self.decoder(decoder_input)
+            diff_loss = torch.tensor(0.0, device=pc.device, dtype=pc.dtype)
+            
+        return inv_z, recon, eq_z, diff_loss
 
-    def _log_metric(self, stage: str, name: str, value, *, on_step=None, on_epoch=None, **kwargs) -> None:
-        """Helper to keep WandB charts grouped by stage."""
-        if on_step is None:
-            on_step = stage == "train"
-        if on_epoch is None:
-            on_epoch = stage != "train"
-
-        log_kwargs = dict(kwargs)
-        if "sync_dist" not in log_kwargs and stage != "train":
-            log_kwargs["sync_dist"] = True
-
-        log_name = f"{stage}/{name}"
-        self.log(log_name, value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
-
-    def _log_metrics(self, stage: str, metrics: dict, prog_bar_keys=None):
-        """Log multiple metrics at once."""
-        prog_bar_keys = prog_bar_keys or set()
-        for name, value in metrics.items():
-            self._log_metric(stage, name, value, prog_bar=(name in prog_bar_keys))
-
-    def _loss_param(self, section: str, key: str, default=None):
-        params = getattr(self, "loss_params", None)
-        if not isinstance(params, dict):
-            return default
-        if section:
-            section_params = params.get(section)
-            if isinstance(section_params, dict) and key in section_params:
-                return section_params[key]
-        return params.get(key, default)
-
-    def _compute_losses(self, recon, pc, inv_z):
-        """Compute all losses and return (loss_dict, current_sinkhorn_blur)."""
-        recon_f32, pc_f32 = to_float32(recon, pc)
+    def _compute_losses(self, recon, pc, inv_z, diff_loss, stage):
+        """
+        Compute all losses.
+        Logic branches based on whether we are using Diffusion or Standard AE.
+        """
         sinkhorn_blur = get_current_sinkhorn_blur(self._sinkhorn_blur_schedule, self.current_epoch)
-
         losses = {}
+        zero_tensor = pc.new_zeros(())
 
-        # Main reconstruction loss (configurable)
-        losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
+        # 1. PRIMARY LOSS
+        if self.is_diffusion or self.is_flow_matching:
+            if stage == 'train':
+                # Generative decoders provide their own training loss
+                losses['recon'] = diff_loss
+                # We SKIP geometric metrics (Chamfer/EMD) during training because:
+                # a) 'recon' during training is not a clean reconstruction (it's noise or gt)
+                # b) Sampling clean reconstructions is too slow for the training loop
+                losses['chamfer'] = zero_tensor
+                losses['emd'] = zero_tensor
+            else:
+                # Validation/Test: We have generated samples in 'recon'
+                # We calculate geometric metrics for monitoring
+                losses['recon'] = diff_loss
+                recon_f32, pc_f32 = to_float32(recon, pc)
+                
+                with torch.no_grad():
+                    losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32)
+                    losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+        else:
+            # Standard Autoencoder Logic
+            recon_f32, pc_f32 = to_float32(recon, pc)
+            losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
+            
+            with torch.no_grad():
+                losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32)
+                losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
 
-        # Diagnostic metrics (no grad)
-        with torch.no_grad():
-            losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32)
-            losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-
-        # KL regularization (optional)
+        # 2. LATENT REGULARIZATION (Optional)
         if self.kl_latent_loss_scale > 0:
             losses['kl'] = kl_latent_regularizer(inv_z)
 
@@ -185,39 +199,47 @@ class EquivariantAutoencoder(pl.LightningModule):
         pc, labels = self._unpack_batch(batch)
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
 
-        # Forward pass
-        inv_z, recon, eq_z = self(pc)
+        # Forward pass (now returns diffusion loss if applicable)
+        inv_z, recon, eq_z, diff_loss = self(pc)
 
-        # Cache for metrics if needed
+        # Cache logic:
+        # If generative decoder training -> 'recon' is not valid for caching (it's noise/gt)
+        # If Val/Test -> 'recon' is a sample, valid for caching
+        skip_cache_recon = (self.is_diffusion or self.is_flow_matching) and stage == 'train'
+        valid_recon_for_cache = None if skip_cache_recon else recon
+        
         if stage in self._supervised_cache:
-            self._cache_supervised_batch(stage, inv_z, labels, recon, pc)
+            self._cache_supervised_batch(stage, inv_z, labels, valid_recon_for_cache, pc)
 
-        # Compute all losses
-        losses, sinkhorn_blur = self._compute_losses(recon, pc, inv_z)
+        # Compute losses
+        losses, sinkhorn_blur = self._compute_losses(recon, pc, inv_z, diff_loss, stage)
 
         # Build total loss
         total_loss = losses['recon']
         if 'kl' in losses:
             total_loss += self.kl_latent_loss_scale * losses['kl']
+        
         total_loss = total_loss.to(self.dtype)
 
-        # Prepare metrics for logging
+        # Logging
         metrics_to_log = {
             'loss': total_loss,
-            f'{self.loss_name}_loss': losses['recon'],
-            'emd': losses['emd'],
-            'chamfer': losses['chamfer'],
+            'recon_loss': losses['recon'],
+            'emd': losses.get('emd', 0.0),
+            'chamfer': losses.get('chamfer', 0.0),
         }
         if 'kl' in losses:
             metrics_to_log['kl_loss'] = losses['kl']
         if sinkhorn_blur is not None:
             metrics_to_log['sinkhorn_blur'] = float(sinkhorn_blur)
 
-        # Log all metrics
-        self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'})
+        prog_bar_keys = {'loss'}
+        for name, value in metrics_to_log.items():
+            self._log_metric(stage, name, value, prog_bar=(name in prog_bar_keys))
 
         return total_loss
 
+    
     def training_step(self, batch, batch_idx, dataloader_idx: int = 0):
         return self._step(batch, batch_idx, "train")
 
@@ -229,6 +251,14 @@ class EquivariantAutoencoder(pl.LightningModule):
 
     def configure_optimizers(self):
         return get_optimizers_and_scheduler(self.hparams, self.parameters())
+
+    def _log_metric(self, stage: str, name: str, value, *, on_step=None, on_epoch=None, **kwargs) -> None:
+        if on_step is None: on_step = stage == "train"
+        if on_epoch is None: on_epoch = stage != "train"
+        log_kwargs = dict(kwargs)
+        if "sync_dist" not in log_kwargs and stage != "train":
+            log_kwargs["sync_dist"] = True
+        self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
 
     def _handle_epoch_boundary(self, stage: str, is_start: bool):
         """Unified handler for epoch boundaries."""

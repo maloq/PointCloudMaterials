@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import traceback
 import hydra
 import torch
 import pytorch_lightning as pl
@@ -121,6 +122,10 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         benchmark=True,
         check_val_every_n_epoch=4,
     )
+    
+    if hasattr(cfg, 'gradient_clip_val'):
+        trainer_kwargs['gradient_clip_val'] = cfg.gradient_clip_val
+        trainer_kwargs['gradient_clip_algorithm'] = 'norm'
 
     # Reload dataloaders every epoch when curriculum learning is active
     # This is necessary because the dataset size changes between epochs
@@ -148,9 +153,71 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     return trainer, model, dm, checkpoint_callbacks
 
 
-def train(cfg: DictConfig):
-    """SPD-specific training function."""
-    train_model(cfg, ShapePoseDisentanglement)
+@rank_zero_only
+def run_post_training_analysis_safe(checkpoint_path: str, output_dir: str, cuda_device: int = 0):
+    """Run post-training analysis with error handling.
+    
+    This function wraps the analysis in try/except to prevent analysis failures
+    from crashing the training pipeline.
+    """
+    try:
+        from src.training_methods.spd.predict_and_visualize import run_post_training_analysis
+        
+        logger.print("\n" + "=" * 60)
+        logger.print("Starting post-training analysis...")
+        logger.print("=" * 60)
+        
+        run_post_training_analysis(
+            checkpoint_path=checkpoint_path,
+            output_dir=output_dir,
+            cuda_device=cuda_device,
+            max_samples=5000,
+            k_range=range(2, 7),
+            run_dbscan=False,
+            run_hdbscan=False,
+            force_recompute=True,
+        )
+        
+        logger.print("Post-training analysis completed successfully!")
+        
+    except Exception as e:
+        logger.print(f"\nWarning: Post-training analysis failed with error: {e}")
+        logger.print("Training completed successfully, but analysis could not be run.")
+        logger.print("You can run the analysis manually using:")
+        logger.print(f"  python src/training_methods/spd/predict_and_visualize.py")
+        traceback.print_exc()
+
+
+def train(cfg: DictConfig, run_analysis: bool = True):
+    """SPD-specific training function.
+    
+    Args:
+        cfg: Hydra configuration
+        run_analysis: Whether to run post-training analysis (default: True)
+    """
+    trainer, model, dm, checkpoint_callbacks = train_model(cfg, ShapePoseDisentanglement)
+    
+    # Run post-training analysis if enabled and we have synthetic data
+    if run_analysis and cfg.data.kind == "synthetic":
+        # Get the best checkpoint path
+        best_ckpt = checkpoint_callbacks[0].best_model_path
+        if best_ckpt and os.path.exists(best_ckpt):
+            # Output directory is the parent of the checkpoint
+            output_dir = os.path.join(os.path.dirname(best_ckpt), "analysis")
+            
+            # Get CUDA device from config
+            if isinstance(cfg.devices, ListConfig):
+                cuda_device = list(cfg.devices)[0] if cfg.devices else 0
+            elif isinstance(cfg.devices, (list, tuple)):
+                cuda_device = cfg.devices[0] if cfg.devices else 0
+            else:
+                cuda_device = 0
+            
+            run_post_training_analysis_safe(best_ckpt, output_dir, cuda_device)
+        else:
+            logger.print("Warning: No best checkpoint found, skipping post-training analysis")
+    
+    return trainer, model, dm, checkpoint_callbacks
 
 
 @hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_synth_small')

@@ -115,7 +115,8 @@ class ShapePoseDisentanglement(pl.LightningModule):
             val, _ = sinkhorn_distance(pred.contiguous(), target, blur=sinkhorn_blur)
             return val
         if component == "chamfer":
-            val, _ = chamfer_distance(pred, target)
+            squared = self._loss_param("chamfer", "squared", True)
+            val, _ = chamfer_distance(pred, target, squared=squared)
             return val
         if component == "pdist":
             val = self._compute_pdist(pred, target)
@@ -272,7 +273,14 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         # Diagnostic metrics (no grad)
         with torch.no_grad():
-            losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32)
+            # Log both squared and L2 for clarity
+            cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True)
+            cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False)
+            
+            losses['chamfer_after'] = cd_sq if self._loss_param("chamfer", "squared", True) else cd_l2
+            losses['chamfer_sq'] = cd_sq
+            losses['chamfer_l2'] = cd_l2
+            
             losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32)
@@ -322,6 +330,8 @@ class ShapePoseDisentanglement(pl.LightningModule):
             'emd': losses['emd_after'],
             'emd_before_rot': losses['emd_before'],
             'chamfer': losses['chamfer_after'],
+            'chamfer_sq': losses.get('chamfer_sq', 0.0),
+            'chamfer_l2': losses.get('chamfer_l2', 0.0),
             'chamfer_before_rot': losses['chamfer_before'],
             'ortho': losses['ortho'],
         }

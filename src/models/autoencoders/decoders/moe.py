@@ -249,7 +249,7 @@ class ImprovedAmorphousExpert(nn.Module):
         self.z_proj = nn.Linear(latent_size, hidden // 2)
         
         # Coordinate MLP
-        self.coord_mlp = mlp([hidden, hidden, hidden, 3], bn=False)
+        self.coord_mlp = mlp([hidden, hidden, hidden, 3], bn=True)
         
         # Scale
         self.head_scale = mlp([latent_size, hidden // 2, 1], bn=True)
@@ -594,12 +594,11 @@ class VQMoEDecoderV2(Decoder):
             hidden=lattice_hidden,
         )
         
-        # Original amorphous expert
-        self.expert_amorphous = AmorphousExpert(
+        # Improved amorphous expert (full 3D capacity)
+        self.expert_amorphous = ImprovedAmorphousExpert(
             latent_size=latent_size,
             num_points=num_points,
             hidden=amorphous_hidden,
-            noise_std=amorphous_noise_std,
         )
         
         self.router = mlp([latent_size, router_hidden, 2], bn=False)
