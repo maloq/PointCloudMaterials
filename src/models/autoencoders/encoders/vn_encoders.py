@@ -704,6 +704,256 @@ class VNDGCNNEncoderRefined(Encoder):
 
         return z_inv, z_eq, None
 
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from .vn_encoders import VNLinearLeakyReLU, VNLinear, VNStdFeature, VNBatchNorm
+
+# ---------------------------------------------------------------------------
+# 1. Invariant Geometric Feature Extractor
+# ---------------------------------------------------------------------------
+class InvariantGeometricFeatures(nn.Module):
+    """
+    Explicitly computes topological/geometric invariants:
+    1. Pairwise distances (Edge lengths)
+    2. Local densities
+    3. (Optional) Triplet angles
+    """
+    def __init__(self, num_points, n_knn=20):
+        super().__init__()
+        self.n_knn = n_knn
+        # Project geometric features to a higher dim
+        self.dist_embed = nn.Sequential(
+            nn.Conv2d(1, 16, 1),
+            nn.BatchNorm2d(16),
+            nn.LeakyReLU(0.2)
+        )
+
+    def forward(self, x):
+        # x: (B, 3, N) - Input Points
+        B, C, N = x.shape
+        
+        # 1. Compute Pairwise Distance Matrix (Invariant to Rotation)
+        # (B, N, N)
+        dist_mat = torch.cdist(x.transpose(1, 2), x.transpose(1, 2))
+        
+        # 2. Extract k-NN distances (Local Topology)
+        # We sort distances to get 'canonical' local neighborhood descriptions
+        knn_dists, _ = torch.topk(dist_mat, k=self.n_knn, dim=-1, largest=False)
+        
+        # (B, 1, N, k)
+        knn_dists = knn_dists.unsqueeze(1) 
+        
+        # Embed these scalar invariants
+        feat = self.dist_embed(knn_dists) # (B, 16, N, k)
+        
+        # Pool to get per-point invariant descriptors
+        feat = feat.max(dim=-1)[0] # (B, 16, N)
+        return feat
+
+# ---------------------------------------------------------------------------
+# 2. Vector Neuron Attention (VN-Attention)
+# ---------------------------------------------------------------------------
+class VNAttention(nn.Module):
+    """
+    Rotation Equivariant Self-Attention.
+    Allows the model to learn long-range topology without fixed k-NN.
+    """
+    def __init__(self, in_channels, num_heads=1, dim=4):
+        super().__init__()
+        assert in_channels % num_heads == 0, "in_channels must be divisible by num_heads"
+        self.in_channels = in_channels
+        self.num_heads = num_heads
+        self.head_dim = in_channels // num_heads
+        
+        self.q_conv = VNLinear(in_channels, in_channels)
+        self.k_conv = VNLinear(in_channels, in_channels)
+        self.v_conv = VNLinear(in_channels, in_channels)
+        self.out_conv = VNLinear(in_channels, in_channels)
+        self.dim = dim
+
+    def forward(self, x):
+        # x: (B, C, 3, N)
+        B, C, D, N = x.size()
+        H = self.num_heads
+        
+        Q = self.q_conv(x) # (B, C, 3, N)
+        K = self.k_conv(x) # (B, C, 3, N)
+        V = self.v_conv(x) # (B, C, 3, N)
+
+        # Reshape for heads: (B, H, C/H, 3, N) -> (B, H, N, C/H, 3)
+        q_reshaped = Q.view(B, H, self.head_dim, 3, N).permute(0, 1, 4, 2, 3)
+        k_reshaped = K.view(B, H, self.head_dim, 3, N).permute(0, 1, 4, 2, 3)
+        
+        # Energy: dot product over C/H and 3
+        # (B, H, N, C/H, 3) * (B, H, M, C/H, 3) -> (B, H, N, M)
+        energy = torch.einsum('bhnci,bhmci->bhnm', q_reshaped, k_reshaped)
+        
+        attention = F.softmax(energy / (self.head_dim**0.5), dim=-1) # (B, H, N, N)
+
+        # Apply attention to V
+        # V: (B, C, 3, N) -> (B, H, N, C/H, 3)
+        v_reshaped = V.view(B, H, self.head_dim, 3, N).permute(0, 1, 4, 2, 3)
+        
+        # (B, H, N, M) * (B, H, M, C/H, 3) -> (B, H, N, C/H, 3)
+        out = torch.einsum('bhnm,bhmci->bhnci', attention, v_reshaped)
+        
+        # Reshape back: (B, H, N, C/H, 3) -> (B, H, C/H, 3, N) -> (B, C, 3, N)
+        out = out.permute(0, 1, 3, 4, 2).reshape(B, C, 3, N)
+        
+        out = self.out_conv(out)
+        return out + x # Residual
+
+class VNFeedForward(nn.Module):
+    def __init__(self, in_channels, expansion_factor=2, dim=4):
+        super().__init__()
+        hidden_channels = in_channels * expansion_factor
+        self.net = nn.Sequential(
+            VNLinearLeakyReLU(in_channels, hidden_channels, dim=dim, negative_slope=0.0),
+            VNLinear(hidden_channels, in_channels)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+class VNTransformerBlock(nn.Module):
+    def __init__(self, channels, num_heads=1, dim=4, expansion_factor=2):
+        super().__init__()
+        self.attn = VNAttention(channels, num_heads=num_heads, dim=dim)
+        self.norm1 = VNBatchNorm(channels, dim=dim)
+        self.ffn = VNFeedForward(channels, expansion_factor=expansion_factor, dim=dim)
+        self.norm2 = VNBatchNorm(channels, dim=dim)
+
+    def forward(self, x):
+        # Post-Norm architecture
+        # 1. Attention + Residual (VNAttention handles residual internally? No, wait, let's check VNAttention)
+        # Checking VNAttention code above: "return out + x # Residual"
+        # So VNAttention DOES add residual.
+        
+        x = self.norm1(self.attn(x))
+        x = x + self.ffn(x)
+        x = self.norm2(x)
+        return x
+
+# ---------------------------------------------------------------------------
+# 3. Geometry-Aware VN-Transformer Encoder
+# ---------------------------------------------------------------------------
+
+@register_encoder("VN_Transformer")
+class VNTransformerEncoder(nn.Module):
+    def __init__(self, latent_size=128, num_points=80, n_knn=20, hidden_dim=64, num_layers=1, num_heads=1, size_preset=None):
+        super().__init__()
+        
+        if size_preset is not None:
+            presets = {
+                'tiny': {'hidden_dim': 32, 'num_layers': 1, 'num_heads': 2},
+                'small': {'hidden_dim': 64, 'num_layers': 2, 'num_heads': 4},
+                'base': {'hidden_dim': 128, 'num_layers': 4, 'num_heads': 8},
+                'large': {'hidden_dim': 256, 'num_layers': 6, 'num_heads': 16},
+            }
+            if size_preset in presets:
+                config = presets[size_preset]
+                hidden_dim = config['hidden_dim']
+                num_layers = config['num_layers']
+                num_heads = config['num_heads']
+            else:
+                raise ValueError(f"Unknown preset {size_preset}. Available: {list(presets.keys())}")
+        
+        # 1. Explicit Topology Extractor (Invariant)
+        self.geo_extractor = InvariantGeometricFeatures(num_points, n_knn)
+        
+        # 2. Embedding Layers (Equivariant)
+        self.conv_pos = VNLinearLeakyReLU(1, hidden_dim // 2, dim=4, negative_slope=0.0)
+        self.conv1 = VNLinearLeakyReLU(hidden_dim // 2, hidden_dim, dim=4, negative_slope=0.0)
+        
+        # 3. Transformer Block (Global Topology)
+        self.transformer = nn.Sequential(*[
+            VNTransformerBlock(hidden_dim, num_heads=num_heads, dim=4, expansion_factor=2) 
+            for _ in range(num_layers)
+        ])
+        
+        # 4. Std Feature (Mixing invariant and equivariant)
+        # We augment the standard VN feature extraction with our explicit geometric features
+        self.std_feature = VNStdFeature(
+            hidden_dim * 2, # Doubled because of concatenation in forward
+            dim=4,
+            normalize_frame=False,
+            hidden_dims=(hidden_dim * 2, hidden_dim)
+        )
+        
+        # Fusion MLP for Invariant Latent
+        # Input: (StdFeature Invariants) + (Geometric Explicit Invariants)
+        inv_input_dim = (hidden_dim * 2 * 3) + 16 
+        self.inv_mlp = nn.Sequential(
+            nn.Linear(inv_input_dim, 256),
+            nn.BatchNorm1d(256),
+            nn.LeakyReLU(0.2),
+            nn.Linear(256, latent_size)
+        )
+        
+        # Head for Equivariant Latent (Orientation)
+        self.eq_mlp = VNLinear(hidden_dim, latent_size // 3) 
+
+        # Head for Crystallinity detection (0=Liquid, 1=Crystal)
+        self.crystallinity_head = nn.Sequential(
+            nn.Linear(latent_size, 32),
+            nn.LeakyReLU(),
+            nn.Linear(32, 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        # Input x: (B, N, 3) -> (B, 3, N)
+        x = x.permute(0, 2, 1)
+        
+        # A. Explicit Invariant Geometry (The "Topology" help)
+        geo_feats = self.geo_extractor(x) # (B, 16, N)
+        geo_global = geo_feats.mean(dim=-1) # (B, 16) Global descriptor
+        
+        # B. Equivariant Stream
+        x_eq = x.unsqueeze(1) # (B, 1, 3, N)
+        # Create initial graph feature to get local normals/directions
+        # (Assuming you have get_graph_feature from vn.txt)
+        # For simplicity in Transformer, we just embed position first
+        x_eq = self.conv_pos(x_eq.repeat(1, 1, 1, 1)) # Dummy expansion or use graph
+        
+        # Note: To strictly use your vn_encoders 'get_graph_feature', you would do:
+        # from .vn_encoders import get_graph_feature
+        # x_graph = get_graph_feature(x_eq, k=20)
+        # x_eq = self.conv_pos(x_graph).mean(dim=-1)
+        
+        # Let's assume simple VN embedding for the transformer demo:
+        x_eq = self.conv1(x_eq) # (B, 64, 3, N)
+        
+        # Transformer mixes information globally
+        x_eq = self.transformer(x_eq) # (B, 64, 3, N)
+        
+        # C. Feature Aggregation
+        x_mean = x_eq.mean(dim=-1, keepdim=True)
+        x_concat = torch.cat((x_eq, x_mean.expand_as(x_eq)), dim=1)
+        
+        # D. Get Invariant Features (V) and Equivariant Frames (Z0)
+        # V: (B, C, N), Z0: (B, C, 3)
+        V, Z0 = self.std_feature(x_concat) 
+        
+        # E. Latent Construction
+        # 1. Invariant Latent (Shape/Topology)
+        V = V.view(V.size(0), -1, V.size(-1))
+        V_pooled = V.max(dim=-1)[0] # (B, C_inv)
+        # FUSE explicit geometry with learned VN invariants
+        V_final = torch.cat([V_pooled, geo_global], dim=1)
+        z_inv = self.inv_mlp(V_final)
+        
+        # 2. Equivariant Latent (Orientation)
+        z_eq = self.eq_mlp(x_mean.squeeze(-1)) # (B, latent/3, 3)
+        
+        # 3. Crystallinity Score
+        crystallinity = self.crystallinity_head(z_inv)
+        
+        return z_inv, z_eq, crystallinity
+
+
 __all__ = [
     "PointNetEncoderVN",
     "VNDGCNNEncoder",
@@ -719,4 +969,5 @@ __all__ = [
     "STNkd",
     "get_graph_feature",
     "get_graph_feature_cross",
+    "VNTransformerEncoder",
 ]

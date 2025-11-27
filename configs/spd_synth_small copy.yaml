@@ -12,23 +12,33 @@ load_supervised_checkpoint: False  # Set to True to load pretrained weights
 supervised_checkpoint_path: output/supervised_encoder/2025-11-07/19-36-50/supervised_encoder_VN_DGCNN_l36_bs1024_lr0.0060_rotsixd_head_loss_epochloss_epoch=00.ckpt
 
 encoder: 
-  name: VN_Transformer
+  name: VN_DGCNN_Refined # PnE_VN
   kwargs:
     latent_size: ${latent_size}
-    size_preset: 'base'
-
+    feature_dims: [256, 256, 512, 512, 512]
+    # hidden_dim1: 360
+    # hidden_dim2: 720
+    # blocks: [2, 2, 2]
+    # bottleneck_ratio: 0.5
+    pooling: "max"
     
 
 decoder: 
-  name: VN_Crystal
-  kwargs:
-    num_points: ${data.num_points}
+  name: VQMoE_v2
+  kwargs: 
     latent_size: ${latent_size}
-    hidden_dims: [1024, 512, 256]
-    correction_mode: 'none'
-    correction_scale: 0.1
-    correction_hidden_dim: 512    
-
+    num_points: ${data.num_points}
+    vq_size: 128
+    force_crystal: True
+    use_refiner: True
+    use_vq: False
+    router_hidden: 256
+    transformer_hidden: 256
+    transformer_layers: 2
+    transformer_heads: 2
+    lattice_hidden: 256
+    amorphous_hidden: 128
+    max_refinement_displacement: 0.3
 
 rot_net:
   name: vn_rotation_head
@@ -36,9 +46,9 @@ rot_net:
     hidden: 256
     use_attention: True
 
-rotation_mode: eq_decoder
+rotation_mode: inv_no_rot
 
-loss: chamfer+sinkhorn
+loss: chamfer
 pdist_scale: 0.0  # weight for pdist component
 loss_params:
   pdist:
@@ -62,12 +72,12 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.004
-batch_size: 1024
+batch_size: 512
 gradient_clip_val: 0.5
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 6
+epochs: 24
 
 gpu: True
 devices: [0]

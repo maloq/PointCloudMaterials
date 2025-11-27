@@ -3,6 +3,7 @@ import sys
 import time
 import traceback
 import hydra
+from hydra.core.hydra_config import HydraConfig
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
@@ -63,7 +64,10 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     logger.print(f"Starting in {os.getcwd()}")
 
     if run_dir is None:
-        run_dir = get_rundir_name()
+        try:
+            run_dir = HydraConfig.get().runtime.output_dir
+        except Exception:
+            run_dir = get_rundir_name()
 
     wandb_logger = init_wandb(cfg, run_dir)
 
@@ -154,7 +158,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
 
 @rank_zero_only
-def run_post_training_analysis_safe(checkpoint_path: str, output_dir: str, cuda_device: int = 0):
+def run_post_training_analysis_safe(checkpoint_path: str, output_dir: str, cuda_device: int = 0, cfg: DictConfig | None = None):
     """Run post-training analysis with error handling.
     
     This function wraps the analysis in try/except to prevent analysis failures
@@ -176,6 +180,7 @@ def run_post_training_analysis_safe(checkpoint_path: str, output_dir: str, cuda_
             run_dbscan=False,
             run_hdbscan=False,
             force_recompute=True,
+            cfg=cfg,
         )
         
         logger.print("Post-training analysis completed successfully!")
@@ -213,7 +218,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
             else:
                 cuda_device = 0
             
-            run_post_training_analysis_safe(best_ckpt, output_dir, cuda_device)
+            run_post_training_analysis_safe(best_ckpt, output_dir, cuda_device, cfg)
         else:
             logger.print("Warning: No best checkpoint found, skipping post-training analysis")
     

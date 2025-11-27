@@ -18,21 +18,41 @@ def load_spd_model(
     checkpoint_path: str,
     cuda_device: int = 0,
     fallback_config_path: str | None = None,
+    cfg: DictConfig | None = None,
 ) -> Tuple[ShapePoseDisentanglement, DictConfig, str]:
     """Restore the SPD model together with its Hydra *cfg* and *device* string."""
-    config_dir, config_name = resolve_config_path(checkpoint_path)
+    if cfg is None:
+        config_dir, config_name = resolve_config_path(checkpoint_path)
 
-    if config_dir is None:
-        config_dir = os.path.dirname(fallback_config_path)
-        config_name = os.path.splitext(os.path.basename(fallback_config_path))[0]
+        if config_dir is None:
+            config_dir = os.path.dirname(fallback_config_path)
+            config_name = os.path.splitext(os.path.basename(fallback_config_path))[0]
 
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
-    absolute_config_dir = os.path.join(project_root, config_dir)
-    relative_config_dir = os.path.relpath(absolute_config_dir, current_dir)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
+        absolute_config_dir = os.path.join(project_root, config_dir)
+        relative_config_dir = os.path.relpath(absolute_config_dir, current_dir)
 
-    with initialize(version_base=None, config_path=relative_config_dir):
-        cfg = compose(config_name=config_name)
+        # Check if Hydra is already initialized to avoid errors
+        from hydra.core.global_hydra import GlobalHydra
+        if GlobalHydra.instance().is_initialized():
+            # If already initialized, we assume the config is available or we can't easily change it.
+            # However, since we are loading a specific checkpoint, we ideally want THAT checkpoint's config.
+            # If we are here, it means we didn't pass 'cfg' but Hydra is initialized.
+            # This might happen if we are running in a notebook or another script.
+            # We'll try to compose, hoping the config path is compatible.
+            # If not, we might need to rely on the user passing 'cfg'.
+            try:
+                cfg = compose(config_name=config_name)
+            except Exception as e:
+                print(f"Warning: Hydra already initialized but failed to compose {config_name}: {e}")
+                print("Attempting to clear GlobalHydra and re-initialize (this might affect other parts of the application)...")
+                GlobalHydra.instance().clear()
+                with initialize(version_base=None, config_path=relative_config_dir):
+                    cfg = compose(config_name=config_name)
+        else:
+            with initialize(version_base=None, config_path=relative_config_dir):
+                cfg = compose(config_name=config_name)
 
     device = f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu"
     model: ShapePoseDisentanglement = load_model_from_checkpoint(

@@ -454,6 +454,7 @@ def predict_and_cache(
     cache_dir: str = "output/spd_analysis/predictions_cache",
     force_recompute: bool = False,
     max_samples: int = None,
+    cfg: DictConfig | None = None,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Any, Any, np.ndarray, Dict]:
     """Load model, extract predictions from synthetic data, and cache results."""
     cache_path = Path(cache_dir)
@@ -461,7 +462,7 @@ def predict_and_cache(
     cache_file = cache_path / f"{Path(checkpoint_path).stem}_synth_predictions.npz"
 
     print(f"Loading model from {checkpoint_path}")
-    model, cfg, device = load_spd_model(checkpoint_path, cuda_device=cuda_device)
+    model, cfg, device = load_spd_model(checkpoint_path, cuda_device=cuda_device, cfg=cfg)
     env_dirs = get_env_dirs(cfg)
 
     print(f"Loading synthetic data from: {env_dirs}")
@@ -694,6 +695,7 @@ def run_post_training_analysis(
     run_dbscan: bool = False,
     run_hdbscan: bool = False,
     force_recompute: bool = True,
+    cfg: DictConfig | None = None,
 ) -> None:
     """Run full post-training analysis pipeline.
     
@@ -708,6 +710,7 @@ def run_post_training_analysis(
         run_dbscan: Whether to run DBSCAN
         run_hdbscan: Whether to run HDBSCAN
         force_recompute: Whether to force recomputation (ignore cache)
+        cfg: Optional Hydra configuration (to avoid reloading/re-initializing)
     """
     print("\n" + "=" * 60)
     print("POST-TRAINING ANALYSIS")
@@ -729,6 +732,7 @@ def run_post_training_analysis(
         cache_dir=cache_dir, 
         max_samples=max_samples,
         force_recompute=force_recompute,
+        cfg=cfg,
     )
     print(f"Shapes - Latents: {latents.shape}, Coords: {coords.shape}, Atoms: {atoms.shape}")
     
@@ -757,7 +761,7 @@ def run_post_training_analysis(
         create_visualization(
             atoms, metadata, coords, phases, grains,
             kmeans_labels,
-            metadata.get("box_size", 160.0),
+            cfg.data["global"].L,
             output_path / viz_filename,
             dbscan_labels=clustering["dbscan"],
             hdbscan_labels=clustering["hdbscan"],
@@ -807,7 +811,7 @@ def run_post_training_analysis(
 def main():
     """Main entry point for standalone analysis."""
     # Configuration
-    checkpoint_path = "output/2025-11-26/00-03-49/synth_SPD_VQMoE_v2_l513_P80_chamfer_256-epoch=59.ckpt"
+    checkpoint_path = "output/2025-11-27/18-28-09/synth_SPD_VN_Equivariant_l513_P80_chamfer+sinkhorn_512-epoch=15.ckpt"
     output_dir = "output/spd_analysis"
     max_samples = None
     k_range = range(2, 7)  # k from 2 to 6

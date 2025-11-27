@@ -199,7 +199,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         vq_loss = 0.0
         
         if self.rotation_mode == "eq_decoder":
-            print("Not standart use of SPD. Z_inv is not used.")
+            # Not standart use of SPD. Z_inv is not used
             out = self.decoder(eq_z)
             cano, vq_loss = self._unpack_decoder_output(out)
             rot = self._identity_rotation(cano.size(0), cano.device, cano.dtype)
@@ -274,8 +274,15 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Diagnostic metrics (no grad)
         with torch.no_grad():
             # Log both squared and L2 for clarity
-            cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True)
-            cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False)
+            if self._loss_param("chamfer", "squared", True):
+                cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True)
+                with torch.no_grad():
+                    cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False)
+            else:
+                cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False)
+                with torch.no_grad():
+                    cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True)
+
             
             losses['chamfer_after'] = cd_sq if self._loss_param("chamfer", "squared", True) else cd_l2
             losses['chamfer_sq'] = cd_sq

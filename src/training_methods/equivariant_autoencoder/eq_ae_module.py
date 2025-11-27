@@ -148,6 +148,8 @@ class EquivariantAutoencoder(pl.LightningModule):
         else:
             # Standard Decoder
             recon = self.decoder(decoder_input)
+            if isinstance(recon, tuple):
+                recon = recon[0]
             diff_loss = torch.tensor(0.0, device=pc.device, dtype=pc.dtype)
             
         return inv_z, recon, eq_z, diff_loss

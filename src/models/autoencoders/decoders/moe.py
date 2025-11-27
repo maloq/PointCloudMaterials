@@ -491,11 +491,6 @@ class VQMoEDecoder(Decoder):
         
         return final_pts, vq_loss, weights
 
-
-# =============================================================================
-# ALTERNATIVE: KEEP YOUR ORIGINAL EXPERTS BUT ADD IMPROVEMENTS
-# =============================================================================
-
 def spherical_fibonacci_points(n: int, device: torch.device) -> torch.Tensor:
     """Deterministic quasi-uniform directions on S^2."""
     i = torch.arange(n, dtype=torch.float32, device=device) + 0.5

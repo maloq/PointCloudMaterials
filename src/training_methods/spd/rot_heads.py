@@ -7,7 +7,7 @@ from typing import Any, Dict
 import os, sys
 sys.path.append(os.getcwd())
 
-from src.models.autoencoders.encoders.vn import VNLinearLeakyReLU, VNLinear, VNMaxPool
+from src.models.autoencoders.encoders.vn_encoders import VNLinearLeakyReLU, VNLinear, VNMaxPool
 
 
 
