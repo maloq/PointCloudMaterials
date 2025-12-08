@@ -287,7 +287,7 @@ if __name__ == "__main__":
     parser.add_argument("--root_dir", default="datasets/ModelNet40")
     parser.add_argument("--metadata_file", default="datasets/metadata_modelnet40.csv")
     parser.add_argument("--output_dir", default="datasets/ModelNet40_fast")
-    parser.add_argument("--n_points", type=int, default=2048)
+    parser.add_argument("--n_points", type=int, default=4096)
     parser.add_argument("--classes", nargs="+", help="Specific classes to process")
     parser.add_argument("--experiment-classes", action="store_true",
                         help="Only convert classes used in run_modelnet_experiments.py (23 classes)")

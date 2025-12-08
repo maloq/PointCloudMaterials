@@ -1,4 +1,5 @@
 numpy
+torch
 pytorch-lightning
 omegaconf
 hydra-core
@@ -13,8 +14,7 @@ scipy
 dscribe
 ase
 hdbscan
-importlib
-pkgutil
 seaborn
 umap-learn
 pytest
+geomloss

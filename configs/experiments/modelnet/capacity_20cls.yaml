@@ -2,7 +2,7 @@
 
 data:
   classes: [
-    "airplane", "bathtub", "bed", "bench", "bookshelf", 
+    "airplane", "bathtub", "table", "bench", "bookshelf", 
     "bottle", "bowl", "car", "chair", "cone", 
     "cup", "curtain", "desk", "door", "dresser", 
     "flower_pot", "glass_box", "guitar", "keyboard", "lamp"
