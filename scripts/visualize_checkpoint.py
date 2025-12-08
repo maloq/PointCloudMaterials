@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 from src.training_methods.spd.spd_experiments_module import SPDExperimentsModule
 from src.data_utils.modelnet_loader import ModelNetDataModule
 from src.utils.visualization import visualize_reconstructions
-from src.run_experiments import load_config
+from src.run_modelnet_experiments import load_config
 
 def main():
     parser = argparse.ArgumentParser(description="Visualize reconstructions from a checkpoint")

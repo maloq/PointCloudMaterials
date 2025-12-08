@@ -41,6 +41,7 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
             class_indices[class_name] = []
         class_indices[class_name].append(idx)
         
+    print(f"Found {len(class_indices)} classes with {len(dataset)} samples total.")
     os.makedirs(save_dir, exist_ok=True)
     
     for class_name, indices in class_indices.items():
@@ -119,3 +120,19 @@ def set_axes_equal(ax):
     ax.set_xlim3d([x_middle - plot_radius, x_middle + plot_radius])
     ax.set_ylim3d([y_middle - plot_radius, y_middle + plot_radius])
     ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
+
+def save_point_cloud_ply(points, file_path):
+    """
+    Save point cloud to PLY file.
+    points: (N, 3) numpy array
+    """
+    with open(file_path, 'w') as f:
+        f.write("ply\n")
+        f.write("format ascii 1.0\n")
+        f.write(f"element vertex {len(points)}\n")
+        f.write("property float x\n")
+        f.write("property float y\n")
+        f.write("property float z\n")
+        f.write("end_header\n")
+        for p in points:
+            f.write(f"{p[0]} {p[1]} {p[2]}\n")

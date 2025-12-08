@@ -1,12 +1,12 @@
 # Base configuration for ModelNet40 experiments
 batch_size: 32
 num_workers: 6
-max_epochs: 600
-latent_size: 420
+max_epochs: 1200
+latent_size: 126 # Reduced from 420
 ortho_scale: 0.0
 kl_latent_loss_scale: 0.0
 learning_rate: 0.0005
-decay_rate: 1e-4
+decay_rate: 1e-2 # Increased from 1e-3
 scheduler_name: "Cosine"
 scheduler_gamma: 0.5
 enable_swa: False
@@ -20,39 +20,50 @@ max_test_samples: 1000
 enable_expensive_metrics: True
 
 augmentation:
-  noise_scale: 0.01  
+  noise_scale: 0.02  
   rotation_scale: 1.0
+  jitter_scale: 0.05
+  scaling_range: 0.15
 
 data:
   data_path: "datasets/ModelNet40"
   metadata_file: "datasets/metadata_modelnet40.csv"
-  num_points: 1600
+  num_points: 2048
   sampling_method: "fps"
 
-# encoder:
-#   name: "VN_DGCNN_Refined"
-#   kwargs:
-#     latent_size: 240
-#     n_knn: 20
-#     pooling: "mean"
-#     feature_dims: [64, 64, 128, 256, 512]
-
-encoder: 
-  name: VN_DGCNN_Refined # PnE_VN
+encoder:
+  name: "VN_DGCNN_Refined"
   kwargs:
     latent_size: ${latent_size}
-    feature_dims: [128, 128, 256, 512, 1024]
-    pooling: "max"
+    n_knn: 20
+    pooling: "mean"
+    feature_dims: [64, 64, 128, 256, 512] # Reduced from [128, 128, 256, 512, 1024]
+    dropout_rate: 0.6 # Increased from 0.5
 
+# encoder: 
+#   name: PnE_VN
+#   kwargs:
+#     latent_size: ${latent_size}
+#     pooling: "max"
+#     hidden_dim1: 512
+#     hidden_dim2: 1024
+#     stn_hidden_dims: [128, 256, 1024]
+#     stn_fc_dims: [512, 256]
+#     std_feature_hidden_dims: [256, 128]
+#     use_batchnorm: True
 
 decoder:
-  name: "FoldingTwoStepAttn"
+  name: "FoldingSphereAttnRes"
   kwargs:
     num_points: ${data.num_points}
     latent_size: ${latent_size}
-    hidden_dim: 512
-    attn_dim: 256
-    R_att: 0.30
+    n_shells: 2
+    R1: 0.5
+    R2: 1.0
+    hidden_dim: 256 # Reduced from 512
+    attn_dim: 128 # Reduced from 256
+    R_att: 0.3
+    dropout_rate: 0.6 # Increased from 0.5
 
 rot_net:
   name: "vn_rotation_head"
@@ -60,8 +71,8 @@ rot_net:
     hidden: 128
 
 sinkhorn_blur_schedule:
-  enable: False
+  enable: True
   start: 0.05
   end: 0.001
   start_epoch: 0
-  duration_epochs: 50
+  duration_epochs: 200

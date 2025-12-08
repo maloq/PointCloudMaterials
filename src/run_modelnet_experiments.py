@@ -85,7 +85,7 @@ def run_experiment(args):
     logger = WandbLogger(project="spd_modelnet_experiments", name=exp_name, offline=args.dry_run)
     
     # Trainer
-    num_devices = 4
+    num_devices = 1
     trainer = pl.Trainer(
         max_epochs=cfg.max_epochs,
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
@@ -95,7 +95,7 @@ def run_experiment(args):
         limit_train_batches=limit_train_batches,
         limit_val_batches=limit_val_batches,
         limit_test_batches=limit_val_batches,
-        check_val_every_n_epoch=10,
+        check_val_every_n_epoch=5,
         log_every_n_steps=1,
         callbacks=[
             ModelCheckpoint(monitor="val/loss", mode="min", save_last=True)
@@ -103,22 +103,19 @@ def run_experiment(args):
         precision="32-true",
     )
     
+    
+    trainer.fit(model, datamodule=dm)
+    
+    # Test
+    trainer.test(model, datamodule=dm)
+
+    # Visualize
+    print("Generating visualizations...")
+    vis_dir = os.path.join("output", "modelnet_visualizations", exp_name)
     try:
-        # Train
-        trainer.fit(model, datamodule=dm)
-        
-        # Test
-        trainer.test(model, datamodule=dm)
-    except KeyboardInterrupt:
-        print("\nTraining interrupted by user. Proceeding to visualization...")
-    finally:
-        # Visualize
-        print("Generating visualizations...")
-        vis_dir = os.path.join("output", "modelnet_visualizations", exp_name)
-        try:
-            visualize_reconstructions(model, dm, vis_dir, num_instances=10)
-        except Exception as e:
-            print(f"Failed to generate visualizations: {e}")
+        visualize_reconstructions(model, dm, vis_dir, num_instances=10)
+    except Exception as e:
+        print(f"Failed to generate visualizations: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

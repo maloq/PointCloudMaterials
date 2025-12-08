@@ -1719,7 +1719,7 @@ def analyze_structure(positions: np.ndarray, box_size: float, avg_nn_dist: float
 def main() -> None:
     import argparse
     parser = argparse.ArgumentParser(description="Generate synthetic atomistic datasets")
-    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_monocrystall.yaml")
+    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_polycrystalline.yaml")
     parser.add_argument("--quiet", "-q", action="store_true")
     parser.add_argument("--skip-viz", action="store_true")
     parser.add_argument("--analyze", action="store_true")

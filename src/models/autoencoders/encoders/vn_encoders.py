@@ -590,13 +590,14 @@ class VNRobustInvariantHead(nn.Module):
     Robustly extracts invariant features from equivariant vectors (B, C, 3).
     Uses vector norms and projections onto the global mean direction.
     """
-    def __init__(self, in_channels: int, out_channels: int):
+    def __init__(self, in_channels: int, out_channels: int, dropout_rate: float = 0.5):
         super().__init__()
         input_dim = in_channels * 2 
         self.mlp = nn.Sequential(
             nn.Linear(input_dim, out_channels),
             nn.BatchNorm1d(out_channels),
             nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(p=dropout_rate),
             nn.Linear(out_channels, out_channels)
         )
 
@@ -624,10 +625,12 @@ class VNDGCNNEncoderRefined(Encoder):
         pooling: str = 'mean',
         feature_dims: tuple[int, int, int, int, int] = (64, 64, 128, 256, 512),
         use_batchnorm: bool = True,
+        dropout_rate: float = 0.0,
     ):
         super().__init__()
         self.n_knn = n_knn
         self.pooling = pooling
+        self.dropout_rate = dropout_rate
 
         c1, c2, c3, c4, c5 = [max(1, dim // 3) for dim in feature_dims]
 
@@ -650,7 +653,7 @@ class VNDGCNNEncoderRefined(Encoder):
         self.eq_projector = VNLinear(c5, latent_size)
 
         # Head for Z_inv (B, latent)
-        self.inv_head = VNRobustInvariantHead(c5, latent_size)
+        self.inv_head = VNRobustInvariantHead(c5, latent_size, dropout_rate=dropout_rate)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # Input x: (B, 3, N)
@@ -893,7 +896,8 @@ class VNTransformerEncoder(nn.Module):
         )
         
         # Head for Equivariant Latent (Orientation)
-        self.eq_mlp = VNLinear(hidden_dim, latent_size // 3) 
+        # Output shape: (B, latent_size, 3) to match VNRotationHead expectations
+        self.eq_mlp = VNLinear(hidden_dim, latent_size) 
 
         # Head for Crystallinity detection (0=Liquid, 1=Crystal)
         self.crystallinity_head = nn.Sequential(

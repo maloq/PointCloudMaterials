@@ -45,6 +45,11 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         if hasattr(cfg, 'augmentation'):
             self.aug_noise_scale = cfg.augmentation.noise_scale
             self.aug_rotation_scale = cfg.augmentation.rotation_scale
+            self.aug_jitter_scale = getattr(cfg.augmentation, 'jitter_scale', 0.0)
+            self.aug_scaling_range = getattr(cfg.augmentation, 'scaling_range', 0.0)
+        else:
+            self.aug_jitter_scale = 0.0
+            self.aug_scaling_range = 0.0
 
     def _apply_augmentations(self, pc, labels):
         """Apply noise and rotation augmentations."""
@@ -52,6 +57,17 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         if self.aug_noise_scale > 0:
             noise = torch.randn_like(pc) * self.aug_noise_scale
             pc = pc + noise
+            
+        # Jitter (Translation)
+        if self.aug_jitter_scale > 0:
+            jitter = torch.randn(pc.shape[0], 1, 3, device=pc.device) * self.aug_jitter_scale
+            pc = pc + jitter
+            
+        # Scaling
+        if self.aug_scaling_range > 0:
+            # Scale factor between [1-scale, 1+scale]
+            scales = (torch.rand(pc.shape[0], 1, 1, device=pc.device) * 2.0 - 1.0) * self.aug_scaling_range + 1.0
+            pc = pc * scales
         
         # Rotation
         if self.aug_rotation_scale > 0:
