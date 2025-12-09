@@ -77,7 +77,7 @@ def run_experiment(args):
     model = SPDExperimentsModule(cfg)
     
     # Logger
-    logger = WandbLogger(project="spd_modelnet_experiments", name=exp_name, offline=args.dry_run)
+    logger = WandbLogger(project="spd_modelnet_experiments", name=exp_name, offline=not cfg.wandb_online)
     
     # Trainer
     num_devices = 1

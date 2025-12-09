@@ -292,26 +292,14 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         # Diagnostic metrics (no grad)
         with torch.no_grad():
-            # Log both squared and L2 for clarity
-            # Log both squared and L2 for clarity
             point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
-            if self._loss_param("chamfer", "squared", True):
-                cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True, point_reduction=point_reduction)
-                with torch.no_grad():
-                    cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
-            else:
-                cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
-                with torch.no_grad():
-                    cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True, point_reduction=point_reduction)
-
             
-            losses['chamfer_after'] = cd_sq if self._loss_param("chamfer", "squared", True) else cd_l2
-            losses['chamfer_sq'] = cd_sq
-            losses['chamfer_l2'] = cd_l2
+            # Standardize on L2 (Euclidean) Chamfer Distance for reporting
+            losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
             
             losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32, point_reduction=point_reduction)
+            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32, squared=False, point_reduction=point_reduction)
             # Pairwise distance metrics (unscaled, for diagnostics)
             if "pdist" in self.loss_components:
                 losses['pdist_after'] = self._compute_pdist(recon_f32, pc_f32)
@@ -358,8 +346,6 @@ class ShapePoseDisentanglement(pl.LightningModule):
             'emd': losses['emd_after'],
             'emd_before_rot': losses['emd_before'],
             'chamfer': losses['chamfer_after'],
-            'chamfer_sq': losses.get('chamfer_sq', 0.0),
-            'chamfer_l2': losses.get('chamfer_l2', 0.0),
             'chamfer_before_rot': losses['chamfer_before'],
             'ortho': losses['ortho'],
         }

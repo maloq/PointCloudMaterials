@@ -42,25 +42,6 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             
         pc = batch[0]
         
-        # Normalize!
-        # Note: We need to handle this carefully. unpack_batch might be called 
-        # with data on CPU or GPU.
-        # But _unpack_batch is usually called inside _step where data is usually on GPU
-        # EXCEPT for the standard lightning hook where the batch comes from loader.
-        # In Lightning, `batch` passed to training_step is usually on device if accelerator="gpu".
-        
-        # However, `_unpack_batch` is a static method here and `self` is passed 
-        # only if I change it to instance method or call it weirdly.
-        # But wait, looking at the code:
-        # def _unpack_batch(self, batch) in spd_experiments_module line 18 is static? 
-        # No, line 17 says @staticmethod.
-        # But line 161 in _step calls `pc, labels = self._unpack_batch(batch)`.
-        # When called on instance, staticmethod ignores self.
-        
-        # If I want to normalize, I can do it here. 
-        # BUT `pc` might be int or something? 
-        # Usually from loader it's float32 tensor.
-        
         if torch.is_tensor(pc):
             pc = SPDExperimentsModule._normalize_pc(pc)
         
@@ -154,7 +135,7 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             # "Before rotation" metrics
             point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
             losses['emd_pred_canonical_vs_input'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-            losses['chamfer_pred_canonical_vs_input'], _ = chamfer_distance(cano_f32, pc_f32, point_reduction=point_reduction)
+            losses['chamfer_pred_canonical_vs_input'], _ = chamfer_distance(cano_f32, pc_f32, squared=False, point_reduction=point_reduction)
 
             if labels is not None:
                 gt_rot = labels.get("orientation")
@@ -171,12 +152,12 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
                 
                 # Pred Canonical vs GT Canonical
                 losses['emd_pred_canonical_vs_gt_canonical'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_unrotated_gt, blur=sinkhorn_blur)
-                losses['chamfer_pred_canonical_vs_gt_canonical'], _ = chamfer_distance(cano_f32, pc_unrotated_gt, point_reduction=point_reduction)
+                losses['chamfer_pred_canonical_vs_gt_canonical'], _ = chamfer_distance(cano_f32, pc_unrotated_gt, squared=False, point_reduction=point_reduction)
                 
                 # Rotation Correctness
                 if rot is not None:
                     pc_derotated = (rot.transpose(1, 2).float() @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
-                    losses['rot_correctness'], _ = chamfer_distance(pc_derotated, pc_unrotated_gt, point_reduction=point_reduction)
+                    losses['rot_correctness'], _ = chamfer_distance(pc_derotated, pc_unrotated_gt, squared=False, point_reduction=point_reduction)
         
         return losses, sinkhorn_blur
 

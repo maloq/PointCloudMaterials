@@ -1,4 +1,5 @@
 # Base configuration for ModelNet40 experiments
+wandb_online: True
 batch_size: 16
 num_workers: 4
 max_epochs: 50

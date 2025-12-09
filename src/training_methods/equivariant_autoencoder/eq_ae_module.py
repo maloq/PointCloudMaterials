@@ -199,7 +199,7 @@ class EquivariantAutoencoder(pl.LightningModule):
                 
                 with torch.no_grad():
                     point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
-                    losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, point_reduction=point_reduction)
+                    losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
                     losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
         else:
             # Standard Autoencoder Logic
@@ -208,7 +208,7 @@ class EquivariantAutoencoder(pl.LightningModule):
             
             with torch.no_grad():
                 point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
-                losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, point_reduction=point_reduction)
+                losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
                 losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
 
         # 2. LATENT REGULARIZATION (Optional)
