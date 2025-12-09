@@ -14,7 +14,7 @@ EPS = 1e-10
 def chamfer_distance(pred: torch.Tensor,
                         target: torch.Tensor,
                         *,
-                        squared: bool = True,
+                        squared: bool = False,
                         point_reduction: str = 'mean'):
     """
     Pure-PyTorch implementation of the symmetric Chamfer distance.

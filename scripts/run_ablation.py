@@ -6,6 +6,7 @@ import csv
 import json
 import re
 import os
+import statistics
 import sys
 from copy import deepcopy
 from dataclasses import dataclass
@@ -576,21 +577,96 @@ def aggregate_and_save_tables(
             column = _sanitize_metric_name(metric)
             row[column] = fmt_metric(final_metrics.get(metric))
         final_rows.append(row)
+
+    # Calculate Mean and Std for final_metrics
+    mean_row: Dict[str, Any] = {"variable": "Mean"}
+    std_row: Dict[str, Any] = {"variable": "Std"}
+    for metric in final_metric_names:
+        values = []
+        for entry in runs:
+            val = entry["final_metrics"].get(metric)
+            if val is not None:
+                try:
+                    values.append(float(val))
+                except (ValueError, TypeError):
+                    pass
+        
+        column = _sanitize_metric_name(metric)
+        if values:
+            mean_val = statistics.mean(values)
+            std_val = statistics.stdev(values) if len(values) > 1 else 0.0
+            mean_row[column] = fmt_metric(mean_val)
+            std_row[column] = fmt_metric(std_val)
+        else:
+            mean_row[column] = ""
+            std_row[column] = ""
+    
+    final_rows.append(mean_row)
+    final_rows.append(std_row)
+
     _write_csv(output_dir / "final_metrics.csv", final_rows)
 
     for spec in best_specs:
         column_value = _sanitize_metric_name(spec.name)
         rows: List[Dict[str, Any]] = []
+        
+        vals_value = []
+        vals_epoch = []
+
         for entry in runs:
             best_data = entry["best_metrics"].get(spec.name)
             variable_display = entry.get("value_display", entry["value"])
+            
+            val_v = None
+            val_e = None
+            if best_data is not None:
+                val_v = best_data.get("value")
+                val_e = best_data.get("epoch")
+                if val_v is not None:
+                    try:
+                        vals_value.append(float(val_v))
+                    except (ValueError, TypeError):
+                        pass
+                if val_e is not None:
+                     # Epoch is usually int, but calculating mean/std treated as float
+                    try:
+                        vals_epoch.append(float(val_e))
+                    except (ValueError, TypeError):
+                        pass
+
             rows.append(
                 {
                     "variable": variable_display,
-                    f"{column_value}_value": None if best_data is None else fmt_metric(best_data.get("value")),
-                    f"{column_value}_epoch": None if best_data is None else best_data.get("epoch"),
+                    f"{column_value}_value": None if best_data is None else fmt_metric(val_v),
+                    f"{column_value}_epoch": None if best_data is None else val_e,
                 }
             )
+        
+        # Calculate stats for best metrics
+        mean_row_best: Dict[str, Any] = {"variable": "Mean"}
+        std_row_best: Dict[str, Any] = {"variable": "Std"}
+
+        if vals_value:
+             m_v = statistics.mean(vals_value)
+             s_v = statistics.stdev(vals_value) if len(vals_value) > 1 else 0.0
+             mean_row_best[f"{column_value}_value"] = fmt_metric(m_v)
+             std_row_best[f"{column_value}_value"] = fmt_metric(s_v)
+        else:
+             mean_row_best[f"{column_value}_value"] = ""
+             std_row_best[f"{column_value}_value"] = ""
+
+        if vals_epoch:
+             m_e = statistics.mean(vals_epoch)
+             s_e = statistics.stdev(vals_epoch) if len(vals_epoch) > 1 else 0.0
+             mean_row_best[f"{column_value}_epoch"] = fmt_metric(m_e)
+             std_row_best[f"{column_value}_epoch"] = fmt_metric(s_e)
+        else:
+             mean_row_best[f"{column_value}_epoch"] = ""
+             std_row_best[f"{column_value}_epoch"] = ""
+        
+        rows.append(mean_row_best)
+        rows.append(std_row_best)
+
         filename = f"best_{column_value}.csv"
         _write_csv(output_dir / filename, rows)
 

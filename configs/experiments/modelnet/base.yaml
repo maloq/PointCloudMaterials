@@ -1,8 +1,8 @@
 # Base configuration for ModelNet40 experiments
 wandb_online: True
-batch_size: 16
+batch_size: 64
 num_workers: 4
-max_epochs: 50
+max_epochs: 400
 latent_size: 420
 ortho_scale: 0.0
 kl_latent_loss_scale: 0.0
@@ -18,18 +18,18 @@ load_supervised_checkpoint: False
 loss: "chamfer"
 loss_params:
   chamfer:
-    point_reduction: "mean" # "mean" or "sum"
-    squared: True
-    auto_scale_by_points: False # Scale loss by 1/num_points
+    point_reduction: "mean" 
+    squared: False
+    auto_scale_by_points: False 
 max_supervised_samples: 4096
 max_test_samples: 1000
 enable_expensive_metrics: True
 
 augmentation:
-  noise_scale: 0.02  
+  noise_scale: 0.00 
   rotation_scale: 1.0
-  jitter_scale: 0.05
-  scaling_range: 0.15
+  jitter_scale: 0.00
+  scaling_range: 0.10
 
 data:
   data_path: "datasets/ModelNet40"
@@ -37,14 +37,21 @@ data:
   num_points: 1024
   sampling_method: "fps"
 
+
+# encoder: 
+#   name: VN_Transformer
+#   kwargs:
+#     latent_size: ${latent_size}
+#     size_preset: 'base'
+
 encoder:
   name: "VN_DGCNN_Refined"
   kwargs:
     latent_size: ${latent_size}
     n_knn: 20
     pooling: "mean"
-    feature_dims: [128, 128, 256, 256, 512]
-    dropout_rate: 0.1
+    feature_dims: [128, 128, 256, 512, 512]
+    dropout_rate: 0.0
 
 # encoder: 
 #   name: PnE_VN
@@ -63,7 +70,7 @@ decoder:
   kwargs:
     num_points: ${data.num_points}
     latent_size: ${latent_size}
-    hidden_dim: 512
+    hidden_dim: 768
 
 rot_net:
   name: "vn_rotation_head"
@@ -71,7 +78,7 @@ rot_net:
     hidden: 128
 
 sinkhorn_blur_schedule:
-  enable: True
+  enable: False
   start: 0.02
   end: 0.001
   start_epoch: 0

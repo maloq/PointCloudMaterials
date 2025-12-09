@@ -1,33 +1,41 @@
 defaults:
-  - data: data_synth_monocrystall
+  - data: synth_simple
 project_name: pointnet
 experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
-wandb_mode: online
+wandb_mode: offline
 
 model_type: spd
-latent_size: 513
+latent_size: 120
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False  # Set to True to load pretrained weights
 supervised_checkpoint_path: output/supervised_encoder/2025-11-07/19-36-50/supervised_encoder_VN_DGCNN_l36_bs1024_lr0.0060_rotsixd_head_loss_epochloss_epoch=00.ckpt
 
-encoder: 
-  name: VN_Transformer
+encoder:
+  name: "VN_DGCNN_Refined"
   kwargs:
     latent_size: ${latent_size}
-    size_preset: 'base'
+    n_knn: 20
+    pooling: "mean"
+    feature_dims: [128, 128, 256, 512, 512]
+    dropout_rate: 0.0
 
-    
-
-decoder: 
-  name: VN_Crystal
+decoder:
+  name: "SnowflakeDeep"
   kwargs:
     num_points: ${data.num_points}
     latent_size: ${latent_size}
-    hidden_dims: [1024, 512, 256]
-    correction_mode: 'none'
-    correction_scale: 0.1
-    correction_hidden_dim: 512    
+    hidden_dim: 256
+
+# decoder: 
+#   name: VN_Crystal
+#   kwargs:
+#     num_points: ${data.num_points}
+#     latent_size: ${latent_size}
+#     hidden_dims: [1024, 512, 256]
+#     correction_mode: 'none'
+#     correction_scale: 0.1
+#     correction_hidden_dim: 512    
 
 
 rot_net:
@@ -36,9 +44,9 @@ rot_net:
     hidden: 256
     use_attention: True
 
-rotation_mode: eq_decoder
+rotation_mode: vn_rotation_head
 
-loss: chamfer+sinkhorn
+loss: chamfer
 pdist_scale: 0.0  # weight for pdist component
 loss_params:
   pdist:
@@ -62,12 +70,12 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.004
-batch_size: 1024
+batch_size: 256
 gradient_clip_val: 0.5
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 6
+epochs: 120
 
 gpu: True
 devices: [0]

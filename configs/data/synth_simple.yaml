@@ -1,3 +1,15 @@
+kind: synthetic
+data_path: output/synthetic_data/simple_dataset
+num_points: 256
+radius: 75.0
+sample_type: regular
+overlap_fraction: 0.2
+n_samples: 0
+train_ratio: 0.8
+drop_edge_samples: true
+pre_normalize: true
+normalize: true
+
 global:
   L: 1200.0
   rho_target: 0.02
@@ -5,8 +17,8 @@ global:
   grain_count: 5
   objects_per_grain: 400
   points_per_object: 256
-  collision_safety_factor: 3.0
-  output_dir: output/simple_dataset
+  collision_safety_factor: 3.3
+  output_dir: output/synthetic_data/simple_dataset
   random_seed: 42
 
 phases:
