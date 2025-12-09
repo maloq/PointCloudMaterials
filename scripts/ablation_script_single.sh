@@ -2,7 +2,7 @@
 #SBATCH --job-name=SPD_single        # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
-#SBATCH --partition=V100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
 #SBATCH --gpus-per-node=1             # Request 1 node
 #SBATCH --gres=gpu:1                  # Request 1 GPU
 #SBATCH --cpus-per-task=8             # Request 8 CPU cores
@@ -24,7 +24,7 @@ export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run multiple ablation experiments consecutively
 echo "=== Running experiment ==="
-srun python scripts/run_ablation.py --config configs/ablations/spd_rotation_method.yaml
+srun python scripts/run_ablation.py --config configs/ablations/spd_latent_size.yaml
 echo "Experiment 1 finished at: $(date)"
 
 

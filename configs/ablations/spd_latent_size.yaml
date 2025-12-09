@@ -1,5 +1,5 @@
 experiment:
-  config_name: spd_synth
+  config_name: spd_synth_small
   config_path: configs
   base_overrides:
     - wandb_mode=offline
@@ -7,7 +7,7 @@ experiment:
     - precision=bf16-mixed
 variable:
   override: latent_size
-  values: [9, 12]
+  values: [9, 36, 96, 120, 240]
 metrics:
   final:
     - train/loss

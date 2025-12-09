@@ -468,10 +468,11 @@ def run_single_experiment(
     model = ShapePoseDisentanglement(cfg)
     checkpoint_callback = ModelCheckpoint(
         dirpath=run_dir,
-        monitor="val_loss",
-        filename=f"{cfg.experiment_name}-{{epoch:02d}}-{{val_loss:.2f}}",
+        monitor="val/loss",
+        filename=f"{cfg.experiment_name}-{{epoch:02d}}",
         save_top_k=3,
         mode="min",
+        auto_insert_metric_name=False,
     )
     lr_monitor = LearningRateMonitor(logging_interval="step")
 
