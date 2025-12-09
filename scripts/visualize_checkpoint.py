@@ -8,13 +8,14 @@ from omegaconf import OmegaConf
 sys.path.append(os.getcwd())
 
 from src.training_methods.spd.spd_experiments_module import SPDExperimentsModule
-from src.data_utils.modelnet_loader import ModelNetDataModule
+# from src.data_utils.modelnet_loader import ModelNetDataModule
+from src.data_utils.modelnet_fast_loader import ModelNetFastDataModule
 from src.utils.visualization import visualize_reconstructions
 from src.run_modelnet_experiments import load_config
 
 def main():
     parser = argparse.ArgumentParser(description="Visualize reconstructions from a checkpoint")
-    parser.add_argument("--checkpoint", type=str, required=True, help="Path to the checkpoint file (.ckpt)")
+    parser.add_argument("--checkpoint", type=str, default="spd_modelnet_experiments/6t15z2fq/checkpoints/epoch=49-step=1950.ckpt", help="Path to the checkpoint file (.ckpt)")
     parser.add_argument("--output_dir", type=str, default="output/visualizations_manual", help="Directory to save visualizations")
     parser.add_argument("--num_instances", type=int, default=10, help="Number of instances per class to visualize")
     parser.add_argument("--experiment", type=str, default=None, help="Experiment name (optional, for fallback config loading)")
@@ -77,8 +78,13 @@ def main():
     
     # Setup DataModule
     print("Initializing DataModule...")
+    
+    # Update config for fast loader
+    if not hasattr(cfg.data, 'fast_data_path'):
+        cfg.data.fast_data_path = 'datasets/ModelNet40_fast'
+        
     try:
-        dm = ModelNetDataModule(cfg)
+        dm = ModelNetFastDataModule(cfg)
         dm.setup(stage='test')
     except Exception as e:
         print(f"Error initializing DataModule: {e}")

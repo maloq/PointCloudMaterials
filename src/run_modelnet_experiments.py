@@ -11,10 +11,11 @@ from pytorch_lightning.strategies import DDPStrategy
 # Add src to path
 sys.path.append(os.getcwd())
 
-from src.data_utils.modelnet_loader import ModelNetDataModule
+# from src.data_utils.modelnet_loader import ModelNetDataModule
 from src.training_methods.spd.spd_experiments_module import SPDExperimentsModule
 torch.set_float32_matmul_precision('high')
 from src.utils.visualization import visualize_reconstructions
+from src.data_utils.modelnet_fast_loader import ModelNetFastDataModule
 
 def update_config_for_fast_data(cfg):
     """Update config to use fast data path if not already set."""
@@ -65,18 +66,12 @@ def run_experiment(args):
     print(f"Running Experiment: {exp_name}")
     print(f"Classes: {cfg.data.classes}")
 
-    # Update config for fast data if needed
-    if not args.slow_data:
-        cfg = update_config_for_fast_data(cfg)
 
-    # Initialize Data Module - use fast loader by default
-    if args.slow_data:
-        print("Using Original Data Loader")
-        dm = ModelNetDataModule(cfg)
-    else:
-        from src.data_utils.modelnet_fast_loader import ModelNetFastDataModule
-        print("Using Fast Data Loader")
-        dm = ModelNetFastDataModule(cfg)
+    cfg = update_config_for_fast_data(cfg)
+
+
+    print("Using Fast Data Loader")
+    dm = ModelNetFastDataModule(cfg)
     
     # Initialize Model
     model = SPDExperimentsModule(cfg)
@@ -126,8 +121,6 @@ if __name__ == "__main__":
                         help="Number of classes for capacity experiment (3, 5, 10, 20)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Run a short dry run for verification")
-    parser.add_argument("--slow-data", action="store_true",
-                        help="Use the original slow dataset loader (default: use fast pre-converted dataset)")
     
     args = parser.parse_args()
     run_experiment(args)

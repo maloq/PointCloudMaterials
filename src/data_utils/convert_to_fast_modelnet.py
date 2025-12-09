@@ -3,6 +3,10 @@ import sys
 import pandas as pd
 import numpy as np
 import torch
+try:
+    import trimesh
+except ImportError:
+    trimesh = None
 from tqdm import tqdm
 import argparse
 # Add project root to path
@@ -10,7 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"
 
 # All classes used in experiments from run_modelnet_experiments.py
 EXPERIMENT_CLASSES = [
-    "airplane", "bathtub", "bed", "bench", "bookshelf", 
+    "airplane", "bathtub", "table", "bench", "bookshelf", 
     "bottle", "bowl", "car", "chair", "cone", 
     "cup", "curtain", "desk", "door", "dresser", 
     "flower_pot", "glass_box", "guitar", "keyboard", "lamp",
@@ -140,6 +144,38 @@ def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
         np.save(cache_filename, points)
     return points
 
+def read_and_sample_mesh(filename, n_points=2048):
+    """
+    Loads OFF file as a mesh and samples points from the SURFACE.
+    """
+    if trimesh is None:
+        raise ImportError("Please install trimesh to use mesh sampling: pip install trimesh")
+
+    try:
+        # Trimesh handles OFF files and face logic automatically
+        mesh = trimesh.load(filename)
+        
+        # Some ModelNet files are "scenes" or broken; force into a single mesh
+        if isinstance(mesh, trimesh.Scene):
+            # Concatenate all geometries in the scene
+            if len(mesh.geometry) == 0:
+                return np.zeros((n_points, 3))
+            mesh = trimesh.util.concatenate(
+                tuple(trimesh.Trimesh(vertices=g.vertices, faces=g.faces) 
+                      for g in mesh.geometry.values())
+            )
+            
+        # SAMPLE points from the surface (weighted by triangle area)
+        # This fills in the wings!
+        points, _ = trimesh.sample.sample_surface(mesh, n_points)
+        
+        return np.array(points, dtype=np.float32)
+        
+    except Exception as e:
+        print(f"Error loading {filename}: {e}")
+        # Fallback to zeros or handle error
+        return np.zeros((n_points, 3), dtype=np.float32)
+
 def drop_points_fps(points: np.ndarray, n_points: int, use_torch: bool = True) -> np.ndarray:
     """Adjust points to have exactly n_points using Farthest Point Sampling."""
     if len(points) == n_points:
@@ -153,17 +189,22 @@ def drop_points_fps(points: np.ndarray, n_points: int, use_torch: bool = True) -
         # Upsample by reflecting points through center
         center = np.mean(points, axis=0)
         num_to_add = n_points - len(points)
-        idx = np.random.choice(len(points), num_to_add, replace=True)
-        new_points = 2 * center - points[idx]
-        return np.vstack((points, new_points))
+        if hasattr(points, 'shape') and len(points) > 0:
+           idx = np.random.choice(len(points), num_to_add, replace=True)
+           new_points = 2 * center - points[idx]
+           return np.vstack((points, new_points))
+        else:
+           return np.zeros((n_points, 3))
+
 
 def convert_modelnet(
     root_dir="datasets/ModelNet40",
     metadata_file="datasets/metadata_modelnet40.csv",
     output_dir="datasets/ModelNet40_fast",
-    n_points=2048,
+    n_points=1024,
     classes=None,
-    sampling_method="fps"
+    sampling_method="fps",
+    read_mode="mesh"
 ):
     """
     Convert ModelNet dataset to fast-loading format.
@@ -172,6 +213,8 @@ def convert_modelnet(
         sampling_method: "fps" (GPU-accelerated FPS, default), 
                         "random" (fastest but lower quality),
                         "fps_cpu" (slow numpy FPS)
+        read_mode: "mesh" (sample from surface using trimesh - better quality),
+                   "vertices" (read vertices from OFF file - legacy)
     """
     os.makedirs(output_dir, exist_ok=True)
     
@@ -191,6 +234,7 @@ def convert_modelnet(
     print(f"Found {len(classes)} classes.")
     print(f"Output directory: {output_dir}")
     print(f"Target points per sample: {n_points}")
+    print(f"Read mode: {read_mode}")
     
     if sampling_method == "fps":
         print(f"Using GPU-accelerated FPS (fast + high quality)")
@@ -228,8 +272,19 @@ def convert_modelnet(
                 full_path = os.path.join(root_dir, rel_path)
                 
                 try:
-                    # Load points
-                    points = read_off_file(full_path, verbose=False, cache=True)
+                    # Determine how many points to load initially
+                    if read_mode == "mesh":
+                        # If doing FPS, we typically want more initial points to sample from
+                        if sampling_method in ["fps", "fps_cpu"]:
+                            load_n_points = n_points * 5
+                        else:
+                            load_n_points = n_points
+                            
+                        # Reading from mesh surface
+                        points = read_and_sample_mesh(full_path, n_points=load_n_points)
+                    else:
+                        # Legacy vertex reading
+                        points = read_off_file(full_path, verbose=False, cache=True)
                     
                     # Resample based on chosen method
                     if sampling_method == "fps":
@@ -239,7 +294,7 @@ def convert_modelnet(
                         # CPU FPS (slow)
                         points = drop_points_fps(points, n_points, use_torch=False)
                     else:
-                        # Random sampling (fastest)
+                        # Random sampling (fastest) or just downsample if we loaded too many
                         if len(points) >= n_points:
                             idx = np.random.choice(len(points), n_points, replace=False)
                         else:
@@ -287,13 +342,16 @@ if __name__ == "__main__":
     parser.add_argument("--root_dir", default="datasets/ModelNet40")
     parser.add_argument("--metadata_file", default="datasets/metadata_modelnet40.csv")
     parser.add_argument("--output_dir", default="datasets/ModelNet40_fast")
-    parser.add_argument("--n_points", type=int, default=4096)
+    parser.add_argument("--n_points", type=int, default=1024)
     parser.add_argument("--classes", nargs="+", help="Specific classes to process")
     parser.add_argument("--experiment-classes", action="store_true",
                         help="Only convert classes used in run_modelnet_experiments.py (23 classes)")
     parser.add_argument("--sampling", default="fps", choices=["fps", "random", "fps_cpu"],
                         help="Sampling method: 'fps' (GPU-accelerated, default), "
                              "'random' (fastest), 'fps_cpu' (slow numpy FPS)")
+    parser.add_argument("--read_mode", default="mesh", choices=["mesh", "vertices"],
+                        help="Reading mode: 'mesh' (sample from surface, requires trimesh) or "
+                             "'vertices' (read vertices from OFF file, legacy)")
     
     args = parser.parse_args()
     
@@ -309,5 +367,6 @@ if __name__ == "__main__":
         output_dir=args.output_dir,
         n_points=args.n_points,
         classes=classes_to_process,
-        sampling_method=args.sampling
+        sampling_method=args.sampling,
+        read_mode=args.read_mode
     )

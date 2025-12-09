@@ -92,12 +92,30 @@ class EquivariantAutoencoder(pl.LightningModule):
             if os.path.exists(ref_path):
                 self.reference_pcs = np.load(ref_path, allow_pickle=True).item()
 
+    def _get_num_points(self):
+        """Try to resolve num_points from config."""
+        if hasattr(self.hparams, 'num_points'):
+            return self.hparams.num_points
+        if hasattr(self.hparams, 'data') and hasattr(self.hparams.data, 'num_points'):
+            return self.hparams.data.num_points
+        if hasattr(self.hparams, 'decoder') and hasattr(self.hparams.decoder, 'kwargs'):
+            return self.hparams.decoder.kwargs.get('num_points', 0)
+        return 0
+
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
             val, _ = sinkhorn_distance(pred.contiguous(), target, blur=sinkhorn_blur)
             return val
         if component == "chamfer":
-            val, _ = chamfer_distance(pred, target)
+            point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
+            val, _ = chamfer_distance(pred, target, point_reduction=point_reduction)
+            
+            auto_scale = self.loss_params.get("chamfer", {}).get("auto_scale_by_points", False)
+            if auto_scale:
+                num_points = self._get_num_points()
+                if num_points > 0:
+                    val = val / float(num_points)
+                    
             return val
         if component == "pdist":
             # Assuming _compute_pdist exists in utils or parent, otherwise implement or import
@@ -180,7 +198,8 @@ class EquivariantAutoencoder(pl.LightningModule):
                 recon_f32, pc_f32 = to_float32(recon, pc)
                 
                 with torch.no_grad():
-                    losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32)
+                    point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
+                    losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, point_reduction=point_reduction)
                     losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
         else:
             # Standard Autoencoder Logic
@@ -188,7 +207,8 @@ class EquivariantAutoencoder(pl.LightningModule):
             losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
             
             with torch.no_grad():
-                losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32)
+                point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
+                losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, point_reduction=point_reduction)
                 losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
 
         # 2. LATENT REGULARIZATION (Optional)

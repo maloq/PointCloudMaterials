@@ -10,7 +10,7 @@ class ModelNetFastDataset(Dataset):
                  root_dir: str, 
                  split: str = 'train', 
                  classes: Optional[List[str]] = None,
-                 n_points: int = 1024):
+                 n_points: int = 2048):
         """
         Args:
             root_dir: Path to directory containing .pt files (e.g., datasets/ModelNet40_fast).

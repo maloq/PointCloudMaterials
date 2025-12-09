@@ -1,17 +1,9 @@
 import sys, os
 sys.path.append(os.getcwd())
 import torch
-try:
-    from pytorch3d.loss import chamfer_distance as chamfer_distance  
-    pytorch3d_available = True
-except Exception:                         
-    pytorch3d_available = False
 
-try:
-    import geomloss
-    geomloss_available = True
-except ImportError:
-    geomloss_available = False
+import geomloss
+
 
 import torch.nn as nn
 from src.utils.logging_config import setup_logging
@@ -19,63 +11,67 @@ logger = setup_logging()
 EPS = 1e-10
 
 
-if not pytorch3d_available:
+def chamfer_distance(pred: torch.Tensor,
+                        target: torch.Tensor,
+                        *,
+                        squared: bool = True,
+                        point_reduction: str = 'mean'):
+    """
+    Pure-PyTorch implementation of the symmetric Chamfer distance.
 
-    def chamfer_distance(pred: torch.Tensor,
-                         target: torch.Tensor,
-                         *,
-                         squared: bool = True):
-        """
-        Pure-PyTorch implementation of the symmetric Chamfer distance.
+    Args
+    ----
+    pred, target : (B, N, 3) or (B, 3, N) tensors
+        Point-clouds of the same batch size B.  N/M may differ.
+    squared : bool, default=True
+        If True (default) uses squared Euclidean distances—matching the
+        behaviour of PyTorch3D.  Set to False for plain L2.
+    point_reduction : str, default='mean'
+        Reduction mode for the points dimension: 'mean' or 'sum'.
 
-        Args
-        ----
-        pred, target : (B, N, 3) or (B, 3, N) tensors
-            Point-clouds of the same batch size B.  N/M may differ.
-        squared : bool, default=True
-            If True (default) uses squared Euclidean distances—matching the
-            behaviour of PyTorch3D.  Set to False for plain L2.
+    Returns
+    -------
+    cd : torch.Tensor
+        Scalar Chamfer distance averaged over the batch.
+    aux : None
+        Placeholder to stay API-compatible with PyTorch3D.
+    """
+    # Ensure both clouds are (B, *, 3)
+    pred   = _to_B_N_3(pred)
+    target = _to_B_N_3(target)
 
-        Returns
-        -------
-        cd : torch.Tensor
-            Scalar Chamfer distance averaged over the batch.
-        aux : None
-            Placeholder to stay API-compatible with PyTorch3D.
-        """
-        # Ensure both clouds are (B, *, 3)
-        pred   = _to_B_N_3(pred)
-        target = _to_B_N_3(target)
+    # ------------------------------------------------------------------
+    # fast squared Euclidean distances:  ‖x‖² + ‖y‖² − 2 x·yᵀ
+    # ------------------------------------------------------------------
+    B, N, _ = pred.shape
+    M       = target.shape[1]
 
-        # ------------------------------------------------------------------
-        # fast squared Euclidean distances:  ‖x‖² + ‖y‖² − 2 x·yᵀ
-        # ------------------------------------------------------------------
-        B, N, _ = pred.shape
-        M       = target.shape[1]
+    # ‖x‖²   (B, N, 1)
+    pred_sq   = (pred   ** 2).sum(-1, keepdim=True)
+    # ‖y‖²   (B, 1, M)
+    target_sq = (target ** 2).sum(-1).unsqueeze(1)
 
-        # ‖x‖²   (B, N, 1)
-        pred_sq   = (pred   ** 2).sum(-1, keepdim=True)
-        # ‖y‖²   (B, 1, M)
-        target_sq = (target ** 2).sum(-1).unsqueeze(1)
+    # -2 x·yᵀ   (B, N, M)
+    cross = -2.0 * torch.bmm(pred, target.transpose(1, 2))
 
-        # -2 x·yᵀ   (B, N, M)
-        cross = -2.0 * torch.bmm(pred, target.transpose(1, 2))
+    dists2 = pred_sq + target_sq + cross                      # (B, N, M)
 
-        dists2 = pred_sq + target_sq + cross                      # (B, N, M)
+    # Numerical stability – make sure we do not go below zero
+    dists2 = dists2.clamp_min(0.)
 
-        # Numerical stability – make sure we do not go below zero
-        dists2 = dists2.clamp_min(0.)
+    # If the caller wants plain L2, take the sqrt **once**
+    dists = torch.sqrt(dists2 + 1e-8) if not squared else dists2
+    # ------------------------------------------------------------------
 
-        # If the caller wants plain L2, take the sqrt **once**
-        dists = torch.sqrt(dists2 + 1e-8) if not squared else dists2
-        # ------------------------------------------------------------------
+    # Closest distances each way
+    min_pred2gt = dists.min(dim=2)[0]     # (B, N)
+    min_gt2pred = dists.min(dim=1)[0]     # (B, M)
 
-        # Closest distances each way
-        min_pred2gt = dists.min(dim=2)[0]     # (B, N)
-        min_gt2pred = dists.min(dim=1)[0]     # (B, M)
-
-        cd = min_pred2gt.mean(1) + min_gt2pred.mean(1)            # (B,)
-        return cd.mean(), None
+    if point_reduction == 'sum':
+        cd = min_pred2gt.sum(1) + min_gt2pred.sum(1)          # (B,)
+    else:
+        cd = min_pred2gt.mean(1) + min_gt2pred.mean(1)        # (B,)
+    return cd.mean(), None
         
 
 def sinkhorn_distance(pred: torch.Tensor,
@@ -128,7 +124,8 @@ def chamfer_loss(pred, target, **kwargs):
     Returns:
         tuple: (Total loss, dictionary for auxiliary losses).
     """
-    loss, _ = chamfer_distance(pred, target)
+    point_reduction = kwargs.get('point_reduction', 'mean')
+    loss, _ = chamfer_distance(pred, target, point_reduction=point_reduction)
     aux_loss_dict = {}
     return _add_optional_losses(loss, aux_loss_dict, **kwargs)
 
@@ -167,7 +164,8 @@ def chamfer_regularized_encoder_loss(pred, target, **kwargs):
     Returns:
         tuple: (Total loss, dictionary containing auxiliary losses).
     """
-    loss, _ = chamfer_distance(pred, target)
+    point_reduction = kwargs.get('point_reduction', 'mean')
+    loss, _ = chamfer_distance(pred, target, point_reduction=point_reduction)
     encoder_trans = kwargs['trans_feat_list'][0]
     reg_loss = feature_transform_regularizer(encoder_trans)
     total_loss = loss + kwargs['feature_transform_loss_scale'] * reg_loss
@@ -200,7 +198,8 @@ def chamfer_regularized_encoder_loss_repulsion(pred, target, **kwargs):
     Returns:
         tuple: (Total loss, dictionary containing {'ft_loss': regularization_loss, 'repulsion_loss': repulsion_loss_val}).
     """
-    loss, _ = chamfer_distance(pred, target)
+    point_reduction = kwargs.get('point_reduction', 'mean')
+    loss, _ = chamfer_distance(pred, target, point_reduction=point_reduction)
     encoder_trans = kwargs['trans_feat_list'][0]
     reg_loss = feature_transform_regularizer(encoder_trans)
     total_loss = loss + kwargs['feature_transform_loss_scale'] * reg_loss
@@ -296,26 +295,6 @@ def _add_optional_losses(total_loss, aux_loss_dict, **kwargs):
         aux_loss_dict['kl_latent_loss'] = kl_loss
         
     return total_loss, aux_loss_dict
-
-
-@torch.no_grad()
-def _kabsch_so3_teacher(
-        cano_points: torch.Tensor,
-        target_points: torch.Tensor
-) -> torch.Tensor:
-    """
-    Computes the optimal rotation matrix using Kabsch algorithm.
-    :param cano_points: canonical point cloud. (B, N, 3)
-    :param target_points: target point cloud. (B, N, 3)
-    :return: optimal rotation matrix. (B, 3, 3)
-    """
-    #  H = A^T B
-    H = torch.einsum("bni,bnj->bij", cano_points, target_points) # H (B,3,3)
-    U, S, Vh = torch.linalg.svd(H.to(torch.float32), full_matrices=False)
-
-    #  R = Vh^T U^T
-    R = torch.einsum("bij,bkj->bik", Vh, U) # R (B,3,3)
-    return R
 
 
 def rotation_geodesic_kabsch_loss(rot_pred: torch.Tensor,

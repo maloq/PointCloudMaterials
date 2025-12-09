@@ -67,6 +67,37 @@ def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
         return np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32)
     return quat / norm
 
+import trimesh
+
+def read_and_sample_mesh(filename, n_points=2048):
+    """
+    Loads OFF file as a mesh and samples points from the SURFACE.
+    """
+    try:
+        # Trimesh handles OFF files and face logic automatically
+        mesh = trimesh.load(filename)
+        
+        # Some ModelNet files are "scenes" or broken; force into a single mesh
+        if isinstance(mesh, trimesh.Scene):
+            # Concatenate all geometries in the scene
+            if len(mesh.geometry) == 0:
+                return np.zeros((n_points, 3))
+            mesh = trimesh.util.concatenate(
+                tuple(trimesh.Trimesh(vertices=g.vertices, faces=g.faces) 
+                      for g in mesh.geometry.values())
+            )
+            
+        # SAMPLE points from the surface (weighted by triangle area)
+        # This fills in the wings!
+        points, _ = trimesh.sample.sample_surface(mesh, n_points)
+        
+        return np.array(points, dtype=np.float32)
+        
+    except Exception as e:
+        print(f"Error loading {filename}: {e}")
+        # Fallback to zeros or handle error
+        return np.zeros((n_points, 3), dtype=np.float32)
+        
 
 def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords, sampling_method="drop_farthest"):
     """

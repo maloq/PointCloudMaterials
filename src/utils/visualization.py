@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import torch
 import numpy as np
 import os
+from src.loss.reconstruction_loss import chamfer_distance
 
 def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
     """
@@ -30,9 +31,10 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
     print("Grouping samples by class...")
     for idx in range(len(dataset)):
         # dataset[idx] returns (pc, label, class_name)
-        # We avoid calling __getitem__ repeatedly if possible, but here we need class names.
-        # If dataset has metadata, use it directly to be faster.
-        if hasattr(dataset, 'metadata'):
+        # Optimization: Use class_names list directly if available (ModelNetFastDataset)
+        if hasattr(dataset, 'class_names'):
+            class_name = dataset.class_names[idx]
+        elif hasattr(dataset, 'metadata'):
             class_name = dataset.metadata.iloc[idx]['class']
         else:
             _, _, class_name = dataset[idx]
@@ -59,13 +61,29 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
             # Prepare batch for model
             pc_batch = pc.unsqueeze(0).to(device) # (1, N, 3)
             
+            # Normalize inputs to match training (centering + unit sphere)
+            centroid = torch.mean(pc_batch, dim=1, keepdim=True)
+            pc_batch = pc_batch - centroid
+            m = torch.max(torch.sqrt(torch.sum(pc_batch**2, dim=2, keepdim=True)), dim=1, keepdim=True)[0]
+            m = torch.maximum(m, torch.tensor(1e-6, device=device))
+            pc_batch = pc_batch / m
+            
             with torch.no_grad():
                 # Forward pass
                 # Output: inv_z, recon, cano, rot, vq_loss
                 inv_z, recon, cano, rot, _ = model(pc_batch)
                 
-            # Convert to numpy
-            pc_np = pc.numpy()
+                
+            # Calculate Chamfer Distances
+            # Input vs Canonical (Input is rotated, Canonical is aligned)
+            # This distance might be large if rotation is significant.
+            cd_cano, _ = chamfer_distance(pc_batch, cano, squared=False, point_reduction='mean')
+            
+            # Input vs Rotated Reconstruction (should match well)
+            cd_recon, _ = chamfer_distance(pc_batch, recon, squared=False, point_reduction='mean')
+            
+            # Convert to numpy (use normalized input for visualization consistency)
+            pc_np = pc_batch[0].cpu().numpy()
             cano_np = cano[0].cpu().numpy()
             recon_np = recon[0].cpu().numpy()
             
@@ -80,14 +98,14 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
             # Plot Canonical
             ax = fig.add_subplot(n_samples, 3, i * 3 + 2, projection='3d')
             ax.scatter(cano_np[:, 0], cano_np[:, 1], cano_np[:, 2], s=2, c='g', alpha=0.5)
-            ax.set_title("Canonical Reconstruction")
+            ax.set_title(f"Canonical Reconstruction\nCD: {cd_cano.item():.4f}")
             ax.axis('off')
             set_axes_equal(ax)
             
             # Plot Final Recon (Rotated back)
             ax = fig.add_subplot(n_samples, 3, i * 3 + 3, projection='3d')
             ax.scatter(recon_np[:, 0], recon_np[:, 1], recon_np[:, 2], s=2, c='r', alpha=0.5)
-            ax.set_title("Rotated Reconstruction")
+            ax.set_title(f"Rotated Reconstruction\nCD: {cd_recon.item():.4f}")
             ax.axis('off')
             set_axes_equal(ax)
             

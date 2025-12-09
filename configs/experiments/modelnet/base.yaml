@@ -1,12 +1,12 @@
 # Base configuration for ModelNet40 experiments
-batch_size: 32
-num_workers: 6
-max_epochs: 1200
-latent_size: 126 # Reduced from 420
+batch_size: 16
+num_workers: 4
+max_epochs: 50
+latent_size: 420
 ortho_scale: 0.0
 kl_latent_loss_scale: 0.0
-learning_rate: 0.0005
-decay_rate: 1e-2 # Increased from 1e-3
+learning_rate: 0.002
+decay_rate: 0.00001
 scheduler_name: "Cosine"
 scheduler_gamma: 0.5
 enable_swa: False
@@ -14,8 +14,13 @@ swa_epoch_start: 50
 epochs: ${max_epochs}
 rotation_mode: "vn_rotation_head"
 load_supervised_checkpoint: False
-loss: "chamfer+sinkhorn"
-max_supervised_samples: 2048
+loss: "chamfer"
+loss_params:
+  chamfer:
+    point_reduction: "mean" # "mean" or "sum"
+    squared: True
+    auto_scale_by_points: False # Scale loss by 1/num_points
+max_supervised_samples: 4096
 max_test_samples: 1000
 enable_expensive_metrics: True
 
@@ -28,7 +33,7 @@ augmentation:
 data:
   data_path: "datasets/ModelNet40"
   metadata_file: "datasets/metadata_modelnet40.csv"
-  num_points: 2048
+  num_points: 1024
   sampling_method: "fps"
 
 encoder:
@@ -37,8 +42,8 @@ encoder:
     latent_size: ${latent_size}
     n_knn: 20
     pooling: "mean"
-    feature_dims: [64, 64, 128, 256, 512] # Reduced from [128, 128, 256, 512, 1024]
-    dropout_rate: 0.6 # Increased from 0.5
+    feature_dims: [128, 128, 256, 256, 512]
+    dropout_rate: 0.1
 
 # encoder: 
 #   name: PnE_VN
@@ -53,17 +58,11 @@ encoder:
 #     use_batchnorm: True
 
 decoder:
-  name: "FoldingSphereAttnRes"
+  name: "SnowflakeDeep"
   kwargs:
     num_points: ${data.num_points}
     latent_size: ${latent_size}
-    n_shells: 2
-    R1: 0.5
-    R2: 1.0
-    hidden_dim: 256 # Reduced from 512
-    attn_dim: 128 # Reduced from 256
-    R_att: 0.3
-    dropout_rate: 0.6 # Increased from 0.5
+    hidden_dim: 512
 
 rot_net:
   name: "vn_rotation_head"
@@ -72,7 +71,7 @@ rot_net:
 
 sinkhorn_blur_schedule:
   enable: True
-  start: 0.05
+  start: 0.02
   end: 0.001
   start_epoch: 0
   duration_epochs: 200

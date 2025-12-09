@@ -116,7 +116,14 @@ class ShapePoseDisentanglement(pl.LightningModule):
             return val
         if component == "chamfer":
             squared = self._loss_param("chamfer", "squared", True)
-            val, _ = chamfer_distance(pred, target, squared=squared)
+            point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
+            val, _ = chamfer_distance(pred, target, squared=squared, point_reduction=point_reduction)
+            
+            if self._loss_param("chamfer", "auto_scale_by_points", False):
+                num_points = self._get_num_points()
+                if num_points > 0:
+                    val = val / float(num_points)
+                    
             return val
         if component == "pdist":
             val = self._compute_pdist(pred, target)
@@ -257,6 +264,18 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 return section_params[key]
         return params.get(key, default)
 
+    def _get_num_points(self):
+        """Try to resolve num_points from config."""
+        # Check standard locations
+        if hasattr(self.hparams, 'num_points'):
+            return self.hparams.num_points
+        if hasattr(self.hparams, 'data') and hasattr(self.hparams.data, 'num_points'):
+            return self.hparams.data.num_points
+        # Fallback to decoder kwargs
+        if hasattr(self.hparams, 'decoder') and hasattr(self.hparams.decoder, 'kwargs'):
+            return self.hparams.decoder.kwargs.get('num_points', 0)
+        return 0
+
     def _compute_losses(self, recon, cano, rot, pc, inv_z, vq_loss=0.0, labels=None):
         """Compute all losses and return (loss_dict, current_sinkhorn_blur)."""
         recon_f32, cano_f32, pc_f32 = to_float32(recon, cano, pc)
@@ -274,14 +293,16 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Diagnostic metrics (no grad)
         with torch.no_grad():
             # Log both squared and L2 for clarity
+            # Log both squared and L2 for clarity
+            point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
             if self._loss_param("chamfer", "squared", True):
-                cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True)
+                cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True, point_reduction=point_reduction)
                 with torch.no_grad():
-                    cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False)
+                    cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
             else:
-                cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False)
+                cd_l2, _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
                 with torch.no_grad():
-                    cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True)
+                    cd_sq, _ = chamfer_distance(recon_f32, pc_f32, squared=True, point_reduction=point_reduction)
 
             
             losses['chamfer_after'] = cd_sq if self._loss_param("chamfer", "squared", True) else cd_l2
@@ -290,7 +311,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             
             losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32)
+            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32, point_reduction=point_reduction)
             # Pairwise distance metrics (unscaled, for diagnostics)
             if "pdist" in self.loss_components:
                 losses['pdist_after'] = self._compute_pdist(recon_f32, pc_f32)
