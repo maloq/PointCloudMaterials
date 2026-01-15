@@ -14,7 +14,7 @@ sys.path.append(os.getcwd())
 # from src.data_utils.modelnet_loader import ModelNetDataModule
 from src.training_methods.spd.spd_experiments_module import SPDExperimentsModule
 torch.set_float32_matmul_precision('high')
-from src.utils.visualization import visualize_reconstructions
+from src.vis_tools.vis_utils import visualize_reconstructions
 from src.data_utils.modelnet_fast_loader import ModelNetFastDataModule
 
 def update_config_for_fast_data(cfg):

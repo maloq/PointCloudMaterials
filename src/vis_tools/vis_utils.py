@@ -1,365 +1,183 @@
-from scipy.spatial import KDTree
-import numpy as np
-import plotly.graph_objects as go
-import torch
+"""
+General visualization utilities for point cloud models.
+
+This module provides visualization functions for model reconstructions
+and point cloud data. For t-SNE specific visualizations, see tsne_vis.py.
+For SPD-specific visualizations, see spd_reference_viz.py and spd_clustering_viz.py.
+"""
+
+import os
+
 import matplotlib.pyplot as plt
-from .tsne_vis import compute_tsne, save_tsne_plot
+import numpy as np
+import torch
+
+from src.loss.reconstruction_loss import chamfer_distance
 
 
-
-def find_n_nearest(points, n_neighbors):
-    """Find N nearest neighbors for each point using KDTree"""
-    tree = KDTree(points)
-    # Get indices of n+1 nearest points (first one is the point itself)
-    distances, indices = tree.query(points, k=n_neighbors + 1)
-    # Return all except first index (which is the point itself)
-    return indices[:, 1:]
-
-
-def plot_point_cloud_3d(points, n_connections=3, title='Point Cloud',
-                       num_points=5, color=None):
+def set_axes_equal(ax):
     """
-    Create interactive 3D visualization of point cloud with connections to nearest neighbors.
+    Make axes of 3D plot have equal scale so that spheres appear as spheres,
+    cubes as cubes, etc.
     
     Args:
-        points: np.array of shape (N, 3) containing XYZ coordinates
-        n_connections: int, number of nearest neighbors to connect
-        title: str, plot title
-        num_points: int, size of points
-        color: optional array of values for color mapping
-    
-    Returns:
-        plotly.graph_objects.Figure
+        ax: Matplotlib 3D axis object
     """
-    if isinstance(points, torch.Tensor):
-        points = points.numpy()
-    
-    nearest_indices = find_n_nearest(points, n_connections)
-    
-    # Create line segments
-    lines_x, lines_y, lines_z = [], [], []
-    for i, neighbors in enumerate(nearest_indices):
-        for neighbor_idx in neighbors:
-            lines_x.extend([points[i, 0], points[neighbor_idx, 0], None])
-            lines_y.extend([points[i, 1], points[neighbor_idx, 1], None])
-            lines_z.extend([points[i, 2], points[neighbor_idx, 2], None])
-    
-    fig = go.Figure(data=[
-        # Plot points
-        go.Scatter3d(
-            x=points[:, 0],
-            y=points[:, 1],
-            z=points[:, 2],
-            mode='markers',
-            marker=dict(
-                size=num_points,
-                color=color,
-                colorscale='Viridis' if color is not None else None,
-                opacity=0.8
-            ),
-            name='Points'
-        ),
-        go.Scatter3d(
-            x=lines_x,
-            y=lines_y,
-            z=lines_z,
-            mode='lines',
-            line=dict(color='gray', width=1),
-            opacity=0.5,
-            name='Connections'
-        )
-    ])
+    x_limits = ax.get_xlim3d()
+    y_limits = ax.get_ylim3d()
+    z_limits = ax.get_zlim3d()
 
-    fig.update_layout(
-        title=title,
-        scene=dict(
-            xaxis_title='X',
-            yaxis_title='Y', 
-            zaxis_title='Z',
-            aspectmode='data'
-        ),
-        width=800,
-        height=800,
-    )
+    x_range = abs(x_limits[1] - x_limits[0])
+    x_middle = np.mean(x_limits)
+    y_range = abs(y_limits[1] - y_limits[0])
+    y_middle = np.mean(y_limits)
+    z_range = abs(z_limits[1] - z_limits[0])
+    z_middle = np.mean(z_limits)
 
-    return fig
+    # The plot bounding box is a sphere in the sense of the infinity
+    # norm, hence call half the max range the plot radius.
+    plot_radius = 0.5 * max([x_range, y_range, z_range])
+
+    ax.set_xlim3d([x_middle - plot_radius, x_middle + plot_radius])
+    ax.set_ylim3d([y_middle - plot_radius, y_middle + plot_radius])
+    ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
 
 
-
-def visualize_original_and_reconstructed(original_points, reconstructed_points, random_sample=False):
+def save_point_cloud_ply(points, file_path):
     """
-    Visualize original and reconstructed point clouds side by side.
+    Save point cloud to PLY file format.
     
     Args:
-        original_points: Original point cloud array of shape (N, 3)
-        reconstructed_points: Reconstructed point cloud array of shape (N, 3)
+        points: (N, 3) numpy array of point coordinates
+        file_path: Output file path for the PLY file
     """
-    # Determine which sample index to visualize
-    random_sample_idx = (
-        np.random.randint(0, original_points.shape[0]) if random_sample else 0
-    )
-
-    fig_original = plot_point_cloud_3d(
-        original_points[random_sample_idx][:, :3],  # Take only XYZ coordinates
-        n_connections=3,
-        title='Original',
-        num_points=3, 
-    )
-    fig_original.update_layout(
-        width=600,  
-        height=400 
-    )
-    fig_original.show()
-
-    # Visualize reconstructed points
-    fig_reconstructed = plot_point_cloud_3d(
-        reconstructed_points[random_sample_idx][:, :3],  # Take only XYZ coordinates
-        n_connections=3,
-        title='Reconstructed',
-        num_points=3,
-        color='red'
-    )
-    fig_reconstructed.update_layout(
-        width=600,  
-        height=400
-    )
-    fig_reconstructed.show()
-    
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with open(file_path, 'w') as f:
+        f.write("ply\n")
+        f.write("format ascii 1.0\n")
+        f.write(f"element vertex {len(points)}\n")
+        f.write("property float x\n")
+        f.write("property float y\n")
+        f.write("property float z\n")
+        f.write("end_header\n")
+        for p in points:
+            f.write(f"{p[0]} {p[1]} {p[2]}\n")
 
 
-def perform_tsne_clustering(latents, labels, chosen_label='liquid', n_clusters=3, 
-                            perplexity=20, n_iter=2000, random_state=42,
-                            include_other_labels=False, cluster_colors=None):
+def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
     """
-    Perform t-SNE dimensionality reduction and K-means clustering on latent representations.
+    Visualize reconstructions for instances per class.
     
-    Parameters:
-    -----------
-    latents : numpy.ndarray
-        Latent representations of the data
-    labels : numpy.ndarray
-        Labels for each latent representation
-    chosen_label : str, default='liquid'
-        Label to perform clustering on
-    n_clusters : int, default=3
-        Number of clusters for K-means
-    perplexity : int, default=20
-        Perplexity parameter for t-SNE
-    n_iter : int, default=2000
-        Maximum number of iterations for t-SNE
-    random_state : int, default=42
-        Random seed for reproducibility
-    include_other_labels : bool, default=False
-        Whether to include other labels in the t-SNE visualization
-    cluster_colors : list, default=None
-        Colors for the clusters. If None, default colors will be used
-        
-    Returns:
-    --------
-    tuple
-        (tsne_results, cluster_labels, kmeans)
+    Generates an image with 3 columns: Input, Canonical, Reconstruction.
+    Each class gets its own visualization file.
+    
+    Args:
+        model: The trained model with forward() returning (inv_z, recon, cano, rot, vq_loss)
+        datamodule: DataModule with test_dataset attribute
+        save_dir: Directory to save visualization images
+        num_instances: Number of instances per class to visualize
     """
-    from sklearn.cluster import KMeans
-    import matplotlib.pyplot as plt
-    import numpy as np
+    print(f"Generating visualizations in {save_dir}...")
+    model.eval()
+    device = model.device
     
-    # Default cluster colors if not provided
-    if cluster_colors is None:
-        cluster_colors = ['coral', 'gold', 'olive']
-    
-    # Get unique labels
-    unique_labels = np.unique(labels)
-    
-    # Filter latents for the chosen label
-    mask = labels == chosen_label
-    filtered_latents = latents[mask]
-    
-    print(f"Performing t-SNE on {'all data' if include_other_labels else 'filtered data'}...")
-    
-    # Perform t-SNE using shared utility
-    if include_other_labels:
-        tsne_results = compute_tsne(
-            latents,
-            perplexity=perplexity,
-            random_state=random_state,
-            n_iter=n_iter,
-        )
-        filtered_indices = np.where(mask)[0]
+    # Get test dataset
+    if hasattr(datamodule, 'test_dataset'):
+        dataset = datamodule.test_dataset
     else:
-        tsne_results = compute_tsne(
-            filtered_latents,
-            perplexity=perplexity,
-            random_state=random_state,
-            n_iter=n_iter,
-        )
+        datamodule.setup(stage='test')
+        dataset = datamodule.test_dataset
     
-    # Perform K-means clustering on filtered latents
-    print(f"Performing clustering on label '{chosen_label}' with {n_clusters} clusters...")
-    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
-    cluster_labels = kmeans.fit_predict(filtered_latents)
+    # Group indices by class
+    class_indices = {}
     
-    # Create a new figure for clustered visualization
-    plt.figure(figsize=(10, 8))
-    
-    if include_other_labels:
-        # Create a color map for labels
-        color_map = {}
-        for i, label in enumerate(unique_labels):
-            color_map[label] = plt.cm.tab10(i % 10)
-            
-        # Visualize original t-SNE plot first for other labels
-        for label in unique_labels:
-            if label == chosen_label:
-                # Don't plot the chosen label yet (will be colored by cluster)
-                continue
-            indices = np.where(labels == label)
-            plt.scatter(tsne_results[indices, 0], tsne_results[indices, 1],
-                        color=color_map[label], label=label,
-                        alpha=0.3, edgecolors='w', s=12)
-        
-        # Plot clusters for the chosen label
-        for cluster_id in range(n_clusters):
-            cluster_points = filtered_indices[cluster_labels == cluster_id]
-            plt.scatter(tsne_results[cluster_points, 0], tsne_results[cluster_points, 1],
-                       color=cluster_colors[cluster_id % len(cluster_colors)], 
-                       label=f"{chosen_label} - Cluster {cluster_id}",
-                       alpha=0.6, edgecolors='w', s=30)
-    else:
-        # Plot just the clusters from the filtered t-SNE results
-        for cluster_id in range(n_clusters):
-            plt.scatter(tsne_results[cluster_labels == cluster_id, 0], 
-                        tsne_results[cluster_labels == cluster_id, 1],
-                        color=cluster_colors[cluster_id % len(cluster_colors)], 
-                        label=f"{chosen_label} - Cluster {cluster_id}",
-                        alpha=0.6, edgecolors='w', s=30)
-    
-    # Add plot details
-    plt.title(f"t-SNE with Clustering for Label '{chosen_label}'")
-    plt.xlabel("t-SNE Component 1")
-    plt.ylabel("t-SNE Component 2")
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-    
-    # Print cluster statistics
-    for cluster_id in range(n_clusters):
-        count = np.sum(cluster_labels == cluster_id)
-        percentage = count / len(cluster_labels) * 100
-        print(f"Cluster {cluster_id}: {count} points ({percentage:.1f}%)")
-    
-    return tsne_results, cluster_labels, kmeans
-
-
-def visualize_cluster_predictions(predictions,
-                                   alphas=[0.7]*6,
-                                   colors = [
-                                            '#FF0000',  # Red
-                                            '#00FFFF',  # Cyan
-                                            '#0000FF',  # Blue
-                                            '#FFFF00',  # Yellow
-                                            '#FF00FF',  # Magenta
-                                            '#FFA500',  # Orange
-                                            '#00FF00',  # Lime Green
-                                            '#800080',  # Purple
-                                            ],
-                                  title: str = "Phase Predictions"):
-
-
-    fig = go.Figure()
-
-    # Define a list of fixed colors
-    
-    
-    
-    # Create scatter plot for each unique prediction class
-    for i, phase in enumerate(np.unique(predictions[:, 3])):
-        mask = predictions[:, 3] == phase
-        points = predictions[mask]
-        
-        if phase == 0:
-            marker_size = 1
+    print("Grouping samples by class...")
+    for idx in range(len(dataset)):
+        # dataset[idx] returns (pc, label, class_name)
+        # Optimization: Use class_names list directly if available (ModelNetFastDataset)
+        if hasattr(dataset, 'class_names'):
+            class_name = dataset.class_names[idx]
+        elif hasattr(dataset, 'metadata'):
+            class_name = dataset.metadata.iloc[idx]['class']
         else:
-            marker_size = 1
+            _, _, class_name = dataset[idx]
+            
+        if class_name not in class_indices:
+            class_indices[class_name] = []
+        class_indices[class_name].append(idx)
         
-        # Select color from the list, cycling through if more than 8 phases
-        color = colors[i % len(colors)]
-        # Select alpha from the list, cycling through if more than 8 phases
-        alpha = alphas[i % len(alphas)]
-        
-        fig.add_trace(go.Scatter3d(
-            x=points[:, 0],
-            y=points[:, 1],
-            z=points[:, 2],
-            mode='markers',
-            marker=dict(
-                size=marker_size, 
-                color=color, 
-                opacity=alpha
-            ),
-            name=f'Phase {int(phase)}'
-        ))
+    print(f"Found {len(class_indices)} classes with {len(dataset)} samples total.")
+    os.makedirs(save_dir, exist_ok=True)
     
-    fig.update_layout(
-        title=title,
-        scene=dict(
-            xaxis_title='X',
-            yaxis_title='Y',
-            zaxis_title='Z',
-            camera=dict(
-                eye=dict(x=1.85, y=1.85, z=0.65) 
-            )
-        ),
-        width=800,
-        height=600
-    )
+    for class_name, indices in class_indices.items():
+        # Select random instances
+        n_samples = min(len(indices), num_instances)
+        selected_indices = np.random.choice(indices, n_samples, replace=False)
+        
+        # Create figure: Rows = instances, Cols = 3
+        fig = plt.figure(figsize=(15, 5 * n_samples))
+        
+        for i, idx in enumerate(selected_indices):
+            batch = dataset[idx]
+            pc = batch[0]  # (N, 3)
+            
+            # Prepare batch for model
+            pc_batch = pc.unsqueeze(0).to(device)  # (1, N, 3)
+            
+            # Normalize inputs to match training (centering + unit sphere)
+            centroid = torch.mean(pc_batch, dim=1, keepdim=True)
+            pc_batch = pc_batch - centroid
+            m = torch.max(torch.sqrt(torch.sum(pc_batch**2, dim=2, keepdim=True)), dim=1, keepdim=True)[0]
+            m = torch.maximum(m, torch.tensor(1e-6, device=device))
+            pc_batch = pc_batch / m
+            
+            with torch.no_grad():
+                # Forward pass
+                # Output: inv_z, recon, cano, rot, vq_loss
+                inv_z, recon, cano, rot, _ = model(pc_batch)
+                
+            # Calculate Chamfer Distances
+            # Input vs Canonical (Input is rotated, Canonical is aligned)
+            cd_cano, _ = chamfer_distance(pc_batch, cano, squared=False, point_reduction='mean')
+            
+            # Input vs Rotated Reconstruction (should match well)
+            cd_recon, _ = chamfer_distance(pc_batch, recon, squared=False, point_reduction='mean')
+            
+            # Convert to numpy (use normalized input for visualization consistency)
+            pc_np = pc_batch[0].cpu().numpy()
+            cano_np = cano[0].cpu().numpy()
+            recon_np = recon[0].cpu().numpy()
+            
+            # Plot Input (Rotated)
+            ax = fig.add_subplot(n_samples, 3, i * 3 + 1, projection='3d')
+            ax.scatter(pc_np[:, 0], pc_np[:, 1], pc_np[:, 2], s=2, c='b', alpha=0.5)
+            ax.set_title("Input (Rotated)")
+            ax.axis('off')
+            set_axes_equal(ax)
+            
+            # Plot Canonical
+            ax = fig.add_subplot(n_samples, 3, i * 3 + 2, projection='3d')
+            ax.scatter(cano_np[:, 0], cano_np[:, 1], cano_np[:, 2], s=2, c='g', alpha=0.5)
+            ax.set_title(f"Canonical Reconstruction\nCD: {cd_cano.item():.4f}")
+            ax.axis('off')
+            set_axes_equal(ax)
+            
+            # Plot Final Recon (Rotated back)
+            ax = fig.add_subplot(n_samples, 3, i * 3 + 3, projection='3d')
+            ax.scatter(recon_np[:, 0], recon_np[:, 1], recon_np[:, 2], s=2, c='r', alpha=0.5)
+            ax.set_title(f"Rotated Reconstruction\nCD: {cd_recon.item():.4f}")
+            ax.axis('off')
+            set_axes_equal(ax)
+            
+        plt.tight_layout()
+        save_path = os.path.join(save_dir, f"{class_name}_visualization.png")
+        plt.savefig(save_path)
+        plt.close(fig)
+        print(f"Saved visualization for {class_name} to {save_path}")
 
-    return fig
 
-
-def visualize_latents(npy_file="latent_label_pairs.npy",
-                      perplexity=30, n_iter=1000,
-                      random_state=42,
-                      output_image="latent_tsne.png"):
-    """
-    Loads latent representations and their labels from a numpy file,
-    computes a 2D t-SNE projection, and visualizes them with distinct colors.
-
-    Args:
-        npy_file (str): Path to the numpy file containing latent-label pairs.
-        perplexity (float): The perplexity parameter for t-SNE.
-        n_iter (int): Number of iterations for t-SNE optimization.
-        random_state (int): Random seed for reproducibility.
-        output_image (str): Filename for saving the plot.
-    """
-    # Load the latent-label pairs.
-    print("Loading latent-label pairs from:", npy_file)
-    latent_label_pairs = np.load(npy_file, allow_pickle=True)
-
-    # Separate the latent vectors and labels.
-    latents = []
-    labels = []
-    for latent, label in latent_label_pairs:
-        latents.append(latent)
-        labels.append(label)
-
-    latents = np.stack(latents, axis=0)
-    labels = np.array(labels)
-
-    # Compute t-SNE projection using shared utility.
-    print("Performing t-SNE on latent representations...")
-    tsne_results = compute_tsne(
-        latents,
-        perplexity=perplexity,
-        random_state=random_state,
-        n_iter=n_iter,
-    )
-
-    # Save and optionally show the plot using shared utility.
-    save_tsne_plot(
-        tsne_results,
-        labels,
-        out_file=output_image,
-        title="t-SNE Visualization of Latent Space",
-        show=True,
-    )
-    print("Saved t-SNE plot to:", output_image)
+__all__ = [
+    "set_axes_equal",
+    "save_point_cloud_ply",
+    "visualize_reconstructions",
+]
