@@ -554,7 +554,7 @@ def aggregate_and_save_tables(
 
         abs_value = abs(decimal_value)
         if abs_value >= 1:
-            quantize_unit = Decimal("0.01")
+            quantize_unit = Decimal("0.001")
         else:
             significant_digits = 2
             exponent = abs_value.adjusted() - significant_digits + 1

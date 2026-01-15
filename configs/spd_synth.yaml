@@ -20,7 +20,7 @@ encoder:
     
 
 decoder: 
-  name: VQMoE
+  name: VQMoEv2
   kwargs: 
     latent_size: ${latent_size}
     num_points: ${data.num_points}

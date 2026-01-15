@@ -565,6 +565,193 @@ def perform_clustering(
     return results
 
 
+    
+    return metrics
+
+
+def compute_best_mapping_confusion_matrix(
+    y_true: np.ndarray, 
+    y_pred: np.ndarray
+) -> Tuple[np.ndarray, List[Tuple[int, int]]]:
+    """Compute confusion matrix with best cluster-to-class assignment.
+    
+    Uses the Hungarian algorithm (linear sum assignment) to find the best mapping
+    between predicted clusters and ground truth classes.
+    
+    Args:
+        y_true: Ground truth labels
+        y_pred: Predicted cluster labels
+        
+    Returns:
+        conf_mat: Reordered confusion matrix (rows=truth, cols=predicted_mapped)
+        mapping: List of (row_ind, col_ind) mapping
+    """
+    from scipy.optimize import linear_sum_assignment
+    from sklearn.metrics import confusion_matrix
+    
+    # Compute standard confusion matrix
+    # rows = true classes, cols = predicted clusters
+    cm = confusion_matrix(y_true, y_pred)
+    
+    # We want to maximize the diagonal elements (matches)
+    # linear_sum_assignment minimizes cost, so we use negative counts
+    row_ind, col_ind = linear_sum_assignment(-cm)
+    
+    # Reorder columns (predictions) to match rows (ground truth)
+    # If standard cm is cm[i, j], finding mapping means class i maps to cluster j
+    # We want to rearrange so that new_cm[i, i] is the count for class i mapped to its best cluster
+    
+    # Create a mapping dictionary: true_class -> best_cluster
+    mapping = list(zip(row_ind, col_ind))
+    
+    # Reorder the confusion matrix columns
+    # We need to construct a new matrix where column i corresponds to the cluster mapped to true class i
+    new_cm = np.zeros_like(cm)
+    
+    # For each true class i (row index), find which cluster j it maps to (col_ind[i])
+    # Then take that column j from the original matrix and place it in column i of the new matrix
+    # Wait, simple way:
+    # If mapping is (0, 2), (1, 0), (2, 1) means:
+    # True class 0 corresponds to Cluster 2
+    # True class 1 corresponds to Cluster 0
+    # True class 2 corresponds to Cluster 1
+    
+    # So the confusion matrix we want to display should have:
+    # Row 0: Distribution of True Class 0. Col 0 should be "Predicted as Class 0's cluster" (i.e., Cluster 2)
+    # So new_cm[:, i] = cm[:, col_ind[i]] ??
+    # Let's verify.
+    # new_cm[0, 0] should be count where True=0 and Pred=2. Original cm[0, 2].
+    # new_cm[1, 0] should be count where True=1 and Pred=2. Original cm[1, 2].
+    # YES. We permute columns.
+    
+    # But wait, linear_sum_assignment returns row_ind and col_ind such that cost is minimized.
+    # row_ind is usually just 0, 1, 2... if matrix is square.
+    # If rectangular, it might skip some.
+    
+    n_classes = cm.shape[0]
+    n_clusters = cm.shape[1]
+    
+    if n_classes == n_clusters:
+        # Permute columns
+        new_cm = cm[:, col_ind]
+        # Also need to make sure row_ind is sorted 0..N
+        # linear_sum_assignment documentation says: "The row indices will be sorted; in the case of a square cost matrix they will be equal to numpy.arange(cost_matrix.shape[0])."
+    else:
+        # Handle non-square case just in case
+        new_cm = np.zeros_like(cm)
+        # We can only map min(n_classes, n_clusters)
+        # For simplicity, let's just use the pairs found
+        for r, c in zip(row_ind, col_ind):
+            # Move column c to column r (if possible, but what if r != destination index?)
+            # Actually, standardizing on a "Best Match Confusion Matrix" usually implies
+            # we want the diagonal to be the matches.
+            pass
+        # Fallback to just returning original if sizes differ too much or logic is complex
+        # But for our specific requirement "best class assignment to clusters", usually K=N_classes.
+        if n_classes <= n_clusters:
+             # We have more clusters than classes, or equal.
+             # We map each class to a unique cluster.
+             # New matrix should be N_classes x N_classes (showing only the mapped clusters?)
+             # Or N_classes x N_clusters (just reordered columns?)
+             # Let's reorder columns so the "diagonal" (or as close as possible) is maximized.
+             
+             # Create a permutation array for columns
+             perm = np.zeros(n_clusters, dtype=int)
+             used_cols = set(col_ind)
+             unused_cols = [c for c in range(n_clusters) if c not in used_cols]
+             
+             # Map row_ind (class) to col_ind (cluster)
+             # We want column `r` of new matrix to be column `c` of old matrix
+             for r, c in zip(row_ind, col_ind):
+                 perm[r] = c
+                 
+             # Fill the rest
+             curr = len(row_ind)
+             for c in unused_cols:
+                 if curr < n_clusters:
+                     perm[curr] = c
+                     curr += 1
+            
+             new_cm = cm[:, perm]
+             
+             # But wait, if we have K=5 and N=3.
+             # Classes 0,1,2 map to clusters 4,0,1.
+             # We want new col 0 to be cluster 4.
+             # new col 1 to be cluster 0.
+             # new col 2 to be cluster 1.
+             # Co that new_cm[0,0] is T0,P4.
+             # new_cm[1,1] is T1,P0.
+             # new_cm[2,2] is T2,P1.
+             # This aligns the main matches to diagonal.
+        else:
+             # More classes than clusters.
+             # We map each cluster to a unique class? 
+             # LSA on -cm gives assignment.
+             # row_ind (classes) -> col_ind (clusters).
+             # Not all classes will be assigned.
+             # Just return original for safety if dimensions don't match perfectly or logic is fuzzy.
+             return cm, mapping
+
+    return new_cm, mapping
+
+    return new_cm, mapping
+
+
+def plot_confusion_matrix(
+    cm: np.ndarray,
+    class_names: List[str] | None = None,
+    output_path: Path | str = "confusion_matrix.png",
+    title: str = "Confusion Matrix",
+) -> None:
+    """Plot and save confusion matrix as an image.
+    
+    Args:
+        cm: Confusion matrix (rows=true, cols=pred)
+        class_names: List of class names
+        output_path: Path to save the image
+        title: Plot title
+    """
+    try:
+        import seaborn as sns
+    except ImportError:
+        sns = None
+    
+    plt.figure(figsize=(10, 8))
+    
+    if class_names is None:
+        class_names = [str(i) for i in range(len(cm))]
+        
+    if sns is not None:
+        sns.heatmap(
+            cm, 
+            annot=True, 
+            fmt='d', 
+            cmap='Blues', 
+            xticklabels=class_names, 
+            yticklabels=class_names
+        )
+    else:
+        plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+        plt.colorbar()
+        tick_marks = np.arange(len(class_names))
+        plt.xticks(tick_marks, class_names, rotation=45)
+        plt.yticks(tick_marks, class_names)
+        
+        # Annotation
+        thresh = cm.max() / 2.
+        for i in range(cm.shape[0]):
+            for j in range(cm.shape[1]):
+                plt.text(j, i, format(cm[i, j], 'd'),
+                         horizontalalignment="center",
+                         color="white" if cm[i, j] > thresh else "black")
+    
+    plt.title(title)
+    plt.ylabel('True Label')
+    plt.xlabel('Predicted Label (Aligned to Truth)')
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200, bbox_inches='tight')
+    plt.close()
+
 def save_clustering_metrics(
     latents: np.ndarray,
     phase_labels: np.ndarray,
@@ -607,6 +794,9 @@ def save_clustering_metrics(
     
     kmeans_results = clustering_results.get("kmeans", {})
     
+    unique_phases = np.unique(phase_labels)
+    n_phases = len(unique_phases)
+    
     for k, labels in kmeans_results.items():
         k_str = str(k)
         
@@ -630,9 +820,44 @@ def save_clustering_metrics(
         
         print(f"  k={k}: silhouette={sil:.4f}, ARI={ari:.4f}, NMI={nmi:.4f}")
         
+        if k == n_phases:
+            print(f"  -> Matching n_clusters ({k}) with n_phases ({n_phases}): Computing Confusion Matrix")
+            try:
+                cm, mapping = compute_best_mapping_confusion_matrix(phase_labels, labels)
+                print("  Aligned Confusion Matrix (Rows=True, Cols=Pred(Aligned)):")
+                print(cm)
+                
+                # Calculate accuracy from aligned diagonal
+                total = np.sum(cm)
+                diag = np.trace(cm)
+                acc = diag / total if total > 0 else 0
+                print(f"  Aligned Accuracy: {acc:.4f}")
+                
+                metrics["per_k_metrics"][k_str]["confusion_matrix"] = cm.tolist()
+                metrics["per_k_metrics"][k_str]["aligned_accuracy"] = round(acc, 4)
+                
+                # Plot and save confusion matrix
+                plot_filename = output_path.parent / f"confusion_matrix_k{k}.png"
+                plot_confusion_matrix(
+                    cm, 
+                    class_names=[f"Phase {i}" for i in range(n_phases)], 
+                    output_path=plot_filename,
+                    title=f"Aligned Confusion Matrix (k={k}, Acc={acc:.2%})"
+                )
+                print(f"  Saved confusion matrix plot to {plot_filename}")
+                
+            except Exception as e:
+                print(f"  Error computing/plotting confusion matrix: {e}")
+                import traceback
+                traceback.print_exc()
+        
         if sil > metrics["best_silhouette"]:
             metrics["best_silhouette"] = round(sil, 4)
             metrics["optimal_k"] = k
+
+
+
+
     
     # Add DBSCAN metrics if available
     if clustering_results.get("dbscan") is not None:

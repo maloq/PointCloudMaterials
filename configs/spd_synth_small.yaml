@@ -1,15 +1,15 @@
 defaults:
-  - data: synth_simple
+  - data: synth_modelnet
 project_name: pointnet
 experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: offline
 
 model_type: spd
-latent_size: 120
+latent_size: 36
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False  # Set to True to load pretrained weights
-supervised_checkpoint_path: output/supervised_encoder/2025-11-07/19-36-50/supervised_encoder_VN_DGCNN_l36_bs1024_lr0.0060_rotsixd_head_loss_epochloss_epoch=00.ckpt
+supervised_checkpoint_path: None
 
 encoder:
   name: "VN_DGCNN_Refined"
@@ -46,7 +46,7 @@ rot_net:
 
 rotation_mode: vn_rotation_head
 
-loss: chamfer
+loss: chamfer+sinkhorn
 pdist_scale: 0.0  # weight for pdist component
 loss_params:
   pdist:
@@ -59,23 +59,23 @@ loss_params:
   chamfer:
     squared: false
 
-sinkhorn_blur: 0.05
+sinkhorn_blur: 0.01
 sinkhorn_blur_schedule:
   enable: true
   start: 0.05
-  end: 0.01
+  end: 0.005
   start_epoch: 0
   duration_epochs: ${epochs}
 max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.004
-batch_size: 256
+batch_size: 128
 gradient_clip_val: 0.5
 
 enable_swa: False
 swa_epoch_start: 1000 
-epochs: 120
+epochs: 400
 gpu: True
 devices: 0
 ddp_find_unused_parameters: True
@@ -85,7 +85,7 @@ scheduler_gamma: 0.5
 scheduler_name: Cosine
 
 decay_rate: 0.0004
-kl_latent_loss_scale: 0.02
+kl_latent_loss_scale: 0.00
 pdist_loss_scale: 0.00
 ortho_scale: 0.01
 kabsch_rotation_loss_scale: 0.000

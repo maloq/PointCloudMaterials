@@ -24,7 +24,8 @@ export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run multiple ablation experiments consecutively
 echo "=== Running experiment ==="
-srun python scripts/run_ablation.py --config configs/ablations/spd_latent_size.yaml
+# srun python scripts/run_ablation.py --config configs/ablations/spd_latent_size.yaml
+srun python scripts/run_ablation.py --config configs/ablations/spd_rotation_method.yaml
 echo "Experiment 1 finished at: $(date)"
 
 

@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import pathlib
 from typing import Any, Dict, List, Optional, Sequence, Tuple
-from collections import Counter
+from collections import Counter, defaultdict
 
 import numpy as np
 from matplotlib import cm
@@ -1328,6 +1328,63 @@ def _render_local_galleries(
         )
 
 
+
+def _plot_object(
+    ax: Any,
+    atom_positions: np.ndarray,
+) -> None:
+    """Plot a discrete object centered at origin."""
+    if len(atom_positions) == 0:
+        return
+
+    center = np.mean(atom_positions, axis=0)
+    coords = atom_positions - center
+    
+    # Simple depth coloring
+    distances = np.linalg.norm(coords, axis=1)
+    max_dist = np.max(distances) if len(distances) > 0 else 1.0
+    
+    # Use different cmap for object view
+    colors = cm.viridis(distances / (max_dist + 1e-6))
+    
+    ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2],
+              c=colors, s=30, alpha=0.9, edgecolors='black', linewidths=0.3)
+    
+    # Delaunay edges for structure
+    if len(coords) >= 4:
+        try:
+            tri = Delaunay(coords)
+            edges = set()
+            for simplex in tri.simplices:
+                for i in range(4):
+                    for j in range(i + 1, 4):
+                        edge = (min(simplex[i], simplex[j]), max(simplex[i], simplex[j]))
+                        edges.add(edge)
+            
+            # Limit edges to avoid overcrowding
+            edge_list = list(edges)
+            if len(edge_list) > 1000:
+                # Random sample
+                idx = np.random.choice(len(edge_list), 1000, replace=False)
+                edge_list = [edge_list[i] for i in idx]
+            
+            for i, j in edge_list:
+                p1, p2 = coords[i], coords[j]
+                ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
+                       color='#555555', linewidth=0.5, alpha=0.3)
+        except Exception:
+            pass
+
+    limit = max_dist * 1.2
+    ax.set_xlim(-limit, limit)
+    ax.set_ylim(-limit, limit)
+    ax.set_zlim(-limit, limit)
+    ax.set_box_aspect([1, 1, 1])
+    # Hide axes ticks for cleaner object view
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+
 def _render_local_gallery(
     title: str,
     filename: pathlib.Path,
@@ -1340,22 +1397,43 @@ def _render_local_gallery(
     edge_type: str = 'delaunay',
     knn_k: int = 4,
 ) -> None:
-    """Render gallery of local neighborhoods.
-    
-    Args:
-        edge_type: 'delaunay' for Delaunay triangulation edges, 'knn' for k-nearest neighbor edges
-        knn_k: Number of neighbors for KNN edges (only used if edge_type='knn')
-    """
+    """Render gallery of local neighborhoods or whole objects."""
     if not selected_phases:
         return
+
+    # Check for simple generator with object IDs
+    use_objects = hasattr(global_cfg, 'objects_per_grain') and len(atoms) > 0 and 'object_id' in atoms[0]
     
-    phase_to_atoms: Dict[str, List[Dict[str, Any]]] = {phase: [] for phase in selected_phases}
-    for atom in atoms:
-        phase = atom['phase_id']
-        if phase in phase_to_atoms:
-            phase_to_atoms[phase].append(atom)
+    if use_objects:
+        # Group by object_id
+        # We need to map phase -> [object_id, ...]
+        phase_to_objects = defaultdict(list)
+        object_to_indices = defaultdict(list)
+        
+        # Build index map first
+        for i, atom in enumerate(atoms):
+             oid = atom.get('object_id', -1)
+             if oid >= 0:
+                 object_to_indices[oid].append(i)
+        
+        # Map objects to phases (using first atom of object)
+        for oid, indices in object_to_indices.items():
+            if indices:
+                first_idx = indices[0]
+                ph = atoms[first_idx]['phase_id']
+                if ph in selected_phases:
+                    phase_to_objects[ph].append(oid)
+        
+        phase_list = [p for p in selected_phases if phase_to_objects[p]]
+    else:
+        # Original logic: map phase -> atoms
+        phase_to_atoms: Dict[str, List[Dict[str, Any]]] = {phase: [] for phase in selected_phases}
+        for atom in atoms:
+            phase = atom['phase_id']
+            if phase in phase_to_atoms:
+                phase_to_atoms[phase].append(atom)
+        phase_list = [p for p in selected_phases if phase_to_atoms[p]]
     
-    phase_list = [p for p in selected_phases if phase_to_atoms[p]]
     if not phase_list:
         return
     
@@ -1366,26 +1444,50 @@ def _render_local_gallery(
         axes = axes.T
     
     for col, phase in enumerate(phase_list):
-        phase_atoms = phase_to_atoms[phase]
-        num_samples = min(rows, len(phase_atoms))
-        sample_indices = rng.choice(len(phase_atoms), size=num_samples, replace=False)
-        
-        for row in range(rows):
-            ax = axes[row, col] if cols > 1 else axes[row, 0]
-            if row >= num_samples:
-                ax.axis('off')
-                continue
+        if use_objects:
+            obj_ids = phase_to_objects[phase]
+            num_samples = min(rows, len(obj_ids))
+            sample_oids = rng.choice(obj_ids, size=num_samples, replace=False)
             
-            center_atom = phase_atoms[int(sample_indices[row])]
-            _plot_local_neighborhood(
-                ax=ax, center_atom=center_atom, atoms=atoms,
-                atom_positions=atom_positions, positions_tree=positions_tree,
-                global_cfg=global_cfg, target_count=48,
-                edge_type=edge_type, knn_k=knn_k,
-            )
-            short_phase = phase.replace('crystal_', '').replace('liquid_', 'liq_')[:15]
-            ax.set_title(f'{short_phase}\n#{center_atom.get("final_index", "?")}', fontsize=9)
+            for row in range(rows):
+                ax = axes[row, col] if cols > 1 else axes[row, 0]
+                if row >= num_samples:
+                    ax.axis('off')
+                    continue
+                
+                oid = sample_oids[row]
+                indices = object_to_indices[oid]
+                pos = atom_positions[indices]
+                
+                _plot_object(ax, pos)
+                
+                short_phase = phase.replace('crystal_', '').replace('liquid_', 'liq_')[:15]
+                ax.set_title(f'{short_phase}\nObj #{oid}', fontsize=9)
+
+        else:
+            phase_atoms = phase_to_atoms[phase]
+            num_samples = min(rows, len(phase_atoms))
+            sample_indices = rng.choice(len(phase_atoms), size=num_samples, replace=False)
+            
+            for row in range(rows):
+                ax = axes[row, col] if cols > 1 else axes[row, 0]
+                if row >= num_samples:
+                    ax.axis('off')
+                    continue
+                
+                center_atom = phase_atoms[int(sample_indices[row])]
+                _plot_local_neighborhood(
+                    ax=ax, center_atom=center_atom, atoms=atoms,
+                    atom_positions=atom_positions, positions_tree=positions_tree,
+                    global_cfg=global_cfg, target_count=48,
+                    edge_type=edge_type, knn_k=knn_k,
+                )
+                short_phase = phase.replace('crystal_', '').replace('liquid_', 'liq_')[:15]
+                ax.set_title(f'{short_phase}\n#{center_atom.get("final_index", "?")}', fontsize=9)
     
+    if use_objects:
+        title = "Base Phases - Whole Objects"
+
     fig.suptitle(title, fontsize=12, fontweight='bold')
     fig.tight_layout()
     fig.savefig(filename, dpi=150)
@@ -1409,7 +1511,27 @@ def _plot_local_neighborhood(
         edge_type: 'delaunay' for Delaunay triangulation edges, 'knn' for k-nearest neighbor edges
         knn_k: Number of neighbors for KNN edges (only used if edge_type='knn')
     """
-    radius = 2.0 * global_cfg.avg_nn_dist
+    # Detect if we are using the simple generator (has objects_per_grain)
+    is_simple_generator = hasattr(global_cfg, 'objects_per_grain')
+    
+    if is_simple_generator:
+        # Heuristic for simple generator to capture entire object
+        # Calculate approximate object size
+        total_objects = global_cfg.grain_count * global_cfg.objects_per_grain
+        if total_objects > 0:
+            vol_per_object = (global_cfg.L**3 * 0.15) / total_objects
+            base_radius = (vol_per_object / (4/3 * np.pi))**(1/3)
+            # Use a large factor to ensure we capture the whole object relative to the center atom
+            # (which might be at the edge of the object)
+            radius = base_radius * 5.0
+            
+            # Increase target count to see the shape
+            target_count = min(int(global_cfg.points_per_object), 500)
+        else:
+             radius = 2.0 * global_cfg.avg_nn_dist
+    else:
+        radius = 2.0 * global_cfg.avg_nn_dist
+
     center_pos = np.array(center_atom['position'])
     
     idxs = positions_tree.query_ball_point(center_pos, r=radius)
@@ -1426,11 +1548,15 @@ def _plot_local_neighborhood(
         if rotation.shape == (3, 3):
             coords = (rotation.T @ coords.T).T
     
-    coords = coords[:target_count]
+    # Sort by distance and take nearest target_count
+    dists_sq = np.sum(coords**2, axis=1)
+    sort_idx = np.argsort(dists_sq)
+    coords = coords[sort_idx[:target_count]]
     
     # Color by distance from center
     distances = np.linalg.norm(coords, axis=1)
-    colors = plt.cm.viridis(distances / (radius + 1e-6))
+    max_dist = np.max(distances) if len(distances) > 0 else radius
+    colors = plt.cm.viridis(distances / (max_dist + 1e-6))
     
     ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2],
               c=colors, s=50, alpha=0.9, edgecolors='black', linewidths=0.4)
@@ -1474,7 +1600,12 @@ def _plot_local_neighborhood(
                             ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
                                    color='#884422', linewidth=0.7, alpha=0.6)
     
-    limit = radius
+    # Dynamically set limits to fit the data
+    if len(coords) > 0:
+        limit = max(radius, np.max(np.abs(coords)) * 1.1)
+    else:
+        limit = radius
+        
     ax.set_xlim(-limit, limit)
     ax.set_ylim(-limit, limit)
     ax.set_zlim(-limit, limit)

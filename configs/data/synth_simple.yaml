@@ -17,7 +17,7 @@ global:
   grain_count: 5
   objects_per_grain: 400
   points_per_object: 256
-  collision_safety_factor: 3.3
+  collision_safety_factor: 3.5
   output_dir: output/synthetic_data/simple_dataset
   random_seed: 42
 
@@ -25,32 +25,43 @@ phases:
   my_cubes:
     phase_type: box
     structural_params:
-      noise_sigma: 0.1
+      noise_sigma: 0.02
       
   my_spheres:
     phase_type: sphere
     structural_params:
       noise_sigma: 0.0
       
-  my_clouds:
-    phase_type: ellipsoid
+  my_helices:
+    phase_type: helix
     structural_params:
-      noise_sigma: 0.5
+      noise_sigma: 0.02
       
   my_cylinders:
     phase_type: cylinder
     structural_params:
-      noise_sigma: 0.2
+      noise_sigma: 0.02
       
   my_donuts:
     phase_type: torus
     structural_params:
       noise_sigma: 0.0
 
+  my_airplanes:
+    phase_type: airplane
+    structural_params:
+      noise_sigma: 0.02
+
+  my_chairs:
+    phase_type: chair
+    structural_params:
+      noise_sigma: 0.02
+
 grain_assignment:
   probabilities:
-    my_cubes: 0.2
-    my_spheres: 0.2
-    my_clouds: 0.2
-    my_cylinders: 0.2
-    my_donuts: 0.2
+    my_cubes: 0.10
+    my_spheres: 0.10
+    my_helices: 0.30
+    my_cylinders: 0.15
+    my_donuts: 0.20
+    my_chairs: 0.15

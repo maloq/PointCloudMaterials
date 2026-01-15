@@ -2,7 +2,7 @@ experiment:
   config_name: spd_synth_small
   config_path: configs
   base_overrides:
-    - wandb_mode=offline
+    - wandb_mode=online
     - log_every_n_steps=10
     - precision=bf16-mixed
 variable:

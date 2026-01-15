@@ -1,0 +1,52 @@
+kind: synthetic
+data_path: output/synthetic_data/modelnet_simple
+num_points: 512 
+radius: 75.0
+sample_type: regular
+overlap_fraction: 0.2
+n_samples: 0
+train_ratio: 0.8
+drop_edge_samples: true
+pre_normalize: true
+normalize: true
+
+global:
+  L: 1200.0
+  rho_target: 0.02
+  avg_nn_dist: 2.0
+  grain_count: 7
+  objects_per_grain: 80
+  points_per_object: 512
+  collision_safety_factor: 0.8 # Lower factor for complex shapes to allow packing
+  output_dir: output/synthetic_data/modelnet_simple
+  random_seed: 42
+  modelnet_path: datasets/ModelNet40_fast
+
+phases:
+  my_airplanes:
+    phase_type: airplane
+    structural_params:
+      noise_sigma: 0.01
+
+  my_chairs:
+    phase_type: chair
+    structural_params:
+      noise_sigma: 0.01
+      
+  my_sofas:
+    phase_type: sofa
+    structural_params:
+      noise_sigma: 0.01
+
+  my_monitors:
+    phase_type: monitor
+    structural_params:
+      noise_sigma: 0.01
+
+grain_assignment:
+  probabilities:
+    my_airplanes: 0.3
+    my_chairs: 0.3
+    my_sofas: 0.2
+    my_monitors: 0.2
+    

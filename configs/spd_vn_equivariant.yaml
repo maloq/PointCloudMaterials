@@ -10,50 +10,28 @@ latent_size: 96  # Number of VN channels for equivariant latent
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
 
-# # VN Encoder - produces equivariant latent (B, latent_size, 3)
-# encoder:
-#   name: VN_DGCNN_Refined
-#   kwargs:
-#     latent_size: ${latent_size}
-#     feature_dims: [128, 128, 256, 512, 1024]
-#     pooling: "max"
-
-
-# decoder: 
-#   name: DiffusionEGNN
-#   kwargs: 
-#     latent_size: ${latent_size}
-#     num_points: ${data.num_points}
-#     hidden_dim: 128
-#     layers: 5
-#     timesteps: 100 # Fast diffusion
-
+# VN Encoder - produces equivariant latent (B, latent_size, 3)
 encoder:
-  name: VN_Graph_Delaunay   # or VN_Graph_MultiScale
+  name: VN_DGCNN_Refined
   kwargs:
     latent_size: ${latent_size}
-    hidden_channels: [64, 128, 256, 512]
-    graph_type: delaunay
-    radius_cutoff: 5.0
+    feature_dims: [128, 128, 256, 512, 1024]
+    pooling: "max"
 
 decoder:
-  name: FlowMatchingEquivariant
+  name: VN_Equivariant
   kwargs:
-    latent_size: ${latent_size}
     num_points: ${data.num_points}
-    sample_steps: 50
-    scalar_dim: 128
-    vector_dim: 32
-    n_layers: 6
+    latent_size: ${latent_size}
+    hidden_dims: [512, 256, 128]
+    use_batchnorm: True
+    negative_slope: 0.1
 
-    
-# IMPORTANT: Diffusion uses its own internal MSE loss. 
-# You need to disable your standard reconstruction losses in the training loop 
-# or set their weights to 0 if the decoder returns the loss directly.
 loss_params:
-    pdist_scale: 0.0 # Handled internally by diffusion MSE
-    chamfer_scale: 0.0
-
+    chamfer:
+      point_reduction: "mean"
+      squared: False
+      auto_scale_by_points: False
 
 loss: sinkhorn
 sinkhorn_blur: 0.1

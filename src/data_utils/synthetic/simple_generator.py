@@ -16,6 +16,7 @@ from scipy.spatial import cKDTree
 
 # Import configuration classes from the main generator to maintain compatibility
 import yaml
+import torch
 
 # ---------------------------------------------------------------------------
 # Configuration Dataclasses (Decoupled)
@@ -47,6 +48,7 @@ class SimpleGlobalConfig:
     collision_safety_factor: float = 4.2
     random_seed: int = 0
     data_path: pathlib.Path = field(default_factory=lambda: pathlib.Path("output/simple_data"))
+    modelnet_path: pathlib.Path = field(default_factory=lambda: pathlib.Path("datasets/ModelNet40_fast"))
 
 # ---------------------------------------------------------------------------
 # Structured Array Dtype for Atoms (Copied to ensure compatibility)
@@ -59,6 +61,7 @@ ATOM_DTYPE = np.dtype([
     ('orientation', np.float32, (9,)),
     ('alive', np.bool_),
     ('pre_index', np.int64),
+    ('object_id', np.int32),
 ])
 
 PHASE_ID_MAP: Dict[str, int] = {}
@@ -85,6 +88,7 @@ def load_simple_config(path: str | pathlib.Path) -> Tuple[SimpleGlobalConfig, Di
         collision_safety_factor=float(global_raw.get("collision_safety_factor", 4.2)),
         random_seed=int(global_raw.get("random_seed", 0)),
         data_path=data_path,
+        modelnet_path=pathlib.Path(global_raw.get("modelnet_path", "datasets/ModelNet40_fast")),
     )
     
     phases_section = raw.get("phases", {})
@@ -198,15 +202,118 @@ class SimpleSyntheticGenerator:
             [2*(x*z - y*w), 2*(y*z + x*w), 1 - 2*(x**2 + y**2)]
         ], dtype=np.float32)
 
+    def _get_box_points(self, n_p: int, dims: Sequence[float]) -> np.ndarray:
+        """Generate points on the surface of a box."""
+        if n_p <= 0:
+            return np.zeros((0, 3), dtype=np.float32)
+        
+        dx, dy, dz = dims
+        # Areas of faces perpendicular to x, y, z
+        areas = np.array([dy*dz, dx*dz, dx*dy])
+        probs = areas / np.sum(areas)
+        
+        # 1. Choose axis (0=x, 1=y, 2=z)
+        ax_choices = self.rng.choice([0, 1, 2], size=n_p, p=probs)
+        
+        # 2. Choose direction (+/-)
+        dirs = self.rng.choice([-1, 1], size=n_p)
+        
+        pos = np.zeros((n_p, 3), dtype=np.float32)
+        
+        # Set the fixed coordinate for the chosen face
+        # e.g. if axis=0 (x), x = +/- dx/2
+        pos[np.arange(n_p), ax_choices] = dirs * (np.array(dims)[ax_choices] / 2)
+        
+        # 3. Sample uniformly on the other two coordinates
+        for d in range(3):
+            mask = (ax_choices != d)
+            dim_val = dims[d]
+            pos[mask, d] = self.rng.uniform(-dim_val/2, dim_val/2, size=np.sum(mask))
+            
+        return pos
+
+    def _load_modelnet_data(self) -> None:
+        """Loads ModelNet data for all required phases."""
+        self._progress("Loading ModelNet data...")
+        
+        # Identify all required classes
+        required_classes = set()
+        for phase in self.phase_cfgs.values():
+            # For ModelNet mode, phase_type is the class name
+            required_classes.add(phase.phase_type)
+            
+        if not required_classes:
+            return
+
+        try:
+            from src.data_utils.modelnet_fast_loader import ModelNetFastDataset
+        except ImportError:
+            # Fallback if running from a different directory structure or if module not found
+            import sys
+            # simple_generator.py is in src/data_utils/synthetic
+            # we need to add the project root (containing 'src') to sys.path
+            project_root = str(pathlib.Path(__file__).resolve().parents[3])
+            if project_root not in sys.path:
+                sys.path.insert(0, project_root)
+            from src.data_utils.modelnet_fast_loader import ModelNetFastDataset
+
+        modelnet_path = getattr(self.global_cfg, 'modelnet_path', 'datasets/ModelNet40_fast')
+        
+        # We load a single dataset containing all required classes
+        # We ask for max points (e.g. 2048) and will sample down later
+        self.modelnet_dataset = ModelNetFastDataset(
+            root_dir=modelnet_path,
+            split='train', # Use train split for generation usually
+            classes=list(required_classes),
+            n_points=2048 
+        )
+        
+        # Organize by class for O(1) access
+        self.modelnet_samples = {cls: [] for cls in required_classes}
+        
+        # We iterate manually to group them. 
+        # Accessing self.modelnet_dataset.points directly is faster if possible
+        # but let's be safe and use usage patterns
+        
+        # Optim: Directly access the internal lists if possible to avoid huge loop overhead
+        points_tensor = self.modelnet_dataset.points
+        labels_tensor = self.modelnet_dataset.labels
+        
+        for cls in required_classes:
+            cls_idx = self.modelnet_dataset.class_to_idx.get(cls)
+            if cls_idx is None:
+                print(f"Warning: Class {cls} not found in ModelNet dataset!")
+                continue
+                
+            # Find all indices for this class
+            indices = torch.where(labels_tensor == cls_idx)[0]
+            if len(indices) == 0:
+                 print(f"Warning: No samples found for class {cls}")
+            
+            # Store as list of numpy arrays
+            self.modelnet_samples[cls] = points_tensor[indices].numpy()
+
+        self._progress(f"Loaded ModelNet data for classes: {list(self.modelnet_samples.keys())}")
+
     def populate_atoms(self) -> None:
-        self._progress("Generating simple objects...")
+        self._progress("Generating objects...")
+        
+        # Load data if not already (check if any phase looks like a modelnet class? 
+        # Or just always try to load if we are in that mode?
+        # A heuristic: if phase_type is NOT one of the known geometric shapes, assume ModelNet)
+        
+        known_shapes = {'box', 'sphere', 'cylinder', 'torus', 'helix', 'airplane', 'chair', 'simple_placeholder'}
+        # airplane and chair are in both, but we want to use ModelNet for them if possible
+        # Let's check config. If user provided a path or if we want to force it.
+        # For now, let's load ModelNet data if we can.
+        self._load_modelnet_data()
+
         all_atoms_list = []
         
-        avg_nn = self.global_cfg.avg_nn_dist
         L = self.global_cfg.L
         points_per_object = self.global_cfg.points_per_object
         
-        # 1. Determine number of objects and size
+        # 1. Determine number of objects
         n_grains = len(self.grains)
         if n_grains == 0:
             return
@@ -214,36 +321,25 @@ class SimpleSyntheticGenerator:
         objects_per_grain = self.global_cfg.objects_per_grain
         target_total_objects = n_grains * objects_per_grain
         
-        # Heuristic for object size to allow packing
-        # We need to ensure bounding spheres don't overlap.
-        # Max bounding radius ~ 2.0 * base_size (Torus/Box/Cylinder)
-        # Bounding sphere vol ~ 33 * base_size^3
-        # Packing fraction ~0.4 -> N * 33 * base^3 = 0.4 * L^3
-        # base^3 = (0.4 * L^3) / (33 * N) = 0.012 * L^3/N
-        # Let's use a slightly looser factor 0.15 for volume per object calculation to get smaller base_size
-        
+        # Heuristic for object size
         vol_per_object = (L**3 * 0.15) / target_total_objects
         est_radius = (vol_per_object / (4/3 * math.pi))**(1/3)
         base_size = est_radius
         
-        # Collision radius factor
         collision_factor = self.global_cfg.collision_safety_factor
         collision_radius = base_size * collision_factor 
         
         self._progress(f"Targeting {target_total_objects} objects (size {base_size:.2f})...")
         
-        # 2. Sample valid object centers (Rejection Sampling)
+        # 2. Sample valid object centers
         object_centers = []
         max_attempts = target_total_objects * 100
         attempts = 0
         
-        # Optimization: use specific spatial structure if needed, but for <500 objects brute force is fast enough
-        # For larger numbers, we can use a grid or existing KDTree, but let's stick to simple list for now as N~250
         while len(object_centers) < target_total_objects and attempts < max_attempts:
             attempts += 1
             cand = self.rng.uniform(base_size, L - base_size, size=3).astype(np.float32)
             
-            # Simple collision check
             collision = False
             for existing in object_centers:
                 dist = np.linalg.norm(cand - existing)
@@ -256,12 +352,12 @@ class SimpleSyntheticGenerator:
         
         object_centers = np.array(object_centers)
         total_objects = len(object_centers)
-        self._progress(f"Placed {total_objects} non-overlapping objects (after {attempts} attempts)")
+        self._progress(f"Placed {total_objects} non-overlapping objects")
 
         if total_objects == 0:
              return
 
-        # 3. Assign to nearest grain seed (Voronoi)
+        # 3. Assign to nearest grain seed
         grain_seeds = np.array([g['seed_position'] for g in self.grains])
         tree = cKDTree(grain_seeds)
         _, grain_indices = tree.query(object_centers)
@@ -274,142 +370,40 @@ class SimpleSyntheticGenerator:
             
             phase_name = grain['base_phase_id']
             phase_cfg = self.phase_cfgs[phase_name]
-            phase_type = phase_cfg.phase_type
+            class_name = phase_cfg.phase_type # Use phase_type as class name
             
-            # Read configuration
+            # Structural params
             structural_params = phase_cfg.structural_params
-            
-            # Key change: phase_type IS the shape, or specified in structural_params
-            shape_type = structural_params.get("shape", phase_type).lower()
             noise_sigma = float(structural_params.get("noise_sigma", 0.0))
             
-            # FIXED POINT COUNT
-            n_points = points_per_object
-            
-            # FIXED POINT COUNT
-            n_points = points_per_object
-            
-            # Set dimensions
-            if shape_type == 'box':
-                side = base_size * 2
-                # Surface sampling for box: 6 faces
-                # Each face has area side^2. Total area 6*side^2.
-                # Uniformly pick a face, then sample on it? 
-                # Better: generate n_points, randomly assign to faces.
+            # Use ModelNet sample if available
+            if class_name in self.modelnet_samples and len(self.modelnet_samples[class_name]) > 0:
+                # Pick a random sample index
+                samples = self.modelnet_samples[class_name] # (N_samples, 2048, 3)
+                sample_idx = self.rng.integers(0, len(samples))
+                raw_points = samples[sample_idx] # (2048, 3)
                 
-                local_pos = np.zeros((n_points, 3), dtype=np.float32)
-                # Randomly pick axis (0=x, 1=y, 2=z) and direction (+/- 1)
-                axes = self.rng.integers(0, 3, size=n_points)
-                directions = self.rng.choice([-1, 1], size=n_points)
+                # Randomly sample points from the cloud
+                # If we need more points than available, replace=True
+                curr_n = raw_points.shape[0]
+                if curr_n >= points_per_object:
+                    choice = self.rng.choice(curr_n, points_per_object, replace=False)
+                else:
+                    choice = self.rng.choice(curr_n, points_per_object, replace=True)
                 
-                # Fill fixed coords
-                local_pos[np.arange(n_points), axes] = directions * (side / 2)
+                local_pos = raw_points[choice].copy()
                 
-                # Fill other coords uniformly
-                for d in range(3):
-                    mask = (axes != d)
-                    local_pos[mask, d] = self.rng.uniform(-side/2, side/2, size=np.sum(mask))
-                
-            elif shape_type == 'cylinder':
-                radius = base_size * 0.8
-                height = base_size * 3.0
-                
-                # Surface areas
-                area_side = 2 * math.pi * radius * height
-                area_cap = math.pi * radius**2
-                total_area = area_side + 2 * area_cap
-                
-                prob_side = area_side / total_area
-                
-                # Assign points to side or caps
-                is_side = self.rng.random(size=n_points) < prob_side
-                n_side = np.sum(is_side)
-                n_cap = n_points - n_side
-                
-                local_pos = np.zeros((n_points, 3), dtype=np.float32)
-                
-                # Side points
-                if n_side > 0:
-                    theta = self.rng.uniform(0, 2*np.pi, size=n_side)
-                    h = self.rng.uniform(-height/2, height/2, size=n_side)
-                    local_pos[is_side, 0] = radius * np.cos(theta)
-                    local_pos[is_side, 1] = radius * np.sin(theta)
-                    local_pos[is_side, 2] = h
-                    
-                # Cap points
-                if n_cap > 0:
-                    theta = self.rng.uniform(0, 2*np.pi, size=n_cap)
-                    # Uniform on disk: r = R * sqrt(U)
-                    r = radius * np.sqrt(self.rng.uniform(0, 1, size=n_cap))
-                    is_top = self.rng.choice([-1, 1], size=n_cap)
-                    
-                    local_pos[~is_side, 0] = r * np.cos(theta)
-                    local_pos[~is_side, 1] = r * np.sin(theta)
-                    local_pos[~is_side, 2] = is_top * (height / 2)
+                # Normalize just in case? ModelNet is usually in unit sphere/box.
+                # Let's scale it to our base_size.
+                # Usually ModelNet is in [-1, 1]. So radius is 1.
+                # We want radius ~ base_size.
+                local_pos *= base_size 
 
-            elif shape_type == 'torus':
-                R_major = base_size * 1.5
-                r_minor = base_size * 0.5
-                
-                # Parametric sampling given u, v in [0, 2pi)
-                # Note: This is not perfectly uniform density without area weighting,
-                # but it ensures points are ON the surface.
-                # Area element dA = r_minor * (R_major + r_minor * cos(v)) du dv
-                # Rejection sampling for uniform surface density:
-                
-                local_pos = []
-                while len(local_pos) < n_points:
-                    batch_size = n_points - len(local_pos)
-                    u = self.rng.uniform(0, 2*np.pi, size=batch_size)
-                    v = self.rng.uniform(0, 2*np.pi, size=batch_size)
-                    
-                    # Rejection based on major radius contribution
-                    w = (R_major + r_minor * np.cos(v)) / (R_major + r_minor)
-                    accept = self.rng.random(size=batch_size) < w
-                    
-                    valid_u = u[accept]
-                    valid_v = v[accept]
-                    
-                    x = (R_major + r_minor * np.cos(valid_v)) * np.cos(valid_u)
-                    y = (R_major + r_minor * np.cos(valid_v)) * np.sin(valid_u)
-                    z = r_minor * np.sin(valid_v)
-                    
-                    pts = np.stack([x, y, z], axis=1)
-                    local_pos.extend(pts)
-                
-                local_pos = np.array(local_pos[:n_points], dtype=np.float32)
-
-            elif shape_type == 'ellipsoid':
-                radii = np.array([base_size * 0.7, base_size, base_size * 1.3], dtype=np.float32)
-                
-                # Sample on sphere then stretch
-                # Note: this crowds points at "poles" of longest axis if not careful?
-                # Actually, stretching uniform sphere points makes density non-uniform (lower curvature -> lower density).
-                # But it IS on the surface. For simple recognition this is likely fine.
-                # Correct uniform sampling on ellipsoid is complex.
-                
-                # Generate vectors on unit sphere
-                vecs = self.rng.normal(0, 1, size=(n_points, 3))
-                norms = np.linalg.norm(vecs, axis=1, keepdims=True)
-                unit_vecs = vecs / norms
-                
-                # Scale by radii
-                local_pos = unit_vecs * radii
-                local_pos = local_pos.astype(np.float32)
-
-            elif shape_type == 'sphere':
-                radius = base_size
-                # Uniform samples on sphere
-                vecs = self.rng.normal(0, 1, size=(n_points, 3))
-                norms = np.linalg.norm(vecs, axis=1, keepdims=True)
-                local_pos = (vecs / norms) * radius
-                local_pos = local_pos.astype(np.float32)
-            
             else:
                  # Fallback to sphere
                  shape_type = 'sphere' 
                  radius = base_size
-                 vecs = self.rng.normal(0, 1, size=(n_points, 3))
+                 vecs = self.rng.normal(0, 1, size=(points_per_object, 3))
                  norms = np.linalg.norm(vecs, axis=1, keepdims=True)
                  local_pos = (vecs / norms) * radius
                  local_pos = local_pos.astype(np.float32)
@@ -425,7 +419,19 @@ class SimpleSyntheticGenerator:
             local_pos = local_pos.reshape(-1, 3)
 
             # Rotate and Translate
+            # Grain rotation
             R = grain['base_rotation']
+            
+            # Additional small random rotation per object?
+            # User said: "random objects of one with simular orientation creates grain"
+            # "simular orientation" implies some deviation.
+            # Let's add a small deviation if configured, or just use grain rotation?
+            # "Grains might be of the same class but different orientation" -> This is handled by grain['base_rotation'] which is random per grain.
+            # "simular orientation" -> maybe per-object deviation?
+            # Let's assume strict grain orientation for now as in the original code, 
+            # or maybe add a small jitter if requested.
+            # For now, strict grain orientation.
+            
             world_pos = (local_pos @ R.T) + center
             
             if len(world_pos) > 0:
@@ -435,8 +441,9 @@ class SimpleSyntheticGenerator:
                 chunk['grain_id'] = grain['grain_id']
                 chunk['orientation'] = R.flatten()
                 chunk['alive'] = True
+                chunk['object_id'] = i
                 all_atoms_list.append(chunk)
-            
+
         # Concatenate all
         if all_atoms_list:
             final_atoms = np.concatenate(all_atoms_list)
@@ -541,7 +548,9 @@ class SimpleSyntheticGenerator:
                     "phase_id": PHASE_NAME_MAP.get(a['phase_id'], f"unknown_{a['phase_id']}"),
                     "grain_id": int(a['grain_id']),
                     "orientation": a['orientation'].reshape(3,3),
-                    "alive": bool(a['alive'])
+                    "orientation": a['orientation'].reshape(3,3),
+                    "alive": bool(a['alive']),
+                    "object_id": int(a['object_id']),
                 })
 
             generate_visualizations(self.global_cfg, self.grains, atoms_list, self.metadata, self.rng, output_dir)
@@ -560,7 +569,7 @@ class SimpleSyntheticGenerator:
 def main() -> None:
     import argparse
     parser = argparse.ArgumentParser(description="Generate simple synthetic atomistic datasets")
-    parser.add_argument("config", type=str, nargs="?", default="configs/data/synth_simple.yaml")
+    parser.add_argument("config", type=str, nargs="?", default="configs/data/synth_modelnet.yaml")
     parser.add_argument("--quiet", "-q", action="store_true")
     parser.add_argument("--skip-viz", action="store_true")
 

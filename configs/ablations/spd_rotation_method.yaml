@@ -1,13 +1,13 @@
 experiment:
-  config_name: spd_synth
+  config_name: spd_synth_small
   config_path: configs
   base_overrides:
-    - wandb_mode=offline
+    - wandb_mode=online
     - log_every_n_steps=10
-    - precision=32
+    - epochs=800
 variable:
   override: rotation_mode
-  values: [sixd_head, matrix_head, eq_decoder, inv_no_rot, inv_kabsch]
+  values: [matrix_head, inv_no_rot, inv_kabsch]
 metrics:
   final:
     - train/loss
