@@ -39,10 +39,10 @@ loss_params:
       squared: False
       auto_scale_by_points: False
 
-loss: sinkhorn
+loss: chamfer
 sinkhorn_blur: 0.1
 sinkhorn_blur_schedule:
-  enable: true
+  enable: false
   start: 0.1
   end: 0.01
   start_epoch: 0
