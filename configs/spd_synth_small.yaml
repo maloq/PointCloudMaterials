@@ -70,7 +70,7 @@ max_samples: 0  # no limit
 torch_compile: True
 
 learning_rate: 0.004
-batch_size: 128
+batch_size: 16
 gradient_clip_val: 0.5
 
 enable_swa: False

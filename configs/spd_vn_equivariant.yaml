@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_small_crystals
+  - data: synth_modelnet
 project_name: pointnet
 experiment_name: synth_SPD_VN_EQ_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online
@@ -19,11 +19,13 @@ encoder:
     pooling: "max"
 
 decoder:
-  name: VN_Equivariant
+  name: VN_Snowflake
   kwargs:
-    num_points: ${data.num_points}
+    num_points: ${data.num_points}  # Must be num_seeds * 2^num_stages
     latent_size: ${latent_size}
-    hidden_dims: [512, 256, 128]
+    num_seeds: 16                   # Starting seed points
+    hidden_channels: 64             # VN feature channels
+    k: 16                            # kNN neighbors in attention
     use_batchnorm: True
     negative_slope: 0.1
 
@@ -43,14 +45,14 @@ sinkhorn_blur_schedule:
   duration_epochs: ${epochs}
 
 learning_rate: 0.004
-batch_size: 512
+batch_size: 64
 
 enable_swa: False
 swa_epoch_start: 1000
 epochs: 100
 
 gpu: True
-devices: [0, 1, 2]
+devices: [0]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
