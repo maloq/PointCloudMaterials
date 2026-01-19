@@ -8,6 +8,13 @@ import matplotlib.pyplot as plt
 
 
 # ---------------------------
+# Stability constants
+# ---------------------------
+EPS = 1e-6
+FEATURE_CLAMP_MAX = 50.0  # Clamp feature magnitudes to prevent explosion
+
+
+# ---------------------------
 # Helpers: kNN + gathering
 # ---------------------------
 
@@ -42,6 +49,61 @@ def gather_neighbors(t: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
 # VN building blocks
 # ---------------------------
 
+class VNBatchNorm4D(nn.Module):
+    """
+    VN Batch Normalization for tensors of shape (B, N, C, 3).
+    Normalizes based on the norm of each vector channel, preserving direction.
+    """
+    def __init__(self, num_features: int, momentum: float = 0.1):
+        super().__init__()
+        self.bn = nn.BatchNorm1d(num_features, momentum=momentum)
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: (B, N, C, 3)
+        B, N, C, _ = x.shape
+        # Compute norms per channel: (B, N, C)
+        norm = torch.linalg.norm(x, dim=-1).clamp_min(EPS)
+        # Reshape for BatchNorm1d: (B*N, C)
+        norm_flat = norm.view(B * N, C)
+        norm_bn = self.bn(norm_flat)  # (B*N, C)
+        norm_bn = norm_bn.view(B, N, C, 1)  # (B, N, C, 1)
+        norm = norm.unsqueeze(-1)  # (B, N, C, 1)
+        # Scale vectors by normalized magnitude, preserving direction
+        return x / norm * norm_bn
+
+
+class VNLayerNorm(nn.Module):
+    """
+    VN Layer Normalization for tensors of shape (B, N, C, 3).
+    Normalizes across the channel dimension while preserving direction.
+    """
+    def __init__(self, num_features: int):
+        super().__init__()
+        self.gamma = nn.Parameter(torch.ones(num_features))
+        self.beta = nn.Parameter(torch.zeros(num_features))
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: (B, N, C, 3)
+        norm = torch.linalg.norm(x, dim=-1).clamp_min(EPS)  # (B, N, C)
+        # Normalize across channel dimension
+        mean = norm.mean(dim=-1, keepdim=True)  # (B, N, 1)
+        std = norm.std(dim=-1, keepdim=True).clamp_min(EPS)  # (B, N, 1)
+        norm_normalized = (norm - mean) / std  # (B, N, C)
+        # Apply learnable scale and shift
+        norm_scaled = norm_normalized * self.gamma + self.beta  # (B, N, C)
+        # Reconstruct vectors
+        norm = norm.unsqueeze(-1)  # (B, N, C, 1)
+        norm_scaled = norm_scaled.unsqueeze(-1)  # (B, N, C, 1)
+        return x / norm * norm_scaled.clamp_min(EPS)
+
+
+def clamp_features(x: torch.Tensor, max_norm: float = FEATURE_CLAMP_MAX) -> torch.Tensor:
+    """Clamp feature vector magnitudes to prevent explosion."""
+    norm = torch.linalg.norm(x, dim=-1, keepdim=True).clamp_min(EPS)
+    scale = torch.clamp(max_norm / norm, max=1.0)
+    return x * scale
+
+
 class VNLinear(nn.Module):
     """
     VN linear: mixes vector channels with scalar weights.
@@ -51,7 +113,8 @@ class VNLinear(nn.Module):
     def __init__(self, c_in: int, c_out: int, bias: bool = False):
         super().__init__()
         self.weight = nn.Parameter(torch.empty(c_out, c_in))
-        nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))
+        # Use Xavier initialization for better gradient flow
+        nn.init.xavier_uniform_(self.weight, gain=0.5)
         if bias:
             # A *vector* bias would break SO(3)-equivariance, so we disallow it here.
             raise ValueError("Vector bias breaks rotation equivariance; keep bias=False.")
@@ -60,10 +123,15 @@ class VNLinear(nn.Module):
         # v: (B,N,Cin,3), W: (Cout,Cin) -> (B,N,Cout,3)
         return torch.einsum("bncd,oc->bnod", v, self.weight)
 
-def radial_tanh(vec: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
+def radial_tanh(vec: torch.Tensor, eps: float = EPS, scale: float = 0.1) -> torch.Tensor:
+    """
+    Bounds displacement magnitudes using tanh.
+    Scale parameter controls the maximum displacement magnitude.
+    """
     # vec: (..., 3)
     n = torch.linalg.norm(vec, dim=-1, keepdim=True).clamp_min(eps)
-    return vec * (torch.tanh(n) / n)
+    return vec * (torch.tanh(n) / n) * scale
+
 
 class VNReLU(nn.Module):
     """
@@ -77,7 +145,7 @@ class VNReLU(nn.Module):
       in:  (B,N,Cin,3)
       out: (B,N,Cout,3)
     """
-    def __init__(self, c_in: int, c_out: Optional[int] = None, eps: float = 1e-8):
+    def __init__(self, c_in: int, c_out: Optional[int] = None, eps: float = EPS):
         super().__init__()
         c_out = c_in if c_out is None else c_out
         self.q_lin = VNLinear(c_in, c_out, bias=False)
@@ -144,8 +212,8 @@ class VNInvariantAttention(nn.Module):
     Equivariant message passing:
       Q = Wq V, K = Wk V, U = Wv V
       e_{jℓ} = MLP( ||Q_j||, ||K_ℓ||, <Q_j,K_ℓ>, ||x_j-x_ℓ|| )
-      a = softmax(e) over neighbors
-      H_j = V_j + sum_ℓ a_{jℓ} U_ℓ
+      a = softmax(e / temperature) over neighbors
+      H_j = V_j + residual_scale * sum_ℓ a_{jℓ} U_ℓ
 
     All logits are scalars built from invariants, so a is invariant.
     Message is scalar-weighted sum of vectors, so equivariant.
@@ -153,51 +221,69 @@ class VNInvariantAttention(nn.Module):
     Input:  x (B,N,3), v (B,N,C,3)
     Output: h (B,N,C_out,3)
     """
-    def __init__(self, c_in: int, c_out: int, k: int = 16, mlp_hidden: int = 32):
+    def __init__(
+        self, 
+        c_in: int, 
+        c_out: int, 
+        k: int = 16, 
+        mlp_hidden: int = 32,
+        temperature: float = 1.0,
+        residual_scale: float = 0.5,
+        use_layer_norm: bool = True,
+    ):
         super().__init__()
         self.k = k
+        self.temperature = temperature
+        self.residual_scale = residual_scale
+        
         self.q = VNLinear(c_in, c_out, bias=False)
         self.k_lin = VNLinear(c_in, c_out, bias=False)
         self.u = VNLinear(c_in, c_out, bias=False)
         self.edge_mlp = ScalarEdgeMLP(in_dim=4, hidden=mlp_hidden)
+        
+        # Optional layer norm for stability
+        self.use_layer_norm = use_layer_norm
+        if use_layer_norm:
+            self.layer_norm = VNLayerNorm(c_out)
 
     @staticmethod
     def _reduce_invariant(v: torch.Tensor) -> torch.Tensor:
         """
-        v: (B,N,C,3) -> (B,N,1) scalar invariant: sum of channel norms
+        v: (B,N,C,3) -> (B,N,1) scalar invariant: mean of channel norms (not sum, for stability)
         """
         # channelwise norms: (B,N,C)
         n = torch.linalg.norm(v, dim=-1)
-        return n.sum(dim=-1, keepdim=True)  # (B,N,1)
+        return n.mean(dim=-1, keepdim=True)  # (B,N,1) - use mean instead of sum
 
     @staticmethod
-    def _reduce_dot(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
+    def _reduce_dot(a: torch.Tensor, b: torch.Tensor, c_out: int) -> torch.Tensor:
         """
-        a,b: (B,N,C,3) -> (B,N,1) scalar invariant: sum of channel dot products
+        a,b: (B,N,C,3) -> (B,N,1) scalar invariant: mean of channel dot products (normalized)
         """
         d = (a * b).sum(dim=-1)  # (B,N,C)
-        return d.sum(dim=-1, keepdim=True)  # (B,N,1)
+        return d.mean(dim=-1, keepdim=True)  # (B,N,1) - use mean instead of sum
 
     def forward(self, x: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
-        B, N, _, _ = v.shape
+        B, N, C, _ = v.shape
 
         idx = knn_indices(x, self.k)                     # (B,N,k)
         x_nbr = gather_neighbors(x, idx)                 # (B,N,k,3)
-        v_nbr = gather_neighbors(v, idx)                 # (B,N,k,C,3)
 
         Q = self.q(v)                                    # (B,N,Cout,3)
         K = self.k_lin(v)                                # (B,N,Cout,3)
         U = self.u(v)                                    # (B,N,Cout,3)
+        
+        C_out = Q.shape[2]
 
         K_nbr = gather_neighbors(K, idx)                 # (B,N,k,Cout,3)
         U_nbr = gather_neighbors(U, idx)                 # (B,N,k,Cout,3)
 
-        # invariants
+        # invariants (normalized for stability)
         qn = self._reduce_invariant(Q)                   # (B,N,1)
         kn = self._reduce_invariant(K)                   # (B,N,1)
         kn_nbr = gather_neighbors(kn, idx)               # (B,N,k,1)
 
-        dot_nbr = self._reduce_dot(Q.unsqueeze(2), K_nbr)  # (B,N,k,1) via broadcasting
+        dot_nbr = self._reduce_dot(Q.unsqueeze(2), K_nbr, C_out)  # (B,N,k,1)
 
         dist = torch.linalg.norm(x.unsqueeze(2) - x_nbr, dim=-1, keepdim=True)  # (B,N,k,1)
 
@@ -208,13 +294,28 @@ class VNInvariantAttention(nn.Module):
                             dist], dim=-1)  # (B,N,k,4)
 
         logits = self.edge_mlp(edge_s)                   # (B,N,k,1)
+        
+        # Temperature scaling for numerical stability
+        logits = logits / self.temperature
+        # Clamp logits to prevent extreme values
+        logits = logits.clamp(-10, 10)
+        
         attn = torch.softmax(logits, dim=2)              # (B,N,k,1)
 
         # message: sum over neighbors of scalar * vector
         msg = (attn.unsqueeze(-1) * U_nbr).sum(dim=2)    # (B,N,Cout,3)
 
-        # residual
-        return Q + msg
+        # Scaled residual connection to prevent magnitude growth
+        out = Q + self.residual_scale * msg
+        
+        # Optional layer normalization
+        if self.use_layer_norm:
+            out = self.layer_norm(out)
+        
+        # Clamp features to prevent explosion
+        out = clamp_features(out)
+        
+        return out
 
 
 # ---------------------------
@@ -244,15 +345,33 @@ class VNSnowflakeDeconvBlock(nn.Module):
         k: int = 16,
         attn_mlp_hidden: int = 32,
         disp_hidden: int = 64,
+        temperature: float = 1.0,
+        residual_scale: float = 0.5,
+        disp_scale: float = 0.1,
+        use_batch_norm: bool = True,
     ):
         super().__init__()
         self.r = up_factor
+        self.disp_scale = disp_scale
 
-        # "skip-transformer" analog
-        self.ctx = VNInvariantAttention(c_in=c_in, c_out=c_ctx, k=k, mlp_hidden=attn_mlp_hidden)
+        # "skip-transformer" analog with stability improvements
+        self.ctx = VNInvariantAttention(
+            c_in=c_in, 
+            c_out=c_ctx, 
+            k=k, 
+            mlp_hidden=attn_mlp_hidden,
+            temperature=temperature,
+            residual_scale=residual_scale,
+            use_layer_norm=True,
+        )
 
         # r splitting heads (fixed, equivariant)
         self.split_heads = nn.ModuleList([VNLinear(c_ctx, c_child, bias=False) for _ in range(self.r)])
+        
+        # Batch normalization after splitting
+        self.use_batch_norm = use_batch_norm
+        if use_batch_norm:
+            self.bn = VNBatchNorm4D(c_child)
 
         # displacement MLP: produce 1 vector-channel then squeeze to (B,rN,3)
         self.disp = VNMLP(c_in=c_child, c_hidden=disp_hidden, c_out=1)
@@ -260,7 +379,7 @@ class VNSnowflakeDeconvBlock(nn.Module):
     def forward(self, x: torch.Tensor, v: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         B, N, _ = x.shape
 
-        # 1) context
+        # 1) context with attention
         h = self.ctx(x, v)  # (B,N,Cctx,3)
 
         # 2) split features into r children
@@ -269,6 +388,13 @@ class VNSnowflakeDeconvBlock(nn.Module):
             children.append(head(h))  # each: (B,N,Cchild,3)
         v_child = torch.stack(children, dim=2)           # (B,N,r,Cchild,3)
         v_up = v_child.reshape(B, N * self.r, v_child.size(3), 3)  # (B,rN,Cchild,3)
+        
+        # Apply batch normalization for stability
+        if self.use_batch_norm:
+            v_up = self.bn(v_up)
+        
+        # Clamp features to prevent explosion
+        v_up = clamp_features(v_up)
 
         # 3) duplicate coords and predict displacements
         x_dup = x.unsqueeze(2).expand(B, N, self.r, 3).reshape(B, N * self.r, 3)  # (B,rN,3)
@@ -276,7 +402,8 @@ class VNSnowflakeDeconvBlock(nn.Module):
         disp_v = self.disp(v_up)                         # (B,rN,1,3)
         delta = disp_v.squeeze(2)                        # (B,rN,3)
 
-        x_up = x_dup + radial_tanh(delta)                 # tanh optional for stability
+        # Use radial_tanh with configurable scale for bounded displacements
+        x_up = x_dup + radial_tanh(delta, scale=self.disp_scale)
         return x_up, v_up
 
 
@@ -286,21 +413,34 @@ class VNSnowflakeDeconvBlock(nn.Module):
 
 class VNSnowflakeDecoder(nn.Module):
     """
-    Stacks multiple VNSnowflakeDeconvBlock blocks.
+    Stacks multiple VNSnowflakeDeconvBlock blocks with stability improvements.
     """
     def __init__(
         self,
         c_in: int,
         stages: Tuple[Tuple[int, int, int, int], ...],
         k: int = 16,
+        temperature: float = 1.0,
+        residual_scale: float = 0.5,
+        disp_scale: float = 0.1,
+        use_batch_norm: bool = True,
     ):
         """
-        stages: tuple of (c_ctx, c_child, up_factor, disp_hidden) per stage
+        Args:
+            c_in: Input channels
+            stages: tuple of (c_ctx, c_child, up_factor, disp_hidden) per stage
+            k: Number of neighbors for kNN attention
+            temperature: Temperature for attention softmax (higher = smoother attention)
+            residual_scale: Scale factor for residual connections (lower = more stable)
+            disp_scale: Scale factor for displacement predictions
+            use_batch_norm: Whether to use batch normalization
         """
         super().__init__()
         blocks = []
         cur_c = c_in
-        for (c_ctx, c_child, up_factor, disp_hidden) in stages:
+        for i, (c_ctx, c_child, up_factor, disp_hidden) in enumerate(stages):
+            # Use progressively smaller displacement scale in later stages
+            stage_disp_scale = disp_scale / (1.0 + 0.5 * i)
             blocks.append(
                 VNSnowflakeDeconvBlock(
                     c_in=cur_c,
@@ -309,6 +449,10 @@ class VNSnowflakeDecoder(nn.Module):
                     up_factor=up_factor,
                     k=k,
                     disp_hidden=disp_hidden,
+                    temperature=temperature,
+                    residual_scale=residual_scale,
+                    disp_scale=stage_disp_scale,
+                    use_batch_norm=use_batch_norm,
                 )
             )
             cur_c = c_child
@@ -318,6 +462,8 @@ class VNSnowflakeDecoder(nn.Module):
     def forward(self, x: torch.Tensor, v: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         for blk in self.blocks:
             x, v = blk(x, v)
+            # Clamp outputs at each stage for safety
+            v = clamp_features(v)
         return x, v
 
 

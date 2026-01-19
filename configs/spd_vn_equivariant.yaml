@@ -25,9 +25,13 @@ decoder:
     latent_size: ${latent_size}
     num_seeds: 16                   # Starting seed points
     hidden_channels: 64             # VN feature channels
-    k: 16                            # kNN neighbors in attention
+    k: 16                           # kNN neighbors in attention
     use_batchnorm: True
     negative_slope: 0.1
+    # Stability parameters
+    temperature: 2.0                # Higher = smoother attention, more stable
+    residual_scale: 0.3             # Lower = more stable residual connections
+    disp_scale: 0.05                # Lower = smaller displacements, more stable
 
 loss_params:
     chamfer:
@@ -44,8 +48,11 @@ sinkhorn_blur_schedule:
   start_epoch: 0
   duration_epochs: ${epochs}
 
-learning_rate: 0.004
+learning_rate: 0.0005
 batch_size: 64
+
+# Gradient clipping for stability
+gradient_clip_val: 1.0
 
 enable_swa: False
 swa_epoch_start: 1000
@@ -65,7 +72,7 @@ ortho_scale: 0.01  # Will be zero for eq_decoder mode (identity rotation)
 max_samples: 0
 # Curriculum learning settings
 curriculum_learning:
-  enable: True
+  enable: False
   start_fraction: 0.0
   end_fraction: 1.0
   start_epoch: 10

@@ -107,6 +107,10 @@ class VNSnowflakeDecoderWrapper(Decoder):
         k: int = 8,
         use_batchnorm: bool = True,
         negative_slope: float = 0.1,
+        # New stability parameters
+        temperature: float = 1.0,
+        residual_scale: float = 0.5,
+        disp_scale: float = 0.1,
     ):
         """
         Args:
@@ -119,6 +123,9 @@ class VNSnowflakeDecoderWrapper(Decoder):
             k: Number of neighbors for kNN in attention blocks.
             use_batchnorm: Whether to use batch normalization in initial projection.
             negative_slope: Negative slope for LeakyReLU activations.
+            temperature: Temperature for attention softmax (higher = smoother, more stable).
+            residual_scale: Scale factor for residual connections (lower = more stable).
+            disp_scale: Scale factor for displacement predictions (lower = more stable).
         """
         super().__init__()
         self._n = num_points
@@ -154,12 +161,16 @@ class VNSnowflakeDecoderWrapper(Decoder):
             use_batchnorm=use_batchnorm
         )
 
-        # Core snowflake decoder (upsampling stages)
+        # Core snowflake decoder (upsampling stages) with stability improvements
         c_in = hidden_channels
         self.decoder_core = VNSnowflakeDecoderCore(
             c_in=c_in,
             stages=stages,
             k=k,
+            temperature=temperature,
+            residual_scale=residual_scale,
+            disp_scale=disp_scale,
+            use_batch_norm=use_batchnorm,
         )
 
         # Final projection to single vector channel (output point positions)
