@@ -1,5 +1,5 @@
 defaults:
-  - data: synth_modelnet
+  - data: synth_modelnet_objects
 project_name: pointnet
 experiment_name: synth_SPD_VN_EQ_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: online

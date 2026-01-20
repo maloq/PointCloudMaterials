@@ -76,11 +76,11 @@ class EquivariantAutoencoder(pl.LightningModule):
 
         self.kl_latent_loss_scale = cfg.kl_latent_loss_scale
         
-        # Caches
+        # Caches (using standardized field names)
         self._supervised_cache = {
-            "train": {"latents": [], "phase": []},
-            "val": {"latents": [], "phase": []},
-            "test": {"latents": [], "phase": [], "reconstructions": [], "canonicals": [], "originals": []},
+            "train": {"latents": [], "class_id": []},
+            "val": {"latents": [], "class_id": []},
+            "test": {"latents": [], "class_id": [], "reconstructions": [], "canonicals": [], "originals": []},
         }
         self.max_supervised_samples = cfg.max_supervised_samples if hasattr(cfg, 'max_supervised_samples') else 8192
         self.max_test_samples = cfg.max_test_samples if hasattr(cfg, 'max_test_samples') else 1000
@@ -132,16 +132,26 @@ class EquivariantAutoencoder(pl.LightningModule):
 
     @staticmethod
     def _unpack_batch(batch):
+        """Unpack batch dict into points and metadata.
+        
+        Args:
+            batch: Dict with keys "points", "class_id", "instance_id", "rotation"
+            
+        Returns:
+            Tuple of (points, meta_dict)
+        """
+        if isinstance(batch, dict):
+            pc = batch["points"]
+            meta = {
+                "class_id": batch.get("class_id"),
+                "instance_id": batch.get("instance_id"),
+                "rotation": batch.get("rotation"),
+            }
+            return pc, meta
+        # Fallback for non-dict batches (shouldn't happen with new datasets)
         if not isinstance(batch, (tuple, list)):
             return batch, {}
-        pc = batch[0]
-        labels = {}
-        # Safely unpack labels if they exist
-        if len(batch) > 1: labels["phase"] = batch[1]
-        if len(batch) > 2: labels["grain"] = batch[2]
-        if len(batch) > 3: labels["orientation"] = batch[3]
-        if len(batch) > 4: labels["quaternion"] = batch[4]
-        return pc, labels
+        return batch[0], {}
 
     def forward(self, pc: torch.Tensor):
         """
@@ -218,7 +228,7 @@ class EquivariantAutoencoder(pl.LightningModule):
         return losses, sinkhorn_blur
 
     def _step(self, batch, batch_idx, stage: str):
-        pc, labels = self._unpack_batch(batch)
+        pc, meta = self._unpack_batch(batch)
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
 
         # Forward pass (now returns diffusion loss if applicable)
@@ -231,7 +241,7 @@ class EquivariantAutoencoder(pl.LightningModule):
         valid_recon_for_cache = None if skip_cache_recon else recon
         
         if stage in self._supervised_cache:
-            self._cache_supervised_batch(stage, inv_z, labels, valid_recon_for_cache, pc)
+            self._cache_supervised_batch(stage, inv_z, meta, valid_recon_for_cache, pc)
 
         # Compute losses
         losses, sinkhorn_blur = self._compute_losses(recon, pc, inv_z, diff_loss, stage)
@@ -327,8 +337,17 @@ class EquivariantAutoencoder(pl.LightningModule):
             return self.max_supervised_samples
         return None
 
-    def _cache_supervised_batch(self, stage: str, inv_z: torch.Tensor, labels: dict,
+    def _cache_supervised_batch(self, stage: str, inv_z: torch.Tensor, meta: dict,
                                  recon: torch.Tensor = None, pc: torch.Tensor = None) -> None:
+        """Cache batch data for computing metrics at epoch end.
+        
+        Args:
+            stage: "train", "val", or "test"
+            inv_z: Invariant latent representations
+            meta: Metadata dict with "class_id", "instance_id", "rotation"
+            recon: Reconstructed point clouds (optional)
+            pc: Original point clouds (optional)
+        """
         cache = self._supervised_cache.get(stage)
         if cache is None:
             return
@@ -346,13 +365,13 @@ class EquivariantAutoencoder(pl.LightningModule):
         if effective_batch <= 0:
             return
 
-        phase = labels.get("phase")
-        if phase is None:
+        class_id = meta.get("class_id")
+        if class_id is None:
             return
-        if not torch.is_tensor(phase):
-            phase = torch.as_tensor(phase)
-        phase = phase.detach().view(-1)
-        effective_batch = min(effective_batch, phase.shape[0])
+        if not torch.is_tensor(class_id):
+            class_id = torch.as_tensor(class_id)
+        class_id = class_id.detach().view(-1)
+        effective_batch = min(effective_batch, class_id.shape[0])
         if effective_batch <= 0:
             return
 
@@ -368,28 +387,28 @@ class EquivariantAutoencoder(pl.LightningModule):
             if pc is not None:
                 cache["originals"].append(pc[:effective_batch].detach().to(torch.float32).cpu())
 
-        cache["phase"].append(phase[:effective_batch].cpu())
+        cache["class_id"].append(class_id[:effective_batch].cpu())
 
     def _log_supervised_metrics(self, stage: str) -> None:
         cache = self._supervised_cache.get(stage)
         if cache is None:
             return
 
-        if not cache["latents"] or not cache["phase"]:
+        if not cache["latents"] or not cache["class_id"]:
             for key in cache:
                 cache[key].clear()
             return
 
         latents = torch.cat(cache["latents"], dim=0).numpy()
-        labels = torch.cat(cache["phase"], dim=0).numpy()
+        labels = torch.cat(cache["class_id"], dim=0).numpy()
 
-        # Original clustering metrics
+        # Clustering metrics (using "class" prefix instead of "phase")
         metrics = compute_cluster_metrics(latents, labels, stage)
         if metrics:
             for name, value in metrics.items():
                 self._log_metric(
                     stage,
-                    f"phase/{name.lower()}",
+                    f"class/{name.lower()}",
                     value,
                     prog_bar=False,
                     on_step=False,
@@ -449,7 +468,7 @@ class EquivariantAutoencoder(pl.LightningModule):
             except Exception as e:
                 print(f"Error computing canonical consistency metrics: {e}")
 
-        # Reconstruction EMD per phase
+        # Reconstruction EMD per class
         if stage == "test" and cache["originals"] and cache["reconstructions"] and len(cache["originals"]) > 0:
             try:
                 originals = torch.cat(cache["originals"], dim=0).numpy()
@@ -458,7 +477,7 @@ class EquivariantAutoencoder(pl.LightningModule):
                 for name, value in emd_metrics.items():
                     self._log_metric(
                         stage,
-                        f"phase/{name}",
+                        f"class/{name}",
                         value,
                         prog_bar=False,
                         on_step=False,
@@ -471,7 +490,7 @@ class EquivariantAutoencoder(pl.LightningModule):
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
             except Exception as e:
-                print(f"Error computing reconstruction EMD per phase: {e}")
+                print(f"Error computing reconstruction EMD per class: {e}")
 
         # Clear cache
         for key in cache:

@@ -37,6 +37,21 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         """
         Unpack ModelNet batch: (points, label, class_name)
         """
+        """Unpack batch dict into points and metadata.
+        
+        Handles both new dict format and legacy tuple format from ModelNet.
+        """
+        if isinstance(batch, dict):
+            pc = batch["points"]
+            if torch.is_tensor(pc):
+                pc = SPDExperimentsModule._normalize_pc(pc)
+            meta = {
+                "class_id": batch.get("class_id"),
+                "instance_id": batch.get("instance_id"),
+                "rotation": batch.get("rotation"),
+            }
+            return pc, meta
+            
         if not isinstance(batch, (tuple, list)):
             return batch, {}
             
@@ -45,18 +60,17 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         if torch.is_tensor(pc):
             pc = SPDExperimentsModule._normalize_pc(pc)
         
-        labels = {}
+        meta = {}
         
-        # ModelNet loader returns (pc, label_idx, class_name)
+        # ModelNet loader returns (pc, label_idx, class_name) - legacy format
         if len(batch) >= 2:
-            labels["phase"] = batch[1] # Use class label as phase
+            meta["class_id"] = batch[1]
         
-        # No ground truth orientation/grain for ModelNet
-        labels["grain"] = None
-        labels["orientation"] = None 
-        labels["quaternion"] = None
+        # No ground truth for ModelNet
+        meta["instance_id"] = None
+        meta["rotation"] = None 
         
-        return pc, labels
+        return pc, meta
 
     def __init__(self, cfg):
         super().__init__(cfg)
@@ -73,7 +87,7 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             self.aug_jitter_scale = 0.0
             self.aug_scaling_range = 0.0
 
-    def _apply_augmentations(self, pc, labels):
+    def _apply_augmentations(self, pc, meta):
         """Apply noise and rotation augmentations."""
         # Noise
         if self.aug_noise_scale > 0:
@@ -110,15 +124,15 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             # Apply rotation
             pc = (rot_aug @ pc.transpose(1, 2)).transpose(1, 2).contiguous()
             
-            # Update ground truth orientation
-            if labels.get("orientation") is None:
-                # If no orientation exists, assume identity (input was canonical)
-                labels["orientation"] = torch.eye(3, device=pc.device, dtype=pc.dtype).unsqueeze(0).expand(pc.shape[0], -1, -1)
+            # Update ground truth rotation
+            if meta.get("rotation") is None:
+                # If no rotation exists, assume identity (input was canonical)
+                meta["rotation"] = torch.eye(3, device=pc.device, dtype=pc.dtype).unsqueeze(0).expand(pc.shape[0], -1, -1)
             
-            # New orientation = R_aug @ Old_orientation
-            labels["orientation"] = rot_aug @ labels["orientation"]
+            # New rotation = R_aug @ Old_rotation
+            meta["rotation"] = rot_aug @ meta["rotation"]
                 
-        return pc, labels
+        return pc, meta
 
     def _compute_losses(self, recon, cano, rot, pc, inv_z, vq_loss=0.0, labels=None):
         """Override to add new metrics for ModelNet experiments."""
@@ -248,15 +262,15 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
         if self.reference_pcs is None:
             # Build reference PCs from cache
             cache = self._supervised_cache.get(stage)
-            if cache and cache["originals"] and cache["phase"]:
+            if cache and cache["originals"] and cache["class_id"]:
                 originals = torch.cat(cache["originals"], dim=0).numpy()
-                phase_ids = torch.cat(cache["phase"], dim=0).numpy()
+                class_ids = torch.cat(cache["class_id"], dim=0).numpy()
                 
                 self.reference_pcs = {}
-                unique_phases = np.unique(phase_ids)
-                for pid in unique_phases:
-                    # Pick first sample of this phase
-                    idx = np.where(phase_ids == pid)[0][0]
+                unique_classes = np.unique(class_ids)
+                for cid in unique_classes:
+                    # Pick first sample of this class
+                    idx = np.where(class_ids == cid)[0][0]
                     # We don't have class names here easily unless we store them, 
                     # but spd_metrics expects phase names or we can just use IDs if we adapt it.
                     # spd_metrics.test_rotation_equivariance_sample maps IDs to names.
@@ -289,15 +303,15 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             return
 
         originals = torch.cat(cache["originals"], dim=0)
-        phase_ids = torch.cat(cache["phase"], dim=0).cpu().numpy()
+        class_ids = torch.cat(cache["class_id"], dim=0).cpu().numpy()
         
-        unique_phases = np.unique(phase_ids)
+        unique_classes = np.unique(class_ids)
         
         self.eval()
         with torch.no_grad():
-            for pid in unique_phases:
-                # Get a few samples for this phase
-                indices = np.where(phase_ids == pid)[0]
+            for cid in unique_classes:
+                # Get a few samples for this class
+                indices = np.where(class_ids == cid)[0]
                 if len(indices) == 0:
                     continue
                 
@@ -348,13 +362,13 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             return
 
         originals = torch.cat(cache["originals"], dim=0)
-        phase_ids = torch.cat(cache["phase"], dim=0).cpu().numpy()
-        unique_phases = np.unique(phase_ids)
+        class_ids = torch.cat(cache["class_id"], dim=0).cpu().numpy()
+        unique_classes = np.unique(class_ids)
         
         self.eval()
         with torch.no_grad():
-            for pid in unique_phases:
-                indices = np.where(phase_ids == pid)[0]
+            for cid in unique_classes:
+                indices = np.where(class_ids == cid)[0]
                 if len(indices) == 0:
                     continue
                 

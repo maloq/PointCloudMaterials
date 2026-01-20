@@ -40,26 +40,26 @@ PHASE_MARKERS = {
 
 def extract_actual_dataset_samples(
     dataset: SyntheticPointCloudDataset,
-    num_samples_per_phase: int = 3,
+    num_samples_per_class: int = 3,
 ) -> Dict[str, List[np.ndarray]]:
-    """Extract actual samples from the synthetic dataset, organized by phase."""
-    phase_samples: Dict[str, List[np.ndarray]] = {}
-    idx_to_phase = {idx: name for name, idx in dataset._phase_to_idx.items()}
-    phase_counts: Dict[str, int] = {name: 0 for name in idx_to_phase.values()}
+    """Extract actual samples from the synthetic dataset, organized by class."""
+    class_samples: Dict[str, List[np.ndarray]] = {}
+    idx_to_class = dataset.class_names  # {id: name}
+    class_counts: Dict[str, int] = {name: 0 for name in idx_to_class.values()}
 
     for i in range(len(dataset)):
-        if all(count >= num_samples_per_phase for count in phase_counts.values()):
+        if all(count >= num_samples_per_class for count in class_counts.values()):
             break
 
-        phase_idx = dataset._phase_labels[i]
-        phase_name = idx_to_phase.get(phase_idx, f"unknown_{phase_idx}")
+        class_idx = dataset._class_ids[i]
+        class_name = idx_to_class.get(class_idx, f"unknown_{class_idx}")
 
-        if phase_counts[phase_name] < num_samples_per_phase:
+        if class_counts[class_name] < num_samples_per_class:
             pc_tensor = dataset.samples[i]
-            phase_samples.setdefault(phase_name, []).append(pc_tensor.numpy())
-            phase_counts[phase_name] += 1
+            class_samples.setdefault(class_name, []).append(pc_tensor.numpy())
+            class_counts[class_name] += 1
 
-    return phase_samples
+    return class_samples
 
 
 def draw_edges_on_ax(

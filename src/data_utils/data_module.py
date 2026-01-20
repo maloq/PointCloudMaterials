@@ -142,7 +142,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             self.test_dataset = self.val_dataset
 
         if (stage is None or stage == 'fit') and not self._phase_info_logged:
-            self._log_phase_mapping()
+            self._log_class_mapping()
 
         elapsed_time = time.time() - start_time
         logger.print(f"Synth train dataset size: {len(self.train_dataset)}")
@@ -331,19 +331,22 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             break
         return None
 
-    def _log_phase_mapping(self):
+    def _log_class_mapping(self):
+        """Log the class name to ID mapping for the dataset."""
         base_dataset = self._resolve_synthetic_dataset()
-        if base_dataset is None or not hasattr(base_dataset, '_phase_to_idx'):
-            logger.print("Synthetic phase mapping unavailable; dataset not initialized yet")
+        if base_dataset is None or not hasattr(base_dataset, '_class_to_idx'):
+            logger.print("Class mapping unavailable; dataset not initialized yet")
             return
 
-        if not base_dataset._phase_to_idx:
-            logger.print("Synthetic dataset did not expose any phase labels")
+        if not base_dataset._class_to_idx:
+            logger.print("Dataset did not expose any class labels")
             return
 
-        logger.print("Synthetic phase labels:")
-        for phase_name, phase_idx in sorted(base_dataset._phase_to_idx.items(), key=lambda item: item[1]):
-            logger.print(f"  Phase {phase_idx}: {phase_name}")
+        domain = getattr(base_dataset, 'domain', 'unknown')
+        logger.print(f"Dataset domain: {domain}")
+        logger.print("Class labels:")
+        for class_name, class_idx in sorted(base_dataset._class_to_idx.items(), key=lambda item: item[1]):
+            logger.print(f"  Class {class_idx}: {class_name}")
         self._phase_info_logged = True
 
 

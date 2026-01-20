@@ -31,7 +31,14 @@ def pc_normalize(pc, radius = None):
 
 
 def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
-    """Convert rotation matrix to quaternion (w, x, y, z)."""
+    """Convert rotation matrix to quaternion (w, x, y, z).
+    
+    Args:
+        R: (3, 3) rotation matrix as numpy array
+        
+    Returns:
+        (4,) quaternion as numpy array [w, x, y, z]
+    """
     if R.shape != (3, 3):
         raise ValueError(f"Rotation matrix must be 3x3, got {R.shape}")
     m00, m01, m02 = R[0]
@@ -67,6 +74,68 @@ def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
     if norm == 0:
         return np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32)
     return quat / norm
+
+
+def rotation_matrix_to_quaternion_batch(R: torch.Tensor) -> torch.Tensor:
+    """Convert batched rotation matrices to quaternions (w, x, y, z).
+    
+    Args:
+        R: (..., 3, 3) rotation matrices as torch tensor
+        
+    Returns:
+        (..., 4) quaternions as torch tensor [w, x, y, z]
+    """
+    batch_shape = R.shape[:-2]
+    R = R.reshape(-1, 3, 3)
+    batch_size = R.shape[0]
+    
+    m00, m01, m02 = R[:, 0, 0], R[:, 0, 1], R[:, 0, 2]
+    m10, m11, m12 = R[:, 1, 0], R[:, 1, 1], R[:, 1, 2]
+    m20, m21, m22 = R[:, 2, 0], R[:, 2, 1], R[:, 2, 2]
+    
+    tr = m00 + m11 + m22
+    quat = torch.zeros(batch_size, 4, dtype=R.dtype, device=R.device)
+    
+    # Case 1: tr > 0
+    mask1 = tr > 0
+    if mask1.any():
+        S = torch.sqrt(tr[mask1] + 1.0) * 2.0
+        quat[mask1, 0] = 0.25 * S
+        quat[mask1, 1] = (m21[mask1] - m12[mask1]) / S
+        quat[mask1, 2] = (m02[mask1] - m20[mask1]) / S
+        quat[mask1, 3] = (m10[mask1] - m01[mask1]) / S
+    
+    # Case 2: m00 > m11 and m00 > m22
+    mask2 = ~mask1 & (m00 > m11) & (m00 > m22)
+    if mask2.any():
+        S = torch.sqrt(1.0 + m00[mask2] - m11[mask2] - m22[mask2]) * 2.0
+        quat[mask2, 0] = (m21[mask2] - m12[mask2]) / S
+        quat[mask2, 1] = 0.25 * S
+        quat[mask2, 2] = (m01[mask2] + m10[mask2]) / S
+        quat[mask2, 3] = (m02[mask2] + m20[mask2]) / S
+    
+    # Case 3: m11 > m22
+    mask3 = ~mask1 & ~mask2 & (m11 > m22)
+    if mask3.any():
+        S = torch.sqrt(1.0 + m11[mask3] - m00[mask3] - m22[mask3]) * 2.0
+        quat[mask3, 0] = (m02[mask3] - m20[mask3]) / S
+        quat[mask3, 1] = (m01[mask3] + m10[mask3]) / S
+        quat[mask3, 2] = 0.25 * S
+        quat[mask3, 3] = (m12[mask3] + m21[mask3]) / S
+    
+    # Case 4: else
+    mask4 = ~mask1 & ~mask2 & ~mask3
+    if mask4.any():
+        S = torch.sqrt(1.0 + m22[mask4] - m00[mask4] - m11[mask4]) * 2.0
+        quat[mask4, 0] = (m10[mask4] - m01[mask4]) / S
+        quat[mask4, 1] = (m02[mask4] + m20[mask4]) / S
+        quat[mask4, 2] = (m12[mask4] + m21[mask4]) / S
+        quat[mask4, 3] = 0.25 * S
+    
+    # Normalize
+    quat = quat / (torch.norm(quat, dim=-1, keepdim=True) + 1e-8)
+    
+    return quat.reshape(*batch_shape, 4)
 
 
 def _get_fps_device(use_gpu: bool) -> torch.device:
@@ -218,7 +287,16 @@ class SyntheticPointCloudDataset(Dataset):
 
     Optimized for millions of atoms by using lazy metadata computation
     and pre-converted tensors.
+    
+    Returns dict with keys:
+        - "points": (N, 3) point cloud tensor
+        - "class_id": scalar int64 tensor (category/phase index)
+        - "instance_id": scalar int64 tensor (grain/instance index, -1 if unknown)
+        - "rotation": (3, 3) float32 rotation matrix tensor
     """
+
+    # Dataset metadata
+    domain: str = "materials"
 
     def __init__(
         self,
@@ -251,16 +329,18 @@ class SyntheticPointCloudDataset(Dataset):
         self.discard_mixed_phase = discard_mixed_phase
         self.sampling_method = sampling_method
 
-
         # Store as tensors to avoid conversion overhead
         self.samples: List[torch.Tensor] = []
-        self._phase_labels: List[int] = []
-        self._grain_labels: List[int] = []
-        self._orientation: List[torch.Tensor] = []
-        self._quaternions: List[torch.Tensor] = []
+        self._class_ids: List[int] = []
+        self._instance_ids: List[int] = []
+        self._rotations: List[torch.Tensor] = []
 
-        self._phase_to_idx: Dict[str, int] = {}
-        self._grain_to_idx: Dict[Tuple[str, str], int] = {}
+        # Class mapping (class_name -> class_id)
+        self._class_to_idx: Dict[str, int] = {}
+        self._instance_to_idx: Dict[Tuple[str, str], int] = {}
+        
+        # Class properties for domain-specific info
+        self._class_properties: Dict[str, Dict[str, Any]] = {}
 
         for env_index, env_dir in enumerate(env_dirs):
             if self.max_samples is not None and len(self.samples) >= self.max_samples:
@@ -269,6 +349,9 @@ class SyntheticPointCloudDataset(Dataset):
 
         if not self.samples:
             raise RuntimeError("SyntheticPointCloudDataset constructed with zero samples")
+        
+        # Build class properties based on detected classes
+        self._build_class_properties()
 
     def _ingest_environment(self, env_dir: Union[str, Path], env_index: int) -> None:
         env_path = Path(env_dir)
@@ -329,15 +412,14 @@ class SyntheticPointCloudDataset(Dataset):
             # Look up metadata on-demand
             meta = atom_to_meta_idx[atom_idx]
             processed = self._prepare_sample(sample_points)
-            phase_idx = self._encode_phase(meta["phase_id"])
-            grain_idx = self._encode_grain(meta["grain_key"])
+            class_idx = self._encode_class(meta["phase_id"])
+            instance_idx = self._encode_instance(meta["grain_key"])
 
             # Store as tensors to avoid conversion overhead in __getitem__
             self.samples.append(torch.tensor(processed, dtype=torch.float32))
-            self._phase_labels.append(phase_idx)
-            self._grain_labels.append(grain_idx)
-            self._orientation.append(torch.tensor(meta["orientation"], dtype=torch.float32))
-            self._quaternions.append(torch.tensor(meta["quaternion"], dtype=torch.float32))
+            self._class_ids.append(class_idx)
+            self._instance_ids.append(instance_idx)
+            self._rotations.append(torch.tensor(meta["orientation"], dtype=torch.float32))
 
             if self.max_samples is not None and len(self.samples) >= self.max_samples:
                 break
@@ -589,52 +671,108 @@ class SyntheticPointCloudDataset(Dataset):
         return atom_meta
 
     @staticmethod
-    def _group_phase(phase_id: str) -> str:
+    def _group_class(class_name: str) -> str:
         """Group amorphous phases (but not intermediate) into one class."""
-        if phase_id.startswith('amorphous_') and not phase_id.startswith('intermediate_'):
+        if class_name.startswith('amorphous_') and not class_name.startswith('intermediate_'):
             return 'amorphous'
-        return phase_id
+        return class_name
 
-    def _encode_phase(self, phase_id: str) -> int:
-        # Apply phase grouping
-        grouped_phase_id = self._group_phase(phase_id)
+    def _encode_class(self, class_name: str) -> int:
+        """Encode class name to integer index."""
+        grouped_name = self._group_class(class_name)
+        if grouped_name not in self._class_to_idx:
+            self._class_to_idx[grouped_name] = len(self._class_to_idx)
+        return self._class_to_idx[grouped_name]
 
-        if grouped_phase_id not in self._phase_to_idx:
-            self._phase_to_idx[grouped_phase_id] = len(self._phase_to_idx)
-        return self._phase_to_idx[grouped_phase_id]
-
-    def _encode_grain(self, grain_key: Tuple[str, str]) -> int:
-        if grain_key[1] == "unknown":
+    def _encode_instance(self, instance_key: Tuple[str, str]) -> int:
+        """Encode instance key to integer index."""
+        if instance_key[1] == "unknown":
             return -1
-        if grain_key not in self._grain_to_idx:
-            self._grain_to_idx[grain_key] = len(self._grain_to_idx)
-        return self._grain_to_idx[grain_key]
+        if instance_key not in self._instance_to_idx:
+            self._instance_to_idx[instance_key] = len(self._instance_to_idx)
+        return self._instance_to_idx[instance_key]
+    
+    def _build_class_properties(self) -> None:
+        """Build class properties dict with domain-specific info."""
+        for class_name in self._class_to_idx.keys():
+            if class_name.startswith('crystal_'):
+                structure = class_name.replace('crystal_', '')
+                is_cubic = structure in ('fcc', 'bcc')
+                self._class_properties[class_name] = {
+                    "structure": structure,
+                    "symmetry": "cubic" if is_cubic else "other",
+                    "cubic_symmetric": is_cubic,
+                }
+            elif class_name == 'amorphous':
+                self._class_properties[class_name] = {
+                    "structure": "disordered",
+                    "symmetry": None,
+                    "cubic_symmetric": False,
+                }
+            else:
+                self._class_properties[class_name] = {
+                    "structure": "unknown",
+                    "symmetry": None,
+                    "cubic_symmetric": False,
+                }
+    
+    @property
+    def class_names(self) -> Dict[int, str]:
+        """Return mapping from class_id to class name."""
+        return {v: k for k, v in self._class_to_idx.items()}
+    
+    @property
+    def class_properties(self) -> Dict[str, Dict[str, Any]]:
+        """Return class properties dict."""
+        return self._class_properties
+    
+    @property 
+    def num_classes(self) -> int:
+        """Return number of classes."""
+        return len(self._class_to_idx)
 
     def __len__(self) -> int:
         return len(self.samples)
 
-    def __getitem__(self, index: int):
+    def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
+        """Return sample as dictionary with standardized keys.
+        
+        Returns:
+            Dict with keys:
+                - "points": (N, 3) point cloud tensor
+                - "class_id": scalar int64 tensor
+                - "instance_id": scalar int64 tensor  
+                - "rotation": (3, 3) float32 rotation matrix tensor
+        """
         # Samples are already stored as tensors for efficiency
         pc_tensor = self.samples[index]
         if not self.pre_normalize and self.normalize:
-            # Need to convert back to numpy for normalization, then back to tensor
             point_set = pc_tensor.numpy()
             point_set = pc_normalize(point_set, self.radius).astype(np.float32)
             pc_tensor = torch.tensor(point_set, dtype=torch.float32)
 
-        # Use cached tensors for orientation and quaternion
-        phase_tensor = torch.tensor(self._phase_labels[index], dtype=torch.long)
-        grain_tensor = torch.tensor(self._grain_labels[index], dtype=torch.long)
-        orientation_tensor = self._orientation[index]
-        quaternion_tensor = self._quaternions[index]
-        return pc_tensor, phase_tensor, grain_tensor, orientation_tensor, quaternion_tensor
+        return {
+            "points": pc_tensor,
+            "class_id": torch.tensor(self._class_ids[index], dtype=torch.long),
+            "instance_id": torch.tensor(self._instance_ids[index], dtype=torch.long),
+            "rotation": self._rotations[index],
+        }
 
 
 class CenteredModelNetDataset(Dataset):
-    """ModelNet40 wrapper that returns centered objects with synthetic-like metadata.
+    """ModelNet40 wrapper that returns centered objects with standardized metadata.
 
     Note: when add_center_point=True, num_points includes the center point.
+    
+    Returns dict with keys:
+        - "points": (N, 3) point cloud tensor
+        - "class_id": scalar int64 tensor (object class index)
+        - "instance_id": scalar int64 tensor (-1, not used for ModelNet)
+        - "rotation": (3, 3) float32 rotation matrix tensor (augmentation rotation)
     """
+
+    # Dataset metadata
+    domain: str = "objects"
 
     def __init__(
         self,
@@ -705,7 +843,7 @@ class CenteredModelNetDataset(Dataset):
             )
             points = torch.cat([train_ds.points, test_ds.points], dim=0)
             labels = torch.cat([train_ds.labels, test_ds.labels], dim=0)
-            class_names = train_ds.class_names + test_ds.class_names
+            sample_class_names = train_ds.class_names + test_ds.class_names
             class_to_idx = train_ds.class_to_idx
         else:
             base_ds = ModelNetFastDataset(
@@ -716,36 +854,44 @@ class CenteredModelNetDataset(Dataset):
             )
             points = base_ds.points
             labels = base_ds.labels
-            class_names = base_ds.class_names
+            sample_class_names = base_ds.class_names
             class_to_idx = base_ds.class_to_idx
 
         if len(points) == 0:
             raise RuntimeError("CenteredModelNetDataset constructed with zero samples")
 
-        self._phase_to_idx = dict(class_to_idx)
+        self._class_to_idx = dict(class_to_idx)
         if self.classes is not None:
             class_set = set(self.classes)
-            self._phase_to_idx = {name: idx for name, idx in self._phase_to_idx.items() if name in class_set}
-        self._grain_to_idx: Dict[Tuple[str, str], int] = {}
+            self._class_to_idx = {name: idx for name, idx in self._class_to_idx.items() if name in class_set}
+        
         source_points = points.shape[1]
         if self.num_surface_points != source_points:
-            points, labels, class_names = self._load_or_build_fps_cache(
-                points, labels, class_names, source_points
+            points, labels, sample_class_names = self._load_or_build_fps_cache(
+                points, labels, sample_class_names, source_points
             )
 
         if self.max_samples is not None:
             max_samples = min(self.max_samples, len(points))
             points = points[:max_samples]
             labels = labels[:max_samples]
-            class_names = class_names[:max_samples]
+            sample_class_names = sample_class_names[:max_samples]
 
         if self.pre_normalize and self.normalize:
             points = self._normalize_unit_sphere(points)
 
         self.points = points.contiguous()
-        self.class_names = class_names
-        self._phase_labels = labels.to(dtype=torch.long)
-        self._grain_labels = torch.full((len(self._phase_labels),), -1, dtype=torch.long)
+        self._sample_class_names = sample_class_names  # per-sample class name list
+        self._class_ids = labels.to(dtype=torch.long)
+        self._instance_ids = torch.full((len(self._class_ids),), -1, dtype=torch.long)
+        
+        # Build class properties
+        self._class_properties: Dict[str, Dict[str, Any]] = {}
+        for class_name in self._class_to_idx.keys():
+            self._class_properties[class_name] = {
+                "source": "modelnet40",
+                "axis_symmetric": class_name in ("vase", "bottle", "cone", "cup"),
+            }
 
         if self.track_augmentation:
             self._augmentation_metadata = [None] * len(self.points)
@@ -754,7 +900,7 @@ class CenteredModelNetDataset(Dataset):
     def _normalize_unit_sphere(points: torch.Tensor) -> torch.Tensor:
         centroid = points.mean(dim=1, keepdim=True)
         centered = points - centroid
-        max_dist = torch.max(torch.linalg.norm(centered, dim=2), dim=1, keepdim=True)[0]
+        max_dist = torch.max(torch.linalg.norm(centered, dim=2), dim=1, keepdim=True)[0].unsqueeze(-1)
         max_dist = torch.clamp(max_dist, min=1e-6)
         return centered / max_dist
 
@@ -791,7 +937,7 @@ class CenteredModelNetDataset(Dataset):
             "points": downsampled,
             "labels": labels,
             "class_names": class_names,
-            "class_to_idx": self._phase_to_idx,
+            "class_to_idx": self._class_to_idx,
             "num_points": self.num_surface_points,
             "source_points": source_points,
         }
@@ -841,21 +987,45 @@ class CenteredModelNetDataset(Dataset):
             return None
         return self._augmentation_metadata[index]
 
+    @property
+    def class_names(self) -> Dict[int, str]:
+        """Return mapping from class_id to class name."""
+        return {v: k for k, v in self._class_to_idx.items()}
+    
+    @property
+    def class_properties(self) -> Dict[str, Dict[str, Any]]:
+        """Return class properties dict."""
+        return self._class_properties
+    
+    @property
+    def num_classes(self) -> int:
+        """Return number of classes."""
+        return len(self._class_to_idx)
+
     def __len__(self) -> int:
         return len(self.points)
 
-    def __getitem__(self, index: int):
+    def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
+        """Return sample as dictionary with standardized keys.
+        
+        Returns:
+            Dict with keys:
+                - "points": (N, 3) point cloud tensor
+                - "class_id": scalar int64 tensor
+                - "instance_id": scalar int64 tensor (-1 for ModelNet)
+                - "rotation": (3, 3) float32 rotation matrix tensor
+        """
         pc = self.points[index].clone()
         if not self.pre_normalize and self.normalize:
             pc = self._normalize_unit_sphere(pc.unsqueeze(0)).squeeze(0)
 
-        orientation = torch.eye(3, dtype=pc.dtype, device=pc.device)
+        rotation = torch.eye(3, dtype=pc.dtype, device=pc.device)
         aug_info: Dict[str, Any] = {}
 
         if self.rotation_scale > 0:
             rot = self._random_rotation_matrix(pc.device, pc.dtype)
             pc = (rot @ pc.transpose(0, 1)).transpose(0, 1).contiguous()
-            orientation = rot
+            rotation = rot
             aug_info["rotation"] = rot.cpu().numpy()
 
         if self.scaling_range > 0:
@@ -881,12 +1051,12 @@ class CenteredModelNetDataset(Dataset):
         if self._augmentation_metadata is not None:
             self._augmentation_metadata[index] = aug_info
 
-        phase_tensor = self._phase_labels[index]
-        grain_tensor = self._grain_labels[index]
-        quaternion = rotation_matrix_to_quaternion(orientation.cpu().numpy())
-        orientation_tensor = orientation.to(dtype=torch.float32)
-        quaternion_tensor = torch.tensor(quaternion, dtype=torch.float32)
-        return pc, phase_tensor, grain_tensor, orientation_tensor, quaternion_tensor
+        return {
+            "points": pc,
+            "class_id": self._class_ids[index],
+            "instance_id": self._instance_ids[index],
+            "rotation": rotation.to(dtype=torch.float32),
+        }
 
 
 class CurriculumLearningDataset(Dataset):
@@ -928,18 +1098,18 @@ class CurriculumLearningDataset(Dataset):
             # We're wrapping the full dataset
             indices_to_check = range(len(self.base_dataset))
 
-        # Separate indices by phase type
+        # Separate indices by class type
         for idx in indices_to_check:
-            phase_label = self.base_dataset._phase_labels[idx]
-            # Get the phase name from the index
-            phase_name = None
-            for name, phase_idx in self.base_dataset._phase_to_idx.items():
-                if phase_idx == phase_label:
-                    phase_name = name
+            class_label = self.base_dataset._class_ids[idx]
+            # Get the class name from the index
+            class_name = None
+            for name, class_idx in self.base_dataset._class_to_idx.items():
+                if class_idx == class_label:
+                    class_name = name
                     break
 
-            # Check if this is an amorphous phase
-            if phase_name and phase_name == 'amorphous':
+            # Check if this is an amorphous class
+            if class_name and class_name == 'amorphous':
                 amorphous_indices.append(idx)
             else:
                 crystalline_indices.append(idx)
@@ -974,8 +1144,8 @@ class CurriculumLearningDataset(Dataset):
     def __len__(self) -> int:
         return len(self._valid_indices)
 
-    def __getitem__(self, index: int):
-        # Map the index to the actual dataset index
+    def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
+        """Return sample as dictionary."""
         actual_idx = self._valid_indices[index]
         return self.base_dataset[actual_idx]
 

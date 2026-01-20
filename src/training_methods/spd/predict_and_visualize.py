@@ -188,23 +188,23 @@ def compute_rdf_adf_comparison(
     """
     print("Computing RDF and ADF comparison per phase...")
     
-    # Get phase mapping
-    idx_to_phase = {idx: name for name, idx in dataset._phase_to_idx.items()}
-    unique_phases = sorted(idx_to_phase.keys())
-    n_phases = len(unique_phases)
+    # Get class mapping
+    idx_to_class = dataset.class_names  # {id: name}
+    unique_classes = sorted(idx_to_class.keys())
+    n_phases = len(unique_classes)
     
-    # Collect samples per phase
-    phase_samples: Dict[int, List[Tuple[np.ndarray, np.ndarray]]] = {p: [] for p in unique_phases}
+    # Collect samples per class
+    phase_samples: Dict[int, List[Tuple[np.ndarray, np.ndarray]]] = {c: [] for c in unique_classes}
     
     model.eval()
     rng = np.random.default_rng(42)
     
-    # Group indices by phase
-    phase_indices: Dict[int, List[int]] = {p: [] for p in unique_phases}
+    # Group indices by class
+    phase_indices: Dict[int, List[int]] = {c: [] for c in unique_classes}
     for i in range(len(dataset)):
-        phase_idx = dataset._phase_labels[i]
-        if phase_idx in phase_indices:
-            phase_indices[phase_idx].append(i)
+        class_idx = dataset._class_ids[i]
+        if class_idx in phase_indices:
+            phase_indices[class_idx].append(i)
     
     # Sample and process
     with torch.inference_mode():
@@ -236,8 +236,8 @@ def compute_rdf_adf_comparison(
     colors_orig = '#2ecc71'  # green
     colors_recon = '#e74c3c'  # red
     
-    for row, phase_idx in enumerate(unique_phases):
-        phase_name = idx_to_phase.get(phase_idx, f"Phase {phase_idx}")
+    for row, phase_idx in enumerate(unique_classes):
+        phase_name = idx_to_class.get(phase_idx, f"Class {phase_idx}")
         samples = phase_samples[phase_idx]
         
         if len(samples) == 0:

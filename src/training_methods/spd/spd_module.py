@@ -87,10 +87,11 @@ class ShapePoseDisentanglement(pl.LightningModule):
         self.ortho_scale = cfg.ortho_scale
         self.kl_latent_loss_scale = cfg.kl_latent_loss_scale
         self.pdist_scale = cfg.pdist_scale if hasattr(cfg, 'pdist_scale') else 1.0
+        # Caches using standardized field names
         self._supervised_cache = {
-            "train": {"latents": [], "phase": []},
-            "val": {"latents": [], "phase": [], "rotations": [], "gt_rotations": []},
-            "test": {"latents": [], "phase": [], "reconstructions": [], "canonicals": [], "rotations": [], "originals": [], "gt_rotations": []},
+            "train": {"latents": [], "class_id": []},
+            "val": {"latents": [], "class_id": [], "rotations": [], "gt_rotations": []},
+            "test": {"latents": [], "class_id": [], "reconstructions": [], "canonicals": [], "rotations": [], "originals": [], "gt_rotations": []},
         }
 
         # Maximum samples to use for metrics caches (to limit memory usage) - optional with defaults
@@ -167,15 +168,26 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
     @staticmethod
     def _unpack_batch(batch):
+        """Unpack batch dict into points and metadata.
+        
+        Args:
+            batch: Dict with keys "points", "class_id", "instance_id", "rotation"
+            
+        Returns:
+            Tuple of (points, meta_dict)
+        """
+        if isinstance(batch, dict):
+            pc = batch["points"]
+            meta = {
+                "class_id": batch.get("class_id"),
+                "instance_id": batch.get("instance_id"),
+                "rotation": batch.get("rotation"),
+            }
+            return pc, meta
+        # Fallback for non-dict batches (shouldn't happen with new datasets)
         if not isinstance(batch, (tuple, list)):
             return batch, {}
-        pc = batch[0]
-        labels = {}
-        labels["phase"] = batch[1]
-        labels["grain"] = batch[2]
-        labels["orientation"] = batch[3]
-        labels["quaternion"] = batch[4]
-        return pc, labels
+        return batch[0], {}
 
     @staticmethod
     def _apply_rotation(points: torch.Tensor, rot: torch.Tensor) -> torch.Tensor:
@@ -318,7 +330,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
 
     def _step(self, batch, batch_idx, stage: str):
-        pc, labels = self._unpack_batch(batch)
+        pc, meta = self._unpack_batch(batch)
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
 
         # Forward pass
@@ -326,7 +338,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
         # Cache for metrics if needed
         if stage in self._supervised_cache:
-            self._cache_supervised_batch(stage, inv_z, labels, recon, cano, rot, pc)
+            self._cache_supervised_batch(stage, inv_z, meta, recon, cano, rot, pc)
 
         # Compute all losses
         losses, sinkhorn_blur = self._compute_losses(recon, cano, rot, pc, inv_z, vq_loss)
@@ -363,8 +375,9 @@ class ShapePoseDisentanglement(pl.LightningModule):
         self._log_metrics(stage, metrics_to_log, prog_bar_keys={'loss'}, batch_size=pc.shape[0])
 
         # Optional rotation geodesic when ground truth is available
-        if rot is not None and labels.get("orientation") is not None:
-            gt_rot = labels["orientation"].to(device=rot.device, dtype=torch.float32)
+        gt_rotation = meta.get("rotation")
+        if rot is not None and gt_rotation is not None:
+            gt_rot = gt_rotation.to(device=rot.device, dtype=torch.float32)
             geodesic = rotation_geodesic(rot.to(torch.float32), gt_rot)
             self._log_metric(stage, "rot_geodesic_deg", geodesic * (180.0 / torch.pi), prog_bar=False)
 
@@ -435,9 +448,20 @@ class ShapePoseDisentanglement(pl.LightningModule):
             return self.max_supervised_samples
         return None
 
-    def _cache_supervised_batch(self, stage: str, inv_z: torch.Tensor, labels: dict,
+    def _cache_supervised_batch(self, stage: str, inv_z: torch.Tensor, meta: dict,
                                  recon: torch.Tensor = None, cano: torch.Tensor = None,
                                  rot: torch.Tensor = None, pc: torch.Tensor = None) -> None:
+        """Cache batch data for computing metrics at epoch end.
+        
+        Args:
+            stage: "train", "val", or "test"
+            inv_z: Invariant latent representations
+            meta: Metadata dict with "class_id", "instance_id", "rotation"
+            recon: Reconstructed point clouds (optional)
+            cano: Canonical point clouds (optional)
+            rot: Predicted rotation matrices (optional)
+            pc: Original point clouds (optional)
+        """
         cache = self._supervised_cache.get(stage)
         if cache is None:
             return
@@ -455,13 +479,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if effective_batch <= 0:
             return
 
-        phase = labels.get("phase")
-        if phase is None:
+        class_id = meta.get("class_id")
+        if class_id is None:
             return
-        if not torch.is_tensor(phase):
-            phase = torch.as_tensor(phase)
-        phase = phase.detach().view(-1)
-        effective_batch = min(effective_batch, phase.shape[0])
+        if not torch.is_tensor(class_id):
+            class_id = torch.as_tensor(class_id)
+        class_id = class_id.detach().view(-1)
+        effective_batch = min(effective_batch, class_id.shape[0])
         if effective_batch <= 0:
             return
 
@@ -471,8 +495,9 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if stage in ["val", "test"]:
             if rot is not None:
                 cache["rotations"].append(rot[:effective_batch].detach().to(torch.float32).cpu())
-            if labels.get("orientation") is not None:
-                cache["gt_rotations"].append(labels["orientation"][:effective_batch].detach().to(torch.float32).cpu())
+            gt_rotation = meta.get("rotation")
+            if gt_rotation is not None:
+                cache["gt_rotations"].append(gt_rotation[:effective_batch].detach().to(torch.float32).cpu())
 
         # Only cache full point cloud data for test stage to save memory
         if stage == "test":
@@ -483,7 +508,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
             if pc is not None:
                 cache["originals"].append(pc[:effective_batch].detach().to(torch.float32).cpu())
 
-        cache["phase"].append(phase[:effective_batch].cpu())
+        cache["class_id"].append(class_id[:effective_batch].cpu())
 
     def _log_validation_metrics(self, stage="val") -> None:
         """
@@ -491,11 +516,11 @@ class ShapePoseDisentanglement(pl.LightningModule):
         Uses subsampling to ensure speed.
         """
         cache = self._supervised_cache.get(stage)
-        if not cache or not cache["latents"] or not cache["phase"]:
+        if not cache or not cache["latents"] or not cache["class_id"]:
             return
 
         latents = torch.cat(cache["latents"], dim=0).numpy()
-        labels = torch.cat(cache["phase"], dim=0).numpy()
+        labels = torch.cat(cache["class_id"], dim=0).numpy()
 
         # Subsample for expensive metrics if dataset is large
         MAX_VAL_SAMPLES = 2048
@@ -507,11 +532,11 @@ class ShapePoseDisentanglement(pl.LightningModule):
             latents_sub = latents
             labels_sub = labels
 
-        # Clustering metrics
+        # Clustering metrics (using "class" prefix)
         metrics = compute_cluster_metrics(latents_sub, labels_sub, stage)
         if metrics:
             for name, value in metrics.items():
-                self._log_metric(stage, f"phase/{name.lower()}", value, on_step=False, on_epoch=True)
+                self._log_metric(stage, f"class/{name.lower()}", value, on_step=False, on_epoch=True)
 
         # Embedding quality metrics (lightweight only) - skip for train stage
         if stage != "train":
@@ -540,7 +565,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 else:
                     labels_rot = labels
 
-                # Symmetry-aware metric (assuming phases 0 and 1 are cubic crystals)
+                # Symmetry-aware metric (assuming classes 0 and 1 are cubic crystals)
                 sym_metrics = compute_symmetry_aware_rot_metric(
                     pred_rots, gt_rots, labels_rot, symmetry_phases=[0, 1]
                 )
@@ -554,19 +579,23 @@ class ShapePoseDisentanglement(pl.LightningModule):
         # Clear cache to free memory
         self._reset_supervised_cache(stage)
 
-    def _log_per_phase_metrics(self, stage: str, metric_name: str, phase_metrics: dict) -> None:
-        """Log per-phase metrics as scalars."""
-        for key, value in phase_metrics.items():
-            # key is typically something like "metric_phase_0" or just "phase_0" depending on metric
-            # We want to log as stage/metric_name/phase_X
+    def _log_per_class_metrics(self, stage: str, metric_name: str, class_metrics: dict) -> None:
+        """Log per-class metrics as scalars."""
+        for key, value in class_metrics.items():
+            # key is typically something like "metric_phase_0" or "class_0" depending on metric
+            # We want to log as stage/metric_name/class_X
             
-            # Try to extract phase ID
+            # Try to extract class ID
             try:
                 if "phase_" in key:
-                    phase_id = key.split("phase_")[-1]
-                    log_name = f"{metric_name}/phase_{phase_id}"
+                    # Legacy naming from metrics - convert to class
+                    class_id = key.split("phase_")[-1]
+                    log_name = f"{metric_name}/class_{class_id}"
+                elif "class_" in key:
+                    class_id = key.split("class_")[-1]
+                    log_name = f"{metric_name}/class_{class_id}"
                 else:
-                    # Fallback if no phase in key (shouldn't happen for these metrics but safe fallback)
+                    # Fallback
                     log_name = f"{metric_name}/{key}"
                 
                 self._log_metric(stage, log_name, value, on_step=False, on_epoch=True)
@@ -579,17 +608,17 @@ class ShapePoseDisentanglement(pl.LightningModule):
         """
         stage = "test"
         cache = self._supervised_cache.get(stage)
-        if not cache or not cache["latents"] or not cache["phase"]:
+        if not cache or not cache["latents"] or not cache["class_id"]:
             return
 
         latents = torch.cat(cache["latents"], dim=0).numpy()
-        labels = torch.cat(cache["phase"], dim=0).numpy()
+        labels = torch.cat(cache["class_id"], dim=0).numpy()
 
         # 1. Clustering & Embedding Quality (Full Test Set)
         metrics = compute_cluster_metrics(latents, labels, stage)
         if metrics:
             for name, value in metrics.items():
-                self._log_metric(stage, f"phase/{name.lower()}", value, on_step=False, on_epoch=True)
+                self._log_metric(stage, f"class/{name.lower()}", value, on_step=False, on_epoch=True)
 
         emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=True)
         for name, value in emb_metrics.items():
@@ -614,15 +643,15 @@ class ShapePoseDisentanglement(pl.LightningModule):
                 canonicals_sub, latents_sub, labels_sub
             )
             # Log scalar metrics for variance
-            self._log_per_phase_metrics(stage, "canonical_pose_variance", 
+            self._log_per_class_metrics(stage, "canonical_pose_variance", 
                                   {k: v for k, v in consistency_metrics.items() if "variance" in k})
 
-        # 3. Reconstruction EMD per Phase
+        # 3. Reconstruction EMD per class
         if cache["originals"] and cache["reconstructions"]:
             originals = torch.cat(cache["originals"], dim=0).numpy()
             reconstructions = torch.cat(cache["reconstructions"], dim=0).numpy()
             emd_metrics = compute_reconstruction_emd_per_phase(originals, reconstructions, labels)
-            self._log_per_phase_metrics(stage, "reconstruction_emd", emd_metrics)
+            self._log_per_class_metrics(stage, "reconstruction_emd", emd_metrics)
 
         # 4. Rotational Metrics (Global & Symmetry-Aware)
         if cache["rotations"] and cache["gt_rotations"]:
@@ -631,13 +660,13 @@ class ShapePoseDisentanglement(pl.LightningModule):
 
             # Global alignment
             global_metrics = compute_global_aligned_rot_metric(pred_rots, gt_rots, labels)
-            self._log_per_phase_metrics(stage, "rot_global_error", global_metrics)
+            self._log_per_class_metrics(stage, "rot_global_error", global_metrics)
 
-            # Symmetry-aware (phases 0 and 1 are cubic)
+            # Symmetry-aware (classes 0 and 1 are cubic)
             sym_metrics = compute_symmetry_aware_rot_metric(
                 pred_rots, gt_rots, labels, symmetry_phases=[0, 1]
             )
-            self._log_per_phase_metrics(stage, "rot_sym_error", sym_metrics)
+            self._log_per_class_metrics(stage, "rot_sym_error", sym_metrics)
 
         # 5. Expensive Forward-Pass Tests (Equivariance & Consistency)
         if self.reference_pcs is not None:

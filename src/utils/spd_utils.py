@@ -157,21 +157,25 @@ def unpack_batch(batch) -> Tuple[torch.Tensor, Dict[str, Any]]:
     Unpack batch data into point clouds and labels.
 
     Args:
-        batch: Batch data (can be tensor or tuple/list)
+        batch: Batch data (dict with "points", "class_id", "instance_id", "rotation")
 
     Returns:
-        Tuple of (point_clouds, labels_dict)
+        Tuple of (point_clouds, meta_dict)
     """
+    if isinstance(batch, dict):
+        pc = batch["points"]
+        meta = {
+            "class_id": batch.get("class_id"),
+            "instance_id": batch.get("instance_id"),
+            "rotation": batch.get("rotation"),
+        }
+        return pc, meta
+    
     if not isinstance(batch, (tuple, list)):
         return batch, {}
 
-    pc = batch[0]
-    labels = {}
-    labels["phase"] = batch[1]
-    labels["grain"] = batch[2]
-    labels["orientation"] = batch[3]
-    labels["quaternion"] = batch[4]
-    return pc, labels
+    # Fallback for legacy tuple format
+    return batch[0], {}
 
 
 # ============================================================================
