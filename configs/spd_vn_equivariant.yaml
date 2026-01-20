@@ -15,7 +15,7 @@ encoder:
   name: VN_DGCNN_Refined
   kwargs:
     latent_size: ${latent_size}
-    feature_dims: [128, 128, 256, 512, 1024]
+    feature_dims: [128, 128, 256, 512, 512]
     pooling: "max"
 
 decoder:
@@ -25,13 +25,24 @@ decoder:
     latent_size: ${latent_size}
     num_seeds: 16                   # Starting seed points
     hidden_channels: 64             # VN feature channels
-    k: 16                           # kNN neighbors in attention
+    k: 12                           # kNN neighbors in attention (<= num_seeds - 1)
     use_batchnorm: True
     negative_slope: 0.1
-    # Stability parameters
-    temperature: 2.0                # Higher = smoother attention, more stable
-    residual_scale: 0.3             # Lower = more stable residual connections
-    disp_scale: 0.05                # Lower = smaller displacements, more stable
+    # Stability parameters (relaxed)
+    temperature: 1.0                # Higher = smoother attention, more stable
+    residual_scale: 0.5             # Higher = stronger message passing
+    disp_scale: 0.1                 # Higher = larger displacements
+    feature_clamp_max: 200.0        # Higher = less aggressive feature clamping
+    final_disp_scale: 0.0           # 0 disables the extra displacement head
+
+# decoder:
+#   name: VN_Equivariant
+#   kwargs:
+#     num_points: ${data.num_points}
+#     latent_size: ${latent_size}
+#     hidden_dims: [1024, 512, 256]
+#     use_batchnorm: True
+#     negative_slope: 0.1
 
 loss_params:
     chamfer:
@@ -48,8 +59,8 @@ sinkhorn_blur_schedule:
   start_epoch: 0
   duration_epochs: ${epochs}
 
-learning_rate: 0.0005
-batch_size: 64
+learning_rate: 0.001
+batch_size: 32
 
 # Gradient clipping for stability
 gradient_clip_val: 1.0

@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, random_split
 from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
+    CenteredModelNetDataset,
     CurriculumLearningDataset,
 )
 import time
@@ -154,6 +155,60 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         synth_cfg = getattr(data_cfg, "synthetic", None)
         synth_dict = _to_container(synth_cfg) if synth_cfg is not None else {}
 
+        dataset_type = self._get_param("dataset_type", data_cfg, synth_dict, default="synthetic_env")
+        if dataset_type == "modelnet_objects":
+            root_dir = self._get_param("data_path", data_cfg, synth_dict, required=True)
+            num_points = self._get_param("num_points", data_cfg, synth_dict, required=True)
+            pre_normalize = self._get_param("pre_normalize", data_cfg, synth_dict, default=True)
+            normalize = self._get_param("normalize", data_cfg, synth_dict, default=False)
+            dataset_max = self._get_param("dataset_max_samples", data_cfg, synth_dict, default=None)
+            modelnet_split = self._get_param("modelnet_split", data_cfg, synth_dict, default="train")
+            add_center_point = self._get_param("add_center_point", data_cfg, synth_dict, default=True)
+            fps_cache = self._get_param("fps_cache", data_cfg, synth_dict, default=True)
+            fps_cache_dir = self._get_param("fps_cache_dir", data_cfg, synth_dict, default=None)
+            fps_use_gpu = self._get_param("fps_use_gpu", data_cfg, synth_dict, default=True)
+            classes = self._get_param("classes", data_cfg, synth_dict, default=None)
+            if classes is not None:
+                classes = _to_container(classes)
+                if isinstance(classes, str):
+                    classes = [classes]
+
+            aug_cfg = getattr(data_cfg, "augmentation", None)
+            if aug_cfg is None:
+                aug_cfg = getattr(self.cfg, "augmentation", None)
+
+            rotation_scale = getattr(aug_cfg, "rotation_scale", 0.0) if aug_cfg else 0.0
+            noise_scale = getattr(aug_cfg, "noise_scale", 0.0) if aug_cfg else 0.0
+            jitter_scale = getattr(aug_cfg, "jitter_scale", 0.0) if aug_cfg else 0.0
+            scaling_range = getattr(aug_cfg, "scaling_range", 0.0) if aug_cfg else 0.0
+            track_augmentation = getattr(aug_cfg, "track_augmentation", False) if aug_cfg else False
+
+            dataset = CenteredModelNetDataset(
+                root_dir=root_dir,
+                split=str(modelnet_split),
+                classes=classes,
+                num_points=int(num_points),
+                add_center_point=bool(add_center_point),
+                pre_normalize=bool(pre_normalize),
+                normalize=bool(normalize),
+                max_samples=int(dataset_max) if dataset_max is not None else None,
+                fps_cache=bool(fps_cache),
+                fps_cache_dir=fps_cache_dir,
+                fps_use_gpu=bool(fps_use_gpu),
+                rotation_scale=rotation_scale,
+                noise_scale=noise_scale,
+                jitter_scale=jitter_scale,
+                scaling_range=scaling_range,
+                track_augmentation=track_augmentation,
+            )
+
+            train_ratio = float(self._get_param("train_ratio", data_cfg, synth_dict, default=0.8))
+            train_size = int(train_ratio * len(dataset))
+            val_size = len(dataset) - train_size
+            if train_size <= 0 or val_size <= 0:
+                raise ValueError("Synthetic dataset split resulted in empty train or val set")
+            return random_split(dataset, [train_size, val_size])
+
         env_dirs = self._resolve_env_dirs(data_cfg, synth_dict)
         radius = self._get_param("radius", data_cfg, synth_dict, required=True)
         sample_type = self._get_param("sample_type", data_cfg, synth_dict, default="regular")
@@ -263,7 +318,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         visited = set()
         while dataset is not None and id(dataset) not in visited:
             visited.add(id(dataset))
-            if isinstance(dataset, SyntheticPointCloudDataset):
+            if isinstance(dataset, (SyntheticPointCloudDataset, CenteredModelNetDataset)):
                 return dataset
             next_dataset = getattr(dataset, 'dataset', None)
             if next_dataset is not None and next_dataset is not dataset:

@@ -24,12 +24,20 @@ def knn_indices(x: torch.Tensor, k: int) -> torch.Tensor:
     returns idx: (B, N, k) of k nearest neighbors (excluding self)
     NOTE: O(N^2) via torch.cdist. For large N, swap in torch_cluster.knn.
     """
-    B, N, _ = x.shape
-    dist = torch.cdist(x, x)  # (B, N, N)
-    # exclude self by setting diagonal huge
-    eye = torch.eye(N, device=x.device, dtype=torch.bool).unsqueeze(0)  # (1,N,N)
-    dist = dist.masked_fill(eye, float("inf"))
-    idx = dist.topk(k, largest=False).indices  # (B, N, k)
+    _, N, _ = x.shape
+    if N <= 1:
+        raise ValueError("kNN requires at least 2 points per batch.")
+    k = min(k, N - 1)
+    # Compute kNN in float32 for stable neighbor selection under mixed precision.
+    x_f = x
+    if x_f.dtype in (torch.float16, torch.bfloat16):
+        x_f = x_f.float()
+    with torch.no_grad():
+        dist = torch.cdist(x_f, x_f)  # (B, N, N)
+        # exclude self by setting diagonal huge
+        eye = torch.eye(N, device=x_f.device, dtype=torch.bool).unsqueeze(0)  # (1,N,N)
+        dist = dist.masked_fill(eye, float("inf"))
+        idx = dist.topk(k, largest=False).indices  # (B, N, k)
     return idx
 
 
@@ -230,11 +238,13 @@ class VNInvariantAttention(nn.Module):
         temperature: float = 1.0,
         residual_scale: float = 0.5,
         use_layer_norm: bool = True,
+        feature_clamp_max: float = FEATURE_CLAMP_MAX,
     ):
         super().__init__()
         self.k = k
         self.temperature = temperature
         self.residual_scale = residual_scale
+        self.feature_clamp_max = feature_clamp_max
         
         self.q = VNLinear(c_in, c_out, bias=False)
         self.k_lin = VNLinear(c_in, c_out, bias=False)
@@ -313,7 +323,7 @@ class VNInvariantAttention(nn.Module):
             out = self.layer_norm(out)
         
         # Clamp features to prevent explosion
-        out = clamp_features(out)
+        out = clamp_features(out, max_norm=self.feature_clamp_max)
         
         return out
 
@@ -349,10 +359,12 @@ class VNSnowflakeDeconvBlock(nn.Module):
         residual_scale: float = 0.5,
         disp_scale: float = 0.1,
         use_batch_norm: bool = True,
+        feature_clamp_max: float = FEATURE_CLAMP_MAX,
     ):
         super().__init__()
         self.r = up_factor
         self.disp_scale = disp_scale
+        self.feature_clamp_max = feature_clamp_max
 
         # "skip-transformer" analog with stability improvements
         self.ctx = VNInvariantAttention(
@@ -363,6 +375,7 @@ class VNSnowflakeDeconvBlock(nn.Module):
             temperature=temperature,
             residual_scale=residual_scale,
             use_layer_norm=True,
+            feature_clamp_max=feature_clamp_max,
         )
 
         # r splitting heads (fixed, equivariant)
@@ -394,7 +407,7 @@ class VNSnowflakeDeconvBlock(nn.Module):
             v_up = self.bn(v_up)
         
         # Clamp features to prevent explosion
-        v_up = clamp_features(v_up)
+        v_up = clamp_features(v_up, max_norm=self.feature_clamp_max)
 
         # 3) duplicate coords and predict displacements
         x_dup = x.unsqueeze(2).expand(B, N, self.r, 3).reshape(B, N * self.r, 3)  # (B,rN,3)
@@ -424,6 +437,7 @@ class VNSnowflakeDecoder(nn.Module):
         residual_scale: float = 0.5,
         disp_scale: float = 0.1,
         use_batch_norm: bool = True,
+        feature_clamp_max: float = FEATURE_CLAMP_MAX,
     ):
         """
         Args:
@@ -436,6 +450,7 @@ class VNSnowflakeDecoder(nn.Module):
             use_batch_norm: Whether to use batch normalization
         """
         super().__init__()
+        self.feature_clamp_max = feature_clamp_max
         blocks = []
         cur_c = c_in
         for i, (c_ctx, c_child, up_factor, disp_hidden) in enumerate(stages):
@@ -453,6 +468,7 @@ class VNSnowflakeDecoder(nn.Module):
                     residual_scale=residual_scale,
                     disp_scale=stage_disp_scale,
                     use_batch_norm=use_batch_norm,
+                    feature_clamp_max=feature_clamp_max,
                 )
             )
             cur_c = c_child
@@ -463,7 +479,7 @@ class VNSnowflakeDecoder(nn.Module):
         for blk in self.blocks:
             x, v = blk(x, v)
             # Clamp outputs at each stage for safety
-            v = clamp_features(v)
+            v = clamp_features(v, max_norm=self.feature_clamp_max)
         return x, v
 
 

@@ -10,7 +10,7 @@ def compute_tsne(
     *,
     random_state: int = 42,
     perplexity: int | None = None,
-    n_iter: int | None = None,
+    n_iter: int  = 1000,
 ) -> np.ndarray:
     """Project high-dimensional latents to 2D using t-SNE.
 

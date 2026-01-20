@@ -1,6 +1,7 @@
 import sys,os
 sys.path.append(os.getcwd())
 import json
+import hashlib
 import numpy as np
 import logging 
 import torch
@@ -66,6 +67,31 @@ def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
     if norm == 0:
         return np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32)
     return quat / norm
+
+
+def _get_fps_device(use_gpu: bool) -> torch.device:
+    if use_gpu and torch.cuda.is_available():
+        return torch.device("cuda")
+    return torch.device("cpu")
+
+
+def _farthest_point_sample_torch(points: torch.Tensor, npoint: int, device: torch.device) -> torch.Tensor:
+    """Fast FPS using torch (matches convert_to_fast_modelnet.py behavior)."""
+    if points.shape[0] <= npoint:
+        return points
+    xyz = points[:, :3].to(device)
+    n_points = xyz.shape[0]
+    centroids = torch.zeros(npoint, dtype=torch.long, device=device)
+    distance = torch.full((n_points,), 1e10, device=device)
+    farthest = torch.randint(0, n_points, (1,), device=device).item()
+    for i in range(npoint):
+        centroids[i] = farthest
+        centroid = xyz[farthest:farthest + 1]
+        dist = torch.sum((xyz - centroid) ** 2, dim=-1)
+        distance = torch.minimum(distance, dist)
+        farthest = torch.argmax(distance).item()
+    indices = centroids.cpu()
+    return points[indices]
 
 import trimesh
 
@@ -602,8 +628,267 @@ class SyntheticPointCloudDataset(Dataset):
         orientation_tensor = self._orientation[index]
         quaternion_tensor = self._quaternions[index]
         return pc_tensor, phase_tensor, grain_tensor, orientation_tensor, quaternion_tensor
- 
- 
+
+
+class CenteredModelNetDataset(Dataset):
+    """ModelNet40 wrapper that returns centered objects with synthetic-like metadata.
+
+    Note: when add_center_point=True, num_points includes the center point.
+    """
+
+    def __init__(
+        self,
+        root_dir: Union[str, Path],
+        *,
+        split: str = "train",
+        classes: Optional[Sequence[str]] = None,
+        num_points: int = 1024,
+        add_center_point: bool = True,
+        pre_normalize: bool = True,
+        normalize: bool = False,
+        max_samples: Optional[int] = None,
+        fps_cache: bool = True,
+        fps_cache_dir: Optional[Union[str, Path]] = None,
+        fps_use_gpu: bool = True,
+        rotation_scale: float = 0.0,
+        noise_scale: float = 0.0,
+        jitter_scale: float = 0.0,
+        scaling_range: float = 0.0,
+        track_augmentation: bool = False,
+    ) -> None:
+        super().__init__()
+        if num_points <= 0:
+            raise ValueError("num_points must be > 0 for CenteredModelNetDataset")
+
+        self.root_dir = Path(root_dir)
+        self.split = split
+        self.classes = list(classes) if classes is not None else None
+        self.num_points = int(num_points)
+        self.add_center_point = bool(add_center_point)
+        self.pre_normalize = bool(pre_normalize)
+        self.normalize = bool(normalize)
+        self.max_samples = max_samples if max_samples is not None and max_samples > 0 else None
+        self.fps_cache = bool(fps_cache)
+        self.fps_cache_dir = Path(fps_cache_dir) if fps_cache_dir else (self.root_dir / "fps_cache")
+        self.fps_use_gpu = bool(fps_use_gpu)
+
+        # Augmentation params (applied in __getitem__)
+        self.rotation_scale = float(rotation_scale)
+        self.noise_scale = float(noise_scale)
+        self.jitter_scale = float(jitter_scale)
+        self.scaling_range = float(scaling_range)
+        self.track_augmentation = bool(track_augmentation)
+        self._augmentation_metadata: Optional[List[Dict[str, Any]]] = None
+
+        if self.add_center_point:
+            if self.num_points < 2:
+                raise ValueError("num_points must be >= 2 when add_center_point=True")
+            self.num_surface_points = self.num_points - 1
+        else:
+            self.num_surface_points = self.num_points
+
+        # Lazy import to avoid loading unless needed
+        from src.data_utils.modelnet_fast_loader import ModelNetFastDataset
+
+        if self.split == "all":
+            train_ds = ModelNetFastDataset(
+                root_dir=str(self.root_dir),
+                split="train",
+                classes=self.classes,
+                n_points=self.num_surface_points,
+            )
+            test_ds = ModelNetFastDataset(
+                root_dir=str(self.root_dir),
+                split="test",
+                classes=self.classes,
+                n_points=self.num_surface_points,
+            )
+            points = torch.cat([train_ds.points, test_ds.points], dim=0)
+            labels = torch.cat([train_ds.labels, test_ds.labels], dim=0)
+            class_names = train_ds.class_names + test_ds.class_names
+            class_to_idx = train_ds.class_to_idx
+        else:
+            base_ds = ModelNetFastDataset(
+                root_dir=str(self.root_dir),
+                split=self.split,
+                classes=self.classes,
+                n_points=self.num_surface_points,
+            )
+            points = base_ds.points
+            labels = base_ds.labels
+            class_names = base_ds.class_names
+            class_to_idx = base_ds.class_to_idx
+
+        if len(points) == 0:
+            raise RuntimeError("CenteredModelNetDataset constructed with zero samples")
+
+        self._phase_to_idx = dict(class_to_idx)
+        if self.classes is not None:
+            class_set = set(self.classes)
+            self._phase_to_idx = {name: idx for name, idx in self._phase_to_idx.items() if name in class_set}
+        self._grain_to_idx: Dict[Tuple[str, str], int] = {}
+        source_points = points.shape[1]
+        if self.num_surface_points != source_points:
+            points, labels, class_names = self._load_or_build_fps_cache(
+                points, labels, class_names, source_points
+            )
+
+        if self.max_samples is not None:
+            max_samples = min(self.max_samples, len(points))
+            points = points[:max_samples]
+            labels = labels[:max_samples]
+            class_names = class_names[:max_samples]
+
+        if self.pre_normalize and self.normalize:
+            points = self._normalize_unit_sphere(points)
+
+        self.points = points.contiguous()
+        self.class_names = class_names
+        self._phase_labels = labels.to(dtype=torch.long)
+        self._grain_labels = torch.full((len(self._phase_labels),), -1, dtype=torch.long)
+
+        if self.track_augmentation:
+            self._augmentation_metadata = [None] * len(self.points)
+
+    @staticmethod
+    def _normalize_unit_sphere(points: torch.Tensor) -> torch.Tensor:
+        centroid = points.mean(dim=1, keepdim=True)
+        centered = points - centroid
+        max_dist = torch.max(torch.linalg.norm(centered, dim=2), dim=1, keepdim=True)[0]
+        max_dist = torch.clamp(max_dist, min=1e-6)
+        return centered / max_dist
+
+    def _cache_key(self, source_points: int) -> str:
+        classes_key = "all" if self.classes is None else ",".join(sorted(self.classes))
+        classes_hash = hashlib.md5(classes_key.encode("utf-8")).hexdigest()[:8]
+        return f"modelnet_{self.split}_fps{self.num_surface_points}_src{source_points}_{classes_hash}.pt"
+
+    def _load_or_build_fps_cache(
+        self,
+        points: torch.Tensor,
+        labels: torch.Tensor,
+        class_names: List[str],
+        source_points: int,
+    ) -> Tuple[torch.Tensor, torch.Tensor, List[str]]:
+        if not self.fps_cache:
+            return self._fps_downsample(points), labels, class_names
+
+        self.fps_cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_path = self.fps_cache_dir / self._cache_key(source_points)
+        if cache_path.exists():
+            cached = torch.load(cache_path, map_location="cpu")
+            if (
+                cached.get("num_points") == self.num_surface_points
+                and cached.get("source_points") == source_points
+            ):
+                return cached["points"], cached["labels"], cached["class_names"]
+
+        logger.print(
+            f"FPS downsampling ModelNet ({self.split}) to {self.num_surface_points} points..."
+        )
+        downsampled = self._fps_downsample(points)
+        payload = {
+            "points": downsampled,
+            "labels": labels,
+            "class_names": class_names,
+            "class_to_idx": self._phase_to_idx,
+            "num_points": self.num_surface_points,
+            "source_points": source_points,
+        }
+        torch.save(payload, cache_path)
+        logger.print(f"Saved FPS cache: {cache_path}")
+        return downsampled, labels, class_names
+
+    def _fps_downsample(self, points: torch.Tensor) -> torch.Tensor:
+        target_points = self.num_surface_points
+        if points.shape[1] < target_points:
+            return self._upsample(points, target_points)
+        if points.shape[1] == target_points:
+            return points
+
+        device = _get_fps_device(self.fps_use_gpu)
+        downsampled = torch.empty(
+            (points.shape[0], target_points, 3),
+            dtype=points.dtype,
+        )
+        for idx in range(points.shape[0]):
+            downsampled[idx] = _farthest_point_sample_torch(points[idx], target_points, device)
+            if idx > 0 and idx % 200 == 0:
+                logger.print(f"  FPS progress: {idx}/{points.shape[0]}")
+        return downsampled
+
+    @staticmethod
+    def _upsample(points: torch.Tensor, target_points: int) -> torch.Tensor:
+        n_samples, curr_points, _ = points.shape
+        if curr_points == 0:
+            return torch.zeros((n_samples, target_points, 3), dtype=points.dtype)
+        idx = torch.randint(0, curr_points, (n_samples, target_points))
+        batch_idx = torch.arange(n_samples).unsqueeze(1).expand(-1, target_points)
+        return points[batch_idx, idx]
+
+    @staticmethod
+    def _random_rotation_matrix(device: torch.device, dtype: torch.dtype) -> torch.Tensor:
+        rand_mat = torch.randn(3, 3, device=device, dtype=dtype)
+        q, r = torch.linalg.qr(rand_mat)
+        d = torch.diagonal(r).sign()
+        q *= d.unsqueeze(-1)
+        if torch.det(q) < 0:
+            q[:, 0] *= -1
+        return q
+
+    def get_augmentation_info(self, index: int) -> Optional[Dict[str, Any]]:
+        if self._augmentation_metadata is None:
+            return None
+        return self._augmentation_metadata[index]
+
+    def __len__(self) -> int:
+        return len(self.points)
+
+    def __getitem__(self, index: int):
+        pc = self.points[index].clone()
+        if not self.pre_normalize and self.normalize:
+            pc = self._normalize_unit_sphere(pc.unsqueeze(0)).squeeze(0)
+
+        orientation = torch.eye(3, dtype=pc.dtype, device=pc.device)
+        aug_info: Dict[str, Any] = {}
+
+        if self.rotation_scale > 0:
+            rot = self._random_rotation_matrix(pc.device, pc.dtype)
+            pc = (rot @ pc.transpose(0, 1)).transpose(0, 1).contiguous()
+            orientation = rot
+            aug_info["rotation"] = rot.cpu().numpy()
+
+        if self.scaling_range > 0:
+            scale = (torch.rand(1, dtype=pc.dtype, device=pc.device) * 2.0 - 1.0) * self.scaling_range + 1.0
+            pc = pc * scale
+            aug_info["scale"] = float(scale.item())
+
+        if self.noise_scale > 0:
+            pc = pc + torch.randn_like(pc) * self.noise_scale
+            aug_info["noise_scale"] = self.noise_scale
+
+        if self.jitter_scale > 0:
+            jitter = torch.randn_like(pc) * self.jitter_scale
+            pc = pc + jitter
+            aug_info["jitter_scale"] = self.jitter_scale
+
+        pc = pc - pc.mean(dim=0, keepdim=True)
+
+        if self.add_center_point:
+            center = torch.zeros((1, 3), dtype=pc.dtype, device=pc.device)
+            pc = torch.cat([pc, center], dim=0)
+
+        if self._augmentation_metadata is not None:
+            self._augmentation_metadata[index] = aug_info
+
+        phase_tensor = self._phase_labels[index]
+        grain_tensor = self._grain_labels[index]
+        quaternion = rotation_matrix_to_quaternion(orientation.cpu().numpy())
+        orientation_tensor = orientation.to(dtype=torch.float32)
+        quaternion_tensor = torch.tensor(quaternion, dtype=torch.float32)
+        return pc, phase_tensor, grain_tensor, orientation_tensor, quaternion_tensor
+
+
 class CurriculumLearningDataset(Dataset):
     """Wrapper dataset that filters samples based on amorphous fraction for curriculum learning.
 

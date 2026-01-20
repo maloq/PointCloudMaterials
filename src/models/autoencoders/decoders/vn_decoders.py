@@ -9,7 +9,7 @@ import torch.nn as nn
 from ..base import Decoder
 from ..registry import register_decoder
 from ..encoders.vn_encoders import VNLinear, VNLinearLeakyReLU, VNBatchNorm
-from .snowflake_vn import VNSnowflakeDecoder as VNSnowflakeDecoderCore
+from .snowflake_vn import FEATURE_CLAMP_MAX, VNSnowflakeDecoder as VNSnowflakeDecoderCore
 
 
 @register_decoder("VN_Equivariant")
@@ -104,6 +104,7 @@ class VNSnowflakeDecoderWrapper(Decoder):
         num_seeds: int = 16,
         hidden_channels: int = 64,
         stages: Tuple[Tuple[int, int, int, int], ...] | None = None,
+        max_ctx_channels: int | None = None,
         k: int = 8,
         use_batchnorm: bool = True,
         negative_slope: float = 0.1,
@@ -111,6 +112,8 @@ class VNSnowflakeDecoderWrapper(Decoder):
         temperature: float = 1.0,
         residual_scale: float = 0.5,
         disp_scale: float = 0.1,
+        feature_clamp_max: float = FEATURE_CLAMP_MAX,
+        final_disp_scale: float = 1.0,
     ):
         """
         Args:
@@ -120,22 +123,26 @@ class VNSnowflakeDecoderWrapper(Decoder):
             hidden_channels: Hidden VN channel dimension for seed features.
             stages: Tuple of (c_ctx, c_child, up_factor, disp_hidden) per stage.
                     If None, auto-computed based on num_seeds and num_points.
+            max_ctx_channels: Optional cap for context channels in auto-computed stages.
             k: Number of neighbors for kNN in attention blocks.
             use_batchnorm: Whether to use batch normalization in initial projection.
             negative_slope: Negative slope for LeakyReLU activations.
             temperature: Temperature for attention softmax (higher = smoother, more stable).
             residual_scale: Scale factor for residual connections (lower = more stable).
             disp_scale: Scale factor for displacement predictions (lower = more stable).
+            feature_clamp_max: Maximum feature norm for internal clamping.
+            final_disp_scale: Scale for the final displacement head (0 disables it).
         """
         super().__init__()
         self._n = num_points
         self.num_seeds = num_seeds
         self.latent_size = latent_size
         self.hidden_channels = hidden_channels
+        self.final_disp_scale = final_disp_scale
 
         # Auto-compute stages if not provided
         if stages is None:
-            stages = self._compute_stages(num_seeds, num_points, hidden_channels)
+            stages = self._compute_stages(num_seeds, num_points, hidden_channels, max_ctx_channels)
         
         # Validate that stages produce the right number of points
         total_up = 1
@@ -171,6 +178,7 @@ class VNSnowflakeDecoderWrapper(Decoder):
             residual_scale=residual_scale,
             disp_scale=disp_scale,
             use_batch_norm=use_batchnorm,
+            feature_clamp_max=feature_clamp_max,
         )
 
         # Final projection to single vector channel (output point positions)
@@ -181,7 +189,8 @@ class VNSnowflakeDecoderWrapper(Decoder):
     def _compute_stages(
         num_seeds: int, 
         num_points: int, 
-        hidden_channels: int
+        hidden_channels: int,
+        max_ctx_channels: int | None = None,
     ) -> Tuple[Tuple[int, int, int, int], ...]:
         """
         Auto-compute stages configuration based on seed count and target points.
@@ -208,7 +217,10 @@ class VNSnowflakeDecoderWrapper(Decoder):
         c_in = hidden_channels
         
         for i in range(num_stages):
-            c_ctx = min(c_in * 2, 128)  # Context channels
+            if max_ctx_channels is None:
+                c_ctx = c_in * 2
+            else:
+                c_ctx = min(c_in * 2, max_ctx_channels)
             c_child = c_ctx  # Child channels (keep same)
             up_factor = 2  # Standard upsampling factor
             disp_hidden = c_ctx  # Displacement MLP hidden dim
@@ -241,6 +253,9 @@ class VNSnowflakeDecoderWrapper(Decoder):
         # Run snowflake upsampling
         x_out, v_out = self.decoder_core(x_seeds, v_seeds)  # (B, num_points, c_out, 3)
 
+        if self.final_disp_scale <= 0.0:
+            return x_out
+
         # Project vector features to final positions
         # v_out: (B, num_points, c_out, 3) -> need to add displacements
         # Option 1: Use x_out directly
@@ -256,6 +271,8 @@ class VNSnowflakeDecoderWrapper(Decoder):
         v_reshaped = v_out.view(B * N, self.decoder_core.out_c, 3)  # (B*N, c_out, 3)
         displacement = self.final_proj(v_reshaped)  # (B*N, 1, 3)
         displacement = displacement.view(B, N, 3)  # (B, N, 3)
+        if self.final_disp_scale != 1.0:
+            displacement = displacement * self.final_disp_scale
 
         # Final output: seed-derived positions + learned displacement
         output = x_out + displacement
