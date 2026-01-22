@@ -1,0 +1,93 @@
+# Mo3ENet Configuration
+# Multi-Type Point Cloud Autoencoder with E(3)-Equivariant GNN
+# Paper: "Multi-Type Point Cloud Autoencoder" (Kilgour et al., arXiv:2405.13791)
+
+defaults:
+  - data: synth_modelnet_objects
+  - _self_
+
+project_name: mo3enet
+experiment_name: mo3enet_l${latent_k}_s${swarm_m}_${batch_size}
+wandb_mode: online
+
+model_type: mo3enet
+
+# -------------------------
+# Mo3ENet Model Settings
+# -------------------------
+
+# Multi-type support (set to True for molecules, False for single-type point clouds)
+multi_type: false
+num_types: 1  # Number of atom/point types (1 for single-type)
+
+# Encoder settings (EGNN-based)
+type_emb_dim: 32       # Type embedding dimension
+h_dim: 256             # Hidden dimension for EGNN layers 
+msg_dim: 128            # Message dimension 
+latent_k: 128           # Number of latent vectors (equivariant output size)
+n_layers: 4            # Number of EGNN layers 
+num_rbfs: 16           # Number of radial basis functions
+cutoff: 0.5            # Distance cutoff for EGNN - FOR NORMALIZED [-1,1] DATA use ~0.3-0.5
+dropout: 0.05          # Dropout rate
+
+# Decoder settings (Equivariant Swarm Decoder)
+swarm_m: 256           # Number of output swarm points (reduced for memory)
+attn_dim: 64           # Attention dimension
+query_dim: 64          # Query dimension
+hidden_s: 128          # Hidden dimension for decoder MLPs
+
+# Normalization
+radius_norm: 1.0       # Radius normalization (data is already in [-1,1] range)
+
+# -------------------------
+# Loss Settings
+# -------------------------
+
+# Use Chamfer loss as primary loss (GM loss doesn't scale well to dense point clouds)
+# Set chamfer_weight > 0 and gm_weight = 0 for standard Chamfer training
+use_chamfer_loss: true   # Primary loss: Chamfer distance
+gm_weight: 0.0           # Weight for GM loss (0 = disabled)
+chamfer_weight: 1.0      # Weight for Chamfer loss
+
+# GM loss parameters (only used if gm_weight > 0)
+gm_sigma: 0.3            # Gaussian width
+gm_type_scale: 0.0       # Type distance scale (0 for single-type)
+gm_use_self_target: false  # IMPORTANT: false for dense point clouds
+gm_sphere_penalty: 0.01   # Penalty for points outside unit sphere
+gm_minw_penalty: 0.01     # Penalty for vanishing weights
+gm_minw_frac: 0.01        # Minimum weight fraction
+
+# Sigma annealing (only used if gm_weight > 0)
+sigma_schedule:
+  enable: false
+
+# -------------------------
+# Training Settings
+# -------------------------
+
+learning_rate: 0.0005  # Slightly lower LR for stability
+batch_size: 16         # Smaller batch due to O(N^2) memory complexity
+
+# Gradient clipping for stability
+gradient_clip_val: 1.0
+
+enable_swa: false
+swa_epoch_start: 1000
+epochs: 100
+
+gpu: true
+devices: [0]
+ddp_find_unused_parameters: true
+log_every_n_steps: 5
+num_workers: 4
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+
+# Regularization
+decay_rate: 0.0001
+kl_latent_loss_scale: 0.0  # Not used for Mo3ENet (uses GM loss instead)
+
+# Cache settings for metrics
+max_cache_samples: 8192
+max_test_samples: 1000
+max_samples: 0
