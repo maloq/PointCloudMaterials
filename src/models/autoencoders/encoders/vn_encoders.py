@@ -590,12 +590,19 @@ class VNRobustInvariantHead(nn.Module):
     Robustly extracts invariant features from equivariant vectors (B, C, 3).
     Uses vector norms and projections onto the global mean direction.
     """
-    def __init__(self, in_channels: int, out_channels: int, dropout_rate: float = 0.5):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        dropout_rate: float = 0.5,
+        use_batchnorm: bool = True,
+    ):
         super().__init__()
         input_dim = in_channels * 2 
+        norm_layer = nn.BatchNorm1d(out_channels) if use_batchnorm else nn.Identity()
         self.mlp = nn.Sequential(
             nn.Linear(input_dim, out_channels),
-            nn.BatchNorm1d(out_channels),
+            norm_layer,
             nn.LeakyReLU(0.2, inplace=True),
             nn.Dropout(p=dropout_rate),
             nn.Linear(out_channels, out_channels)
@@ -651,9 +658,16 @@ class VNDGCNNEncoderRefined(Encoder):
         # latent_size must be divisible by 3 to map from VN channels
         assert latent_size % 3 == 0
         self.eq_projector = VNLinear(c5, latent_size)
+        # Initialize with larger gain to produce useful equivariant outputs
+        nn.init.xavier_uniform_(self.eq_projector.map_to_feat.weight, gain=2.0)
 
         # Head for Z_inv (B, latent)
-        self.inv_head = VNRobustInvariantHead(c5, latent_size, dropout_rate=dropout_rate)
+        self.inv_head = VNRobustInvariantHead(
+            c5,
+            latent_size,
+            dropout_rate=dropout_rate,
+            use_batchnorm=use_batchnorm,
+        )
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # Input x: (B, 3, N)
@@ -707,11 +721,6 @@ class VNDGCNNEncoderRefined(Encoder):
 
         return z_inv, z_eq, None
 
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from .vn_encoders import VNLinearLeakyReLU, VNLinear, VNStdFeature, VNBatchNorm
 
 # ---------------------------------------------------------------------------
 # 1. Invariant Geometric Feature Extractor

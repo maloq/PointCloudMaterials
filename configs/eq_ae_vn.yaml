@@ -1,0 +1,100 @@
+defaults:
+  - data: synth_modelnet_objects
+project_name: pointnet
+experiment_name: EQ_AE_l${latent_size}_P${data.num_points}_${loss}_${decoder.name}
+wandb_mode: online
+
+model_type: eq_ae  # Equivariant Autoencoder
+latent_size: 720  # Number of VN channels for equivariant latent
+
+# Optional: Load pretrained supervised encoder
+load_supervised_checkpoint: False
+
+# VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
+encoder:
+  name: VN_DGCNN_Refined
+  kwargs:
+    latent_size: ${latent_size}
+    feature_dims: [128, 256, 256, 512, 512]
+    pooling: "max"
+
+decoder:
+  name: VN_REVNET_Anchor
+  kwargs:
+    num_points: ${data.num_points}
+    latent_size: ${latent_size}
+    num_anchors: 64
+    anchor_channels: 48
+    transformer_depth: 2
+    attn_hidden: 128
+
+
+# Disable batchnorm and use larger output_scale for proper reconstruction.
+# decoder:
+#   name: VN_Equivariant
+#   kwargs:
+#     num_points: ${data.num_points}
+#     latent_size: ${latent_size}
+#     hidden_dims: [1024, 1024, 512]
+#     use_batchnorm: False  # IMPORTANT: VN batchnorm keeps outputs small
+#     negative_slope: 0.1
+#     output_scale: 10.0  
+#     learnable_scale: True 
+#     num_res_blocks: 4
+#     center_output: True  # Keep reconstructions centered
+
+
+#  MLP baseline test
+# decoder:
+#   name: MLPLarge
+#   kwargs:
+#     num_points: ${data.num_points}
+#     latent_size: ${latent_size}
+#     hidden_dims: [1024, 1024, 512, 256]
+#     use_batchnorm: True
+#     dropout_rate: 0.0
+
+loss_params:
+    chamfer:
+      point_reduction: "mean"
+      auto_scale_by_points: False
+
+loss: chamfer
+sinkhorn_blur: 0.1
+sinkhorn_blur_schedule:
+  enable: false
+  start: 0.1
+  end: 0.01
+  start_epoch: 0
+  duration_epochs: ${epochs}
+
+# Training parameters
+learning_rate: 0.001
+batch_size: 64
+precision: bf16-mixed
+# Gradient clipping for stability (use 0 to disable)
+gradient_clip_val: 1.0
+
+enable_swa: False
+swa_epoch_start: 1000
+epochs: 200 
+
+gpu: True
+devices: [0]
+ddp_find_unused_parameters: True
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+
+decay_rate: 0.0
+kl_latent_loss_scale: 0.0
+max_samples: 0
+
+# Curriculum learning settings
+curriculum_learning:
+  enable: False
+  start_fraction: 0.0
+  end_fraction: 1.0
+  start_epoch: 10
+  end_epoch: 50

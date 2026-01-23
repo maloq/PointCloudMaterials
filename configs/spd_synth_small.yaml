@@ -56,8 +56,6 @@ loss_params:
     normalize: true
     p: 2           # norm type (1=L1, 2=L2)
     squared: false
-  chamfer:
-    squared: false
 
 sinkhorn_blur: 0.01
 sinkhorn_blur_schedule:

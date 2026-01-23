@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 import pytorch_lightning as pl
 
 import sys, os
@@ -27,17 +26,12 @@ from omegaconf import DictConfig, ListConfig, OmegaConf
 LOSS_COMPONENTS = (
     "sinkhorn",
     "chamfer",
-    "pairwise_sorted",
-    "pairwise_hist",
 )
 
 
 class EquivariantAutoencoder(pl.LightningModule):
     """
-    Equivariant Autoencoder that supports:
-    1. Standard Reconstruction (Chamfer/Sinkhorn loss)
-    2. Diffusion Probabilistic Models (Score matching loss)
-    3. Flow-Matching generative decoders (velocity field training)
+    Equivariant Autoencoder with standard reconstruction (Chamfer/Sinkhorn loss).
     """
 
     def __init__(self, cfg):
@@ -45,12 +39,7 @@ class EquivariantAutoencoder(pl.LightningModule):
         self.save_hyperparameters(cfg)
 
         self.encoder, self.decoder = build_model(cfg)
-
-        # Detect if we are using the Diffusion Decoder
-        # Assumes the decoder class name contains 'Diffusion' or config has a flag
-        self.is_diffusion = "Diffusion" in cfg.decoder.name
-        self.is_flow_matching = getattr(self.decoder, "is_flow_matching", False) or ("FlowMatching" in cfg.decoder.name)
-        self.use_invariant_latent = getattr(self.decoder, "use_invariant_latent", self.is_diffusion or self.is_flow_matching)
+        self.use_invariant_latent = bool(getattr(self.decoder, "use_invariant_latent", True))
 
         # Parse loss configuration
         raw_loss = cfg.loss
@@ -59,9 +48,7 @@ class EquivariantAutoencoder(pl.LightningModule):
         else:
             loss_components = [part.strip().lower() for part in str(raw_loss).split("+") if part.strip()]
         
-        # If diffusion, we don't strictly require standard loss components, 
-        # but we keep them for validation metric calculation.
-        if not loss_components and not (self.is_diffusion or self.is_flow_matching):
+        if not loss_components:
             raise ValueError("At least one loss component must be specified")
             
         self.loss_components = loss_components
@@ -102,15 +89,39 @@ class EquivariantAutoencoder(pl.LightningModule):
             return self.hparams.decoder.kwargs.get('num_points', 0)
         return 0
 
+    def _loss_param(self, section: str, key: str, default):
+        return self.loss_params.get(section, {}).get(key, default)
+
+    def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
+        if getattr(self.encoder, "expects_channel_first", False):
+            return pc.permute(0, 2, 1).contiguous()
+        return pc
+
+    def _split_encoder_output(self, enc_out):
+        if isinstance(enc_out, (tuple, list)):
+            if not enc_out:
+                raise ValueError("Encoder returned empty output")
+            inv_z = enc_out[0]
+            eq_z = None
+            if len(enc_out) > 1:
+                candidate = enc_out[1]
+                if torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3:
+                    if inv_z is not None and inv_z.dim() == 2 and candidate.shape[1] == inv_z.shape[1]:
+                        eq_z = candidate
+                    elif candidate.shape[1] != 3:
+                        eq_z = candidate
+            return inv_z, eq_z
+        return enc_out, None
+
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
             val, _ = sinkhorn_distance(pred.contiguous(), target, blur=sinkhorn_blur)
             return val
         if component == "chamfer":
-            point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
+            point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
             val, _ = chamfer_distance(pred, target, point_reduction=point_reduction)
             
-            auto_scale = self.loss_params.get("chamfer", {}).get("auto_scale_by_points", False)
+            auto_scale = self._loss_param("chamfer", "auto_scale_by_points", False)
             if auto_scale:
                 num_points = self._get_num_points()
                 if num_points > 0:
@@ -155,73 +166,45 @@ class EquivariantAutoencoder(pl.LightningModule):
 
     def forward(self, pc: torch.Tensor):
         """
-        Forward pass modified for Diffusion.
+        Forward pass.
         
         Args:
             pc: Input point cloud (B, N, 3)
             
         Returns:
             inv_z: Invariant latent
-            recon: Reconstructed PC (or dummy if training diffusion)
+            recon: Reconstructed point cloud
             eq_z: Equivariant latent
-            diff_loss: Diffusion MSE loss (scalar) or 0.0 if not diffusion
         """
-        inv_z, eq_z, _ = self.encoder(pc)
+        enc_out = self.encoder(self._prepare_encoder_input(pc))
+        inv_z, eq_z = self._split_encoder_output(enc_out)
         decoder_input = inv_z if self.use_invariant_latent else eq_z
+        if decoder_input is None:
+            latent_kind = "invariant" if self.use_invariant_latent else "equivariant"
+            raise ValueError(f"Decoder expects {latent_kind} latent, but encoder did not return it.")
         
-        if self.is_diffusion or self.is_flow_matching:
-            # Generative decoders expect invariant latent + gt during training
-            recon, diff_loss, _ = self.decoder(decoder_input, gt_pts=pc)
-            diff_loss = torch.as_tensor(diff_loss, device=pc.device, dtype=pc.dtype)
-        else:
-            # Standard Decoder
-            recon = self.decoder(decoder_input)
-            if isinstance(recon, tuple):
-                recon = recon[0]
-            diff_loss = torch.tensor(0.0, device=pc.device, dtype=pc.dtype)
+        recon = self.decoder(decoder_input)
+        if isinstance(recon, tuple):
+            recon = recon[0]
             
-        return inv_z, recon, eq_z, diff_loss
+        return inv_z, recon, eq_z
 
-    def _compute_losses(self, recon, pc, inv_z, diff_loss, stage):
+    def _compute_losses(self, recon, pc, inv_z):
         """
         Compute all losses.
-        Logic branches based on whether we are using Diffusion or Standard AE.
         """
         sinkhorn_blur = get_current_sinkhorn_blur(self._sinkhorn_blur_schedule, self.current_epoch)
         losses = {}
-        zero_tensor = pc.new_zeros(())
 
-        # 1. PRIMARY LOSS
-        if self.is_diffusion or self.is_flow_matching:
-            if stage == 'train':
-                # Generative decoders provide their own training loss
-                losses['recon'] = diff_loss
-                # We SKIP geometric metrics (Chamfer/EMD) during training because:
-                # a) 'recon' during training is not a clean reconstruction (it's noise or gt)
-                # b) Sampling clean reconstructions is too slow for the training loop
-                losses['chamfer'] = zero_tensor
-                losses['emd'] = zero_tensor
-            else:
-                # Validation/Test: We have generated samples in 'recon'
-                # We calculate geometric metrics for monitoring
-                losses['recon'] = diff_loss
-                recon_f32, pc_f32 = to_float32(recon, pc)
-                
-                with torch.no_grad():
-                    point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
-                    losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
-                    losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-        else:
-            # Standard Autoencoder Logic
-            recon_f32, pc_f32 = to_float32(recon, pc)
-            losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
-            
-            with torch.no_grad():
-                point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
-                losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
-                losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
+        recon_f32, pc_f32 = to_float32(recon, pc)
+        losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
+        
+        with torch.no_grad():
+            point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
+            losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, point_reduction=point_reduction)
+            losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
 
-        # 2. LATENT REGULARIZATION (Optional)
+        # LATENT REGULARIZATION (Optional)
         if self.kl_latent_loss_scale > 0:
             losses['kl'] = kl_latent_regularizer(inv_z)
 
@@ -231,20 +214,14 @@ class EquivariantAutoencoder(pl.LightningModule):
         pc, meta = self._unpack_batch(batch)
         pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
 
-        # Forward pass (now returns diffusion loss if applicable)
-        inv_z, recon, eq_z, diff_loss = self(pc)
+        # Forward pass
+        inv_z, recon, eq_z = self(pc)
 
-        # Cache logic:
-        # If generative decoder training -> 'recon' is not valid for caching (it's noise/gt)
-        # If Val/Test -> 'recon' is a sample, valid for caching
-        skip_cache_recon = (self.is_diffusion or self.is_flow_matching) and stage == 'train'
-        valid_recon_for_cache = None if skip_cache_recon else recon
-        
         if stage in self._supervised_cache:
-            self._cache_supervised_batch(stage, inv_z, meta, valid_recon_for_cache, pc)
+            self._cache_supervised_batch(stage, inv_z, meta, recon, pc)
 
         # Compute losses
-        losses, sinkhorn_blur = self._compute_losses(recon, pc, inv_z, diff_loss, stage)
+        losses, sinkhorn_blur = self._compute_losses(recon, pc, inv_z)
 
         # Build total loss
         total_loss = losses['recon']

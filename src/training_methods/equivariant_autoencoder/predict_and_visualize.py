@@ -1,13 +1,17 @@
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from hydra import compose, initialize
 from omegaconf import DictConfig
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import KMeans
+import seaborn as sns
 
 sys.path.append(os.getcwd())
 
@@ -59,7 +63,11 @@ def build_datamodule(cfg: DictConfig):
 
 
 def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None]:
-    if isinstance(batch, (tuple, list)):
+    if isinstance(batch, dict):
+        # SyntheticPointCloudDataset returns dict with "points" and "class_id"
+        pc = batch["points"]
+        phase = batch.get("class_id", None)
+    elif isinstance(batch, (tuple, list)):
         pc = batch[0]
         phase = batch[1] if len(batch) > 1 else None
     else:
@@ -93,7 +101,7 @@ def gather_inference_batches(
             pc, phase = _extract_pc_and_phase(batch)
             pc = pc.to(device)
 
-            inv_z, recon, eq_z, _ = model(pc)
+            inv_z, recon, eq_z = model(pc)
             originals.append(pc.detach().cpu())
             reconstructions.append(recon.detach().cpu())
             inv_latents.append(inv_z.detach().cpu())
@@ -117,7 +125,7 @@ def gather_inference_batches(
 def _chamfer(orig: np.ndarray, reco: np.ndarray) -> float:
     a = torch.tensor(orig, dtype=torch.float32).unsqueeze(0)
     b = torch.tensor(reco, dtype=torch.float32).unsqueeze(0)
-    val, _ = chamfer_distance(a, b, squared=False, point_reduction="mean")
+    val, _ = chamfer_distance(a, b, point_reduction="mean")
     return float(val.item())
 
 
@@ -163,25 +171,482 @@ def save_reconstruction_grid(
 def save_latent_tsne(
     inv_latents: np.ndarray,
     phases: np.ndarray,
-    out_file: Path,
-    max_samples: int = 4000,
+    out_dir: Path,
+    max_samples: int = 10000,
 ) -> None:
+    """Save t-SNE plots: one with ground truth phases, one with clustering results.
+    
+    Uses up to 10000 samples by default for better visualization coverage.
+    """
     if inv_latents.size == 0 or len(inv_latents) < 2:
         return
 
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     latents = inv_latents
-    labels = phases if phases.size == len(latents) else np.zeros(len(latents), dtype=int)
+    has_phases = phases.size == len(latents)
+    gt_labels = phases if has_phases else None
 
     if len(latents) > max_samples:
         idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
         latents = latents[idx]
-        labels = labels[idx]
+        if gt_labels is not None:
+            gt_labels = gt_labels[idx]
+    
+    # Adjust perplexity based on sample size for better t-SNE quality
+    perplexity = min(50, max(5, len(latents) // 100))
+    tsne_coords = compute_tsne(latents, perplexity=perplexity, n_iter=1500)
 
-    tsne_coords = compute_tsne(latents)
-    save_tsne_plot(tsne_coords, labels, out_file=str(out_file), title="Invariant latent space")
+    # 1. Save plot with ground truth phases (if available)
+    if gt_labels is not None:
+        save_tsne_plot(
+            tsne_coords,
+            gt_labels,
+            out_file=str(out_dir / "latent_tsne_ground_truth.png"),
+            title=f"Latent space t-SNE (n={len(latents)}, ground truth phases)",
+            legend_title="phase",
+        )
+
+    # 2. Save plot with clustering results
+    n_clusters = len(np.unique(gt_labels)) if gt_labels is not None else 4
+    n_clusters = max(2, min(n_clusters, len(latents) // 2))  # Ensure valid n_clusters
+    
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    cluster_labels = kmeans.fit_predict(latents)
+    
+    save_tsne_plot(
+        tsne_coords,
+        cluster_labels,
+        out_file=str(out_dir / "latent_tsne_clusters.png"),
+        title=f"Latent space t-SNE (KMeans k={n_clusters})",
+        legend_title="cluster",
+    )
+    
+    return tsne_coords, latents, gt_labels, cluster_labels
+
+
+def save_pca_visualization(
+    inv_latents: np.ndarray,
+    phases: np.ndarray,
+    out_dir: Path,
+    max_samples: int = 10000,
+) -> Dict[str, Any]:
+    """Generate PCA visualizations and statistics for latent space analysis."""
+    if inv_latents.size == 0 or len(inv_latents) < 2:
+        return {}
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    latents = inv_latents
+    has_phases = phases.size == len(latents)
+    gt_labels = phases if has_phases else None
+
+    if len(latents) > max_samples:
+        idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
+        latents = latents[idx]
+        if gt_labels is not None:
+            gt_labels = gt_labels[idx]
+
+    # Fit PCA
+    n_components = min(latents.shape[1], 50)
+    pca = PCA(n_components=n_components)
+    pca_coords = pca.fit_transform(latents)
+
+    pca_stats = {
+        "explained_variance_ratio": pca.explained_variance_ratio_.tolist(),
+        "cumulative_variance_ratio": np.cumsum(pca.explained_variance_ratio_).tolist(),
+        "n_components_95_var": int(np.searchsorted(np.cumsum(pca.explained_variance_ratio_), 0.95) + 1),
+    }
+
+    # Plot 1: PCA scatter (first 2 components)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), dpi=150)
+    
+    if gt_labels is not None:
+        unique_labels = np.unique(gt_labels)
+        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+        for i, label in enumerate(unique_labels):
+            mask = gt_labels == label
+            axes[0].scatter(pca_coords[mask, 0], pca_coords[mask, 1], 
+                          c=[colors[i]], s=8, alpha=0.6, label=f"Phase {int(label)}")
+        if len(unique_labels) <= 15:
+            axes[0].legend(fontsize=7, markerscale=1.5)
+    else:
+        axes[0].scatter(pca_coords[:, 0], pca_coords[:, 1], s=8, alpha=0.6, c="#3498db")
+    
+    axes[0].set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)")
+    axes[0].set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)")
+    axes[0].set_title(f"PCA Projection (n={len(latents)})")
+
+    # Plot 2: Explained variance
+    components = np.arange(1, n_components + 1)
+    cumulative_var = np.cumsum(pca.explained_variance_ratio_)
+    
+    axes[1].bar(components, pca.explained_variance_ratio_, alpha=0.7, label="Individual")
+    axes[1].plot(components, cumulative_var, "r-o", markersize=3, label="Cumulative")
+    axes[1].axhline(y=0.95, color="g", linestyle="--", alpha=0.7, label="95% threshold")
+    axes[1].set_xlabel("Principal Component")
+    axes[1].set_ylabel("Explained Variance Ratio")
+    axes[1].set_title("PCA Explained Variance")
+    axes[1].legend()
+    axes[1].set_xlim(0.5, min(20, n_components) + 0.5)
+
+    plt.tight_layout()
+    fig.savefig(out_dir / "latent_pca_analysis.png")
+    plt.close(fig)
+
+    # Plot 3: PCA 3D scatter (first 3 components)
+    if pca_coords.shape[1] >= 3:
+        fig = plt.figure(figsize=(10, 8), dpi=150)
+        ax = fig.add_subplot(111, projection="3d")
+        
+        if gt_labels is not None:
+            for i, label in enumerate(unique_labels):
+                mask = gt_labels == label
+                ax.scatter(pca_coords[mask, 0], pca_coords[mask, 1], pca_coords[mask, 2],
+                          c=[colors[i]], s=6, alpha=0.5, label=f"Phase {int(label)}")
+            if len(unique_labels) <= 15:
+                ax.legend(fontsize=7, markerscale=1.5)
+        else:
+            ax.scatter(pca_coords[:, 0], pca_coords[:, 1], pca_coords[:, 2],
+                      s=6, alpha=0.5, c="#3498db")
+        
+        ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)")
+        ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)")
+        ax.set_zlabel(f"PC3 ({pca.explained_variance_ratio_[2]*100:.1f}%)")
+        ax.set_title("3D PCA Projection")
+        
+        plt.tight_layout()
+        fig.savefig(out_dir / "latent_pca_3d.png")
+        plt.close(fig)
+
+    return pca_stats
+
+
+def save_latent_statistics(
+    inv_latents: np.ndarray,
+    eq_latents: np.ndarray,
+    phases: np.ndarray,
+    out_dir: Path,
+) -> Dict[str, Any]:
+    """Compute and visualize detailed latent space statistics."""
+    if inv_latents.size == 0:
+        return {}
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    stats = {}
+    has_phases = phases.size == len(inv_latents)
+    has_eq_latents = eq_latents.size > 0
+
+    # 1. Global latent statistics
+    stats["inv_latent"] = {
+        "mean": float(np.mean(inv_latents)),
+        "std": float(np.std(inv_latents)),
+        "min": float(np.min(inv_latents)),
+        "max": float(np.max(inv_latents)),
+        "dim": int(inv_latents.shape[1]) if inv_latents.ndim > 1 else 1,
+        "n_samples": int(len(inv_latents)),
+    }
+    
+    # Per-dimension statistics
+    dim_means = np.mean(inv_latents, axis=0)
+    dim_stds = np.std(inv_latents, axis=0)
+    stats["inv_latent"]["dim_mean_range"] = [float(dim_means.min()), float(dim_means.max())]
+    stats["inv_latent"]["dim_std_range"] = [float(dim_stds.min()), float(dim_stds.max())]
+
+    # 2. Latent norms distribution
+    norms = np.linalg.norm(inv_latents, axis=1)
+    stats["inv_latent"]["norm_mean"] = float(np.mean(norms))
+    stats["inv_latent"]["norm_std"] = float(np.std(norms))
+
+    # 3. Create comprehensive statistics figure
+    fig, axes = plt.subplots(2, 3, figsize=(15, 10), dpi=150)
+
+    # Plot 1: Latent norm distribution
+    if has_phases:
+        unique_labels = np.unique(phases)
+        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+        for i, label in enumerate(unique_labels):
+            mask = phases == label
+            axes[0, 0].hist(norms[mask], bins=50, alpha=0.5, label=f"Phase {int(label)}", color=colors[i])
+        if len(unique_labels) <= 10:
+            axes[0, 0].legend(fontsize=7)
+    else:
+        axes[0, 0].hist(norms, bins=50, alpha=0.7, color="#3498db")
+    axes[0, 0].set_xlabel("Latent Norm ||z||")
+    axes[0, 0].set_ylabel("Count")
+    axes[0, 0].set_title("Invariant Latent Norm Distribution")
+
+    # Plot 2: Per-dimension mean and std
+    dims = np.arange(len(dim_means))
+    axes[0, 1].fill_between(dims, dim_means - dim_stds, dim_means + dim_stds, alpha=0.3, color="#3498db")
+    axes[0, 1].plot(dims, dim_means, color="#2980b9", linewidth=1)
+    axes[0, 1].set_xlabel("Latent Dimension")
+    axes[0, 1].set_ylabel("Value")
+    axes[0, 1].set_title("Per-Dimension Statistics (mean ± std)")
+
+    # Plot 3: Dimension activation histogram
+    dim_activity = np.abs(dim_means) + dim_stds
+    sorted_idx = np.argsort(dim_activity)[::-1]
+    top_dims = min(20, len(dim_activity))
+    axes[0, 2].bar(range(top_dims), dim_activity[sorted_idx[:top_dims]], color="#27ae60", alpha=0.7)
+    axes[0, 2].set_xlabel("Dimension Rank")
+    axes[0, 2].set_ylabel("Activity (|mean| + std)")
+    axes[0, 2].set_title(f"Top {top_dims} Active Dimensions")
+
+    # Plot 4: Correlation heatmap (top correlated dimensions)
+    if inv_latents.shape[1] > 1:
+        corr_matrix = np.corrcoef(inv_latents.T)
+        # Show top 20 dimensions or all if fewer
+        n_show = min(20, corr_matrix.shape[0])
+        sns.heatmap(corr_matrix[:n_show, :n_show], ax=axes[1, 0], cmap="RdBu_r", 
+                   center=0, vmin=-1, vmax=1, square=True, cbar_kws={"shrink": 0.5})
+        axes[1, 0].set_title(f"Dimension Correlation (first {n_show} dims)")
+    else:
+        axes[1, 0].text(0.5, 0.5, "Single dimension", ha="center", va="center")
+        axes[1, 0].set_title("Correlation Matrix")
+
+    # Plot 5: Class-conditional statistics (if phases available)
+    if has_phases and len(unique_labels) > 1:
+        class_means = []
+        class_stds = []
+        for label in unique_labels:
+            mask = phases == label
+            class_means.append(np.mean(norms[mask]))
+            class_stds.append(np.std(norms[mask]))
+        
+        x_pos = np.arange(len(unique_labels))
+        axes[1, 1].bar(x_pos, class_means, yerr=class_stds, capsize=3, 
+                      color=colors[:len(unique_labels)], alpha=0.7)
+        axes[1, 1].set_xlabel("Phase")
+        axes[1, 1].set_ylabel("Mean Latent Norm")
+        axes[1, 1].set_title("Per-Class Latent Norm")
+        axes[1, 1].set_xticks(x_pos)
+        axes[1, 1].set_xticklabels([f"{int(l)}" for l in unique_labels])
+    else:
+        axes[1, 1].text(0.5, 0.5, "No class labels available", ha="center", va="center")
+        axes[1, 1].set_title("Per-Class Statistics")
+
+    # Plot 6: Equivariant vs Invariant comparison (if eq_latents available)
+    if has_eq_latents and eq_latents.shape[0] == inv_latents.shape[0]:
+        eq_norms = np.linalg.norm(eq_latents.reshape(eq_latents.shape[0], -1), axis=1)
+        axes[1, 2].scatter(norms, eq_norms, alpha=0.3, s=5, c="#9b59b6")
+        axes[1, 2].set_xlabel("Invariant Latent Norm")
+        axes[1, 2].set_ylabel("Equivariant Latent Norm")
+        axes[1, 2].set_title("Inv. vs Eq. Latent Norms")
+        
+        # Add correlation coefficient
+        correlation = np.corrcoef(norms, eq_norms)[0, 1]
+        axes[1, 2].text(0.05, 0.95, f"r = {correlation:.3f}", transform=axes[1, 2].transAxes,
+                       fontsize=10, verticalalignment="top")
+        stats["inv_eq_norm_correlation"] = float(correlation)
+    else:
+        axes[1, 2].text(0.5, 0.5, "No equivariant latents", ha="center", va="center")
+        axes[1, 2].set_title("Inv. vs Eq. Comparison")
+
+    plt.tight_layout()
+    fig.savefig(out_dir / "latent_statistics.png")
+    plt.close(fig)
+
+    return stats
+
+
+def save_clustering_analysis(
+    inv_latents: np.ndarray,
+    phases: np.ndarray,
+    out_dir: Path,
+    max_samples: int = 10000,
+) -> Dict[str, Any]:
+    """Perform clustering analysis on latent space and compute quality metrics."""
+    if inv_latents.size == 0 or len(inv_latents) < 10:
+        return {}
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    latents = inv_latents
+    has_phases = phases.size == len(latents)
+    gt_labels = phases if has_phases else None
+
+    if len(latents) > max_samples:
+        idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
+        latents = latents[idx]
+        if gt_labels is not None:
+            gt_labels = gt_labels[idx]
+
+    metrics = {}
+
+    # 1. Compute silhouette scores for different k values
+    k_range = range(2, min(11, len(latents) // 10))
+    silhouette_scores = []
+    inertias = []
+    
+    for k in k_range:
+        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+        cluster_labels = kmeans.fit_predict(latents)
+        silhouette_scores.append(silhouette_score(latents, cluster_labels))
+        inertias.append(kmeans.inertia_)
+
+    metrics["silhouette_scores"] = {int(k): float(s) for k, s in zip(k_range, silhouette_scores)}
+    metrics["best_k_silhouette"] = int(list(k_range)[np.argmax(silhouette_scores)])
+    metrics["best_silhouette_score"] = float(max(silhouette_scores))
+
+    # 2. If ground truth labels exist, compute adjusted rand index
+    if gt_labels is not None:
+        from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+        
+        n_true_clusters = len(np.unique(gt_labels))
+        kmeans_gt = KMeans(n_clusters=n_true_clusters, random_state=42, n_init=10)
+        pred_labels = kmeans_gt.fit_predict(latents)
+        
+        ari = adjusted_rand_score(gt_labels, pred_labels)
+        nmi = normalized_mutual_info_score(gt_labels, pred_labels)
+        gt_silhouette = silhouette_score(latents, gt_labels)
+        
+        metrics["ari_with_gt"] = float(ari)
+        metrics["nmi_with_gt"] = float(nmi)
+        metrics["gt_silhouette_score"] = float(gt_silhouette)
+
+    # 3. Inter-class and intra-class distances
+    if gt_labels is not None:
+        unique_labels = np.unique(gt_labels)
+        if len(unique_labels) > 1:
+            intra_dists = []
+            inter_dists = []
+            class_centroids = {}
+            
+            for label in unique_labels:
+                mask = gt_labels == label
+                class_points = latents[mask]
+                centroid = np.mean(class_points, axis=0)
+                class_centroids[label] = centroid
+                
+                # Intra-class distances (to centroid)
+                dists_to_centroid = np.linalg.norm(class_points - centroid, axis=1)
+                intra_dists.extend(dists_to_centroid.tolist())
+            
+            # Inter-class distances (between centroids)
+            centroids_arr = np.array(list(class_centroids.values()))
+            for i in range(len(centroids_arr)):
+                for j in range(i + 1, len(centroids_arr)):
+                    inter_dists.append(np.linalg.norm(centroids_arr[i] - centroids_arr[j]))
+            
+            metrics["mean_intra_class_distance"] = float(np.mean(intra_dists))
+            metrics["mean_inter_class_distance"] = float(np.mean(inter_dists))
+            metrics["class_separation_ratio"] = float(np.mean(inter_dists) / (np.mean(intra_dists) + 1e-8))
+
+    # 4. Create clustering analysis figure
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5), dpi=150)
+
+    # Plot 1: Silhouette scores vs k
+    axes[0].plot(list(k_range), silhouette_scores, "b-o", markersize=6)
+    axes[0].axvline(x=metrics["best_k_silhouette"], color="r", linestyle="--", 
+                   label=f"Best k={metrics['best_k_silhouette']}")
+    axes[0].set_xlabel("Number of Clusters (k)")
+    axes[0].set_ylabel("Silhouette Score")
+    axes[0].set_title("Silhouette Score vs. k")
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    # Plot 2: Elbow plot (inertia)
+    axes[1].plot(list(k_range), inertias, "g-o", markersize=6)
+    axes[1].set_xlabel("Number of Clusters (k)")
+    axes[1].set_ylabel("Inertia (Within-cluster SS)")
+    axes[1].set_title("Elbow Plot")
+    axes[1].grid(True, alpha=0.3)
+
+    # Plot 3: Class separation (if available)
+    if gt_labels is not None and len(unique_labels) > 1:
+        separation_data = []
+        labels_list = []
+        for label in unique_labels:
+            mask = gt_labels == label
+            class_points = latents[mask]
+            centroid = class_centroids[label]
+            dists = np.linalg.norm(class_points - centroid, axis=1)
+            separation_data.append(dists)
+            labels_list.append(f"Phase {int(label)}")
+        
+        bp = axes[2].boxplot(separation_data, labels=labels_list, patch_artist=True)
+        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+        for patch, color in zip(bp["boxes"], colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.6)
+        axes[2].set_xlabel("Phase")
+        axes[2].set_ylabel("Distance to Class Centroid")
+        axes[2].set_title("Intra-Class Distance Distribution")
+        axes[2].tick_params(axis="x", rotation=45)
+    else:
+        axes[2].text(0.5, 0.5, "No class labels available", ha="center", va="center")
+        axes[2].set_title("Class Separation")
+
+    plt.tight_layout()
+    fig.savefig(out_dir / "clustering_analysis.png")
+    plt.close(fig)
+
+    return metrics
+
+
+def save_umap_visualization(
+    inv_latents: np.ndarray,
+    phases: np.ndarray,
+    out_dir: Path,
+    max_samples: int = 10000,
+) -> None:
+    """Generate UMAP visualization as an alternative to t-SNE."""
+    try:
+        import umap
+    except ImportError:
+        print("UMAP not installed, skipping UMAP visualization. Install with: pip install umap-learn")
+        return
+
+    if inv_latents.size == 0 or len(inv_latents) < 10:
+        return
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    latents = inv_latents
+    has_phases = phases.size == len(latents)
+    gt_labels = phases if has_phases else None
+
+    if len(latents) > max_samples:
+        idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
+        latents = latents[idx]
+        if gt_labels is not None:
+            gt_labels = gt_labels[idx]
+
+    # Compute UMAP
+    reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, metric="euclidean", random_state=42)
+    umap_coords = reducer.fit_transform(latents)
+
+    # Plot
+    fig, ax = plt.subplots(figsize=(10, 8), dpi=150)
+    
+    if gt_labels is not None:
+        unique_labels = np.unique(gt_labels)
+        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+        for i, label in enumerate(unique_labels):
+            mask = gt_labels == label
+            ax.scatter(umap_coords[mask, 0], umap_coords[mask, 1], 
+                      c=[colors[i]], s=8, alpha=0.6, label=f"Phase {int(label)}")
+        if len(unique_labels) <= 15:
+            ax.legend(fontsize=8, markerscale=1.5)
+    else:
+        ax.scatter(umap_coords[:, 0], umap_coords[:, 1], s=8, alpha=0.6, c="#3498db")
+    
+    ax.set_xlabel("UMAP 1")
+    ax.set_ylabel("UMAP 2")
+    ax.set_title(f"UMAP Projection (n={len(latents)})")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    
+    plt.tight_layout()
+    fig.savefig(out_dir / "latent_umap.png")
+    plt.close(fig)
 
 
 def evaluate_equivariance(
@@ -208,8 +673,8 @@ def evaluate_equivariance(
             )
             pc_rot = torch.einsum("bij,bnj->bni", rots, pc)
 
-            inv_z, recon, eq_z, _ = model(pc)
-            _, recon_rot, eq_z_rot, _ = model(pc_rot)
+            inv_z, recon, eq_z = model(pc)
+            _, recon_rot, eq_z_rot = model(pc_rot)
 
             if eq_z is not None and eq_z_rot is not None:
                 expected_eq = torch.einsum("bij,bcj->bci", rots, eq_z)
@@ -223,7 +688,6 @@ def evaluate_equivariance(
                 cd, _ = chamfer_distance(
                     recon_back[i].unsqueeze(0).float(),
                     recon[i].unsqueeze(0).float(),
-                    squared=False,
                     point_reduction="mean",
                 )
                 chamfer_errors.append(float(cd.detach().cpu().item()))
@@ -281,34 +745,146 @@ def run_post_training_analysis(
     output_dir: str,
     cuda_device: int = 0,
     cfg: DictConfig | None = None,
-    max_batches: int = 4,
-) -> None:
-    """Generate qualitative and quantitative diagnostics for the Equivariant AE."""
+    max_batches_recon: int = 4,
+    max_batches_latent: int = 100,
+    max_samples_visualization: int = 10000,
+) -> Dict[str, Any]:
+    """Generate qualitative and quantitative diagnostics for the Equivariant AE.
+    
+    Args:
+        checkpoint_path: Path to model checkpoint
+        output_dir: Directory to save analysis outputs
+        cuda_device: GPU device index
+        cfg: Optional config override
+        max_batches_recon: Number of batches for reconstruction visualization
+        max_batches_latent: Number of batches to collect for latent analysis (increased for better coverage)
+        max_samples_visualization: Maximum samples for dimensionality reduction visualizations
+        
+    Returns:
+        Dictionary containing all computed metrics
+    """
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    print("Loading model...")
     model, cfg, device = load_eq_model(checkpoint_path, cuda_device=cuda_device, cfg=cfg)
     dm = build_datamodule(cfg)
     dl = dm.test_dataloader()
 
-    cache = gather_inference_batches(model, dl, device, max_batches=max_batches)
+    # Collect more batches for comprehensive latent analysis
+    print(f"Gathering inference batches (up to {max_batches_latent} batches)...")
+    cache = gather_inference_batches(model, dl, device, max_batches=max_batches_latent)
+    
+    n_samples = len(cache["inv_latents"])
+    print(f"Collected {n_samples} samples for analysis")
 
+    # 1. Reconstruction grid visualization
+    print("Generating reconstruction grid...")
     save_reconstruction_grid(
         cache["originals"],
         cache["reconstructions"],
         cache["phases"],
         out_dir / "recon_vs_prediction.png",
+        max_examples=min(6, max_batches_recon * getattr(dl, "batch_size", 8)),
     )
 
-    save_latent_tsne(cache["inv_latents"], cache["phases"], out_dir / "latent_tsne.png")
+    all_metrics = {}
 
-    metrics, eq_err, cd_err = evaluate_equivariance(model, dl, device, max_batches=2)
+    # 2. t-SNE visualization with more points
+    print("Computing t-SNE visualization...")
+    save_latent_tsne(
+        cache["inv_latents"], 
+        cache["phases"], 
+        out_dir,
+        max_samples=max_samples_visualization,
+    )
+
+    # 3. PCA visualization and analysis
+    print("Computing PCA analysis...")
+    pca_stats = save_pca_visualization(
+        cache["inv_latents"],
+        cache["phases"],
+        out_dir,
+        max_samples=max_samples_visualization,
+    )
+    all_metrics["pca"] = pca_stats
+
+    # 4. Detailed latent statistics
+    print("Computing latent statistics...")
+    latent_stats = save_latent_statistics(
+        cache["inv_latents"],
+        cache["eq_latents"],
+        cache["phases"],
+        out_dir,
+    )
+    all_metrics["latent_stats"] = latent_stats
+
+    # 5. Clustering analysis
+    print("Computing clustering analysis...")
+    clustering_metrics = save_clustering_analysis(
+        cache["inv_latents"],
+        cache["phases"],
+        out_dir,
+        max_samples=max_samples_visualization,
+    )
+    all_metrics["clustering"] = clustering_metrics
+
+    # 6. UMAP visualization (optional, if umap-learn is installed)
+    print("Computing UMAP visualization...")
+    save_umap_visualization(
+        cache["inv_latents"],
+        cache["phases"],
+        out_dir,
+        max_samples=max_samples_visualization,
+    )
+
+    # 7. Equivariance evaluation
+    print("Evaluating equivariance...")
+    eq_metrics, eq_err, cd_err = evaluate_equivariance(model, dl, device, max_batches=2)
     save_equivariance_plot(eq_err, cd_err, out_dir / "equivariance.png")
+    all_metrics["equivariance"] = eq_metrics
 
+    # Save all metrics to JSON
+    import json
     metrics_path = out_dir / "analysis_metrics.json"
     with metrics_path.open("w") as handle:
-        import json
+        json.dump(all_metrics, handle, indent=2)
 
-        json.dump(metrics, handle, indent=2)
-
-    print(f"Saved reconstruction, latent, and equivariance analyses to {out_dir}")
+    # Print summary
+    print("\n" + "=" * 60)
+    print("ANALYSIS SUMMARY")
+    print("=" * 60)
+    print(f"Total samples analyzed: {n_samples}")
+    
+    if "pca" in all_metrics and all_metrics["pca"]:
+        print(f"PCA: {all_metrics['pca'].get('n_components_95_var', 'N/A')} components for 95% variance")
+    
+    if "clustering" in all_metrics and all_metrics["clustering"]:
+        print(f"Best k (silhouette): {all_metrics['clustering'].get('best_k_silhouette', 'N/A')}")
+        print(f"Best silhouette score: {all_metrics['clustering'].get('best_silhouette_score', 'N/A'):.4f}")
+        if "ari_with_gt" in all_metrics["clustering"]:
+            print(f"ARI with ground truth: {all_metrics['clustering']['ari_with_gt']:.4f}")
+            print(f"NMI with ground truth: {all_metrics['clustering']['nmi_with_gt']:.4f}")
+        if "class_separation_ratio" in all_metrics["clustering"]:
+            print(f"Class separation ratio: {all_metrics['clustering']['class_separation_ratio']:.4f}")
+    
+    if "equivariance" in all_metrics:
+        eq = all_metrics["equivariance"]
+        print(f"Equivariant latent error (mean): {eq.get('eq_latent_rel_error_mean', 'N/A')}")
+        print(f"Reconstruction equiv. CD (mean): {eq.get('recon_equiv_chamfer_mean', 'N/A')}")
+    
+    print("=" * 60)
+    print(f"\nSaved all analyses to {out_dir}")
+    print("Generated files:")
+    print("  - recon_vs_prediction.png: Reconstruction visualization")
+    print("  - latent_tsne_ground_truth.png: t-SNE with ground truth labels")
+    print("  - latent_tsne_clusters.png: t-SNE with KMeans clusters")
+    print("  - latent_pca_analysis.png: PCA projection and variance")
+    print("  - latent_pca_3d.png: 3D PCA projection")
+    print("  - latent_statistics.png: Comprehensive latent statistics")
+    print("  - clustering_analysis.png: Clustering quality metrics")
+    print("  - latent_umap.png: UMAP projection (if umap-learn installed)")
+    print("  - equivariance.png: Equivariance error distributions")
+    print("  - analysis_metrics.json: All numerical metrics")
+    
+    return all_metrics

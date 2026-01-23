@@ -10,6 +10,7 @@ from ..encoders.vn_encoders import VNLinear, VNLinearLeakyReLU, VNBatchNorm
 
 @register_decoder("VN_Crystal")
 class VNCrystalDecoder(Decoder):
+    use_invariant_latent = False
     """
     Vector Neuron Equivariant Crystal Decoder with optional correction for imperfect crystals.
     

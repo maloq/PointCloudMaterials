@@ -7,6 +7,8 @@ class Encoder(ABC, nn.Module):
         """Return (latent, *aux)"""
 
 class Decoder(ABC, nn.Module):
+    use_invariant_latent: bool = True
+
     @abstractmethod
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         """Return reconstructed point cloud (B, N, 3)"""

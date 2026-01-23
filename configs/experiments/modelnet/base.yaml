@@ -19,7 +19,6 @@ loss: "chamfer"
 loss_params:
   chamfer:
     point_reduction: "mean" 
-    squared: False
     auto_scale_by_points: False 
 max_supervised_samples: 4096
 max_test_samples: 1000

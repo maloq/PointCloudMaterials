@@ -114,6 +114,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     if cfg.gpu and len(devices) > 1 and hasattr(cfg, 'ddp_find_unused_parameters') and cfg.ddp_find_unused_parameters:
         ddp_strategy = DDPStrategy(find_unused_parameters=True)
 
+    precision = getattr(cfg, "precision", "bf16-mixed")
     trainer_kwargs = dict(
         default_root_dir=run_dir,
         max_epochs=cfg.epochs,
@@ -122,7 +123,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         logger=wandb_logger,
         callbacks=callbacks,
         log_every_n_steps=cfg.log_every_n_steps,
-        precision='bf16-mixed',
+        precision=precision,
         benchmark=True,
         check_val_every_n_epoch=4,
     )

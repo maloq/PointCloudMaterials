@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
+from ..registry import register_decoder
+from ..base import Decoder
 
 
 # ---------------------------
@@ -131,14 +133,24 @@ class VNLinear(nn.Module):
         # v: (B,N,Cin,3), W: (Cout,Cin) -> (B,N,Cout,3)
         return torch.einsum("bncd,oc->bnod", v, self.weight)
 
-def radial_tanh(vec: torch.Tensor, eps: float = EPS, scale: float = 0.1) -> torch.Tensor:
+def radial_tanh(vec: torch.Tensor, eps: float = EPS, scale: float = 0.1, use_tanh: bool = True) -> torch.Tensor:
     """
-    Bounds displacement magnitudes using tanh.
-    Scale parameter controls the maximum displacement magnitude.
+    Optionally bounds displacement magnitudes using tanh.
+    Scale parameter controls the displacement scaling.
+    
+    Args:
+        vec: Input displacement vectors (..., 3)
+        eps: Small constant for numerical stability
+        scale: Scale factor for the output
+        use_tanh: If True, apply tanh bounding. If False, just scale linearly.
     """
     # vec: (..., 3)
-    n = torch.linalg.norm(vec, dim=-1, keepdim=True).clamp_min(eps)
-    return vec * (torch.tanh(n) / n) * scale
+    if use_tanh:
+        n = torch.linalg.norm(vec, dim=-1, keepdim=True).clamp_min(eps)
+        return vec * (torch.tanh(n) / n) * scale
+    else:
+        # Linear scaling without bounding - better for reconstruction tasks
+        return vec * scale
 
 
 class VNReLU(nn.Module):
@@ -360,11 +372,13 @@ class VNSnowflakeDeconvBlock(nn.Module):
         disp_scale: float = 0.1,
         use_batch_norm: bool = True,
         feature_clamp_max: float = FEATURE_CLAMP_MAX,
+        use_tanh_displacement: bool = False,  # NEW: disable tanh by default for better reconstruction
     ):
         super().__init__()
         self.r = up_factor
         self.disp_scale = disp_scale
         self.feature_clamp_max = feature_clamp_max
+        self.use_tanh_displacement = use_tanh_displacement
 
         # "skip-transformer" analog with stability improvements
         self.ctx = VNInvariantAttention(
@@ -415,8 +429,8 @@ class VNSnowflakeDeconvBlock(nn.Module):
         disp_v = self.disp(v_up)                         # (B,rN,1,3)
         delta = disp_v.squeeze(2)                        # (B,rN,3)
 
-        # Use radial_tanh with configurable scale for bounded displacements
-        x_up = x_dup + radial_tanh(delta, scale=self.disp_scale)
+        # Apply displacement with configurable bounding
+        x_up = x_dup + radial_tanh(delta, scale=self.disp_scale, use_tanh=self.use_tanh_displacement)
         return x_up, v_up
 
 
@@ -438,6 +452,8 @@ class VNSnowflakeDecoder(nn.Module):
         disp_scale: float = 0.1,
         use_batch_norm: bool = True,
         feature_clamp_max: float = FEATURE_CLAMP_MAX,
+        use_tanh_displacement: bool = False,  # NEW: disable tanh by default
+        progressive_disp_scale: bool = False,  # NEW: option to progressively reduce disp_scale
     ):
         """
         Args:
@@ -448,14 +464,19 @@ class VNSnowflakeDecoder(nn.Module):
             residual_scale: Scale factor for residual connections (lower = more stable)
             disp_scale: Scale factor for displacement predictions
             use_batch_norm: Whether to use batch normalization
+            use_tanh_displacement: If True, bound displacements with tanh. If False, use linear scaling.
+            progressive_disp_scale: If True, progressively reduce disp_scale in later stages (original behavior).
         """
         super().__init__()
         self.feature_clamp_max = feature_clamp_max
         blocks = []
         cur_c = c_in
         for i, (c_ctx, c_child, up_factor, disp_hidden) in enumerate(stages):
-            # Use progressively smaller displacement scale in later stages
-            stage_disp_scale = disp_scale / (1.0 + 0.5 * i)
+            # Optionally use progressively smaller displacement scale in later stages
+            if progressive_disp_scale:
+                stage_disp_scale = disp_scale / (1.0 + 0.5 * i)
+            else:
+                stage_disp_scale = disp_scale
             blocks.append(
                 VNSnowflakeDeconvBlock(
                     c_in=cur_c,
@@ -469,6 +490,7 @@ class VNSnowflakeDecoder(nn.Module):
                     disp_scale=stage_disp_scale,
                     use_batch_norm=use_batch_norm,
                     feature_clamp_max=feature_clamp_max,
+                    use_tanh_displacement=use_tanh_displacement,
                 )
             )
             cur_c = c_child
@@ -603,6 +625,214 @@ def plot_equivariance_vs_k(k_values=None, num_trials=5, save_path=None):
     return k_values, err_x_list, err_v_list
 
 
+@register_decoder("VN_Snowflake")
+class VNSnowflakeDecoderWrapper(Decoder):
+    use_invariant_latent = False
+    """
+    SO(3)-Equivariant Snowflake Point Decoder.
+
+    Adapts the VNSnowflakeDecoder for use with the standard equivariant autoencoder
+    interface. Takes an equivariant latent representation (B, latent_size, 3) and 
+    generates a point cloud (B, num_points, 3) while preserving SO(3) equivariance.
+
+    Architecture:
+    - Learns seed point initialization from the latent
+    - Progressively upsamples through VN-equivariant deconvolution blocks
+    - Uses attention-based context aggregation at each stage
+    """
+
+    def __init__(
+        self,
+        num_points: int,
+        latent_size: int,
+        num_seeds: int = 16,
+        hidden_channels: int = 64,
+        stages: Tuple[Tuple[int, int, int, int], ...] | None = None,
+        max_ctx_channels: int | None = None,
+        k: int = 8,
+        use_batchnorm: bool = True,
+        negative_slope: float = 0.1,
+        # Stability parameters
+        temperature: float = 1.0,
+        residual_scale: float = 0.5,
+        disp_scale: float = 1.0,  # INCREASED from 0.1 - critical for reconstruction
+        feature_clamp_max: float = FEATURE_CLAMP_MAX,
+        final_disp_scale: float = 1.0,
+        # NEW reconstruction-friendly options
+        use_tanh_displacement: bool = False,  # Disable tanh bounding for better reconstruction
+        progressive_disp_scale: bool = False,  # Don't reduce disp_scale per stage
+    ):
+        """
+        Args:
+            num_points: Number of output points to generate.
+            latent_size: Number of VN channels in the input latent (B, latent_size, 3).
+            num_seeds: Number of seed points to initialize (must divide num_points by power of 2).
+            hidden_channels: Hidden VN channel dimension for seed features.
+            stages: Tuple of (c_ctx, c_child, up_factor, disp_hidden) per stage.
+                    If None, auto-computed based on num_seeds and num_points.
+            max_ctx_channels: Optional cap for context channels in auto-computed stages.
+            k: Number of neighbors for kNN in attention blocks.
+            use_batchnorm: Whether to use batch normalization in initial projection.
+            negative_slope: Negative slope for LeakyReLU activations.
+            temperature: Temperature for attention softmax (higher = smoother, more stable).
+            residual_scale: Scale factor for residual connections (lower = more stable).
+            disp_scale: Scale factor for displacement predictions.
+            feature_clamp_max: Maximum feature norm for internal clamping.
+            final_disp_scale: Scale for the final displacement head (0 disables it).
+            use_tanh_displacement: If True, bound displacements with tanh. False is better for reconstruction.
+            progressive_disp_scale: If True, reduce disp_scale in later stages (can limit reconstruction quality).
+        """
+        super().__init__()
+        self._n = num_points
+        self.num_seeds = num_seeds
+        self.latent_size = latent_size
+        self.hidden_channels = hidden_channels
+        self.final_disp_scale = final_disp_scale
+
+        # Auto-compute stages if not provided
+        if stages is None:
+            stages = self._compute_stages(num_seeds, num_points, hidden_channels, max_ctx_channels)
+        
+        # Validate that stages produce the right number of points
+        total_up = 1
+        for stage in stages:
+            total_up *= stage[2]  # up_factor
+        expected_points = num_seeds * total_up
+        if expected_points != num_points:
+            raise ValueError(
+                f"Stages produce {expected_points} points (seeds={num_seeds} * {total_up}), "
+                f"but num_points={num_points}. Adjust num_seeds or stages."
+            )
+
+        # Project latent to seed positions: (B, latent_size, 3) -> (B, num_seeds, 3)
+        # We use a VN linear to maintain equivariance
+        self.seed_pos_proj = VNLinear(latent_size, num_seeds)
+        # Initialize with larger gain so seed positions span the data range
+        nn.init.xavier_uniform_(self.seed_pos_proj.map_to_feat.weight, gain=2.0)
+
+        # Project latent to initial vector features: (B, latent_size, 3) -> (B, num_seeds, hidden_channels, 3)
+        # First expand channels, then reshape
+        self.seed_feat_proj = VNLinearLeakyReLU(
+            latent_size, num_seeds * hidden_channels, 
+            dim=3,
+            negative_slope=negative_slope,
+            use_batchnorm=use_batchnorm
+        )
+
+        # Core snowflake decoder (upsampling stages) with improved reconstruction settings
+        c_in = hidden_channels
+        self.decoder_core = VNSnowflakeDecoderCore(
+            c_in=c_in,
+            stages=stages,
+            k=k,
+            temperature=temperature,
+            residual_scale=residual_scale,
+            disp_scale=disp_scale,
+            use_batch_norm=use_batchnorm,
+            feature_clamp_max=feature_clamp_max,
+            use_tanh_displacement=use_tanh_displacement,
+            progressive_disp_scale=progressive_disp_scale,
+        )
+
+        # Final projection to single vector channel (output point positions)
+        # Output of decoder_core is (B, N, c_out, 3), we want (B, N, 3)
+        self.final_proj = VNLinear(self.decoder_core.out_c, 1)
+
+    @staticmethod
+    def _compute_stages(
+        num_seeds: int, 
+        num_points: int, 
+        hidden_channels: int,
+        max_ctx_channels: int | None = None,
+    ) -> Tuple[Tuple[int, int, int, int], ...]:
+        """
+        Auto-compute stages configuration based on seed count and target points.
+        
+        Returns tuple of (c_ctx, c_child, up_factor, disp_hidden) per stage.
+        """
+        import math
+        
+        ratio = num_points / num_seeds
+        if ratio < 1:
+            raise ValueError(f"num_points ({num_points}) must be >= num_seeds ({num_seeds})")
+        
+        # Find number of stages needed (assuming up_factor=2 per stage)
+        num_stages = max(1, int(math.ceil(math.log2(ratio))))
+        
+        # Verify we can achieve exact point count
+        total_up = 2 ** num_stages
+        if num_seeds * total_up != num_points:
+            # Fallback: try different up factors
+            # For simplicity, use equal up factors when possible
+            pass  # Continue with the approximation
+        
+        stages = []
+        c_in = hidden_channels
+        
+        for i in range(num_stages):
+            if max_ctx_channels is None:
+                c_ctx = c_in * 2
+            else:
+                c_ctx = min(c_in * 2, max_ctx_channels)
+            c_child = c_ctx  # Child channels (keep same)
+            up_factor = 2  # Standard upsampling factor
+            disp_hidden = c_ctx  # Displacement MLP hidden dim
+            
+            stages.append((c_ctx, c_child, up_factor, disp_hidden))
+            c_in = c_child
+        
+        return tuple(stages)
+
+    def forward(self, z: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            z: Equivariant latent (B, latent_size, 3) where latent_size is the number of VN channels.
+
+        Returns:
+            Point cloud (B, num_points, 3)
+        """
+        B = z.shape[0]
+        
+        # Generate seed positions (equivariant)
+        # z: (B, latent_size, 3) -> (B, num_seeds, 3)
+        x_seeds = self.seed_pos_proj(z)  # (B, num_seeds, 3)
+
+        # Generate seed vector features (equivariant)
+        # z: (B, latent_size, 3) -> (B, num_seeds * hidden_channels, 3)
+        v_flat = self.seed_feat_proj(z)  # (B, num_seeds * hidden_channels, 3)
+        # Reshape to (B, num_seeds, hidden_channels, 3)
+        v_seeds = v_flat.view(B, self.num_seeds, self.hidden_channels, 3)
+
+        # Run snowflake upsampling
+        x_out, v_out = self.decoder_core(x_seeds, v_seeds)  # (B, num_points, c_out, 3)
+
+        if self.final_disp_scale <= 0.0:
+            return x_out
+
+        # Project vector features to final positions
+        # v_out: (B, num_points, c_out, 3) -> need to add displacements
+        # Option 1: Use x_out directly
+        # Option 2: Add learned displacement from v_out
+        
+        # Project v_out to single channel and add as displacement
+        # v_out: (B, N, c_out, 3) -> transpose to (B, c_out, 3, N) for VNLinear? 
+        # Actually VNLinear in vn_encoders expects (B, C, 3) or (B, C, 3, N)
+        # But our v_out is (B, N, C, 3)
+        
+        # Reshape for final projection: (B, N, c_out, 3) -> (B*N, c_out, 3)
+        N = x_out.shape[1]
+        v_reshaped = v_out.view(B * N, self.decoder_core.out_c, 3)  # (B*N, c_out, 3)
+        displacement = self.final_proj(v_reshaped)  # (B*N, 1, 3)
+        displacement = displacement.view(B, N, 3)  # (B, N, 3)
+        if self.final_disp_scale != 1.0:
+            displacement = displacement * self.final_disp_scale
+
+        # Final output: seed-derived positions + learned displacement
+        output = x_out + displacement
+
+        return output
+
+        
 if __name__ == "__main__":
     plot_equivariance_vs_k(
         k_values=list(range(1, 65)),

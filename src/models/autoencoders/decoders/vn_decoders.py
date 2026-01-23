@@ -5,15 +5,17 @@ from typing import Tuple
 
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 
 from ..base import Decoder
 from ..registry import register_decoder
-from ..encoders.vn_encoders import VNLinear, VNLinearLeakyReLU, VNBatchNorm
+from ..encoders.vn_encoders import VNLinear, VNLinearLeakyReLU, VNBatchNorm, VNResBlock, VNStdFeature
 from .snowflake_vn import FEATURE_CLAMP_MAX, VNSnowflakeDecoder as VNSnowflakeDecoderCore
 
 
 @register_decoder("VN_Equivariant")
 class VNEquivariantDecoder(Decoder):
+    use_invariant_latent = False
     """
     Vector Neuron Equivariant Decoder.
 
@@ -30,37 +32,68 @@ class VNEquivariantDecoder(Decoder):
         self,
         num_points: int,
         latent_size: int,
-        hidden_dims: tuple[int, int, int] = (512, 256, 128),
+        hidden_dims: tuple[int, ...] = (512, 256, 128),
         use_batchnorm: bool = True,
         negative_slope: float = 0.1,
+        output_scale: float = 1.0,  # Scale factor for output points
+        learnable_scale: bool = True,  # NEW: learn the output scale
+        num_res_blocks: int = 0,  # Optional VN residual blocks for more capacity
+        center_output: bool = False,  # Center output points around origin
     ):
         super().__init__()
         self._n = num_points
+        self.output_scale = output_scale
+        self.center_output = center_output
 
         # Input eq_z has shape (B, latent_size, 3) where latent_size is the number of VN channels
+        hidden_dims = tuple(hidden_dims)
+        if len(hidden_dims) == 0:
+            raise ValueError("hidden_dims must contain at least one entry")
         c_in = latent_size
-        h1, h2, h3 = [max(1, dim // 3) for dim in hidden_dims]
+        hidden_channels = [max(1, dim // 3) for dim in hidden_dims]
 
         # Expansion layers with VN
-        self.vn1 = VNLinearLeakyReLU(
-            c_in, h1, dim=3,
-            negative_slope=negative_slope,
-            use_batchnorm=use_batchnorm
-        )
-        self.vn2 = VNLinearLeakyReLU(
-            h1, h2, dim=3,
-            negative_slope=negative_slope,
-            use_batchnorm=use_batchnorm
-        )
-        self.vn3 = VNLinearLeakyReLU(
-            h2, h3, dim=3,
-            negative_slope=negative_slope,
-            use_batchnorm=use_batchnorm
-        )
+        layers = []
+        for h in hidden_channels:
+            layers.append(
+                VNLinearLeakyReLU(
+                    c_in,
+                    h,
+                    dim=3,
+                    negative_slope=negative_slope,
+                    use_batchnorm=use_batchnorm,
+                )
+            )
+            c_in = h
+        self.vn_layers = nn.Sequential(*layers)
+
+        self.res_blocks = None
+        if num_res_blocks > 0:
+            self.res_blocks = nn.Sequential(
+                *[
+                    VNResBlock(
+                        c_in,
+                        dim=3,
+                        negative_slope=negative_slope,
+                        use_batchnorm=use_batchnorm,
+                    )
+                    for _ in range(num_res_blocks)
+                ]
+            )
 
         # Final projection to num_points
         # Each VN channel will produce one 3D point
-        self.vn_final = VNLinear(h3, num_points)
+        self.vn_final = VNLinear(c_in, num_points)
+        
+        # Better initialization for the final layer - increase gain significantly
+        # Standard kaiming init leads to very small outputs in VN networks
+        nn.init.xavier_uniform_(self.vn_final.map_to_feat.weight, gain=2.0)
+        
+        # Learnable output scale - starts at 1.0, can learn to amplify output
+        if learnable_scale:
+            self.scale_param = nn.Parameter(torch.tensor(1.0))
+        else:
+            self.register_buffer('scale_param', torch.tensor(1.0))
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         """
@@ -72,212 +105,262 @@ class VNEquivariantDecoder(Decoder):
         """
         # z shape: (B, latent_size, 3) - latent_size VN channels, each being a 3D vector
         # Progressively expand through VN layers
-        x = self.vn1(z)  # (B, h1, 3)
-        x = self.vn2(x)  # (B, h2, 3)
-        x = self.vn3(x)  # (B, h3, 3)
+        x = self.vn_layers(z)
+        if self.res_blocks is not None:
+            x = self.res_blocks(x)
 
         # Final projection to num_points
         x = self.vn_final(x)  # (B, num_points, 3)
+        
+        # Apply output scaling (fixed + learnable)
+        x = x * self.output_scale * self.scale_param
+
+        if self.center_output:
+            x = x - x.mean(dim=1, keepdim=True)
 
         return x
 
+# ---------------------------------------------------------------------------
+# REVNET-inspired anchor + VN-transformer + invariant fine decoder
+# ---------------------------------------------------------------------------
 
-@register_decoder("VN_Snowflake")
-class VNSnowflakeDecoderWrapper(Decoder):
-    """
-    SO(3)-Equivariant Snowflake Point Decoder.
+_EPS = 1e-6
 
-    Adapts the VNSnowflakeDecoder for use with the standard equivariant autoencoder
-    interface. Takes an equivariant latent representation (B, latent_size, 3) and 
-    generates a point cloud (B, num_points, 3) while preserving SO(3) equivariance.
 
-    Architecture:
-    - Learns seed point initialization from the latent
-    - Progressively upsamples through VN-equivariant deconvolution blocks
-    - Uses attention-based context aggregation at each stage
-    """
+class VNZCALayerNorm(nn.Module):
+    """ZCA-whitening LayerNorm for VN features (B, C, 3, ...)."""
+
+    def __init__(self, channels: int, eps: float = 1e-5, affine: bool = True):
+        super().__init__()
+        self.eps = eps
+        if affine:
+            self.gamma = nn.Parameter(torch.ones(1, channels, 1, 1))
+        else:
+            self.register_buffer("gamma", torch.ones(1, channels, 1, 1), persistent=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() < 3:
+            raise ValueError(f"Expected VN tensor with >=3 dims, got shape {tuple(x.shape)}")
+        B, C = x.shape[:2]
+        if x.shape[2] != 3:
+            raise ValueError(f"VNZCALayerNorm expects vector-dim=3, got {x.shape[2]}")
+
+        x_flat = x.reshape(B, C, 3, -1).permute(0, 2, 1, 3).reshape(B, 3, -1)
+        mu = x_flat.mean(dim=-1, keepdim=True)
+        xc = x_flat - mu
+
+        M = xc.shape[-1]
+        cov = (xc @ xc.transpose(1, 2)) / (float(M) + _EPS)
+        cov = cov + self.eps * torch.eye(3, device=x.device, dtype=x.dtype).unsqueeze(0)
+
+        eigvals, eigvecs = torch.linalg.eigh(cov)
+        inv_sqrt = torch.rsqrt(eigvals + self.eps)
+        W = eigvecs @ torch.diag_embed(inv_sqrt) @ eigvecs.transpose(1, 2)
+        xw = W @ xc
+
+        xw = xw.reshape(B, 3, C, -1).permute(0, 2, 1, 3).reshape_as(x)
+        gamma = self.gamma
+        while gamma.dim() < xw.dim():
+            gamma = gamma.unsqueeze(-1)
+        return xw * gamma
+
+
+class VNChannelWiseSubtractionAttention(nn.Module):
+    """Channel-wise subtraction attention (CWSA) over anchor tokens."""
+
+    def __init__(self, channels: int, hidden: int = 64, use_pos: bool = True):
+        super().__init__()
+        self.channels = channels
+        self.use_pos = use_pos
+        self.to_q = VNLinear(channels, channels)
+        self.to_k = VNLinear(channels, channels)
+        self.to_v = VNLinear(channels, channels)
+        self.to_out = VNLinear(channels, channels)
+
+        in_mlp = 2 if use_pos else 1
+        self.score_mlp = nn.Sequential(
+            nn.Linear(in_mlp, hidden),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(hidden, channels),
+        )
+
+    def forward(self, x: torch.Tensor, pos: torch.Tensor | None = None) -> torch.Tensor:
+        # x: (B, C, 3, K), pos: (B, K, 3)
+        q = self.to_q(x)
+        k = self.to_k(x)
+        v = self.to_v(x)
+
+        # (B, K, C, 3)
+        qk = q.permute(0, 3, 1, 2)
+        kk = k.permute(0, 3, 1, 2)
+        vv = v.permute(0, 3, 1, 2)
+
+        # Invariant relation feature
+        rel = qk[:, :, None, :, :] - kk[:, None, :, :, :]        # (B,Kq,Kk,C,3)
+        rel_norm = torch.norm(rel, dim=-1)                       # (B,Kq,Kk,C)
+        rel_mean = rel_norm.mean(dim=-1, keepdim=True)           # (B,Kq,Kk,1)
+
+        if self.use_pos:
+            if pos is None:
+                raise ValueError("pos must be provided when use_pos=True")
+            rel_pos = pos[:, :, None, :] - pos[:, None, :, :]    # (B,Kq,Kk,3)
+            rel_pos_norm = torch.norm(rel_pos, dim=-1, keepdim=True)
+            score_in = torch.cat([rel_mean, rel_pos_norm], dim=-1)
+        else:
+            score_in = rel_mean
+
+        scores = self.score_mlp(score_in)                        # (B,Kq,Kk,C)
+        attn = torch.softmax(scores, dim=2)
+
+        out = torch.einsum('bijk,bjkd->bikd', attn, vv)          # (B,K,C,3)
+        out = out.permute(0, 2, 3, 1).contiguous()               # (B,C,3,K)
+        return self.to_out(out)
+
+
+class VNAnchorTransformerBlock(nn.Module):
+    def __init__(
+        self,
+        channels: int,
+        mlp_ratio: int = 2,
+        attn_hidden: int = 64,
+        use_zca_norm: bool = True,
+        use_pos: bool = True,
+        negative_slope: float = 0.1,
+        use_batchnorm: bool = False,
+    ):
+        super().__init__()
+        self.attn = VNChannelWiseSubtractionAttention(channels, hidden=attn_hidden, use_pos=use_pos)
+        self.norm1 = VNZCALayerNorm(channels) if use_zca_norm else VNBatchNorm(channels, dim=4)
+        self.ffn = nn.Sequential(
+            VNLinearLeakyReLU(
+                channels,
+                channels * mlp_ratio,
+                dim=4,
+                negative_slope=negative_slope,
+                use_batchnorm=use_batchnorm,
+            ),
+            VNLinear(channels * mlp_ratio, channels),
+        )
+        self.norm2 = VNZCALayerNorm(channels) if use_zca_norm else VNBatchNorm(channels, dim=4)
+
+    def forward(self, x: torch.Tensor, pos: torch.Tensor) -> torch.Tensor:
+        x = self.norm1(x + self.attn(x, pos))
+        x = self.norm2(x + self.ffn(x))
+        return x
+
+
+@register_decoder("VN_REVNET_Anchor")
+class VNRevnetAnchorDecoder(Decoder):
+    use_invariant_latent = False
 
     def __init__(
         self,
         num_points: int,
         latent_size: int,
-        num_seeds: int = 16,
-        hidden_channels: int = 64,
-        stages: Tuple[Tuple[int, int, int, int], ...] | None = None,
-        max_ctx_channels: int | None = None,
-        k: int = 8,
-        use_batchnorm: bool = True,
-        negative_slope: float = 0.1,
-        # New stability parameters
-        temperature: float = 1.0,
-        residual_scale: float = 0.5,
-        disp_scale: float = 0.1,
-        feature_clamp_max: float = FEATURE_CLAMP_MAX,
-        final_disp_scale: float = 1.0,
+        num_anchors: int = 64,
+        anchor_channels: int = 48,
+        transformer_depth: int = 2,
+        attn_hidden: int = 128,
+        mlp_ratio: int = 2,
+        point_query_dim: int = 32,
+        offset_mlp_hidden: int = 256,
+        offset_scale: float = 0.25,
+        output_scale: float = 1.0,
+        learnable_scale: bool = True,
+        center_output: bool = True,
+        use_zca_norm: bool = True,
     ):
-        """
-        Args:
-            num_points: Number of output points to generate.
-            latent_size: Number of VN channels in the input latent (B, latent_size, 3).
-            num_seeds: Number of seed points to initialize (must divide num_points by power of 2).
-            hidden_channels: Hidden VN channel dimension for seed features.
-            stages: Tuple of (c_ctx, c_child, up_factor, disp_hidden) per stage.
-                    If None, auto-computed based on num_seeds and num_points.
-            max_ctx_channels: Optional cap for context channels in auto-computed stages.
-            k: Number of neighbors for kNN in attention blocks.
-            use_batchnorm: Whether to use batch normalization in initial projection.
-            negative_slope: Negative slope for LeakyReLU activations.
-            temperature: Temperature for attention softmax (higher = smoother, more stable).
-            residual_scale: Scale factor for residual connections (lower = more stable).
-            disp_scale: Scale factor for displacement predictions (lower = more stable).
-            feature_clamp_max: Maximum feature norm for internal clamping.
-            final_disp_scale: Scale for the final displacement head (0 disables it).
-        """
         super().__init__()
         self._n = num_points
-        self.num_seeds = num_seeds
-        self.latent_size = latent_size
-        self.hidden_channels = hidden_channels
-        self.final_disp_scale = final_disp_scale
+        self.num_anchors = num_anchors
+        self.anchor_channels = anchor_channels
+        self.offset_scale = offset_scale
+        self.output_scale = output_scale
+        self.center_output = center_output
 
-        # Auto-compute stages if not provided
-        if stages is None:
-            stages = self._compute_stages(num_seeds, num_points, hidden_channels, max_ctx_channels)
-        
-        # Validate that stages produce the right number of points
-        total_up = 1
-        for stage in stages:
-            total_up *= stage[2]  # up_factor
-        expected_points = num_seeds * total_up
-        if expected_points != num_points:
-            raise ValueError(
-                f"Stages produce {expected_points} points (seeds={num_seeds} * {total_up}), "
-                f"but num_points={num_points}. Adjust num_seeds or stages."
-            )
+        self.anchor_pos = VNLinear(latent_size, num_anchors)
+        nn.init.xavier_uniform_(self.anchor_pos.map_to_feat.weight, gain=2.0)
 
-        # Project latent to seed positions: (B, latent_size, 3) -> (B, num_seeds, 3)
-        # We use a VN linear to maintain equivariance
-        self.seed_pos_proj = VNLinear(latent_size, num_seeds)
-
-        # Project latent to initial vector features: (B, latent_size, 3) -> (B, num_seeds, hidden_channels, 3)
-        # First expand channels, then reshape
-        self.seed_feat_proj = VNLinearLeakyReLU(
-            latent_size, num_seeds * hidden_channels, 
+        self.anchor_feat = VNLinearLeakyReLU(
+            latent_size,
+            num_anchors * anchor_channels,
             dim=3,
-            negative_slope=negative_slope,
-            use_batchnorm=use_batchnorm
+            negative_slope=0.1,
+            use_batchnorm=False,
         )
 
-        # Core snowflake decoder (upsampling stages) with stability improvements
-        c_in = hidden_channels
-        self.decoder_core = VNSnowflakeDecoderCore(
-            c_in=c_in,
-            stages=stages,
-            k=k,
-            temperature=temperature,
-            residual_scale=residual_scale,
-            disp_scale=disp_scale,
-            use_batch_norm=use_batchnorm,
-            feature_clamp_max=feature_clamp_max,
+        self.blocks = nn.ModuleList(
+            [
+                VNAnchorTransformerBlock(
+                    channels=anchor_channels,
+                    mlp_ratio=mlp_ratio,
+                    attn_hidden=attn_hidden,
+                    use_zca_norm=use_zca_norm,
+                    use_pos=True,
+                )
+                for _ in range(transformer_depth)
+            ]
         )
 
-        # Final projection to single vector channel (output point positions)
-        # Output of decoder_core is (B, N, c_out, 3), we want (B, N, 3)
-        self.final_proj = VNLinear(self.decoder_core.out_c, 1)
+        self.frame = VNStdFeature(
+            in_channels=anchor_channels * 2,
+            dim=4,
+            normalize_frame=True,
+            negative_slope=0.0,
+            use_batchnorm=False,
+        )
 
-    @staticmethod
-    def _compute_stages(
-        num_seeds: int, 
-        num_points: int, 
-        hidden_channels: int,
-        max_ctx_channels: int | None = None,
-    ) -> Tuple[Tuple[int, int, int, int], ...]:
-        """
-        Auto-compute stages configuration based on seed count and target points.
-        
-        Returns tuple of (c_ctx, c_child, up_factor, disp_hidden) per stage.
-        """
-        import math
-        
-        ratio = num_points / num_seeds
-        if ratio < 1:
-            raise ValueError(f"num_points ({num_points}) must be >= num_seeds ({num_seeds})")
-        
-        # Find number of stages needed (assuming up_factor=2 per stage)
-        num_stages = max(1, int(math.ceil(math.log2(ratio))))
-        
-        # Verify we can achieve exact point count
-        total_up = 2 ** num_stages
-        if num_seeds * total_up != num_points:
-            # Fallback: try different up factors
-            # For simplicity, use equal up factors when possible
-            pass  # Continue with the approximation
-        
-        stages = []
-        c_in = hidden_channels
-        
-        for i in range(num_stages):
-            if max_ctx_channels is None:
-                c_ctx = c_in * 2
-            else:
-                c_ctx = min(c_in * 2, max_ctx_channels)
-            c_child = c_ctx  # Child channels (keep same)
-            up_factor = 2  # Standard upsampling factor
-            disp_hidden = c_ctx  # Displacement MLP hidden dim
-            
-            stages.append((c_ctx, c_child, up_factor, disp_hidden))
-            c_in = c_child
-        
-        return tuple(stages)
+        self.points_per_anchor = int(math.ceil(num_points / float(num_anchors)))
+        self.total_points = self.points_per_anchor * num_anchors
+        self.point_queries = nn.Parameter(torch.randn(self.points_per_anchor, point_query_dim) * 0.02)
+
+        inv_dim = anchor_channels * 3
+        self.offset_mlp = nn.Sequential(
+            nn.Linear(inv_dim + point_query_dim, offset_mlp_hidden),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(offset_mlp_hidden, offset_mlp_hidden),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(offset_mlp_hidden, 3),
+        )
+
+        if learnable_scale:
+            self.scale_param = nn.Parameter(torch.tensor(1.0))
+        else:
+            self.register_buffer('scale_param', torch.tensor(1.0))
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
-        """
-        Args:
-            z: Equivariant latent (B, latent_size, 3) where latent_size is the number of VN channels.
-
-        Returns:
-            Point cloud (B, num_points, 3)
-        """
         B = z.shape[0]
-        
-        # Generate seed positions (equivariant)
-        # z: (B, latent_size, 3) -> (B, num_seeds, 3)
-        x_seeds = self.seed_pos_proj(z)  # (B, num_seeds, 3)
 
-        # Generate seed vector features (equivariant)
-        # z: (B, latent_size, 3) -> (B, num_seeds * hidden_channels, 3)
-        v_flat = self.seed_feat_proj(z)  # (B, num_seeds * hidden_channels, 3)
-        # Reshape to (B, num_seeds, hidden_channels, 3)
-        v_seeds = v_flat.view(B, self.num_seeds, self.hidden_channels, 3)
+        pos = self.anchor_pos(z)  # (B,K,3)
 
-        # Run snowflake upsampling
-        x_out, v_out = self.decoder_core(x_seeds, v_seeds)  # (B, num_points, c_out, 3)
+        feat_flat = self.anchor_feat(z)  # (B,K*C,3)
+        feat = feat_flat.view(B, self.num_anchors, self.anchor_channels, 3).permute(0, 2, 3, 1).contiguous()
 
-        if self.final_disp_scale <= 0.0:
-            return x_out
+        for blk in self.blocks:
+            feat = blk(feat, pos)
 
-        # Project vector features to final positions
-        # v_out: (B, num_points, c_out, 3) -> need to add displacements
-        # Option 1: Use x_out directly
-        # Option 2: Add learned displacement from v_out
-        
-        # Project v_out to single channel and add as displacement
-        # v_out: (B, N, c_out, 3) -> transpose to (B, c_out, 3, N) for VNLinear? 
-        # Actually VNLinear in vn_encoders expects (B, C, 3) or (B, C, 3, N)
-        # But our v_out is (B, N, C, 3)
-        
-        # Reshape for final projection: (B, N, c_out, 3) -> (B*N, c_out, 3)
-        N = x_out.shape[1]
-        v_reshaped = v_out.view(B * N, self.decoder_core.out_c, 3)  # (B*N, c_out, 3)
-        displacement = self.final_proj(v_reshaped)  # (B*N, 1, 3)
-        displacement = displacement.view(B, N, 3)  # (B, N, 3)
-        if self.final_disp_scale != 1.0:
-            displacement = displacement * self.final_disp_scale
+        feat_mean = feat.mean(dim=-1, keepdim=True)
+        feat_cat = torch.cat([feat, feat_mean.expand_as(feat)], dim=1)  # (B,2C,3,K)
+        feat_std, R = self.frame(feat_cat)                              # R: (B,3,3,K)
 
-        # Final output: seed-derived positions + learned displacement
-        output = x_out + displacement
+        inv = feat_std[:, : self.anchor_channels]                       # (B,C,3,K)
+        inv = inv.permute(0, 3, 1, 2).reshape(B, self.num_anchors, -1)  # (B,K,C*3)
 
-        return output
+        q = self.point_queries.unsqueeze(0).unsqueeze(0).expand(B, self.num_anchors, -1, -1)
+        inv_exp = inv.unsqueeze(2).expand(B, self.num_anchors, self.points_per_anchor, inv.shape[-1])
+        offsets_local = self.offset_mlp(torch.cat([inv_exp, q], dim=-1)) * self.offset_scale
+
+        Rt = R.permute(0, 3, 2, 1).contiguous()                          # (B,K,3,3)
+        offsets_global = torch.einsum('bkpi,bkij->bkpj', offsets_local, Rt)
+
+        points = (pos.unsqueeze(2) + offsets_global).reshape(B, self.total_points, 3)
+        if self.total_points != self._n:
+            points = points[:, : self._n]
+
+        points = points * self.output_scale * self.scale_param
+        if self.center_output:
+            points = points - points.mean(dim=1, keepdim=True)
+        return points
 
 
 __all__ = [

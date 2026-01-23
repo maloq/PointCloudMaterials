@@ -149,7 +149,7 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
             # "Before rotation" metrics
             point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
             losses['emd_pred_canonical_vs_input'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-            losses['chamfer_pred_canonical_vs_input'], _ = chamfer_distance(cano_f32, pc_f32, squared=False, point_reduction=point_reduction)
+            losses['chamfer_pred_canonical_vs_input'], _ = chamfer_distance(cano_f32, pc_f32, point_reduction=point_reduction)
 
             if labels is not None:
                 gt_rot = labels.get("orientation")
@@ -166,12 +166,12 @@ class SPDExperimentsModule(ShapePoseDisentanglement):
                 
                 # Pred Canonical vs GT Canonical
                 losses['emd_pred_canonical_vs_gt_canonical'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_unrotated_gt, blur=sinkhorn_blur)
-                losses['chamfer_pred_canonical_vs_gt_canonical'], _ = chamfer_distance(cano_f32, pc_unrotated_gt, squared=False, point_reduction=point_reduction)
+                losses['chamfer_pred_canonical_vs_gt_canonical'], _ = chamfer_distance(cano_f32, pc_unrotated_gt, point_reduction=point_reduction)
                 
                 # Rotation Correctness
                 if rot is not None:
                     pc_derotated = (rot.transpose(1, 2).float() @ pc_f32.transpose(1, 2)).transpose(1, 2).contiguous()
-                    losses['rot_correctness'], _ = chamfer_distance(pc_derotated, pc_unrotated_gt, squared=False, point_reduction=point_reduction)
+                    losses['rot_correctness'], _ = chamfer_distance(pc_derotated, pc_unrotated_gt, point_reduction=point_reduction)
         
         return losses, sinkhorn_blur
 

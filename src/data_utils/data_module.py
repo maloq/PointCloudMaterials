@@ -80,7 +80,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             shuffle=True,
             drop_last=True,
             pin_memory=True,
-            persistent_workers=True,
+            persistent_workers=self.num_workers > 0,
         )
         return main
 
@@ -91,7 +91,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=True,
-            persistent_workers=True,
+            persistent_workers=self.num_workers > 0,
         )
 
     def test_dataloader(self):
@@ -101,7 +101,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=True,
-            persistent_workers=True,
+            persistent_workers=self.num_workers > 0,
         )
 
 
@@ -296,21 +296,23 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         )
 
     def val_dataloader(self):
+        use_persistent = self.num_workers > 0
         return DataLoader(
             self.val_dataset,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=True,
-            persistent_workers=True,
+            persistent_workers=use_persistent,
         )
 
     def test_dataloader(self):
+        use_persistent = self.num_workers > 0
         return DataLoader(
             self.test_dataset,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=True,
-            persistent_workers=True,
+            persistent_workers=use_persistent,
         )
 
     def _resolve_synthetic_dataset(self):

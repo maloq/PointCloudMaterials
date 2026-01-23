@@ -151,7 +151,7 @@ def gather_inference_batches(
 def _chamfer(orig: np.ndarray, reco: np.ndarray) -> float:
     a = torch.tensor(orig, dtype=torch.float32).unsqueeze(0)
     b = torch.tensor(reco, dtype=torch.float32).unsqueeze(0)
-    val, _ = chamfer_distance(a, b, squared=False, point_reduction="mean")
+    val, _ = chamfer_distance(a, b, point_reduction="mean")
     return float(val.item())
 
 

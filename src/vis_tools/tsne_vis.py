@@ -47,10 +47,11 @@ def save_tsne_plot(
     out_file: str,
     title: str,
     show: bool = False,
+    legend_title: str = "cluster",
 ) -> None:
-    """Save a t-SNE scatter plot, colored by cluster labels, to *out_file*.
+    """Save a t-SNE scatter plot, colored by labels, to *out_file*.
 
-    Cluster label ``-1`` (e.g., HDBSCAN noise) is colored light gray.
+    Label ``-1`` (e.g., HDBSCAN noise) is colored light gray.
     """
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
@@ -93,9 +94,9 @@ def save_tsne_plot(
     plt.title(title)
     plt.xticks([])
     plt.yticks([])
-    # Only show legend if number of clusters is manageable
+    # Only show legend if number of labels is manageable
     if len(unique_labels) <= 20:
-        plt.legend(title="cluster", markerscale=2, fontsize=8, loc="best", frameon=False)
+        plt.legend(title=legend_title, markerscale=2, fontsize=8, loc="best", frameon=False)
     plt.tight_layout()
     plt.savefig(out_file, bbox_inches="tight")
     if show:

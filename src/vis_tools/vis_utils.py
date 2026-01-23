@@ -138,10 +138,10 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
                 
             # Calculate Chamfer Distances
             # Input vs Canonical (Input is rotated, Canonical is aligned)
-            cd_cano, _ = chamfer_distance(pc_batch, cano, squared=False, point_reduction='mean')
+            cd_cano, _ = chamfer_distance(pc_batch, cano, point_reduction='mean')
             
             # Input vs Rotated Reconstruction (should match well)
-            cd_recon, _ = chamfer_distance(pc_batch, recon, squared=False, point_reduction='mean')
+            cd_recon, _ = chamfer_distance(pc_batch, recon, point_reduction='mean')
             
             # Convert to numpy (use normalized input for visualization consistency)
             pc_np = pc_batch[0].cpu().numpy()

@@ -8,7 +8,7 @@ import wandb
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
 from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance
-from src.loss.pdist_loss import compute_pdist_loss
+# from src.loss.pdist_loss import compute_pdist_loss
 from src.utils.model_utils import load_supervised_checkpoint, find_best_supervised_checkpoint
 from src.loss.reconstruction_loss import kl_latent_regularizer, rotation_geodesic_kabsch_loss
 from src.training_methods.spd.rot_heads import build_rot_head, kabsch_rotation
@@ -118,7 +118,7 @@ class ShapePoseDisentanglement(pl.LightningModule):
         if component == "chamfer":
             squared = self._loss_param("chamfer", "squared", True)
             point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
-            val, _ = chamfer_distance(pred, target, squared=squared, point_reduction=point_reduction)
+            val, _ = chamfer_distance(pred, target, point_reduction=point_reduction)
             
             if self._loss_param("chamfer", "auto_scale_by_points", False):
                 num_points = self._get_num_points()
@@ -131,17 +131,17 @@ class ShapePoseDisentanglement(pl.LightningModule):
             return val * self.pdist_scale
         raise ValueError(f"Unsupported reconstruction loss component: {component}")
     
-    def _compute_pdist(self, pred, target):
-        """Compute pairwise distance loss with configurable parameters from loss_params."""
-        return compute_pdist_loss(
-            pred, target,
-            mode=self._loss_param("pdist", "mode", "sampled"),
-            n_samples=self._loss_param("pdist", "n_samples", 256),
-            k=self._loss_param("pdist", "k", 16),
-            normalize=self._loss_param("pdist", "normalize", True),
-            p=self._loss_param("pdist", "p", 2),
-            squared=self._loss_param("pdist", "squared", False),
-        )
+    # def _compute_pdist(self, pred, target):
+    #     """Compute pairwise distance loss with configurable parameters from loss_params."""
+    #     return compute_pdist_loss(
+    #         pred, target,
+    #         mode=self._loss_param("pdist", "mode", "sampled"),
+    #         n_samples=self._loss_param("pdist", "n_samples", 256),
+    #         k=self._loss_param("pdist", "k", 16),
+    #         normalize=self._loss_param("pdist", "normalize", True),
+    #         p=self._loss_param("pdist", "p", 2),
+    #         squared=self._loss_param("pdist", "squared", False),
+    #     )
 
     def _reconstruction_loss(self, pred, target, sinkhorn_blur):
         total_loss = None
@@ -307,11 +307,11 @@ class ShapePoseDisentanglement(pl.LightningModule):
             point_reduction = self._loss_param("chamfer", "point_reduction", "mean")
             
             # Standardize on L2 (Euclidean) Chamfer Distance for reporting
-            losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32, squared=False, point_reduction=point_reduction)
+            losses['chamfer_after'], _ = chamfer_distance(recon_f32, pc_f32, point_reduction=point_reduction)
             
             losses['emd_after'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
             losses['emd_before'], _ = sinkhorn_distance(cano_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
-            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32, squared=False, point_reduction=point_reduction)
+            losses['chamfer_before'], _ = chamfer_distance(cano_f32, pc_f32, point_reduction=point_reduction)
             # Pairwise distance metrics (unscaled, for diagnostics)
             if "pdist" in self.loss_components:
                 losses['pdist_after'] = self._compute_pdist(recon_f32, pc_f32)

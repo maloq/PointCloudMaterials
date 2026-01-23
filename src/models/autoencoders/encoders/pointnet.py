@@ -142,6 +142,7 @@ class _PointNetBackbone(nn.Module):
 # ---------------------------------------------------------------------------
 @register_encoder("PnE_L")
 class PointNetEncoder(Encoder):
+    expects_channel_first = True
     def __init__(
         self,
         latent_size: int = 128,
@@ -178,6 +179,7 @@ class PointNetEncoder(Encoder):
 # ---------------------------------------------------------------------------
 @register_encoder("PnE_S")
 class PointNetEncoderSmall(Encoder):
+    expects_channel_first = True
     def __init__(
         self,
         latent_size: int = 128,

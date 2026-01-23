@@ -14,7 +14,6 @@ EPS = 1e-10
 def chamfer_distance(pred: torch.Tensor,
                         target: torch.Tensor,
                         *,
-                        squared: bool = False,
                         point_reduction: str = 'mean'):
     """
     Pure-PyTorch implementation of the symmetric Chamfer distance.
@@ -23,9 +22,6 @@ def chamfer_distance(pred: torch.Tensor,
     ----
     pred, target : (B, N, 3) or (B, 3, N) tensors
         Point-clouds of the same batch size B.  N/M may differ.
-    squared : bool, default=True
-        If True (default) uses squared Euclidean distances—matching the
-        behaviour of PyTorch3D.  Set to False for plain L2.
     point_reduction : str, default='mean'
         Reduction mode for the points dimension: 'mean' or 'sum'.
 
@@ -60,7 +56,8 @@ def chamfer_distance(pred: torch.Tensor,
     dists2 = dists2.clamp_min(0.)
 
     # If the caller wants plain L2, take the sqrt **once**
-    dists = torch.sqrt(dists2 + 1e-8) if not squared else dists2
+    # dists = torch.sqrt(dists2 + 1e-8) if not squared else dists2
+    dists = torch.sqrt(dists2 + 1e-8)
     # ------------------------------------------------------------------
 
     # Closest distances each way

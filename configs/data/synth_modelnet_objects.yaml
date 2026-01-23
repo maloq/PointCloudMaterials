@@ -2,8 +2,8 @@ kind: synthetic
 dataset_type: modelnet_objects
 data_path: datasets/ModelNet40_fast
 modelnet_split: train
-classes: ["chair", "airplane", "car", "lamp"]
-num_points: 256
+classes: ["chair", "airplane", "car", "lamp", "sofa", "monitor"]
+num_points: 512
 train_ratio: 0.8
 add_center_point: true
 pre_normalize: true
