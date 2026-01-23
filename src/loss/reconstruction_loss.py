@@ -1,4 +1,5 @@
 import sys, os
+import math
 sys.path.append(os.getcwd())
 import torch
 
@@ -102,8 +103,15 @@ def sinkhorn_distance(pred: torch.Tensor,
     pred = _to_B_N_3(pred)
     target = _to_B_N_3(target)
 
+    blur = _coerce_positive_float(blur, 0.02)
+    scaling = _coerce_float(scaling, 0.5)
+    if not (0.0 < scaling < 1.0):
+        scaling = 0.5
+    diameter = _estimate_diameter(pred, target, blur, eps=1e-6)
+
     loss = geomloss.SamplesLoss(loss="sinkhorn", p=p, blur=blur,
-                                scaling=scaling, backend="tensorized")
+                                scaling=scaling, diameter=diameter,
+                                backend="tensorized")
     
     return loss(pred, target).mean(), None
 
@@ -218,6 +226,35 @@ def _to_B_N_3(pc: torch.Tensor) -> torch.Tensor:
     if pc.shape[1] == 3 and pc.shape[2] != 3:
         pc = pc.transpose(1, 2).contiguous()
     return pc
+
+
+def _coerce_float(value, default):
+    if torch.is_tensor(value):
+        value = value.item()
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return default
+    if not math.isfinite(value):
+        return default
+    return value
+
+
+def _coerce_positive_float(value, default):
+    value = _coerce_float(value, default)
+    if value <= 0.0:
+        return default
+    return value
+
+
+def _estimate_diameter(pred: torch.Tensor, target: torch.Tensor, blur: float, eps: float = 1e-6) -> float:
+    mins = torch.minimum(pred.amin(dim=1), target.amin(dim=1))
+    maxs = torch.maximum(pred.amax(dim=1), target.amax(dim=1))
+    diag = torch.linalg.norm(maxs - mins, dim=-1)
+    diameter = float(diag.max().item())
+    if not math.isfinite(diameter) or diameter <= 0.0:
+        return max(blur, eps)
+    return max(diameter, blur, eps)
 
 
 

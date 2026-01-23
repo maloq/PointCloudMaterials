@@ -649,14 +649,38 @@ def save_umap_visualization(
     plt.close(fig)
 
 
+def _seeded_forward(model, pc, seed: int):
+    """Run forward pass with fixed random seed for reproducibility."""
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+    return model(pc)
+
+
 def evaluate_equivariance(
     model: EquivariantAutoencoder,
     dataloader: torch.utils.data.DataLoader,
     device: str,
     max_batches: int = 2,
 ) -> Tuple[Dict[str, float], np.ndarray, np.ndarray]:
-    eq_errors, chamfer_errors = [], []
+    """
+    Rigorous equivariance test with determinism controls.
+    
+    Tests:
+    1. Determinism: Same input twice should give identical output
+    2. Identity rotation: R=I should give zero error
+    3. Random rotation with seeded forward passes
+    4. Random rotation without seed control (original test)
+    """
+    eq_errors_seeded = []
+    eq_errors_unseeded = []
+    chamfer_errors_seeded = []
+    chamfer_errors_unseeded = []
+    determinism_errors = []
+    identity_errors = []
 
+    model.eval()
+    
     with torch.inference_mode():
         for batch_idx, batch in enumerate(dataloader):
             if batch_idx >= max_batches:
@@ -665,6 +689,7 @@ def evaluate_equivariance(
             pc = pc.to(device)
             batch_size = pc.shape[0]
 
+            # Generate random rotations
             rots = torch.stack(
                 [
                     torch.tensor(random_rotation_matrix(), device=device, dtype=pc.dtype)
@@ -672,16 +697,41 @@ def evaluate_equivariance(
                 ]
             )
             pc_rot = torch.einsum("bij,bnj->bni", rots, pc)
+            
+            # Identity rotation matrix for sanity check
+            identity = torch.eye(3, device=device, dtype=pc.dtype).unsqueeze(0).expand(batch_size, -1, -1)
 
-            inv_z, recon, eq_z = model(pc)
-            _, recon_rot, eq_z_rot = model(pc_rot)
+            # ===== TEST 1: Determinism check (same input, same seed) =====
+            seed = 42 + batch_idx
+            inv_z_1, recon_1, eq_z_1 = _seeded_forward(model, pc, seed)
+            inv_z_2, recon_2, eq_z_2 = _seeded_forward(model, pc, seed)
+            
+            if eq_z_1 is not None and eq_z_2 is not None:
+                det_diff = torch.linalg.norm(eq_z_1 - eq_z_2, dim=-1).mean(dim=1)
+                determinism_errors.extend(det_diff.detach().cpu().numpy().tolist())
+            
+            # ===== TEST 2: Identity rotation (should give ~0 error) =====
+            inv_z_orig, recon_orig, eq_z_orig = _seeded_forward(model, pc, seed)
+            # With identity rotation, pc_identity = pc, so we use same input
+            inv_z_id, recon_id, eq_z_id = _seeded_forward(model, pc, seed)
+            
+            if eq_z_orig is not None and eq_z_id is not None:
+                expected_id = torch.einsum("bij,bcj->bci", identity, eq_z_orig)
+                id_rel = torch.linalg.norm(eq_z_id - expected_id, dim=-1) / torch.linalg.norm(
+                    expected_id, dim=-1
+                ).clamp_min(1e-6)
+                identity_errors.extend(id_rel.mean(dim=1).detach().cpu().numpy().tolist())
+
+            # ===== TEST 3: Random rotation WITH seed control =====
+            inv_z, recon, eq_z = _seeded_forward(model, pc, seed)
+            _, recon_rot, eq_z_rot = _seeded_forward(model, pc_rot, seed)
 
             if eq_z is not None and eq_z_rot is not None:
                 expected_eq = torch.einsum("bij,bcj->bci", rots, eq_z)
                 rel = torch.linalg.norm(eq_z_rot - expected_eq, dim=-1) / torch.linalg.norm(
                     expected_eq, dim=-1
                 ).clamp_min(1e-6)
-                eq_errors.extend(rel.mean(dim=1).detach().cpu().numpy().tolist())
+                eq_errors_seeded.extend(rel.mean(dim=1).detach().cpu().numpy().tolist())
 
             recon_back = torch.einsum("bij,bnj->bni", rots.transpose(1, 2), recon_rot)
             for i in range(batch_size):
@@ -690,18 +740,80 @@ def evaluate_equivariance(
                     recon[i].unsqueeze(0).float(),
                     point_reduction="mean",
                 )
-                chamfer_errors.append(float(cd.detach().cpu().item()))
+                chamfer_errors_seeded.append(float(cd.detach().cpu().item()))
 
-    eq_arr = np.asarray(eq_errors)
-    cd_arr = np.asarray(chamfer_errors)
+            # ===== TEST 4: Random rotation WITHOUT seed control (original) =====
+            inv_z_uns, recon_uns, eq_z_uns = model(pc)
+            _, recon_rot_uns, eq_z_rot_uns = model(pc_rot)
+
+            if eq_z_uns is not None and eq_z_rot_uns is not None:
+                expected_eq_uns = torch.einsum("bij,bcj->bci", rots, eq_z_uns)
+                rel_uns = torch.linalg.norm(eq_z_rot_uns - expected_eq_uns, dim=-1) / torch.linalg.norm(
+                    expected_eq_uns, dim=-1
+                ).clamp_min(1e-6)
+                eq_errors_unseeded.extend(rel_uns.mean(dim=1).detach().cpu().numpy().tolist())
+
+            recon_back_uns = torch.einsum("bij,bnj->bni", rots.transpose(1, 2), recon_rot_uns)
+            for i in range(batch_size):
+                cd_uns, _ = chamfer_distance(
+                    recon_back_uns[i].unsqueeze(0).float(),
+                    recon_uns[i].unsqueeze(0).float(),
+                    point_reduction="mean",
+                )
+                chamfer_errors_unseeded.append(float(cd_uns.detach().cpu().item()))
+
+    # Convert to arrays
+    eq_seeded = np.asarray(eq_errors_seeded)
+    eq_unseeded = np.asarray(eq_errors_unseeded)
+    cd_seeded = np.asarray(chamfer_errors_seeded)
+    cd_unseeded = np.asarray(chamfer_errors_unseeded)
+    det_arr = np.asarray(determinism_errors)
+    id_arr = np.asarray(identity_errors)
+
+    # Print diagnostic info
+    print("\n" + "=" * 60)
+    print("EQUIVARIANCE DIAGNOSTICS")
+    print("=" * 60)
+    print(f"1. DETERMINISM (same input, same seed):")
+    print(f"   Mean abs diff: {det_arr.mean():.6e}" if det_arr.size else "   N/A")
+    print(f"   Should be ~0 if model is deterministic with fixed seed")
+    print()
+    print(f"2. IDENTITY ROTATION (R=I, same seed):")
+    print(f"   Mean rel error: {id_arr.mean():.6e}" if id_arr.size else "   N/A")
+    print(f"   Should be ~0 (sanity check)")
+    print()
+    print(f"3. RANDOM ROTATION (WITH seed control):")
+    print(f"   Latent rel error: {eq_seeded.mean():.4f}" if eq_seeded.size else "   N/A")
+    print(f"   Recon CD: {cd_seeded.mean():.6f}" if cd_seeded.size else "   N/A")
+    print(f"   Tests true equivariance (FPS initialized same way)")
+    print()
+    print(f"4. RANDOM ROTATION (WITHOUT seed control):")
+    print(f"   Latent rel error: {eq_unseeded.mean():.4f}" if eq_unseeded.size else "   N/A")
+    print(f"   Recon CD: {cd_unseeded.mean():.6f}" if cd_unseeded.size else "   N/A")
+    print(f"   Includes non-determinism from FPS random init")
+    print("=" * 60)
+    
+    if eq_seeded.size and eq_unseeded.size:
+        diff = eq_unseeded.mean() - eq_seeded.mean()
+        print(f"\nNON-DETERMINISM CONTRIBUTION: {diff:.4f}")
+        print(f"  (difference between unseeded and seeded tests)")
+        if diff > 0.1:
+            print("  WARNING: Significant non-determinism detected!")
+            print("  This is likely from FPS random initialization.")
+        print()
+
+    # Return primary metrics (seeded version is more accurate)
     metrics = {
-        "eq_latent_rel_error_mean": float(eq_arr.mean()) if eq_arr.size else float("nan"),
-        "eq_latent_rel_error_median": float(np.median(eq_arr)) if eq_arr.size else float("nan"),
-        "recon_equiv_chamfer_mean": float(cd_arr.mean()) if cd_arr.size else float("nan"),
-        "recon_equiv_chamfer_median": float(np.median(cd_arr)) if cd_arr.size else float("nan"),
-        "num_samples": int(len(chamfer_errors)),
+        "eq_latent_rel_error_mean": float(eq_seeded.mean()) if eq_seeded.size else float("nan"),
+        "eq_latent_rel_error_median": float(np.median(eq_seeded)) if eq_seeded.size else float("nan"),
+        "eq_latent_rel_error_unseeded": float(eq_unseeded.mean()) if eq_unseeded.size else float("nan"),
+        "recon_equiv_chamfer_mean": float(cd_seeded.mean()) if cd_seeded.size else float("nan"),
+        "recon_equiv_chamfer_median": float(np.median(cd_seeded)) if cd_seeded.size else float("nan"),
+        "determinism_error": float(det_arr.mean()) if det_arr.size else float("nan"),
+        "identity_rotation_error": float(id_arr.mean()) if id_arr.size else float("nan"),
+        "num_samples": int(len(chamfer_errors_seeded)),
     }
-    return metrics, eq_arr, cd_arr
+    return metrics, eq_seeded, cd_seeded
 
 
 def save_equivariance_plot(
@@ -870,7 +982,9 @@ def run_post_training_analysis(
     
     if "equivariance" in all_metrics:
         eq = all_metrics["equivariance"]
-        print(f"Equivariant latent error (mean): {eq.get('eq_latent_rel_error_mean', 'N/A')}")
+        print(f"Equivariant latent error (seeded): {eq.get('eq_latent_rel_error_mean', 'N/A'):.4f}" if isinstance(eq.get('eq_latent_rel_error_mean'), float) else f"Equivariant latent error (seeded): {eq.get('eq_latent_rel_error_mean', 'N/A')}")
+        print(f"Equivariant latent error (unseeded): {eq.get('eq_latent_rel_error_unseeded', 'N/A'):.4f}" if isinstance(eq.get('eq_latent_rel_error_unseeded'), float) else f"Equivariant latent error (unseeded): {eq.get('eq_latent_rel_error_unseeded', 'N/A')}")
+        print(f"Determinism check: {eq.get('determinism_error', 'N/A'):.2e}" if isinstance(eq.get('determinism_error'), float) else f"Determinism check: {eq.get('determinism_error', 'N/A')}")
         print(f"Reconstruction equiv. CD (mean): {eq.get('recon_equiv_chamfer_mean', 'N/A')}")
     
     print("=" * 60)

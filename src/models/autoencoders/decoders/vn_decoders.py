@@ -9,8 +9,7 @@ import torch.nn.init as init
 
 from ..base import Decoder
 from ..registry import register_decoder
-from ..encoders.vn_encoders import VNLinear, VNLinearLeakyReLU, VNBatchNorm, VNResBlock, VNStdFeature
-from .snowflake_vn import FEATURE_CLAMP_MAX, VNSnowflakeDecoder as VNSnowflakeDecoderCore
+from ..encoders.vn_encoders import VNLinear, VNLinearLeakyReLU, VNBatchNorm, VNResBlock
 
 
 @register_decoder("VN_Equivariant")
@@ -120,8 +119,11 @@ class VNEquivariantDecoder(Decoder):
 
         return x
 
+
+
 # ---------------------------------------------------------------------------
 # REVNET-inspired anchor + VN-transformer + invariant fine decoder
+# (includes an optional invariant->equivariant anchor-position head for stability)
 # ---------------------------------------------------------------------------
 
 _EPS = 1e-6
@@ -190,30 +192,28 @@ class VNChannelWiseSubtractionAttention(nn.Module):
         k = self.to_k(x)
         v = self.to_v(x)
 
-        # (B, K, C, 3)
-        qk = q.permute(0, 3, 1, 2)
+        qk = q.permute(0, 3, 1, 2)  # (B,K,C,3)
         kk = k.permute(0, 3, 1, 2)
         vv = v.permute(0, 3, 1, 2)
 
-        # Invariant relation feature
-        rel = qk[:, :, None, :, :] - kk[:, None, :, :, :]        # (B,Kq,Kk,C,3)
-        rel_norm = torch.norm(rel, dim=-1)                       # (B,Kq,Kk,C)
-        rel_mean = rel_norm.mean(dim=-1, keepdim=True)           # (B,Kq,Kk,1)
+        rel = qk[:, :, None, :, :] - kk[:, None, :, :, :]     # (B,Kq,Kk,C,3)
+        rel_norm = torch.norm(rel, dim=-1)                    # (B,Kq,Kk,C)
+        rel_mean = rel_norm.mean(dim=-1, keepdim=True)        # (B,Kq,Kk,1)
 
         if self.use_pos:
             if pos is None:
                 raise ValueError("pos must be provided when use_pos=True")
-            rel_pos = pos[:, :, None, :] - pos[:, None, :, :]    # (B,Kq,Kk,3)
+            rel_pos = pos[:, :, None, :] - pos[:, None, :, :]  # (B,Kq,Kk,3)
             rel_pos_norm = torch.norm(rel_pos, dim=-1, keepdim=True)
             score_in = torch.cat([rel_mean, rel_pos_norm], dim=-1)
         else:
             score_in = rel_mean
 
-        scores = self.score_mlp(score_in)                        # (B,Kq,Kk,C)
+        scores = self.score_mlp(score_in)                     # (B,Kq,Kk,C)
         attn = torch.softmax(scores, dim=2)
 
-        out = torch.einsum('bijk,bjkd->bikd', attn, vv)          # (B,K,C,3)
-        out = out.permute(0, 2, 3, 1).contiguous()               # (B,C,3,K)
+        out = torch.einsum("bijk,bjkd->bikd", attn, vv)        # (B,K,C,3)
+        out = out.permute(0, 2, 3, 1).contiguous()             # (B,C,3,K)
         return self.to_out(out)
 
 
@@ -269,6 +269,8 @@ class VNRevnetAnchorDecoder(Decoder):
         learnable_scale: bool = True,
         center_output: bool = True,
         use_zca_norm: bool = True,
+        use_invariant_anchor_pos: bool = True,
+        pos_mlp_hidden: int = 256,
     ):
         super().__init__()
         self._n = num_points
@@ -277,10 +279,35 @@ class VNRevnetAnchorDecoder(Decoder):
         self.offset_scale = offset_scale
         self.output_scale = output_scale
         self.center_output = center_output
+        self.use_invariant_anchor_pos = use_invariant_anchor_pos
 
-        self.anchor_pos = VNLinear(latent_size, num_anchors)
-        nn.init.xavier_uniform_(self.anchor_pos.map_to_feat.weight, gain=2.0)
+        # NOTE: import VNStdFeature locally to avoid changing your existing top-level imports
+        from ..encoders.vn_encoders import VNStdFeature
+        self._VNStdFeature = VNStdFeature
 
+        if use_invariant_anchor_pos:
+            # Invariant->equivariant anchor position head (REVNET idea):
+            # build a canonical frame from z, predict anchors in that frame, rotate back.
+            self.z_frame = self._VNStdFeature(
+                in_channels=latent_size,
+                dim=3,
+                normalize_frame=True,
+                negative_slope=0.0,
+                use_batchnorm=False,
+            )
+            self.pos_mlp = nn.Sequential(
+                nn.Linear(latent_size * 3, pos_mlp_hidden),
+                nn.LeakyReLU(0.2, inplace=True),
+                nn.Linear(pos_mlp_hidden, pos_mlp_hidden),
+                nn.LeakyReLU(0.2, inplace=True),
+                nn.Linear(pos_mlp_hidden, num_anchors * 3),
+            )
+        else:
+            # Purely equivariant linear projection to anchor positions
+            self.anchor_pos = VNLinear(latent_size, num_anchors)
+            nn.init.xavier_uniform_(self.anchor_pos.map_to_feat.weight, gain=2.0)
+
+        # Anchor feature projection (equivariant)
         self.anchor_feat = VNLinearLeakyReLU(
             latent_size,
             num_anchors * anchor_channels,
@@ -302,7 +329,8 @@ class VNRevnetAnchorDecoder(Decoder):
             ]
         )
 
-        self.frame = VNStdFeature(
+        # Canonicalization per-anchor to feed an invariant MLP for local offsets
+        self.anchor_frame = self._VNStdFeature(
             in_channels=anchor_channels * 2,
             dim=4,
             normalize_frame=True,
@@ -326,12 +354,22 @@ class VNRevnetAnchorDecoder(Decoder):
         if learnable_scale:
             self.scale_param = nn.Parameter(torch.tensor(1.0))
         else:
-            self.register_buffer('scale_param', torch.tensor(1.0))
+            self.register_buffer("scale_param", torch.tensor(1.0))
+
+    def _predict_anchor_pos(self, z: torch.Tensor) -> torch.Tensor:
+        if not self.use_invariant_anchor_pos:
+            return self.anchor_pos(z)  # (B,K,3)
+
+        z_std, R = self.z_frame(z)                     # z_std: (B,C,3), R: (B,3,3)
+        inv = z_std.reshape(z.shape[0], -1)            # (B, C*3) canonical -> rotation-invariant
+        pos_local = self.pos_mlp(inv).view(z.shape[0], self.num_anchors, 3)  # (B,K,3)
+        pos_global = torch.einsum("bki,bij->bkj", pos_local, R.transpose(1, 2))
+        return pos_global
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         B = z.shape[0]
 
-        pos = self.anchor_pos(z)  # (B,K,3)
+        pos = self._predict_anchor_pos(z)  # (B,K,3)
 
         feat_flat = self.anchor_feat(z)  # (B,K*C,3)
         feat = feat_flat.view(B, self.num_anchors, self.anchor_channels, 3).permute(0, 2, 3, 1).contiguous()
@@ -341,17 +379,17 @@ class VNRevnetAnchorDecoder(Decoder):
 
         feat_mean = feat.mean(dim=-1, keepdim=True)
         feat_cat = torch.cat([feat, feat_mean.expand_as(feat)], dim=1)  # (B,2C,3,K)
-        feat_std, R = self.frame(feat_cat)                              # R: (B,3,3,K)
+        feat_std, R = self.anchor_frame(feat_cat)                       # R: (B,3,3,K)
 
-        inv = feat_std[:, : self.anchor_channels]                       # (B,C,3,K)
+        inv = feat_std[:, : self.anchor_channels]                        # (B,C,3,K)
         inv = inv.permute(0, 3, 1, 2).reshape(B, self.num_anchors, -1)  # (B,K,C*3)
 
         q = self.point_queries.unsqueeze(0).unsqueeze(0).expand(B, self.num_anchors, -1, -1)
         inv_exp = inv.unsqueeze(2).expand(B, self.num_anchors, self.points_per_anchor, inv.shape[-1])
         offsets_local = self.offset_mlp(torch.cat([inv_exp, q], dim=-1)) * self.offset_scale
 
-        Rt = R.permute(0, 3, 2, 1).contiguous()                          # (B,K,3,3)
-        offsets_global = torch.einsum('bkpi,bkij->bkpj', offsets_local, Rt)
+        Rt = R.permute(0, 3, 2, 1).contiguous()                          # (B,K,3,3) canonical->global
+        offsets_global = torch.einsum("bkpi,bkij->bkpj", offsets_local, Rt)
 
         points = (pos.unsqueeze(2) + offsets_global).reshape(B, self.total_points, 3)
         if self.total_points != self._n:
@@ -365,5 +403,5 @@ class VNRevnetAnchorDecoder(Decoder):
 
 __all__ = [
     "VNEquivariantDecoder",
-    "VNSnowflakeDecoderWrapper",
+    "VNRevnetAnchorDecoder",
 ]

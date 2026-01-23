@@ -722,6 +722,11 @@ class VNDGCNNEncoderRefined(Encoder):
         return z_inv, z_eq, None
 
 
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from .vn_encoders import VNLinearLeakyReLU, VNLinear, VNStdFeature, VNBatchNorm
+
 # ---------------------------------------------------------------------------
 # 1. Invariant Geometric Feature Extractor
 # ---------------------------------------------------------------------------
@@ -984,3 +989,390 @@ __all__ = [
     "get_graph_feature_cross",
     "VNTransformerEncoder",
 ]
+
+
+
+# ---------------------------------------------------------------------------
+# REVNET-inspired hierarchical VN anchor backbone encoder (autoencoder-friendly)
+# ---------------------------------------------------------------------------
+# This follows the paper's key decoder/encoder-side ideas:
+# - Hierarchical downsampling to "anchors" (FPS) + neighborhood grouping (VN-SA)
+# - ZCA-based normalization for VN features
+# - Channel-wise subtraction attention (CWSA) on anchor tokens
+# See REVNET Sec. 3.1.2, 3.2, 3.4. (arXiv:2601.08558v1)
+
+import math
+
+
+class VNZCALayerNorm(nn.Module):
+    """ZCA-whitening LayerNorm for VN features (B, C, 3, ...)."""
+
+    def __init__(self, channels: int, eps: float = 1e-5, affine: bool = True):
+        super().__init__()
+        self.eps = eps
+        if affine:
+            self.gamma = nn.Parameter(torch.ones(1, channels, 1, 1))
+        else:
+            self.register_buffer("gamma", torch.ones(1, channels, 1, 1), persistent=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() < 3:
+            raise ValueError(f"Expected VN tensor with >=3 dims, got shape {tuple(x.shape)}")
+        B, C = x.shape[:2]
+        if x.shape[2] != 3:
+            raise ValueError(f"VNZCALayerNorm expects vector-dim=3, got {x.shape[2]}")
+
+        x_flat = x.reshape(B, C, 3, -1).permute(0, 2, 1, 3).reshape(B, 3, -1)
+        mu = x_flat.mean(dim=-1, keepdim=True)
+        xc = x_flat - mu
+
+        M = xc.shape[-1]
+        cov = (xc @ xc.transpose(1, 2)) / (float(M) + EPS)
+        cov = cov + self.eps * torch.eye(3, device=x.device, dtype=x.dtype).unsqueeze(0)
+
+        eigvals, eigvecs = torch.linalg.eigh(cov)
+        inv_sqrt = torch.rsqrt(eigvals + self.eps)
+        W = eigvecs @ torch.diag_embed(inv_sqrt) @ eigvecs.transpose(1, 2)
+        xw = W @ xc
+
+        xw = xw.reshape(B, 3, C, -1).permute(0, 2, 1, 3).reshape_as(x)
+
+        gamma = self.gamma
+        while gamma.dim() < xw.dim():
+            gamma = gamma.unsqueeze(-1)
+        return xw * gamma
+
+
+def farthest_point_sample(xyz: torch.Tensor, npoint: int) -> torch.Tensor:
+    """FPS on xyz (B, N, 3) -> idx (B, npoint). Rotation-invariant via distances."""
+    device = xyz.device
+    B, N, _ = xyz.shape
+    centroids = torch.zeros(B, npoint, dtype=torch.long, device=device)
+    distance = torch.full((B, N), 1e10, device=device, dtype=xyz.dtype)
+    farthest = torch.randint(0, N, (B,), device=device)
+    batch_indices = torch.arange(B, device=device)
+
+    for i in range(npoint):
+        centroids[:, i] = farthest
+        centroid = xyz[batch_indices, farthest, :].view(B, 1, 3)
+        dist = ((xyz - centroid) ** 2).sum(-1)
+        mask = dist < distance
+        distance[mask] = dist[mask]
+        farthest = distance.max(-1)[1]
+    return centroids
+
+
+def index_points(points: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
+    """Gather points (B, N, D) by idx (B, ...). -> (B, ..., D)."""
+    B = points.shape[0]
+    idx_flat = idx.reshape(B, -1)
+    out = points.gather(1, idx_flat.unsqueeze(-1).expand(B, idx_flat.shape[1], points.shape[-1]))
+    return out.view(B, *idx.shape[1:], points.shape[-1])
+
+
+def index_points_vn(x: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
+    """Gather VN features (B, C, 3, N) by idx (B, ...). -> (B, C, 3, ...)."""
+    B, C, _, N = x.shape
+    idx_flat = idx.reshape(B, -1)
+    out = x.gather(3, idx_flat.unsqueeze(1).unsqueeze(2).expand(B, C, 3, idx_flat.shape[1]))
+    return out.view(B, C, 3, *idx.shape[1:])
+
+
+def knn_point(k: int, xyz: torch.Tensor, new_xyz: torch.Tensor) -> torch.Tensor:
+    """kNN from new_xyz to xyz using Euclidean distance. Returns idx (B, M, k)."""
+    # xyz: (B, N, 3), new_xyz: (B, M, 3)
+    dist = torch.cdist(new_xyz, xyz)  # (B, M, N)
+    return dist.topk(k=k, dim=-1, largest=False)[1]
+
+
+class VNSetAbstraction(nn.Module):
+    """
+    VN Set Abstraction (VN-SA) style block:
+    - FPS downsample to M anchors
+    - group kNN neighbors
+    - edge feature: [neighbor - anchor, anchor, rel_xyz]
+    - VN MLP + pooling over neighbors
+    """
+
+    def __init__(
+        self,
+        npoint: int,
+        k: int,
+        in_channels: int,
+        out_channels: int,
+        pooling: str = "mean",
+        use_zca_norm: bool = True,
+        negative_slope: float = 0.1,
+        use_batchnorm: bool = True,
+    ):
+        super().__init__()
+        self.npoint = npoint
+        self.k = k
+        self.pooling = pooling
+
+        edge_in = 2 * in_channels + 1
+        self.edge_mlp = VNLinearLeakyReLU(
+            edge_in,
+            out_channels,
+            dim=5,
+            negative_slope=negative_slope,
+            use_batchnorm=use_batchnorm,
+        )
+
+        if pooling == "max":
+            self.pool = VNMaxPool(out_channels)
+        else:
+            self.pool = None
+
+        self.norm = VNZCALayerNorm(out_channels) if use_zca_norm else VNBatchNorm(out_channels, dim=4)
+
+    def forward(self, xyz: torch.Tensor, feat: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        xyz: (B, N, 3)
+        feat: (B, C, 3, N)
+        returns: new_xyz (B, M, 3), new_feat (B, Cout, 3, M)
+        """
+        B, N, _ = xyz.shape
+        M = self.npoint
+
+        fps_idx = farthest_point_sample(xyz, M)          # (B, M)
+        new_xyz = index_points(xyz, fps_idx)             # (B, M, 3)
+        anchor_feat = index_points_vn(feat, fps_idx)     # (B, C, 3, M)
+
+        group_idx = knn_point(self.k, xyz, new_xyz)      # (B, M, k)
+
+        neigh_xyz = index_points(xyz, group_idx)         # (B, M, k, 3)
+        rel_xyz = neigh_xyz - new_xyz.unsqueeze(2)       # (B, M, k, 3)
+        rel_xyz_vn = rel_xyz.permute(0, 3, 1, 2).unsqueeze(1)  # (B, 1, 3, M, k)
+
+        neigh_feat = index_points_vn(feat, group_idx)    # (B, C, 3, M, k)
+        anchor_feat_rep = anchor_feat.unsqueeze(-1).expand_as(neigh_feat)
+        edge = torch.cat([neigh_feat - anchor_feat_rep, anchor_feat_rep, rel_xyz_vn], dim=1)  # (B, 2C+1, 3, M, k)
+
+        h = self.edge_mlp(edge)  # (B, Cout, 3, M, k)
+
+        if self.pooling == "max":
+            new_feat = self.pool(h)          # (B, Cout, 3, M)
+        else:
+            new_feat = h.mean(dim=-1)        # (B, Cout, 3, M)
+
+        new_feat = self.norm(new_feat)
+        return new_xyz, new_feat
+
+
+class VNChannelWiseSubtractionAttention(nn.Module):
+    """Channel-wise subtraction attention (CWSA) over anchor tokens."""
+
+    def __init__(self, channels: int, hidden: int = 64, use_pos: bool = True):
+        super().__init__()
+        self.channels = channels
+        self.use_pos = use_pos
+        self.to_q = VNLinear(channels, channels)
+        self.to_k = VNLinear(channels, channels)
+        self.to_v = VNLinear(channels, channels)
+        self.to_out = VNLinear(channels, channels)
+
+        in_mlp = 2 if use_pos else 1
+        self.score_mlp = nn.Sequential(
+            nn.Linear(in_mlp, hidden),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(hidden, channels),
+        )
+
+    def forward(self, x: torch.Tensor, pos: torch.Tensor | None = None) -> torch.Tensor:
+        # x: (B, C, 3, K), pos: (B, K, 3)
+        q = self.to_q(x)
+        k = self.to_k(x)
+        v = self.to_v(x)
+
+        qk = q.permute(0, 3, 1, 2)  # (B,K,C,3)
+        kk = k.permute(0, 3, 1, 2)
+        vv = v.permute(0, 3, 1, 2)
+
+        rel = qk[:, :, None, :, :] - kk[:, None, :, :, :]     # (B,Kq,Kk,C,3)
+        rel_norm = torch.norm(rel, dim=-1)                    # (B,Kq,Kk,C)
+        rel_mean = rel_norm.mean(dim=-1, keepdim=True)        # (B,Kq,Kk,1)
+
+        if self.use_pos:
+            if pos is None:
+                raise ValueError("pos must be provided when use_pos=True")
+            rel_pos = pos[:, :, None, :] - pos[:, None, :, :]  # (B,Kq,Kk,3)
+            rel_pos_norm = torch.norm(rel_pos, dim=-1, keepdim=True)
+            score_in = torch.cat([rel_mean, rel_pos_norm], dim=-1)
+        else:
+            score_in = rel_mean
+
+        scores = self.score_mlp(score_in)                     # (B,Kq,Kk,C)
+        attn = torch.softmax(scores, dim=2)
+
+        out = torch.einsum("bijk,bjkd->bikd", attn, vv)        # (B,K,C,3)
+        out = out.permute(0, 2, 3, 1).contiguous()             # (B,C,3,K)
+        return self.to_out(out)
+
+
+class VNAnchorTransformerBlock(nn.Module):
+    def __init__(
+        self,
+        channels: int,
+        mlp_ratio: int = 2,
+        attn_hidden: int = 64,
+        use_zca_norm: bool = True,
+        use_pos: bool = True,
+        negative_slope: float = 0.1,
+        use_batchnorm: bool = False,
+    ):
+        super().__init__()
+        self.attn = VNChannelWiseSubtractionAttention(channels, hidden=attn_hidden, use_pos=use_pos)
+        self.norm1 = VNZCALayerNorm(channels) if use_zca_norm else VNBatchNorm(channels, dim=4)
+        self.ffn = nn.Sequential(
+            VNLinearLeakyReLU(
+                channels,
+                channels * mlp_ratio,
+                dim=4,
+                negative_slope=negative_slope,
+                use_batchnorm=use_batchnorm,
+            ),
+            VNLinear(channels * mlp_ratio, channels),
+        )
+        self.norm2 = VNZCALayerNorm(channels) if use_zca_norm else VNBatchNorm(channels, dim=4)
+
+    def forward(self, x: torch.Tensor, pos: torch.Tensor) -> torch.Tensor:
+        x = self.norm1(x + self.attn(x, pos))
+        x = self.norm2(x + self.ffn(x))
+        return x
+
+
+@register_encoder("VN_REVNET_Backbone")
+class VNRevnetBackboneEncoder(Encoder):
+    """
+    Encoder meant to replace VNDGCNNEncoderRefined when you want an easier-to-train,
+    fully SO(3)-equivariant VN autoencoder.
+
+    Output:
+      inv_z: (B, latent_size)          (optional invariant head, for compatibility)
+      eq_z:  (B, latent_size, 3)       equivariant VN latent for equivariant decoders
+      center: (B, 3)                   mean input location (like other encoders here)
+    """
+
+    def __init__(
+        self,
+        latent_size: int = 256,
+        k_embed: int = 20,
+        embed_channels: int = 48,
+        sa_channels: tuple[int, int] = (96, 192),
+        sa_npoints: tuple[int, int] = (256, 64),
+        sa_knn: tuple[int, int] = (32, 32),
+        res_blocks_per_stage: int = 1,
+        transformer_depth: int = 2,
+        attn_hidden: int = 128,
+        mlp_ratio: int = 2,
+        pooling: str = "mean",
+        use_zca_norm: bool = True,
+        use_batchnorm: bool = True,
+        dropout_rate: float = 0.0,
+    ):
+        super().__init__()
+        if len(sa_channels) != 2 or len(sa_npoints) != 2 or len(sa_knn) != 2:
+            raise ValueError("This encoder currently expects 2-stage SA: sa_channels/npoints/knn must be length 2.")
+
+        self.dropout_rate = dropout_rate
+
+        # VN input embedding using VN-EdgeConv style lifting
+        self.embed = VNLinearLeakyReLU(
+            2,  # [neighbor - center, center] on 1-channel input -> 2 channels
+            embed_channels,
+            dim=5,
+            negative_slope=0.1,
+            use_batchnorm=use_batchnorm,
+        )
+
+        self.sa1 = VNSetAbstraction(
+            npoint=sa_npoints[0],
+            k=sa_knn[0],
+            in_channels=embed_channels,
+            out_channels=sa_channels[0],
+            pooling=pooling,
+            use_zca_norm=use_zca_norm,
+            use_batchnorm=use_batchnorm,
+        )
+        self.sa2 = VNSetAbstraction(
+            npoint=sa_npoints[1],
+            k=sa_knn[1],
+            in_channels=sa_channels[0],
+            out_channels=sa_channels[1],
+            pooling=pooling,
+            use_zca_norm=use_zca_norm,
+            use_batchnorm=use_batchnorm,
+        )
+
+        self.res1 = nn.Sequential(*[VNResBlock(sa_channels[0], dim=4, use_batchnorm=use_batchnorm) for _ in range(res_blocks_per_stage)])
+        self.res2 = nn.Sequential(*[VNResBlock(sa_channels[1], dim=4, use_batchnorm=use_batchnorm) for _ in range(res_blocks_per_stage)])
+
+        self.blocks = nn.ModuleList(
+            [
+                VNAnchorTransformerBlock(
+                    channels=sa_channels[1],
+                    mlp_ratio=mlp_ratio,
+                    attn_hidden=attn_hidden,
+                    use_zca_norm=use_zca_norm,
+                    use_pos=True,
+                )
+                for _ in range(transformer_depth)
+            ]
+        )
+
+        # Equivariant latent head: (B, C, 3) -> (B, latent_size, 3)
+        self.out_eq = VNLinearLeakyReLU(sa_channels[1], latent_size, dim=3, use_batchnorm=False)
+
+        # Invariant head (optional): VNStdFeature + pool + MLP
+        self.std_feature = VNStdFeature(in_channels=sa_channels[1] * 2, dim=4, normalize_frame=True)
+        inv_in = sa_channels[1] * 2 * 3
+        self.inv_head = nn.Sequential(
+            nn.Linear(inv_in * 2, max(128, latent_size)),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(p=dropout_rate),
+            nn.Linear(max(128, latent_size), latent_size),
+        )
+
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        # x: (B, N, 3) expected
+        if x.dim() != 3 or x.shape[-1] != 3:
+            raise ValueError(f"Expected input (B, N, 3), got {tuple(x.shape)}")
+
+        B, N, _ = x.shape
+        center = x.mean(dim=1)  # (B, 3)
+
+        # Build 1-channel VN feature from coordinates: (B, 1, 3, N)
+        x_vn = x.permute(0, 2, 1).unsqueeze(1)
+
+        # VN-EdgeConv style neighbor lifting on coordinates (kNN in coord space)
+        x_coord = x.permute(0, 2, 1)  # (B, 3, N)
+        edge = get_graph_feature(x_vn, k=20, x_coord=x_coord)  # (B, 2, 3, N, k)
+        feat = self.embed(edge).mean(dim=-1)                   # (B, Cembed, 3, N)
+
+        # Stage 1 SA
+        xyz1, feat1 = self.sa1(x, feat)                        # (B, M1, 3), (B, C1, 3, M1)
+        feat1 = self.res1(feat1)
+
+        # Stage 2 SA
+        xyz2, feat2 = self.sa2(xyz1, feat1)                    # (B, M2, 3), (B, C2, 3, M2)
+        feat2 = self.res2(feat2)
+
+        # Anchor transformer on final anchors
+        for blk in self.blocks:
+            feat2 = blk(feat2, xyz2)
+
+        # Equivariant latent from pooled anchors
+        pooled = feat2.mean(dim=-1)                            # (B, C2, 3)
+        eq_z = self.out_eq(pooled)                             # (B, latent_size, 3)
+
+        # Invariant head (compat): canonicalize anchor features then pool
+        feat_mean = feat2.mean(dim=-1, keepdim=True)
+        feat_cat = torch.cat([feat2, feat_mean.expand_as(feat2)], dim=1)
+        feat_std, _ = self.std_feature(feat_cat)               # (B, 2C2, 3, M2)
+        inv_feat = feat_std.reshape(B, -1, feat_std.shape[-1]) # (B, 2C2*3, M2)
+        inv_max = inv_feat.max(dim=-1)[0]
+        inv_avg = inv_feat.mean(dim=-1)
+        inv_z = self.inv_head(torch.cat([inv_max, inv_avg], dim=-1))
+
+        return inv_z, eq_z, center

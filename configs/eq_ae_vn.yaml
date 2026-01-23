@@ -11,12 +11,19 @@ latent_size: 720  # Number of VN channels for equivariant latent
 load_supervised_checkpoint: False
 
 # VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
+
 encoder:
-  name: VN_DGCNN_Refined
+  name: VN_REVNET_Backbone
   kwargs:
     latent_size: ${latent_size}
-    feature_dims: [128, 256, 256, 512, 512]
-    pooling: "max"
+    sa_npoints: [128, 32]
+
+# encoder:
+#   name: VN_DGCNN_Refined
+#   kwargs:
+#     latent_size: ${latent_size}
+#     feature_dims: [128, 256, 256, 512, 512]
+#     pooling: "max"
 
 decoder:
   name: VN_REVNET_Anchor
@@ -70,8 +77,8 @@ sinkhorn_blur_schedule:
 
 # Training parameters
 learning_rate: 0.001
-batch_size: 64
-precision: bf16-mixed
+batch_size: 256
+precision: 32-true
 # Gradient clipping for stability (use 0 to disable)
 gradient_clip_val: 1.0
 
