@@ -68,5 +68,6 @@ def main(cfg: DictConfig):
     train(cfg)
 
 if __name__ == '__main__':
-    sys.argv.append('hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}')
+    if not any(arg.startswith("hydra.run.dir=") for arg in sys.argv):
+        sys.argv.append('hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}')
     main()

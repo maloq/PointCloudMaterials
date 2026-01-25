@@ -5,7 +5,7 @@ experiment_name: EQ_AE_l${latent_size}_P${data.num_points}_${loss}_${decoder.nam
 wandb_mode: online
 
 model_type: eq_ae  # Equivariant Autoencoder
-latent_size: 720  # Number of VN channels for equivariant latent
+latent_size: 128  # Number of VN channels for equivariant latent
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
@@ -32,7 +32,7 @@ decoder:
     latent_size: ${latent_size}
     num_anchors: 64
     anchor_channels: 48
-    transformer_depth: 2
+    transformer_depth: 3
     attn_hidden: 128
 
 
@@ -76,7 +76,7 @@ sinkhorn_blur_schedule:
   duration_epochs: ${epochs}
 
 # Training parameters
-learning_rate: 0.001
+learning_rate: 0.0015
 batch_size: 256
 precision: 32-true
 # Gradient clipping for stability (use 0 to disable)
@@ -84,19 +84,34 @@ gradient_clip_val: 1.0
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 200 
+epochs: 600 
 
 gpu: True
-devices: [0]
+devices: [0, 1, 2]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
+debug_startup: true
+debug_faulthandler_timeout: 60
 
 decay_rate: 0.0
 kl_latent_loss_scale: 0.0
 max_samples: 0
+load_pretrained_ae: False
+pretrained_ae_checkpoint: null
+
+# IDEC clustering (disabled by default; enable after AE pretraining)
+idec_enabled: False
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: True
+idec_normalize_z: True
+idec_init_kmeans: True
 
 # Curriculum learning settings
 curriculum_learning:

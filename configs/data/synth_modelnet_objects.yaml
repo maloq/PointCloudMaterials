@@ -11,6 +11,7 @@ normalize: true
 fps_cache: true
 fps_cache_dir: null
 fps_use_gpu: true
+fps_ordered: true
 
 augmentation:
   rotation_scale: 1.0

@@ -89,14 +89,21 @@ def gather_inference_batches(
     model: EquivariantAutoencoder,
     dataloader: torch.utils.data.DataLoader,
     device: str,
-    max_batches: int = 4,
+    max_batches: int | None = 4,
 ) -> Dict[str, np.ndarray]:
-    """Collect originals, reconstructions, and latents from a few batches."""
+    """Collect originals, reconstructions, and latents from batches.
+    
+    Args:
+        model: The trained model
+        dataloader: DataLoader to iterate over
+        device: Device string
+        max_batches: Maximum number of batches to process. If None, process all batches.
+    """
     originals, reconstructions, inv_latents, eq_latents, phases = [], [], [], [], []
 
     with torch.inference_mode():
         for batch_idx, batch in enumerate(dataloader):
-            if batch_idx >= max_batches:
+            if max_batches is not None and batch_idx >= max_batches:
                 break
             pc, phase = _extract_pc_and_phase(batch)
             pc = pc.to(device)
@@ -172,11 +179,15 @@ def save_latent_tsne(
     inv_latents: np.ndarray,
     phases: np.ndarray,
     out_dir: Path,
-    max_samples: int = 10000,
+    max_samples: int | None = None,
 ) -> None:
     """Save t-SNE plots: one with ground truth phases, one with clustering results.
     
-    Uses up to 10000 samples by default for better visualization coverage.
+    Args:
+        inv_latents: Invariant latent vectors
+        phases: Ground truth phase labels
+        out_dir: Output directory
+        max_samples: Maximum samples to use. If None, use all samples.
     """
     if inv_latents.size == 0 or len(inv_latents) < 2:
         return
@@ -188,7 +199,7 @@ def save_latent_tsne(
     has_phases = phases.size == len(latents)
     gt_labels = phases if has_phases else None
 
-    if len(latents) > max_samples:
+    if max_samples is not None and len(latents) > max_samples:
         idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
         latents = latents[idx]
         if gt_labels is not None:
@@ -230,9 +241,16 @@ def save_pca_visualization(
     inv_latents: np.ndarray,
     phases: np.ndarray,
     out_dir: Path,
-    max_samples: int = 10000,
+    max_samples: int | None = None,
 ) -> Dict[str, Any]:
-    """Generate PCA visualizations and statistics for latent space analysis."""
+    """Generate PCA visualizations and statistics for latent space analysis.
+    
+    Args:
+        inv_latents: Invariant latent vectors
+        phases: Ground truth phase labels
+        out_dir: Output directory
+        max_samples: Maximum samples to use. If None, use all samples.
+    """
     if inv_latents.size == 0 or len(inv_latents) < 2:
         return {}
 
@@ -243,7 +261,7 @@ def save_pca_visualization(
     has_phases = phases.size == len(latents)
     gt_labels = phases if has_phases else None
 
-    if len(latents) > max_samples:
+    if max_samples is not None and len(latents) > max_samples:
         idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
         latents = latents[idx]
         if gt_labels is not None:
@@ -458,9 +476,16 @@ def save_clustering_analysis(
     inv_latents: np.ndarray,
     phases: np.ndarray,
     out_dir: Path,
-    max_samples: int = 10000,
+    max_samples: int | None = None,
 ) -> Dict[str, Any]:
-    """Perform clustering analysis on latent space and compute quality metrics."""
+    """Perform clustering analysis on latent space and compute quality metrics.
+    
+    Args:
+        inv_latents: Invariant latent vectors
+        phases: Ground truth phase labels
+        out_dir: Output directory
+        max_samples: Maximum samples to use. If None, use all samples.
+    """
     if inv_latents.size == 0 or len(inv_latents) < 10:
         return {}
 
@@ -471,7 +496,7 @@ def save_clustering_analysis(
     has_phases = phases.size == len(latents)
     gt_labels = phases if has_phases else None
 
-    if len(latents) > max_samples:
+    if max_samples is not None and len(latents) > max_samples:
         idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
         latents = latents[idx]
         if gt_labels is not None:
@@ -594,9 +619,16 @@ def save_umap_visualization(
     inv_latents: np.ndarray,
     phases: np.ndarray,
     out_dir: Path,
-    max_samples: int = 10000,
+    max_samples: int | None = None,
 ) -> None:
-    """Generate UMAP visualization as an alternative to t-SNE."""
+    """Generate UMAP visualization as an alternative to t-SNE.
+    
+    Args:
+        inv_latents: Invariant latent vectors
+        phases: Ground truth phase labels
+        out_dir: Output directory
+        max_samples: Maximum samples to use. If None, use all samples.
+    """
     try:
         import umap
     except ImportError:
@@ -613,7 +645,7 @@ def save_umap_visualization(
     has_phases = phases.size == len(latents)
     gt_labels = phases if has_phases else None
 
-    if len(latents) > max_samples:
+    if max_samples is not None and len(latents) > max_samples:
         idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
         latents = latents[idx]
         if gt_labels is not None:
@@ -650,11 +682,18 @@ def save_umap_visualization(
 
 
 def _seeded_forward(model, pc, seed: int):
-    """Run forward pass with fixed random seed for reproducibility."""
+    """Run forward pass with fixed random seed while preserving global RNG state."""
+    cpu_state = torch.get_rng_state()
+    cuda_states = torch.cuda.get_rng_state_all() if pc.is_cuda else None
     torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-    return model(pc)
+    if pc.is_cuda:
+        torch.cuda.manual_seed_all(seed)
+    try:
+        return model(pc)
+    finally:
+        torch.set_rng_state(cpu_state)
+        if cuda_states is not None:
+            torch.cuda.set_rng_state_all(cuda_states)
 
 
 def evaluate_equivariance(
@@ -858,8 +897,9 @@ def run_post_training_analysis(
     cuda_device: int = 0,
     cfg: DictConfig | None = None,
     max_batches_recon: int = 4,
-    max_batches_latent: int = 100,
-    max_samples_visualization: int = 10000,
+    max_batches_latent: int | None = None,
+    max_samples_visualization: int | None = None,
+    use_train_data: bool = True,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for the Equivariant AE.
     
@@ -869,8 +909,12 @@ def run_post_training_analysis(
         cuda_device: GPU device index
         cfg: Optional config override
         max_batches_recon: Number of batches for reconstruction visualization
-        max_batches_latent: Number of batches to collect for latent analysis (increased for better coverage)
-        max_samples_visualization: Maximum samples for dimensionality reduction visualizations
+        max_batches_latent: Number of batches to collect for latent analysis. 
+            If None, use all available batches.
+        max_samples_visualization: Maximum samples for dimensionality reduction visualizations.
+            If None, use all collected samples.
+        use_train_data: If True, use training dataset for latent analysis (more samples).
+            If False, use test dataset.
         
     Returns:
         Dictionary containing all computed metrics
@@ -881,10 +925,21 @@ def run_post_training_analysis(
     print("Loading model...")
     model, cfg, device = load_eq_model(checkpoint_path, cuda_device=cuda_device, cfg=cfg)
     dm = build_datamodule(cfg)
-    dl = dm.test_dataloader()
+    
+    # Use train or test dataloader based on parameter
+    if use_train_data:
+        dm.setup(stage="fit")  # Ensure train data is loaded
+        dl = dm.train_dataloader()
+        print("Using TRAINING dataset for latent analysis")
+    else:
+        dl = dm.test_dataloader()
+        print("Using TEST dataset for latent analysis")
 
-    # Collect more batches for comprehensive latent analysis
-    print(f"Gathering inference batches (up to {max_batches_latent} batches)...")
+    # Collect batches for comprehensive latent analysis
+    if max_batches_latent is None:
+        print("Gathering inference batches (ALL batches)...")
+    else:
+        print(f"Gathering inference batches (up to {max_batches_latent} batches)...")
     cache = gather_inference_batches(model, dl, device, max_batches=max_batches_latent)
     
     n_samples = len(cache["inv_latents"])
