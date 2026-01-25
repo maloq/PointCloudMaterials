@@ -6,7 +6,7 @@ experiment_name: EQ_AE_IDEC_l${latent_size}_P${data.num_points}_${loss}_${decode
 
 # Load pretrained autoencoder weights before IDEC finetuning
 load_pretrained_ae: True
-pretrained_ae_checkpoint: output/2026-01-24/21-05-08/EQ_AE_l720_P512_chamfer_VN_REVNET_Anchor-epoch=195.ckpt
+pretrained_ae_checkpoint: output/2026-01-25/19-18-27/EQ_AE_l128_P512_chamfer_VN_REVNET_Anchor-epoch=539.ckpt
 
 # Enable IDEC clustering
 idec_enabled: True
@@ -15,3 +15,7 @@ idec_num_clusters: 4
 idec_gamma: 0.1
 idec_update_interval: 200
 idec_use_global_p: True
+
+learning_rate: 0.0005
+batch_size: 256
+epochs: 30

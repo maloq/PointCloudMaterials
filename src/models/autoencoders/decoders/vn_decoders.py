@@ -148,23 +148,26 @@ class VNZCALayerNorm(nn.Module):
             raise ValueError(f"VNZCALayerNorm expects vector-dim=3, got {x.shape[2]}")
 
         x_flat = x.reshape(B, C, 3, -1).permute(0, 2, 1, 3).reshape(B, 3, -1)
-        mu = x_flat.mean(dim=-1, keepdim=True)
-        xc = x_flat - mu
+        # Whitening in float32 avoids bf16 eigh/rsqrt issues and improves stability.
+        x_flat_f = x_flat.to(torch.float32)
+        mu = x_flat_f.mean(dim=-1, keepdim=True)
+        xc = x_flat_f - mu
 
         M = xc.shape[-1]
         cov = (xc @ xc.transpose(1, 2)) / (float(M) + _EPS)
-        cov = cov + self.eps * torch.eye(3, device=x.device, dtype=x.dtype).unsqueeze(0)
+        cov = cov + self.eps * torch.eye(3, device=x.device, dtype=xc.dtype).unsqueeze(0)
 
         eigvals, eigvecs = torch.linalg.eigh(cov)
-        inv_sqrt = torch.rsqrt(eigvals + self.eps)
+        eigvals = eigvals.clamp_min(self.eps)
+        inv_sqrt = torch.rsqrt(eigvals)
         W = eigvecs @ torch.diag_embed(inv_sqrt) @ eigvecs.transpose(1, 2)
         xw = W @ xc
 
-        xw = xw.reshape(B, 3, C, -1).permute(0, 2, 1, 3).reshape_as(x)
+        xw = xw.reshape(B, 3, C, -1).permute(0, 2, 1, 3).reshape_as(x).to(x.dtype)
         gamma = self.gamma
         while gamma.dim() < xw.dim():
             gamma = gamma.unsqueeze(-1)
-        return xw * gamma
+        return xw * gamma.to(xw.dtype)
 
 
 class VNChannelWiseSubtractionAttention(nn.Module):

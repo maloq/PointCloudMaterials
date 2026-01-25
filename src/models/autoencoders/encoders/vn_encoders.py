@@ -1023,24 +1023,27 @@ class VNZCALayerNorm(nn.Module):
             raise ValueError(f"VNZCALayerNorm expects vector-dim=3, got {x.shape[2]}")
 
         x_flat = x.reshape(B, C, 3, -1).permute(0, 2, 1, 3).reshape(B, 3, -1)
-        mu = x_flat.mean(dim=-1, keepdim=True)
-        xc = x_flat - mu
+        # Whitening in float32 avoids bf16 eigh/rsqrt issues and improves stability.
+        x_flat_f = x_flat.to(torch.float32)
+        mu = x_flat_f.mean(dim=-1, keepdim=True)
+        xc = x_flat_f - mu
 
         M = xc.shape[-1]
         cov = (xc @ xc.transpose(1, 2)) / (float(M) + EPS)
-        cov = cov + self.eps * torch.eye(3, device=x.device, dtype=x.dtype).unsqueeze(0)
+        cov = cov + self.eps * torch.eye(3, device=x.device, dtype=xc.dtype).unsqueeze(0)
 
         eigvals, eigvecs = torch.linalg.eigh(cov)
-        inv_sqrt = torch.rsqrt(eigvals + self.eps)
+        eigvals = eigvals.clamp_min(self.eps)
+        inv_sqrt = torch.rsqrt(eigvals)
         W = eigvecs @ torch.diag_embed(inv_sqrt) @ eigvecs.transpose(1, 2)
         xw = W @ xc
 
-        xw = xw.reshape(B, 3, C, -1).permute(0, 2, 1, 3).reshape_as(x)
+        xw = xw.reshape(B, 3, C, -1).permute(0, 2, 1, 3).reshape_as(x).to(x.dtype)
 
         gamma = self.gamma
         while gamma.dim() < xw.dim():
             gamma = gamma.unsqueeze(-1)
-        return xw * gamma
+        return xw * gamma.to(xw.dtype)
 
 
 def farthest_point_sample(xyz: torch.Tensor, npoint: int) -> torch.Tensor:
@@ -1324,16 +1327,6 @@ class VNRevnetBackboneEncoder(Encoder):
         # Equivariant latent head: (B, C, 3) -> (B, latent_size, 3)
         self.out_eq = VNLinearLeakyReLU(sa_channels[1], latent_size, dim=3, use_batchnorm=False)
 
-        # Invariant head (optional): VNStdFeature + pool + MLP
-        self.std_feature = VNStdFeature(in_channels=sa_channels[1] * 2, dim=4, normalize_frame=True)
-        inv_in = sa_channels[1] * 2 * 3
-        self.inv_head = nn.Sequential(
-            nn.Linear(inv_in * 2, max(128, latent_size)),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Dropout(p=dropout_rate),
-            nn.Linear(max(128, latent_size), latent_size),
-        )
-
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # x: (B, N, 3) expected
         if x.dim() != 3 or x.shape[-1] != 3:
@@ -1366,13 +1359,7 @@ class VNRevnetBackboneEncoder(Encoder):
         pooled = feat2.mean(dim=-1)                            # (B, C2, 3)
         eq_z = self.out_eq(pooled)                             # (B, latent_size, 3)
 
-        # Invariant head (compat): canonicalize anchor features then pool
-        feat_mean = feat2.mean(dim=-1, keepdim=True)
-        feat_cat = torch.cat([feat2, feat_mean.expand_as(feat2)], dim=1)
-        feat_std, _ = self.std_feature(feat_cat)               # (B, 2C2, 3, M2)
-        inv_feat = feat_std.reshape(B, -1, feat_std.shape[-1]) # (B, 2C2*3, M2)
-        inv_max = inv_feat.max(dim=-1)[0]
-        inv_avg = inv_feat.mean(dim=-1)
-        inv_z = self.inv_head(torch.cat([inv_max, inv_avg], dim=-1))
+        # Invariant latent: L2 norm of each equivariant vector (no learned params)
+        inv_z = eq_z.norm(dim=-1)                              # (B, latent_size)
 
         return inv_z, eq_z, center

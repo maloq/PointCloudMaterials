@@ -116,6 +116,11 @@ class EquivariantAutoencoder(pl.LightningModule):
         self.idec_normalize_z = bool(getattr(cfg, "idec_normalize_z", True))
         self.idec_init_kmeans = bool(getattr(cfg, "idec_init_kmeans", True))
 
+        self.barlow_enabled = bool(getattr(cfg, "barlow_enabled", False))
+        self.barlow_weight = float(getattr(cfg, "barlow_weight", 0.0))
+        self.barlow_lambda = float(getattr(cfg, "barlow_lambda", 5e-3))
+        self.barlow_embed_dim = int(getattr(cfg, "barlow_embed_dim", 8192))
+
         self._idec_embed_dim = self._resolve_idec_embed_dim(cfg)
         self.idec_head = None
         if self.idec_num_clusters > 0:
@@ -127,6 +132,22 @@ class EquivariantAutoencoder(pl.LightningModule):
             )
         elif self.idec_enabled:
             raise ValueError("idec_num_clusters must be set when idec_enabled=True")
+
+        self._barlow_inv_dim = self._idec_embed_dim
+        if self._barlow_inv_dim is None:
+            if self.barlow_enabled and self.barlow_weight > 0:
+                raise ValueError("Barlow Twins requires latent_size to set projector input dim")
+            self.barlow_projector = None
+        else:
+            self.barlow_projector = nn.Sequential(
+                nn.Linear(self._barlow_inv_dim, self.barlow_embed_dim, bias=False),
+                nn.BatchNorm1d(self.barlow_embed_dim),
+                nn.ReLU(inplace=True),
+                nn.Linear(self.barlow_embed_dim, self.barlow_embed_dim, bias=False),
+                nn.BatchNorm1d(self.barlow_embed_dim),
+                nn.ReLU(inplace=True),
+                nn.Linear(self.barlow_embed_dim, self.barlow_embed_dim, bias=False),
+            )
 
         if self.load_pretrained_ae:
             self._load_pretrained_ae(self.pretrained_ae_checkpoint)
@@ -231,6 +252,65 @@ class EquivariantAutoencoder(pl.LightningModule):
                         eq_z = candidate
             return inv_z, eq_z
         return enc_out, None
+
+    def _barlow_augment(self, pc: torch.Tensor) -> torch.Tensor:
+        """
+        Produce a label-preserving augmented view of a point cloud.
+        pc: (B, N, 3)
+        """
+        x = pc
+
+        jitter_std = float(getattr(self.hparams, "barlow_jitter_std", 0.01))
+        drop_ratio = float(getattr(self.hparams, "barlow_drop_ratio", 0.2))
+
+        if jitter_std > 0:
+            x = x + torch.randn_like(x) * jitter_std
+
+        if drop_ratio > 0:
+            B, N, _ = x.shape
+            keep = (torch.rand(B, N, device=x.device) > drop_ratio)
+            keep[:, 0] = True
+            w = keep.float()
+            w = w / (w.sum(dim=1, keepdim=True) + 1e-8)
+            idx = torch.multinomial(w, num_samples=N, replacement=True)
+            x = x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
+
+        return x
+
+    @staticmethod
+    def _off_diagonal(x: torch.Tensor) -> torch.Tensor:
+        n, m = x.shape
+        if n != m:
+            raise ValueError("Input must be a square matrix")
+        return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
+
+    def _barlow_loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> torch.Tensor:
+        """
+        z_a, z_b are embeddings after projector: (N, D)
+        """
+        N, D = z_a.shape
+        if N < 2:
+            return z_a.new_tensor(0.0)
+
+        z_a_norm = (z_a - z_a.mean(0)) / (z_a.std(0) + 1e-9)
+        z_b_norm = (z_b - z_b.mean(0)) / (z_b.std(0) + 1e-9)
+
+        c = (z_a_norm.T @ z_b_norm) / N
+        c_diff = (c - torch.eye(D, device=c.device, dtype=c.dtype)).pow(2)
+
+        off = self._off_diagonal(c_diff)
+        off.mul_(self.barlow_lambda)
+
+        loss = torch.diagonal(c_diff).sum() + off.sum()
+        return loss
+
+    def _barlow_invariant(self, inv_z, eq_z):
+        if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
+            eq_z = inv_z
+            inv_z = None
+        if eq_z is not None:
+            return eq_z.norm(dim=-1)
+        return inv_z
 
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
@@ -621,6 +701,23 @@ class EquivariantAutoencoder(pl.LightningModule):
                 losses['cluster_kl'] = cluster_kl
             if q_entropy is not None:
                 losses['idec_q_entropy'] = q_entropy
+        if stage == "train" and self.barlow_enabled and self.barlow_weight > 0 and self.barlow_projector is not None:
+            y_a = self._barlow_augment(pc)
+            y_b = self._barlow_augment(pc)
+
+            enc_a = self.encoder(self._prepare_encoder_input(y_a))
+            inv_a, eq_a = self._split_encoder_output(enc_a)
+            inv_a = self._barlow_invariant(inv_a, eq_a)
+
+            enc_b = self.encoder(self._prepare_encoder_input(y_b))
+            inv_b, eq_b = self._split_encoder_output(enc_b)
+            inv_b = self._barlow_invariant(inv_b, eq_b)
+
+            if inv_a is not None and inv_b is not None:
+                z_a = self.barlow_projector(inv_a.float())
+                z_b = self.barlow_projector(inv_b.float())
+                barlow = self._barlow_loss(z_a.float(), z_b.float())
+                losses['barlow'] = barlow
 
         # Build total loss
         total_loss = losses['recon']
@@ -628,6 +725,8 @@ class EquivariantAutoencoder(pl.LightningModule):
             total_loss += self.kl_latent_loss_scale * losses['kl']
         if 'cluster_kl' in losses:
             total_loss += self.idec_gamma * losses['cluster_kl']
+        if 'barlow' in losses:
+            total_loss += self.barlow_weight * losses['barlow']
         
         total_loss = total_loss.to(self.dtype)
 
@@ -646,6 +745,8 @@ class EquivariantAutoencoder(pl.LightningModule):
             metrics_to_log['cluster_kl'] = losses['cluster_kl']
         if 'idec_q_entropy' in losses:
             metrics_to_log['idec_q_entropy'] = losses['idec_q_entropy']
+        if 'barlow' in losses:
+            metrics_to_log['barlow'] = losses['barlow']
         if sinkhorn_blur is not None:
             metrics_to_log['sinkhorn_blur'] = float(sinkhorn_blur)
 

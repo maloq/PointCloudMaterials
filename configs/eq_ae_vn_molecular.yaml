@@ -1,11 +1,11 @@
 defaults:
-  - data: synth_modelnet_objects
+  - data: data_synth_polycrystalline
 project_name: pointnet
 experiment_name: EQ_AE_l${latent_size}_P${data.num_points}_${loss}_${decoder.name}
 wandb_mode: online
 
 model_type: eq_ae  # Equivariant Autoencoder
-latent_size: 128  # Number of VN channels for equivariant latent
+latent_size: 64  # Number of VN channels for equivariant latent
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
@@ -16,7 +16,7 @@ encoder:
   name: VN_REVNET_Backbone
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [128, 32]
+    sa_npoints: [64, 16]
     
 # encoder:
 #   name: VN_DGCNN_Refined
@@ -77,7 +77,7 @@ sinkhorn_blur_schedule:
 
 # Training parameters
 learning_rate: 0.0015
-batch_size: 192
+batch_size: 512
 precision: 32-true
 # Gradient clipping for stability (use 0 to disable)
 gradient_clip_val: 1.0
