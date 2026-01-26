@@ -96,6 +96,8 @@ def apply_overfit_overrides(cfg: DictConfig) -> None:
         if hasattr(enc_kwargs, "dropout_rate"):
             enc_kwargs.dropout_rate = 0.0
             overrides.append("encoder.kwargs.dropout_rate=0.0")
+        enc_kwargs.deterministic_fps = True
+        overrides.append("encoder.kwargs.deterministic_fps=True")
 
     # Increase learning rate for faster overfitting
     if hasattr(cfg, "learning_rate"):

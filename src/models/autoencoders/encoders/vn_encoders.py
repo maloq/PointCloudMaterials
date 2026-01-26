@@ -1052,13 +1052,21 @@ class VNZCALayerNorm(nn.Module):
         return xw * gamma.to(xw.dtype)
 
 
-def farthest_point_sample(xyz: torch.Tensor, npoint: int) -> torch.Tensor:
+def farthest_point_sample(
+    xyz: torch.Tensor,
+    npoint: int,
+    *,
+    deterministic: bool = False,
+) -> torch.Tensor:
     """FPS on xyz (B, N, 3) -> idx (B, npoint). Rotation-invariant via distances."""
     device = xyz.device
     B, N, _ = xyz.shape
     centroids = torch.zeros(B, npoint, dtype=torch.long, device=device)
     distance = torch.full((B, N), 1e10, device=device, dtype=xyz.dtype)
-    farthest = torch.randint(0, N, (B,), device=device)
+    if deterministic:
+        farthest = torch.zeros((B,), dtype=torch.long, device=device)
+    else:
+        farthest = torch.randint(0, N, (B,), device=device)
     batch_indices = torch.arange(B, device=device)
 
     for i in range(npoint):
@@ -1113,11 +1121,13 @@ class VNSetAbstraction(nn.Module):
         use_zca_norm: bool = True,
         negative_slope: float = 0.1,
         use_batchnorm: bool = True,
+        deterministic_fps: bool = False,
     ):
         super().__init__()
         self.npoint = npoint
         self.k = k
         self.pooling = pooling
+        self.deterministic_fps = deterministic_fps
 
         edge_in = 2 * in_channels + 1
         self.edge_mlp = VNLinearLeakyReLU(
@@ -1144,7 +1154,7 @@ class VNSetAbstraction(nn.Module):
         B, N, _ = xyz.shape
         M = self.npoint
 
-        fps_idx = farthest_point_sample(xyz, M)          # (B, M)
+        fps_idx = farthest_point_sample(xyz, M, deterministic=self.deterministic_fps)  # (B, M)
         new_xyz = index_points(xyz, fps_idx)             # (B, M, 3)
         anchor_feat = index_points_vn(feat, fps_idx)     # (B, C, 3, M)
 
@@ -1276,9 +1286,11 @@ class VNRevnetBackboneEncoder(Encoder):
         attn_hidden: int = 128,
         mlp_ratio: int = 2,
         pooling: str = "mean",
+        global_pooling: str = "mean",
         use_zca_norm: bool = True,
         use_batchnorm: bool = True,
         dropout_rate: float = 0.0,
+        deterministic_fps: bool = False,
     ):
         super().__init__()
         if len(sa_channels) != 2 or len(sa_npoints) != 2 or len(sa_knn) != 2:
@@ -1303,6 +1315,7 @@ class VNRevnetBackboneEncoder(Encoder):
             pooling=pooling,
             use_zca_norm=use_zca_norm,
             use_batchnorm=use_batchnorm,
+            deterministic_fps=deterministic_fps,
         )
         self.sa2 = VNSetAbstraction(
             npoint=sa_npoints[1],
@@ -1312,6 +1325,7 @@ class VNRevnetBackboneEncoder(Encoder):
             pooling=pooling,
             use_zca_norm=use_zca_norm,
             use_batchnorm=use_batchnorm,
+            deterministic_fps=deterministic_fps,
         )
 
         self.res1 = nn.Sequential(*[VNResBlock(sa_channels[0], dim=4, use_batchnorm=use_batchnorm) for _ in range(res_blocks_per_stage)])
@@ -1329,6 +1343,12 @@ class VNRevnetBackboneEncoder(Encoder):
                 for _ in range(transformer_depth)
             ]
         )
+
+        global_pooling = str(global_pooling).lower()
+        if global_pooling not in {"mean", "max"}:
+            raise ValueError(f"Unsupported global_pooling={global_pooling!r}")
+        self.global_pooling = global_pooling
+        self.global_pool = VNMaxPool(sa_channels[1]) if global_pooling == "max" else None
 
         # Equivariant latent head: (B, C, 3) -> (B, latent_size, 3)
         self.out_eq = VNLinearLeakyReLU(sa_channels[1], latent_size, dim=3, use_batchnorm=False)
@@ -1362,7 +1382,10 @@ class VNRevnetBackboneEncoder(Encoder):
             feat2 = blk(feat2, xyz2)
 
         # Equivariant latent from pooled anchors
-        pooled = feat2.mean(dim=-1)                            # (B, C2, 3)
+        if self.global_pooling == "max":
+            pooled = self.global_pool(feat2)                   # (B, C2, 3)
+        else:
+            pooled = feat2.mean(dim=-1)                        # (B, C2, 3)
         eq_z = self.out_eq(pooled)                             # (B, latent_size, 3)
 
         # Invariant latent: L2 norm of each equivariant vector (no learned params)

@@ -192,6 +192,12 @@ def process_sample(points, tree, center, size, n_points, sampling_method="drop_f
         dropped = 0
     added = max(n_points - len(sample_points), 0)
     sample_points = drop_func(sample_points, n_points)
+    # Ensure the snapped center atom is always present at the origin.
+    if sample_points.size > 0:
+        dists_to_center = np.linalg.norm(sample_points - center, axis=1)
+        if not np.any(dists_to_center < 1e-8):
+            farthest_idx = int(np.argmax(dists_to_center))
+            sample_points[farthest_idx] = center
     return sample_points, added, dropped
 
 
@@ -406,6 +412,9 @@ def get_random_samples(
             high=max_coords - (size)
         )
         center = np.asarray(center, dtype=np.float64)
+        # Snap to nearest atom so the origin corresponds to a real atom.
+        _, nearest_index = tree.query(center)
+        center = points[nearest_index]
         
         sample_points, add, drop = process_sample(points, tree, center, size, n_points, sampling_method)
         if sample_points is not None:

@@ -765,7 +765,8 @@ class EquivariantAutoencoder(pl.LightningModule):
 
         # Forward pass
         inv_z, recon, eq_z = self(pc)
-
+        if self.global_step == 0:
+            print("pc shape:", tuple(pc.shape), "recon shape:", tuple(recon.shape))
         if stage in self._supervised_cache:
             self._cache_supervised_batch(stage, inv_z, meta, recon, pc)
 
