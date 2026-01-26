@@ -8,7 +8,13 @@ import sys, os
 import numpy as np
 sys.path.append(os.getcwd())
 from src.models.autoencoders.factory import build_model
-from src.loss.reconstruction_loss import chamfer_distance, sinkhorn_distance, kl_latent_regularizer
+from src.loss.reconstruction_loss import (
+    chamfer_distance,
+    sinkhorn_distance,
+    kl_latent_regularizer,
+    pairwise_distance_distribution_loss,
+    rdf_loss,
+)
 from src.utils.spd_metrics import (
     compute_embedding_quality_metrics,
     compute_canonical_consistency_metrics,
@@ -29,6 +35,8 @@ from omegaconf import DictConfig, ListConfig, OmegaConf
 LOSS_COMPONENTS = (
     "sinkhorn",
     "chamfer",
+    "pdist",
+    "rdf",
 )
 
 
@@ -120,6 +128,7 @@ class EquivariantAutoencoder(pl.LightningModule):
         self.barlow_weight = float(getattr(cfg, "barlow_weight", 0.0))
         self.barlow_lambda = float(getattr(cfg, "barlow_lambda", 5e-3))
         self.barlow_embed_dim = int(getattr(cfg, "barlow_embed_dim", 8192))
+        self.barlow_start_epoch = max(0, int(getattr(cfg, "barlow_start_epoch", 0)))
 
         self._idec_embed_dim = self._resolve_idec_embed_dim(cfg)
         self.idec_head = None
@@ -288,12 +297,20 @@ class EquivariantAutoencoder(pl.LightningModule):
         """
         z_a, z_b are embeddings after projector: (N, D)
         """
+        if z_a.dtype != torch.float32:
+            z_a = z_a.float()
+        if z_b.dtype != torch.float32:
+            z_b = z_b.float()
         N, D = z_a.shape
         if N < 2:
             return z_a.new_tensor(0.0)
 
-        z_a_norm = (z_a - z_a.mean(0)) / (z_a.std(0) + 1e-9)
-        z_b_norm = (z_b - z_b.mean(0)) / (z_b.std(0) + 1e-9)
+        z_a_mean = z_a.mean(0)
+        z_b_mean = z_b.mean(0)
+        z_a_std = z_a.std(0, unbiased=False).clamp_min(1e-4)
+        z_b_std = z_b.std(0, unbiased=False).clamp_min(1e-4)
+        z_a_norm = (z_a - z_a_mean) / z_a_std
+        z_b_norm = (z_b - z_b_mean) / z_b_std
 
         c = (z_a_norm.T @ z_b_norm) / N
         c_diff = (c - torch.eye(D, device=c.device, dtype=c.dtype)).pow(2)
@@ -328,9 +345,55 @@ class EquivariantAutoencoder(pl.LightningModule):
                     
             return val
         if component == "pdist":
-            # Assuming _compute_pdist exists in utils or parent, otherwise implement or import
-            val = self._compute_pdist(pred, target)
-            return val * getattr(self, 'pdist_scale', 1.0)
+            n_bins = self._loss_param("pdist", "n_bins", 64)
+            r_max = self._loss_param("pdist", "r_max", None)
+            r_min = self._loss_param("pdist", "r_min", 0.0)
+            sigma = self._loss_param("pdist", "sigma", None)
+            normalize = self._loss_param("pdist", "normalize", True)
+            loss_type = self._loss_param("pdist", "loss_type", "l2")
+            use_upper = self._loss_param("pdist", "use_upper", True)
+            clamp = self._loss_param("pdist", "clamp", True)
+            weight = self._loss_param("pdist", "weight", 1.0)
+            val = pairwise_distance_distribution_loss(
+                pred,
+                target,
+                n_bins=n_bins,
+                r_max=r_max,
+                r_min=r_min,
+                sigma=sigma,
+                normalize=normalize,
+                loss_type=loss_type,
+                use_upper=use_upper,
+                clamp=clamp,
+            )
+            return val * float(weight)
+        if component == "rdf":
+            n_bins = self._loss_param("rdf", "n_bins", 64)
+            r_max = self._loss_param("rdf", "r_max", None)
+            r_min = self._loss_param("rdf", "r_min", 0.0)
+            sigma = self._loss_param("rdf", "sigma", None)
+            reference = self._loss_param("rdf", "reference", "origin")
+            exclude_self = self._loss_param("rdf", "exclude_self", True)
+            shell_normalize = self._loss_param("rdf", "shell_normalize", True)
+            normalize = self._loss_param("rdf", "normalize", True)
+            loss_type = self._loss_param("rdf", "loss_type", "l2")
+            clamp = self._loss_param("rdf", "clamp", True)
+            weight = self._loss_param("rdf", "weight", 1.0)
+            val = rdf_loss(
+                pred,
+                target,
+                n_bins=n_bins,
+                r_max=r_max,
+                r_min=r_min,
+                sigma=sigma,
+                reference=str(reference).lower(),
+                exclude_self=exclude_self,
+                shell_normalize=shell_normalize,
+                normalize=normalize,
+                loss_type=loss_type,
+                clamp=clamp,
+            )
+            return val * float(weight)
         raise ValueError(f"Unsupported reconstruction loss component: {component}")
 
     def _reconstruction_loss(self, pred, target, sinkhorn_blur):
@@ -396,7 +459,16 @@ class EquivariantAutoencoder(pl.LightningModule):
         losses = {}
 
         recon_f32, pc_f32 = to_float32(recon, pc)
+        nonfinite_inputs = False
+        with torch.no_grad():
+            if not torch.isfinite(recon_f32).all() or not torch.isfinite(pc_f32).all():
+                nonfinite_inputs = True
+        if nonfinite_inputs:
+            recon_f32 = torch.nan_to_num(recon_f32, nan=0.0, posinf=1e4, neginf=-1e4)
+            pc_f32 = torch.nan_to_num(pc_f32, nan=0.0, posinf=1e4, neginf=-1e4)
         losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
+        if nonfinite_inputs:
+            losses['nonfinite_inputs'] = recon_f32.new_tensor(1.0)
         
         with torch.no_grad():
             if self.log_chamfer:
@@ -412,8 +484,12 @@ class EquivariantAutoencoder(pl.LightningModule):
                     losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
 
         # LATENT REGULARIZATION (Optional)
-        if self.kl_latent_loss_scale > 0:
-            losses['kl'] = kl_latent_regularizer(inv_z)
+        if self.kl_latent_loss_scale > 0 and inv_z is not None:
+            kl = kl_latent_regularizer(inv_z.float())
+            if not torch.isfinite(kl).item():
+                losses['kl_nonfinite'] = recon_f32.new_tensor(1.0)
+                kl = torch.nan_to_num(kl, nan=0.0, posinf=0.0, neginf=0.0)
+            losses['kl'] = kl
 
         return losses, sinkhorn_blur
 
@@ -701,7 +777,13 @@ class EquivariantAutoencoder(pl.LightningModule):
                 losses['cluster_kl'] = cluster_kl
             if q_entropy is not None:
                 losses['idec_q_entropy'] = q_entropy
-        if stage == "train" and self.barlow_enabled and self.barlow_weight > 0 and self.barlow_projector is not None:
+        if (
+            stage == "train"
+            and self.barlow_enabled
+            and self.barlow_weight > 0
+            and self.barlow_projector is not None
+            and int(self.current_epoch) >= self.barlow_start_epoch
+        ):
             y_a = self._barlow_augment(pc)
             y_b = self._barlow_augment(pc)
 
@@ -714,9 +796,13 @@ class EquivariantAutoencoder(pl.LightningModule):
             inv_b = self._barlow_invariant(inv_b, eq_b)
 
             if inv_a is not None and inv_b is not None:
-                z_a = self.barlow_projector(inv_a.float())
-                z_b = self.barlow_projector(inv_b.float())
-                barlow = self._barlow_loss(z_a.float(), z_b.float())
+                proj_dtype = next(self.barlow_projector.parameters()).dtype
+                z_a = self.barlow_projector(inv_a.to(dtype=proj_dtype))
+                z_b = self.barlow_projector(inv_b.to(dtype=proj_dtype))
+                barlow = self._barlow_loss(z_a, z_b)
+                if not torch.isfinite(barlow).item():
+                    self._log_metric(stage, "barlow_nonfinite", 1.0, on_step=True, on_epoch=False)
+                    barlow = torch.nan_to_num(barlow, nan=0.0, posinf=0.0, neginf=0.0)
                 losses['barlow'] = barlow
 
         # Build total loss
@@ -727,8 +813,13 @@ class EquivariantAutoencoder(pl.LightningModule):
             total_loss += self.idec_gamma * losses['cluster_kl']
         if 'barlow' in losses:
             total_loss += self.barlow_weight * losses['barlow']
-        
-        total_loss = total_loss.to(self.dtype)
+
+        if not torch.isfinite(total_loss).item():
+            self._log_metric(stage, "loss_nonfinite", 1.0, on_step=True, on_epoch=False)
+            if torch.isfinite(losses['recon']).item():
+                total_loss = losses['recon']
+            else:
+                total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
         # Logging
         metrics_to_log = {
@@ -747,6 +838,10 @@ class EquivariantAutoencoder(pl.LightningModule):
             metrics_to_log['idec_q_entropy'] = losses['idec_q_entropy']
         if 'barlow' in losses:
             metrics_to_log['barlow'] = losses['barlow']
+        if 'nonfinite_inputs' in losses:
+            metrics_to_log['nonfinite_inputs'] = losses['nonfinite_inputs']
+        if 'kl_nonfinite' in losses:
+            metrics_to_log['kl_nonfinite'] = losses['kl_nonfinite']
         if sinkhorn_blur is not None:
             metrics_to_log['sinkhorn_blur'] = float(sinkhorn_blur)
 

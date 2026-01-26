@@ -228,6 +228,190 @@ def _to_B_N_3(pc: torch.Tensor) -> torch.Tensor:
     return pc
 
 
+def _pairwise_distances(
+    pc: torch.Tensor,
+    *,
+    use_upper: bool = True,
+    exclude_self: bool = True,
+) -> torch.Tensor:
+    pc = _to_B_N_3(pc)
+    B, N, _ = pc.shape
+    if N < 2:
+        return pc.new_zeros((B, 0))
+    dists = torch.cdist(pc, pc, p=2)
+    if use_upper:
+        mask = torch.triu(torch.ones(N, N, device=pc.device, dtype=torch.bool), diagonal=1)
+        return dists[:, mask]
+    if exclude_self:
+        mask = ~torch.eye(N, device=pc.device, dtype=torch.bool)
+        return dists[:, mask]
+    return dists.reshape(B, -1)
+
+
+def _soft_histogram(
+    distances: torch.Tensor,
+    bin_centers: torch.Tensor,
+    sigma: float,
+    *,
+    normalize: bool = True,
+    mask: torch.Tensor | None = None,
+    eps: float = 1e-8,
+) -> torch.Tensor:
+    if distances.numel() == 0:
+        return distances.new_zeros((distances.shape[0], bin_centers.shape[0]))
+    diff = distances.unsqueeze(-1) - bin_centers.view(1, 1, -1)
+    sigma = max(float(sigma), eps)
+    weights = torch.exp(-0.5 * (diff / sigma) ** 2)
+    if normalize:
+        weights = weights / (weights.sum(dim=-1, keepdim=True) + eps)
+    if mask is not None:
+        weights = weights * mask.unsqueeze(-1).to(weights.dtype)
+        denom = mask.sum(dim=1, keepdim=True).clamp_min(eps)
+    else:
+        denom = float(distances.shape[1])
+    return weights.sum(dim=1) / denom
+
+
+def _resolve_r_max(
+    r_max: float | None,
+    pred_dists: torch.Tensor,
+    target_dists: torch.Tensor,
+    *,
+    default: float,
+) -> float:
+    if r_max is None:
+        if pred_dists.numel() == 0 and target_dists.numel() == 0:
+            return default
+        with torch.no_grad():
+            combined = torch.cat([pred_dists, target_dists], dim=1)
+            r_max = float(combined.max().item())
+    else:
+        r_max = _coerce_float(r_max, default)
+    if not math.isfinite(r_max) or r_max <= 0.0:
+        return default
+    return r_max
+
+
+def pairwise_distance_distribution_loss(
+    pred: torch.Tensor,
+    target: torch.Tensor,
+    *,
+    n_bins: int = 64,
+    r_max: float | None = None,
+    r_min: float = 0.0,
+    sigma: float | None = None,
+    normalize: bool = True,
+    loss_type: str = "l2",
+    use_upper: bool = True,
+    clamp: bool = True,
+    eps: float = 1e-8,
+) -> torch.Tensor:
+    pred = _to_B_N_3(pred)
+    target = _to_B_N_3(target)
+    if pred.shape[1] < 2 or target.shape[1] < 2:
+        return pred.new_tensor(0.0)
+
+    pred_d = _pairwise_distances(pred, use_upper=use_upper, exclude_self=True)
+    target_d = _pairwise_distances(target, use_upper=use_upper, exclude_self=True)
+    r_max_val = _resolve_r_max(r_max, pred_d, target_d, default=2.0)
+    if r_max_val <= r_min:
+        return pred.new_tensor(0.0)
+
+    n_bins = max(int(n_bins), 1)
+    dr = (r_max_val - r_min) / float(n_bins)
+    bin_centers = torch.linspace(
+        r_min + 0.5 * dr,
+        r_max_val - 0.5 * dr,
+        n_bins,
+        device=pred.device,
+        dtype=pred.dtype,
+    )
+    if sigma is None or sigma <= 0:
+        sigma = 0.5 * dr
+
+    if clamp:
+        pred_d = pred_d.clamp(min=r_min, max=r_max_val)
+        target_d = target_d.clamp(min=r_min, max=r_max_val)
+
+    hist_pred = _soft_histogram(pred_d, bin_centers, sigma, normalize=normalize, eps=eps)
+    hist_target = _soft_histogram(target_d, bin_centers, sigma, normalize=normalize, eps=eps)
+
+    if loss_type.lower() in {"l1", "mae"}:
+        return torch.mean(torch.abs(hist_pred - hist_target))
+    return torch.mean((hist_pred - hist_target) ** 2)
+
+
+def rdf_loss(
+    pred: torch.Tensor,
+    target: torch.Tensor,
+    *,
+    n_bins: int = 64,
+    r_max: float | None = None,
+    r_min: float = 0.0,
+    sigma: float | None = None,
+    reference: str = "origin",
+    exclude_self: bool = True,
+    shell_normalize: bool = True,
+    normalize: bool = True,
+    loss_type: str = "l2",
+    clamp: bool = True,
+    eps: float = 1e-8,
+) -> torch.Tensor:
+    pred = _to_B_N_3(pred)
+    target = _to_B_N_3(target)
+    if pred.shape[1] < 2 or target.shape[1] < 2:
+        return pred.new_tensor(0.0)
+
+    if reference == "centroid":
+        pred_center = pred.mean(dim=1, keepdim=True)
+        target_center = target.mean(dim=1, keepdim=True)
+    else:
+        pred_center = pred.new_zeros((pred.shape[0], 1, 3))
+        target_center = target.new_zeros((target.shape[0], 1, 3))
+
+    pred_r = torch.linalg.norm(pred - pred_center, dim=-1)
+    target_r = torch.linalg.norm(target - target_center, dim=-1)
+
+    pred_mask = pred_r > eps if exclude_self else None
+    target_mask = target_r > eps if exclude_self else None
+
+    r_max_val = _resolve_r_max(r_max, pred_r, target_r, default=1.0)
+    if r_max_val <= r_min:
+        return pred.new_tensor(0.0)
+
+    n_bins = max(int(n_bins), 1)
+    dr = (r_max_val - r_min) / float(n_bins)
+    bin_centers = torch.linspace(
+        r_min + 0.5 * dr,
+        r_max_val - 0.5 * dr,
+        n_bins,
+        device=pred.device,
+        dtype=pred.dtype,
+    )
+    if sigma is None or sigma <= 0:
+        sigma = 0.5 * dr
+
+    if clamp:
+        pred_r = pred_r.clamp(min=r_min, max=r_max_val)
+        target_r = target_r.clamp(min=r_min, max=r_max_val)
+
+    hist_pred = _soft_histogram(pred_r, bin_centers, sigma, normalize=False, mask=pred_mask, eps=eps)
+    hist_target = _soft_histogram(target_r, bin_centers, sigma, normalize=False, mask=target_mask, eps=eps)
+
+    if shell_normalize:
+        shell = (4.0 * math.pi) * (bin_centers ** 2) * dr
+        hist_pred = hist_pred / (shell + eps)
+        hist_target = hist_target / (shell + eps)
+
+    if normalize:
+        hist_pred = hist_pred / (hist_pred.sum(dim=1, keepdim=True) + eps)
+        hist_target = hist_target / (hist_target.sum(dim=1, keepdim=True) + eps)
+
+    if loss_type.lower() in {"l1", "mae"}:
+        return torch.mean(torch.abs(hist_pred - hist_target))
+    return torch.mean((hist_pred - hist_target) ** 2)
+
+
 def _coerce_float(value, default):
     if torch.is_tensor(value):
         value = value.item()

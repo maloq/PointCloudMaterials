@@ -5,7 +5,7 @@ experiment_name: EQ_AE_l${latent_size}_P${data.num_points}_${loss}_${decoder.nam
 wandb_mode: online
 
 model_type: eq_ae  # Equivariant Autoencoder
-latent_size: 64  # Number of VN channels for equivariant latent
+latent_size: 80  # Number of VN channels for equivariant latent
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
@@ -16,7 +16,7 @@ encoder:
   name: VN_REVNET_Backbone
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [64, 16]
+    sa_npoints: [80, 20]
     
 # encoder:
 #   name: VN_DGCNN_Refined
@@ -30,10 +30,11 @@ decoder:
   kwargs:
     num_points: ${data.num_points}
     latent_size: ${latent_size}
-    num_anchors: 64
-    anchor_channels: 48
+    num_anchors: 40
+    anchor_channels: 64
     transformer_depth: 3
     attn_hidden: 128
+    point_allocation: truncate  # options: truncate | balanced
 
 
 # Disable batchnorm and use larger output_scale for proper reconstruction.
@@ -76,15 +77,15 @@ sinkhorn_blur_schedule:
   duration_epochs: ${epochs}
 
 # Training parameters
-learning_rate: 0.0015
-batch_size: 512
+learning_rate: 0.001
+batch_size: 480
 precision: 32-true
 # Gradient clipping for stability (use 0 to disable)
 gradient_clip_val: 1.0
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 600 
+epochs: 60 
 
 gpu: True
 devices: [0]
@@ -115,10 +116,11 @@ idec_init_kmeans: True
 
 # Barlow Twins (self-supervised invariants)
 barlow_enabled: True
-barlow_weight: 0.01
+barlow_weight: 0.005
 barlow_lambda: 0.005
-barlow_embed_dim: 128
-barlow_jitter_std: 0.01
+barlow_embed_dim: 80
+barlow_start_epoch: 6
+barlow_jitter_std: 0.003
 barlow_drop_ratio: 0.2
 
 # Curriculum learning settings

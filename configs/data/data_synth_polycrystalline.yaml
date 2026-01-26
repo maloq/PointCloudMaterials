@@ -8,9 +8,9 @@
 kind: synthetic
 data_path: output/synthetic_data/polycrystalline_metal
 num_points: 80
-radius: 6.0
+radius: 6.5
 sample_type: regular
-overlap_fraction: 0.5
+overlap_fraction: 0.0
 n_samples: 0
 train_ratio: 0.8
 drop_edge_samples: true

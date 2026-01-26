@@ -69,10 +69,10 @@ def apply_overfit_overrides(cfg: DictConfig) -> None:
     overrides.append("precision=32-true")
 
     if hasattr(cfg, "max_samples"):
-        cfg.max_samples = 3
+        cfg.max_samples = 1
         overrides.append("max_samples=1")
     if hasattr(cfg, "batch_size"):
-        cfg.batch_size = 3
+        cfg.batch_size = 1
         overrides.append("batch_size=1")
     if hasattr(cfg, "num_workers"):
         cfg.num_workers = 1
@@ -234,7 +234,7 @@ def train(cfg: DictConfig):
     return train_model(cfg, EquivariantAutoencoder)
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='spd_vn_equivariant.yaml')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='eq_ae_vn_molecular.yaml')
 def main(cfg: DictConfig):
     train(cfg)
 

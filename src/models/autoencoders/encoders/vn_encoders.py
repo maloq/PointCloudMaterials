@@ -13,6 +13,12 @@ EPS = 1e-6
 # ---------------------------------------------------------------------------
 # Vector Neuron building blocks (adapted from VN-SPD)
 # ---------------------------------------------------------------------------
+def _softmax_fp32(scores: torch.Tensor, dim: int) -> torch.Tensor:
+    if scores.dtype in (torch.float16, torch.bfloat16):
+        return torch.softmax(scores.float(), dim=dim).to(scores.dtype)
+    return torch.softmax(scores, dim=dim)
+
+
 class VNLinear(nn.Module):
     def __init__(self, in_channels: int, out_channels: int):
         super().__init__()
@@ -806,8 +812,8 @@ class VNAttention(nn.Module):
         # Energy: dot product over C/H and 3
         # (B, H, N, C/H, 3) * (B, H, M, C/H, 3) -> (B, H, N, M)
         energy = torch.einsum('bhnci,bhmci->bhnm', q_reshaped, k_reshaped)
-        
-        attention = F.softmax(energy / (self.head_dim**0.5), dim=-1) # (B, H, N, N)
+
+        attention = _softmax_fp32(energy / (self.head_dim**0.5), dim=-1) # (B, H, N, N)
 
         # Apply attention to V
         # V: (B, C, 3, N) -> (B, H, N, C/H, 3)
@@ -1206,7 +1212,7 @@ class VNChannelWiseSubtractionAttention(nn.Module):
             score_in = rel_mean
 
         scores = self.score_mlp(score_in)                     # (B,Kq,Kk,C)
-        attn = torch.softmax(scores, dim=2)
+        attn = _softmax_fp32(scores, dim=2)
 
         out = torch.einsum("bijk,bjkd->bikd", attn, vv)        # (B,K,C,3)
         out = out.permute(0, 2, 3, 1).contiguous()             # (B,C,3,K)

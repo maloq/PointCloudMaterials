@@ -118,6 +118,7 @@ barlow_enabled: True
 barlow_weight: 0.01
 barlow_lambda: 0.005
 barlow_embed_dim: 128
+barlow_start_epoch: 0
 barlow_jitter_std: 0.01
 barlow_drop_ratio: 0.2
 

@@ -129,6 +129,12 @@ class VNEquivariantDecoder(Decoder):
 _EPS = 1e-6
 
 
+def _softmax_fp32(scores: torch.Tensor, dim: int) -> torch.Tensor:
+    if scores.dtype in (torch.float16, torch.bfloat16):
+        return torch.softmax(scores.float(), dim=dim).to(scores.dtype)
+    return torch.softmax(scores, dim=dim)
+
+
 class VNZCALayerNorm(nn.Module):
     """ZCA-whitening LayerNorm for VN features (B, C, 3, ...)."""
 
@@ -213,7 +219,7 @@ class VNChannelWiseSubtractionAttention(nn.Module):
             score_in = rel_mean
 
         scores = self.score_mlp(score_in)                     # (B,Kq,Kk,C)
-        attn = torch.softmax(scores, dim=2)
+        attn = _softmax_fp32(scores, dim=2)
 
         out = torch.einsum("bijk,bjkd->bikd", attn, vv)        # (B,K,C,3)
         out = out.permute(0, 2, 3, 1).contiguous()             # (B,C,3,K)
@@ -274,6 +280,7 @@ class VNRevnetAnchorDecoder(Decoder):
         use_zca_norm: bool = True,
         use_invariant_anchor_pos: bool = True,
         pos_mlp_hidden: int = 256,
+        point_allocation: str = "truncate",
     ):
         super().__init__()
         self._n = num_points
@@ -283,6 +290,7 @@ class VNRevnetAnchorDecoder(Decoder):
         self.output_scale = output_scale
         self.center_output = center_output
         self.use_invariant_anchor_pos = use_invariant_anchor_pos
+        self.point_allocation = point_allocation
 
         # NOTE: import VNStdFeature locally to avoid changing your existing top-level imports
         from ..encoders.vn_encoders import VNStdFeature
@@ -345,6 +353,20 @@ class VNRevnetAnchorDecoder(Decoder):
         self.total_points = self.points_per_anchor * num_anchors
         self.point_queries = nn.Parameter(torch.randn(self.points_per_anchor, point_query_dim) * 0.02)
 
+        if self.point_allocation not in {"truncate", "balanced"}:
+            raise ValueError(f"Unsupported point_allocation={self.point_allocation!r}")
+        if self.point_allocation == "balanced":
+            base = num_points // num_anchors
+            extra = num_points % num_anchors
+            counts = torch.full((num_anchors,), base, dtype=torch.long)
+            if extra > 0:
+                counts[:extra] += 1
+            idx = torch.arange(self.points_per_anchor).unsqueeze(0)
+            mask = idx < counts.unsqueeze(1)
+            self.register_buffer("point_mask", mask, persistent=False)
+        else:
+            self.point_mask = None
+
         inv_dim = anchor_channels * 3
         self.offset_mlp = nn.Sequential(
             nn.Linear(inv_dim + point_query_dim, offset_mlp_hidden),
@@ -394,9 +416,14 @@ class VNRevnetAnchorDecoder(Decoder):
         Rt = R.permute(0, 3, 2, 1).contiguous()                          # (B,K,3,3) canonical->global
         offsets_global = torch.einsum("bkpi,bkij->bkpj", offsets_local, Rt)
 
-        points = (pos.unsqueeze(2) + offsets_global).reshape(B, self.total_points, 3)
-        if self.total_points != self._n:
-            points = points[:, : self._n]
+        points = (pos.unsqueeze(2) + offsets_global)
+        if self.point_allocation == "balanced":
+            points = points.reshape(B, self.total_points, 3)
+            points = points[:, self.point_mask.view(-1), :]
+        else:
+            points = points.reshape(B, self.total_points, 3)
+            if self.total_points != self._n:
+                points = points[:, : self._n]
 
         points = points * self.output_scale * self.scale_param
         if self.center_output:
