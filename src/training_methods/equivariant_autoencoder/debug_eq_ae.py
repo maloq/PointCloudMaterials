@@ -329,10 +329,6 @@ def apply_debug_overrides(cfg: DictConfig) -> None:
     cfg.barlow_enabled = False
     cfg.barlow_weight = 0.0
     
-    # Disable curriculum
-    if hasattr(cfg, "curriculum_learning"):
-        cfg.curriculum_learning.enable = False
-    
     # Higher learning rate for overfitting
     cfg.learning_rate = 0.01
     

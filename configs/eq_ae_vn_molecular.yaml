@@ -78,8 +78,8 @@ sinkhorn_blur_schedule:
 
 # Training parameters
 learning_rate: 0.001
-batch_size: 256
-precision: 32-true
+batch_size: 32
+precision: bf16-true
 # Gradient clipping for stability (use 0 to disable)
 gradient_clip_val: 1.0
 
@@ -123,10 +123,10 @@ barlow_start_epoch: 2
 barlow_jitter_std: 0.003
 barlow_drop_ratio: 0.2
 
-# Curriculum learning settings
-curriculum_learning:
-  enable: False
-  start_fraction: 0.0
-  end_fraction: 1.0
-  start_epoch: 10
-  end_epoch: 50
+# Data augmentation (applied in dataloaders)
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false

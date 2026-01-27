@@ -121,11 +121,3 @@ barlow_embed_dim: 128
 barlow_start_epoch: 0
 barlow_jitter_std: 0.01
 barlow_drop_ratio: 0.2
-
-# Curriculum learning settings
-curriculum_learning:
-  enable: False
-  start_fraction: 0.0
-  end_fraction: 1.0
-  start_epoch: 10
-  end_epoch: 50

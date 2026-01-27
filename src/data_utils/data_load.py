@@ -313,6 +313,11 @@ class SyntheticPointCloudDataset(Dataset):
         max_samples: Optional[int] = None,
         discard_mixed_phase: bool = False,
         sampling_method: str = "drop_farthest",
+        rotation_scale: float = 0.0,
+        noise_scale: float = 0.0,
+        jitter_scale: float = 0.0,
+        scaling_range: float = 0.0,
+        track_augmentation: bool = False,
     ) -> None:
         super().__init__()
         if not env_dirs:
@@ -328,6 +333,12 @@ class SyntheticPointCloudDataset(Dataset):
         self.max_samples = max_samples if max_samples is not None and max_samples > 0 else None
         self.discard_mixed_phase = discard_mixed_phase
         self.sampling_method = sampling_method
+        self.rotation_scale = float(rotation_scale)
+        self.noise_scale = float(noise_scale)
+        self.jitter_scale = float(jitter_scale)
+        self.scaling_range = float(scaling_range)
+        self.track_augmentation = bool(track_augmentation)
+        self._augmentation_metadata: Optional[List[Dict[str, Any]]] = None
 
         # Store as tensors to avoid conversion overhead
         self.samples: List[torch.Tensor] = []
@@ -349,9 +360,12 @@ class SyntheticPointCloudDataset(Dataset):
 
         if not self.samples:
             raise RuntimeError("SyntheticPointCloudDataset constructed with zero samples")
-        
+
         # Build class properties based on detected classes
         self._build_class_properties()
+
+        if self.track_augmentation:
+            self._augmentation_metadata = [None] * len(self.samples)
 
     def _ingest_environment(self, env_dir: Union[str, Path], env_index: int) -> None:
         env_path = Path(env_dir)
@@ -745,18 +759,62 @@ class SyntheticPointCloudDataset(Dataset):
                 - "rotation": (3, 3) float32 rotation matrix tensor
         """
         # Samples are already stored as tensors for efficiency
-        pc_tensor = self.samples[index]
+        pc_tensor = self.samples[index].clone()
         if not self.pre_normalize and self.normalize:
             point_set = pc_tensor.numpy()
             point_set = pc_normalize(point_set, self.radius).astype(np.float32)
             pc_tensor = torch.tensor(point_set, dtype=torch.float32)
 
+        rotation = self._rotations[index].to(dtype=pc_tensor.dtype)
+        aug_info: Dict[str, Any] = {}
+        did_augment = False
+
+        if self.rotation_scale > 0:
+            rot = self._random_rotation_matrix(pc_tensor.device, pc_tensor.dtype)
+            pc_tensor = (rot @ pc_tensor.transpose(0, 1)).transpose(0, 1).contiguous()
+            rotation = rot @ rotation
+            aug_info["rotation"] = rot.cpu().numpy()
+            did_augment = True
+
+        if self.scaling_range > 0:
+            scale = (torch.rand(1, dtype=pc_tensor.dtype, device=pc_tensor.device) * 2.0 - 1.0) * self.scaling_range + 1.0
+            pc_tensor = pc_tensor * scale
+            aug_info["scale"] = float(scale.item())
+            did_augment = True
+
+        if self.noise_scale > 0:
+            pc_tensor = pc_tensor + torch.randn_like(pc_tensor) * self.noise_scale
+            aug_info["noise_scale"] = self.noise_scale
+            did_augment = True
+
+        if self.jitter_scale > 0:
+            jitter = torch.randn_like(pc_tensor) * self.jitter_scale
+            pc_tensor = pc_tensor + jitter
+            aug_info["jitter_scale"] = self.jitter_scale
+            did_augment = True
+
+        if did_augment:
+            pc_tensor = pc_tensor - pc_tensor.mean(dim=0, keepdim=True)
+
+        if self._augmentation_metadata is not None:
+            self._augmentation_metadata[index] = aug_info
+
         return {
             "points": pc_tensor,
             "class_id": torch.tensor(self._class_ids[index], dtype=torch.long),
             "instance_id": torch.tensor(self._instance_ids[index], dtype=torch.long),
-            "rotation": self._rotations[index],
+            "rotation": rotation.to(dtype=torch.float32),
         }
+
+    @staticmethod
+    def _random_rotation_matrix(device: torch.device, dtype: torch.dtype) -> torch.Tensor:
+        rand_mat = torch.randn(3, 3, device=device, dtype=dtype)
+        q, r = torch.linalg.qr(rand_mat)
+        d = torch.diagonal(r).sign()
+        q *= d.unsqueeze(-1)
+        if torch.det(q) < 0:
+            q[:, 0] *= -1
+        return q
 
 
 class CenteredModelNetDataset(Dataset):
@@ -1057,97 +1115,6 @@ class CenteredModelNetDataset(Dataset):
             "instance_id": self._instance_ids[index],
             "rotation": rotation.to(dtype=torch.float32),
         }
-
-
-class CurriculumLearningDataset(Dataset):
-    """Wrapper dataset that filters samples based on amorphous fraction for curriculum learning.
-
-    This dataset wraps a SyntheticPointCloudDataset and dynamically filters samples to include
-    only a specified fraction of amorphous samples. This enables curriculum learning where
-    the model starts training with only crystalline samples and gradually introduces amorphous ones.
-
-    Args:
-        dataset: The underlying SyntheticPointCloudDataset (or Subset of one)
-        amorphous_fraction: Fraction of amorphous samples to include (0.0 to 1.0)
-    """
-
-    def __init__(self, dataset, amorphous_fraction: float = 1.0):
-        self.dataset = dataset
-        self._amorphous_fraction = amorphous_fraction
-
-        # Handle Subset objects from train/val split
-        self.base_dataset = dataset
-        self.subset_indices = None
-        if hasattr(dataset, 'dataset') and hasattr(dataset, 'indices'):
-            # This is a Subset object from random_split
-            self.base_dataset = dataset.dataset
-            self.subset_indices = dataset.indices
-
-        self._update_indices()
-
-    def _update_indices(self):
-        """Update the list of valid indices based on current amorphous fraction."""
-        crystalline_indices = []
-        amorphous_indices = []
-
-        # Determine which indices to iterate over
-        if self.subset_indices is not None:
-            # We're wrapping a Subset - only consider indices in the subset
-            indices_to_check = self.subset_indices
-        else:
-            # We're wrapping the full dataset
-            indices_to_check = range(len(self.base_dataset))
-
-        # Separate indices by class type
-        for idx in indices_to_check:
-            class_label = self.base_dataset._class_ids[idx]
-            # Get the class name from the index
-            class_name = None
-            for name, class_idx in self.base_dataset._class_to_idx.items():
-                if class_idx == class_label:
-                    class_name = name
-                    break
-
-            # Check if this is an amorphous class
-            if class_name and class_name == 'amorphous':
-                amorphous_indices.append(idx)
-            else:
-                crystalline_indices.append(idx)
-
-        # Calculate how many amorphous samples to include
-        num_amorphous_to_include = int(len(amorphous_indices) * self._amorphous_fraction)
-
-        # Combine indices: all crystalline + fraction of amorphous
-        self._valid_indices = crystalline_indices + amorphous_indices[:num_amorphous_to_include]
-
-        logger.print(
-            f"CurriculumLearning: amorphous_fraction={self._amorphous_fraction:.3f}, "
-            f"crystalline={len(crystalline_indices)}, "
-            f"amorphous={num_amorphous_to_include}/{len(amorphous_indices)}, "
-            f"total={len(self._valid_indices)}"
-        )
-
-    @property
-    def amorphous_fraction(self) -> float:
-        """Get current amorphous fraction."""
-        return self._amorphous_fraction
-
-    @amorphous_fraction.setter
-    def amorphous_fraction(self, value: float):
-        """Set amorphous fraction and update indices."""
-        if not 0.0 <= value <= 1.0:
-            raise ValueError(f"amorphous_fraction must be in [0, 1], got {value}")
-        if value != self._amorphous_fraction:
-            self._amorphous_fraction = value
-            self._update_indices()
-
-    def __len__(self) -> int:
-        return len(self._valid_indices)
-
-    def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
-        """Return sample as dictionary."""
-        actual_idx = self._valid_indices[index]
-        return self.base_dataset[actual_idx]
 
 
 class SoapCoordDataset(Dataset):

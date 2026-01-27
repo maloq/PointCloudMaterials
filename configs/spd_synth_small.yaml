@@ -87,11 +87,3 @@ kl_latent_loss_scale: 0.00
 pdist_loss_scale: 0.00
 ortho_scale: 0.01
 kabsch_rotation_loss_scale: 0.000
-
-# Curriculum learning settings
-curriculum_learning:
-  enable: False  # Set to True to enable curriculum learning
-  start_fraction: 0.0  # Starting amorphous fraction (0.0 = no amorphous samples)
-  end_fraction: 1.0  # Final amorphous fraction (1.0 = all amorphous samples included)
-  start_epoch: 3  # Epoch to start increasing amorphous fraction
-  end_epoch: 11  # Epoch to reach end_fraction (null = use max_epochs)

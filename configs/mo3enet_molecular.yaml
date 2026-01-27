@@ -96,6 +96,14 @@ scheduler_name: Cosine
 decay_rate: 0.0001
 kl_latent_loss_scale: 0.0
 
+# Data augmentation (applied in dataloaders)
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false
+
 # Cache settings for metrics
 max_cache_samples: 8192
 max_test_samples: 2000

@@ -5,7 +5,6 @@ from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
     CenteredModelNetDataset,
-    CurriculumLearningDataset,
 )
 import time
 import logging
@@ -112,11 +111,6 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
         self.max_samples = cfg.max_samples
-
-        # Curriculum learning settings
-        self.enable_curriculum = hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable
-        if self.enable_curriculum:
-            self.curriculum_learning = cfg.curriculum_learning
         self._phase_info_logged = False
 
     def setup(self, stage=None):
@@ -124,15 +118,6 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         self.train_dataset, self.val_dataset = self._build_datasets()
         # Test dataset is same as val for metrics
         self.test_dataset = self.val_dataset
-
-        # Apply curriculum learning wrapper to train dataset BEFORE max_samples limiting
-        if self.enable_curriculum:
-            start_fraction = self.curriculum_learning.start_fraction
-            logger.print(f"Curriculum learning enabled with start_fraction={start_fraction}")
-            self.train_dataset = CurriculumLearningDataset(
-                self.train_dataset,
-                amorphous_fraction=start_fraction
-            )
 
         if self.max_samples > 0:
             max_train = min(self.max_samples, len(self.train_dataset))
@@ -155,6 +140,15 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         synth_cfg = getattr(data_cfg, "synthetic", None)
         synth_dict = _to_container(synth_cfg) if synth_cfg is not None else {}
 
+        aug_cfg = getattr(data_cfg, "augmentation", None)
+        if aug_cfg is None:
+            aug_cfg = getattr(self.cfg, "augmentation", None)
+        rotation_scale = getattr(aug_cfg, "rotation_scale", 0.0) if aug_cfg else 0.0
+        noise_scale = getattr(aug_cfg, "noise_scale", 0.0) if aug_cfg else 0.0
+        jitter_scale = getattr(aug_cfg, "jitter_scale", 0.0) if aug_cfg else 0.0
+        scaling_range = getattr(aug_cfg, "scaling_range", 0.0) if aug_cfg else 0.0
+        track_augmentation = getattr(aug_cfg, "track_augmentation", False) if aug_cfg else False
+
         dataset_type = self._get_param("dataset_type", data_cfg, synth_dict, default="synthetic_env")
         if dataset_type == "modelnet_objects":
             root_dir = self._get_param("data_path", data_cfg, synth_dict, required=True)
@@ -172,16 +166,6 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
                 classes = _to_container(classes)
                 if isinstance(classes, str):
                     classes = [classes]
-
-            aug_cfg = getattr(data_cfg, "augmentation", None)
-            if aug_cfg is None:
-                aug_cfg = getattr(self.cfg, "augmentation", None)
-
-            rotation_scale = getattr(aug_cfg, "rotation_scale", 0.0) if aug_cfg else 0.0
-            noise_scale = getattr(aug_cfg, "noise_scale", 0.0) if aug_cfg else 0.0
-            jitter_scale = getattr(aug_cfg, "jitter_scale", 0.0) if aug_cfg else 0.0
-            scaling_range = getattr(aug_cfg, "scaling_range", 0.0) if aug_cfg else 0.0
-            track_augmentation = getattr(aug_cfg, "track_augmentation", False) if aug_cfg else False
 
             dataset = CenteredModelNetDataset(
                 root_dir=root_dir,
@@ -231,6 +215,11 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             pre_normalize=bool(pre_normalize),
             normalize=bool(normalize),
             max_samples=int(dataset_max) if dataset_max is not None else None,
+            rotation_scale=rotation_scale,
+            noise_scale=noise_scale,
+            jitter_scale=jitter_scale,
+            scaling_range=scaling_range,
+            track_augmentation=track_augmentation,
         )
 
         train_ratio = float(self._get_param("train_ratio", data_cfg, synth_dict, default=0.8))
@@ -281,10 +270,6 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         return value
 
     def train_dataloader(self):
-        # Disable persistent workers when curriculum learning is active
-        # because dataset size changes between epochs
-        use_persistent = not self.enable_curriculum and self.num_workers > 0
-
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
@@ -292,7 +277,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             shuffle=True,
             drop_last=True,
             pin_memory=True,
-            persistent_workers=use_persistent,
+            persistent_workers=self.num_workers > 0,
         )
 
     def val_dataloader(self):

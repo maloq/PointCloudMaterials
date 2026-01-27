@@ -1,8 +1,5 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
 
 import sys, os
 import numpy as np
@@ -28,7 +25,12 @@ from src.utils.spd_utils import (
     get_current_sinkhorn_blur,
     get_optimizers_and_scheduler,
 )
-from omegaconf import DictConfig, ListConfig, OmegaConf
+from src.training_methods.equivariant_autoencoder.idec import (
+    IDECManager,
+    resolve_latent_dim,
+)
+from src.training_methods.equivariant_autoencoder.barlow_twins import BarlowTwinsLoss
+from omegaconf import ListConfig, OmegaConf
 
 
 # Supported reconstruction loss components (can be combined via '+')
@@ -38,40 +40,6 @@ LOSS_COMPONENTS = (
     "pdist",
     "rdf",
 )
-
-
-class IDECClusteringHead(nn.Module):
-    def __init__(self, num_clusters: int, embed_dim: int, eps: float = 1e-8):
-        super().__init__()
-        self.num_clusters = int(num_clusters)
-        self.embed_dim = int(embed_dim)
-        self.eps = float(eps)
-        self.centers = nn.Parameter(torch.empty(self.num_clusters, self.embed_dim))
-        nn.init.normal_(self.centers, std=0.02)
-
-    def soft_assign_q(self, z: torch.Tensor) -> torch.Tensor:
-        diff = z.unsqueeze(1) - self.centers.unsqueeze(0)
-        dist_sq = (diff * diff).sum(dim=2)
-        q = 1.0 / (1.0 + dist_sq)
-        q = q / (q.sum(dim=1, keepdim=True) + self.eps)
-        return q
-
-    def target_distribution_p(self, q: torch.Tensor) -> torch.Tensor:
-        f_j = q.sum(dim=0)
-        numerator = (q * q) / (f_j + self.eps)
-        p = numerator / (numerator.sum(dim=1, keepdim=True) + self.eps)
-        return p
-
-    def kl_pq(self, p: torch.Tensor, q: torch.Tensor) -> torch.Tensor:
-        p_safe = p.clamp(min=self.eps)
-        q_safe = q.clamp(min=self.eps)
-        return torch.mean(torch.sum(p_safe * torch.log(p_safe / q_safe), dim=1))
-
-
-# IDEC workflow example:
-# 1) Pretrain AE with idec_enabled=False for N epochs
-# 2) model.init_idec_centers_from_kmeans(trainer.datamodule.train_dataloader())
-# 3) Finetune with idec_enabled=True, idec_gamma=0.1, idec_use_global_p=True, idec_update_interval=T
 
 
 class EquivariantAutoencoder(pl.LightningModule):
@@ -114,62 +82,12 @@ class EquivariantAutoencoder(pl.LightningModule):
         self.load_pretrained_ae = bool(getattr(cfg, "load_pretrained_ae", False))
         self.pretrained_ae_checkpoint = getattr(cfg, "pretrained_ae_checkpoint", None)
 
-        self.idec_enabled = bool(getattr(cfg, "idec_enabled", False))
-        self.idec_num_clusters = int(getattr(cfg, "idec_num_clusters", 0) or 0)
-        self.idec_gamma = float(getattr(cfg, "idec_gamma", 0.1))
-        self.idec_update_interval = int(getattr(cfg, "idec_update_interval", 200))
-        self.idec_delta = float(getattr(cfg, "idec_delta", 0.001))
-        self.idec_max_iter = getattr(cfg, "idec_max_iter", None)
-        self.idec_use_global_p = bool(getattr(cfg, "idec_use_global_p", True))
-        self.idec_normalize_z = bool(getattr(cfg, "idec_normalize_z", True))
-        self.idec_init_kmeans = bool(getattr(cfg, "idec_init_kmeans", True))
-
-        self.barlow_enabled = bool(getattr(cfg, "barlow_enabled", False))
-        self.barlow_weight = float(getattr(cfg, "barlow_weight", 0.0))
-        self.barlow_lambda = float(getattr(cfg, "barlow_lambda", 5e-3))
-        self.barlow_embed_dim = int(getattr(cfg, "barlow_embed_dim", 8192))
-        self.barlow_start_epoch = max(0, int(getattr(cfg, "barlow_start_epoch", 0)))
-
-        self._idec_embed_dim = self._resolve_idec_embed_dim(cfg)
-        self.idec_head = None
-        if self.idec_num_clusters > 0:
-            if self._idec_embed_dim is None:
-                raise ValueError("IDEC requires latent_size to set clustering embed_dim")
-            self.idec_head = IDECClusteringHead(
-                num_clusters=self.idec_num_clusters,
-                embed_dim=self._idec_embed_dim,
-            )
-        elif self.idec_enabled:
-            raise ValueError("idec_num_clusters must be set when idec_enabled=True")
-
-        self._barlow_inv_dim = self._idec_embed_dim
-        if self._barlow_inv_dim is None:
-            if self.barlow_enabled and self.barlow_weight > 0:
-                raise ValueError("Barlow Twins requires latent_size to set projector input dim")
-            self.barlow_projector = None
-        else:
-            self.barlow_projector = nn.Sequential(
-                nn.Linear(self._barlow_inv_dim, self.barlow_embed_dim, bias=False),
-                nn.BatchNorm1d(self.barlow_embed_dim),
-                nn.ReLU(inplace=True),
-                nn.Linear(self.barlow_embed_dim, self.barlow_embed_dim, bias=False),
-                nn.BatchNorm1d(self.barlow_embed_dim),
-                nn.ReLU(inplace=True),
-                nn.Linear(self.barlow_embed_dim, self.barlow_embed_dim, bias=False),
-            )
+        latent_dim = resolve_latent_dim(cfg)
+        self.idec = IDECManager.from_config(cfg, embed_dim=latent_dim)
+        self.barlow = BarlowTwinsLoss.from_config(cfg, input_dim=latent_dim)
 
         if self.load_pretrained_ae:
             self._load_pretrained_ae(self.pretrained_ae_checkpoint)
-
-        self._idec_p_cache = None
-        self._idec_p_cache_is_tensor = False
-        self._idec_p_cache_ready = False
-        self._idec_prev_labels = None
-        self._idec_last_p_update_step = None
-        self._idec_last_change_rate = None
-        self._idec_should_stop = False
-        self._idec_cached_train_loader = None
-        self._idec_global_p_invalid = False
         
         # Caches (using standardized field names)
         self._supervised_cache = {
@@ -200,15 +118,13 @@ class EquivariantAutoencoder(pl.LightningModule):
     def _loss_param(self, section: str, key: str, default):
         return self.loss_params.get(section, {}).get(key, default)
 
-    @staticmethod
-    def _resolve_idec_embed_dim(cfg):
-        if hasattr(cfg, "latent_size"):
-            return int(cfg.latent_size)
-        if hasattr(cfg, "encoder") and hasattr(cfg.encoder, "kwargs"):
-            latent_size = cfg.encoder.kwargs.get("latent_size", None)
-            if latent_size is not None:
-                return int(latent_size)
-        return None
+    @property
+    def idec_head(self):
+        return self.idec.head
+
+    @property
+    def barlow_projector(self):
+        return self.barlow.projector
 
     def _load_pretrained_ae(self, checkpoint_path) -> None:
         if not checkpoint_path:
@@ -238,9 +154,6 @@ class EquivariantAutoencoder(pl.LightningModule):
         if unexpected:
             print(f"  Unexpected keys: {unexpected[:5]}{'...' if len(unexpected) > 5 else ''}")
 
-    def _idec_active(self) -> bool:
-        return bool(self.idec_enabled and self.idec_head is not None)
-
     def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
         if getattr(self.encoder, "expects_channel_first", False):
             return pc.permute(0, 2, 1).contiguous()
@@ -261,73 +174,6 @@ class EquivariantAutoencoder(pl.LightningModule):
                         eq_z = candidate
             return inv_z, eq_z
         return enc_out, None
-
-    def _barlow_augment(self, pc: torch.Tensor) -> torch.Tensor:
-        """
-        Produce a label-preserving augmented view of a point cloud.
-        pc: (B, N, 3)
-        """
-        x = pc
-
-        jitter_std = float(getattr(self.hparams, "barlow_jitter_std", 0.01))
-        drop_ratio = float(getattr(self.hparams, "barlow_drop_ratio", 0.2))
-
-        if jitter_std > 0:
-            x = x + torch.randn_like(x) * jitter_std
-
-        if drop_ratio > 0:
-            B, N, _ = x.shape
-            keep = (torch.rand(B, N, device=x.device) > drop_ratio)
-            keep[:, 0] = True
-            w = keep.float()
-            w = w / (w.sum(dim=1, keepdim=True) + 1e-8)
-            idx = torch.multinomial(w, num_samples=N, replacement=True)
-            x = x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
-
-        return x
-
-    @staticmethod
-    def _off_diagonal(x: torch.Tensor) -> torch.Tensor:
-        n, m = x.shape
-        if n != m:
-            raise ValueError("Input must be a square matrix")
-        return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
-
-    def _barlow_loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> torch.Tensor:
-        """
-        z_a, z_b are embeddings after projector: (N, D)
-        """
-        if z_a.dtype != torch.float32:
-            z_a = z_a.float()
-        if z_b.dtype != torch.float32:
-            z_b = z_b.float()
-        N, D = z_a.shape
-        if N < 2:
-            return z_a.new_tensor(0.0)
-
-        z_a_mean = z_a.mean(0)
-        z_b_mean = z_b.mean(0)
-        z_a_std = z_a.std(0, unbiased=False).clamp_min(1e-4)
-        z_b_std = z_b.std(0, unbiased=False).clamp_min(1e-4)
-        z_a_norm = (z_a - z_a_mean) / z_a_std
-        z_b_norm = (z_b - z_b_mean) / z_b_std
-
-        c = (z_a_norm.T @ z_b_norm) / N
-        c_diff = (c - torch.eye(D, device=c.device, dtype=c.dtype)).pow(2)
-
-        off = self._off_diagonal(c_diff)
-        off.mul_(self.barlow_lambda)
-
-        loss = torch.diagonal(c_diff).sum() + off.sum()
-        return loss
-
-    def _barlow_invariant(self, inv_z, eq_z):
-        if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
-            eq_z = inv_z
-            inv_z = None
-        if eq_z is not None:
-            return eq_z.norm(dim=-1)
-        return inv_z
 
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
@@ -493,271 +339,21 @@ class EquivariantAutoencoder(pl.LightningModule):
 
         return losses, sinkhorn_blur
 
-    def _compute_idec_loss(self, inv_z: torch.Tensor, meta: dict):
-        if not self._idec_active():
-            return None, None
-        if inv_z is None:
-            return None, None
-        z = inv_z
-        if self.idec_normalize_z:
-            z = F.normalize(z, dim=1)
-        q = self.idec_head.soft_assign_q(z).float()
-        p = None
-        if self.idec_use_global_p and self._idec_p_cache_ready:
-            p = self._get_idec_p_for_batch(meta.get("instance_id"))
-        if p is None:
-            p = self.idec_head.target_distribution_p(q).detach()
-        p = p.to(device=q.device, dtype=q.dtype)
-        cluster_kl = self.idec_head.kl_pq(p, q)
-        q_entropy = (-q * q.clamp_min(self.idec_head.eps).log()).sum(dim=1).mean()
-        return cluster_kl, q_entropy
-
-    def _maybe_update_idec_targets(self) -> None:
-        if not self._idec_active():
-            return
-        if not self.idec_use_global_p or self._idec_global_p_invalid:
-            return
-        if self.idec_update_interval <= 0:
-            return
-        if self._idec_should_stop:
-            return
-        step = int(self.global_step)
-        if self._idec_last_p_update_step is None or (step - self._idec_last_p_update_step) >= self.idec_update_interval:
-            change_rate = self._update_idec_p_cache()
-            if change_rate is not None:
-                self._log_metric("train", "idec_label_change_rate", change_rate, on_step=True, on_epoch=False)
-
-    @torch.no_grad()
-    def _update_idec_p_cache(self):
-        loader = self._get_train_dataloader()
-        if loader is None:
-            return None
-        was_training = self.training
-        self.eval()
-        q_batches = []
-        id_batches = []
-        for batch in loader:
-            pc, meta = self._unpack_batch(batch)
-            pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
-            enc_out = self.encoder(self._prepare_encoder_input(pc))
-            inv_z, _ = self._split_encoder_output(enc_out)
-            if inv_z is None:
-                continue
-            z = inv_z
-            if self.idec_normalize_z:
-                z = F.normalize(z, dim=1)
-            q = self.idec_head.soft_assign_q(z)
-            q_batches.append(q.detach().to(torch.float32).cpu())
-            ids = meta.get("instance_id")
-            if ids is None:
-                ids = torch.arange(z.shape[0], dtype=torch.long)
-            elif not torch.is_tensor(ids):
-                ids = torch.as_tensor(ids, dtype=torch.long)
-            ids = ids.view(-1).detach().cpu()
-            id_batches.append(ids)
-        if was_training:
-            self.train()
-        if not q_batches:
-            self._idec_p_cache_ready = False
-            return None
-        q_all = torch.cat(q_batches, dim=0)
-        ids_all = torch.cat(id_batches, dim=0)
-        if (ids_all < 0).any():
-            self._idec_global_p_invalid = True
-            self._idec_p_cache_ready = False
-            return None
-        p_all = self.idec_head.target_distribution_p(q_all).detach()
-        self._set_idec_p_cache(ids_all, p_all)
-        labels = torch.argmax(q_all, dim=1)
-        change_rate = None
-        if self._idec_prev_labels is not None and self._idec_prev_labels.numel() == labels.numel():
-            change_rate = (self._idec_prev_labels != labels).float().mean().item()
-            self._idec_last_change_rate = change_rate
-            if self.idec_delta > 0 and change_rate < self.idec_delta:
-                self._idec_should_stop = True
-                if self.trainer is not None:
-                    self.trainer.should_stop = True
-        self._idec_prev_labels = labels
-        self._idec_last_p_update_step = int(self.global_step)
-        return change_rate
-
-    def _set_idec_p_cache(self, instance_ids: torch.Tensor, p_all: torch.Tensor) -> None:
-        instance_ids = instance_ids.to(torch.long).view(-1)
-        p_all = p_all.to(torch.float32)
-        if instance_ids.numel() == 0:
-            self._idec_p_cache = None
-            self._idec_p_cache_is_tensor = False
-            self._idec_p_cache_ready = False
-            return
-        unique_ids, _ = torch.unique(instance_ids, return_counts=True)
-        has_duplicates = unique_ids.numel() != instance_ids.numel()
-        min_id = int(unique_ids.min().item())
-        max_id = int(unique_ids.max().item())
-        contiguous = min_id >= 0 and (max_id + 1 == unique_ids.numel()) and not has_duplicates
-        if contiguous:
-            cache = torch.zeros((max_id + 1, p_all.shape[1]), dtype=torch.float32)
-            cache[instance_ids] = p_all
-            self._idec_p_cache = cache
-            self._idec_p_cache_is_tensor = True
-            self._idec_p_cache_ready = True
-            return
-        sums = {}
-        counts_map = {}
-        for idx, key in enumerate(instance_ids.tolist()):
-            key = int(key)
-            if key not in sums:
-                sums[key] = p_all[idx].clone()
-                counts_map[key] = 1
-            else:
-                sums[key] += p_all[idx]
-                counts_map[key] += 1
-        cache = {key: sums[key] / float(counts_map[key]) for key in sums}
-        self._idec_p_cache = cache
-        self._idec_p_cache_is_tensor = False
-        self._idec_p_cache_ready = True
-
-    def _get_idec_p_for_batch(self, instance_ids):
-        if instance_ids is None or self._idec_p_cache is None or not self._idec_p_cache_ready:
-            return None
-        if not torch.is_tensor(instance_ids):
-            instance_ids = torch.as_tensor(instance_ids, dtype=torch.long)
-        instance_ids = instance_ids.view(-1)
-        if instance_ids.numel() == 0 or (instance_ids < 0).any():
-            return None
-        if self._idec_p_cache_is_tensor:
-            ids_cpu = instance_ids.to(torch.long).cpu()
-            if ids_cpu.max().item() >= self._idec_p_cache.shape[0]:
-                return None
-            p = self._idec_p_cache[ids_cpu]
-            return p.to(device=self.device)
-        p_list = []
-        for key in instance_ids.tolist():
-            val = self._idec_p_cache.get(int(key))
-            if val is None:
-                return None
-            p_list.append(val)
-        return torch.stack(p_list, dim=0).to(device=self.device)
-
-    def _clone_dataloader_no_drop(self, loader):
-        if not isinstance(loader, DataLoader):
-            return loader
-        kwargs = dict(
-            batch_size=loader.batch_size,
-            shuffle=False,
-            num_workers=loader.num_workers,
-            pin_memory=loader.pin_memory,
-            drop_last=False,
-            collate_fn=loader.collate_fn,
-            worker_init_fn=loader.worker_init_fn,
-            timeout=loader.timeout,
-            generator=loader.generator,
-        )
-        if loader.num_workers > 0:
-            kwargs["persistent_workers"] = loader.persistent_workers
-            prefetch_factor = getattr(loader, "prefetch_factor", None)
-            if prefetch_factor is not None:
-                kwargs["prefetch_factor"] = prefetch_factor
-        return DataLoader(loader.dataset, **kwargs)
-
-    def _get_train_dataloader(self):
-        if self._idec_cached_train_loader is not None:
-            return self._idec_cached_train_loader
-        if self.trainer is None:
-            return None
-        loader = None
-        dm = getattr(self.trainer, "datamodule", None)
-        if dm is not None and hasattr(dm, "train_dataloader"):
-            try:
-                loader = dm.train_dataloader()
-            except Exception:
-                loader = None
-        if loader is None:
-            loader = getattr(self.trainer, "train_dataloader", None)
-        if isinstance(loader, (list, tuple)):
-            loader = loader[0] if loader else None
-        if loader is None:
-            return None
-        loader = self._clone_dataloader_no_drop(loader)
-        self._idec_cached_train_loader = loader
-        return loader
-
-    def _run_kmeans(self, z: torch.Tensor, num_clusters: int, *, kmeans_kwargs=None) -> torch.Tensor:
-        kmeans_kwargs = {} if kmeans_kwargs is None else dict(kmeans_kwargs)
-        z_np = z.detach().cpu().numpy()
-        try:
-            from sklearn.cluster import KMeans
-
-            n_init = kmeans_kwargs.pop("n_init", 10)
-            random_state = kmeans_kwargs.pop("random_state", 0)
-            kmeans = KMeans(
-                n_clusters=num_clusters,
-                n_init=n_init,
-                random_state=random_state,
-                **kmeans_kwargs,
-            )
-            kmeans.fit(z_np)
-            centers = torch.from_numpy(kmeans.cluster_centers_).to(dtype=z.dtype)
-            return centers
-        except Exception as exc:
-            print(f"Falling back to torch k-means: {exc}")
-        return self._torch_kmeans(z, num_clusters)
-
-    def _torch_kmeans(self, z: torch.Tensor, num_clusters: int, num_iters: int = 20) -> torch.Tensor:
-        if z.shape[0] < num_clusters:
-            raise ValueError("Not enough samples to initialize k-means centers")
-        z = z.to(torch.float32)
-        indices = torch.randperm(z.shape[0], device=z.device)[:num_clusters]
-        centers = z[indices].clone()
-        for _ in range(num_iters):
-            diff = z.unsqueeze(1) - centers.unsqueeze(0)
-            dist_sq = (diff * diff).sum(dim=2)
-            labels = dist_sq.argmin(dim=1)
-            new_centers = centers.clone()
-            for k in range(num_clusters):
-                mask = labels == k
-                if mask.any():
-                    new_centers[k] = z[mask].mean(dim=0)
-            if torch.allclose(new_centers, centers):
-                centers = new_centers
-                break
-            centers = new_centers
-        return centers
-
     @torch.no_grad()
     def init_idec_centers_from_kmeans(self, train_dataloader=None, *, max_samples=None, kmeans_kwargs=None):
-        if self.idec_head is None:
-            raise ValueError("IDEC head is not initialized")
-        loader = train_dataloader or self._get_train_dataloader()
-        if loader is None:
-            raise ValueError("Training dataloader is required for k-means initialization")
-        was_training = self.training
-        self.eval()
-        z_batches = []
-        total = 0
-        for batch in loader:
-            pc, meta = self._unpack_batch(batch)
-            pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
-            enc_out = self.encoder(self._prepare_encoder_input(pc))
-            inv_z, _ = self._split_encoder_output(enc_out)
-            if inv_z is None:
-                continue
-            z = inv_z
-            if self.idec_normalize_z:
-                z = F.normalize(z, dim=1)
-            z_batches.append(z.detach().to(torch.float32).cpu())
-            total += int(z.shape[0])
-            if max_samples is not None and total >= max_samples:
-                break
-        if was_training:
-            self.train()
-        if not z_batches:
-            raise RuntimeError("No latents collected for k-means initialization")
-        z_all = torch.cat(z_batches, dim=0)
-        if max_samples is not None and z_all.shape[0] > max_samples:
-            z_all = z_all[:max_samples]
-        centers = self._run_kmeans(z_all, self.idec_num_clusters, kmeans_kwargs=kmeans_kwargs)
-        self.idec_head.centers.data.copy_(centers.to(self.idec_head.centers.device))
-        return centers
+        return self.idec.init_centers_from_kmeans(
+            module=self,
+            encoder=self.encoder,
+            prepare_input=self._prepare_encoder_input,
+            split_output=self._split_encoder_output,
+            unpack_batch=self._unpack_batch,
+            device=self.device,
+            dtype=self.dtype,
+            train_dataloader=train_dataloader,
+            trainer=self.trainer,
+            max_samples=max_samples,
+            kmeans_kwargs=kmeans_kwargs,
+        )
 
     def _step(self, batch, batch_idx, stage: str):
         pc, meta = self._unpack_batch(batch)
@@ -772,48 +368,33 @@ class EquivariantAutoencoder(pl.LightningModule):
 
         # Compute losses
         losses, sinkhorn_blur = self._compute_losses(recon, pc, inv_z)
-        if stage == "train" and self._idec_active():
-            cluster_kl, q_entropy = self._compute_idec_loss(inv_z, meta)
+        if stage == "train" and self.idec.active:
+            cluster_kl, q_entropy = self.idec.compute_loss(inv_z, meta)
             if cluster_kl is not None:
                 losses['cluster_kl'] = cluster_kl
             if q_entropy is not None:
                 losses['idec_q_entropy'] = q_entropy
-        if (
-            stage == "train"
-            and self.barlow_enabled
-            and self.barlow_weight > 0
-            and self.barlow_projector is not None
-            and int(self.current_epoch) >= self.barlow_start_epoch
-        ):
-            y_a = self._barlow_augment(pc)
-            y_b = self._barlow_augment(pc)
-
-            enc_a = self.encoder(self._prepare_encoder_input(y_a))
-            inv_a, eq_a = self._split_encoder_output(enc_a)
-            inv_a = self._barlow_invariant(inv_a, eq_a)
-
-            enc_b = self.encoder(self._prepare_encoder_input(y_b))
-            inv_b, eq_b = self._split_encoder_output(enc_b)
-            inv_b = self._barlow_invariant(inv_b, eq_b)
-
-            if inv_a is not None and inv_b is not None:
-                proj_dtype = next(self.barlow_projector.parameters()).dtype
-                z_a = self.barlow_projector(inv_a.to(dtype=proj_dtype))
-                z_b = self.barlow_projector(inv_b.to(dtype=proj_dtype))
-                barlow = self._barlow_loss(z_a, z_b)
-                if not torch.isfinite(barlow).item():
-                    self._log_metric(stage, "barlow_nonfinite", 1.0, on_step=True, on_epoch=False)
-                    barlow = torch.nan_to_num(barlow, nan=0.0, posinf=0.0, neginf=0.0)
-                losses['barlow'] = barlow
+        if stage == "train":
+            barlow_loss, barlow_metrics = self.barlow.compute_loss(
+                pc=pc,
+                encoder=self.encoder,
+                prepare_input=self._prepare_encoder_input,
+                split_output=self._split_encoder_output,
+                current_epoch=int(self.current_epoch),
+            )
+            if barlow_loss is not None:
+                losses['barlow'] = barlow_loss
+            for name, value in barlow_metrics.items():
+                self._log_metric(stage, name, value, on_step=True, on_epoch=False)
 
         # Build total loss
         total_loss = losses['recon']
         if 'kl' in losses:
             total_loss += self.kl_latent_loss_scale * losses['kl']
         if 'cluster_kl' in losses:
-            total_loss += self.idec_gamma * losses['cluster_kl']
+            total_loss += self.idec.gamma * losses['cluster_kl']
         if 'barlow' in losses:
-            total_loss += self.barlow_weight * losses['barlow']
+            total_loss += self.barlow.weight * losses['barlow']
 
         if not torch.isfinite(total_loss).item():
             self._log_metric(stage, "loss_nonfinite", 1.0, on_step=True, on_epoch=False)
@@ -854,17 +435,20 @@ class EquivariantAutoencoder(pl.LightningModule):
 
     
     def training_step(self, batch, batch_idx, dataloader_idx: int = 0):
-        if self._idec_active():
-            if self.idec_max_iter is not None:
-                try:
-                    max_iter = int(self.idec_max_iter)
-                    if max_iter > 0 and int(self.global_step) >= max_iter:
-                        self._idec_should_stop = True
-                        if self.trainer is not None:
-                            self.trainer.should_stop = True
-                except (TypeError, ValueError):
-                    pass
-            self._maybe_update_idec_targets()
+        if self.idec.active:
+            metrics = self.idec.on_train_step_start(
+                global_step=self.global_step,
+                module=self,
+                trainer=self.trainer,
+                encoder=self.encoder,
+                prepare_input=self._prepare_encoder_input,
+                split_output=self._split_encoder_output,
+                unpack_batch=self._unpack_batch,
+                device=self.device,
+                dtype=self.dtype,
+            )
+            for name, value in metrics.items():
+                self._log_metric("train", name, value, on_step=True, on_epoch=False)
         return self._step(batch, batch_idx, "train")
 
     def validation_step(self, batch, batch_idx):

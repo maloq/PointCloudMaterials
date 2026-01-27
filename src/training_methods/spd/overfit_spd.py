@@ -19,7 +19,6 @@ sys.path.append(os.getcwd())
 try:
     from src.utils.logging_config import setup_logging
     from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-    from src.utils.curriculum_callback import CurriculumLearningCallback
     from src.data_utils.data_module import (
         RealPointCloudDataModule,
         SyntheticPointCloudDataModule,
@@ -29,7 +28,6 @@ except ImportError:
     sys.path.append(os.path.join(os.getcwd(), '..', '..', '..'))
     from src.utils.logging_config import setup_logging
     from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-    from src.utils.curriculum_callback import CurriculumLearningCallback
     from src.data_utils.data_module import (
         RealPointCloudDataModule,
         SyntheticPointCloudDataModule,
@@ -77,9 +75,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
-    # No curriculum learning for overfitting
     callbacks = [lr_monitor]
-    logger.print("Curriculum learning DISABLED for overfitting")
 
     # Set up devices
     if devices is None:

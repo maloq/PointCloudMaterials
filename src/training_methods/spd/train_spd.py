@@ -18,7 +18,6 @@ import wandb
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.spd.spd_module import ShapePoseDisentanglement
-from src.utils.curriculum_callback import CurriculumLearningCallback
 from src.data_utils.data_module import (
     RealPointCloudDataModule,
     SyntheticPointCloudDataModule,
@@ -89,17 +88,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
-    # Set up curriculum learning callback if enabled
     callbacks = list(checkpoint_callbacks) + [lr_monitor]
-    if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
-        curriculum_callback = CurriculumLearningCallback(
-            start_fraction=cfg.curriculum_learning.start_fraction,
-            end_fraction=cfg.curriculum_learning.end_fraction,
-            start_epoch=cfg.curriculum_learning.start_epoch,
-            end_epoch=cfg.curriculum_learning.end_epoch,
-        )
-        callbacks.append(curriculum_callback)
-        logger.print("Curriculum learning callback enabled")
 
     # Set up devices
     if devices is None:
@@ -131,17 +120,6 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     if hasattr(cfg, 'gradient_clip_val'):
         trainer_kwargs['gradient_clip_val'] = cfg.gradient_clip_val
         trainer_kwargs['gradient_clip_algorithm'] = 'norm'
-
-    # Reload dataloaders every epoch when curriculum learning is active
-    # This is necessary because the dataset size changes between epochs
-    if hasattr(cfg, 'curriculum_learning') and cfg.curriculum_learning.enable:
-        trainer_kwargs["reload_dataloaders_every_n_epochs"] = 1
-        # Disable automatic DistributedSampler when using curriculum learning
-        # because the dataset size changes and DistributedSampler expects fixed size
-        if len(devices) > 1:
-            trainer_kwargs["use_distributed_sampler"] = False
-            logger.print("Disabled automatic DistributedSampler for curriculum learning")
-        logger.print("Dataloader will be reloaded every epoch for curriculum learning")
 
     if ddp_strategy is not None:
         trainer_kwargs["strategy"] = ddp_strategy
