@@ -371,10 +371,12 @@ class LiquidMetalGenerator:
         avg_nn_dist: float,
         config: Optional[LiquidStructureConfig] = None,
         rng: Optional[np.random.Generator] = None,
+        min_pair_dist: Optional[float] = None,
     ):
         self.box_size = box_size
         self.target_density = target_density
         self.avg_nn_dist = avg_nn_dist
+        self.min_pair_dist = min_pair_dist if min_pair_dist is not None else (0.85 * avg_nn_dist)
         self.config = config or LiquidStructureConfig()
         self.rng = rng or np.random.default_rng()
         self.n_atoms = int(round(target_density * box_size ** 3))
@@ -429,34 +431,78 @@ class LiquidMetalGenerator:
             return self._generate_simple()
             
     def _generate_simple(self) -> np.ndarray:
-        min_dist = 0.85 * self.avg_nn_dist
-        min_dist_sq = min_dist ** 2
+        """Generate amorphous positions with batch rejection sampling.
         
-        positions = []
-        cell_list = CellList(self.box_size, min_dist * 1.5)
-        max_attempts = self.n_atoms * 100
-        attempts = 0
+        Optimized for large systems using cKDTree and batch generation.
+        """
+        min_dist = self.min_pair_dist
+        positions = np.zeros((0, 3), dtype=np.float32)
         
-        while len(positions) < self.n_atoms and attempts < max_attempts:
-            candidate = self.rng.uniform(0, self.box_size, size=3).astype(np.float32)
-            attempts += 1
+        # Estimate needed candidates (packing fraction ~0.6-0.7 for random close pack)
+        # We need self.n_atoms valid. 
+        # For lower densities, efficiency is high.
+        # Batch size strategy: generate more than needed, filter.
+        
+        batch_size = max(10000, self.n_atoms * 2)
+        total_attempts = 0
+        max_attempts = self.n_atoms * 200  # Safety break
+        
+        # If we already have atoms (e.g. from recursive calls or other logic), build tree
+        # But here valid_positions starts empty usually.
+        valid_positions = []
+        
+        while len(valid_positions) < self.n_atoms and total_attempts < max_attempts:
+            needed = self.n_atoms - len(valid_positions)
             
-            if positions:
-                neighbors = cell_list.get_neighbors(candidate, min_dist)
-                if neighbors:
+            # Generate a batch of candidates
+            current_batch_size = max(needed * 2, 10000)
+            candidates = self.rng.uniform(0, self.box_size, size=(current_batch_size, 3)).astype(np.float32)
+            total_attempts += current_batch_size
+            
+            # If we have existing atoms, filter candidates against them
+            if len(valid_positions) > 0:
+                tree_existing = cKDTree(valid_positions)
+                # Query candidates against existing atoms
+                # query_ball_point finds neighbors. simpler: query closest distance
+                dists, _ = tree_existing.query(candidates, k=1, distance_upper_bound=min_dist)
+                # Keep candidates where dist > min_dist (query returns inf if > upper_bound)
+                # wait, query returns infinite if no neighbor within upper_bound? 
+                # Scipy documentation: "If no neighbors are found ... return inf"
+                # So we want dists == inf (meaning no neighbor within min_dist)
+                mask_existing = dists == float('inf')
+                candidates = candidates[mask_existing]
+                
+            if len(candidates) == 0:
+                continue
+                
+            # Now self-filter the surviving candidates
+            # This is the hard part: greedy selection from candidates
+            # Using cKDTree.query_pairs on the batch is efficient
+            tree_batch = cKDTree(candidates)
+            pairs = tree_batch.query_pairs(min_dist)
+            
+            # Greedy removal of conflicts
+            removed = set()
+            for i, j in pairs:
+                if i in removed or j in removed:
                     continue
-                    
-            positions.append(candidate)
-            cell_list.cells[cell_list._get_cell_key(candidate)].append(
-                (len(positions) - 1, candidate)
-            )
+                # Remove one of them (e.g., j)
+                removed.add(j)
+                
+            keep_indices = [i for i in range(len(candidates)) if i not in removed]
+            new_valid = candidates[keep_indices]
             
-        if len(positions) < self.n_atoms:
-            remaining = self.n_atoms - len(positions)
-            extra = self.rng.uniform(0, self.box_size, size=(remaining, 3)).astype(np.float32)
-            positions.extend(extra)
+            # Append valid ones
+            # Truncate if we have enough
+            take = min(needed, len(new_valid))
+            if take > 0:
+                valid_positions.extend(new_valid[:take])
+                
+        if len(valid_positions) < self.n_atoms:
+            print(f"WARNING: LiquidMetalGenerator._generate_simple could only place "
+                  f"{len(valid_positions)}/{self.n_atoms} atoms. Density may be lower than target.")
             
-        return np.array(positions[:self.n_atoms], dtype=np.float32)
+        return np.array(valid_positions, dtype=np.float32)
     
     def _generate_rdf_constrained(self) -> np.ndarray:
         positions = self._generate_simple()
@@ -498,7 +544,7 @@ class LiquidMetalGenerator:
                 displacement = self.rng.normal(0, move_scale, size=3).astype(np.float32)
                 new_pos = (old_pos + displacement) % self.box_size
                 
-                min_dist = 0.8 * self.avg_nn_dist
+                min_dist = self.min_pair_dist
                 neighbors = cell_list.get_neighbors(new_pos, min_dist)
                 neighbors = [(i, d) for i, _, d in neighbors if i != idx]
                 
@@ -643,7 +689,7 @@ class LiquidMetalGenerator:
             cell_list = CellList(self.box_size, self.avg_nn_dist)
             if len(positions) > 0:
                 cell_list.build(positions)
-            min_dist = 0.85 * self.avg_nn_dist
+            min_dist = self.min_pair_dist
             
             for _ in range(remaining):
                 for attempt in range(100):
@@ -797,26 +843,37 @@ def _generate_structured_cloud(
     for axis in range(3):
         axis_norm = np.linalg.norm(cell_vectors[axis])
         if axis_norm < 1e-8:
-            ranges.append(range(0, 1))
+            ranges.append(np.array([0]))
         else:
             i_min = int(np.floor((local_min[axis] - motif_max[axis]) / axis_norm)) - 1
             i_max = int(np.ceil((local_max[axis] - motif_min[axis]) / axis_norm)) + 1
-            ranges.append(range(i_min, i_max + 1))
+            ranges.append(np.arange(i_min, i_max + 1))
             
-    positions = []
-    for i in ranges[0]:
-        base_i = i * cell_vectors[0]
-        for j in ranges[1]:
-            base_j = base_i + j * cell_vectors[1]
-            for k in ranges[2]:
-                lattice_origin = base_j + k * cell_vectors[2]
-                for offset in motif_offsets:
-                    local_pos = lattice_origin + offset
-                    world_pos = rotation @ local_pos + seed_position
-                    if np.all(world_pos >= -1e-8) and np.all(world_pos <= L + 1e-8):
-                        positions.append(world_pos)
+    # Vectorized generation
+    I, J, K = np.meshgrid(ranges[0], ranges[1], ranges[2], indexing='ij')
+    I, J, K = I.flatten(), J.flatten(), K.flatten()
+    
+    # Base lattice points: N_cells x 3
+    base_points = (I[:, None] * cell_vectors[0] + 
+                  J[:, None] * cell_vectors[1] + 
+                  K[:, None] * cell_vectors[2])
+                  
+    # Add motif: (N_cells x N_motif) points
+    # Reshape for broadcasting: (N_cells, 1, 3) + (1, N_motif, 3) -> (N_cells, N_motif, 3)
+    candidate_points = base_points[:, None, :] + motif_offsets[None, :, :]
+    candidate_points = candidate_points.reshape(-1, 3)
+    
+    # Rotate and translate
+    world_pos = (rotation @ candidate_points.T).T + seed_position
+    
+    # Filter bounds
+    mask = (world_pos[:, 0] >= -1e-8) & (world_pos[:, 0] <= L + 1e-8) & \
+           (world_pos[:, 1] >= -1e-8) & (world_pos[:, 1] <= L + 1e-8) & \
+           (world_pos[:, 2] >= -1e-8) & (world_pos[:, 2] <= L + 1e-8)
+           
+    positions = world_pos[mask]
                         
-    return np.array(positions, dtype=np.float32) if positions else np.zeros((0, 3), dtype=np.float32)
+    return positions.astype(np.float32)
 
 
 def _populate_grain_worker(
@@ -847,12 +904,14 @@ def _populate_grain_worker(
     elif phase_type in ('amorphous_random', 'liquid_metal'):
         liquid_config = phase_recipe.get('liquid_config')
         config = LiquidStructureConfig(**liquid_config) if liquid_config else LiquidStructureConfig(method='rdf_constrained')
-        generator = LiquidMetalGenerator(L, rho_target, avg_nn_dist, config, rng)
+        min_pair_dist = phase_recipe.get('min_pair_dist')  # From config YAML
+        generator = LiquidMetalGenerator(L, rho_target, avg_nn_dist, config, rng, min_pair_dist=min_pair_dist)
         positions = generator.generate()
     elif phase_type == 'amorphous_mixed':
         liquid_config = phase_recipe.get('liquid_config')
         config = LiquidStructureConfig(**liquid_config) if liquid_config else LiquidStructureConfig(method='simple')
-        generator = LiquidMetalGenerator(L, rho_target, avg_nn_dist, config, rng)
+        min_pair_dist = phase_recipe.get('min_pair_dist')  # From config YAML
+        generator = LiquidMetalGenerator(L, rho_target, avg_nn_dist, config, rng, min_pair_dist=min_pair_dist)
         positions = generator.generate()
     else:
         positions = np.zeros((0, 3), dtype=np.float32)
@@ -998,6 +1057,9 @@ class SyntheticAtomisticDatasetGenerator:
         rng = np.random.default_rng(self.rng.integers(0, 2**31))
         motif = []
         cell_list = CellList(cell_size, min_sep)
+        # Initialize so get_neighbors works during incremental build
+        cell_list.positions = np.zeros((0, 3), dtype=np.float32)
+        cell_list.n_atoms = 0
         
         for _ in range(20000):
             if len(motif) >= n_points:
@@ -1006,11 +1068,13 @@ class SyntheticAtomisticDatasetGenerator:
             if not motif:
                 motif.append(candidate)
                 cell_list.cells[cell_list._get_cell_key(candidate)].append((0, candidate))
+                cell_list.n_atoms = 1
             else:
                 neighbors = cell_list.get_neighbors(candidate, min_sep)
                 if not neighbors:
                     motif.append(candidate)
                     cell_list.cells[cell_list._get_cell_key(candidate)].append((len(motif)-1, candidate))
+                    cell_list.n_atoms = len(motif)
                     
         if not motif:
             raise RuntimeError("Failed to construct amorphous_repeat motif")
@@ -1022,12 +1086,32 @@ class SyntheticAtomisticDatasetGenerator:
         }
         
     def _scale_phase_density(self, recipe: Dict[str, Any], phase_cfg: PhaseConfig) -> None:
+        """Scale lattice to achieve target density, optionally preserving NN distance for crystals.
+        
+        For crystal phases (crystal_bcc, crystal_fcc, crystal_hcp), we skip density
+        rescaling by default to ensure all phases have consistent nearest-neighbor
+        distances. This produces more physically consistent training data.
+        
+        Set structural_params.preserve_nn_distance: false to enable density rescaling.
+        """
         motif = recipe.get("motif")
         if motif is None or len(motif) == 0:
             return
         cell_key = "lattice_vectors" if "lattice_vectors" in recipe else "tile_vectors"
         if cell_key not in recipe:
             return
+        
+        phase_type = recipe.get("phase_type", "")
+        
+        # For crystal phases, preserve NN distance by default (skip density rescaling)
+        # This ensures BCC, FCC, HCP all have the same avg_nn_dist
+        preserve_nn = phase_cfg.structural_params.get("preserve_nn_distance", True)
+        if phase_type.startswith("crystal_") and preserve_nn:
+            recipe["density_scale_factor"] = 1.0
+            recipe["density_target"] = self.global_cfg.rho_target
+            recipe["preserve_nn_distance"] = True
+            return
+        
         target_density = float(phase_cfg.structural_params.get("density_target", self.global_cfg.rho_target))
         if target_density <= 0:
             return
@@ -1049,6 +1133,7 @@ class SyntheticAtomisticDatasetGenerator:
                 recipe["cell_size"] = float(recipe["cell_size"] * scale)
         recipe["density_scale_factor"] = float(scale)
         recipe["density_target"] = float(target_density)
+        recipe["preserve_nn_distance"] = False
         
     def _build_reference_point_cloud(self, recipe: Dict[str, Any], phase_cfg: PhaseConfig, num_points: int = 80) -> Optional[np.ndarray]:
         phase_type = recipe.get("phase_type")
@@ -1328,6 +1413,11 @@ class SyntheticAtomisticDatasetGenerator:
         bubble_count = self._apply_density_bubbles()
         self._progress(f"    Applied {bubble_count} density bubbles")
         
+        # Enforce minimum distance after all perturbations to prevent atomic overlap
+        self._progress("  • Enforcing minimum distance")
+        min_dist_adjusted = self._enforce_minimum_distance()
+        self._progress(f"    Resolved {min_dist_adjusted} overlapping pairs")
+        
         self.cell_list.build_from_structured(self.atoms[:self.atom_count])
         
     def _apply_rotation_bubbles(self) -> int:
@@ -1443,6 +1533,94 @@ class SyntheticAtomisticDatasetGenerator:
             
         self.metadata["perturbations"]["thermal_noise"] = records
         return total_jittered
+    
+    def _enforce_minimum_distance(self, min_dist: float = None, max_iterations: int = 10) -> int:
+        """
+        Push overlapping atoms apart to enforce minimum pair distance.
+        
+        Uses scipy cKDTree.query_pairs for fast O(N log N) pair finding,
+        then vectorized adjustment computation.
+        
+        Args:
+            min_dist: Minimum allowed pair distance (default: 0.85 * avg_nn_dist)
+            max_iterations: Maximum relaxation iterations
+            
+        Returns:
+            Total number of overlapping pairs resolved
+        """
+        if min_dist is None:
+            min_dist = 0.85 * self.global_cfg.avg_nn_dist
+        
+        total_resolved = 0
+        alive_mask = self.atoms['alive'][:self.atom_count]
+        alive_indices = np.where(alive_mask)[0]
+        
+        if len(alive_indices) < 2:
+            return 0
+        
+        for iteration in range(max_iterations):
+            # Get current positions of alive atoms
+            positions = self.atoms['position'][alive_indices].copy()
+            
+            # Build KD-tree and find all pairs closer than min_dist
+            tree = cKDTree(positions)
+            pairs = tree.query_pairs(r=min_dist, output_type='ndarray')
+            
+            if len(pairs) == 0:
+                # No overlapping pairs, we're done
+                break
+            
+            # Compute adjustments vectorized
+            i_local, j_local = pairs[:, 0], pairs[:, 1]
+            pos_i = positions[i_local]
+            pos_j = positions[j_local]
+            
+            # Distance vectors and magnitudes
+            diff = pos_j - pos_i
+            dists = np.linalg.norm(diff, axis=1)
+            
+            # Handle near-coincident points (avoid division by zero)
+            near_zero = dists < 1e-6
+            if np.any(near_zero):
+                random_dirs = self.rng.normal(size=(np.sum(near_zero), 3)).astype(np.float32)
+                random_dirs /= np.linalg.norm(random_dirs, axis=1, keepdims=True) + 1e-8
+                diff[near_zero] = random_dirs * min_dist
+                dists[near_zero] = min_dist
+            
+            # Normalize direction vectors
+            directions = diff / dists[:, np.newaxis]
+            
+            # Compute overlap amount and push magnitude
+            overlaps = min_dist - dists
+            push = 0.5 * overlaps * 1.1  # Push each atom by half (plus 10%)
+            
+            # Compute adjustment vectors
+            push_vectors = push[:, np.newaxis] * directions
+            
+            # Accumulate adjustments (use np.add.at for scatter-add)
+            adjustments = np.zeros_like(positions)
+            np.add.at(adjustments, i_local, -push_vectors)
+            np.add.at(adjustments, j_local, push_vectors)
+            
+            # Apply adjustments back to original atom array
+            self.atoms['position'][alive_indices] += adjustments
+            
+            # Clamp positions to simulation box
+            L = self.global_cfg.L
+            self.atoms['position'][alive_indices] = np.clip(
+                self.atoms['position'][alive_indices], 0, L
+            )
+            
+            total_resolved += len(pairs)
+        
+        # Record metadata
+        self.metadata["perturbations"]["minimum_distance_enforcement"] = {
+            "min_dist": float(min_dist),
+            "iterations": iteration + 1 if 'iteration' in dir() else 0,
+            "total_pairs_resolved": total_resolved,
+        }
+        
+        return total_resolved
     
     def _apply_dropouts(self) -> int:
         events = []
@@ -1624,6 +1802,54 @@ class SyntheticAtomisticDatasetGenerator:
         except Exception as e:
             self._progress(f"Visualization failed: {e}")
             
+    def _compute_nn_diagnostics(self, stage_name: str) -> dict:
+        """Compute and log NN distance statistics at a generation stage.
+        
+        Used to diagnose overlap issues by tracking NN stats throughout generation.
+        """
+        if self.atom_count < 2:
+            return {}
+        
+        alive_mask = self.atoms['alive'][:self.atom_count]
+        positions = self.atoms['position'][:self.atom_count][alive_mask]
+        
+        if len(positions) < 2:
+            return {}
+        
+        # Sample for efficiency on large datasets
+        sample_size = min(50000, len(positions))
+        if len(positions) > sample_size:
+            idx = np.random.choice(len(positions), sample_size, replace=False)
+            sample_pos = positions[idx]
+        else:
+            sample_pos = positions
+        
+        tree = cKDTree(positions)
+        distances, _ = tree.query(sample_pos, k=2)
+        nn_dists = distances[:, 1]
+        
+        stats = {
+            "stage": stage_name,
+            "n_atoms": int(len(positions)),
+            "nn_mean": float(np.mean(nn_dists)),
+            "nn_std": float(np.std(nn_dists)),
+            "nn_min": float(np.min(nn_dists)),
+            "nn_p1": float(np.percentile(nn_dists, 1)),
+            "nn_p5": float(np.percentile(nn_dists, 5)),
+            "n_below_2A": int(np.sum(nn_dists < 2.0)),
+            "n_below_1A": int(np.sum(nn_dists < 1.0)),
+        }
+        
+        self._progress(f"  NN diagnostics ({stage_name}): mean={stats['nn_mean']:.3f}Å "
+                      f"min={stats['nn_min']:.3f}Å P1={stats['nn_p1']:.3f}Å")
+        
+        if stats['nn_min'] < 1.0:
+            self._progress(f"  ⚠️ WARNING: NN min < 1.0Å detected! ({stats['n_below_1A']} atoms)")
+        elif stats['nn_min'] < 1.8:
+            self._progress(f"  ⚠️ Warning: NN min < 1.8Å ({stats['n_below_2A']} atoms with NN < 2Å)")
+        
+        return stats
+    
     def run(self) -> None:
         self._start_time = time.perf_counter()
         self._progress("=" * 60)
@@ -1636,8 +1862,22 @@ class SyntheticAtomisticDatasetGenerator:
         self.sample_grains()
         self._progress("Step 3/6: Populating atoms")
         self.populate_atoms()
+        
+        # Diagnostic: check NN after atom population
+        post_pop_stats = self._compute_nn_diagnostics("post_population")
+        
         self._progress("Step 4/6: Applying perturbations")
         self.apply_perturbations()
+        
+        # Diagnostic: check NN after perturbations
+        post_perturb_stats = self._compute_nn_diagnostics("post_perturbation")
+        
+        # Store diagnostics in metadata
+        self.metadata["nn_diagnostics"] = {
+            "post_population": post_pop_stats,
+            "post_perturbation": post_perturb_stats,
+        }
+        
         self._progress("Step 5/6: Saving outputs")
         self.save_outputs()
         

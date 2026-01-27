@@ -77,7 +77,7 @@ sinkhorn_blur_schedule:
 
 # Training parameters
 learning_rate: 0.0015
-batch_size: 192
+batch_size: 64
 precision: 32-true
 # Gradient clipping for stability (use 0 to disable)
 gradient_clip_val: 1.0

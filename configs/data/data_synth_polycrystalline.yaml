@@ -7,8 +7,11 @@
 # =============================================================================
 kind: synthetic
 data_path: output/synthetic_data/polycrystalline_metal
-num_points: 80
-radius: 6.5
+num_points: 120
+model_points: 80
+model_norm_constant: 1.0
+radius: 7.8
+model_norm_clamp: false
 sample_type: regular
 overlap_fraction: 0.0
 n_samples: 0
@@ -19,7 +22,7 @@ normalize: true
 
 global:
   # Large box for polycrystalline structure (Angstroms)
-  L: 300.0
+  L: 200.0
   
   # Target density (atoms/Å³) - solid iron at room temperature
   rho_target: 0.0849

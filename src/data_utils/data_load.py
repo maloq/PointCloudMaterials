@@ -317,6 +317,7 @@ class SyntheticPointCloudDataset(Dataset):
         noise_scale: float = 0.0,
         jitter_scale: float = 0.0,
         scaling_range: float = 0.0,
+        normalization_scale: float = 1.0,
         track_augmentation: bool = False,
     ) -> None:
         super().__init__()
@@ -337,6 +338,7 @@ class SyntheticPointCloudDataset(Dataset):
         self.noise_scale = float(noise_scale)
         self.jitter_scale = float(jitter_scale)
         self.scaling_range = float(scaling_range)
+        self.normalization_scale = float(normalization_scale)
         self.track_augmentation = bool(track_augmentation)
         self._augmentation_metadata: Optional[List[Dict[str, Any]]] = None
 
@@ -481,9 +483,10 @@ class SyntheticPointCloudDataset(Dataset):
 
     def _prepare_sample(self, sample_points: np.ndarray) -> np.ndarray:
         if self.pre_normalize and self.normalize:
-            return pc_normalize(sample_points, self.radius).astype(np.float32)
+            norm = pc_normalize(sample_points, self.radius).astype(np.float32)
+            return norm * self.normalization_scale
         if self.normalize:
-            return sample_points.astype(np.float32)
+            return sample_points.astype(np.float32) * self.normalization_scale
         return sample_points
 
     def _build_atom_phase_map(

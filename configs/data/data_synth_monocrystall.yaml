@@ -5,18 +5,21 @@
 # =============================================================================
 kind: synthetic
 data_path: output/synthetic_data/monocrystall_metal
-num_points: 80
-radius: 6.5
+num_points: 120
+model_points: 80
+model_norm_constant: null
+radius: 7.5
+model_norm_clamp: false
 sample_type: regular
-overlap_fraction: 0.2
+overlap_fraction: 0.0
 n_samples: 0
 train_ratio: 0.8
 drop_edge_samples: true
 pre_normalize: true
 normalize: true
+normalization_scale: 1.732
 
 global:
-  # Large box for polycrystalline structure (Angstroms)
   L: 300.0
   
   # Target density (atoms/Å³) - solid iron at room temperature
@@ -34,7 +37,7 @@ global:
   
   random_seed: 12345
   
-  output_dir: "output/polycrystalline_metal"
+  output_dir: "output/monocrystall_metal"
   
   parallel:
     enabled: true

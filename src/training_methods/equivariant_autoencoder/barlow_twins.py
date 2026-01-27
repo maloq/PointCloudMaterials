@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
+
 
 class BarlowTwinsLoss(nn.Module):
     def __init__(
@@ -13,6 +15,10 @@ class BarlowTwinsLoss(nn.Module):
         start_epoch: int,
         jitter_std: float,
         drop_ratio: float,
+        view_points: int | None,
+        neighbor_view: bool,
+        neighbor_k: int,
+
         input_dim,
     ) -> None:
         super().__init__()
@@ -23,6 +29,10 @@ class BarlowTwinsLoss(nn.Module):
         self.start_epoch = max(0, int(start_epoch))
         self.jitter_std = float(jitter_std)
         self.drop_ratio = float(drop_ratio)
+        self.view_points = int(view_points) if view_points is not None else None
+        self.neighbor_view = bool(neighbor_view)
+        self.neighbor_k = int(neighbor_k)
+
 
         self.projector = None
         if input_dim is None:
@@ -41,6 +51,15 @@ class BarlowTwinsLoss(nn.Module):
 
     @classmethod
     def from_config(cls, cfg, *, input_dim):
+        data_cfg = getattr(cfg, "data", None)
+        view_points = getattr(cfg, "barlow_view_points", None)
+        if view_points is None and data_cfg is not None:
+            view_points = getattr(data_cfg, "model_points", None)
+        if view_points is None and data_cfg is not None:
+            view_points = getattr(data_cfg, "num_points", None)
+
+
+
         return cls(
             enabled=bool(getattr(cfg, "barlow_enabled", False)),
             weight=float(getattr(cfg, "barlow_weight", 0.0)),
@@ -49,6 +68,10 @@ class BarlowTwinsLoss(nn.Module):
             start_epoch=int(getattr(cfg, "barlow_start_epoch", 0)),
             jitter_std=float(getattr(cfg, "barlow_jitter_std", 0.01)),
             drop_ratio=float(getattr(cfg, "barlow_drop_ratio", 0.2)),
+            view_points=int(view_points) if view_points is not None else None,
+            neighbor_view=bool(getattr(cfg, "barlow_neighbor_view", False)),
+            neighbor_k=int(getattr(cfg, "barlow_neighbor_k", 8)),
+
             input_dim=input_dim,
         )
 
@@ -71,8 +94,8 @@ class BarlowTwinsLoss(nn.Module):
     ):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
-        y_a = self._augment(pc)
-        y_b = self._augment(pc)
+        y_a = self._augment(pc, use_neighbor=False)
+        y_b = self._augment(pc, use_neighbor=self.neighbor_view)
 
         enc_a = encoder(prepare_input(y_a))
         inv_a, eq_a = split_output(enc_a)
@@ -95,8 +118,12 @@ class BarlowTwinsLoss(nn.Module):
             loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
-    def _augment(self, pc: torch.Tensor) -> torch.Tensor:
+    def _augment(self, pc: torch.Tensor, *, use_neighbor: bool) -> torch.Tensor:
         x = pc
+        if use_neighbor:
+            x = shift_to_neighbor(x, neighbor_k=self.neighbor_k)
+        if self.view_points is not None:
+            x = crop_to_num_points(x, self.view_points)
         if self.jitter_std > 0:
             x = x + torch.randn_like(x) * self.jitter_std
         if self.drop_ratio > 0:
@@ -107,6 +134,7 @@ class BarlowTwinsLoss(nn.Module):
             w = w / (w.sum(dim=1, keepdim=True) + 1e-8)
             idx = torch.multinomial(w, num_samples=num_points, replacement=True)
             x = x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
+
         return x
 
     @staticmethod

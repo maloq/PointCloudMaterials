@@ -18,6 +18,7 @@ from src.utils.spd_metrics import (
     compute_reconstruction_emd_per_phase,
     compute_cluster_metrics,
 )
+from src.utils.pointcloud_ops import crop_to_num_points
 from src.utils.spd_utils import (
     to_float32,
     cached_sample_count,
@@ -86,6 +87,25 @@ class EquivariantAutoencoder(pl.LightningModule):
         self.idec = IDECManager.from_config(cfg, embed_dim=latent_dim)
         self.barlow = BarlowTwinsLoss.from_config(cfg, input_dim=latent_dim)
 
+        data_cfg = getattr(cfg, "data", None)
+        self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
+        model_points = getattr(data_cfg, "model_points", None) if data_cfg is not None else None
+        if model_points is None:
+            model_points = getattr(cfg, "model_points", None)
+        if model_points is not None:
+            model_points = int(model_points)
+            if model_points <= 0:
+                model_points = None
+        self.model_points = model_points
+
+
+
+
+        if self.model_points is not None and self.sample_points and self.model_points > self.sample_points:
+            raise ValueError(
+                f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
+            )
+
         if self.load_pretrained_ae:
             self._load_pretrained_ae(self.pretrained_ae_checkpoint)
         
@@ -107,6 +127,8 @@ class EquivariantAutoencoder(pl.LightningModule):
 
     def _get_num_points(self):
         """Try to resolve num_points from config."""
+        if getattr(self, "model_points", None):
+            return self.model_points
         if hasattr(self.hparams, 'num_points'):
             return self.hparams.num_points
         if hasattr(self.hparams, 'data') and hasattr(self.hparams.data, 'num_points'):
@@ -174,6 +196,12 @@ class EquivariantAutoencoder(pl.LightningModule):
                         eq_z = candidate
             return inv_z, eq_z
         return enc_out, None
+
+    def _prepare_model_input(self, pc: torch.Tensor) -> torch.Tensor:
+        out = pc
+        if self.model_points is not None:
+            out = crop_to_num_points(out, self.model_points)
+        return out
 
     def _component_reconstruction_loss(self, component, pred, target, sinkhorn_blur):
         if component == "sinkhorn":
@@ -356,8 +384,9 @@ class EquivariantAutoencoder(pl.LightningModule):
         )
 
     def _step(self, batch, batch_idx, stage: str):
-        pc, meta = self._unpack_batch(batch)
-        pc = pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
+        pc_raw, meta = self._unpack_batch(batch)
+        pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
+        pc = self._prepare_model_input(pc_raw)
 
         # Forward pass
         inv_z, recon, eq_z = self(pc)
@@ -376,7 +405,7 @@ class EquivariantAutoencoder(pl.LightningModule):
                 losses['idec_q_entropy'] = q_entropy
         if stage == "train":
             barlow_loss, barlow_metrics = self.barlow.compute_loss(
-                pc=pc,
+                pc=pc_raw,
                 encoder=self.encoder,
                 prepare_input=self._prepare_encoder_input,
                 split_output=self._split_encoder_output,
