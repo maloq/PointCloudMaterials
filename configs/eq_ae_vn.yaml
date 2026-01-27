@@ -24,6 +24,7 @@ encoder:
 #     latent_size: ${latent_size}
 #     feature_dims: [128, 256, 256, 512, 512]
 #     pooling: "max"
+#     use_cross_product: True
 
 decoder:
   name: VN_REVNET_Anchor

@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_monocrystall
+  - data: data_synth_polycrystalline
 project_name: pointnet
 experiment_name: EQ_AE_l${latent_size}_N${data.num_points}_M${data.model_points}_${loss}_${decoder.name}
 wandb_mode: online
@@ -24,6 +24,7 @@ encoder:
 #     latent_size: ${latent_size}
 #     feature_dims: [128, 256, 256, 512, 512]
 #     pooling: "max"
+#     use_cross_product: True
 
 decoder:
   name: VN_REVNET_Anchor
@@ -34,8 +35,13 @@ decoder:
     anchor_channels: 96
     transformer_depth: 3
     attn_hidden: 128
-    point_allocation: balanced  # options: truncate | balanced
+    point_allocation: truncate  # options: truncate | balanced
     use_invariant_anchor_pos: false
+    point_query_dim: 64
+    rich_invariants: True
+    rbf_dim: 16
+    rbf_cutoff: 1.5
+    # offset_mlp_hidden: 512
 
 # Disable batchnorm and use larger output_scale for proper reconstruction.
 # decoder:
@@ -77,10 +83,9 @@ sinkhorn_blur_schedule:
   duration_epochs: ${epochs}
 
 # Training parameters
-learning_rate: 0.001
-batch_size: 64
-precision: 32-true
-# Gradient clipping for stability (use 0 to disable)
+learning_rate: 0.004
+batch_size: 128
+precision: bf16-true
 gradient_clip_val: 1.0
 
 enable_swa: False
@@ -119,14 +124,12 @@ barlow_enabled: True
 barlow_weight: 0.002
 barlow_lambda: 0.005
 barlow_embed_dim: 80
-barlow_start_epoch: 6
+barlow_start_epoch: 12
 barlow_jitter_std: 0.003
 barlow_drop_ratio: 0.0
 barlow_neighbor_view: true
 barlow_neighbor_k: 6
 barlow_view_points: ${data.model_points}
-barlow_norm_constant: ${data.model_norm_constant}
-barlow_norm_clamp: ${data.model_norm_clamp}
 
 # Data augmentation (applied in dataloaders)
 augmentation:

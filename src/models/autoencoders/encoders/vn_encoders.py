@@ -336,6 +336,7 @@ class VNDGCNNEncoder(Encoder):
         share_nonlinearity: bool = True,
         std_feature_hidden_dims: tuple[int, int] | None = None,
         use_batchnorm: bool = True,
+        use_cross_product: bool = False,
     ):
         super().__init__()
         if len(feature_dims) != 5:
@@ -343,32 +344,35 @@ class VNDGCNNEncoder(Encoder):
 
         self.n_knn = n_knn
         self.pooling = pooling
+        self.use_cross_product = use_cross_product
+        
+        c_mult = 3 if use_cross_product else 2
 
         c1, c2, c3, c4, c5 = [max(1, dim // 3) for dim in feature_dims]
 
         self.conv1 = VNLinearLeakyReLU(
-            2,
+            c_mult,
             c1,
             dim=5,
             negative_slope=0.2,
             use_batchnorm=use_batchnorm,
         )
         self.conv2 = VNLinearLeakyReLU(
-            c1 * 2,
+            c1 * c_mult,
             c2,
             dim=5,
             negative_slope=0.2,
             use_batchnorm=use_batchnorm,
         )
         self.conv3 = VNLinearLeakyReLU(
-            c2 * 2,
+            c2 * c_mult,
             c3,
             dim=5,
             negative_slope=0.2,
             use_batchnorm=use_batchnorm,
         )
         self.conv4 = VNLinearLeakyReLU(
-            c3 * 2,
+            c3 * c_mult,
             c4,
             dim=5,
             negative_slope=0.2,
@@ -426,19 +430,31 @@ class VNDGCNNEncoder(Encoder):
         batch_size, channels, num_points = x.size()
         x = x.unsqueeze(1)
 
-        x = get_graph_feature(x, k=self.n_knn)
+        if self.use_cross_product:
+            x = get_graph_feature_cross(x, k=self.n_knn)
+        else:
+            x = get_graph_feature(x, k=self.n_knn)
         x = self.conv1(x)
         x1 = self.pool1(x)
 
-        x = get_graph_feature(x1, k=self.n_knn)
+        if self.use_cross_product:
+            x = get_graph_feature_cross(x1, k=self.n_knn)
+        else:
+            x = get_graph_feature(x1, k=self.n_knn)
         x = self.conv2(x)
         x2 = self.pool2(x)
 
-        x = get_graph_feature(x2, k=self.n_knn)
+        if self.use_cross_product:
+            x = get_graph_feature_cross(x2, k=self.n_knn)
+        else:
+            x = get_graph_feature(x2, k=self.n_knn)
         x = self.conv3(x)
         x3 = self.pool3(x)
 
-        x = get_graph_feature(x3, k=self.n_knn)
+        if self.use_cross_product:
+            x = get_graph_feature_cross(x3, k=self.n_knn)
+        else:
+            x = get_graph_feature(x3, k=self.n_knn)
         x = self.conv4(x)
         x4 = self.pool4(x)
 
@@ -639,18 +655,22 @@ class VNDGCNNEncoderRefined(Encoder):
         feature_dims: tuple[int, int, int, int, int] = (64, 64, 128, 256, 512),
         use_batchnorm: bool = True,
         dropout_rate: float = 0.0,
+        use_cross_product: bool = False,
     ):
         super().__init__()
         self.n_knn = n_knn
         self.pooling = pooling
         self.dropout_rate = dropout_rate
+        self.use_cross_product = use_cross_product
+
+        c_mult = 3 if use_cross_product else 2
 
         c1, c2, c3, c4, c5 = [max(1, dim // 3) for dim in feature_dims]
 
-        self.conv1 = VNLinearLeakyReLU(2, c1, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
-        self.conv2 = VNLinearLeakyReLU(c1 * 2, c2, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
-        self.conv3 = VNLinearLeakyReLU(c2 * 2, c3, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
-        self.conv4 = VNLinearLeakyReLU(c3 * 2, c4, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        self.conv1 = VNLinearLeakyReLU(c_mult, c1, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        self.conv2 = VNLinearLeakyReLU(c1 * c_mult, c2, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        self.conv3 = VNLinearLeakyReLU(c2 * c_mult, c3, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
+        self.conv4 = VNLinearLeakyReLU(c3 * c_mult, c4, dim=5, negative_slope=0.2, use_batchnorm=use_batchnorm)
         
         concat_channels = c1 + c2 + c3 + c4
         self.conv5 = VNLinearLeakyReLU(concat_channels, c5, dim=4, negative_slope=0.2, use_batchnorm=use_batchnorm)
@@ -687,22 +707,34 @@ class VNDGCNNEncoderRefined(Encoder):
         x = x.unsqueeze(1) # (B, 1, 3, N)
 
         # Layer 1
-        x_graph = get_graph_feature(x, k=self.n_knn) # (B, 2*1, 3, N, k)
+        if self.use_cross_product:
+            x_graph = get_graph_feature_cross(x, k=self.n_knn) # (B, 3*1, 3, N, k)
+        else:
+            x_graph = get_graph_feature(x, k=self.n_knn) # (B, 2*1, 3, N, k)
         x = self.conv1(x_graph) # (B, c1, 3, N, k)
         x1 = x.mean(dim=-1) # Pool neighbors -> (B, c1, 3, N)
 
         # Layer 2
-        x_graph = get_graph_feature(x1, k=self.n_knn)
+        if self.use_cross_product:
+            x_graph = get_graph_feature_cross(x1, k=self.n_knn)
+        else:
+            x_graph = get_graph_feature(x1, k=self.n_knn)
         x = self.conv2(x_graph)
         x2 = x.mean(dim=-1)
 
         # Layer 3
-        x_graph = get_graph_feature(x2, k=self.n_knn)
+        if self.use_cross_product:
+            x_graph = get_graph_feature_cross(x2, k=self.n_knn)
+        else:
+            x_graph = get_graph_feature(x2, k=self.n_knn)
         x = self.conv3(x_graph)
         x3 = x.mean(dim=-1)
 
         # Layer 4
-        x_graph = get_graph_feature(x3, k=self.n_knn)
+        if self.use_cross_product:
+            x_graph = get_graph_feature_cross(x3, k=self.n_knn)
+        else:
+            x_graph = get_graph_feature(x3, k=self.n_knn)
         x = self.conv4(x_graph)
         x4 = x.mean(dim=-1)
 

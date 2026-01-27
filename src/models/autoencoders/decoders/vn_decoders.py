@@ -176,19 +176,69 @@ class VNZCALayerNorm(nn.Module):
         return xw * gamma.to(xw.dtype)
 
 
+
+class GaussianRBF(nn.Module):
+    def __init__(self, num_rbfs: int, cutoff: float):
+        super().__init__()
+        self.num_rbfs = int(num_rbfs)
+        self.cutoff = float(cutoff)
+        centers = torch.linspace(0.0, cutoff, steps=num_rbfs)
+        self.register_buffer("centers", centers)
+        # width so neighboring bases overlap reasonably
+        self.gamma = 1.0 / (centers[1] - centers[0]).clamp_min(1e-6).item()
+
+    def forward(self, dist: torch.Tensor) -> torch.Tensor:
+        """
+        dist: (..., 1) in same units as cutoff
+        returns: (..., num_rbfs)
+        """
+        # dist[..., 1] -> dist[..., num_rbfs]
+        d = dist
+        c = self.centers.view(*([1] * (d.ndim - 1)), -1)
+        rbf = torch.exp(-0.5 * ((d - c) * self.gamma) ** 2)
+        return rbf
+
+
 class VNChannelWiseSubtractionAttention(nn.Module):
     """Channel-wise subtraction attention (CWSA) over anchor tokens."""
 
-    def __init__(self, channels: int, hidden: int = 64, use_pos: bool = True):
+    def __init__(
+        self,
+        channels: int,
+        hidden: int = 64,
+        use_pos: bool = True,
+        rich_invariants: bool = True,
+        rbf_dim: int = 0,
+        rbf_cutoff: float = 1.0,
+    ):
         super().__init__()
         self.channels = channels
         self.use_pos = use_pos
+        self.rich_invariants = rich_invariants
+        self.rbf_dim = rbf_dim
+        
         self.to_q = VNLinear(channels, channels)
         self.to_k = VNLinear(channels, channels)
         self.to_v = VNLinear(channels, channels)
         self.to_out = VNLinear(channels, channels)
 
-        in_mlp = 2 if use_pos else 1
+        # Calculate input dimension for the score MLP
+        # Base features (from feature differences):
+        # 1 (mean) if not rich_invariants
+        # 3 (mean, std, max) if rich_invariants
+        in_mlp = 3 if rich_invariants else 1
+        
+        if use_pos:
+            # Positional features:
+            # rbf_dim if rbf_dim > 0
+            # 1 (norm) otherwise
+            if rbf_dim > 0:
+                self.rbf = GaussianRBF(rbf_dim, rbf_cutoff)
+                in_mlp += rbf_dim
+            else:
+                self.rbf = None
+                in_mlp += 1
+        
         self.score_mlp = nn.Sequential(
             nn.Linear(in_mlp, hidden),
             nn.LeakyReLU(0.2, inplace=True),
@@ -207,16 +257,31 @@ class VNChannelWiseSubtractionAttention(nn.Module):
 
         rel = qk[:, :, None, :, :] - kk[:, None, :, :, :]     # (B,Kq,Kk,C,3)
         rel_norm = torch.norm(rel, dim=-1)                    # (B,Kq,Kk,C)
+        
+        # Calculate invariants over channels
         rel_mean = rel_norm.mean(dim=-1, keepdim=True)        # (B,Kq,Kk,1)
+        
+        if self.rich_invariants:
+            rel_std = rel_norm.std(dim=-1, keepdim=True)      # (B,Kq,Kk,1)
+            rel_max = rel_norm.max(dim=-1, keepdim=True)[0]   # (B,Kq,Kk,1)
+            base_feats = torch.cat([rel_mean, rel_std, rel_max], dim=-1)
+        else:
+            base_feats = rel_mean
 
         if self.use_pos:
             if pos is None:
                 raise ValueError("pos must be provided when use_pos=True")
             rel_pos = pos[:, :, None, :] - pos[:, None, :, :]  # (B,Kq,Kk,3)
-            rel_pos_norm = torch.norm(rel_pos, dim=-1, keepdim=True)
-            score_in = torch.cat([rel_mean, rel_pos_norm], dim=-1)
+            rel_pos_norm = torch.norm(rel_pos, dim=-1, keepdim=True) # (B,Kq,Kk,1)
+            
+            if self.rbf_dim > 0:
+                pos_feats = self.rbf(rel_pos_norm) # (B,Kq,Kk,rbf_dim)
+            else:
+                pos_feats = rel_pos_norm
+                
+            score_in = torch.cat([base_feats, pos_feats], dim=-1)
         else:
-            score_in = rel_mean
+            score_in = base_feats
 
         scores = self.score_mlp(score_in)                     # (B,Kq,Kk,C)
         attn = _softmax_fp32(scores, dim=2)
@@ -236,9 +301,19 @@ class VNAnchorTransformerBlock(nn.Module):
         use_pos: bool = True,
         negative_slope: float = 0.1,
         use_batchnorm: bool = False,
+        rich_invariants: bool = True,
+        rbf_dim: int = 0,
+        rbf_cutoff: float = 1.0,
     ):
         super().__init__()
-        self.attn = VNChannelWiseSubtractionAttention(channels, hidden=attn_hidden, use_pos=use_pos)
+        self.attn = VNChannelWiseSubtractionAttention(
+            channels, 
+            hidden=attn_hidden, 
+            use_pos=use_pos,
+            rich_invariants=rich_invariants,
+            rbf_dim=rbf_dim,
+            rbf_cutoff=rbf_cutoff,
+        )
         self.norm1 = VNZCALayerNorm(channels) if use_zca_norm else VNBatchNorm(channels, dim=4)
         self.ffn = nn.Sequential(
             VNLinearLeakyReLU(
@@ -281,6 +356,9 @@ class VNRevnetAnchorDecoder(Decoder):
         use_invariant_anchor_pos: bool = True,
         pos_mlp_hidden: int = 256,
         point_allocation: str = "truncate",
+        rich_invariants: bool = True,
+        rbf_dim: int = 0,
+        rbf_cutoff: float = 1.0,
     ):
         super().__init__()
         self._n = num_points
@@ -335,6 +413,9 @@ class VNRevnetAnchorDecoder(Decoder):
                     attn_hidden=attn_hidden,
                     use_zca_norm=use_zca_norm,
                     use_pos=True,
+                    rich_invariants=rich_invariants,
+                    rbf_dim=rbf_dim,
+                    rbf_cutoff=rbf_cutoff,
                 )
                 for _ in range(transformer_depth)
             ]

@@ -9,7 +9,6 @@ kind: synthetic
 data_path: output/synthetic_data/polycrystalline_metal
 num_points: 120
 model_points: 80
-model_norm_constant: 1.0
 radius: 7.8
 model_norm_clamp: false
 sample_type: regular
