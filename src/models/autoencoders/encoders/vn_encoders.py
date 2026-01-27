@@ -1352,6 +1352,12 @@ class VNRevnetBackboneEncoder(Encoder):
 
         # Equivariant latent head: (B, C, 3) -> (B, latent_size, 3)
         self.out_eq = VNLinearLeakyReLU(sa_channels[1], latent_size, dim=3, use_batchnorm=False)
+        
+        # Learnable scale for equivariant output to match input data scale
+        # VNBatchNorm normalizes features resulting in small vector norms (~0.1)
+        # For unit-sphere normalized data with RMS ~0.7, we need to scale up significantly
+        # Initialize to 5.0 as a reasonable starting point (can learn from there)
+        self.eq_z_scale = nn.Parameter(torch.tensor(5.0))
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # x: (B, N, 3) expected
@@ -1387,6 +1393,9 @@ class VNRevnetBackboneEncoder(Encoder):
         else:
             pooled = feat2.mean(dim=-1)                        # (B, C2, 3)
         eq_z = self.out_eq(pooled)                             # (B, latent_size, 3)
+        
+        # Apply learnable scale to match input data scale
+        eq_z = eq_z * self.eq_z_scale
 
         # Invariant latent: L2 norm of each equivariant vector (no learned params)
         inv_z = eq_z.norm(dim=-1)                              # (B, latent_size)

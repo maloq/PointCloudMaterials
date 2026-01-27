@@ -16,7 +16,7 @@ encoder:
   name: VN_REVNET_Backbone
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [80, 20]
+    sa_npoints: [80, 40]
     
 # encoder:
 #   name: VN_DGCNN_Refined
@@ -78,7 +78,7 @@ sinkhorn_blur_schedule:
 
 # Training parameters
 learning_rate: 0.001
-batch_size: 480
+batch_size: 256
 precision: 32-true
 # Gradient clipping for stability (use 0 to disable)
 gradient_clip_val: 1.0
@@ -119,7 +119,7 @@ barlow_enabled: True
 barlow_weight: 0.005
 barlow_lambda: 0.005
 barlow_embed_dim: 80
-barlow_start_epoch: 6
+barlow_start_epoch: 2
 barlow_jitter_std: 0.003
 barlow_drop_ratio: 0.2
 

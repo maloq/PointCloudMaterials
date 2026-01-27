@@ -273,7 +273,7 @@ class VNRevnetAnchorDecoder(Decoder):
         mlp_ratio: int = 2,
         point_query_dim: int = 32,
         offset_mlp_hidden: int = 256,
-        offset_scale: float = 0.25,
+        offset_scale: float = 1.0,
         output_scale: float = 1.0,
         learnable_scale: bool = True,
         center_output: bool = True,
