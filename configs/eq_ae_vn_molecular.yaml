@@ -5,10 +5,14 @@ experiment_name: EQ_AE_l${latent_size}_N${data.num_points}_M${data.model_points}
 wandb_mode: online
 
 model_type: eq_ae  # Equivariant Autoencoder
-latent_size: 80  # Number of VN channels for equivariant latent
+latent_size: 120  # Number of VN channels for equivariant latent
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
+
+data:
+  synthetic:
+    classes: ['bcc_iron_pristine', 'fcc_iron_austenite' , 'bcc_iron_defected']
 
 # VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
 
@@ -33,15 +37,15 @@ decoder:
     latent_size: ${latent_size}
     num_anchors: 40
     anchor_channels: 96
-    transformer_depth: 3
-    attn_hidden: 128
-    point_allocation: truncate  # options: truncate | balanced
+    transformer_depth: 4
+    attn_hidden: 256
+    point_allocation: balanced  # options: truncate | balanced
     use_invariant_anchor_pos: false
     point_query_dim: 64
     rich_invariants: True
     rbf_dim: 16
     rbf_cutoff: 1.5
-    # offset_mlp_hidden: 512
+    offset_mlp_hidden: 512
 
 # Disable batchnorm and use larger output_scale for proper reconstruction.
 # decoder:
@@ -73,7 +77,7 @@ loss_params:
       point_reduction: "mean"
       auto_scale_by_points: False
 
-loss: chamfer
+loss: sinkhorn+rdf
 sinkhorn_blur: 0.1
 sinkhorn_blur_schedule:
   enable: false
@@ -83,26 +87,27 @@ sinkhorn_blur_schedule:
   duration_epochs: ${epochs}
 
 # Training parameters
-learning_rate: 0.004
-batch_size: 128
+learning_rate: 0.003
+batch_size: 400
 precision: bf16-true
 gradient_clip_val: 1.0
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 60 
+epochs: 1000
 
 gpu: True
-devices: [0]
+devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
+scheduler_min_lr: 1e-6
 debug_startup: true
 debug_faulthandler_timeout: 60
 
-decay_rate: 0.0004
+decay_rate: 0.0000
 kl_latent_loss_scale: 0.0
 max_samples: 0
 load_pretrained_ae: False
@@ -123,7 +128,7 @@ idec_init_kmeans: True
 barlow_enabled: True
 barlow_weight: 0.002
 barlow_lambda: 0.005
-barlow_embed_dim: 80
+barlow_embed_dim: 120
 barlow_start_epoch: 12
 barlow_jitter_std: 0.003
 barlow_drop_ratio: 0.0

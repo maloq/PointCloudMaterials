@@ -319,6 +319,7 @@ class SyntheticPointCloudDataset(Dataset):
         scaling_range: float = 0.0,
         normalization_scale: float = 1.0,
         track_augmentation: bool = False,
+        allowed_classes: Optional[Sequence[str]] = None,
     ) -> None:
         super().__init__()
         if not env_dirs:
@@ -340,6 +341,7 @@ class SyntheticPointCloudDataset(Dataset):
         self.scaling_range = float(scaling_range)
         self.normalization_scale = float(normalization_scale)
         self.track_augmentation = bool(track_augmentation)
+        self.allowed_classes = set(allowed_classes) if allowed_classes else None
         self._augmentation_metadata: Optional[List[Dict[str, Any]]] = None
 
         # Store as tensors to avoid conversion overhead
@@ -427,6 +429,12 @@ class SyntheticPointCloudDataset(Dataset):
 
             # Look up metadata on-demand
             meta = atom_to_meta_idx[atom_idx]
+
+            # Filter by allowed classes if specified
+            if self.allowed_classes is not None:
+                if meta["phase_id"] not in self.allowed_classes:
+                    continue
+
             processed = self._prepare_sample(sample_points)
             class_idx = self._encode_class(meta["phase_id"])
             instance_idx = self._encode_instance(meta["grain_key"])

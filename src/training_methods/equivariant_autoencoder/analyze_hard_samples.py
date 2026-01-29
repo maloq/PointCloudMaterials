@@ -415,7 +415,7 @@ if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser(description='Analyze per-sample reconstruction quality')
-    parser.add_argument('--checkpoint',  default="output/2026-01-27/19-43-11/EQ_AE_l80_N120_M80_chamfer_VN_REVNET_Anchor-epoch=18.ckpt",   help='Path to model checkpoint')
+    parser.add_argument('--checkpoint',  default="output/2026-01-28/20-52-49/EQ_AE_l120_N120_M80_pdist+rdf_VN_REVNET_Anchor-epoch=33.ckpt",   help='Path to model checkpoint')
     parser.add_argument('--output-dir', '-o', default=None, help='Output directory (default: checkpoint_dir/sample_analysis)')
     parser.add_argument('--cuda-device', '-d', type=int, default=0, help='CUDA device')
     parser.add_argument('--max-samples', '-n', type=int, default=None, help='Max samples to analyze')

@@ -48,6 +48,7 @@ def save_tsne_plot(
     title: str,
     show: bool = False,
     legend_title: str = "cluster",
+    class_names: Dict[Any, str] | None = None,
 ) -> None:
     """Save a t-SNE scatter plot, colored by labels, to *out_file*.
 
@@ -81,13 +82,22 @@ def save_tsne_plot(
     plt.figure(figsize=(7, 6), dpi=150)
     for lbl in unique_labels:
         mask = labels == lbl
+        
+        # Determine label text
+        if class_names is not None and lbl in class_names:
+             label_text = class_names[lbl]
+        elif class_names is not None and int(lbl) in class_names: # Handle potential type mismatch (int/float/np.int)
+             label_text = class_names[int(lbl)]
+        else:
+             label_text = str(lbl)
+             
         plt.scatter(
             tsne_coords[mask, 0],
             tsne_coords[mask, 1],
             s=6,
             alpha=0.8,
             c=[label_to_color[lbl]],
-            label=str(lbl),
+            label=label_text,
             linewidths=0,
         )
 

@@ -1,4 +1,7 @@
 import os
+# Hack to fix multi-GPU training on this server (NCCL P2P hang)
+os.environ["NCCL_P2P_DISABLE"] = "1"
+
 import sys
 import traceback
 import hydra

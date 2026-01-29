@@ -107,6 +107,8 @@ def gather_inference_batches(
                 break
             pc, phase = _extract_pc_and_phase(batch)
             pc = pc.to(device)
+            if hasattr(model, "_prepare_model_input"):
+                pc = model._prepare_model_input(pc)
 
             inv_z, recon, eq_z = model(pc)
             originals.append(pc.detach().cpu())
@@ -143,6 +145,7 @@ def save_reconstruction_grid(
     out_file: Path,
     max_examples: int = 6,
     max_points: int = 2048,
+    class_names: Dict[int, str] | None = None,
 ) -> None:
     if originals.size == 0 or reconstructions.size == 0:
         return
@@ -160,14 +163,22 @@ def save_reconstruction_grid(
 
         ax = fig.add_subplot(count, 2, i * 2 + 1, projection="3d")
         ax.scatter(orig[:, 0], orig[:, 1], orig[:, 2], s=2, alpha=0.7, c="#2c3e50")
-        ax.set_title(f"Original{'' if phase_label is None else f' (phase {phase_label})'}")
-        ax.axis("off")
+        if phase_label is not None:
+             label_text = class_names.get(phase_label, str(phase_label)) if class_names else str(phase_label)
+             ax.set_title(f"Original (Phase: {label_text})", fontsize=9)
+        else:
+             ax.set_title("Original", fontsize=9)
+             
+        # Enable axis for scale visibility
+        # ax.axis("off") 
+        ax.tick_params(labelsize=6)
         set_axes_equal(ax)
 
         ax = fig.add_subplot(count, 2, i * 2 + 2, projection="3d")
         ax.scatter(reco[:, 0], reco[:, 1], reco[:, 2], s=2, alpha=0.7, c="#e74c3c")
-        ax.set_title(f"Reconstruction • CD={cd:.4f}")
-        ax.axis("off")
+        ax.set_title(f"Reconstruction • CD={cd:.4f}", fontsize=9)
+        # ax.axis("off")
+        ax.tick_params(labelsize=6)
         set_axes_equal(ax)
 
     plt.tight_layout()
@@ -180,6 +191,7 @@ def save_latent_tsne(
     phases: np.ndarray,
     out_dir: Path,
     max_samples: int | None = None,
+    class_names: Dict[int, str] | None = None,
 ) -> None:
     """Save t-SNE plots: one with ground truth phases, one with clustering results.
     
@@ -217,6 +229,7 @@ def save_latent_tsne(
             out_file=str(out_dir / "latent_tsne_ground_truth.png"),
             title=f"Latent space t-SNE (n={len(latents)}, ground truth phases)",
             legend_title="phase",
+            class_names=class_names,
         )
 
     # 2. Save plot with clustering results
@@ -242,6 +255,7 @@ def save_pca_visualization(
     phases: np.ndarray,
     out_dir: Path,
     max_samples: int | None = None,
+    class_names: Dict[int, str] | None = None,
 ) -> Dict[str, Any]:
     """Generate PCA visualizations and statistics for latent space analysis.
     
@@ -286,8 +300,9 @@ def save_pca_visualization(
         colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
         for i, label in enumerate(unique_labels):
             mask = gt_labels == label
+            label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
             axes[0].scatter(pca_coords[mask, 0], pca_coords[mask, 1], 
-                          c=[colors[i]], s=8, alpha=0.6, label=f"Phase {int(label)}")
+                          c=[colors[i]], s=8, alpha=0.6, label=label_text)
         if len(unique_labels) <= 15:
             axes[0].legend(fontsize=7, markerscale=1.5)
     else:
@@ -322,8 +337,9 @@ def save_pca_visualization(
         if gt_labels is not None:
             for i, label in enumerate(unique_labels):
                 mask = gt_labels == label
+                label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
                 ax.scatter(pca_coords[mask, 0], pca_coords[mask, 1], pca_coords[mask, 2],
-                          c=[colors[i]], s=6, alpha=0.5, label=f"Phase {int(label)}")
+                          c=[colors[i]], s=6, alpha=0.5, label=label_text)
             if len(unique_labels) <= 15:
                 ax.legend(fontsize=7, markerscale=1.5)
         else:
@@ -347,6 +363,7 @@ def save_latent_statistics(
     eq_latents: np.ndarray,
     phases: np.ndarray,
     out_dir: Path,
+    class_names: Dict[int, str] | None = None,
 ) -> Dict[str, Any]:
     """Compute and visualize detailed latent space statistics."""
     if inv_latents.size == 0:
@@ -389,7 +406,8 @@ def save_latent_statistics(
         colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
         for i, label in enumerate(unique_labels):
             mask = phases == label
-            axes[0, 0].hist(norms[mask], bins=50, alpha=0.5, label=f"Phase {int(label)}", color=colors[i])
+            label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
+            axes[0, 0].hist(norms[mask], bins=50, alpha=0.5, label=label_text, color=colors[i])
         if len(unique_labels) <= 10:
             axes[0, 0].legend(fontsize=7)
     else:
@@ -443,7 +461,12 @@ def save_latent_statistics(
         axes[1, 1].set_ylabel("Mean Latent Norm")
         axes[1, 1].set_title("Per-Class Latent Norm")
         axes[1, 1].set_xticks(x_pos)
-        axes[1, 1].set_xticklabels([f"{int(l)}" for l in unique_labels])
+        
+        labels_list = []
+        for l in unique_labels:
+             labels_list.append(class_names.get(int(l), str(int(l))) if class_names else str(int(l)))
+             
+        axes[1, 1].set_xticklabels(labels_list, rotation=45, ha="right", fontsize=8)
     else:
         axes[1, 1].text(0.5, 0.5, "No class labels available", ha="center", va="center")
         axes[1, 1].set_title("Per-Class Statistics")
@@ -477,6 +500,7 @@ def save_clustering_analysis(
     phases: np.ndarray,
     out_dir: Path,
     max_samples: int | None = None,
+    class_names: Dict[int, str] | None = None,
 ) -> Dict[str, Any]:
     """Perform clustering analysis on latent space and compute quality metrics.
     
@@ -593,7 +617,9 @@ def save_clustering_analysis(
             centroid = class_centroids[label]
             dists = np.linalg.norm(class_points - centroid, axis=1)
             separation_data.append(dists)
-            labels_list.append(f"Phase {int(label)}")
+            
+            label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
+            labels_list.append(label_text)
         
         bp = axes[2].boxplot(separation_data, labels=labels_list, patch_artist=True)
         colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
@@ -620,6 +646,7 @@ def save_umap_visualization(
     phases: np.ndarray,
     out_dir: Path,
     max_samples: int | None = None,
+    class_names: Dict[int, str] | None = None,
 ) -> None:
     """Generate UMAP visualization as an alternative to t-SNE.
     
@@ -663,8 +690,9 @@ def save_umap_visualization(
         colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
         for i, label in enumerate(unique_labels):
             mask = gt_labels == label
+            label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
             ax.scatter(umap_coords[mask, 0], umap_coords[mask, 1], 
-                      c=[colors[i]], s=8, alpha=0.6, label=f"Phase {int(label)}")
+                      c=[colors[i]], s=8, alpha=0.6, label=label_text)
         if len(unique_labels) <= 15:
             ax.legend(fontsize=8, markerscale=1.5)
     else:
@@ -726,6 +754,8 @@ def evaluate_equivariance(
                 break
             pc, _ = _extract_pc_and_phase(batch)
             pc = pc.to(device)
+            if hasattr(model, "_prepare_model_input"):
+                pc = model._prepare_model_input(pc)
             batch_size = pc.shape[0]
 
             # Generate random rotations
@@ -935,6 +965,27 @@ def run_post_training_analysis(
         dl = dm.test_dataloader()
         print("Using TEST dataset for latent analysis")
 
+    # Extract class names mapping if available
+    class_names = None
+    if hasattr(dm, "train_dataset"): # Try accessing direct dataset first
+         ds = getattr(dm, "train_dataset", None)
+         # Unwrap subsets
+         while hasattr(ds, "dataset"):
+             ds = ds.dataset
+         
+         if hasattr(ds, "class_names"):
+             class_names = ds.class_names
+             print(f"Loaded class names: {class_names}")
+    
+    # Fallback to checking the dataloader's dataset if above failed
+    if class_names is None and hasattr(dl, "dataset"):
+         ds = dl.dataset
+         while hasattr(ds, "dataset"):
+             ds = ds.dataset
+         if hasattr(ds, "class_names"):
+             class_names = ds.class_names
+             print(f"Loaded class names from DL: {class_names}")
+
     # Collect batches for comprehensive latent analysis
     if max_batches_latent is None:
         print("Gathering inference batches (ALL batches)...")
@@ -953,6 +1004,7 @@ def run_post_training_analysis(
         cache["phases"],
         out_dir / "recon_vs_prediction.png",
         max_examples=min(6, max_batches_recon * getattr(dl, "batch_size", 8)),
+        class_names=class_names,
     )
 
     all_metrics = {}
@@ -964,6 +1016,7 @@ def run_post_training_analysis(
         cache["phases"], 
         out_dir,
         max_samples=max_samples_visualization,
+        class_names=class_names,
     )
 
     # 3. PCA visualization and analysis
@@ -973,6 +1026,7 @@ def run_post_training_analysis(
         cache["phases"],
         out_dir,
         max_samples=max_samples_visualization,
+        class_names=class_names,
     )
     all_metrics["pca"] = pca_stats
 
@@ -983,6 +1037,7 @@ def run_post_training_analysis(
         cache["eq_latents"],
         cache["phases"],
         out_dir,
+        class_names=class_names,
     )
     all_metrics["latent_stats"] = latent_stats
 
@@ -993,6 +1048,7 @@ def run_post_training_analysis(
         cache["phases"],
         out_dir,
         max_samples=max_samples_visualization,
+        class_names=class_names,
     )
     all_metrics["clustering"] = clustering_metrics
 
@@ -1003,6 +1059,7 @@ def run_post_training_analysis(
         cache["phases"],
         out_dir,
         max_samples=max_samples_visualization,
+        class_names=class_names,
     )
 
     # 7. Equivariance evaluation

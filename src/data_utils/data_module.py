@@ -203,6 +203,11 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         pre_normalize = self._get_param("pre_normalize", data_cfg, synth_dict, default=True)
         normalize = self._get_param("normalize", data_cfg, synth_dict, default=True)
         dataset_max = self._get_param("dataset_max_samples", data_cfg, synth_dict, default=None)
+        classes = self._get_param("classes", data_cfg, synth_dict, default=None)
+        if classes is not None:
+             classes = _to_container(classes)
+             if isinstance(classes, str):
+                 classes = [classes]
 
         dataset = SyntheticPointCloudDataset(
             env_dirs=env_dirs,
@@ -220,6 +225,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             jitter_scale=jitter_scale,
             scaling_range=scaling_range,
             track_augmentation=track_augmentation,
+            allowed_classes=classes,
         )
 
         train_ratio = float(self._get_param("train_ratio", data_cfg, synth_dict, default=0.8))

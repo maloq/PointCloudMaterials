@@ -1,0 +1,222 @@
+data:
+  kind: synthetic
+  data_path: output/synthetic_data/polycrystalline_metal
+  num_points: 128
+  model_points: 80
+  radius: 7.4
+  sample_type: regular
+  overlap_fraction: 0.0
+  n_samples: 0
+  train_ratio: 0.8
+  drop_edge_samples: true
+  pre_normalize: true
+  normalize: true
+  global:
+    L: 200.0
+    rho_target: 0.0849
+    avg_nn_dist: 2.49
+    grain_count: 30
+    intermediate_layer_thickness_factor: 2.0
+    random_seed: 12345
+    output_dir: output/polycrystalline_metal
+    parallel:
+      enabled: true
+      n_workers: null
+      chunk_size: 2
+    cell_size_factor: 1.5
+  phases:
+    bcc_iron_pristine:
+      phase_type: crystal_bcc
+      structural_params:
+        density_target: 0.0849
+      perturbations:
+        temperature_K: 200.0
+        atomic_mass_amu: 55.845
+        p_dropout: 0.0
+        dropout_relax_radius: 0.0
+        dropout_relax_max_fraction: 0.0
+        use_elastic_relaxation: true
+        rot_bubble_prob: 0.0
+        rot_bubble_radius: 0.0
+        rot_bubble_angle_deg: 0.0
+        density_bubbles: []
+    bcc_iron_defected:
+      phase_type: crystal_bcc
+      structural_params:
+        density_target: 0.0845
+      perturbations:
+        temperature_K: 350.0
+        atomic_mass_amu: 55.845
+        p_dropout: 0.008
+        dropout_relax_radius: 7.0
+        dropout_relax_max_fraction: 0.12
+        use_elastic_relaxation: true
+        rot_bubble_prob: 0.5
+        rot_bubble_radius: 8.0
+        rot_bubble_angle_deg: 15.0
+        density_bubbles:
+        - expected_count: 2
+          radius: 5.0
+          alpha: -0.4
+        - expected_count: 1
+          radius: 4.0
+          alpha: 0.3
+    bcc_iron_deformed:
+      phase_type: crystal_bcc
+      structural_params:
+        density_target: 0.084
+      perturbations:
+        temperature_K: 400.0
+        atomic_mass_amu: 55.845
+        p_dropout: 0.015
+        dropout_relax_radius: 8.0
+        dropout_relax_max_fraction: 0.15
+        use_elastic_relaxation: true
+        rot_bubble_prob: 0.8
+        rot_bubble_radius: 10.0
+        rot_bubble_angle_deg: 25.0
+        density_bubbles:
+        - expected_count: 4
+          radius: 6.0
+          alpha: -0.5
+        - expected_count: 3
+          radius: 4.0
+          alpha: -0.3
+        - expected_count: 2
+          radius: 5.0
+          alpha: 0.4
+    fcc_iron_austenite:
+      phase_type: crystal_fcc
+      structural_params:
+        density_target: 0.083
+      perturbations:
+        temperature_K: 300.0
+        atomic_mass_amu: 55.845
+        p_dropout: 0.005
+        dropout_relax_radius: 5.0
+        dropout_relax_max_fraction: 0.08
+        use_elastic_relaxation: true
+        rot_bubble_prob: 0.4
+        rot_bubble_radius: 12.0
+        rot_bubble_angle_deg: 60.0
+        density_bubbles: []
+    grain_boundary_amorphous:
+      phase_type: amorphous_random
+      structural_params:
+        min_pair_dist: 2.1
+        density_target: 0.078
+      liquid_structure:
+        method: simple
+        target_coordination: 10.0
+      perturbations:
+        sigma_thermal: 0.25
+        temperature_K: 0.0
+        p_dropout: 0.03
+        dropout_relax_radius: 4.0
+        dropout_relax_max_fraction: 0.1
+        use_elastic_relaxation: false
+        rot_bubble_prob: 0.0
+        density_bubbles:
+        - expected_count: 1
+          radius: 3.0
+          alpha: -0.2
+  grain_assignment:
+    probabilities:
+      bcc_iron_pristine: 0.45
+      bcc_iron_defected: 0.3
+      bcc_iron_deformed: 0.12
+      fcc_iron_austenite: 0.08
+      grain_boundary_amorphous: 0.05
+  synthetic:
+    classes:
+    - bcc_iron_pristine
+    - fcc_iron_austenite
+project_name: pointnet
+experiment_name: EQ_AE_l${latent_size}_N${data.num_points}_M${data.model_points}_${loss}_${decoder.name}
+wandb_mode: online
+model_type: eq_ae
+latent_size: 120
+load_supervised_checkpoint: false
+encoder:
+  name: VN_REVNET_Backbone
+  kwargs:
+    latent_size: ${latent_size}
+    sa_npoints:
+    - 80
+    - 40
+decoder:
+  name: VN_REVNET_Anchor
+  kwargs:
+    num_points: ${data.model_points}
+    latent_size: ${latent_size}
+    num_anchors: 40
+    anchor_channels: 96
+    transformer_depth: 4
+    attn_hidden: 256
+    point_allocation: balanced
+    use_invariant_anchor_pos: false
+    point_query_dim: 64
+    rich_invariants: true
+    rbf_dim: 16
+    rbf_cutoff: 1.5
+    offset_mlp_hidden: 512
+loss_params:
+  chamfer:
+    point_reduction: mean
+    auto_scale_by_points: false
+loss: pdist+rdf
+sinkhorn_blur: 0.1
+sinkhorn_blur_schedule:
+  enable: false
+  start: 0.1
+  end: 0.01
+  start_epoch: 0
+  duration_epochs: ${epochs}
+learning_rate: 0.003
+batch_size: 400
+precision: bf16-true
+gradient_clip_val: 1.0
+enable_swa: false
+swa_epoch_start: 1000
+epochs: 100
+gpu: true
+devices:
+- 0
+ddp_find_unused_parameters: true
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+scheduler_min_lr: 1.0e-06
+debug_startup: true
+debug_faulthandler_timeout: 60
+decay_rate: 0.0
+kl_latent_loss_scale: 0.0
+max_samples: 0
+load_pretrained_ae: false
+pretrained_ae_checkpoint: null
+idec_enabled: false
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: true
+idec_normalize_z: true
+idec_init_kmeans: true
+barlow_enabled: true
+barlow_weight: 0.002
+barlow_lambda: 0.005
+barlow_embed_dim: 120
+barlow_start_epoch: 12
+barlow_jitter_std: 0.003
+barlow_drop_ratio: 0.0
+barlow_neighbor_view: true
+barlow_neighbor_k: 6
+barlow_view_points: ${data.model_points}
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false

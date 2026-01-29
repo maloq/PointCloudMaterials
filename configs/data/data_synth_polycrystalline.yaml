@@ -7,10 +7,9 @@
 # =============================================================================
 kind: synthetic
 data_path: output/synthetic_data/polycrystalline_metal
-num_points: 120
+num_points: 128
 model_points: 80
-radius: 7.8
-model_norm_clamp: false
+radius: 7.4
 sample_type: regular
 overlap_fraction: 0.0
 n_samples: 0
@@ -62,20 +61,19 @@ phases:
       density_target: 0.0849
     
     perturbations:
-      # Room temperature thermal vibrations
-      temperature_K: 300.0
+      temperature_K: 200.0
       atomic_mass_amu: 55.845
       
       # Low vacancy concentration (equilibrium at 300K)
-      p_dropout: 0.001
-      dropout_relax_radius: 6.0
-      dropout_relax_max_fraction: 0.05
+      p_dropout: 0.000
+      dropout_relax_radius: 0.0
+      dropout_relax_max_fraction: 0.00
       use_elastic_relaxation: true
       
       # Rare rotation defects
-      rot_bubble_prob: 0.1
-      rot_bubble_radius: 4.0
-      rot_bubble_angle_deg: 3.0
+      rot_bubble_prob: 0.0
+      rot_bubble_radius: 0.0
+      rot_bubble_angle_deg: 0.0
       
       # No density bubbles in pristine grains
       density_bubbles: []

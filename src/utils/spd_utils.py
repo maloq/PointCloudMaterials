@@ -43,7 +43,7 @@ def get_optimizers_and_scheduler(hparams, parameters):
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             optimizer,
             T_max=epochs_before_swa,
-            eta_min=0 
+            eta_min=getattr(hparams, 'scheduler_min_lr', 1e-6)
         )
     elif scheduler_name == 'chained':
         scheduler1 = torch.optim.lr_scheduler.OneCycleLR(

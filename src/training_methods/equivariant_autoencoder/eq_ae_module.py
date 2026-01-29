@@ -252,7 +252,7 @@ class EquivariantAutoencoder(pl.LightningModule):
             normalize = self._loss_param("rdf", "normalize", True)
             loss_type = self._loss_param("rdf", "loss_type", "l2")
             clamp = self._loss_param("rdf", "clamp", True)
-            weight = self._loss_param("rdf", "weight", 1.0)
+            weight = self._loss_param("rdf", "weight", 10.0)
             val = rdf_loss(
                 pred,
                 target,
@@ -272,10 +272,12 @@ class EquivariantAutoencoder(pl.LightningModule):
 
     def _reconstruction_loss(self, pred, target, sinkhorn_blur):
         total_loss = None
+        component_losses = {}
         for component in self.loss_components:
             comp_val = self._component_reconstruction_loss(component, pred, target, sinkhorn_blur)
+            component_losses[component] = comp_val
             total_loss = comp_val if total_loss is None else (total_loss + comp_val)
-        return total_loss, None
+        return total_loss, component_losses
 
     @staticmethod
     def _unpack_batch(batch):
@@ -340,20 +342,30 @@ class EquivariantAutoencoder(pl.LightningModule):
         if nonfinite_inputs:
             recon_f32 = torch.nan_to_num(recon_f32, nan=0.0, posinf=1e4, neginf=-1e4)
             pc_f32 = torch.nan_to_num(pc_f32, nan=0.0, posinf=1e4, neginf=-1e4)
-        losses['recon'], _ = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
+        
+        losses['recon'], component_losses = self._reconstruction_loss(recon_f32, pc_f32, sinkhorn_blur)
+        
+        # Log component losses if available
+        if component_losses:
+            for name, val in component_losses.items():
+                losses[name] = val
+
         if nonfinite_inputs:
             losses['nonfinite_inputs'] = recon_f32.new_tensor(1.0)
         
         with torch.no_grad():
             if self.log_chamfer:
-                if self.loss_components == ["chamfer"]:
-                    losses['chamfer'] = losses['recon']
+                # Use computed component if available to save computation
+                if 'chamfer' in losses:
+                    pass # Already in losses
                 else:
                     point_reduction = self.loss_params.get("chamfer", {}).get("point_reduction", "mean")
                     losses['chamfer'], _ = chamfer_distance(recon_f32, pc_f32, point_reduction=point_reduction)
+            
             if self.log_emd:
-                if self.loss_components == ["sinkhorn"]:
-                    losses['emd'] = losses['recon']
+                # Use computed component if available
+                if 'sinkhorn' in losses:
+                    losses['emd'] = losses['sinkhorn']
                 else:
                     losses['emd'], _ = sinkhorn_distance(recon_f32.contiguous(), pc_f32, blur=sinkhorn_blur)
 
@@ -441,6 +453,10 @@ class EquivariantAutoencoder(pl.LightningModule):
             metrics_to_log['emd'] = losses['emd']
         if 'chamfer' in losses:
             metrics_to_log['chamfer'] = losses['chamfer']
+        if 'rdf' in losses:
+            metrics_to_log['rdf'] = losses['rdf']
+        if 'pdist' in losses:
+            metrics_to_log['pdist'] = losses['pdist']
         if 'kl' in losses:
             metrics_to_log['kl_loss'] = losses['kl']
         if 'cluster_kl' in losses:

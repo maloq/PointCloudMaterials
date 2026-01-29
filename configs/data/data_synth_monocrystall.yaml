@@ -8,7 +8,6 @@ data_path: output/synthetic_data/monocrystall_metal
 num_points: 120
 model_points: 80
 radius: 7.5
-model_norm_clamp: false
 sample_type: regular
 overlap_fraction: 0.0
 n_samples: 0

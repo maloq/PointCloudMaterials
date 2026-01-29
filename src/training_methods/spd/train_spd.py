@@ -1,4 +1,7 @@
 import os
+# Hack to fix multi-GPU training on this server (NCCL P2P hang)
+os.environ["NCCL_P2P_DISABLE"] = "1"
+
 import sys
 import time
 import traceback
@@ -114,7 +117,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         log_every_n_steps=cfg.log_every_n_steps,
         precision=precision,
         benchmark=True,
-        check_val_every_n_epoch=1,
+        check_val_every_n_epoch=4,
     )
     
     if hasattr(cfg, 'gradient_clip_val'):
