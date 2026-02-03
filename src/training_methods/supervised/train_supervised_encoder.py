@@ -75,7 +75,7 @@ def train(cfg: DictConfig):
     logger.print(f"Best checkpoint (loss): {checkpoint_callback_loss.best_model_path}")
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='supervised_encoder_synth')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='supervised_encoder_barlow_vn_molecular')
 def main(cfg: DictConfig):
     train(cfg)
 
