@@ -16,11 +16,12 @@ from src.utils.spd_utils import (
 )
 from src.training_methods.equivariant_autoencoder.idec import resolve_latent_dim
 from src.training_methods.contrastive_learning.barlow_twins import BarlowTwinsLoss
+from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 
 
 class BarlowTwinsModule(pl.LightningModule):
     """
-    Self-supervised Barlow Twins training for point cloud encoders.
+    Self-supervised Barlow Twins / VICReg training for point cloud encoders.
     """
 
     def __init__(self, cfg):
@@ -32,6 +33,7 @@ class BarlowTwinsModule(pl.LightningModule):
 
         latent_dim = resolve_latent_dim(cfg)
         self.barlow = BarlowTwinsLoss.from_config(cfg, input_dim=latent_dim)
+        self.vicreg = VICRegLoss.from_config(cfg, input_dim=latent_dim)
 
         data_cfg = getattr(cfg, "data", None)
         self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
@@ -61,6 +63,10 @@ class BarlowTwinsModule(pl.LightningModule):
     @property
     def barlow_projector(self):
         return self.barlow.projector
+
+    @property
+    def vicreg_projector(self):
+        return self.vicreg.projector
 
     def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
         if getattr(self.encoder, "expects_channel_first", False):
@@ -138,9 +144,25 @@ class BarlowTwinsModule(pl.LightningModule):
         for name, value in barlow_metrics.items():
             self._log_metric(stage, name, value)
 
+        # VICReg loss (self-supervised)
+        vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
+            pc=pc_raw,
+            encoder=self.encoder,
+            prepare_input=self._prepare_encoder_input,
+            split_output=self._split_encoder_output,
+            current_epoch=int(self.current_epoch),
+        )
+        if vicreg_loss is not None:
+            losses["vicreg"] = vicreg_loss
+        for name, value in vicreg_metrics.items():
+            self._log_metric(stage, name, value)
+
         total_loss = None
         if "barlow" in losses:
             total_loss = self.barlow.weight * losses["barlow"]
+        if "vicreg" in losses:
+            vicreg_total = self.vicreg.weight * losses["vicreg"]
+            total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
@@ -153,6 +175,8 @@ class BarlowTwinsModule(pl.LightningModule):
         }
         if "barlow" in losses:
             metrics_to_log["barlow"] = losses["barlow"]
+        if "vicreg" in losses:
+            metrics_to_log["vicreg"] = losses["vicreg"]
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():

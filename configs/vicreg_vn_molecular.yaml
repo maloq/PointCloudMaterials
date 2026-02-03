@@ -1,0 +1,101 @@
+defaults:
+#  - data: data_synth_polycrystalline
+  - data: data_synth_polycrystalline
+project_name: pointnet
+experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+wandb_mode: online
+
+model_type: vicreg  # Self-supervised VICReg
+latent_size: 80  # Number of VN channels for equivariant latent
+
+# Optional: Load pretrained supervised encoder
+load_supervised_checkpoint: False
+
+# VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
+encoder:
+  name: VN_REVNET_Backbone
+  kwargs:
+    latent_size: ${latent_size}
+    sa_npoints: [80, 40]
+    sa_channels: [128, 256]
+    attn_hidden: 256
+
+
+# Decoder config is required by the model factory but is not used for VICReg
+decoder:
+  name: VN_REVNET_Anchor
+  kwargs:
+    num_points: ${data.model_points}
+    latent_size: ${latent_size}
+
+# Training parameters
+learning_rate: 0.003
+batch_size: 128
+precision: bf16-true
+gradient_clip_val: 1.0
+
+enable_swa: False
+swa_epoch_start: 1000
+epochs: 120
+max_samples: 0
+
+gpu: True
+devices: [0, 1]
+ddp_find_unused_parameters: True
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+scheduler_min_lr: 1e-6
+debug_startup: false
+debug_faulthandler_timeout: 60
+
+decay_rate: 0.0000
+
+# IDEC clustering (disabled by default; enable after pretraining)
+idec_enabled: False
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: True
+idec_normalize_z: True
+idec_init_kmeans: True
+
+# Barlow Twins (disabled)
+barlow_enabled: False
+barlow_weight: 0.0
+
+# VICReg (self-supervised)
+vicreg_enabled: True
+vicreg_weight: 1.0
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+vicreg_embed_dim: 120
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.01
+vicreg_jitter_mode: physical
+vicreg_drop_ratio: 0.0
+vicreg_neighbor_view: true
+vicreg_neighbor_k: 6
+vicreg_view_points: ${data.model_points}
+vicreg_rotation_mode: small
+vicreg_rotation_deg: 10.0
+vicreg_strain_std: 0.02
+vicreg_strain_volume_preserve: true
+vicreg_occlusion_mode: mixed
+vicreg_occlusion_view: second
+vicreg_occlusion_slab_frac: 0.0
+vicreg_occlusion_cone_deg: 0.0
+vicreg_std_eps: 1e-4
+vicreg_std_target: 1.0
+
+# Data augmentation (applied in dataloaders)
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false

@@ -848,14 +848,32 @@ def save_clustering_analysis(
 
 
 
+def _seeded_forward(model: BarlowTwinsModule, pc: torch.Tensor, seed: int):
+    """Run forward pass with fixed random seed while preserving global RNG state."""
+    cpu_state = torch.get_rng_state()
+    cuda_states = torch.cuda.get_rng_state_all() if pc.is_cuda else None
+    torch.manual_seed(seed)
+    if pc.is_cuda:
+        torch.cuda.manual_seed_all(seed)
+    try:
+        return model(pc)
+    finally:
+        torch.set_rng_state(cpu_state)
+        if cuda_states is not None:
+            torch.cuda.set_rng_state_all(cuda_states)
+
+
 def evaluate_latent_equivariance(
     model: BarlowTwinsModule,
     dataloader: torch.utils.data.DataLoader,
     device: str,
     max_batches: int = 2,
 ) -> Tuple[Dict[str, float], np.ndarray]:
-    """Evaluate equivariance in encoder outputs (if equivariant latents exist)."""
-    eq_errors = []
+    """Evaluate equivariance in encoder outputs (seeded vs unseeded)."""
+    eq_errors_seeded = []
+    eq_errors_unseeded = []
+    determinism_errors = []
+    identity_errors = []
 
     model.eval()
 
@@ -876,26 +894,92 @@ def evaluate_latent_equivariance(
                 ]
             )
             pc_rot = torch.einsum("bij,bnj->bni", rots, pc)
+            identity = torch.eye(3, device=device, dtype=pc.dtype).unsqueeze(0).expand(
+                batch_size, -1, -1
+            )
 
-            _, _, eq_z = model(pc)
-            _, _, eq_z_rot = model(pc_rot)
+            seed = 42 + batch_idx
 
-            if eq_z is None or eq_z_rot is None:
-                continue
+            # Determinism check (same input, same seed)
+            _, _, eq_z_1 = _seeded_forward(model, pc, seed)
+            _, _, eq_z_2 = _seeded_forward(model, pc, seed)
+            if eq_z_1 is not None and eq_z_2 is not None:
+                det_diff = torch.linalg.norm(eq_z_1 - eq_z_2, dim=-1).mean(dim=1)
+                determinism_errors.extend(det_diff.detach().cpu().numpy().tolist())
 
-            expected_eq = torch.einsum("bij,bcj->bci", rots, eq_z)
-            rel = torch.linalg.norm(eq_z_rot - expected_eq, dim=-1) / torch.linalg.norm(
-                expected_eq, dim=-1
-            ).clamp_min(1e-6)
-            eq_errors.extend(rel.mean(dim=1).detach().cpu().numpy().tolist())
+            # Identity rotation check (should be ~0)
+            _, _, eq_z_orig = _seeded_forward(model, pc, seed)
+            _, _, eq_z_id = _seeded_forward(model, pc, seed)
+            if eq_z_orig is not None and eq_z_id is not None:
+                expected_id = torch.einsum("bij,bcj->bci", identity, eq_z_orig)
+                id_rel = torch.linalg.norm(eq_z_id - expected_id, dim=-1) / torch.linalg.norm(
+                    expected_id, dim=-1
+                ).clamp_min(1e-6)
+                identity_errors.extend(id_rel.mean(dim=1).detach().cpu().numpy().tolist())
 
-    eq_arr = np.asarray(eq_errors)
+            # Random rotation WITH seed control
+            _, _, eq_z = _seeded_forward(model, pc, seed)
+            _, _, eq_z_rot = _seeded_forward(model, pc_rot, seed)
+            if eq_z is not None and eq_z_rot is not None:
+                expected_eq = torch.einsum("bij,bcj->bci", rots, eq_z)
+                rel = torch.linalg.norm(eq_z_rot - expected_eq, dim=-1) / torch.linalg.norm(
+                    expected_eq, dim=-1
+                ).clamp_min(1e-6)
+                eq_errors_seeded.extend(rel.mean(dim=1).detach().cpu().numpy().tolist())
+
+            # Random rotation WITHOUT seed control
+            _, _, eq_z_uns = model(pc)
+            _, _, eq_z_rot_uns = model(pc_rot)
+            if eq_z_uns is not None and eq_z_rot_uns is not None:
+                expected_eq_uns = torch.einsum("bij,bcj->bci", rots, eq_z_uns)
+                rel_uns = torch.linalg.norm(eq_z_rot_uns - expected_eq_uns, dim=-1) / torch.linalg.norm(
+                    expected_eq_uns, dim=-1
+                ).clamp_min(1e-6)
+                eq_errors_unseeded.extend(rel_uns.mean(dim=1).detach().cpu().numpy().tolist())
+
+    eq_seeded = np.asarray(eq_errors_seeded)
+    eq_unseeded = np.asarray(eq_errors_unseeded)
+    det_arr = np.asarray(determinism_errors)
+    id_arr = np.asarray(identity_errors)
+
+    print("\n" + "=" * 60)
+    print("EQUIVARIANCE DIAGNOSTICS")
+    print("=" * 60)
+    print("1. DETERMINISM (same input, same seed):")
+    print(f"   Mean abs diff: {det_arr.mean():.6e}" if det_arr.size else "   N/A")
+    print("   Should be ~0 if model is deterministic with fixed seed")
+    print()
+    print("2. IDENTITY ROTATION (R=I, same seed):")
+    print(f"   Mean rel error: {id_arr.mean():.6e}" if id_arr.size else "   N/A")
+    print("   Should be ~0 (sanity check)")
+    print()
+    print("3. RANDOM ROTATION (WITH seed control):")
+    print(f"   Latent rel error: {eq_seeded.mean():.4f}" if eq_seeded.size else "   N/A")
+    print("   Tests true equivariance (FPS initialized same way)")
+    print()
+    print("4. RANDOM ROTATION (WITHOUT seed control):")
+    print(f"   Latent rel error: {eq_unseeded.mean():.4f}" if eq_unseeded.size else "   N/A")
+    print("   Includes non-determinism from FPS random init")
+    print("=" * 60)
+
+    nondet = float(eq_unseeded.mean() - eq_seeded.mean()) if eq_seeded.size and eq_unseeded.size else float("nan")
+    if eq_seeded.size and eq_unseeded.size:
+        print(f"\nNON-DETERMINISM CONTRIBUTION: {nondet:.4f}")
+        if nondet > 0.1:
+            print("  WARNING: Significant non-determinism detected (likely FPS init).")
+        print()
+
     metrics = {
-        "eq_latent_rel_error_mean": float(eq_arr.mean()) if eq_arr.size else float("nan"),
-        "eq_latent_rel_error_median": float(np.median(eq_arr)) if eq_arr.size else float("nan"),
-        "num_samples": int(eq_arr.size),
+        "eq_latent_rel_error_mean": float(eq_seeded.mean()) if eq_seeded.size else float("nan"),
+        "eq_latent_rel_error_median": float(np.median(eq_seeded)) if eq_seeded.size else float("nan"),
+        "eq_latent_rel_error_unseeded": float(eq_unseeded.mean()) if eq_unseeded.size else float("nan"),
+        "eq_latent_rel_error_unseeded_median": float(np.median(eq_unseeded)) if eq_unseeded.size else float("nan"),
+        "eq_latent_determinism_mean": float(det_arr.mean()) if det_arr.size else float("nan"),
+        "eq_latent_identity_mean": float(id_arr.mean()) if id_arr.size else float("nan"),
+        "eq_latent_nondeterminism_contribution": nondet,
+        "num_samples": int(eq_seeded.size),
     }
-    return metrics, eq_arr
+    return metrics, eq_seeded
 
 
 def save_equivariance_plot(eq_errors: np.ndarray, out_file: Path) -> None:
@@ -907,7 +991,7 @@ def save_equivariance_plot(eq_errors: np.ndarray, out_file: Path) -> None:
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 4), dpi=150)
     ax.hist(eq_errors, bins=30, color="#2980b9", alpha=0.8)
-    ax.set_title("Equivariant latent relative error")
+    ax.set_title("Equivariant latent relative error (seeded)")
     ax.set_xlabel("||z_R - Rz|| / ||Rz||")
     ax.set_ylabel("count")
 
@@ -1227,15 +1311,33 @@ def run_post_training_analysis(
     if "equivariance" in all_metrics:
         eq = all_metrics["equivariance"]
         print(
-            f"Equivariant latent error (mean): {eq.get('eq_latent_rel_error_mean', 'N/A'):.4f}"
+            f"Equivariant latent error (seeded mean): {eq.get('eq_latent_rel_error_mean', 'N/A'):.4f}"
             if isinstance(eq.get("eq_latent_rel_error_mean"), float)
-            else f"Equivariant latent error (mean): {eq.get('eq_latent_rel_error_mean', 'N/A')}"
+            else f"Equivariant latent error (seeded mean): {eq.get('eq_latent_rel_error_mean', 'N/A')}"
         )
         print(
-            f"Equivariant latent error (median): {eq.get('eq_latent_rel_error_median', 'N/A'):.4f}"
+            f"Equivariant latent error (seeded median): {eq.get('eq_latent_rel_error_median', 'N/A'):.4f}"
             if isinstance(eq.get("eq_latent_rel_error_median"), float)
-            else f"Equivariant latent error (median): {eq.get('eq_latent_rel_error_median', 'N/A')}"
+            else f"Equivariant latent error (seeded median): {eq.get('eq_latent_rel_error_median', 'N/A')}"
         )
+        if "eq_latent_rel_error_unseeded" in eq:
+            print(
+                f"Equivariant latent error (unseeded mean): {eq.get('eq_latent_rel_error_unseeded', 'N/A'):.4f}"
+                if isinstance(eq.get("eq_latent_rel_error_unseeded"), float)
+                else f"Equivariant latent error (unseeded mean): {eq.get('eq_latent_rel_error_unseeded', 'N/A')}"
+            )
+        if "eq_latent_rel_error_unseeded_median" in eq:
+            print(
+                f"Equivariant latent error (unseeded median): {eq.get('eq_latent_rel_error_unseeded_median', 'N/A'):.4f}"
+                if isinstance(eq.get("eq_latent_rel_error_unseeded_median"), float)
+                else f"Equivariant latent error (unseeded median): {eq.get('eq_latent_rel_error_unseeded_median', 'N/A')}"
+            )
+        if "eq_latent_nondeterminism_contribution" in eq:
+            print(
+                f"Non-determinism contribution (unseeded - seeded): {eq.get('eq_latent_nondeterminism_contribution', 'N/A'):.4f}"
+                if isinstance(eq.get("eq_latent_nondeterminism_contribution"), float)
+                else f"Non-determinism contribution (unseeded - seeded): {eq.get('eq_latent_nondeterminism_contribution', 'N/A')}"
+            )
 
     print("=" * 60)
     print(f"\nSaved all analyses to {out_dir}")

@@ -9,7 +9,7 @@ from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
-from src.training_methods.spd.supervised_encoder_module import SupervisedEncoder
+from src.training_methods.supervised.supervised_encoder_module import SupervisedEncoder
 from src.training_methods.spd.train_spd import train_model
 
 torch.set_float32_matmul_precision('high')
@@ -30,11 +30,10 @@ def get_checkpoint_filename(cfg: DictConfig) -> str:
     latent_size = cfg.latent_size
     batch_size = cfg.batch_size
     lr = cfg.learning_rate
-    rotation_mode = cfg.rotation_mode
 
     filename = (f"supervised_encoder_{encoder_name}_"
                f"l{latent_size}_bs{batch_size}_lr{lr:.4f}_"
-               f"rot{rotation_mode}_epoch{{epoch:02d}}")
+               f"epoch{{epoch:02d}}")
     return filename
 
 
