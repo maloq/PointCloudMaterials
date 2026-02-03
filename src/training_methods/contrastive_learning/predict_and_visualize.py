@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 from pathlib import Path
@@ -7,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from hydra import compose, initialize
-from omegaconf import DictConfig
+from omegaconf import DictConfig, ListConfig
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
@@ -15,11 +16,13 @@ import seaborn as sns
 
 sys.path.append(os.getcwd())
 
+from src.data_utils.data_load import PointCloudDataset
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 from src.utils.spd_metrics import random_rotation_matrix
 from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
+from src.vis_tools.md_cluster_plot import save_interactive_md_plot
 
 
 def load_barlow_model(
@@ -55,19 +58,120 @@ def build_datamodule(cfg: DictConfig):
     return dm
 
 
-def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None]:
+def _looks_like_coords(value: Any) -> bool:
+    if value is None:
+        return False
+    if torch.is_tensor(value):
+        if value.ndim == 1 and value.shape[0] == 3:
+            return True
+        if value.ndim == 2 and value.shape[1] == 3:
+            return True
+        return False
+    if isinstance(value, np.ndarray):
+        if value.ndim == 1 and value.shape[0] == 3:
+            return True
+        if value.ndim == 2 and value.shape[1] == 3:
+            return True
+    return False
+
+
+def _extract_pc_phase_coords(
+    batch: Any,
+) -> Tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None]:
     if isinstance(batch, dict):
         pc = batch["points"]
         phase = batch.get("class_id", None)
+        coords = batch.get("coords", None)
     elif isinstance(batch, (tuple, list)):
         pc = batch[0]
-        phase = batch[1] if len(batch) > 1 else None
+        phase = None
+        coords = None
+        if len(batch) > 1:
+            second = batch[1]
+            if _looks_like_coords(second):
+                coords = second
+            else:
+                phase = second
+        if len(batch) > 2:
+            third = batch[2]
+            if coords is None and _looks_like_coords(third):
+                coords = third
+            elif phase is None:
+                phase = third
     else:
         pc = batch
         phase = None
+        coords = None
     if phase is not None and not torch.is_tensor(phase):
         phase = torch.as_tensor(phase)
+    if coords is not None and not torch.is_tensor(coords):
+        coords = torch.as_tensor(coords)
+    return pc, phase, coords
+
+
+def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None]:
+    pc, phase, _ = _extract_pc_phase_coords(batch)
     return pc, phase
+
+
+def _unwrap_subset_indices(dataset: Any) -> Tuple[Any, list[int] | None]:
+    indices: list[int] | None = None
+    while isinstance(dataset, torch.utils.data.Subset):
+        if indices is None:
+            indices = list(dataset.indices)
+        else:
+            indices = [indices[i] for i in dataset.indices]
+        dataset = dataset.dataset
+    return dataset, indices
+
+
+def build_real_coords_dataloader(
+    cfg: DictConfig,
+    dm: Any,
+    use_train_data: bool,
+    use_full_dataset: bool = False,
+) -> torch.utils.data.DataLoader:
+    data_cfg = cfg.data
+    data_files = getattr(data_cfg, "data_files", None)
+    if not data_files:
+        raise ValueError("No dataset under data_files files provided")
+
+    file_list = data_files
+    if isinstance(file_list, ListConfig):
+        file_list = list(file_list)
+    if isinstance(file_list, str):
+        file_list = [file_list]
+
+    full_dataset = PointCloudDataset(
+        root=data_cfg.data_path,
+        data_files=file_list,
+        radius=getattr(data_cfg, "radius", 8),
+        sample_type=getattr(data_cfg, "sample_type", "regular"),
+        overlap_fraction=getattr(data_cfg, "overlap_fraction", 0.0),
+        n_samples=getattr(data_cfg, "n_samples", 1000),
+        num_points=getattr(data_cfg, "num_points", 100),
+        return_coords=True,
+        pre_normalize=getattr(data_cfg, "pre_normalize", True),
+        normalize=getattr(data_cfg, "normalize", True),
+        sampling_method=getattr(data_cfg, "sampling_method", "drop_farthest"),
+    )
+
+    dataset = full_dataset
+    if not use_full_dataset:
+        target_dataset = dm.train_dataset if use_train_data else dm.test_dataset
+        _, indices = _unwrap_subset_indices(target_dataset)
+        if indices is not None:
+            dataset = torch.utils.data.Subset(full_dataset, indices)
+
+    return torch.utils.data.DataLoader(
+        dataset,
+        batch_size=cfg.batch_size,
+        num_workers=cfg.num_workers,
+        shuffle=False,
+        drop_last=False,
+        pin_memory=True,
+        persistent_workers=cfg.num_workers > 0,
+    )
 
 
 def gather_inference_batches(
@@ -75,15 +179,16 @@ def gather_inference_batches(
     dataloader: torch.utils.data.DataLoader,
     device: str,
     max_batches: int | None = 4,
+    collect_coords: bool = False,
 ) -> Dict[str, np.ndarray]:
     """Collect inputs and latents from batches."""
-    inv_latents, eq_latents, phases = [], [], []
+    inv_latents, eq_latents, phases, coords_list = [], [], [], []
 
     with torch.inference_mode():
         for batch_idx, batch in enumerate(dataloader):
             if max_batches is not None and batch_idx >= max_batches:
                 break
-            pc, phase = _extract_pc_and_phase(batch)
+            pc, phase, coords = _extract_pc_phase_coords(batch)
             pc = pc.to(device)
             if hasattr(model, "_prepare_model_input"):
                 pc = model._prepare_model_input(pc)
@@ -91,6 +196,13 @@ def gather_inference_batches(
             z, _, eq_z = model(pc)
             if z is not None:
                 inv_latents.append(z.detach().cpu())
+                if collect_coords and coords is not None:
+                    coords_t = coords.detach().cpu()
+                    if coords_t.ndim == 1:
+                        coords_t = coords_t.unsqueeze(0)
+                    elif coords_t.ndim > 2:
+                        coords_t = coords_t.view(coords_t.shape[0], -1)
+                    coords_list.append(coords_t)
             if eq_z is not None:
                 eq_latents.append(eq_z.detach().cpu())
             if phase is not None:
@@ -99,10 +211,16 @@ def gather_inference_batches(
     def _cat(tensors):
         return torch.cat(tensors, dim=0).numpy() if tensors else np.empty((0,))
 
+    def _cat_coords(tensors):
+        if not tensors:
+            return np.empty((0, 3), dtype=np.float32)
+        return torch.cat(tensors, dim=0).numpy()
+
     return {
         "inv_latents": _cat(inv_latents),
         "eq_latents": _cat(eq_latents),
         "phases": _cat(phases),
+        "coords": _cat_coords(coords_list),
     }
 
 
@@ -156,6 +274,179 @@ def save_latent_tsne(
         title=f"Latent space t-SNE (KMeans k={n_clusters})",
         legend_title="cluster",
     )
+
+
+def _default_cluster_count(num_samples: int, fallback: int = 4) -> int:
+    if num_samples < 2:
+        return 0
+    return max(2, min(fallback, num_samples // 2))
+
+
+def compute_kmeans_labels(
+    latents: np.ndarray,
+    n_clusters: int,
+    *,
+    max_samples: int | None = None,
+    random_state: int = 42,
+) -> np.ndarray:
+    if latents.size == 0 or len(latents) < 2:
+        return np.empty((0,), dtype=int)
+    n_clusters = max(2, min(int(n_clusters), len(latents)))
+    if max_samples is not None and len(latents) > max_samples:
+        rng = np.random.default_rng(random_state)
+        idx = rng.choice(len(latents), size=max_samples, replace=False)
+        subset = latents[idx]
+        kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
+        kmeans.fit(subset)
+        return kmeans.predict(latents)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
+    return kmeans.fit_predict(latents)
+
+
+def save_tsne_with_labels(
+    latents: np.ndarray,
+    labels: np.ndarray,
+    out_dir: Path,
+    *,
+    out_name: str = "latent_tsne_clusters.png",
+    max_samples: int | None = None,
+    title: str | None = None,
+    legend_title: str = "cluster",
+) -> None:
+    if latents.size == 0 or len(latents) < 2:
+        return
+    if labels.size != len(latents):
+        return
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    latents_sub = latents
+    labels_sub = labels
+    if max_samples is not None and len(latents) > max_samples:
+        idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
+        latents_sub = latents[idx]
+        labels_sub = labels[idx]
+
+    perplexity = min(50, max(5, len(latents_sub) // 100))
+    tsne_coords = compute_tsne(latents_sub, perplexity=perplexity, n_iter=1500)
+
+    save_tsne_plot(
+        tsne_coords,
+        labels_sub,
+        out_file=str(out_dir / out_name),
+        title=title or f"Latent space t-SNE (n={len(latents_sub)})",
+        legend_title=legend_title,
+    )
+
+
+def _sample_indices(num_samples: int, max_samples: int | None) -> np.ndarray:
+    if max_samples is None or num_samples <= max_samples:
+        return np.arange(num_samples)
+    rng = np.random.default_rng(0)
+    return rng.choice(num_samples, size=max_samples, replace=False)
+
+
+def save_tsne_plot_with_coords(
+    tsne_coords: np.ndarray,
+    labels: np.ndarray,
+    out_dir: Path,
+    *,
+    out_name: str,
+    title: str,
+    legend_title: str = "cluster",
+) -> None:
+    if tsne_coords.size == 0 or labels.size != len(tsne_coords):
+        return
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    save_tsne_plot(
+        tsne_coords,
+        labels,
+        out_file=str(out_dir / out_name),
+        title=title,
+        legend_title=legend_title,
+    )
+
+
+def save_local_structure_assignments(
+    coords: np.ndarray,
+    cluster_labels: np.ndarray,
+    out_dir: Path,
+    *,
+    prefix: str = "local_structure",
+) -> Dict[str, str]:
+    if coords.size == 0 or cluster_labels.size != len(coords):
+        return {}
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    npz_path = out_dir / f"{prefix}_coords_clusters.npz"
+    np.savez_compressed(npz_path, coords=coords, clusters=cluster_labels)
+
+    csv_path = out_dir / f"{prefix}_coords_clusters.csv"
+    data = np.column_stack([np.arange(len(coords)), coords, cluster_labels])
+    np.savetxt(
+        csv_path,
+        data,
+        delimiter=",",
+        header="sample_idx,x,y,z,cluster",
+        comments="",
+        fmt=["%d", "%.6f", "%.6f", "%.6f", "%d"],
+    )
+
+    return {"npz": str(npz_path), "csv": str(csv_path)}
+
+
+def save_md_space_clusters_plot(
+    coords: np.ndarray,
+    cluster_labels: np.ndarray,
+    out_file: Path,
+    *,
+    max_points: int | None = None,
+) -> None:
+    if coords.size == 0 or len(coords) < 2:
+        return
+    if cluster_labels.size != len(coords):
+        return
+
+    coords_plot = coords
+    labels_plot = cluster_labels
+    if max_points is not None and len(coords) > max_points:
+        idx = np.random.default_rng(0).choice(len(coords), size=max_points, replace=False)
+        coords_plot = coords[idx]
+        labels_plot = cluster_labels[idx]
+
+    unique_labels = np.unique(labels_plot)
+    colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+
+    fig = plt.figure(figsize=(10, 8), dpi=150)
+    ax = fig.add_subplot(111, projection="3d")
+    for i, label in enumerate(unique_labels):
+        mask = labels_plot == label
+        ax.scatter(
+            coords_plot[mask, 0],
+            coords_plot[mask, 1],
+            coords_plot[mask, 2],
+            c=[colors[i]],
+            s=6,
+            alpha=0.6,
+            depthshade=True,
+            label=str(int(label)),
+        )
+
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_zlabel("z")
+    ax.set_title(
+        f"MD local-structure clusters (n={len(coords_plot)}, k={len(unique_labels)})"
+    )
+    if len(unique_labels) <= 15:
+        ax.legend(title="cluster", fontsize=7, markerscale=1.5)
+
+    plt.tight_layout()
+    fig.savefig(out_file)
+    plt.close(fig)
 
 
 def save_pca_visualization(
@@ -555,69 +846,6 @@ def save_clustering_analysis(
     return metrics
 
 
-def save_umap_visualization(
-    inv_latents: np.ndarray,
-    phases: np.ndarray,
-    out_dir: Path,
-    max_samples: int | None = None,
-    class_names: Dict[int, str] | None = None,
-) -> None:
-    """Generate UMAP visualization as an alternative to t-SNE."""
-    try:
-        import umap
-    except ImportError:
-        print("UMAP not installed, skipping UMAP visualization. Install with: pip install umap-learn")
-        return
-
-    if inv_latents.size == 0 or len(inv_latents) < 10:
-        return
-
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    latents = inv_latents
-    has_phases = phases.size == len(latents)
-    gt_labels = phases if has_phases else None
-
-    if max_samples is not None and len(latents) > max_samples:
-        idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
-        latents = latents[idx]
-        if gt_labels is not None:
-            gt_labels = gt_labels[idx]
-
-    reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, metric="euclidean", random_state=42)
-    umap_coords = reducer.fit_transform(latents)
-
-    fig, ax = plt.subplots(figsize=(10, 8), dpi=150)
-
-    if gt_labels is not None:
-        unique_labels = np.unique(gt_labels)
-        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
-        for i, label in enumerate(unique_labels):
-            mask = gt_labels == label
-            label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
-            ax.scatter(
-                umap_coords[mask, 0],
-                umap_coords[mask, 1],
-                c=[colors[i]],
-                s=8,
-                alpha=0.6,
-                label=label_text,
-            )
-        if len(unique_labels) <= 15:
-            ax.legend(fontsize=8, markerscale=1.5)
-    else:
-        ax.scatter(umap_coords[:, 0], umap_coords[:, 1], s=8, alpha=0.6, c="#3498db")
-
-    ax.set_xlabel("UMAP 1")
-    ax.set_ylabel("UMAP 2")
-    ax.set_title(f"UMAP Projection (n={len(latents)})")
-    ax.set_xticks([])
-    ax.set_yticks([])
-
-    plt.tight_layout()
-    fig.savefig(out_dir / "latent_umap.png")
-    plt.close(fig)
 
 
 def evaluate_latent_equivariance(
@@ -696,6 +924,7 @@ def run_post_training_analysis(
     max_batches_latent: int | None = None,
     max_samples_visualization: int | None = None,
     use_train_data: bool = True,
+    data_files_override: list[str] | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for Barlow Twins."""
     out_dir = Path(output_dir)
@@ -703,15 +932,66 @@ def run_post_training_analysis(
 
     print("Loading model...")
     model, cfg, device = load_barlow_model(checkpoint_path, cuda_device=cuda_device, cfg=cfg)
+
+    def _resolve_analysis_files() -> list[str] | None:
+        if getattr(cfg, "data", None) is None:
+            return None
+        if getattr(cfg.data, "kind", None) != "real":
+            return None
+        if data_files_override:
+            return data_files_override
+        if hasattr(cfg.data, "analysis_data_files"):
+            files = cfg.data.analysis_data_files
+            if isinstance(files, ListConfig):
+                return list(files)
+            if isinstance(files, str):
+                return [files]
+            if isinstance(files, list):
+                return files
+        if hasattr(cfg.data, "analysis_data_file"):
+            file = cfg.data.analysis_data_file
+            if isinstance(file, str):
+                return [file]
+        data_files = cfg.data.data_files
+        if isinstance(data_files, ListConfig):
+            data_files = list(data_files)
+        if isinstance(data_files, str):
+            data_files = [data_files]
+        if not data_files:
+            return None
+        analysis_single = bool(getattr(cfg.data, "analysis_single_timestep", True))
+        if not analysis_single:
+            return data_files
+        mid_idx = len(data_files) // 2
+        return [data_files[mid_idx]]
+
+    analysis_files = _resolve_analysis_files()
+    if analysis_files is not None and getattr(cfg, "data", None) is not None:
+        cfg.data.data_files = analysis_files
+        print(f"Analysis data_files: {analysis_files}")
+
+    tsne_max_samples = 20000
+    if max_samples_visualization is not None:
+        tsne_max_samples = min(tsne_max_samples, max_samples_visualization)
+    clustering_max_samples = int(getattr(cfg, "analysis_clustering_max_samples", 50000))
+    print(f"t-SNE sample cap: {tsne_max_samples}")
+    print(f"Clustering metrics cap: {clustering_max_samples}")
     dm = build_datamodule(cfg)
+    is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
 
     if use_train_data:
         dm.setup(stage="fit")
-        dl = dm.train_dataloader()
         print("Using TRAINING dataset for latent analysis")
     else:
-        dl = dm.test_dataloader()
         print("Using TEST dataset for latent analysis")
+
+    if is_synthetic:
+        dl = dm.train_dataloader() if use_train_data else dm.test_dataloader()
+    else:
+        dl = build_real_coords_dataloader(cfg, dm, use_train_data, use_full_dataset=True)
+        print(
+            "Real data detected: using full dataset for local-structure clustering visualization"
+        )
 
     class_names = None
     if hasattr(dm, "train_dataset"):
@@ -734,28 +1014,36 @@ def run_post_training_analysis(
         print("Gathering inference batches (ALL batches)...")
     else:
         print(f"Gathering inference batches (up to {max_batches_latent} batches)...")
-    cache = gather_inference_batches(model, dl, device, max_batches=max_batches_latent)
+    cache = gather_inference_batches(
+        model,
+        dl,
+        device,
+        max_batches=max_batches_latent,
+        collect_coords=not is_synthetic,
+    )
 
     n_samples = len(cache["inv_latents"])
     print(f"Collected {n_samples} samples for analysis")
+    has_phases = cache["phases"].size == n_samples
 
     all_metrics: Dict[str, Any] = {}
 
-    print("Computing t-SNE visualization...")
-    save_latent_tsne(
-        cache["inv_latents"],
-        cache["phases"],
-        out_dir,
-        max_samples=max_samples_visualization,
-        class_names=class_names,
-    )
+    if is_synthetic:
+        print("Computing t-SNE visualization...")
+        save_latent_tsne(
+            cache["inv_latents"],
+            cache["phases"],
+            out_dir,
+            max_samples=tsne_max_samples,
+            class_names=class_names,
+        )
 
     print("Computing PCA analysis...")
     pca_stats = save_pca_visualization(
         cache["inv_latents"],
         cache["phases"],
         out_dir,
-        max_samples=max_samples_visualization,
+        max_samples=None,
         class_names=class_names,
     )
     all_metrics["pca"] = pca_stats
@@ -775,19 +1063,132 @@ def run_post_training_analysis(
         cache["inv_latents"],
         cache["phases"],
         out_dir,
-        max_samples=max_samples_visualization,
+        max_samples=clustering_max_samples,
         class_names=class_names,
     )
     all_metrics["clustering"] = clustering_metrics
 
-    print("Computing UMAP visualization...")
-    save_umap_visualization(
-        cache["inv_latents"],
-        cache["phases"],
-        out_dir,
-        max_samples=max_samples_visualization,
-        class_names=class_names,
-    )
+    if not is_synthetic:
+        coords = cache.get("coords", np.empty((0, 3), dtype=np.float32))
+        if coords.shape[0] != len(cache["inv_latents"]):
+            print(
+                "Warning: coordinate count does not match latent count; "
+                "skipping spatial clustering visualization."
+            )
+            coords = np.empty((0, 3), dtype=np.float32)
+
+        best_k = clustering_metrics.get("best_k_silhouette") if clustering_metrics else None
+        if not isinstance(best_k, int) or best_k <= 1:
+            best_k = _default_cluster_count(len(cache["inv_latents"]))
+
+        cluster_labels = compute_kmeans_labels(cache["inv_latents"], best_k)
+
+        print("Computing t-SNE visualization (clusters)...")
+        tsne_idx = _sample_indices(len(cache["inv_latents"]), tsne_max_samples)
+        tsne_latents = cache["inv_latents"][tsne_idx]
+        tsne_perplexity = min(50, max(5, len(tsne_latents) // 100))
+        tsne_coords = compute_tsne(tsne_latents, perplexity=tsne_perplexity, n_iter=1500)
+
+        save_tsne_plot_with_coords(
+            tsne_coords,
+            cluster_labels[tsne_idx],
+            out_dir,
+            out_name="latent_tsne_clusters.png",
+            title=f"Latent space t-SNE (KMeans k={best_k})",
+        )
+
+        k_candidates = [int(best_k)]
+        if int(best_k) > 3:
+            k_candidates.append(int(best_k) - 1)
+        k_candidates.extend([int(best_k) + 1, int(best_k) + 2])
+        unique_k: list[int] = []
+        for k_val in k_candidates:
+            k_val = max(2, min(k_val, len(cache["inv_latents"])))
+            if k_val not in unique_k:
+                unique_k.append(k_val)
+
+        for k_val in unique_k:
+            if k_val == int(best_k):
+                continue
+            labels_k = compute_kmeans_labels(cache["inv_latents"], k_val)
+            save_tsne_plot_with_coords(
+                tsne_coords,
+                labels_k[tsne_idx],
+                out_dir,
+                out_name=f"latent_tsne_clusters_k{k_val}.png",
+                title=f"Latent space t-SNE (KMeans k={k_val})",
+            )
+
+        if coords.size and cluster_labels.size:
+            print("Saving local-structure coordinate assignments...")
+            coord_files = save_local_structure_assignments(
+                coords,
+                cluster_labels,
+                out_dir,
+            )
+            if coord_files:
+                print("Saving MD space clustering plot...")
+                save_md_space_clusters_plot(
+                    coords,
+                    cluster_labels,
+                    out_dir / "md_space_clusters.png",
+                    max_points=None,
+                )
+                interactive_path = None
+                interactive_paths: Dict[int, str] = {}
+                try:
+                    interactive_path = out_dir / "md_space_clusters.html"
+                    save_interactive_md_plot(
+                        coords,
+                        cluster_labels,
+                        interactive_path,
+                        palette="Set3",
+                        max_points=None,
+                        marker_size=3.0,
+                        marker_line_width=0.0,
+                    )
+                    interactive_paths[int(best_k)] = str(interactive_path)
+
+                    k_candidates = [int(best_k)]
+                    if int(best_k) > 3:
+                        k_candidates.append(int(best_k) - 1)
+                    k_candidates.extend([int(best_k) + 1, int(best_k) + 2])
+
+                    unique_k: list[int] = []
+                    for k_val in k_candidates:
+                        k_val = max(2, min(k_val, len(cache["inv_latents"])))
+                        if k_val not in unique_k:
+                            unique_k.append(k_val)
+
+                    for k_val in unique_k:
+                        if k_val == int(best_k):
+                            continue
+                        labels_k = compute_kmeans_labels(cache["inv_latents"], k_val)
+                        out_path = out_dir / f"md_space_clusters_k{k_val}.html"
+                        save_interactive_md_plot(
+                            coords,
+                            labels_k,
+                            out_path,
+                            palette="Set3",
+                            max_points=None,
+                            marker_size=3.0,
+                            marker_line_width=0.0,
+                        )
+                        interactive_paths[int(k_val)] = str(out_path)
+                except ImportError:
+                    interactive_path = None
+                    print("Plotly not installed; skipping interactive MD plot.")
+
+                unique_labels, counts = np.unique(cluster_labels, return_counts=True)
+                all_metrics["real_md"] = {
+                    "n_clusters": int(len(unique_labels)),
+                    "cluster_counts": {int(k): int(v) for k, v in zip(unique_labels, counts)},
+                    "coords_files": coord_files,
+                }
+                if interactive_path is not None:
+                    all_metrics["real_md"]["interactive_html"] = str(interactive_path)
+                if interactive_paths:
+                    all_metrics["real_md"]["interactive_htmls"] = interactive_paths
 
     print("Evaluating equivariance (encoder latents)...")
     eq_metrics, eq_err = evaluate_latent_equivariance(model, dl, device, max_batches=2)
@@ -839,14 +1240,101 @@ def run_post_training_analysis(
     print("=" * 60)
     print(f"\nSaved all analyses to {out_dir}")
     print("Generated files:")
-    print("  - latent_tsne_ground_truth.png: t-SNE with ground truth labels")
+    if has_phases:
+        print("  - latent_tsne_ground_truth.png: t-SNE with ground truth labels")
     print("  - latent_tsne_clusters.png: t-SNE with KMeans clusters")
     print("  - latent_pca_analysis.png: PCA projection and variance")
     print("  - latent_pca_3d.png: 3D PCA projection")
     print("  - latent_statistics.png: Comprehensive latent statistics")
     print("  - clustering_analysis.png: Clustering quality metrics")
-    print("  - latent_umap.png: UMAP projection (if umap-learn installed)")
     print("  - equivariance.png: Equivariant latent error distribution")
     print("  - analysis_metrics.json: All numerical metrics")
+    if not is_synthetic and "real_md" in all_metrics:
+        print("  - local_structure_coords_clusters.csv: local-structure centers with cluster IDs")
+        print("  - local_structure_coords_clusters.npz: local-structure centers + cluster IDs")
+        print("  - md_space_clusters.png: 3D MD space clusters")
+        print("  - md_space_clusters.html: interactive 3D MD space clusters")
+        print("  - md_space_clusters_k*.html: interactive 3D MD plots for k±1,k+2")
+        print("  - latent_tsne_clusters_k*.png: t-SNE plots for k±1,k+2")
 
     return all_metrics
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Run post-training analysis for contrastive (Barlow Twins) checkpoints.",
+    )
+    parser.add_argument(
+        "checkpoint_path",
+        type=str,
+        help="Path to a trained checkpoint (.ckpt).",
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default=None,
+        help="Directory to write analysis outputs (default: <ckpt_dir>/analysis).",
+    )
+    parser.add_argument(
+        "--cuda_device",
+        type=int,
+        default=0,
+        help="CUDA device index (default: 0).",
+    )
+    parser.add_argument(
+        "--max_batches_latent",
+        type=int,
+        default=None,
+        help="Max batches to use for latent analysis (default: all).",
+    )
+    parser.add_argument(
+        "--max_samples_visualization",
+        type=int,
+        default=None,
+        help="Max samples for t-SNE (default: 20000).",
+    )
+    parser.add_argument(
+        "--use_train_data",
+        action="store_true",
+        help="Use training data instead of test data.",
+    )
+    parser.add_argument(
+        "--data_file",
+        action="append",
+        default=None,
+        help="Override real data files (repeat for multiple). Example: --data_file 175ps.off",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = _parse_args()
+    checkpoint_path = os.path.expanduser(args.checkpoint_path)
+    if not os.path.isabs(checkpoint_path):
+        checkpoint_path = os.path.join(os.getcwd(), checkpoint_path)
+
+    if not os.path.exists(checkpoint_path):
+        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
+
+    output_dir = args.output_dir
+    if output_dir is None:
+        output_dir = os.path.join(os.path.dirname(checkpoint_path), "analysis")
+    else:
+        output_dir = os.path.expanduser(output_dir)
+        if not os.path.isabs(output_dir):
+            output_dir = os.path.join(os.getcwd(), output_dir)
+
+    run_post_training_analysis(
+        checkpoint_path=checkpoint_path,
+        output_dir=output_dir,
+        cuda_device=int(args.cuda_device),
+        cfg=None,
+        max_batches_latent=args.max_batches_latent,
+        max_samples_visualization=args.max_samples_visualization,
+        use_train_data=bool(args.use_train_data),
+        data_files_override=args.data_file,
+    )
+
+
+if __name__ == "__main__":
+    main()

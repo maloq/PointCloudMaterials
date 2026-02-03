@@ -11,7 +11,7 @@ num_points: 128
 model_points: 80
 radius: 7.4
 sample_type: regular
-overlap_fraction: 0.0
+overlap_fraction: 0.3
 n_samples: 0
 train_ratio: 0.8
 drop_edge_samples: true

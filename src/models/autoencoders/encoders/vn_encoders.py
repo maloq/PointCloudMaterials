@@ -1300,7 +1300,7 @@ class VNRevnetBackboneEncoder(Encoder):
     fully SO(3)-equivariant VN autoencoder.
 
     Output:
-      inv_z: (B, latent_size)          (optional invariant head, for compatibility)
+      inv_z: (B, latent_size + P)      (invariant head: norms + selected Gram dots)
       eq_z:  (B, latent_size, 3)       equivariant VN latent for equivariant decoders
       center: (B, 3)                   mean input location (like other encoders here)
     """
@@ -1322,6 +1322,10 @@ class VNRevnetBackboneEncoder(Encoder):
         use_zca_norm: bool = True,
         use_batchnorm: bool = True,
         dropout_rate: float = 0.0,
+        gram_pairs: int = 128,
+        gram_pair_mode: str = "nearest",
+        gram_pair_seed: int = 0,
+        invariant_eps: float = 1e-6,
         deterministic_fps: bool = False,
     ):
         super().__init__()
@@ -1391,6 +1395,86 @@ class VNRevnetBackboneEncoder(Encoder):
         # Initialize to 5.0 as a reasonable starting point (can learn from there)
         self.eq_z_scale = nn.Parameter(torch.tensor(5.0))
 
+        self.inv_eps = float(invariant_eps)
+        pair_indices = self._build_gram_pairs(
+            num_channels=latent_size,
+            num_pairs=gram_pairs,
+            mode=gram_pair_mode,
+            seed=gram_pair_seed,
+        )
+        self.register_buffer("gram_pairs", pair_indices, persistent=False)
+        self.num_gram_pairs = int(pair_indices.shape[0])
+        self.inv_dim = latent_size + self.num_gram_pairs
+        self.inv_norm = nn.LayerNorm(self.inv_dim)
+        self.inv_norm_pooled = nn.LayerNorm(self.inv_dim * 2)
+
+    @staticmethod
+    def _build_gram_pairs(
+        num_channels: int,
+        num_pairs: int,
+        mode: str,
+        seed: int,
+    ) -> torch.Tensor:
+        num_channels = int(num_channels)
+        num_pairs = int(num_pairs)
+        if num_pairs <= 0 or num_channels < 2:
+            return torch.empty((0, 2), dtype=torch.long)
+
+        max_pairs = num_channels * (num_channels - 1) // 2
+        num_pairs = min(num_pairs, max_pairs)
+        mode = str(mode).lower()
+
+        if mode == "nearest":
+            pairs = []
+            for offset in range(1, num_channels):
+                for i in range(num_channels - offset):
+                    pairs.append((i, i + offset))
+                    if len(pairs) >= num_pairs:
+                        break
+                if len(pairs) >= num_pairs:
+                    break
+            return torch.tensor(pairs, dtype=torch.long)
+
+        if mode == "random":
+            g = torch.Generator()
+            g.manual_seed(int(seed))
+            idx = torch.triu_indices(num_channels, num_channels, offset=1)
+            perm = torch.randperm(idx.shape[1], generator=g)
+            selected = perm[:num_pairs]
+            return idx[:, selected].T.contiguous()
+
+        raise ValueError(f"Unsupported gram_pair_mode={mode!r}")
+
+    def _invariant_features(self, z_eq: torch.Tensor) -> torch.Tensor:
+        if z_eq.dim() == 3:
+            norms = torch.sqrt((z_eq * z_eq).sum(dim=-1) + self.inv_eps)  # (B, C)
+            if self.num_gram_pairs > 0:
+                pairs = self.gram_pairs
+                v1 = z_eq[:, pairs[:, 0], :]
+                v2 = z_eq[:, pairs[:, 1], :]
+                dots = (v1 * v2).sum(dim=-1)  # (B, P)
+                feat = torch.cat([norms, dots], dim=-1)
+            else:
+                feat = norms
+            return self.inv_norm(feat)
+
+        if z_eq.dim() == 4:
+            norms = torch.sqrt((z_eq * z_eq).sum(dim=-1) + self.inv_eps)  # (B, N, C)
+            if self.num_gram_pairs > 0:
+                pairs = self.gram_pairs
+                v1 = z_eq[:, :, pairs[:, 0], :]
+                v2 = z_eq[:, :, pairs[:, 1], :]
+                dots = (v1 * v2).sum(dim=-1)  # (B, N, P)
+                feat = torch.cat([norms, dots], dim=-1)
+            else:
+                feat = norms
+            feat_mean = feat.mean(dim=1)
+            feat_max = feat.max(dim=1).values
+            pooled = torch.cat([feat_mean, feat_max], dim=-1)
+            return self.inv_norm_pooled(pooled)
+
+        raise ValueError(f"Expected z_eq with shape (B,C,3) or (B,N,C,3), got {tuple(z_eq.shape)}")
+
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # x: (B, N, 3) expected
         if x.dim() != 3 or x.shape[-1] != 3:
@@ -1429,7 +1513,7 @@ class VNRevnetBackboneEncoder(Encoder):
         # Apply learnable scale to match input data scale
         eq_z = eq_z * self.eq_z_scale
 
-        # Invariant latent: L2 norm of each equivariant vector (no learned params)
-        inv_z = eq_z.norm(dim=-1)                              # (B, latent_size)
+        # Invariant latent: channel norms + selected Gram dot products
+        inv_z = self._invariant_features(eq_z)
 
         return inv_z, eq_z, center
