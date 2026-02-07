@@ -124,11 +124,17 @@ class BarlowTwinsLoss(nn.Module):
         prepare_input,
         split_output,
         current_epoch: int,
+        views: dict[str, torch.Tensor] | None = None,
     ):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
-        y_a = self._augment(pc, use_neighbor=False)
-        y_b = self._augment(pc, use_neighbor=self.neighbor_view)
+        if views is None:
+            sampled = self.sample_view_pair(pc)
+            y_a = sampled["y_a"]
+            y_b = sampled["y_b"]
+        else:
+            y_a = views["y_a"]
+            y_b = views["y_b"]
 
         enc_a = encoder(prepare_input(y_a))
         inv_a, eq_a = split_output(enc_a)
@@ -151,13 +157,38 @@ class BarlowTwinsLoss(nn.Module):
             loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
-    def _augment(self, pc: torch.Tensor, *, use_neighbor: bool) -> torch.Tensor:
+    def sample_view_pair(self, pc: torch.Tensor) -> dict[str, torch.Tensor]:
+        y_a, meta_a = self._augment(pc, use_neighbor=False, return_metadata=True)
+        y_b, meta_b = self._augment(
+            pc,
+            use_neighbor=self.neighbor_view,
+            return_metadata=True,
+        )
+        return {
+            "y_a": y_a,
+            "y_b": y_b,
+            "rot_a": meta_a["rotation"],
+            "rot_b": meta_b["rotation"],
+        }
+
+    def _augment(
+        self,
+        pc: torch.Tensor,
+        *,
+        use_neighbor: bool,
+        return_metadata: bool = False,
+    ) -> torch.Tensor | tuple[torch.Tensor, dict[str, torch.Tensor]]:
         x = pc
+        meta: dict[str, torch.Tensor] = {}
         if use_neighbor:
             x = shift_to_neighbor(x, neighbor_k=self.neighbor_k)
         if self.view_points is not None:
             x = crop_to_num_points(x, self.view_points)
-        x = self._apply_rotation(x)
+        if return_metadata:
+            x, rot = self._apply_rotation(x, return_rotation=True)
+            meta["rotation"] = rot
+        else:
+            x = self._apply_rotation(x)
         x = self._apply_strain(x)
         if self._should_occlude(use_neighbor):
             mode = self._resolve_occlusion_mode(device=x.device)
@@ -176,6 +207,11 @@ class BarlowTwinsLoss(nn.Module):
             idx = torch.multinomial(w, num_samples=num_points, replacement=True)
             x = x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
 
+        if return_metadata:
+            if "rotation" not in meta:
+                eye = torch.eye(3, device=x.device, dtype=x.dtype).unsqueeze(0)
+                meta["rotation"] = eye.expand(x.shape[0], -1, -1)
+            return x, meta
         return x
 
     @staticmethod
@@ -221,9 +257,17 @@ class BarlowTwinsLoss(nn.Module):
             return "slab"
         return "cone"
 
-    def _apply_rotation(self, x: torch.Tensor) -> torch.Tensor:
+    def _apply_rotation(
+        self,
+        x: torch.Tensor,
+        *,
+        return_rotation: bool = False,
+    ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
         mode = self.rotation_mode
         if mode == "none":
+            if return_rotation:
+                eye = torch.eye(3, device=x.device, dtype=x.dtype).unsqueeze(0)
+                return x, eye.expand(x.shape[0], -1, -1)
             return x
         bsz = x.shape[0]
         device = x.device
@@ -233,12 +277,20 @@ class BarlowTwinsLoss(nn.Module):
         else:
             max_deg = float(self.rotation_deg)
             if max_deg <= 0:
+                if return_rotation:
+                    eye = torch.eye(3, device=device, dtype=dtype).unsqueeze(0)
+                    return x, eye.expand(bsz, -1, -1)
                 return x
             max_rad = math.radians(max_deg)
             axis = self._random_unit_vectors(bsz, device=device, dtype=dtype)
             angle = (torch.rand(bsz, device=device, dtype=dtype) * 2.0 - 1.0) * max_rad
             R = self._axis_angle_to_matrix(axis, angle)
-        return torch.matmul(x, R)
+        out = torch.matmul(x, R)
+        if return_rotation:
+            # `_apply_rotation` uses row-vector convention (x @ R). Convert to
+            # left-multiplication convention so downstream pose code stays consistent.
+            return out, R.transpose(-1, -2)
+        return out
 
     def _apply_strain(self, x: torch.Tensor) -> torch.Tensor:
         if self.strain_std <= 0:

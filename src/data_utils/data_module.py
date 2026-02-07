@@ -1,6 +1,7 @@
 import torch
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
+from collections import defaultdict
 from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
@@ -306,13 +307,22 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             persistent_workers=use_persistent,
         )
 
-    def _resolve_synthetic_dataset(self):
+    def _resolve_synthetic_dataset_with_indices(self):
         dataset = getattr(self, 'train_dataset', None)
+        indices = None
         visited = set()
         while dataset is not None and id(dataset) not in visited:
             visited.add(id(dataset))
+            if isinstance(dataset, torch.utils.data.Subset):
+                current = list(dataset.indices)
+                if indices is None:
+                    indices = current
+                else:
+                    indices = [current[i] for i in indices]
+                dataset = dataset.dataset
+                continue
             if isinstance(dataset, (SyntheticPointCloudDataset, CenteredModelNetDataset)):
-                return dataset
+                return dataset, indices
             next_dataset = getattr(dataset, 'dataset', None)
             if next_dataset is not None and next_dataset is not dataset:
                 dataset = next_dataset
@@ -322,11 +332,107 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
                 dataset = base_dataset
                 continue
             break
-        return None
+        return None, None
+
+    @staticmethod
+    def _anisotropy_from_points(points: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
+        if points.dim() != 3 or points.shape[-1] != 3:
+            raise ValueError(f"Expected points of shape (B,N,3), got {tuple(points.shape)}")
+        centered = points - points.mean(dim=1, keepdim=True)
+        cov = (centered.transpose(1, 2) @ centered) / float(centered.shape[1])
+        eigvals = torch.linalg.eigvalsh(cov.to(dtype=torch.float32))
+        eigvals, _ = torch.sort(eigvals, dim=-1, descending=True)
+        lam1, lam2, lam3 = eigvals.unbind(dim=-1)
+        return (lam1 - lam3) / (lam1 + lam2 + lam3 + float(eps))
+
+    @staticmethod
+    def _class_id_to_name_map(dataset) -> dict[int, str]:
+        class_names = getattr(dataset, "class_names", None)
+        if class_names is None:
+            return {}
+        try:
+            mapping = dict(class_names)
+        except Exception:
+            return {}
+        out: dict[int, str] = {}
+        for key, value in mapping.items():
+            try:
+                out[int(key)] = str(value)
+            except Exception:
+                continue
+        return out
+
+    def _log_train_anisotropy_by_class(self, dataset, subset_indices: list[int] | None) -> None:
+        class_ids_raw = getattr(dataset, "_class_ids", None)
+        points_raw = getattr(dataset, "samples", None)
+        if points_raw is None:
+            points_raw = getattr(dataset, "points", None)
+        class_name_map = self._class_id_to_name_map(dataset)
+
+        sums = defaultdict(float)
+        counts = defaultdict(int)
+
+        if class_ids_raw is not None and points_raw is not None:
+            class_ids = class_ids_raw if torch.is_tensor(class_ids_raw) else torch.as_tensor(class_ids_raw)
+            class_ids = class_ids.to(dtype=torch.long).view(-1).cpu()
+            total = int(class_ids.shape[0])
+            if subset_indices is None:
+                selected = list(range(total))
+            else:
+                selected = [int(i) for i in subset_indices if 0 <= int(i) < total]
+
+            chunk_size = 512
+            for start in range(0, len(selected), chunk_size):
+                idx_list = selected[start:start + chunk_size]
+                if not idx_list:
+                    continue
+                idx = torch.as_tensor(idx_list, dtype=torch.long)
+                if torch.is_tensor(points_raw):
+                    pts = points_raw.index_select(0, idx).to(dtype=torch.float32)
+                else:
+                    pts = torch.stack([points_raw[int(i)] for i in idx_list], dim=0).to(dtype=torch.float32)
+                anis = self._anisotropy_from_points(pts).to(dtype=torch.float64).cpu()
+                cls = class_ids.index_select(0, idx)
+                valid = cls >= 0
+                if not valid.any():
+                    continue
+                cls = cls[valid]
+                anis = anis[valid]
+                for cid in torch.unique(cls):
+                    mask = cls == cid
+                    cid_int = int(cid.item())
+                    sums[cid_int] += float(anis[mask].sum().item())
+                    counts[cid_int] += int(mask.sum().item())
+        else:
+            train_ds = getattr(self, "train_dataset", None)
+            if train_ds is not None:
+                for idx in range(len(train_ds)):
+                    sample = train_ds[idx]
+                    if not isinstance(sample, dict):
+                        continue
+                    cls = sample.get("class_id", None)
+                    pts = sample.get("points", None)
+                    if cls is None or pts is None:
+                        continue
+                    cls_val = int(cls.item()) if torch.is_tensor(cls) else int(cls)
+                    if cls_val < 0:
+                        continue
+                    anis = float(self._anisotropy_from_points(pts.unsqueeze(0).to(dtype=torch.float32)).item())
+                    sums[cls_val] += anis
+                    counts[cls_val] += 1
+
+        logger.print("Train anisotropy by class (mean over train split):")
+        if not counts:
+            logger.print("  unavailable (no class_id labels found)")
+            return
+        for cid in sorted(counts):
+            name = class_name_map.get(cid, f"class_{cid}")
+            mean_anis = sums[cid] / max(1, counts[cid])
+            logger.print(f"  {name}: {mean_anis:.6f} (n={counts[cid]})")
 
     def _log_class_mapping(self):
         """Log the class name to ID mapping for the dataset."""
-        base_dataset = self._resolve_synthetic_dataset()
+        base_dataset, subset_indices = self._resolve_synthetic_dataset_with_indices()
         if base_dataset is None or not hasattr(base_dataset, '_class_to_idx'):
             logger.print("Class mapping unavailable; dataset not initialized yet")
             return
@@ -340,6 +446,8 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         logger.print("Class labels:")
         for class_name, class_idx in sorted(base_dataset._class_to_idx.items(), key=lambda item: item[1]):
             logger.print(f"  Class {class_idx}: {class_name}")
+
+        self._log_train_anisotropy_by_class(base_dataset, subset_indices)
         self._phase_info_logged = True
 
 

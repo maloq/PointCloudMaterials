@@ -193,6 +193,18 @@ class SupervisedEncoder(pl.LightningModule):
         inv_z = self._select_inv_z(inv_z, eq_z)
         return inv_z, eq_z
 
+    def _ensure_projector_input_dim(self, inv_z: torch.Tensor) -> None:
+        if inv_z is None or inv_z.dim() != 2:
+            return
+        current_in = self.projector.net[0].in_features
+        target_in = int(inv_z.shape[1])
+        if current_in == target_in:
+            return
+        print(f"Updating projector input dim: {current_in} -> {target_in}")
+        device = next(self.projector.parameters()).device
+        dtype = next(self.projector.parameters()).dtype
+        self.projector = ProjectionMLP(target_in, self.projector_dim).to(device=device, dtype=dtype)
+
     def forward(self, pc: torch.Tensor):
         """
         Args:
@@ -204,6 +216,7 @@ class SupervisedEncoder(pl.LightningModule):
         inv_z, eq_z = self._encode(pc)
         if inv_z is None:
             raise ValueError("Encoder did not provide invariant features (inv_z)")
+        self._ensure_projector_input_dim(inv_z)
         proj_dtype = next(self.projector.parameters()).dtype
         proj = self.projector(inv_z.to(dtype=proj_dtype))
         class_logits = self.classifier(proj)

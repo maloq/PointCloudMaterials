@@ -4,6 +4,7 @@ data_path: datasets/ModelNet40_fast
 modelnet_split: train
 classes: ["chair", "airplane", "car", "lamp", "sofa", "monitor"]
 num_points: 512
+model_points: 400
 train_ratio: 0.8
 add_center_point: true
 pre_normalize: true
@@ -15,7 +16,7 @@ fps_ordered: true
 
 augmentation:
   rotation_scale: 1.0
-  noise_scale: 0.005
+  noise_scale: 0.01
   jitter_scale: 0.0
-  scaling_range: 0.1
+  scaling_range: 0.2
   track_augmentation: false
