@@ -500,6 +500,302 @@ def cap_cluster_labels(
     return capped
 
 
+def _build_knn_edges(coords: np.ndarray, k: int) -> np.ndarray:
+    num_nodes = int(coords.shape[0])
+    if num_nodes < 2:
+        return np.empty((0, 2), dtype=np.int64)
+
+    k_eff = max(1, min(int(k), num_nodes - 1))
+    try:
+        from scipy.spatial import cKDTree
+    except ImportError as exc:
+        raise ImportError("scipy is required for kNN-based grain segmentation.") from exc
+
+    tree = cKDTree(coords)
+    _, nn_idx = tree.query(coords, k=k_eff + 1)
+    if nn_idx.ndim == 1:
+        nn_idx = nn_idx[:, None]
+
+    edge_set: set[tuple[int, int]] = set()
+    for i in range(num_nodes):
+        for j in nn_idx[i, 1:]:
+            j = int(j)
+            if j < 0 or j >= num_nodes or j == i:
+                continue
+            a, b = (i, j) if i < j else (j, i)
+            edge_set.add((a, b))
+
+    if not edge_set:
+        return np.empty((0, 2), dtype=np.int64)
+    return np.asarray(sorted(edge_set), dtype=np.int64)
+
+
+def _rotation_geodesic_angles_np(
+    rot_a: np.ndarray,
+    rot_b: np.ndarray,
+    *,
+    eps: float = 1e-7,
+) -> np.ndarray:
+    if rot_a.size == 0 or rot_b.size == 0:
+        return np.empty((0,), dtype=np.float32)
+    delta = np.matmul(np.transpose(rot_a, (0, 2, 1)), rot_b)
+    trace = np.trace(delta, axis1=1, axis2=2)
+    cos_theta = 0.5 * (trace - 1.0)
+    cos_theta = np.clip(cos_theta, -1.0 + eps, 1.0 - eps)
+    return np.arccos(cos_theta).astype(np.float32)
+
+
+def _connected_components_from_edges(num_nodes: int, edges: np.ndarray) -> np.ndarray:
+    if num_nodes <= 0:
+        return np.empty((0,), dtype=int)
+
+    parent = np.arange(num_nodes, dtype=np.int64)
+    rank = np.zeros(num_nodes, dtype=np.int8)
+
+    def _find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = int(parent[x])
+        return x
+
+    if edges.size:
+        for a, b in np.asarray(edges, dtype=np.int64):
+            ra = _find(int(a))
+            rb = _find(int(b))
+            if ra == rb:
+                continue
+            if rank[ra] < rank[rb]:
+                parent[ra] = rb
+            elif rank[ra] > rank[rb]:
+                parent[rb] = ra
+            else:
+                parent[rb] = ra
+                rank[ra] += 1
+
+    roots = np.empty((num_nodes,), dtype=np.int64)
+    for idx in range(num_nodes):
+        roots[idx] = _find(idx)
+    _, labels = np.unique(roots, return_inverse=True)
+    return labels.astype(int)
+
+
+def _relabel_nonnegative(labels: np.ndarray) -> np.ndarray:
+    labels = np.asarray(labels).astype(int, copy=False)
+    out = np.full(labels.shape, -1, dtype=int)
+    valid_mask = labels >= 0
+    if not valid_mask.any():
+        return out
+    unique = np.unique(labels[valid_mask])
+    remap = {int(old): int(new) for new, old in enumerate(unique.tolist())}
+    out_valid = np.fromiter((remap[int(v)] for v in labels[valid_mask]), dtype=int)
+    out[valid_mask] = out_valid
+    return out
+
+
+def segment_grains_with_pose_head(
+    model: BarlowTwinsModule,
+    inv_latents: np.ndarray,
+    eq_latents: np.ndarray,
+    motif_labels: np.ndarray,
+    coords: np.ndarray,
+    *,
+    knn_k: int = 12,
+    edge_weight_threshold: float = 0.35,
+    orientation_tau_deg: float = 18.0,
+    alpha_scale_quantile: float = 0.75,
+    align_n_iters: int = 5,
+    align_min_cluster_size: int = 3,
+    align_normalize_channels: bool = True,
+    min_grain_size: int = 1,
+) -> Dict[str, Any]:
+    """Orientation-aware grain segmentation with motif boundary preservation."""
+    inv_latents = np.asarray(inv_latents)
+    eq_latents = np.asarray(eq_latents)
+    motif_labels = np.asarray(motif_labels).astype(int, copy=False)
+    coords = np.asarray(coords, dtype=np.float32)
+
+    num_nodes = int(inv_latents.shape[0]) if inv_latents.ndim >= 1 else 0
+    empty = {
+        "grain_labels": np.empty((0,), dtype=int),
+        "alpha": np.empty((0,), dtype=np.float32),
+        "orientation_residuals": np.empty((0,), dtype=np.float32),
+        "metrics": {
+            "num_nodes": int(num_nodes),
+            "num_grains": 0,
+            "status": "empty",
+        },
+    }
+    if num_nodes < 2:
+        return empty
+    if inv_latents.ndim != 2:
+        inv_latents = np.reshape(inv_latents, (num_nodes, -1))
+    if coords.ndim != 2 or coords.shape[1] < 3:
+        return {
+            **empty,
+            "metrics": {
+                "num_nodes": int(num_nodes),
+                "num_grains": 0,
+                "status": "invalid_coords",
+            },
+        }
+    if motif_labels.shape[0] != num_nodes or coords.shape[0] != num_nodes:
+        return {
+            **empty,
+            "metrics": {
+                "num_nodes": int(num_nodes),
+                "num_grains": 0,
+                "status": "shape_mismatch",
+            },
+        }
+
+    coords3 = coords[:, :3].astype(np.float32, copy=False)
+    edges = _build_knn_edges(coords3, k=knn_k)
+    if edges.size == 0:
+        singleton_labels = np.arange(num_nodes, dtype=int)
+        return {
+            "grain_labels": singleton_labels,
+            "alpha": np.ones((num_nodes,), dtype=np.float32),
+            "orientation_residuals": np.full((num_nodes,), np.nan, dtype=np.float32),
+            "metrics": {
+                "num_nodes": int(num_nodes),
+                "num_edges_total": 0,
+                "num_grains": int(num_nodes),
+                "status": "no_edges",
+            },
+        }
+
+    orientation_available = bool(
+        getattr(model, "pose_head", None) is not None
+        and eq_latents.ndim == 3
+        and eq_latents.shape[0] == num_nodes
+        and eq_latents.shape[-1] == 3
+    )
+    alpha = np.ones((num_nodes,), dtype=np.float32)
+    residuals = np.full((num_nodes,), np.nan, dtype=np.float32)
+    rot_align = np.tile(np.eye(3, dtype=np.float32), (num_nodes, 1, 1))
+
+    if orientation_available:
+        try:
+            align = compute_cluster_prototypes_and_alignments_with_rotation_head(
+                model,
+                eq_latents,
+                motif_labels,
+                n_iters=max(1, int(align_n_iters)),
+                min_cluster_size=max(2, int(align_min_cluster_size)),
+                normalize_channels=bool(align_normalize_channels),
+            )
+            rot_candidate = np.asarray(align.get("R_align", rot_align), dtype=np.float32)
+            if rot_candidate.shape == (num_nodes, 3, 3):
+                rot_align = rot_candidate
+            else:
+                orientation_available = False
+
+            res_candidate = np.asarray(
+                align.get("residuals", residuals),
+                dtype=np.float32,
+            )
+            if res_candidate.shape == (num_nodes,):
+                residuals = res_candidate
+
+            finite_res = residuals[np.isfinite(residuals)]
+            q = float(np.clip(alpha_scale_quantile, 0.05, 0.95))
+            if finite_res.size:
+                scale = float(np.quantile(finite_res, q))
+                scale = max(scale, 1e-6)
+                scaled = np.clip(residuals / scale, 0.0, 10.0)
+                alpha = np.exp(-(scaled ** 2)).astype(np.float32)
+                alpha[~np.isfinite(alpha)] = 0.0
+            else:
+                alpha = np.zeros((num_nodes,), dtype=np.float32)
+        except Exception:
+            orientation_available = False
+            alpha = np.ones((num_nodes,), dtype=np.float32)
+            residuals = np.full((num_nodes,), np.nan, dtype=np.float32)
+            rot_align = np.tile(np.eye(3, dtype=np.float32), (num_nodes, 1, 1))
+
+    src = edges[:, 0]
+    dst = edges[:, 1]
+    same_motif = motif_labels[src] == motif_labels[dst]
+
+    dz = inv_latents[src] - inv_latents[dst]
+    dz2 = np.einsum("ij,ij->i", dz, dz).astype(np.float32)
+    dz_ref = dz2[same_motif] if same_motif.any() else dz2
+    dz_pos = dz_ref[dz_ref > 0]
+    if dz_pos.size:
+        sigma2 = float(np.median(dz_pos))
+    elif dz_ref.size:
+        sigma2 = float(np.mean(dz_ref))
+    else:
+        sigma2 = 1.0
+    sigma2 = max(sigma2, 1e-8)
+    motif_weight = np.exp(-dz2 / sigma2).astype(np.float32)
+
+    theta = np.zeros((len(edges),), dtype=np.float32)
+    if orientation_available:
+        theta = _rotation_geodesic_angles_np(rot_align[src], rot_align[dst])
+    tau_rad = max(np.deg2rad(max(1e-3, float(orientation_tau_deg))), 1e-6)
+    orient_weight = np.exp(
+        -((alpha[src] * alpha[dst]) * (theta ** 2)) / (tau_rad * tau_rad)
+    ).astype(np.float32)
+
+    edge_weight = motif_weight * orient_weight
+    threshold = float(np.clip(edge_weight_threshold, 0.0, 1.0))
+    keep_mask = same_motif & (edge_weight >= threshold)
+    kept_edges = edges[keep_mask]
+
+    grain_labels = _connected_components_from_edges(num_nodes, kept_edges)
+    min_grain = max(1, int(min_grain_size))
+    if min_grain > 1:
+        unique, counts = np.unique(grain_labels, return_counts=True)
+        small_labels = unique[counts < min_grain]
+        if small_labels.size:
+            small_mask = np.isin(grain_labels, small_labels)
+            grain_labels = grain_labels.astype(int, copy=True)
+            grain_labels[small_mask] = -1
+    grain_labels = _relabel_nonnegative(grain_labels)
+
+    valid_grains = grain_labels[grain_labels >= 0]
+    grain_sizes = (
+        np.unique(valid_grains, return_counts=True)[1]
+        if valid_grains.size
+        else np.empty((0,), dtype=int)
+    )
+
+    metrics: Dict[str, Any] = {
+        "status": "ok",
+        "num_nodes": int(num_nodes),
+        "knn_k": int(max(1, min(int(knn_k), num_nodes - 1))),
+        "num_edges_total": int(edges.shape[0]),
+        "num_edges_same_motif": int(np.sum(same_motif)),
+        "num_edges_kept": int(np.sum(keep_mask)),
+        "edge_keep_fraction": float(np.mean(keep_mask)) if keep_mask.size else 0.0,
+        "edge_weight_threshold": float(threshold),
+        "sigma_latent": float(np.sqrt(sigma2)),
+        "orientation_tau_deg": float(orientation_tau_deg),
+        "orientation_available": float(1.0 if orientation_available else 0.0),
+        "alpha_mean": float(np.mean(alpha)),
+        "alpha_median": float(np.median(alpha)),
+        "num_grains": int(len(np.unique(valid_grains))),
+        "grain_size_min": int(np.min(grain_sizes)) if grain_sizes.size else 0,
+        "grain_size_median": float(np.median(grain_sizes)) if grain_sizes.size else 0.0,
+        "grain_size_max": int(np.max(grain_sizes)) if grain_sizes.size else 0,
+    }
+    if orientation_available and theta.size:
+        metrics["edge_theta_mean_deg"] = float(np.degrees(np.mean(theta)))
+        metrics["edge_theta_median_deg"] = float(np.degrees(np.median(theta)))
+    finite_res = residuals[np.isfinite(residuals)]
+    if finite_res.size:
+        metrics["orientation_residual_mean"] = float(np.mean(finite_res))
+        metrics["orientation_residual_median"] = float(np.median(finite_res))
+
+    return {
+        "grain_labels": grain_labels.astype(int, copy=False),
+        "alpha": alpha.astype(np.float32, copy=False),
+        "orientation_residuals": residuals.astype(np.float32, copy=False),
+        "metrics": metrics,
+    }
+
+
 def _looks_like_coords(value: Any) -> bool:
     if value is None:
         return False
@@ -621,11 +917,17 @@ def gather_inference_batches(
     dataloader: torch.utils.data.DataLoader,
     device: str,
     max_batches: int | None = 4,
+    max_samples_total: int | None = None,
     collect_coords: bool = False,
     seed_base: int | None = 123,
+    progress_every_batches: int = 25,
+    verbose: bool = False,
 ) -> Dict[str, np.ndarray]:
     """Collect inputs and latents from batches."""
     inv_latents, eq_latents, phases, coords_list = [], [], [], []
+    collected = 0
+    max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
+    every = max(1, int(progress_every_batches))
 
     with torch.inference_mode():
         for batch_idx, batch in enumerate(dataloader):
@@ -640,19 +942,45 @@ def gather_inference_batches(
                 z, _, eq_z = model(pc)
             else:
                 z, _, eq_z = _seeded_forward(model, pc, seed_base + batch_idx)
-            if z is not None:
-                inv_latents.append(z.detach().cpu())
-                if collect_coords and coords is not None:
-                    coords_t = coords.detach().cpu()
-                    if coords_t.ndim == 1:
-                        coords_t = coords_t.unsqueeze(0)
-                    elif coords_t.ndim > 2:
-                        coords_t = coords_t.view(coords_t.shape[0], -1)
-                    coords_list.append(coords_t)
+            if z is None:
+                continue
+
+            z_cpu = z.detach().cpu()
+            take = z_cpu.shape[0]
+            if max_samples is not None:
+                remaining = max_samples - collected
+                if remaining <= 0:
+                    break
+                take = min(take, remaining)
+
+            if take <= 0:
+                break
+
+            inv_latents.append(z_cpu[:take])
+            if collect_coords and coords is not None:
+                coords_t = coords.detach().cpu()
+                if coords_t.ndim == 1:
+                    coords_t = coords_t.unsqueeze(0)
+                elif coords_t.ndim > 2:
+                    coords_t = coords_t.view(coords_t.shape[0], -1)
+                coords_list.append(coords_t[:take])
             if eq_z is not None:
-                eq_latents.append(eq_z.detach().cpu())
+                eq_latents.append(eq_z.detach().cpu()[:take])
             if phase is not None:
-                phases.append(phase.detach().view(-1).cpu())
+                phases.append(phase.detach().view(-1).cpu()[:take])
+
+            collected += int(take)
+            if verbose and ((batch_idx + 1) % every == 0 or take != z_cpu.shape[0]):
+                print(
+                    f"[analysis][collect] batch={batch_idx + 1} "
+                    f"samples={collected}"
+                    + (f"/{max_samples}" if max_samples is not None else "")
+                )
+
+            if max_samples is not None and collected >= max_samples:
+                if verbose:
+                    print(f"[analysis][collect] reached sample cap: {collected}")
+                break
 
     def _cat(tensors):
         return torch.cat(tensors, dim=0).numpy() if tensors else np.empty((0,))
@@ -994,4 +1322,5 @@ __all__ = [
     "evaluate_pose_head_relative_rotation",
     "evaluate_latent_equivariance",
     "gather_inference_batches",
+    "segment_grains_with_pose_head",
 ]

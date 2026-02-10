@@ -4,6 +4,7 @@ from contextlib import nullcontext
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import pytorch_lightning as pl
 
 import sys, os
@@ -134,6 +135,68 @@ class BarlowTwinsModule(pl.LightningModule):
                 self._cfg_get(pose_cfg, "unambiguous_margin_deg", 1.0),
             )
         )
+        self.pose_curriculum_enabled = bool(
+            getattr(
+                cfg,
+                "pose_curriculum_enabled",
+                self._cfg_get(pose_cfg, "curriculum_enabled", False),
+            )
+        )
+        self.pose_curriculum_epochs = int(
+            getattr(
+                cfg,
+                "pose_curriculum_epochs",
+                self._cfg_get(pose_cfg, "curriculum_epochs", 120),
+            )
+        )
+        self.pose_curriculum_start_deg = float(
+            getattr(
+                cfg,
+                "pose_curriculum_start_deg",
+                self._cfg_get(pose_cfg, "curriculum_start_deg", 8.0),
+            )
+        )
+        self.pose_eq_center = bool(
+            getattr(
+                cfg,
+                "pose_eq_center",
+                self._cfg_get(pose_cfg, "eq_center", True),
+            )
+        )
+        self.pose_eq_l2_normalize = bool(
+            getattr(
+                cfg,
+                "pose_eq_l2_normalize",
+                self._cfg_get(pose_cfg, "eq_l2_normalize", True),
+            )
+        )
+        self.pose_cov_normalize = bool(
+            getattr(
+                cfg,
+                "pose_cov_normalize",
+                self._cfg_get(pose_cfg, "cov_normalize", True),
+            )
+        )
+        self.pose_head_loss_weight = max(
+            0.0,
+            float(
+                getattr(
+                    cfg,
+                    "pose_head_loss_weight",
+                    self._cfg_get(pose_cfg, "head_loss_weight", 1.0),
+                )
+            ),
+        )
+        self.pose_procrustes_loss_weight = max(
+            0.0,
+            float(
+                getattr(
+                    cfg,
+                    "pose_procrustes_loss_weight",
+                    self._cfg_get(pose_cfg, "procrustes_loss_weight", 0.0),
+                )
+            ),
+        )
 
         sym_cfg = getattr(cfg, "symmetry", None)
         if sym_cfg is None and pose_cfg is not None:
@@ -145,7 +208,11 @@ class BarlowTwinsModule(pl.LightningModule):
         self.register_buffer("symmetry_mats", sym_mats)
         self.pose_unambiguous_cap_rad = self._compute_unambiguous_cap_rad()
 
-        self.pose_head = PoseRotationHead(hidden=self.pose_head_hidden) if self.pose_enabled else None
+        self.pose_head = (
+            PoseRotationHead(hidden=self.pose_head_hidden)
+            if self.pose_enabled and self.pose_head_loss_weight > 0
+            else None
+        )
 
         # Caches for embedding metrics
         self._supervised_cache = {
@@ -273,16 +340,14 @@ class BarlowTwinsModule(pl.LightningModule):
         if mode == "none":
             return torch.eye(3, device=device, dtype=dtype).unsqueeze(0).expand(batch_size, -1, -1)
 
-        if mode == "full":
-            if not self.pose_unambiguous_rotation:
-                return self._random_rotation_matrices(batch_size, device=device, dtype=dtype)
-            max_rad = math.pi
-        else:
-            max_deg = float(self.pose_view_rotation_deg)
-            max_rad = math.radians(max(0.0, max_deg))
+        if mode == "full" and not self.pose_unambiguous_rotation and not self.pose_curriculum_enabled:
+            return self._random_rotation_matrices(batch_size, device=device, dtype=dtype)
 
-        if self.pose_unambiguous_rotation:
-            max_rad = min(max_rad, float(self.pose_unambiguous_cap_rad))
+        max_rad = self._pose_rotation_cap_rad(mode=mode)
+        max_rad = self._apply_pose_curriculum(max_rad)
+
+        if mode == "full" and not self.pose_unambiguous_rotation and max_rad >= (math.pi - 1e-6):
+            return self._random_rotation_matrices(batch_size, device=device, dtype=dtype)
 
         return self._sample_axis_angle_rotation(
             batch_size,
@@ -290,6 +355,32 @@ class BarlowTwinsModule(pl.LightningModule):
             device=device,
             dtype=dtype,
         )
+
+    def _pose_rotation_cap_rad(self, *, mode: str) -> float:
+        if mode == "none":
+            return 0.0
+        if mode == "full":
+            max_rad = math.pi
+        else:
+            max_deg = float(self.pose_view_rotation_deg)
+            max_rad = math.radians(max(0.0, max_deg))
+        if self.pose_unambiguous_rotation:
+            max_rad = min(max_rad, float(self.pose_unambiguous_cap_rad))
+        return max(0.0, float(max_rad))
+
+    def _apply_pose_curriculum(self, max_rad: float) -> float:
+        if not self.pose_curriculum_enabled or max_rad <= 0.0:
+            return max_rad
+        if self.pose_curriculum_epochs <= 1:
+            return max_rad
+
+        start_rad = math.radians(max(0.0, float(self.pose_curriculum_start_deg)))
+        start_rad = min(start_rad, max_rad)
+        start_epoch = int(self.pose_start_epoch)
+        denom = max(1, int(self.pose_curriculum_epochs) - 1)
+        progress = (int(self.current_epoch) - start_epoch) / float(denom)
+        progress = max(0.0, min(1.0, progress))
+        return start_rad + (max_rad - start_rad) * progress
 
     @staticmethod
     def _prepare_eq_latent(eq_z: torch.Tensor | None) -> torch.Tensor | None:
@@ -358,12 +449,53 @@ class BarlowTwinsModule(pl.LightningModule):
         return out
 
     def _pose_should_run(self) -> bool:
+        has_pose_solver = bool(
+            (self.pose_head is not None and self.pose_head_loss_weight > 0)
+            or self.pose_procrustes_loss_weight > 0
+        )
         return bool(
             self.pose_enabled
             and self.pose_weight > 0
-            and self.pose_head is not None
+            and has_pose_solver
             and int(self.current_epoch) >= self.pose_start_epoch
         )
+
+    def _prepare_pose_equivariant(self, eq_z: torch.Tensor) -> torch.Tensor:
+        eq = eq_z
+        if self.pose_eq_center:
+            eq = eq - eq.mean(dim=1, keepdim=True)
+        if self.pose_eq_l2_normalize:
+            eq = F.normalize(eq, dim=-1, eps=1e-6)
+        return eq
+
+    @staticmethod
+    def _procrustes_rotation_from_cov(cov: torch.Tensor) -> torch.Tensor:
+        u, _, vh = torch.linalg.svd(cov, full_matrices=False)
+        rot = u @ vh
+        det = torch.det(rot)
+        neg = det < 0
+        if neg.any():
+            sfix = torch.eye(3, device=cov.device, dtype=cov.dtype).unsqueeze(0).expand(cov.shape[0], -1, -1).clone()
+            sfix[neg, -1, -1] = -1.0
+            rot = u @ sfix @ vh
+        return rot
+
+    def _symmetry_aware_pose_loss(
+        self,
+        rot_hat_f: torch.Tensor,
+        rot_targets_f: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        angles_all, _ = self._rotation_geodesic_angles(
+            rot_hat_f.unsqueeze(1), rot_targets_f, eps=float(self.symmetry_angle_eps)
+        )
+        angles_sq = angles_all.pow(2)
+        if self.symmetry_beta > 0:
+            beta = float(self.symmetry_beta)
+            loss_sym = -torch.logsumexp(-beta * angles_sq, dim=1) / beta
+        else:
+            loss_sym = angles_sq.min(dim=1).values
+        theta_sym = angles_all.min(dim=1).values
+        return loss_sym, theta_sym
 
     def _compute_pose_loss(
         self,
@@ -412,26 +544,47 @@ class BarlowTwinsModule(pl.LightningModule):
         if eq_a is None or eq_b is None:
             return None, {}
 
+        eq_a = self._prepare_pose_equivariant(eq_a)
+        eq_b = self._prepare_pose_equivariant(eq_b)
         cov = torch.einsum("bci,bcj->bij", eq_b, eq_a)
-        r6 = self.pose_head(cov)
-        rot_hat = sixd_to_so3(r6, eps=1e-6)
+        if self.pose_cov_normalize and eq_a.shape[1] > 0:
+            cov = cov / float(eq_a.shape[1])
 
         sym_mats = self.symmetry_mats.to(device=device, dtype=dtype)
         rot_targets = rot.unsqueeze(1) @ sym_mats.unsqueeze(0)
 
-        with _autocast_disabled_context(rot_hat):
-            rot_hat_f = rot_hat.to(dtype=torch.float32)
+        weighted_terms: list[torch.Tensor] = []
+        theta_head = None
+        theta_proc = None
+
+        with _autocast_disabled_context(cov):
             rot_targets_f = rot_targets.to(dtype=torch.float32)
 
-            angles_all, _ = self._rotation_geodesic_angles(
-                rot_hat_f.unsqueeze(1), rot_targets_f, eps=float(self.symmetry_angle_eps)
-            )
-            angles_sq = angles_all.pow(2)
-            if self.symmetry_beta > 0:
-                beta = float(self.symmetry_beta)
-                loss_sym = -torch.logsumexp(-beta * angles_sq, dim=1) / beta
-            else:
-                loss_sym = angles_sq.min(dim=1).values
+            if self.pose_head is not None and self.pose_head_loss_weight > 0:
+                r6 = self.pose_head(cov)
+                rot_hat_head = sixd_to_so3(r6, eps=1e-6)
+                loss_head, theta_head = self._symmetry_aware_pose_loss(
+                    rot_hat_head.to(dtype=torch.float32),
+                    rot_targets_f,
+                )
+                weighted_terms.append(loss_head * float(self.pose_head_loss_weight))
+
+            if self.pose_procrustes_loss_weight > 0:
+                rot_hat_proc = self._procrustes_rotation_from_cov(cov.to(dtype=torch.float32))
+                loss_proc, theta_proc = self._symmetry_aware_pose_loss(
+                    rot_hat_proc,
+                    rot_targets_f,
+                )
+                weighted_terms.append(loss_proc * float(self.pose_procrustes_loss_weight))
+
+        if not weighted_terms:
+            return None, {}
+
+        total_weight = float(self.pose_head_loss_weight + self.pose_procrustes_loss_weight)
+        if total_weight <= 0:
+            return None, {}
+
+        loss_sym = torch.stack(weighted_terms, dim=0).sum(dim=0) / total_weight
 
         pose_loss = loss_sym.mean()
 
@@ -441,11 +594,21 @@ class BarlowTwinsModule(pl.LightningModule):
             pose_loss = torch.nan_to_num(pose_loss, nan=0.0, posinf=0.0, neginf=0.0)
             return pose_loss, metrics
 
-        theta_sym = angles_all.min(dim=1).values
         rad_to_deg = 180.0 / math.pi
-        theta_sym_deg = (theta_sym * rad_to_deg).to(dtype=torch.float32)
+        theta_default = theta_head if theta_head is not None else theta_proc
+        metrics = {}
+        if theta_default is not None:
+            theta_sym_deg = (theta_default * rad_to_deg).to(dtype=torch.float32)
+            metrics["pose_theta_sym_mean"] = theta_sym_deg.mean()
+        if theta_head is not None:
+            metrics["pose_theta_sym_head_mean"] = (theta_head * rad_to_deg).mean().to(dtype=torch.float32)
+        if theta_proc is not None:
+            metrics["pose_theta_sym_procrustes_mean"] = (theta_proc * rad_to_deg).mean().to(dtype=torch.float32)
+
+        target_cap_deg = math.degrees(self._apply_pose_curriculum(self._pose_rotation_cap_rad(mode=self.pose_view_rotation_mode)))
         metrics = {
-            "pose_theta_sym_mean": theta_sym_deg.mean(),
+            **metrics,
+            "pose_target_max_deg": xa.new_tensor(float(target_cap_deg), dtype=torch.float32),
         }
 
         with torch.no_grad():

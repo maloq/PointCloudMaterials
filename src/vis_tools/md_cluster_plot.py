@@ -79,6 +79,8 @@ def save_interactive_md_plot(
     label_prefix: str = "Cluster",
     hover_values: np.ndarray | None = None,
     hover_label: str = "value",
+    aspect_mode: str = "cube",
+    legend_max_items: int = 60,
 ) -> None:
     try:
         import plotly.graph_objects as go
@@ -99,17 +101,23 @@ def save_interactive_md_plot(
         if hover_values is not None:
             hover_values_plot = hover_values[idx]
 
+    # Reduce payload size in HTML/JSON while preserving visual structure.
+    coords_plot = np.round(np.asarray(coords_plot, dtype=np.float32), 4)
+    clusters_plot = np.asarray(clusters_plot)
+    if hover_values_plot is not None:
+        hover_values_plot = np.round(np.asarray(hover_values_plot, dtype=np.float32), 4)
+
     palette_colors = _resolve_palette(palette)
     unique_labels = np.unique(clusters_plot)
+    show_legend = len(unique_labels) <= max(0, int(legend_max_items))
 
     fig = go.Figure()
     for i, label in enumerate(unique_labels):
         mask = clusters_plot == label
         color = palette_colors[i % len(palette_colors)]
         customdata = None
-        label_name = label_prefix.lower()
         hovertemplate = (
-            f"{label_name}=%{{text}}<br>"
+            f"{label_prefix} {int(label)}<br>"
             "x=%{x:.3f}<br>y=%{y:.3f}<br>z=%{z:.3f}"
         )
         if hover_values_plot is not None:
@@ -130,21 +138,21 @@ def save_interactive_md_plot(
                     opacity=0.8,
                 ),
                 hovertemplate=hovertemplate,
-                text=[str(int(label))] * int(mask.sum()),
                 customdata=customdata,
                 legendgroup=str(int(label)),
+                showlegend=show_legend,
             )
         )
 
     fig.update_layout(
         title=title
         or f"MD local-structure clusters (n={len(coords_plot)}, k={len(unique_labels)})",
-        legend_title_text="cluster",
+        legend_title_text=label_prefix.lower(),
         scene=dict(
             xaxis_title="x",
             yaxis_title="y",
             zaxis_title="z",
-            aspectmode="data",
+            aspectmode=aspect_mode,
         ),
         margin=dict(l=0, r=0, t=40, b=0),
     )
@@ -162,6 +170,7 @@ def render_interactive_md_clusters(
     max_points: int | None = None,
     marker_size: float = 3.0,
     marker_line_width: float = 0.0,
+    aspect_mode: str = "cube",
 ) -> Path:
     coords, clusters = load_coords_clusters(analysis_dir)
     if out_file is None:
@@ -174,6 +183,7 @@ def render_interactive_md_clusters(
         max_points=max_points,
         marker_size=marker_size,
         marker_line_width=marker_line_width,
+        aspect_mode=aspect_mode,
     )
     return Path(out_file)
 

@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any, Dict, Tuple
 import numpy as np
@@ -17,28 +18,18 @@ from src.training_methods.contrastive_learning.analysis_utils import (
     _sample_indices,
     build_real_coords_dataloader,
     cap_cluster_labels,
-    cluster_orientations_by_cluster,
-    compute_cluster_prototypes_and_alignments,
-    compute_cluster_prototypes_and_alignments_with_rotation_head,
-    compute_self_symmetry_metrics,
-    evaluate_pose_head_relative_rotation,
     evaluate_latent_equivariance,
     gather_inference_batches,
+    segment_grains_with_pose_head,
 )
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
-from src.training_methods.contrastive_learning.orientation_sync_analysis import (
-    evaluate_pairwise_orientation_synchronization,
-)
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 from src.vis_tools.md_cluster_plot import (
-    save_interactive_md_continuous_plot,
     save_interactive_md_plot,
-    save_interactive_md_two_layer_plot,
 )
 from src.vis_tools.latent_analysis_vis import (
+    compute_hdbscan_labels,
     compute_kmeans_labels,
-    save_cluster_orientation_histograms,
-    save_cluster_symmetry_boxplots,
     save_clustering_analysis,
     save_equivariance_plot,
     save_latent_statistics,
@@ -46,19 +37,9 @@ from src.vis_tools.latent_analysis_vis import (
     save_local_structure_assignments,
     save_md_space_clusters_plot,
     save_pca_visualization,
-    save_tsne_continuous_plot,
     save_tsne_plot_with_coords,
 )
 from src.vis_tools.tsne_vis import compute_tsne
-
-
-def _rotation_angles_deg(rot_mats: np.ndarray, eps: float = 1e-7) -> np.ndarray:
-    if rot_mats.size == 0:
-        return np.empty((0,), dtype=np.float32)
-    traces = np.trace(rot_mats, axis1=1, axis2=2)
-    cos_theta = (traces - 1.0) * 0.5
-    cos_theta = np.clip(cos_theta, -1.0 + eps, 1.0 - eps)
-    return np.degrees(np.arccos(cos_theta)).astype(np.float32)
 
 
 def load_barlow_model(
@@ -101,33 +82,21 @@ def run_post_training_analysis(
     cfg: DictConfig | None = None,
     max_batches_latent: int | None = None,
     max_samples_visualization: int | None = None,
-    use_train_data: bool = True,
     data_files_override: list[str] | None = None,
-    analysis_orientation_reference: str | None = None,
-    analysis_pose_eval_max_batches: int | None = None,
-    analysis_pose_eval_seed_base: int | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for Barlow Twins."""
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    t0 = time.perf_counter()
+    step_idx = [0]
 
-    print("Loading model...")
+    def _step(msg: str) -> None:
+        step_idx[0] += 1
+        elapsed = time.perf_counter() - t0
+        print(f"[analysis][step {step_idx[0]}][{elapsed:7.1f}s] {msg}")
+
+    _step("Loading model")
     model, cfg, device = load_barlow_model(checkpoint_path, cuda_device=cuda_device, cfg=cfg)
-    orientation_reference_override = (
-        str(analysis_orientation_reference).strip().lower()
-        if analysis_orientation_reference is not None
-        else None
-    )
-    pose_eval_max_batches_override = (
-        int(analysis_pose_eval_max_batches)
-        if analysis_pose_eval_max_batches is not None
-        else None
-    )
-    pose_eval_seed_base_override = (
-        int(analysis_pose_eval_seed_base)
-        if analysis_pose_eval_seed_base is not None
-        else None
-    )
 
     def _resolve_analysis_files() -> list[str] | None:
         if getattr(cfg, "data", None) is None:
@@ -166,25 +135,130 @@ def run_post_training_analysis(
         cfg.data.data_files = analysis_files
         print(f"Analysis data_files: {analysis_files}")
 
-    tsne_max_samples = 20000
+    # Prefer single-process data loading for analysis to avoid semaphore/shm issues
+    # in restricted runtime environments. Can be overridden via config.
+    analysis_num_workers = int(getattr(cfg, "analysis_num_workers", 0))
+    if hasattr(cfg, "num_workers"):
+        cfg.num_workers = analysis_num_workers
+    if getattr(cfg, "data", None) is not None and hasattr(cfg.data, "num_workers"):
+        cfg.data.num_workers = analysis_num_workers
+    print(f"Analysis dataloader workers: {analysis_num_workers}")
+
+    tsne_max_samples = int(getattr(cfg, "analysis_tsne_max_samples", 8000))
     if max_samples_visualization is not None:
         tsne_max_samples = min(tsne_max_samples, max_samples_visualization)
-    clustering_max_samples = int(getattr(cfg, "analysis_clustering_max_samples", 50000))
+    clustering_max_samples = int(getattr(cfg, "analysis_clustering_max_samples", 20000))
+    cluster_method = str(getattr(cfg, "analysis_cluster_method", "auto")).lower()
+    cluster_l2_normalize = bool(getattr(cfg, "analysis_cluster_l2_normalize", True))
+    cluster_standardize = bool(getattr(cfg, "analysis_cluster_standardize", True))
+    cluster_pca_var = float(getattr(cfg, "analysis_cluster_pca_var", 0.98))
+    cluster_pca_max_components = int(
+        getattr(cfg, "analysis_cluster_pca_max_components", 32)
+    )
+    cluster_silhouette_max_samples = int(
+        getattr(cfg, "analysis_cluster_silhouette_max_samples", 5000)
+    )
+    cluster_silhouette_tolerance = float(
+        getattr(cfg, "analysis_cluster_silhouette_tolerance", 0.03)
+    )
+    cluster_k_min = int(getattr(cfg, "analysis_cluster_k_min", 2))
+    cluster_k_max = int(getattr(cfg, "analysis_cluster_k_max", 12))
+    md_use_all_points = bool(getattr(cfg, "analysis_md_use_all_points", True))
+    hdbscan_enabled = bool(getattr(cfg, "analysis_hdbscan_enabled", True))
+    hdbscan_fit_fraction = float(getattr(cfg, "analysis_hdbscan_fit_fraction", 0.25))
+    hdbscan_max_fit_samples = int(getattr(cfg, "analysis_hdbscan_max_fit_samples", 50000))
+    hdbscan_target_k_min = int(getattr(cfg, "analysis_hdbscan_target_k_min", 5))
+    hdbscan_target_k_max = int(getattr(cfg, "analysis_hdbscan_target_k_max", 6))
+    hdbscan_min_samples = getattr(cfg, "analysis_hdbscan_min_samples", None)
+    if hdbscan_min_samples is not None:
+        hdbscan_min_samples = int(hdbscan_min_samples)
+    hdbscan_cluster_selection_epsilon = float(
+        getattr(cfg, "analysis_hdbscan_cluster_selection_epsilon", 0.0)
+    )
+    hdbscan_cluster_selection_method = str(
+        getattr(cfg, "analysis_hdbscan_cluster_selection_method", "leaf")
+    ).lower()
+    hdbscan_min_cluster_size_candidates_cfg = getattr(
+        cfg, "analysis_hdbscan_min_cluster_size_candidates", None
+    )
+    hdbscan_min_cluster_size_candidates = None
+    if isinstance(hdbscan_min_cluster_size_candidates_cfg, ListConfig):
+        hdbscan_min_cluster_size_candidates = [
+            int(v) for v in hdbscan_min_cluster_size_candidates_cfg
+        ]
+    elif isinstance(hdbscan_min_cluster_size_candidates_cfg, list):
+        hdbscan_min_cluster_size_candidates = [int(v) for v in hdbscan_min_cluster_size_candidates_cfg]
+    grain_enabled = bool(getattr(cfg, "analysis_grain_enabled", True))
+    grain_knn_k = int(getattr(cfg, "analysis_grain_knn_k", 12))
+    grain_edge_weight_threshold = float(
+        getattr(cfg, "analysis_grain_edge_weight_threshold", 0.35)
+    )
+    grain_orientation_tau_deg = float(
+        getattr(cfg, "analysis_grain_orientation_tau_deg", 18.0)
+    )
+    grain_alpha_scale_quantile = float(
+        getattr(cfg, "analysis_grain_alpha_scale_quantile", 0.75)
+    )
+    grain_align_n_iters = int(getattr(cfg, "analysis_grain_align_n_iters", 5))
+    grain_align_min_cluster_size = int(
+        getattr(cfg, "analysis_grain_align_min_cluster_size", 3)
+    )
+    grain_align_normalize_channels = bool(
+        getattr(cfg, "analysis_grain_align_normalize_channels", True)
+    )
+    grain_min_size = int(getattr(cfg, "analysis_grain_min_size", 1))
+    grain_interactive_max_points = getattr(
+        cfg, "analysis_grain_interactive_max_points", 120000
+    )
+    if grain_interactive_max_points is not None:
+        grain_interactive_max_points = int(grain_interactive_max_points)
+        if grain_interactive_max_points <= 0:
+            grain_interactive_max_points = None
+    grain_interactive_max_grains = int(
+        getattr(cfg, "analysis_grain_interactive_max_grains", 80)
+    )
+    if grain_interactive_max_grains <= 0:
+        grain_interactive_max_grains = 0
+    grain_tsne_max_grains = int(getattr(cfg, "analysis_grain_tsne_max_grains", 60))
+    if grain_tsne_max_grains <= 0:
+        grain_tsne_max_grains = 0
+
+    # Older checkpoint-local Hydra configs can carry analysis_extra_k_plots=false.
+    # Keep k+1/k+2 analyses always enabled for MD diagnostics.
+    extra_k_plots_cfg = bool(getattr(cfg, "analysis_extra_k_plots", True))
+    extra_k_plots = True
+    if not extra_k_plots_cfg:
+        print(
+            "[analysis] Overriding analysis_extra_k_plots=false from checkpoint config "
+            "-> enabled (k+1,k+2)."
+        )
+    progress_every_batches = int(getattr(cfg, "analysis_progress_every_batches", 25))
     print(f"t-SNE sample cap: {tsne_max_samples}")
     print(f"Clustering metrics cap: {clustering_max_samples}")
+    _step("Building datamodule")
     dm = build_datamodule(cfg)
     is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
 
-    if use_train_data:
-        dm.setup(stage="fit")
-        print("Using TRAINING dataset for latent analysis")
-    else:
-        print("Using TEST dataset for latent analysis")
+    dm.setup(stage="fit")
+    print("Using ALL dataset splits (train + test) for latent analysis")
 
     if is_synthetic:
-        dl = dm.train_dataloader() if use_train_data else dm.test_dataloader()
+        train_dataset = getattr(dm, "train_dataset", None)
+        test_dataset = getattr(dm, "test_dataset", None)
+        if train_dataset is None or test_dataset is None:
+            raise ValueError("Synthetic datamodule is missing train/test datasets.")
+        combined_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
+        dl = torch.utils.data.DataLoader(
+            combined_dataset,
+            batch_size=cfg.batch_size,
+            num_workers=cfg.num_workers,
+            shuffle=False,
+            drop_last=False,
+            pin_memory=True,
+            persistent_workers=cfg.num_workers > 0,
+        )
     else:
-        dl = build_real_coords_dataloader(cfg, dm, use_train_data, use_full_dataset=True)
+        dl = build_real_coords_dataloader(cfg, dm, use_train_data=True, use_full_dataset=True)
         print(
             "Real data detected: using full dataset for local-structure clustering visualization"
         )
@@ -207,17 +281,39 @@ def run_post_training_analysis(
             print(f"Loaded class names from DL: {class_names}")
 
     if max_batches_latent is None:
+        cfg_max_batches = getattr(cfg, "analysis_max_batches_latent", None)
+        if cfg_max_batches is not None:
+            max_batches_latent = int(cfg_max_batches)
+            if max_batches_latent <= 0:
+                max_batches_latent = None
+    max_samples_total = getattr(cfg, "analysis_max_samples_total", None)
+    if max_samples_total is None and not is_synthetic:
+        max_samples_total = 20000
+    if not is_synthetic and md_use_all_points:
+        max_samples_total = None
+    if max_samples_total is not None:
+        max_samples_total = int(max_samples_total)
+        if max_samples_total <= 0:
+            max_samples_total = None
+
+    _step("Collecting inference batches")
+    if max_batches_latent is None:
         print("Gathering inference batches (ALL batches)...")
     else:
         print(f"Gathering inference batches (up to {max_batches_latent} batches)...")
+    if max_samples_total is not None:
+        print(f"Collecting up to {max_samples_total} samples for analysis")
     seed_base = getattr(cfg, "analysis_seed_base", 123)
     cache = gather_inference_batches(
         model,
         dl,
         device,
         max_batches=max_batches_latent,
+        max_samples_total=max_samples_total,
         collect_coords=not is_synthetic,
         seed_base=seed_base,
+        progress_every_batches=progress_every_batches,
+        verbose=True,
     )
 
     n_samples = len(cache["inv_latents"])
@@ -227,7 +323,7 @@ def run_post_training_analysis(
     all_metrics: Dict[str, Any] = {}
 
     if is_synthetic:
-        print("Computing t-SNE visualization...")
+        _step("Computing t-SNE visualization")
         save_latent_tsne(
             cache["inv_latents"],
             cache["phases"],
@@ -236,7 +332,7 @@ def run_post_training_analysis(
             class_names=class_names,
         )
 
-    print("Computing PCA analysis...")
+    _step("Computing PCA analysis")
     pca_stats = save_pca_visualization(
         cache["inv_latents"],
         cache["phases"],
@@ -246,7 +342,7 @@ def run_post_training_analysis(
     )
     all_metrics["pca"] = pca_stats
 
-    print("Computing latent statistics...")
+    _step("Computing latent statistics")
     latent_stats = save_latent_statistics(
         cache["inv_latents"],
         cache["eq_latents"],
@@ -256,13 +352,22 @@ def run_post_training_analysis(
     )
     all_metrics["latent_stats"] = latent_stats
 
-    print("Computing clustering analysis...")
+    _step("Computing clustering analysis")
     clustering_metrics = save_clustering_analysis(
         cache["inv_latents"],
         cache["phases"],
         out_dir,
         max_samples=clustering_max_samples,
         class_names=class_names,
+        cluster_method=cluster_method,
+        l2_normalize=cluster_l2_normalize,
+        standardize=cluster_standardize,
+        pca_variance=cluster_pca_var,
+        pca_max_components=cluster_pca_max_components,
+        silhouette_max_samples=cluster_silhouette_max_samples,
+        silhouette_tolerance=cluster_silhouette_tolerance,
+        k_min=cluster_k_min,
+        k_max=cluster_k_max,
     )
     all_metrics["clustering"] = clustering_metrics
 
@@ -278,432 +383,92 @@ def run_post_training_analysis(
         best_k = clustering_metrics.get("best_k_silhouette") if clustering_metrics else None
         if not isinstance(best_k, int) or best_k <= 1:
             best_k = _default_cluster_count(len(cache["inv_latents"]))
+        selected_method_for_best_k = (
+            str(clustering_metrics.get("best_method", cluster_method)).lower()
+            if clustering_metrics
+            else cluster_method
+        )
+        cluster_labels, cluster_fit_info = compute_kmeans_labels(
+            cache["inv_latents"],
+            best_k,
+            method=selected_method_for_best_k,
+            l2_normalize=cluster_l2_normalize,
+            standardize=cluster_standardize,
+            pca_variance=cluster_pca_var,
+            pca_max_components=cluster_pca_max_components,
+            silhouette_max_samples=cluster_silhouette_max_samples,
+            return_info=True,
+        )
+        cluster_label_method = str(cluster_fit_info.get("method", selected_method_for_best_k))
+        if "clustering" in all_metrics and isinstance(all_metrics["clustering"], dict):
+            all_metrics["clustering"]["labels_k_method"] = cluster_label_method
 
-        cluster_labels = compute_kmeans_labels(cache["inv_latents"], best_k)
-
-        orientation_outputs = None
-        symmetry_outputs = None
-        angles_deg = None
-        orientation_grain_labels = None
-        orientation_method = None
-        orientation_sync_outputs = None
-
-        if (
-            cache["eq_latents"].size
-            and cache["eq_latents"].shape[0] == len(cache["inv_latents"])
-            and cluster_labels.size == len(cache["inv_latents"])
-        ):
-            print("Computing orientation analysis (rotation-head alignments)...")
-            orient_iters = int(getattr(cfg, "analysis_orientation_iters", 5))
-            orient_min_cluster = int(getattr(cfg, "analysis_orientation_min_cluster", 3))
-            orient_channel_weighting = None
-            orient_head_batch_size = int(
-                getattr(cfg, "analysis_orientation_head_batch_size", 4096)
-            )
-            sym_num_probes = int(getattr(cfg, "analysis_symmetry_num_probes", 64))
-            sym_beta = float(getattr(cfg, "analysis_symmetry_beta", 10.0))
-            sym_delta = float(getattr(cfg, "analysis_symmetry_delta", 0.05))
-            sym_mode_thresh = float(getattr(cfg, "analysis_symmetry_mode_threshold_deg", 15.0))
-            sym_max_samples = getattr(cfg, "analysis_symmetry_max_samples", None)
-            if sym_max_samples is not None:
-                sym_max_samples = int(sym_max_samples)
-            grain_thresh = float(
-                getattr(cfg, "analysis_orientation_grain_threshold_deg", 15.0)
-            )
-            grain_max = int(getattr(cfg, "analysis_orientation_grain_max", 20))
-            orient_ref_mode = (
-                orientation_reference_override
-                if orientation_reference_override is not None
-                else str(getattr(cfg, "analysis_orientation_reference", "cluster")).strip().lower()
-            )
-            if orient_ref_mode not in {"cluster", "global"}:
-                print(
-                    f"Unknown analysis_orientation_reference='{orient_ref_mode}', "
-                    "falling back to 'cluster'."
-                )
-                orient_ref_mode = "cluster"
-            if orient_ref_mode == "global":
-                orient_ref_labels = np.zeros_like(cluster_labels)
-                print("Orientation reference: single global prototype.")
-            else:
-                orient_ref_labels = cluster_labels
-                print("Orientation reference: per-cluster prototypes.")
-
-            if getattr(model, "pose_head", None) is not None:
-                try:
-                    orientation_outputs = (
-                        compute_cluster_prototypes_and_alignments_with_rotation_head(
-                            model,
-                            cache["eq_latents"],
-                            orient_ref_labels,
-                            n_iters=orient_iters,
-                            min_cluster_size=orient_min_cluster,
-                            normalize_channels=False,
-                            batch_size=orient_head_batch_size,
-                        )
-                    )
-                    orientation_method = "rotation_head"
-                except ValueError as exc:
-                    print(
-                        f"Rotation-head alignment failed ({exc}); "
-                        "falling back to legacy Kabsch alignment."
-                    )
-                    orient_channel_weighting = str(
-                        getattr(cfg, "analysis_orientation_channel_weighting", "norm")
-                    )
-                    orientation_outputs = compute_cluster_prototypes_and_alignments(
-                        cache["eq_latents"],
-                        orient_ref_labels,
-                        n_iters=orient_iters,
-                        min_cluster_size=orient_min_cluster,
-                        normalize_channels=False,
-                        channel_weighting=orient_channel_weighting,
-                    )
-                    orientation_method = "kabsch_fallback"
-            else:
-                print("Rotation head not found in checkpoint; using legacy Kabsch alignment.")
-                orient_channel_weighting = str(
-                    getattr(cfg, "analysis_orientation_channel_weighting", "norm")
-                )
-                orientation_outputs = compute_cluster_prototypes_and_alignments(
-                    cache["eq_latents"],
-                    orient_ref_labels,
-                    n_iters=orient_iters,
-                    min_cluster_size=orient_min_cluster,
-                    normalize_channels=False,
-                    channel_weighting=orient_channel_weighting,
-                )
-                orientation_method = "kabsch_fallback"
-            symmetry_outputs = compute_self_symmetry_metrics(
-                cache["eq_latents"],
-                num_probes=sym_num_probes,
-                beta=sym_beta,
-                delta=sym_delta,
-                mode_threshold_deg=sym_mode_thresh,
-                max_samples=sym_max_samples,
-            )
-
-            angles_deg = _rotation_angles_deg(orientation_outputs["R_align"])
-            orientation_grain_labels = cluster_orientations_by_cluster(
-                orientation_outputs["R_align"],
-                orient_ref_labels,
-                threshold_deg=grain_thresh,
-            )
-            orientation_grain_labels = cap_cluster_labels(
-                orientation_grain_labels,
-                max_clusters=grain_max,
-                other_label=-1,
-            )
-
-            orientation_npz = out_dir / "orientation_analysis.npz"
-            np.savez_compressed(
-                orientation_npz,
-                cluster_labels=cluster_labels,
-                R_align=orientation_outputs["R_align"],
-                alignment_residuals=orientation_outputs["residuals"],
-                proto_eq=orientation_outputs["proto_eq"],
-                alignment_angles_deg=angles_deg,
-                orientation_grain_labels=orientation_grain_labels,
-                orientation_reference_labels=orient_ref_labels,
-                symmetry_e_min=symmetry_outputs["e_min"],
-                symmetry_e_p10=symmetry_outputs["e_p10"],
-                symmetry_e_median=symmetry_outputs["e_median"],
-                symmetry_entropy=symmetry_outputs["entropy"],
-                symmetry_n_eff=symmetry_outputs["n_eff"],
-                symmetry_n_modes=symmetry_outputs["n_modes"],
-                symmetry_mode_width_deg=symmetry_outputs["mode_width_deg"],
-                symmetry_computed_mask=symmetry_outputs["computed_mask"],
-            )
-
-            orientation_csv = out_dir / "orientation_analysis.csv"
-            sample_idx = np.arange(len(cluster_labels))
-            data = np.column_stack(
-                [
-                    sample_idx,
-                    cluster_labels,
-                    orientation_grain_labels,
-                    angles_deg,
-                    orientation_outputs["residuals"],
-                    symmetry_outputs["e_min"],
-                    symmetry_outputs["e_p10"],
-                    symmetry_outputs["e_median"],
-                    symmetry_outputs["entropy"],
-                    symmetry_outputs["n_eff"],
-                    symmetry_outputs["n_modes"],
-                    symmetry_outputs["mode_width_deg"],
-                    symmetry_outputs["computed_mask"].astype(int),
-                ]
-            )
-            header = (
-                "sample_idx,cluster,grain_label,align_angle_deg,align_residual,"
-                "sym_e_min,sym_e_p10,sym_e_median,sym_entropy,sym_n_eff,"
-                "sym_n_modes,sym_mode_width_deg,sym_computed"
-            )
-            np.savetxt(
-                orientation_csv,
-                data,
-                delimiter=",",
-                header=header,
-                comments="",
-                fmt=[
-                    "%d",
-                    "%d",
-                    "%d",
-                    "%.6f",
-                    "%.6f",
-                    "%.6f",
-                    "%.6f",
-                    "%.6f",
-                    "%.6f",
-                    "%.6f",
-                    "%.6f",
-                    "%.6f",
-                    "%d",
-                ],
-            )
-
-            cluster_summary: Dict[int, Dict[str, float]] = {}
-            unique_labels = np.unique(cluster_labels)
-            for label in unique_labels:
-                mask = cluster_labels == label
-                summary = {"n_samples": int(mask.sum())}
-                if angles_deg is not None:
-                    vals = angles_deg[mask]
-                    vals = vals[np.isfinite(vals)]
-                    summary["median_align_angle_deg"] = (
-                        float(np.median(vals)) if vals.size else float("nan")
-                    )
-                res_vals = orientation_outputs["residuals"][mask]
-                res_vals = res_vals[np.isfinite(res_vals)]
-                summary["median_align_residual"] = (
-                    float(np.median(res_vals)) if res_vals.size else float("nan")
-                )
-                sym_eff = symmetry_outputs["n_eff"][mask]
-                sym_eff = sym_eff[np.isfinite(sym_eff)]
-                summary["median_sym_n_eff"] = (
-                    float(np.median(sym_eff)) if sym_eff.size else float("nan")
-                )
-                sym_modes = symmetry_outputs["n_modes"][mask]
-                sym_modes = sym_modes[np.isfinite(sym_modes)]
-                summary["median_sym_n_modes"] = (
-                    float(np.median(sym_modes)) if sym_modes.size else float("nan")
-                )
-                sym_width = symmetry_outputs["mode_width_deg"][mask]
-                sym_width = sym_width[np.isfinite(sym_width)]
-                summary["median_sym_mode_width_deg"] = (
-                    float(np.median(sym_width)) if sym_width.size else float("nan")
-                )
-                cluster_summary[int(label)] = summary
-
-            cluster_summary_csv = out_dir / "orientation_cluster_medians.csv"
-            if cluster_summary:
-                rows = []
-                for label, summary in cluster_summary.items():
-                    rows.append(
-                        [
-                            label,
-                            summary.get("n_samples", float("nan")),
-                            summary.get("median_align_angle_deg", float("nan")),
-                            summary.get("median_align_residual", float("nan")),
-                            summary.get("median_sym_n_eff", float("nan")),
-                            summary.get("median_sym_n_modes", float("nan")),
-                            summary.get("median_sym_mode_width_deg", float("nan")),
-                        ]
-                    )
-                rows = np.asarray(rows, dtype=np.float64)
-                np.savetxt(
-                    cluster_summary_csv,
-                    rows,
-                    delimiter=",",
-                    header=(
-                        "cluster,n_samples,median_align_angle_deg,median_align_residual,"
-                        "median_sym_n_eff,median_sym_n_modes,median_sym_mode_width_deg"
-                    ),
-                    comments="",
-                    fmt=["%d", "%d", "%.6f", "%.6f", "%.6f", "%.6f", "%.6f"],
-                )
-
-            all_metrics["orientation"] = {
-                "num_samples": int(len(cluster_labels)),
-                "num_clusters": int(len(unique_labels)),
-                "alignment_angle_median_deg": float(np.nanmedian(angles_deg))
-                if angles_deg is not None and angles_deg.size
-                else float("nan"),
-                "alignment_residual_median": float(np.nanmedian(orientation_outputs["residuals"]))
-                if orientation_outputs["residuals"].size
-                else float("nan"),
-                "symmetry_n_eff_median": float(np.nanmedian(symmetry_outputs["n_eff"]))
-                if symmetry_outputs["n_eff"].size
-                else float("nan"),
-                "symmetry_n_modes_median": float(np.nanmedian(symmetry_outputs["n_modes"]))
-                if symmetry_outputs["n_modes"].size
-                else float("nan"),
-                "symmetry_mode_width_median_deg": float(
-                    np.nanmedian(symmetry_outputs["mode_width_deg"])
-                )
-                if symmetry_outputs["mode_width_deg"].size
-                else float("nan"),
-                "symmetry_num_probes": int(sym_num_probes),
-                "symmetry_beta": float(sym_beta),
-                "symmetry_delta": float(sym_delta),
-                "symmetry_mode_threshold_deg": float(sym_mode_thresh),
-                "orientation_grain_threshold_deg": float(grain_thresh),
-                "orientation_grain_max": int(grain_max),
-                "orientation_method": orientation_method,
-                "orientation_reference": orient_ref_mode,
-                "orientation_reference_num_prototypes": int(len(np.unique(orient_ref_labels))),
-                "symmetry_samples_computed": int(symmetry_outputs["computed_mask"].sum()),
-                "cluster_medians": cluster_summary,
-                "outputs": {
-                    "npz": str(orientation_npz),
-                    "csv": str(orientation_csv),
-                    "cluster_csv": str(cluster_summary_csv),
-                },
-            }
-            if orientation_method == "rotation_head":
-                all_metrics["orientation"]["orientation_head_batch_size"] = int(
-                    orient_head_batch_size
-                )
-            if orient_channel_weighting is not None:
-                all_metrics["orientation"]["orientation_channel_weighting"] = (
-                    orient_channel_weighting
-                )
-
-            save_cluster_orientation_histograms(
-                angles_deg,
-                cluster_labels,
-                out_dir,
-            )
-            save_cluster_symmetry_boxplots(
-                symmetry_outputs["n_eff"],
-                symmetry_outputs["n_modes"],
-                cluster_labels,
-                out_dir,
-            )
-
-        if (
-            bool(getattr(cfg, "analysis_orientation_sync_enabled", True))
-            and cache["eq_latents"].size
-            and cache["eq_latents"].shape[0] == len(cache["inv_latents"])
-            and coords.size
-            and len(coords) == len(cache["inv_latents"])
-            and getattr(model, "pose_head", None) is not None
-        ):
-            print("Computing pairwise orientation synchronization analysis...")
-            sync_knn_k = int(getattr(cfg, "analysis_orientation_sync_knn_k", 12))
-            sync_max_nodes = getattr(cfg, "analysis_orientation_sync_max_nodes", 6000)
-            sync_max_nodes = None if sync_max_nodes is None else int(sync_max_nodes)
-            sync_iters = int(getattr(cfg, "analysis_orientation_sync_iters", 30))
-            sync_tol_deg = float(getattr(cfg, "analysis_orientation_sync_tol_deg", 1e-3))
-            sync_smooth_k = int(getattr(cfg, "analysis_orientation_sync_smooth_k", 6))
-            sync_max_triplets = int(
-                getattr(cfg, "analysis_orientation_sync_max_triplets", 20000)
-            )
-            sync_pair_batch = int(
-                getattr(cfg, "analysis_orientation_sync_pair_batch_size", 4096)
-            )
-            sync_seed = int(getattr(cfg, "analysis_orientation_sync_seed", 0))
-
-            try:
-                orientation_sync_outputs = evaluate_pairwise_orientation_synchronization(
-                    model,
-                    cache["eq_latents"],
-                    coords,
-                    knn_k=sync_knn_k,
-                    max_nodes=sync_max_nodes,
-                    sync_iters=sync_iters,
-                    sync_tol_deg=sync_tol_deg,
-                    smooth_k=sync_smooth_k,
-                    max_triplets=sync_max_triplets,
-                    pair_batch_size=sync_pair_batch,
-                    seed=sync_seed,
-                )
-
-                sync_npz = out_dir / "orientation_sync_analysis.npz"
-                np.savez_compressed(
-                    sync_npz,
-                    node_indices=orientation_sync_outputs["node_indices"],
-                    edges=orientation_sync_outputs["edges"],
-                    pair_rotations=orientation_sync_outputs["pair_rotations"],
-                    absolute_rotations=orientation_sync_outputs["absolute_rotations"],
-                    edge_residual_deg=orientation_sync_outputs["edge_residual_deg"],
-                    cycle_error_deg=orientation_sync_outputs["cycle_error_deg"],
-                    spatial_smoothness_deg=orientation_sync_outputs["spatial_smoothness_deg"],
-                    sync_update_deg=orientation_sync_outputs["sync_update_deg"],
-                )
-
-                sync_metrics_path = out_dir / "orientation_sync_metrics.json"
-                with sync_metrics_path.open("w") as handle:
-                    json.dump(orientation_sync_outputs["metrics"], handle, indent=2)
-
-                all_metrics["orientation_sync"] = {
-                    **orientation_sync_outputs["metrics"],
-                    "outputs": {
-                        "npz": str(sync_npz),
-                        "json": str(sync_metrics_path),
-                    },
-                }
-            except ValueError as exc:
-                print(f"Skipping orientation synchronization analysis: {exc}")
-
-        print("Computing t-SNE visualization (clusters)...")
+        _step("Computing t-SNE visualization (clusters)")
+        tsne_n_iter = int(getattr(cfg, "analysis_tsne_n_iter", 1000))
         tsne_idx = _sample_indices(len(cache["inv_latents"]), tsne_max_samples)
         tsne_latents = cache["inv_latents"][tsne_idx]
         tsne_perplexity = min(50, max(5, len(tsne_latents) // 100))
-        tsne_coords = compute_tsne(tsne_latents, perplexity=tsne_perplexity, n_iter=1500)
+        tsne_coords = compute_tsne(tsne_latents, perplexity=tsne_perplexity, n_iter=tsne_n_iter)
 
         save_tsne_plot_with_coords(
             tsne_coords,
             cluster_labels[tsne_idx],
             out_dir,
             out_name="latent_tsne_clusters.png",
-            title=f"Latent space t-SNE (KMeans k={best_k})",
+            title=f"Latent space t-SNE ({cluster_label_method}, k={best_k})",
         )
 
-        if symmetry_outputs is not None:
-            save_tsne_continuous_plot(
-                tsne_coords,
-                symmetry_outputs["n_eff"][tsne_idx],
-                out_dir / "latent_tsne_symmetry_neff.png",
-                title="Latent space t-SNE (colored by N_eff)",
-            )
+        if extra_k_plots:
+            k_candidates = [int(best_k) + 1, int(best_k) + 2]
+            unique_k: list[int] = []
+            for k_val in k_candidates:
+                k_val = max(2, min(k_val, len(cache["inv_latents"])))
+                if k_val not in unique_k:
+                    unique_k.append(k_val)
 
-        k_candidates = [int(best_k)]
-        if int(best_k) > 3:
-            k_candidates.append(int(best_k) - 1)
-        k_candidates.extend([int(best_k) + 1, int(best_k) + 2])
-        unique_k: list[int] = []
-        for k_val in k_candidates:
-            k_val = max(2, min(k_val, len(cache["inv_latents"])))
-            if k_val not in unique_k:
-                unique_k.append(k_val)
-
-        for k_val in unique_k:
-            if k_val == int(best_k):
-                continue
-            labels_k = compute_kmeans_labels(cache["inv_latents"], k_val)
-            save_tsne_plot_with_coords(
-                tsne_coords,
-                labels_k[tsne_idx],
-                out_dir,
-                out_name=f"latent_tsne_clusters_k{k_val}.png",
-                title=f"Latent space t-SNE (KMeans k={k_val})",
-            )
+            for k_val in unique_k:
+                if k_val == int(best_k):
+                    continue
+                labels_k, labels_k_info = compute_kmeans_labels(
+                    cache["inv_latents"],
+                    k_val,
+                    method=cluster_method,
+                    l2_normalize=cluster_l2_normalize,
+                    standardize=cluster_standardize,
+                    pca_variance=cluster_pca_var,
+                    pca_max_components=cluster_pca_max_components,
+                    silhouette_max_samples=cluster_silhouette_max_samples,
+                    return_info=True,
+                )
+                method_k = str(labels_k_info.get("method", cluster_method))
+                save_tsne_plot_with_coords(
+                    tsne_coords,
+                    labels_k[tsne_idx],
+                    out_dir,
+                    out_name=f"latent_tsne_clusters_k{k_val}.png",
+                    title=f"Latent space t-SNE ({method_k}, k={k_val})",
+                )
 
         if coords.size and cluster_labels.size:
-            print("Saving local-structure coordinate assignments...")
+            _step("Saving coordinate-space clustering outputs")
+            interactive_max_points = getattr(cfg, "analysis_interactive_max_points", None)
+            if interactive_max_points is not None:
+                interactive_max_points = int(interactive_max_points)
+                if interactive_max_points <= 0:
+                    interactive_max_points = None
+            if md_use_all_points:
+                interactive_max_points = None
             coord_files = save_local_structure_assignments(
                 coords,
                 cluster_labels,
                 out_dir,
             )
             if coord_files:
-                print("Saving MD space clustering plot...")
                 save_md_space_clusters_plot(
                     coords,
                     cluster_labels,
                     out_dir / "md_space_clusters.png",
-                    max_points=None,
+                    max_points=interactive_max_points,
                 )
                 interactive_path = None
                 interactive_paths: Dict[int, str] = {}
@@ -714,41 +479,229 @@ def run_post_training_analysis(
                         cluster_labels,
                         interactive_path,
                         palette="Set3",
-                        max_points=None,
+                        max_points=interactive_max_points,
                         marker_size=3.0,
                         marker_line_width=0.0,
+                        aspect_mode="cube",
                     )
                     interactive_paths[int(best_k)] = str(interactive_path)
 
-                    k_candidates = [int(best_k)]
-                    if int(best_k) > 3:
-                        k_candidates.append(int(best_k) - 1)
-                    k_candidates.extend([int(best_k) + 1, int(best_k) + 2])
+                    if extra_k_plots:
+                        k_candidates = [int(best_k) + 1, int(best_k) + 2]
 
-                    unique_k: list[int] = []
-                    for k_val in k_candidates:
-                        k_val = max(2, min(k_val, len(cache["inv_latents"])))
-                        if k_val not in unique_k:
-                            unique_k.append(k_val)
+                        unique_k: list[int] = []
+                        for k_val in k_candidates:
+                            k_val = max(2, min(k_val, len(cache["inv_latents"])))
+                            if k_val not in unique_k:
+                                unique_k.append(k_val)
 
-                    for k_val in unique_k:
-                        if k_val == int(best_k):
-                            continue
-                        labels_k = compute_kmeans_labels(cache["inv_latents"], k_val)
-                        out_path = out_dir / f"md_space_clusters_k{k_val}.html"
-                        save_interactive_md_plot(
-                            coords,
-                            labels_k,
-                            out_path,
-                            palette="Set3",
-                            max_points=None,
-                            marker_size=3.0,
-                            marker_line_width=0.0,
-                        )
-                        interactive_paths[int(k_val)] = str(out_path)
+                        for k_val in unique_k:
+                            if k_val == int(best_k):
+                                continue
+                            labels_k, _ = compute_kmeans_labels(
+                                cache["inv_latents"],
+                                k_val,
+                                method=cluster_method,
+                                l2_normalize=cluster_l2_normalize,
+                                standardize=cluster_standardize,
+                                pca_variance=cluster_pca_var,
+                                pca_max_components=cluster_pca_max_components,
+                                silhouette_max_samples=cluster_silhouette_max_samples,
+                                return_info=True,
+                            )
+                            out_path = out_dir / f"md_space_clusters_k{k_val}.html"
+                            save_interactive_md_plot(
+                                coords,
+                                labels_k,
+                                out_path,
+                                palette="Set3",
+                                max_points=interactive_max_points,
+                                marker_size=3.0,
+                                marker_line_width=0.0,
+                                aspect_mode="cube",
+                            )
+                            interactive_paths[int(k_val)] = str(out_path)
                 except ImportError:
                     interactive_path = None
                     print("Plotly not installed; skipping interactive MD plot.")
+
+                hdbscan_info: Dict[str, Any] | None = None
+                hdbscan_path = None
+                hdbscan_coord_files: Dict[str, str] = {}
+                if hdbscan_enabled:
+                    _step("Running HDBSCAN clustering (sampled fit)")
+                    try:
+                        hdbscan_labels, hdbscan_info = compute_hdbscan_labels(
+                            cache["inv_latents"],
+                            sample_fraction=hdbscan_fit_fraction,
+                            max_fit_samples=hdbscan_max_fit_samples,
+                            random_state=42,
+                            l2_normalize=cluster_l2_normalize,
+                            standardize=cluster_standardize,
+                            pca_variance=cluster_pca_var,
+                            pca_max_components=cluster_pca_max_components,
+                            target_clusters_min=hdbscan_target_k_min,
+                            target_clusters_max=hdbscan_target_k_max,
+                            min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
+                            min_samples=hdbscan_min_samples,
+                            cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
+                            cluster_selection_method=hdbscan_cluster_selection_method,
+                            return_info=True,
+                        )
+                        if hdbscan_labels.size == len(coords):
+                            hdbscan_coord_files = save_local_structure_assignments(
+                                coords,
+                                hdbscan_labels,
+                                out_dir,
+                                prefix="local_structure_hdbscan",
+                            )
+                            try:
+                                hdbscan_path = out_dir / "md_space_clusters_hdbscan.html"
+                                n_hdb_clusters = int(
+                                    len(np.unique(hdbscan_labels[hdbscan_labels >= 0]))
+                                )
+                                save_interactive_md_plot(
+                                    coords,
+                                    hdbscan_labels,
+                                    hdbscan_path,
+                                    palette="Set3",
+                                    max_points=interactive_max_points,
+                                    marker_size=3.0,
+                                    marker_line_width=0.0,
+                                    title=(
+                                        "MD local-structure clusters "
+                                        f"(HDBSCAN, n={len(coords)}, k={n_hdb_clusters})"
+                                    ),
+                                    label_prefix="HDBSCAN",
+                                    aspect_mode="cube",
+                                )
+                            except ImportError:
+                                hdbscan_path = None
+                                print("Plotly not installed; skipping HDBSCAN interactive MD plot.")
+                        else:
+                            print(
+                                "Warning: HDBSCAN labels do not match coordinate count; "
+                                "skipping HDBSCAN MD outputs."
+                            )
+                    except ImportError:
+                        print("HDBSCAN package not installed; skipping HDBSCAN analysis.")
+                    except Exception as err:
+                        print(f"HDBSCAN analysis failed: {err}")
+
+                grain_info: Dict[str, Any] | None = None
+                grain_path = None
+                grain_coord_files: Dict[str, str] = {}
+                grain_tsne_path = None
+                if grain_enabled:
+                    _step("Running grain segmentation")
+                    try:
+                        grain_result = segment_grains_with_pose_head(
+                            model,
+                            cache["inv_latents"],
+                            cache["eq_latents"],
+                            cluster_labels,
+                            coords,
+                            knn_k=grain_knn_k,
+                            edge_weight_threshold=grain_edge_weight_threshold,
+                            orientation_tau_deg=grain_orientation_tau_deg,
+                            alpha_scale_quantile=grain_alpha_scale_quantile,
+                            align_n_iters=grain_align_n_iters,
+                            align_min_cluster_size=grain_align_min_cluster_size,
+                            align_normalize_channels=grain_align_normalize_channels,
+                            min_grain_size=grain_min_size,
+                        )
+                        grain_labels = np.asarray(
+                            grain_result.get("grain_labels", np.empty((0,), dtype=int)),
+                            dtype=int,
+                        )
+                        grain_info = grain_result.get("metrics", None)
+                        if grain_labels.size == len(coords):
+                            grain_labels_tsne = grain_labels
+                            if grain_tsne_max_grains > 0:
+                                n_unique_grains = int(len(np.unique(grain_labels[grain_labels >= 0])))
+                                if n_unique_grains > grain_tsne_max_grains:
+                                    grain_labels_tsne = cap_cluster_labels(
+                                        grain_labels,
+                                        max_clusters=grain_tsne_max_grains,
+                                        other_label=-1,
+                                    )
+                            n_grains_tsne = int(
+                                len(np.unique(grain_labels_tsne[grain_labels_tsne >= 0]))
+                            )
+                            save_tsne_plot_with_coords(
+                                tsne_coords,
+                                grain_labels_tsne[tsne_idx],
+                                out_dir,
+                                out_name="latent_tsne_grains.png",
+                                title=(
+                                    "Latent space t-SNE "
+                                    f"(grains, shown={n_grains_tsne})"
+                                ),
+                                legend_title="grain",
+                            )
+                            grain_tsne_path = str(out_dir / "latent_tsne_grains.png")
+
+                            grain_coord_files = save_local_structure_assignments(
+                                coords,
+                                grain_labels,
+                                out_dir,
+                                prefix="local_structure_grains",
+                            )
+                            if grain_coord_files:
+                                save_md_space_clusters_plot(
+                                    coords,
+                                    grain_labels,
+                                    out_dir / "md_space_grains.png",
+                                    max_points=interactive_max_points,
+                                )
+                                try:
+                                    grain_path = out_dir / "md_space_grains.html"
+                                    grain_labels_plot = grain_labels
+                                    if grain_interactive_max_grains > 0:
+                                        n_unique_grains = int(
+                                            len(np.unique(grain_labels[grain_labels >= 0]))
+                                        )
+                                        if n_unique_grains > grain_interactive_max_grains:
+                                            grain_labels_plot = cap_cluster_labels(
+                                                grain_labels,
+                                                max_clusters=grain_interactive_max_grains,
+                                                other_label=-1,
+                                            )
+                                            print(
+                                                "Reducing interactive grain labels: "
+                                                f"{n_unique_grains} -> {grain_interactive_max_grains} "
+                                                "(smaller grains collapsed to -1)"
+                                            )
+                                    n_grains = int(
+                                        len(np.unique(grain_labels_plot[grain_labels_plot >= 0]))
+                                    )
+                                    save_interactive_md_plot(
+                                        coords,
+                                        grain_labels_plot,
+                                        grain_path,
+                                        palette="Set3",
+                                        max_points=grain_interactive_max_points,
+                                        marker_size=2.6,
+                                        marker_line_width=0.0,
+                                        title=(
+                                            "MD grain segmentation "
+                                            f"(n={len(coords)}, shown_grains={n_grains})"
+                                        ),
+                                        label_prefix="Grain",
+                                        aspect_mode="cube",
+                                    )
+                                except ImportError:
+                                    grain_path = None
+                                    print("Plotly not installed; skipping interactive MD grain plot.")
+                        else:
+                            print(
+                                "Warning: grain labels do not match coordinate count; "
+                                "skipping grain MD outputs."
+                            )
+                    except ImportError:
+                        print("Scipy not installed; skipping grain segmentation.")
+                    except Exception as err:
+                        print(f"Grain segmentation failed: {err}")
 
                 unique_labels, counts = np.unique(cluster_labels, return_counts=True)
                 all_metrics["real_md"] = {
@@ -760,157 +713,35 @@ def run_post_training_analysis(
                     all_metrics["real_md"]["interactive_html"] = str(interactive_path)
                 if interactive_paths:
                     all_metrics["real_md"]["interactive_htmls"] = interactive_paths
-                if (
-                    orientation_outputs is not None
-                    and len(coords) == len(cache["inv_latents"])
-                ):
-                    try:
-                        if angles_deg is not None and len(angles_deg) == len(coords):
-                            angle_path = out_dir / "md_space_orientation_angles.html"
-                            save_interactive_md_continuous_plot(
-                                coords,
-                                angles_deg,
-                                angle_path,
-                                max_points=None,
-                                marker_size=3.5,
-                                colorscale="Turbo",
-                                title="MD orientation (rotation-head alignment angle)",
-                                value_label="align_deg",
-                            )
-                            all_metrics["real_md"]["orientation_angles_html"] = str(angle_path)
-
-                        if symmetry_outputs is not None and len(symmetry_outputs["n_eff"]) == len(coords):
-                            symmetry_path = out_dir / "md_space_orientation_symmetry.html"
-                            save_interactive_md_continuous_plot(
-                                coords,
-                                symmetry_outputs["n_eff"],
-                                symmetry_path,
-                                max_points=None,
-                                marker_size=3.5,
-                                colorscale="Viridis",
-                                title="MD orientation ambiguity (N_eff)",
-                                value_label="N_eff",
-                            )
-                            all_metrics["real_md"]["orientation_symmetry_html"] = str(symmetry_path)
-
-                        if (
-                            symmetry_outputs is not None
-                            and len(symmetry_outputs["n_eff"]) == len(coords)
-                            and angles_deg is not None
-                            and len(angles_deg) == len(coords)
-                        ):
-                            two_layer_path = out_dir / "md_space_orientation_two_layer.html"
-                            save_interactive_md_two_layer_plot(
-                                coords,
-                                cluster_labels,
-                                symmetry_outputs["n_eff"],
-                                two_layer_path,
-                                palette="Set3",
-                                max_points=None,
-                                base_marker_size=2.2,
-                                base_opacity=0.3,
-                                overlay_marker_size=4.0,
-                                overlay_opacity=0.9,
-                                overlay_sizes=angles_deg,
-                                overlay_size_range=(3.0, 7.0),
-                                colorscale="Viridis",
-                                title="MD clusters + ambiguity (color) + head align angle (size)",
-                                value_label="N_eff",
-                            )
-                            all_metrics["real_md"]["orientation_two_layer_html"] = str(
-                                two_layer_path
-                            )
-
-                        if orientation_grain_labels is not None and len(orientation_grain_labels) == len(coords):
-                            grain_path = out_dir / "md_space_orientation_grains.html"
-                            save_interactive_md_plot(
-                                coords,
-                                orientation_grain_labels,
-                                grain_path,
-                                palette="Set3",
-                                max_points=None,
-                                marker_size=3.0,
-                                marker_line_width=0.0,
-                                title="MD orientation grains (rotation-head alignment)",
-                                label_prefix="Grain",
-                                hover_values=angles_deg,
-                                hover_label="align_deg",
-                            )
-                            all_metrics["real_md"]["orientation_grains_html"] = str(grain_path)
-                    except ImportError:
-                        print("Plotly not installed; skipping orientation interactive plots.")
-                if (
-                    orientation_sync_outputs is not None
-                    and len(orientation_sync_outputs["node_indices"]) > 0
-                    and len(orientation_sync_outputs["edges"]) > 0
-                    and len(orientation_sync_outputs["edge_residual_deg"])
-                    == len(orientation_sync_outputs["edges"])
-                ):
-                    try:
-                        node_idx = orientation_sync_outputs["node_indices"].astype(np.int64)
-                        edges = orientation_sync_outputs["edges"].astype(np.int64)
-                        edge_residual = orientation_sync_outputs["edge_residual_deg"].astype(
-                            np.float32
-                        )
-                        node_median_edge_residual = np.full(
-                            len(node_idx), np.nan, dtype=np.float32
-                        )
-                        per_node_values: list[list[float]] = [[] for _ in range(len(node_idx))]
-                        for (i_node, j_node), val in zip(edges, edge_residual):
-                            if np.isfinite(val):
-                                per_node_values[int(i_node)].append(float(val))
-                                per_node_values[int(j_node)].append(float(val))
-                        for i_node, vals in enumerate(per_node_values):
-                            if vals:
-                                node_median_edge_residual[i_node] = float(np.median(vals))
-
-                        sync_residual_path = (
-                            out_dir / "md_space_orientation_sync_edge_residual.html"
-                        )
-                        save_interactive_md_continuous_plot(
-                            coords[node_idx],
-                            node_median_edge_residual,
-                            sync_residual_path,
-                            max_points=None,
-                            marker_size=3.5,
-                            colorscale="Turbo",
-                            title="MD orientation sync quality (median edge residual)",
-                            value_label="edge_residual_deg",
-                        )
-                        all_metrics["real_md"]["orientation_sync_edge_residual_html"] = str(
-                            sync_residual_path
-                        )
-                    except ImportError:
-                        print(
-                            "Plotly not installed; skipping orientation synchronization interactive plots."
-                        )
-
-    print("Evaluating equivariance (encoder latents)...")
+                if hdbscan_info is not None:
+                    all_metrics["real_md"]["hdbscan"] = hdbscan_info
+                    if hdbscan_coord_files:
+                        all_metrics["real_md"]["hdbscan_coords_files"] = hdbscan_coord_files
+                    if hdbscan_path is not None:
+                        all_metrics["real_md"]["hdbscan_interactive_html"] = str(hdbscan_path)
+                if grain_info is not None:
+                    all_metrics["real_md"]["grains"] = grain_info
+                    all_metrics["real_md"]["grains"]["interactive_max_points"] = (
+                        None if grain_interactive_max_points is None else int(grain_interactive_max_points)
+                    )
+                    all_metrics["real_md"]["grains"]["interactive_max_grains"] = int(
+                        grain_interactive_max_grains
+                    )
+                    all_metrics["real_md"]["grains"]["tsne_max_grains"] = int(
+                        grain_tsne_max_grains
+                    )
+                    if grain_coord_files:
+                        all_metrics["real_md"]["grains_coords_files"] = grain_coord_files
+                    if grain_path is not None:
+                        all_metrics["real_md"]["grains_interactive_html"] = str(grain_path)
+                    if grain_tsne_path is not None:
+                        all_metrics["real_md"]["grains_tsne_png"] = grain_tsne_path
+    _step("Evaluating equivariance")
     eq_metrics, eq_err = evaluate_latent_equivariance(model, dl, device, max_batches=2)
     save_equivariance_plot(eq_err, out_dir / "equivariance.png")
     all_metrics["equivariance"] = eq_metrics
 
-    if getattr(model, "pose_head", None) is not None:
-        pose_eval_batches = (
-            int(pose_eval_max_batches_override)
-            if pose_eval_max_batches_override is not None
-            else int(getattr(cfg, "analysis_pose_eval_max_batches", 2))
-        )
-        pose_eval_seed_base = (
-            int(pose_eval_seed_base_override)
-            if pose_eval_seed_base_override is not None
-            else int(getattr(cfg, "analysis_pose_eval_seed_base", 7331))
-        )
-        print("Evaluating pose-head relative rotation (x vs R·x)...")
-        pose_metrics, _ = evaluate_pose_head_relative_rotation(
-            model,
-            dl,
-            device,
-            max_batches=pose_eval_batches,
-            seed_base=pose_eval_seed_base,
-        )
-        all_metrics["pose_head_relative"] = pose_metrics
-
+    _step("Writing metrics")
     metrics_path = out_dir / "analysis_metrics.json"
     with metrics_path.open("w") as handle:
         json.dump(all_metrics, handle, indent=2)
@@ -968,76 +799,40 @@ def run_post_training_analysis(
                 if isinstance(eq.get("eq_latent_nondeterminism_contribution"), float)
                 else f"Non-determinism contribution (unseeded - seeded): {eq.get('eq_latent_nondeterminism_contribution', 'N/A')}"
             )
-    if "pose_head_relative" in all_metrics:
-        pose_rel = all_metrics["pose_head_relative"]
-        print(
-            f"Pose-head relative angle (mean deg): {pose_rel.get('pose_head_rel_angle_mean_deg', 'N/A'):.4f}"
-            if isinstance(pose_rel.get("pose_head_rel_angle_mean_deg"), float)
-            else f"Pose-head relative angle (mean deg): {pose_rel.get('pose_head_rel_angle_mean_deg', 'N/A')}"
-        )
-        if "pose_head_rel_angle_sym_mean_deg" in pose_rel:
-            print(
-                f"Pose-head symmetry-min angle (mean deg): {pose_rel.get('pose_head_rel_angle_sym_mean_deg', 'N/A'):.4f}"
-                if isinstance(pose_rel.get("pose_head_rel_angle_sym_mean_deg"), float)
-                else f"Pose-head symmetry-min angle (mean deg): {pose_rel.get('pose_head_rel_angle_sym_mean_deg', 'N/A')}"
-            )
-    if "orientation_sync" in all_metrics:
-        sync = all_metrics["orientation_sync"]
-        print(
-            f"Orientation sync edge residual (median deg): {sync.get('edge_residual_deg_median', 'N/A'):.4f}"
-            if isinstance(sync.get("edge_residual_deg_median"), float)
-            else f"Orientation sync edge residual (median deg): {sync.get('edge_residual_deg_median', 'N/A')}"
-        )
-        print(
-            f"Orientation sync cycle error (median deg): {sync.get('cycle_error_deg_median', 'N/A'):.4f}"
-            if isinstance(sync.get("cycle_error_deg_median"), float)
-            else f"Orientation sync cycle error (median deg): {sync.get('cycle_error_deg_median', 'N/A')}"
-        )
-        print(
-            f"Orientation sync spatial smoothness (median deg): {sync.get('spatial_smoothness_deg_median', 'N/A'):.4f}"
-            if isinstance(sync.get("spatial_smoothness_deg_median"), float)
-            else f"Orientation sync spatial smoothness (median deg): {sync.get('spatial_smoothness_deg_median', 'N/A')}"
-        )
 
     print("=" * 60)
     print(f"\nSaved all analyses to {out_dir}")
+    print(f"Total runtime: {time.perf_counter() - t0:.1f}s")
     print("Generated files:")
     if has_phases:
         print("  - latent_tsne_ground_truth.png: t-SNE with ground truth labels")
-    print("  - latent_tsne_clusters.png: t-SNE with KMeans clusters")
+    print("  - latent_tsne_clusters.png: t-SNE with clustering labels")
     print("  - latent_pca_analysis.png: PCA projection and variance")
     print("  - latent_pca_3d.png: 3D PCA projection")
     print("  - latent_statistics.png: Comprehensive latent statistics")
     print("  - clustering_analysis.png: Clustering quality metrics")
     print("  - equivariance.png: Equivariant latent error distribution")
     print("  - analysis_metrics.json: All numerical metrics")
-    if "orientation" in all_metrics:
-        print("  - orientation_analysis.npz: Alignment rotations + symmetry metrics")
-        print("  - orientation_analysis.csv: Per-sample orientation + symmetry metrics")
-        print("  - orientation_cluster_medians.csv: Cluster-wise orientation medians")
-        print("  - cluster_orientation_histograms.png: Per-cluster alignment angles")
-        print("  - cluster_symmetry_boxplots.png: Per-cluster symmetry summaries")
-        print("  - latent_tsne_symmetry_neff.png: t-SNE colored by N_eff")
-    if "orientation_sync" in all_metrics:
-        print("  - orientation_sync_analysis.npz: Pairwise rotations + synchronized SO(3)")
-        print("  - orientation_sync_metrics.json: Pairwise-to-absolute quality metrics")
     if not is_synthetic and "real_md" in all_metrics:
         print("  - local_structure_coords_clusters.csv: local-structure centers with cluster IDs")
         print("  - local_structure_coords_clusters.npz: local-structure centers + cluster IDs")
         print("  - md_space_clusters.png: 3D MD space clusters")
         print("  - md_space_clusters.html: interactive 3D MD space clusters")
-        print("  - md_space_clusters_k*.html: interactive 3D MD plots for k±1,k+2")
-        print("  - latent_tsne_clusters_k*.png: t-SNE plots for k±1,k+2")
-        if "orientation_grains_html" in all_metrics.get("real_md", {}):
-            print("  - md_space_orientation_grains.html: interactive orientation grains")
-        if "orientation_angles_html" in all_metrics.get("real_md", {}):
-            print("  - md_space_orientation_angles.html: interactive align-angle coloring")
-        if "orientation_symmetry_html" in all_metrics.get("real_md", {}):
-            print("  - md_space_orientation_symmetry.html: interactive N_eff coloring")
-        if "orientation_two_layer_html" in all_metrics.get("real_md", {}):
-            print("  - md_space_orientation_two_layer.html: clusters + ambiguity overlay")
-        if "orientation_sync_edge_residual_html" in all_metrics.get("real_md", {}):
-            print("  - md_space_orientation_sync_edge_residual.html: sync residual quality map")
+        if extra_k_plots:
+            print("  - md_space_clusters_k*.html: interactive 3D MD plots for k+1,k+2")
+            print("  - latent_tsne_clusters_k*.png: t-SNE plots for k+1,k+2")
+        if hdbscan_enabled:
+            print("  - local_structure_hdbscan_coords_clusters.csv: MD centers with HDBSCAN labels")
+            print("  - local_structure_hdbscan_coords_clusters.npz: MD centers + HDBSCAN labels")
+            print("  - md_space_clusters_hdbscan.html: interactive 3D MD HDBSCAN clusters")
+        if "grains_coords_files" in all_metrics["real_md"]:
+            print("  - local_structure_grains_coords_clusters.csv: MD centers with grain IDs")
+            print("  - local_structure_grains_coords_clusters.npz: MD centers + grain IDs")
+            print("  - md_space_grains.png: 3D MD grain segmentation")
+            if "grains_tsne_png" in all_metrics["real_md"]:
+                print("  - latent_tsne_grains.png: t-SNE colored by grain IDs")
+            if "grains_interactive_html" in all_metrics["real_md"]:
+                print("  - md_space_grains.html: interactive 3D MD grain segmentation")
 
     return all_metrics
 
@@ -1073,37 +868,13 @@ def _parse_args() -> argparse.Namespace:
         "--max_samples_visualization",
         type=int,
         default=None,
-        help="Max samples for t-SNE (default: 20000).",
-    )
-    parser.add_argument(
-        "--use_train_data",
-        action="store_true",
-        help="Use training data instead of test data.",
+        help="Max samples for t-SNE (default: analysis_tsne_max_samples or 8000).",
     )
     parser.add_argument(
         "--data_file",
         action="append",
         default=None,
         help="Override real data files (repeat for multiple). Example: --data_file 175ps.off",
-    )
-    parser.add_argument(
-        "--orientation_reference",
-        type=str,
-        choices=["cluster", "global"],
-        default=None,
-        help="Orientation reference prototype mode: per-cluster or single global average z_eq.",
-    )
-    parser.add_argument(
-        "--pose_eval_max_batches",
-        type=int,
-        default=None,
-        help="Max batches for pose-head relative-rotation diagnostics.",
-    )
-    parser.add_argument(
-        "--pose_eval_seed_base",
-        type=int,
-        default=None,
-        help="Seed base for pose-head relative-rotation diagnostics.",
     )
     return parser.parse_args()
 
@@ -1132,11 +903,7 @@ def main() -> None:
         cfg=None,
         max_batches_latent=args.max_batches_latent,
         max_samples_visualization=args.max_samples_visualization,
-        use_train_data=bool(args.use_train_data),
         data_files_override=args.data_file,
-        analysis_orientation_reference=args.orientation_reference,
-        analysis_pose_eval_max_batches=args.pose_eval_max_batches,
-        analysis_pose_eval_seed_base=args.pose_eval_seed_base,
     )
 
 

@@ -1,13 +1,13 @@
 defaults:
-  - data: data_synth_polycrystalline
+# - data: data_synth_polycrystalline
 #  - data: synth_modelnet_objects
-#  - data: data_ae_Al_80
+ - data: data_ae_Al_80
 project_name: pointnet
 experiment_name: BT_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
 model_type: barlow_twins  # Self-supervised Barlow Twins
-latent_size: 80  # Number of VN channels for equivariant latent
+latent_size: 40  # Number of equivariant channels for latent vectors
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
@@ -16,15 +16,21 @@ load_supervised_checkpoint: False
 #   synthetic:
 #     classes: ['bcc_iron_pristine', 'fcc_iron_austenite' , 'bcc_iron_defected',]
 
-# VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
+# NequIP-style encoder - produces equivariant latent (B, latent_size, 3)
+# and invariant latent (B, latent_size)
 encoder:
-  name: VN_REVNET_Backbone
+  name: NequIP_Backbone
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [80, 40]
-    sa_channels: [128, 256]
-    attn_hidden: 256
+    scalar_dim: 256
+    vector_dim: 192
     num_layers: 4
+    num_neighbors: 32
+    radial_basis: 16
+    cutoff: 2.0
+    hidden_dim: 256
+    pooling: mean
+    dropout_rate: 0.0
 
 
 # Decoder config is required by the model factory but is not used for Barlow Twins
@@ -42,7 +48,7 @@ gradient_clip_val: 1.0
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 120
+epochs: 60
 max_samples: 0
 
 gpu: True
@@ -94,7 +100,7 @@ barlow_occlusion_cone_deg: 0.0
 pose:
   enabled: true
   weight: 0.4
-  start_epoch: 0
+  start_epoch: 10
   head_hidden: 256
   jitter_std: 0.0
   seeded_forward: true
@@ -102,9 +108,17 @@ pose:
   view_rotation_deg: 0.0
   unambiguous_rotation: true
   unambiguous_margin_deg: 1.0
+  curriculum_enabled: true
+  curriculum_epochs: 120
+  curriculum_start_deg: 8.0
+  eq_center: true
+  eq_l2_normalize: true
+  cov_normalize: true
+  head_loss_weight: 1.0
+  procrustes_loss_weight: 0.35
 
 symmetry:
-  type: none
+  type: cubic24
   beta: 30.0
   angle_eps: 1e-6
 
@@ -117,3 +131,43 @@ augmentation:
   track_augmentation: false
 
 vicreg_enabled: False
+
+# Post-training clustering analysis
+analysis_cluster_method: auto
+analysis_cluster_l2_normalize: true
+analysis_cluster_standardize: true
+analysis_cluster_pca_var: 0.98
+analysis_cluster_pca_max_components: 32
+analysis_cluster_silhouette_max_samples: 5000
+analysis_cluster_silhouette_tolerance: 0.03
+analysis_cluster_k_min: 2
+analysis_cluster_k_max: 12
+analysis_num_workers: 0
+analysis_progress_every_batches: 20
+analysis_max_samples_total: 0
+analysis_tsne_max_samples: 8000
+analysis_tsne_n_iter: 1000
+analysis_interactive_max_points: 0
+analysis_md_use_all_points: true
+analysis_extra_k_plots: true
+analysis_hdbscan_enabled: true
+analysis_hdbscan_fit_fraction: 0.25
+analysis_hdbscan_max_fit_samples: 50000
+analysis_hdbscan_target_k_min: 5
+analysis_hdbscan_target_k_max: 6
+analysis_hdbscan_min_cluster_size_candidates: []
+analysis_hdbscan_min_samples: null
+analysis_hdbscan_cluster_selection_epsilon: 0.0
+analysis_hdbscan_cluster_selection_method: leaf
+analysis_grain_enabled: true
+analysis_grain_knn_k: 12
+analysis_grain_edge_weight_threshold: 0.35
+analysis_grain_orientation_tau_deg: 18.0
+analysis_grain_alpha_scale_quantile: 0.75
+analysis_grain_align_n_iters: 5
+analysis_grain_align_min_cluster_size: 3
+analysis_grain_align_normalize_channels: true
+analysis_grain_min_size: 1
+analysis_grain_interactive_max_points: 120000
+analysis_grain_interactive_max_grains: 80
+analysis_grain_tsne_max_grains: 60
