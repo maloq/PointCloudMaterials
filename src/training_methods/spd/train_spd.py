@@ -29,6 +29,34 @@ torch.set_float32_matmul_precision('high')
 
 logger = setup_logging()
 
+
+def _resolve_resume_checkpoint(cfg: DictConfig) -> str | None:
+    """Resolve optional training resume checkpoint from config."""
+    resume_ckpt = getattr(cfg, "resume_from_checkpoint", None)
+    if resume_ckpt is None:
+        resume_ckpt = getattr(cfg, "resume_checkpoint_path", None)
+    if resume_ckpt is None:
+        return None
+
+    resume_ckpt = str(resume_ckpt).strip()
+    if not resume_ckpt:
+        return None
+
+    resume_ckpt = os.path.expanduser(resume_ckpt)
+    if not os.path.isabs(resume_ckpt):
+        base_dir = os.getcwd()
+        try:
+            base_dir = HydraConfig.get().runtime.cwd
+        except Exception:
+            pass
+        resume_ckpt = os.path.join(base_dir, resume_ckpt)
+    resume_ckpt = os.path.abspath(resume_ckpt)
+
+    if not os.path.exists(resume_ckpt):
+        raise FileNotFoundError(f"Resume checkpoint not found: {resume_ckpt}")
+
+    return resume_ckpt
+
 @rank_zero_only
 def get_rundir_name() -> str:
     now = datetime.now()
@@ -129,7 +157,10 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
     trainer = pl.Trainer(**trainer_kwargs)
 
-    trainer.fit(model, dm)
+    resume_ckpt_path = _resolve_resume_checkpoint(cfg)
+    if resume_ckpt_path is not None:
+        logger.print(f"Resuming training from checkpoint: {resume_ckpt_path}")
+    trainer.fit(model, dm, ckpt_path=resume_ckpt_path)
 
     # Run test after training completes
     if run_test:

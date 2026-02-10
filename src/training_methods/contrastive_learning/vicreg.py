@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from src.training_methods.contrastive_learning.invariant_utils import TensorProductInvariantHead
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 
 
@@ -35,6 +36,11 @@ class VICRegLoss(nn.Module):
         std_eps: float,
         std_target: float,
         input_dim,
+        invariant_mode: str = "norms",
+        invariant_max_factor: float = 4.0,
+        invariant_groups: int = 0,
+        invariant_use_third_order: bool = True,
+        invariant_eps: float = 1e-6,
     ) -> None:
         super().__init__()
         self.enabled = bool(enabled)
@@ -62,13 +68,26 @@ class VICRegLoss(nn.Module):
         self.std_eps = float(std_eps)
         self.std_target = float(std_target)
 
+        self.invariant_head = None
+        projector_input_dim = int(input_dim) if input_dim is not None else None
+        if projector_input_dim is not None:
+            self.invariant_head = TensorProductInvariantHead(
+                channels=projector_input_dim,
+                mode=invariant_mode,
+                max_factor=float(invariant_max_factor),
+                groups=int(invariant_groups),
+                include_third_order=bool(invariant_use_third_order),
+                eps=float(invariant_eps),
+            )
+            projector_input_dim = int(self.invariant_head.output_dim)
+
         self.projector = None
-        if input_dim is None:
+        if projector_input_dim is None:
             if self.enabled and self.weight > 0:
                 raise ValueError("VICReg requires latent_size to set projector input dim")
         else:
             self.projector = nn.Sequential(
-                nn.Linear(int(input_dim), self.embed_dim, bias=False),
+                nn.Linear(projector_input_dim, self.embed_dim, bias=False),
                 nn.BatchNorm1d(self.embed_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(self.embed_dim, self.embed_dim, bias=False),
@@ -116,6 +135,21 @@ class VICRegLoss(nn.Module):
             std_eps=float(getattr(cfg, "vicreg_std_eps", 1e-4)),
             std_target=float(getattr(cfg, "vicreg_std_target", 1.0)),
             input_dim=input_dim,
+            invariant_mode=str(
+                getattr(cfg, "vicreg_invariant_mode", getattr(cfg, "barlow_invariant_mode", "norms"))
+            ),
+            invariant_max_factor=float(
+                getattr(cfg, "vicreg_invariant_max_factor", getattr(cfg, "barlow_invariant_max_factor", 4.0))
+            ),
+            invariant_groups=int(getattr(cfg, "vicreg_invariant_groups", getattr(cfg, "barlow_invariant_groups", 0))),
+            invariant_use_third_order=bool(
+                getattr(
+                    cfg,
+                    "vicreg_invariant_use_third_order",
+                    getattr(cfg, "barlow_invariant_use_third_order", True),
+                )
+            ),
+            invariant_eps=float(getattr(cfg, "vicreg_invariant_eps", getattr(cfg, "barlow_invariant_eps", 1e-6))),
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -426,11 +460,12 @@ class VICRegLoss(nn.Module):
         metrics = {"vicreg_sim": sim_loss, "vicreg_std": std_loss, "vicreg_cov": cov_loss}
         return loss, metrics
 
-    @staticmethod
-    def _invariant(inv_z, eq_z):
-        if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
-            eq_z = inv_z
-            inv_z = None
-        if eq_z is not None:
-            return eq_z.norm(dim=-1)
-        return inv_z
+    def _invariant(self, inv_z, eq_z):
+        if self.invariant_head is None:
+            if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
+                eq_z = inv_z
+                inv_z = None
+            if eq_z is not None:
+                return eq_z.norm(dim=-1)
+            return inv_z
+        return self.invariant_head(inv_z, eq_z)

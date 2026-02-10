@@ -293,6 +293,7 @@ class SyntheticPointCloudDataset(Dataset):
         - "class_id": scalar int64 tensor (category/phase index)
         - "instance_id": scalar int64 tensor (grain/instance index, -1 if unknown)
         - "rotation": (3, 3) float32 rotation matrix tensor
+        - "coords": (3,) float32 tensor with sample center in simulation space
     """
 
     # Dataset metadata
@@ -349,6 +350,7 @@ class SyntheticPointCloudDataset(Dataset):
         self._class_ids: List[int] = []
         self._instance_ids: List[int] = []
         self._rotations: List[torch.Tensor] = []
+        self._coords: List[torch.Tensor] = []
 
         # Class mapping (class_name -> class_id)
         self._class_to_idx: Dict[str, int] = {}
@@ -444,6 +446,7 @@ class SyntheticPointCloudDataset(Dataset):
             self._class_ids.append(class_idx)
             self._instance_ids.append(instance_idx)
             self._rotations.append(torch.tensor(meta["orientation"], dtype=torch.float32))
+            self._coords.append(torch.tensor(center, dtype=torch.float32))
 
             if self.max_samples is not None and len(self.samples) >= self.max_samples:
                 break
@@ -768,6 +771,7 @@ class SyntheticPointCloudDataset(Dataset):
                 - "class_id": scalar int64 tensor
                 - "instance_id": scalar int64 tensor  
                 - "rotation": (3, 3) float32 rotation matrix tensor
+                - "coords": (3,) float32 sample center coordinates
         """
         # Samples are already stored as tensors for efficiency
         pc_tensor = self.samples[index].clone()
@@ -815,6 +819,7 @@ class SyntheticPointCloudDataset(Dataset):
             "class_id": torch.tensor(self._class_ids[index], dtype=torch.long),
             "instance_id": torch.tensor(self._instance_ids[index], dtype=torch.long),
             "rotation": rotation.to(dtype=torch.float32),
+            "coords": self._coords[index].clone(),
         }
 
     @staticmethod

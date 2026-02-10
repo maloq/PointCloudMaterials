@@ -42,6 +42,55 @@ from src.vis_tools.latent_analysis_vis import (
 from src.vis_tools.tsne_vis import compute_tsne
 
 
+def _as_list_of_str(value: Any) -> list[str] | None:
+    if value is None:
+        return None
+    if isinstance(value, ListConfig):
+        value = list(value)
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [str(v) for v in value]
+    return None
+
+
+def _positive_int_or_none(value: Any) -> int | None:
+    if value is None:
+        return None
+    value = int(value)
+    return value if value > 0 else None
+
+
+def _unwrap_dataset(dataset: Any) -> Any:
+    while hasattr(dataset, "dataset"):
+        dataset = dataset.dataset
+    return dataset
+
+
+def _extract_class_names(dataset: Any) -> list[str] | None:
+    if dataset is None:
+        return None
+    dataset = _unwrap_dataset(dataset)
+    names = getattr(dataset, "class_names", None)
+    return list(names) if names is not None else None
+
+
+def _extra_k_values(best_k: int, num_samples: int) -> list[int]:
+    candidates = [int(best_k) + 1, int(best_k) + 2]
+    out: list[int] = []
+    for k_val in candidates:
+        k_val = max(2, min(k_val, num_samples))
+        if k_val != int(best_k) and k_val not in out:
+            out.append(k_val)
+    return out
+
+
+def _fmt_metric(value: Any, digits: int = 4) -> str:
+    if isinstance(value, (float, np.floating)):
+        return f"{float(value):.{digits}f}"
+    return str(value)
+
+
 def load_barlow_model(
     checkpoint_path: str, cuda_device: int = 0, cfg: DictConfig | None = None
 ) -> Tuple[BarlowTwinsModule, DictConfig, str]:
@@ -105,23 +154,14 @@ def run_post_training_analysis(
             return None
         if data_files_override:
             return data_files_override
-        if hasattr(cfg.data, "analysis_data_files"):
-            files = cfg.data.analysis_data_files
-            if isinstance(files, ListConfig):
-                return list(files)
-            if isinstance(files, str):
-                return [files]
-            if isinstance(files, list):
-                return files
+        files = _as_list_of_str(getattr(cfg.data, "analysis_data_files", None))
+        if files:
+            return files
         if hasattr(cfg.data, "analysis_data_file"):
             file = cfg.data.analysis_data_file
             if isinstance(file, str):
                 return [file]
-        data_files = cfg.data.data_files
-        if isinstance(data_files, ListConfig):
-            data_files = list(data_files)
-        if isinstance(data_files, str):
-            data_files = [data_files]
+        data_files = _as_list_of_str(getattr(cfg.data, "data_files", None))
         if not data_files:
             return None
         analysis_single = bool(getattr(cfg.data, "analysis_single_timestep", True))
@@ -207,21 +247,11 @@ def run_post_training_analysis(
         getattr(cfg, "analysis_grain_align_normalize_channels", True)
     )
     grain_min_size = int(getattr(cfg, "analysis_grain_min_size", 1))
-    grain_interactive_max_points = getattr(
-        cfg, "analysis_grain_interactive_max_points", 120000
+    grain_interactive_max_points = _positive_int_or_none(
+        getattr(cfg, "analysis_grain_interactive_max_points", 120000)
     )
-    if grain_interactive_max_points is not None:
-        grain_interactive_max_points = int(grain_interactive_max_points)
-        if grain_interactive_max_points <= 0:
-            grain_interactive_max_points = None
-    grain_interactive_max_grains = int(
-        getattr(cfg, "analysis_grain_interactive_max_grains", 80)
-    )
-    if grain_interactive_max_grains <= 0:
-        grain_interactive_max_grains = 0
-    grain_tsne_max_grains = int(getattr(cfg, "analysis_grain_tsne_max_grains", 60))
-    if grain_tsne_max_grains <= 0:
-        grain_tsne_max_grains = 0
+    grain_interactive_max_grains = max(0, int(getattr(cfg, "analysis_grain_interactive_max_grains", 80)))
+    grain_tsne_max_grains = max(0, int(getattr(cfg, "analysis_grain_tsne_max_grains", 60)))
 
     # Older checkpoint-local Hydra configs can carry analysis_extra_k_plots=false.
     # Keep k+1/k+2 analyses always enabled for MD diagnostics.
@@ -263,38 +293,22 @@ def run_post_training_analysis(
             "Real data detected: using full dataset for local-structure clustering visualization"
         )
 
-    class_names = None
-    if hasattr(dm, "train_dataset"):
-        ds = getattr(dm, "train_dataset", None)
-        while hasattr(ds, "dataset"):
-            ds = ds.dataset
-        if hasattr(ds, "class_names"):
-            class_names = ds.class_names
-            print(f"Loaded class names: {class_names}")
-
-    if class_names is None and hasattr(dl, "dataset"):
-        ds = dl.dataset
-        while hasattr(ds, "dataset"):
-            ds = ds.dataset
-        if hasattr(ds, "class_names"):
-            class_names = ds.class_names
+    class_names = _extract_class_names(getattr(dm, "train_dataset", None))
+    if class_names is not None:
+        print(f"Loaded class names: {class_names}")
+    if class_names is None:
+        class_names = _extract_class_names(getattr(dl, "dataset", None))
+        if class_names is not None:
             print(f"Loaded class names from DL: {class_names}")
 
     if max_batches_latent is None:
-        cfg_max_batches = getattr(cfg, "analysis_max_batches_latent", None)
-        if cfg_max_batches is not None:
-            max_batches_latent = int(cfg_max_batches)
-            if max_batches_latent <= 0:
-                max_batches_latent = None
+        max_batches_latent = _positive_int_or_none(getattr(cfg, "analysis_max_batches_latent", None))
     max_samples_total = getattr(cfg, "analysis_max_samples_total", None)
     if max_samples_total is None and not is_synthetic:
         max_samples_total = 20000
     if not is_synthetic and md_use_all_points:
         max_samples_total = None
-    if max_samples_total is not None:
-        max_samples_total = int(max_samples_total)
-        if max_samples_total <= 0:
-            max_samples_total = None
+    max_samples_total = _positive_int_or_none(max_samples_total)
 
     _step("Collecting inference batches")
     if max_batches_latent is None:
@@ -310,7 +324,7 @@ def run_post_training_analysis(
         device,
         max_batches=max_batches_latent,
         max_samples_total=max_samples_total,
-        collect_coords=not is_synthetic,
+        collect_coords=True,
         seed_base=seed_base,
         progress_every_batches=progress_every_batches,
         verbose=True,
@@ -371,33 +385,53 @@ def run_post_training_analysis(
     )
     all_metrics["clustering"] = clustering_metrics
 
-    if not is_synthetic:
-        coords = cache.get("coords", np.empty((0, 3), dtype=np.float32))
-        if coords.shape[0] != len(cache["inv_latents"]):
+    coords = cache.get("coords", np.empty((0, 3), dtype=np.float32))
+    has_valid_coords = (
+        coords.ndim == 2
+        and coords.shape[1] >= 3
+        and coords.shape[0] == len(cache["inv_latents"])
+    )
+    if not has_valid_coords:
+        if is_synthetic and not coords.size:
+            print(
+                "Synthetic dataset did not provide sample coordinates; "
+                "skipping MD-space clustering visualization."
+            )
+        else:
             print(
                 "Warning: coordinate count does not match latent count; "
                 "skipping spatial clustering visualization."
             )
-            coords = np.empty((0, 3), dtype=np.float32)
+        coords = np.empty((0, 3), dtype=np.float32)
 
-        best_k = clustering_metrics.get("best_k_silhouette") if clustering_metrics else None
-        if not isinstance(best_k, int) or best_k <= 1:
-            best_k = _default_cluster_count(len(cache["inv_latents"]))
-        selected_method_for_best_k = (
-            str(clustering_metrics.get("best_method", cluster_method)).lower()
-            if clustering_metrics
-            else cluster_method
-        )
-        cluster_labels, cluster_fit_info = compute_kmeans_labels(
+    md_metrics_key = "synthetic_md" if is_synthetic else "real_md"
+    num_latents = len(cache["inv_latents"])
+
+    def _compute_labels_for_k(k_value: int, *, method_name: str):
+        return compute_kmeans_labels(
             cache["inv_latents"],
-            best_k,
-            method=selected_method_for_best_k,
+            k_value,
+            method=method_name,
             l2_normalize=cluster_l2_normalize,
             standardize=cluster_standardize,
             pca_variance=cluster_pca_var,
             pca_max_components=cluster_pca_max_components,
             silhouette_max_samples=cluster_silhouette_max_samples,
             return_info=True,
+        )
+
+    if (not is_synthetic) or coords.size:
+        best_k = clustering_metrics.get("best_k_silhouette") if clustering_metrics else None
+        if not isinstance(best_k, int) or best_k <= 1:
+            best_k = _default_cluster_count(num_latents)
+        selected_method_for_best_k = (
+            str(clustering_metrics.get("best_method", cluster_method)).lower()
+            if clustering_metrics
+            else cluster_method
+        )
+        cluster_labels, cluster_fit_info = _compute_labels_for_k(
+            best_k,
+            method_name=selected_method_for_best_k,
         )
         cluster_label_method = str(cluster_fit_info.get("method", selected_method_for_best_k))
         if "clustering" in all_metrics and isinstance(all_metrics["clustering"], dict):
@@ -419,27 +453,8 @@ def run_post_training_analysis(
         )
 
         if extra_k_plots:
-            k_candidates = [int(best_k) + 1, int(best_k) + 2]
-            unique_k: list[int] = []
-            for k_val in k_candidates:
-                k_val = max(2, min(k_val, len(cache["inv_latents"])))
-                if k_val not in unique_k:
-                    unique_k.append(k_val)
-
-            for k_val in unique_k:
-                if k_val == int(best_k):
-                    continue
-                labels_k, labels_k_info = compute_kmeans_labels(
-                    cache["inv_latents"],
-                    k_val,
-                    method=cluster_method,
-                    l2_normalize=cluster_l2_normalize,
-                    standardize=cluster_standardize,
-                    pca_variance=cluster_pca_var,
-                    pca_max_components=cluster_pca_max_components,
-                    silhouette_max_samples=cluster_silhouette_max_samples,
-                    return_info=True,
-                )
+            for k_val in _extra_k_values(best_k, num_latents):
+                labels_k, labels_k_info = _compute_labels_for_k(k_val, method_name=cluster_method)
                 method_k = str(labels_k_info.get("method", cluster_method))
                 save_tsne_plot_with_coords(
                     tsne_coords,
@@ -451,11 +466,9 @@ def run_post_training_analysis(
 
         if coords.size and cluster_labels.size:
             _step("Saving coordinate-space clustering outputs")
-            interactive_max_points = getattr(cfg, "analysis_interactive_max_points", None)
-            if interactive_max_points is not None:
-                interactive_max_points = int(interactive_max_points)
-                if interactive_max_points <= 0:
-                    interactive_max_points = None
+            interactive_max_points = _positive_int_or_none(
+                getattr(cfg, "analysis_interactive_max_points", None)
+            )
             if md_use_all_points:
                 interactive_max_points = None
             coord_files = save_local_structure_assignments(
@@ -487,28 +500,8 @@ def run_post_training_analysis(
                     interactive_paths[int(best_k)] = str(interactive_path)
 
                     if extra_k_plots:
-                        k_candidates = [int(best_k) + 1, int(best_k) + 2]
-
-                        unique_k: list[int] = []
-                        for k_val in k_candidates:
-                            k_val = max(2, min(k_val, len(cache["inv_latents"])))
-                            if k_val not in unique_k:
-                                unique_k.append(k_val)
-
-                        for k_val in unique_k:
-                            if k_val == int(best_k):
-                                continue
-                            labels_k, _ = compute_kmeans_labels(
-                                cache["inv_latents"],
-                                k_val,
-                                method=cluster_method,
-                                l2_normalize=cluster_l2_normalize,
-                                standardize=cluster_standardize,
-                                pca_variance=cluster_pca_var,
-                                pca_max_components=cluster_pca_max_components,
-                                silhouette_max_samples=cluster_silhouette_max_samples,
-                                return_info=True,
-                            )
+                        for k_val in _extra_k_values(best_k, num_latents):
+                            labels_k, _ = _compute_labels_for_k(k_val, method_name=cluster_method)
                             out_path = out_dir / f"md_space_clusters_k{k_val}.html"
                             save_interactive_md_plot(
                                 coords,
@@ -704,38 +697,38 @@ def run_post_training_analysis(
                         print(f"Grain segmentation failed: {err}")
 
                 unique_labels, counts = np.unique(cluster_labels, return_counts=True)
-                all_metrics["real_md"] = {
+                all_metrics[md_metrics_key] = {
                     "n_clusters": int(len(unique_labels)),
                     "cluster_counts": {int(k): int(v) for k, v in zip(unique_labels, counts)},
                     "coords_files": coord_files,
                 }
                 if interactive_path is not None:
-                    all_metrics["real_md"]["interactive_html"] = str(interactive_path)
+                    all_metrics[md_metrics_key]["interactive_html"] = str(interactive_path)
                 if interactive_paths:
-                    all_metrics["real_md"]["interactive_htmls"] = interactive_paths
+                    all_metrics[md_metrics_key]["interactive_htmls"] = interactive_paths
                 if hdbscan_info is not None:
-                    all_metrics["real_md"]["hdbscan"] = hdbscan_info
+                    all_metrics[md_metrics_key]["hdbscan"] = hdbscan_info
                     if hdbscan_coord_files:
-                        all_metrics["real_md"]["hdbscan_coords_files"] = hdbscan_coord_files
+                        all_metrics[md_metrics_key]["hdbscan_coords_files"] = hdbscan_coord_files
                     if hdbscan_path is not None:
-                        all_metrics["real_md"]["hdbscan_interactive_html"] = str(hdbscan_path)
+                        all_metrics[md_metrics_key]["hdbscan_interactive_html"] = str(hdbscan_path)
                 if grain_info is not None:
-                    all_metrics["real_md"]["grains"] = grain_info
-                    all_metrics["real_md"]["grains"]["interactive_max_points"] = (
+                    all_metrics[md_metrics_key]["grains"] = grain_info
+                    all_metrics[md_metrics_key]["grains"]["interactive_max_points"] = (
                         None if grain_interactive_max_points is None else int(grain_interactive_max_points)
                     )
-                    all_metrics["real_md"]["grains"]["interactive_max_grains"] = int(
+                    all_metrics[md_metrics_key]["grains"]["interactive_max_grains"] = int(
                         grain_interactive_max_grains
                     )
-                    all_metrics["real_md"]["grains"]["tsne_max_grains"] = int(
+                    all_metrics[md_metrics_key]["grains"]["tsne_max_grains"] = int(
                         grain_tsne_max_grains
                     )
                     if grain_coord_files:
-                        all_metrics["real_md"]["grains_coords_files"] = grain_coord_files
+                        all_metrics[md_metrics_key]["grains_coords_files"] = grain_coord_files
                     if grain_path is not None:
-                        all_metrics["real_md"]["grains_interactive_html"] = str(grain_path)
+                        all_metrics[md_metrics_key]["grains_interactive_html"] = str(grain_path)
                     if grain_tsne_path is not None:
-                        all_metrics["real_md"]["grains_tsne_png"] = grain_tsne_path
+                        all_metrics[md_metrics_key]["grains_tsne_png"] = grain_tsne_path
     _step("Evaluating equivariance")
     eq_metrics, eq_err = evaluate_latent_equivariance(model, dl, device, max_batches=2)
     save_equivariance_plot(eq_err, out_dir / "equivariance.png")
@@ -757,47 +750,42 @@ def run_post_training_analysis(
     if "clustering" in all_metrics and all_metrics["clustering"]:
         print(f"Best k (silhouette): {all_metrics['clustering'].get('best_k_silhouette', 'N/A')}")
         print(
-            f"Best silhouette score: {all_metrics['clustering'].get('best_silhouette_score', 'N/A'):.4f}"
-            if isinstance(all_metrics["clustering"].get("best_silhouette_score"), float)
-            else f"Best silhouette score: {all_metrics['clustering'].get('best_silhouette_score', 'N/A')}"
+            "Best silhouette score: "
+            f"{_fmt_metric(all_metrics['clustering'].get('best_silhouette_score', 'N/A'))}"
         )
         if "ari_with_gt" in all_metrics["clustering"]:
-            print(f"ARI with ground truth: {all_metrics['clustering']['ari_with_gt']:.4f}")
-            print(f"NMI with ground truth: {all_metrics['clustering']['nmi_with_gt']:.4f}")
+            print(f"ARI with ground truth: {_fmt_metric(all_metrics['clustering']['ari_with_gt'])}")
+            print(f"NMI with ground truth: {_fmt_metric(all_metrics['clustering']['nmi_with_gt'])}")
         if "class_separation_ratio" in all_metrics["clustering"]:
             print(
-                f"Class separation ratio: {all_metrics['clustering']['class_separation_ratio']:.4f}"
+                "Class separation ratio: "
+                f"{_fmt_metric(all_metrics['clustering']['class_separation_ratio'])}"
             )
 
     if "equivariance" in all_metrics:
         eq = all_metrics["equivariance"]
         print(
-            f"Equivariant latent error (seeded mean): {eq.get('eq_latent_rel_error_mean', 'N/A'):.4f}"
-            if isinstance(eq.get("eq_latent_rel_error_mean"), float)
-            else f"Equivariant latent error (seeded mean): {eq.get('eq_latent_rel_error_mean', 'N/A')}"
+            "Equivariant latent error (seeded mean): "
+            f"{_fmt_metric(eq.get('eq_latent_rel_error_mean', 'N/A'))}"
         )
         print(
-            f"Equivariant latent error (seeded median): {eq.get('eq_latent_rel_error_median', 'N/A'):.4f}"
-            if isinstance(eq.get("eq_latent_rel_error_median"), float)
-            else f"Equivariant latent error (seeded median): {eq.get('eq_latent_rel_error_median', 'N/A')}"
+            "Equivariant latent error (seeded median): "
+            f"{_fmt_metric(eq.get('eq_latent_rel_error_median', 'N/A'))}"
         )
         if "eq_latent_rel_error_unseeded" in eq:
             print(
-                f"Equivariant latent error (unseeded mean): {eq.get('eq_latent_rel_error_unseeded', 'N/A'):.4f}"
-                if isinstance(eq.get("eq_latent_rel_error_unseeded"), float)
-                else f"Equivariant latent error (unseeded mean): {eq.get('eq_latent_rel_error_unseeded', 'N/A')}"
+                "Equivariant latent error (unseeded mean): "
+                f"{_fmt_metric(eq.get('eq_latent_rel_error_unseeded', 'N/A'))}"
             )
         if "eq_latent_rel_error_unseeded_median" in eq:
             print(
-                f"Equivariant latent error (unseeded median): {eq.get('eq_latent_rel_error_unseeded_median', 'N/A'):.4f}"
-                if isinstance(eq.get("eq_latent_rel_error_unseeded_median"), float)
-                else f"Equivariant latent error (unseeded median): {eq.get('eq_latent_rel_error_unseeded_median', 'N/A')}"
+                "Equivariant latent error (unseeded median): "
+                f"{_fmt_metric(eq.get('eq_latent_rel_error_unseeded_median', 'N/A'))}"
             )
         if "eq_latent_nondeterminism_contribution" in eq:
             print(
-                f"Non-determinism contribution (unseeded - seeded): {eq.get('eq_latent_nondeterminism_contribution', 'N/A'):.4f}"
-                if isinstance(eq.get("eq_latent_nondeterminism_contribution"), float)
-                else f"Non-determinism contribution (unseeded - seeded): {eq.get('eq_latent_nondeterminism_contribution', 'N/A')}"
+                "Non-determinism contribution (unseeded - seeded): "
+                f"{_fmt_metric(eq.get('eq_latent_nondeterminism_contribution', 'N/A'))}"
             )
 
     print("=" * 60)
@@ -813,7 +801,7 @@ def run_post_training_analysis(
     print("  - clustering_analysis.png: Clustering quality metrics")
     print("  - equivariance.png: Equivariant latent error distribution")
     print("  - analysis_metrics.json: All numerical metrics")
-    if not is_synthetic and "real_md" in all_metrics:
+    if md_metrics_key in all_metrics:
         print("  - local_structure_coords_clusters.csv: local-structure centers with cluster IDs")
         print("  - local_structure_coords_clusters.npz: local-structure centers + cluster IDs")
         print("  - md_space_clusters.png: 3D MD space clusters")
@@ -825,13 +813,13 @@ def run_post_training_analysis(
             print("  - local_structure_hdbscan_coords_clusters.csv: MD centers with HDBSCAN labels")
             print("  - local_structure_hdbscan_coords_clusters.npz: MD centers + HDBSCAN labels")
             print("  - md_space_clusters_hdbscan.html: interactive 3D MD HDBSCAN clusters")
-        if "grains_coords_files" in all_metrics["real_md"]:
+        if "grains_coords_files" in all_metrics[md_metrics_key]:
             print("  - local_structure_grains_coords_clusters.csv: MD centers with grain IDs")
             print("  - local_structure_grains_coords_clusters.npz: MD centers + grain IDs")
             print("  - md_space_grains.png: 3D MD grain segmentation")
-            if "grains_tsne_png" in all_metrics["real_md"]:
+            if "grains_tsne_png" in all_metrics[md_metrics_key]:
                 print("  - latent_tsne_grains.png: t-SNE colored by grain IDs")
-            if "grains_interactive_html" in all_metrics["real_md"]:
+            if "grains_interactive_html" in all_metrics[md_metrics_key]:
                 print("  - md_space_grains.html: interactive 3D MD grain segmentation")
 
     return all_metrics

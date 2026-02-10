@@ -1,66 +1,32 @@
-import itertools
-import math
-from contextlib import nullcontext
-
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import pytorch_lightning as pl
 
-import sys, os
+import sys
+import os
+
 sys.path.append(os.getcwd())
 
 from src.models.autoencoders.factory import build_model
-from src.utils.pointcloud_ops import crop_to_num_points
-from src.utils.spd_metrics import (
-    compute_embedding_quality_metrics,
-    compute_cluster_metrics,
-)
-from src.utils.spd_utils import (
-    apply_rotation,
-    cached_sample_count,
-    get_optimizers_and_scheduler,
-)
-from src.training_methods.equivariant_autoencoder.idec import resolve_latent_dim
 from src.training_methods.contrastive_learning.barlow_twins import BarlowTwinsLoss
+from src.training_methods.contrastive_learning.pose.head import PoseRotationHead
+from src.training_methods.contrastive_learning.pose.utils import (
+    cfg_get,
+    compute_pose_loss,
+    init_pose_components,
+    prepare_eq_latent,
+    rotation_geodesic_angles,
+)
+from src.training_methods.contrastive_learning.supervised_cache import (
+    cache_limit_for_stage,
+    cache_supervised_batch,
+    init_supervised_cache,
+    log_supervised_metrics,
+    reset_supervised_cache,
+)
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
-from src.training_methods.spd.rot_heads import sixd_to_so3
-from src.models.autoencoders.encoders.vn_encoders import VNLinearLeakyReLU, VNMaxPool
-
-
-class PoseRotationHead(nn.Module):
-    def __init__(self, hidden: int = 128) -> None:
-        super().__init__()
-        hidden = max(8, int(hidden))
-        vn_width = max(8, hidden // 2)
-        self.vn_stem = nn.Sequential(
-            VNLinearLeakyReLU(1, vn_width, dim=4, negative_slope=0.1, use_batchnorm=False),
-            VNLinearLeakyReLU(vn_width, hidden, dim=4, negative_slope=0.1, use_batchnorm=False),
-            VNLinearLeakyReLU(hidden, hidden, dim=4, negative_slope=0.1, use_batchnorm=False),
-        )
-        self.vn_pool = VNMaxPool(hidden)
-        self.out = nn.Sequential(
-            nn.Linear(hidden * 3, hidden),
-            nn.ReLU(inplace=True),
-            nn.Linear(hidden, 6),
-        )
-
-    def forward(self, cov: torch.Tensor) -> torch.Tensor:
-        if cov.dim() != 3 or cov.shape[-2:] != (3, 3):
-            raise ValueError(f"Expected cov of shape (B,3,3). Got {tuple(cov.shape)}")
-        x = cov.transpose(1, 2).unsqueeze(1)  # (B, 1, 3, 3): 3 points, 1 VN channel
-        x = self.vn_stem(x)
-        x = self.vn_pool(x)  # (B, C, 3)
-        return self.out(x.reshape(x.shape[0], -1))
-
-
-def _autocast_disabled_context(tensor: torch.Tensor):
-    device_type = tensor.device.type
-    if device_type == "cuda" and torch.is_autocast_enabled():
-        return torch.autocast(device_type=device_type, enabled=False)
-    if device_type == "cpu" and hasattr(torch, "is_autocast_cpu_enabled") and torch.is_autocast_cpu_enabled():
-        return torch.autocast(device_type=device_type, enabled=False)
-    return nullcontext()
+from src.training_methods.equivariant_autoencoder.idec import resolve_latent_dim
+from src.utils.pointcloud_ops import crop_to_num_points
+from src.utils.spd_utils import get_optimizers_and_scheduler
 
 
 class BarlowTwinsModule(pl.LightningModule):
@@ -96,132 +62,8 @@ class BarlowTwinsModule(pl.LightningModule):
                 f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
             )
 
-        pose_cfg = getattr(cfg, "pose", None)
-        self.pose_enabled = bool(getattr(cfg, "pose_enabled", self._cfg_get(pose_cfg, "enabled", False)))
-        self.pose_weight = float(getattr(cfg, "pose_weight", self._cfg_get(pose_cfg, "weight", 0.0)))
-        self.pose_start_epoch = int(getattr(cfg, "pose_start_epoch", self._cfg_get(pose_cfg, "start_epoch", 0)))
-        self.pose_jitter_std = float(getattr(cfg, "pose_jitter_std", self._cfg_get(pose_cfg, "jitter_std", 0.0)))
-        self.pose_seeded_forward = bool(
-            getattr(cfg, "pose_seeded_forward", self._cfg_get(pose_cfg, "seeded_forward", True))
-        )
-        self.pose_head_hidden = int(
-            getattr(cfg, "pose_head_hidden", self._cfg_get(pose_cfg, "head_hidden", 128))
-        )
-        self.pose_view_rotation_mode = str(
-            getattr(
-                cfg,
-                "pose_view_rotation_mode",
-                self._cfg_get(pose_cfg, "view_rotation_mode", "full"),
-            )
-        ).lower()
-        self.pose_view_rotation_deg = float(
-            getattr(
-                cfg,
-                "pose_view_rotation_deg",
-                self._cfg_get(pose_cfg, "view_rotation_deg", 0.0),
-            )
-        )
-        self.pose_unambiguous_rotation = bool(
-            getattr(
-                cfg,
-                "pose_unambiguous_rotation",
-                self._cfg_get(pose_cfg, "unambiguous_rotation", True),
-            )
-        )
-        self.pose_unambiguous_margin_deg = float(
-            getattr(
-                cfg,
-                "pose_unambiguous_margin_deg",
-                self._cfg_get(pose_cfg, "unambiguous_margin_deg", 1.0),
-            )
-        )
-        self.pose_curriculum_enabled = bool(
-            getattr(
-                cfg,
-                "pose_curriculum_enabled",
-                self._cfg_get(pose_cfg, "curriculum_enabled", False),
-            )
-        )
-        self.pose_curriculum_epochs = int(
-            getattr(
-                cfg,
-                "pose_curriculum_epochs",
-                self._cfg_get(pose_cfg, "curriculum_epochs", 120),
-            )
-        )
-        self.pose_curriculum_start_deg = float(
-            getattr(
-                cfg,
-                "pose_curriculum_start_deg",
-                self._cfg_get(pose_cfg, "curriculum_start_deg", 8.0),
-            )
-        )
-        self.pose_eq_center = bool(
-            getattr(
-                cfg,
-                "pose_eq_center",
-                self._cfg_get(pose_cfg, "eq_center", True),
-            )
-        )
-        self.pose_eq_l2_normalize = bool(
-            getattr(
-                cfg,
-                "pose_eq_l2_normalize",
-                self._cfg_get(pose_cfg, "eq_l2_normalize", True),
-            )
-        )
-        self.pose_cov_normalize = bool(
-            getattr(
-                cfg,
-                "pose_cov_normalize",
-                self._cfg_get(pose_cfg, "cov_normalize", True),
-            )
-        )
-        self.pose_head_loss_weight = max(
-            0.0,
-            float(
-                getattr(
-                    cfg,
-                    "pose_head_loss_weight",
-                    self._cfg_get(pose_cfg, "head_loss_weight", 1.0),
-                )
-            ),
-        )
-        self.pose_procrustes_loss_weight = max(
-            0.0,
-            float(
-                getattr(
-                    cfg,
-                    "pose_procrustes_loss_weight",
-                    self._cfg_get(pose_cfg, "procrustes_loss_weight", 0.0),
-                )
-            ),
-        )
-
-        sym_cfg = getattr(cfg, "symmetry", None)
-        if sym_cfg is None and pose_cfg is not None:
-            sym_cfg = self._cfg_get(pose_cfg, "symmetry", None)
-        self.symmetry_type = str(self._cfg_get(sym_cfg, "type", "cubic24")).lower()
-        self.symmetry_beta = float(self._cfg_get(sym_cfg, "beta", 30.0))
-        self.symmetry_angle_eps = float(self._cfg_get(sym_cfg, "angle_eps", 1e-6))
-        sym_mats = self._build_symmetry_mats(sym_cfg)
-        self.register_buffer("symmetry_mats", sym_mats)
-        self.pose_unambiguous_cap_rad = self._compute_unambiguous_cap_rad()
-
-        self.pose_head = (
-            PoseRotationHead(hidden=self.pose_head_hidden)
-            if self.pose_enabled and self.pose_head_loss_weight > 0
-            else None
-        )
-
-        # Caches for embedding metrics
-        self._supervised_cache = {
-            "train": {"latents": [], "class_id": []},
-            "val": {"latents": [], "class_id": []},
-            "test": {"latents": [], "class_id": []},
-        }
-        self.max_supervised_samples = cfg.max_supervised_samples if hasattr(cfg, 'max_supervised_samples') else 8192
-        self.max_test_samples = cfg.max_test_samples if hasattr(cfg, 'max_test_samples') else 1000
+        init_pose_components(self, cfg, latent_dim)
+        init_supervised_cache(self, cfg)
 
     @property
     def barlow_projector(self):
@@ -233,193 +75,17 @@ class BarlowTwinsModule(pl.LightningModule):
 
     @staticmethod
     def _cfg_get(obj, name: str, default=None):
-        if obj is None:
-            return default
-        if hasattr(obj, "get"):
-            return obj.get(name, default)
-        return getattr(obj, name, default)
-
-    @staticmethod
-    def _perm_parity(perm: tuple[int, int, int]) -> int:
-        inv = 0
-        for i in range(len(perm)):
-            for j in range(i + 1, len(perm)):
-                if perm[i] > perm[j]:
-                    inv += 1
-        return -1 if (inv % 2) else 1
-
-    @classmethod
-    def _cubic_symmetry_mats(cls) -> torch.Tensor:
-        mats = []
-        for perm in itertools.permutations([0, 1, 2]):
-            parity = cls._perm_parity(perm)
-            for signs in itertools.product([-1, 1], repeat=3):
-                det = parity * (signs[0] * signs[1] * signs[2])
-                if det <= 0:
-                    continue
-                mat = torch.zeros(3, 3, dtype=torch.float32)
-                mat[0, perm[0]] = signs[0]
-                mat[1, perm[1]] = signs[1]
-                mat[2, perm[2]] = signs[2]
-                mats.append(mat)
-        if not mats:
-            return torch.eye(3, dtype=torch.float32).unsqueeze(0)
-        return torch.stack(mats, dim=0)
-
-    @staticmethod
-    def _ensure_identity(mats: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
-        if mats.numel() == 0:
-            return torch.eye(3, dtype=torch.float32).unsqueeze(0)
-        identity = torch.eye(3, dtype=mats.dtype).unsqueeze(0)
-        diffs = (mats - identity).abs().max(dim=-1).values.max(dim=-1).values
-        if (diffs <= eps).any():
-            return mats
-        return torch.cat([identity, mats], dim=0)
-
-    def _build_symmetry_mats(self, sym_cfg) -> torch.Tensor:
-        sym_type = self.symmetry_type
-        if sym_type == "none":
-            mats = torch.eye(3, dtype=torch.float32).unsqueeze(0)
-            return mats
-        if sym_type == "cubic24":
-            mats = self._cubic_symmetry_mats()
-            return mats
-        else:
-            raise ValueError(f"Unknown symmetry.type '{sym_type}'. Expected none, cubic24.")
-
-    @staticmethod
-    def _random_rotation_matrices(batch_size: int, *, device, dtype) -> torch.Tensor:
-        rot_dtype = torch.float32 if dtype in (torch.float16, torch.bfloat16) else dtype
-        rand = torch.randn(batch_size, 3, 3, device=device, dtype=rot_dtype)
-        q, r = torch.linalg.qr(rand)
-        d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
-        q = q * d.unsqueeze(-1)
-        det = torch.det(q)
-        neg = det < 0
-        if neg.any():
-            q[neg, :, 0] *= -1
-        return q.to(dtype=dtype)
-
-    def _sample_axis_angle_rotation(
-        self,
-        batch_size: int,
-        *,
-        max_rad: float,
-        device,
-        dtype,
-    ) -> torch.Tensor:
-        if max_rad <= 0:
-            return torch.eye(3, device=device, dtype=dtype).unsqueeze(0).expand(batch_size, -1, -1)
-        axis = self.barlow._random_unit_vectors(batch_size, device=device, dtype=dtype)
-        angle = (torch.rand(batch_size, device=device, dtype=dtype) * 2.0 - 1.0) * float(max_rad)
-        return self.barlow._axis_angle_to_matrix(axis, angle)
-
-    def _compute_unambiguous_cap_rad(self) -> float:
-        mats = self.symmetry_mats.detach().to(device="cpu", dtype=torch.float32)
-        if mats.shape[0] <= 1:
-            return math.pi
-
-        eye = torch.eye(3, dtype=torch.float32).unsqueeze(0)
-        diffs = (mats - eye).abs().amax(dim=(-2, -1))
-        non_identity = mats[diffs > 1e-6]
-        if non_identity.numel() == 0:
-            return math.pi
-
-        eye_n = eye.expand(non_identity.shape[0], -1, -1)
-        angles, _ = self._rotation_geodesic_angles(
-            eye_n,
-            non_identity,
-            eps=float(self.symmetry_angle_eps),
-        )
-        min_sym_angle = float(angles.min().item())
-        margin = math.radians(max(0.0, float(self.pose_unambiguous_margin_deg)))
-        return max(0.0, 0.5 * min_sym_angle - margin)
-
-    def _sample_pose_relative_rotation(self, batch_size: int, *, device, dtype) -> torch.Tensor:
-        mode = self.pose_view_rotation_mode
-        if mode == "none":
-            return torch.eye(3, device=device, dtype=dtype).unsqueeze(0).expand(batch_size, -1, -1)
-
-        if mode == "full" and not self.pose_unambiguous_rotation and not self.pose_curriculum_enabled:
-            return self._random_rotation_matrices(batch_size, device=device, dtype=dtype)
-
-        max_rad = self._pose_rotation_cap_rad(mode=mode)
-        max_rad = self._apply_pose_curriculum(max_rad)
-
-        if mode == "full" and not self.pose_unambiguous_rotation and max_rad >= (math.pi - 1e-6):
-            return self._random_rotation_matrices(batch_size, device=device, dtype=dtype)
-
-        return self._sample_axis_angle_rotation(
-            batch_size,
-            max_rad=max_rad,
-            device=device,
-            dtype=dtype,
-        )
-
-    def _pose_rotation_cap_rad(self, *, mode: str) -> float:
-        if mode == "none":
-            return 0.0
-        if mode == "full":
-            max_rad = math.pi
-        else:
-            max_deg = float(self.pose_view_rotation_deg)
-            max_rad = math.radians(max(0.0, max_deg))
-        if self.pose_unambiguous_rotation:
-            max_rad = min(max_rad, float(self.pose_unambiguous_cap_rad))
-        return max(0.0, float(max_rad))
-
-    def _apply_pose_curriculum(self, max_rad: float) -> float:
-        if not self.pose_curriculum_enabled or max_rad <= 0.0:
-            return max_rad
-        if self.pose_curriculum_epochs <= 1:
-            return max_rad
-
-        start_rad = math.radians(max(0.0, float(self.pose_curriculum_start_deg)))
-        start_rad = min(start_rad, max_rad)
-        start_epoch = int(self.pose_start_epoch)
-        denom = max(1, int(self.pose_curriculum_epochs) - 1)
-        progress = (int(self.current_epoch) - start_epoch) / float(denom)
-        progress = max(0.0, min(1.0, progress))
-        return start_rad + (max_rad - start_rad) * progress
+        return cfg_get(obj, name, default)
 
     @staticmethod
     def _prepare_eq_latent(eq_z: torch.Tensor | None) -> torch.Tensor | None:
-        if eq_z is None:
-            return None
-        if eq_z.dim() == 3 and eq_z.shape[-1] == 3:
-            return eq_z
-        if eq_z.dim() == 4:
-            if eq_z.shape[-1] == 3:
-                return eq_z.mean(dim=-2)
-            if eq_z.shape[2] == 3:
-                return eq_z.mean(dim=-1)
-        return None
+        return prepare_eq_latent(eq_z)
 
     @staticmethod
     def _rotation_geodesic_angles(
         pred: torch.Tensor, target: torch.Tensor, eps: float
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        delta = pred.transpose(-1, -2) @ target
-        trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1)
-        cos_theta = (0.5 * (trace - 1.0))
-        cos_clamped = cos_theta.clamp(-1.0 + eps, 1.0 - eps)
-        angle = torch.arccos(cos_clamped)
-        clamped = cos_clamped != cos_theta
-        return angle, clamped
-
-    def _seeded_encoder_output(self, pc: torch.Tensor, seed: int):
-        cpu_state = torch.get_rng_state()
-        cuda_states = torch.cuda.get_rng_state_all() if pc.is_cuda else None
-        torch.manual_seed(seed)
-        if pc.is_cuda:
-            torch.cuda.manual_seed_all(seed)
-        try:
-            enc_out = self.encoder(self._prepare_encoder_input(pc))
-            return self._split_encoder_output(enc_out)
-        finally:
-            torch.set_rng_state(cpu_state)
-            if cuda_states is not None:
-                torch.cuda.set_rng_state_all(cuda_states)
+        return rotation_geodesic_angles(pred, target, eps)
 
     def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
         if getattr(self.encoder, "expects_channel_first", False):
@@ -448,175 +114,8 @@ class BarlowTwinsModule(pl.LightningModule):
             out = crop_to_num_points(out, self.model_points)
         return out
 
-    def _pose_should_run(self) -> bool:
-        has_pose_solver = bool(
-            (self.pose_head is not None and self.pose_head_loss_weight > 0)
-            or self.pose_procrustes_loss_weight > 0
-        )
-        return bool(
-            self.pose_enabled
-            and self.pose_weight > 0
-            and has_pose_solver
-            and int(self.current_epoch) >= self.pose_start_epoch
-        )
-
-    def _prepare_pose_equivariant(self, eq_z: torch.Tensor) -> torch.Tensor:
-        eq = eq_z
-        if self.pose_eq_center:
-            eq = eq - eq.mean(dim=1, keepdim=True)
-        if self.pose_eq_l2_normalize:
-            eq = F.normalize(eq, dim=-1, eps=1e-6)
-        return eq
-
-    @staticmethod
-    def _procrustes_rotation_from_cov(cov: torch.Tensor) -> torch.Tensor:
-        u, _, vh = torch.linalg.svd(cov, full_matrices=False)
-        rot = u @ vh
-        det = torch.det(rot)
-        neg = det < 0
-        if neg.any():
-            sfix = torch.eye(3, device=cov.device, dtype=cov.dtype).unsqueeze(0).expand(cov.shape[0], -1, -1).clone()
-            sfix[neg, -1, -1] = -1.0
-            rot = u @ sfix @ vh
-        return rot
-
-    def _symmetry_aware_pose_loss(
-        self,
-        rot_hat_f: torch.Tensor,
-        rot_targets_f: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        angles_all, _ = self._rotation_geodesic_angles(
-            rot_hat_f.unsqueeze(1), rot_targets_f, eps=float(self.symmetry_angle_eps)
-        )
-        angles_sq = angles_all.pow(2)
-        if self.symmetry_beta > 0:
-            beta = float(self.symmetry_beta)
-            loss_sym = -torch.logsumexp(-beta * angles_sq, dim=1) / beta
-        else:
-            loss_sym = angles_sq.min(dim=1).values
-        theta_sym = angles_all.min(dim=1).values
-        return loss_sym, theta_sym
-
-    def _compute_pose_loss(
-        self,
-        pc: torch.Tensor,
-        batch_idx: int,
-    ):
-        if not self._pose_should_run():
-            return None, {}
-        if pc.dim() != 3 or pc.shape[-1] != 3:
-            return None, {}
-
-        # Pose supervision uses two rotations of the same base point cloud.
-        xa_base = self._prepare_model_input(pc)
-        if self.pose_jitter_std > 0:
-            jitter = torch.randn_like(xa_base) * float(self.pose_jitter_std)
-            xa_base = xa_base + jitter
-
-        bsz = xa_base.shape[0]
-        device = xa_base.device
-        dtype = xa_base.dtype
-
-        if self.pose_view_rotation_mode == "none":
-            rot_anchor = torch.eye(3, device=device, dtype=dtype).unsqueeze(0).expand(bsz, -1, -1)
-        else:
-            rot_anchor = self._random_rotation_matrices(bsz, device=device, dtype=dtype)
-
-        rot_rel = self._sample_pose_relative_rotation(bsz, device=device, dtype=dtype)
-        rot_a = rot_anchor
-        rot_b = rot_rel @ rot_anchor
-        xa = apply_rotation(xa_base, rot_a)
-        xb = apply_rotation(xa_base, rot_b)
-        rot = rot_rel
-        device = xa.device
-        dtype = xa.dtype
-
-        seed = int(self.global_step) + int(batch_idx) * 100003
-        if self.pose_seeded_forward:
-            _, eq_a = self._seeded_encoder_output(xa, seed)
-            _, eq_b = self._seeded_encoder_output(xb, seed)
-        else:
-            eq_a = self._split_encoder_output(self.encoder(self._prepare_encoder_input(xa)))[1]
-            eq_b = self._split_encoder_output(self.encoder(self._prepare_encoder_input(xb)))[1]
-
-        eq_a = self._prepare_eq_latent(eq_a)
-        eq_b = self._prepare_eq_latent(eq_b)
-        if eq_a is None or eq_b is None:
-            return None, {}
-
-        eq_a = self._prepare_pose_equivariant(eq_a)
-        eq_b = self._prepare_pose_equivariant(eq_b)
-        cov = torch.einsum("bci,bcj->bij", eq_b, eq_a)
-        if self.pose_cov_normalize and eq_a.shape[1] > 0:
-            cov = cov / float(eq_a.shape[1])
-
-        sym_mats = self.symmetry_mats.to(device=device, dtype=dtype)
-        rot_targets = rot.unsqueeze(1) @ sym_mats.unsqueeze(0)
-
-        weighted_terms: list[torch.Tensor] = []
-        theta_head = None
-        theta_proc = None
-
-        with _autocast_disabled_context(cov):
-            rot_targets_f = rot_targets.to(dtype=torch.float32)
-
-            if self.pose_head is not None and self.pose_head_loss_weight > 0:
-                r6 = self.pose_head(cov)
-                rot_hat_head = sixd_to_so3(r6, eps=1e-6)
-                loss_head, theta_head = self._symmetry_aware_pose_loss(
-                    rot_hat_head.to(dtype=torch.float32),
-                    rot_targets_f,
-                )
-                weighted_terms.append(loss_head * float(self.pose_head_loss_weight))
-
-            if self.pose_procrustes_loss_weight > 0:
-                rot_hat_proc = self._procrustes_rotation_from_cov(cov.to(dtype=torch.float32))
-                loss_proc, theta_proc = self._symmetry_aware_pose_loss(
-                    rot_hat_proc,
-                    rot_targets_f,
-                )
-                weighted_terms.append(loss_proc * float(self.pose_procrustes_loss_weight))
-
-        if not weighted_terms:
-            return None, {}
-
-        total_weight = float(self.pose_head_loss_weight + self.pose_procrustes_loss_weight)
-        if total_weight <= 0:
-            return None, {}
-
-        loss_sym = torch.stack(weighted_terms, dim=0).sum(dim=0) / total_weight
-
-        pose_loss = loss_sym.mean()
-
-        if not torch.isfinite(pose_loss).item():
-            # pose_nonfinite: indicator that pose loss produced NaN/Inf on this step.
-            metrics = {"pose_nonfinite": xa.new_tensor(1.0)}
-            pose_loss = torch.nan_to_num(pose_loss, nan=0.0, posinf=0.0, neginf=0.0)
-            return pose_loss, metrics
-
-        rad_to_deg = 180.0 / math.pi
-        theta_default = theta_head if theta_head is not None else theta_proc
-        metrics = {}
-        if theta_default is not None:
-            theta_sym_deg = (theta_default * rad_to_deg).to(dtype=torch.float32)
-            metrics["pose_theta_sym_mean"] = theta_sym_deg.mean()
-        if theta_head is not None:
-            metrics["pose_theta_sym_head_mean"] = (theta_head * rad_to_deg).mean().to(dtype=torch.float32)
-        if theta_proc is not None:
-            metrics["pose_theta_sym_procrustes_mean"] = (theta_proc * rad_to_deg).mean().to(dtype=torch.float32)
-
-        target_cap_deg = math.degrees(self._apply_pose_curriculum(self._pose_rotation_cap_rad(mode=self.pose_view_rotation_mode)))
-        metrics = {
-            **metrics,
-            "pose_target_max_deg": xa.new_tensor(float(target_cap_deg), dtype=torch.float32),
-        }
-
-        with torch.no_grad():
-            rot_f = rot.to(dtype=torch.float32)
-            eye = torch.eye(3, device=rot_f.device, dtype=rot_f.dtype).unsqueeze(0).expand_as(rot_f)
-            target_ang, _ = self._rotation_geodesic_angles(eye, rot_f, eps=float(self.symmetry_angle_eps))
-            metrics["pose_target_angle_mean_deg"] = (target_ang * (180.0 / math.pi)).mean()
-        return pose_loss, metrics
+    def _compute_pose_loss(self, pc: torch.Tensor, batch_idx: int, stage: str):
+        return compute_pose_loss(self, pc, batch_idx, stage)
 
     @staticmethod
     def _unpack_batch(batch):
@@ -652,8 +151,10 @@ class BarlowTwinsModule(pl.LightningModule):
         z = self._invariant_latent(inv_z, eq_z)
         if z is not None and stage in self._supervised_cache:
             self._cache_supervised_batch(stage, z, meta)
-        # Barlow Twins loss (self-supervised)
+
         losses = {}
+
+        # Barlow Twins loss (self-supervised)
         barlow_loss, barlow_metrics = self.barlow.compute_loss(
             pc=pc_raw,
             encoder=self.encoder,
@@ -663,7 +164,6 @@ class BarlowTwinsModule(pl.LightningModule):
         )
         if barlow_loss is not None:
             losses["barlow"] = barlow_loss
-        # Barlow metrics come from BarlowTwinsLoss (invariance/redundancy diagnostics).
         for name, value in barlow_metrics.items():
             self._log_metric(stage, name, value)
 
@@ -678,15 +178,11 @@ class BarlowTwinsModule(pl.LightningModule):
             )
             if vicreg_loss is not None:
                 losses["vicreg"] = vicreg_loss
-            # VICReg metrics come from VICRegLoss (variance/invariance/covariance diagnostics).
             for name, value in vicreg_metrics.items():
                 self._log_metric(stage, name, value)
 
-        # Pose loss (symmetry-aware)
-        pose_loss, pose_metrics = self._compute_pose_loss(
-            pc,
-            batch_idx,
-        )
+        # Pose loss (relative-rotation NLL + optional equivariance consistency)
+        pose_loss, pose_metrics = self._compute_pose_loss(pc, batch_idx, stage)
         if pose_loss is not None:
             losses["pose"] = pose_loss
             for name, value in pose_metrics.items():
@@ -751,6 +247,78 @@ class BarlowTwinsModule(pl.LightningModule):
             log_kwargs["sync_dist"] = True
         self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
 
+    def _get_wandb_experiment(self):
+        logger_obj = getattr(self, "logger", None)
+        if logger_obj is None:
+            return None
+
+        if hasattr(logger_obj, "experiment"):
+            exp = logger_obj.experiment
+            if exp is not None and hasattr(exp, "log"):
+                return exp
+
+        loggers = getattr(logger_obj, "loggers", None)
+        if loggers is not None:
+            for lg in loggers:
+                exp = getattr(lg, "experiment", None)
+                if exp is not None and hasattr(exp, "log"):
+                    return exp
+        return None
+
+    def _log_pose_ambiguity_histogram(
+        self,
+        stage: str,
+        ambiguity: torch.Tensor | None,
+        *,
+        identifiability: torch.Tensor | None,
+        logvar: torch.Tensor | None,
+        batch_idx: int,
+    ) -> None:
+        if ambiguity is None:
+            return
+        if int(getattr(self, "global_rank", 0)) != 0:
+            return
+
+        every = int(self.pose_histogram_every_n_steps)
+        if stage == "train":
+            if every <= 0 or (int(self.global_step) % every) != 0:
+                return
+        else:
+            if int(batch_idx) != 0:
+                return
+
+        exp = self._get_wandb_experiment()
+        if exp is None:
+            return
+
+        try:
+            import wandb
+        except Exception:
+            return
+
+        with torch.no_grad():
+            amb_np = ambiguity.detach().to(dtype=torch.float32).cpu().numpy()
+            ident_np = (
+                identifiability.detach().to(dtype=torch.float32).cpu().numpy()
+                if identifiability is not None
+                else None
+            )
+            logvar_np = (
+                logvar.detach().to(dtype=torch.float32).reshape(-1).cpu().numpy()
+                if logvar is not None
+                else None
+            )
+
+        payload = {
+            f"{stage}/pose_orientation_ambiguity_hist": wandb.Histogram(amb_np),
+        }
+        if ident_np is not None:
+            payload[f"{stage}/pose_identifiability_hist"] = wandb.Histogram(ident_np)
+        if logvar_np is not None:
+            payload[f"{stage}/pose_logvar_hist"] = wandb.Histogram(logvar_np)
+
+        exp.log(payload, step=int(self.global_step))
+
     def _handle_epoch_boundary(self, stage: str, is_start: bool):
         if is_start:
             self._reset_supervised_cache(stage)
@@ -782,95 +350,16 @@ class BarlowTwinsModule(pl.LightningModule):
         super().on_test_epoch_end()
 
     def _reset_supervised_cache(self, stage: str) -> None:
-        cache = self._supervised_cache.get(stage)
-        if cache is None:
-            return
-        for key in cache:
-            cache[key].clear()
+        reset_supervised_cache(self, stage)
 
     def _cache_limit_for_stage(self, stage: str):
-        if stage == "test":
-            return self.max_test_samples
-        if stage in {"train", "val"}:
-            return self.max_supervised_samples
-        return None
+        return cache_limit_for_stage(self, stage)
 
     def _cache_supervised_batch(self, stage: str, z: torch.Tensor, meta: dict) -> None:
-        cache = self._supervised_cache.get(stage)
-        if cache is None:
-            return
-
-        limit = self._cache_limit_for_stage(stage)
-        remaining = None
-        if limit is not None and limit > 0:
-            cached = cached_sample_count(cache)
-            remaining = int(limit - cached)
-            if remaining <= 0:
-                return
-
-        if z is None:
-            return
-
-        batch_size = int(z.shape[0])
-        effective_batch = batch_size if remaining is None else min(batch_size, remaining)
-        if effective_batch <= 0:
-            return
-
-        class_id = meta.get("class_id")
-        if class_id is None:
-            return
-        if not torch.is_tensor(class_id):
-            class_id = torch.as_tensor(class_id)
-        class_id = class_id.detach().view(-1)
-        effective_batch = min(effective_batch, class_id.shape[0])
-        if effective_batch <= 0:
-            return
-
-        cache["latents"].append(z[:effective_batch].detach().to(torch.float32).cpu())
-        cache["class_id"].append(class_id[:effective_batch].cpu())
+        cache_supervised_batch(self, stage, z, meta)
 
     def _log_supervised_metrics(self, stage: str) -> None:
-        cache = self._supervised_cache.get(stage)
-        if cache is None:
-            return
+        log_supervised_metrics(self, stage)
 
-        if not cache["latents"] or not cache["class_id"]:
-            for key in cache:
-                cache[key].clear()
-            return
 
-        latents = torch.cat(cache["latents"], dim=0).numpy()
-        labels = torch.cat(cache["class_id"], dim=0).numpy()
-
-        metrics = compute_cluster_metrics(latents, labels, stage)
-        if metrics:
-            # class/* metrics: clustering/classification quality against class_id labels.
-            for name, value in metrics.items():
-                self._log_metric(
-                    stage,
-                    f"class/{name.lower()}",
-                    value,
-                    prog_bar=False,
-                    on_step=False,
-                    on_epoch=True,
-                    sync_dist=True,
-                )
-
-        try:
-            emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=(stage == "test"))
-            # embedding/* metrics: geometry/quality scores of latent embedding with class labels.
-            for name, value in emb_metrics.items():
-                self._log_metric(
-                    stage,
-                    f"embedding/{name}",
-                    value,
-                    prog_bar=False,
-                    on_step=False,
-                    on_epoch=True,
-                    sync_dist=True,
-                )
-        except Exception as e:
-            print(f"Error computing embedding quality metrics: {e}")
-
-        for key in cache:
-            cache[key].clear()
+__all__ = ["BarlowTwinsModule", "PoseRotationHead"]
