@@ -269,9 +269,6 @@ class BarlowTwinsModule(pl.LightningModule):
         self,
         stage: str,
         ambiguity: torch.Tensor | None,
-        *,
-        identifiability: torch.Tensor | None,
-        logvar: torch.Tensor | None,
         batch_idx: int,
     ) -> None:
         if ambiguity is None:
@@ -298,24 +295,10 @@ class BarlowTwinsModule(pl.LightningModule):
 
         with torch.no_grad():
             amb_np = ambiguity.detach().to(dtype=torch.float32).cpu().numpy()
-            ident_np = (
-                identifiability.detach().to(dtype=torch.float32).cpu().numpy()
-                if identifiability is not None
-                else None
-            )
-            logvar_np = (
-                logvar.detach().to(dtype=torch.float32).reshape(-1).cpu().numpy()
-                if logvar is not None
-                else None
-            )
 
         payload = {
             f"{stage}/pose_orientation_ambiguity_hist": wandb.Histogram(amb_np),
         }
-        if ident_np is not None:
-            payload[f"{stage}/pose_identifiability_hist"] = wandb.Histogram(ident_np)
-        if logvar_np is not None:
-            payload[f"{stage}/pose_logvar_hist"] = wandb.Histogram(logvar_np)
 
         exp.log(payload, step=int(self.global_step))
 

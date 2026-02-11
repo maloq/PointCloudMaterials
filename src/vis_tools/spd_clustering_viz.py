@@ -410,11 +410,12 @@ def _set_cube_axes(ax: Any, box_size: float) -> None:
 
 def _add_axes_border(ax: Any, linewidth: float = 1.0, color: str = "black") -> None:
     """Add border to 3D axes."""
-    try:
-        ax.patch.set_edgecolor(color)
-        ax.patch.set_linewidth(linewidth)
-    except Exception:
-        pass
+    patch = getattr(ax, "patch", None)
+    if patch is not None:
+        if hasattr(patch, "set_edgecolor"):
+            patch.set_edgecolor(color)
+        if hasattr(patch, "set_linewidth"):
+            patch.set_linewidth(linewidth)
     for spine in getattr(ax, "spines", {}).values():
         spine.set_linewidth(linewidth)
         spine.set_color(color)

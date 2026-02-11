@@ -350,17 +350,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         class_names = getattr(dataset, "class_names", None)
         if class_names is None:
             return {}
-        try:
-            mapping = dict(class_names)
-        except Exception:
-            return {}
-        out: dict[int, str] = {}
-        for key, value in mapping.items():
-            try:
-                out[int(key)] = str(value)
-            except Exception:
-                continue
-        return out
+        return {int(k): str(v) for k, v in dict(class_names).items()}
 
     def _log_train_anisotropy_by_class(self, dataset, subset_indices: list[int] | None) -> None:
         class_ids_raw = getattr(dataset, "_class_ids", None)

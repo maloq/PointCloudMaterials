@@ -32,37 +32,26 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from sklearn.neighbors import NearestNeighbors
 
-# optional parallel runtime
-try:
-    from joblib import Parallel, delayed
-    _HAS_JOBLIB = True
-except Exception:
-    _HAS_JOBLIB = False
 
-# optional UMAP
-try:
-    import umap  # type: ignore
-    _HAS_UMAP = True
-except Exception:
-    _HAS_UMAP = False
+from joblib import Parallel, delayed
+import umap  
 
+
+_WARNED_KEYS: set[str] = set()
+
+
+def _warn_once(key: str, message: str) -> None:
+    if key in _WARNED_KEYS:
+        return
+    _WARNED_KEYS.add(key)
+    warnings.warn(message, RuntimeWarning, stacklevel=2)
 
 # ------------------------ scoring helpers ----------------------------------
 
-def _try_dbcv(X: np.ndarray, labels: np.ndarray, metric: str) -> float | float("nan"):
-    try:
-        from hdbscan.validity import validity_index  # type: ignore
-    except Exception:
-        try:
-            validity_index = hdbscan.validity_index  # type: ignore[attr-defined]
-        except Exception:
-            return float("nan")
-    if len(set(labels) - {-1}) == 0:
-        return float("nan")
-    try:
-        return float(validity_index(X, labels, metric=metric))
-    except Exception:
-        return float("nan")
+def _try_dbcv(X: np.ndarray, labels: np.ndarray, metric: str) -> float:
+    """Return DBCV score for *labels*, or NaN if no real clusters exist."""
+    return float("nan") if len(set(labels) - {-1}) == 0 else float(hdbscan.validity_index(X, labels, metric=metric))
+
 
 
 def _scores_for_labels(
@@ -95,16 +84,25 @@ def _scores_for_labels(
                     )
                 else:
                     sil = float(silhouette_score(Xc, labelsc, metric=metric))
-            except Exception:
-                pass
+            except Exception as exc:
+                _warn_once(
+                    "hdbscan_silhouette_score_failed",
+                    f"silhouette_score failed during scoring; using NaN. Error: {exc}",
+                )
             try:
                 ch = float(calinski_harabasz_score(Xc, labelsc))
-            except Exception:
-                pass
+            except Exception as exc:
+                _warn_once(
+                    "hdbscan_calinski_harabasz_score_failed",
+                    f"calinski_harabasz_score failed during scoring; using NaN. Error: {exc}",
+                )
             try:
                 db = float(davies_bouldin_score(Xc, labelsc))
-            except Exception:
-                pass
+            except Exception as exc:
+                _warn_once(
+                    "hdbscan_davies_bouldin_score_failed",
+                    f"davies_bouldin_score failed during scoring; using NaN. Error: {exc}",
+                )
 
     dbcv = _try_dbcv(X, labels, metric) if compute_dbcv else float("nan")
 
@@ -282,8 +280,17 @@ def _grid_search_hdbscan_on_split(
                 penalized = 0.0 if math.isnan(base) else base * (1.0 - noise_penalty * s["frac_noise"])
                 penalized = float(max(0.0, min(1.0, penalized)))
             t["score"] = penalized
-        except Exception:
-            pass
+        except Exception as exc:
+            t["score"] = float("nan")
+            t["error"] = str(exc)
+            _warn_once(
+                "hdbscan_refine_trial_failed",
+                "Top-K HDBSCAN refinement failed for at least one trial; "
+                f"first failure params: min_cluster_size={int(t['min_cluster_size'])}, "
+                f"min_samples={t['min_samples']}, "
+                f"cluster_selection_epsilon={float(t['cluster_selection_epsilon'])}. "
+                f"Error: {exc}",
+            )
 
     # Select best
     best = None

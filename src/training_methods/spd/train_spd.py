@@ -47,8 +47,13 @@ def _resolve_resume_checkpoint(cfg: DictConfig) -> str | None:
         base_dir = os.getcwd()
         try:
             base_dir = HydraConfig.get().runtime.cwd
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning(
+                "Hydra runtime cwd is unavailable; resolving resume checkpoint "
+                "relative to current directory '%s'. Error: %s",
+                base_dir,
+                exc,
+            )
         resume_ckpt = os.path.join(base_dir, resume_ckpt)
     resume_ckpt = os.path.abspath(resume_ckpt)
 
@@ -96,8 +101,14 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     if run_dir is None:
         try:
             run_dir = HydraConfig.get().runtime.output_dir
-        except Exception:
+        except Exception as exc:
             run_dir = get_rundir_name()
+            logger.warning(
+                "Hydra runtime output_dir is unavailable; falling back to "
+                "timestamped run directory '%s'. Error: %s",
+                run_dir,
+                exc,
+            )
 
     wandb_logger = init_wandb(cfg, run_dir)
 

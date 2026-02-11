@@ -876,6 +876,155 @@ def _generate_structured_cloud(
     return positions.astype(np.float32)
 
 
+def _build_embedded_crystal_recipe(phase_type: str, avg_nn_dist: float) -> Dict[str, np.ndarray]:
+    """Build a minimal crystal recipe used to embed small nuclei in amorphous phases."""
+    if phase_type == "crystal_bcc":
+        lc = (2.0 / np.sqrt(3.0)) * avg_nn_dist
+        motif = np.array([[0, 0, 0], [0.5, 0.5, 0.5]], dtype=np.float32)
+        lattice_vectors = np.eye(3, dtype=np.float32) * lc
+    elif phase_type == "crystal_hcp":
+        a = avg_nn_dist
+        c = avg_nn_dist * np.sqrt(8.0 / 3.0)
+        lattice_vectors = np.array([
+            [a, 0, 0],
+            [a * 0.5, a * np.sqrt(3.0) / 2.0, 0],
+            [0, 0, c],
+        ], dtype=np.float32)
+        motif = np.array([[0, 0, 0], [1.0/3.0, 2.0/3.0, 0.5]], dtype=np.float32)
+    else:
+        # Default to FCC for unknown values.
+        lc = avg_nn_dist * np.sqrt(2.0)
+        motif = np.array([[0, 0, 0], [0, 0.5, 0.5], [0.5, 0, 0.5], [0.5, 0.5, 0]], dtype=np.float32)
+        lattice_vectors = np.eye(3, dtype=np.float32) * lc
+
+    return {
+        "phase_type": phase_type,
+        "lattice_vectors": lattice_vectors,
+        "motif": motif,
+    }
+
+
+def _generate_crystal_nucleus(
+    crystal_recipe: Dict[str, np.ndarray],
+    center: np.ndarray,
+    rotation: np.ndarray,
+    radius: float,
+    L: float,
+) -> np.ndarray:
+    """Generate a spherical crystal nucleus around a center."""
+    if radius <= 0:
+        return np.zeros((0, 3), dtype=np.float32)
+
+    cell_vectors = np.array(crystal_recipe["lattice_vectors"], dtype=np.float32)
+    motif_frac = np.array(crystal_recipe["motif"], dtype=np.float32)
+    motif_offsets = motif_frac @ cell_vectors
+
+    axis_steps = np.linalg.norm(cell_vectors, axis=1)
+    step = float(np.min(axis_steps[axis_steps > 1e-8])) if np.any(axis_steps > 1e-8) else 1.0
+    pad = float(np.max(np.linalg.norm(motif_offsets, axis=1))) if len(motif_offsets) > 0 else 0.0
+    n_shell = int(np.ceil((radius + pad) / max(step, 1e-6))) + 1
+    rng = np.arange(-n_shell, n_shell + 1, dtype=np.int32)
+
+    I, J, K = np.meshgrid(rng, rng, rng, indexing='ij')
+    I, J, K = I.ravel(), J.ravel(), K.ravel()
+
+    base_points = (
+        I[:, None] * cell_vectors[0] +
+        J[:, None] * cell_vectors[1] +
+        K[:, None] * cell_vectors[2]
+    )
+    candidate_points = base_points[:, None, :] + motif_offsets[None, :, :]
+    candidate_points = candidate_points.reshape(-1, 3)
+
+    world_pos = (rotation @ candidate_points.T).T + center
+
+    dist_sq = np.sum((world_pos - center) ** 2, axis=1)
+    in_sphere = dist_sq <= (radius * radius)
+    in_box = (
+        (world_pos[:, 0] >= 0.0) & (world_pos[:, 0] <= L) &
+        (world_pos[:, 1] >= 0.0) & (world_pos[:, 1] <= L) &
+        (world_pos[:, 2] >= 0.0) & (world_pos[:, 2] <= L)
+    )
+
+    mask = in_sphere & in_box
+    if not np.any(mask):
+        return np.zeros((0, 3), dtype=np.float32)
+    return world_pos[mask].astype(np.float32)
+
+
+def _inject_crystal_nuclei(
+    amorphous_positions: np.ndarray,
+    phase_recipe: Dict[str, Any],
+    rng: np.random.Generator,
+    avg_nn_dist: float,
+    rho_target: float,
+    L: float,
+) -> np.ndarray:
+    """Embed sparse crystal nuclei into an amorphous point cloud."""
+    if len(amorphous_positions) == 0:
+        return amorphous_positions
+
+    embed_fraction = float(phase_recipe.get("embedded_probability", 0.0))
+    embed_radius = float(phase_recipe.get("embedded_radius", 0.0))
+    crystal_type = str(phase_recipe.get("embedded_crystal", "crystal_fcc"))
+
+    if embed_fraction <= 0.0 or embed_radius <= 0.0:
+        return amorphous_positions
+
+    target_nucleus_atoms = max(1, int(round(embed_fraction * len(amorphous_positions))))
+    est_atoms_per_nucleus = max(1, int(round((4.0 / 3.0) * np.pi * (embed_radius ** 3) * rho_target)))
+    n_nuclei = max(1, min(4, int(np.ceil(target_nucleus_atoms / est_atoms_per_nucleus))))
+
+    centers: List[np.ndarray] = []
+    min_center_sep = 1.8 * embed_radius
+    for _ in range(n_nuclei):
+        chosen = None
+        for _attempt in range(200):
+            candidate = amorphous_positions[int(rng.integers(0, len(amorphous_positions)))]
+            if not centers:
+                chosen = candidate
+                break
+            dists = np.linalg.norm(np.array(centers) - candidate, axis=1)
+            if np.all(dists >= min_center_sep):
+                chosen = candidate
+                break
+        if chosen is None:
+            chosen = amorphous_positions[int(rng.integers(0, len(amorphous_positions)))]
+        centers.append(chosen.astype(np.float32))
+
+    crystal_recipe = _build_embedded_crystal_recipe(crystal_type, avg_nn_dist)
+    keep_mask = np.ones(len(amorphous_positions), dtype=bool)
+    nucleus_chunks: List[np.ndarray] = []
+
+    for center in centers:
+        carve_radius = 1.05 * embed_radius
+        dists_sq = np.sum((amorphous_positions - center) ** 2, axis=1)
+        keep_mask &= dists_sq > (carve_radius * carve_radius)
+
+        nucleus = _generate_crystal_nucleus(
+            crystal_recipe=crystal_recipe,
+            center=center,
+            rotation=random_rotation_matrix(rng),
+            radius=0.95 * embed_radius,
+            L=L,
+        )
+        if len(nucleus) > 0:
+            nucleus_chunks.append(nucleus)
+
+    if not nucleus_chunks:
+        return amorphous_positions
+
+    nucleus_positions = np.vstack(nucleus_chunks)
+    if len(nucleus_positions) > target_nucleus_atoms:
+        select_idx = rng.choice(len(nucleus_positions), size=target_nucleus_atoms, replace=False)
+        nucleus_positions = nucleus_positions[select_idx]
+
+    remaining_positions = amorphous_positions[keep_mask]
+    if len(remaining_positions) == 0:
+        return nucleus_positions.astype(np.float32)
+    return np.vstack([remaining_positions, nucleus_positions]).astype(np.float32)
+
+
 def _populate_grain_worker(
     grain_data: Dict[str, Any], global_cfg_dict: Dict[str, Any],
     phase_recipe: Dict[str, Any], seed: int,
@@ -913,6 +1062,14 @@ def _populate_grain_worker(
         min_pair_dist = phase_recipe.get('min_pair_dist')  # From config YAML
         generator = LiquidMetalGenerator(L, rho_target, avg_nn_dist, config, rng, min_pair_dist=min_pair_dist)
         positions = generator.generate()
+        positions = _inject_crystal_nuclei(
+            amorphous_positions=positions,
+            phase_recipe=phase_recipe,
+            rng=rng,
+            avg_nn_dist=avg_nn_dist,
+            rho_target=rho_target,
+            L=L,
+        )
     else:
         positions = np.zeros((0, 3), dtype=np.float32)
     
@@ -1213,8 +1370,41 @@ class SyntheticAtomisticDatasetGenerator:
             return assignments
         probs = self.grain_assignment_cfg.probabilities or {}
         phase_ids = list(probs.keys())
-        prob_values = np.array(list(probs.values()))
-        return list(self.rng.choice(phase_ids, size=n_grains, p=prob_values))
+        prob_values = np.array(list(probs.values()), dtype=np.float64)
+
+        if n_grains <= 0 or not phase_ids:
+            return []
+
+        positive_idx = np.where(prob_values > 0.0)[0]
+        if len(positive_idx) == 0:
+            raise ValueError("Probabilistic grain assignment has no positive probabilities")
+
+        # Use a dedicated RNG stream so phase assignment is stable and does not
+        # depend on prior random draws (e.g., reference cloud generation).
+        phase_rng = np.random.default_rng(int(self.global_cfg.random_seed) + 7919)
+        counts = np.zeros(len(phase_ids), dtype=np.int32)
+
+        if n_grains >= len(positive_idx):
+            # Ensure every non-zero-probability phase is represented at least once.
+            counts[positive_idx] = 1
+            remaining = n_grains - len(positive_idx)
+            if remaining > 0:
+                pos_probs = prob_values[positive_idx]
+                pos_probs = pos_probs / np.sum(pos_probs)
+                counts[positive_idx] += phase_rng.multinomial(remaining, pos_probs)
+        else:
+            # Not enough grains to cover every phase: distribute by probabilities.
+            pos_probs = prob_values[positive_idx]
+            pos_probs = pos_probs / np.sum(pos_probs)
+            counts[positive_idx] = phase_rng.multinomial(n_grains, pos_probs)
+
+        assignments: List[str] = []
+        for phase_name, count in zip(phase_ids, counts.tolist()):
+            if count > 0:
+                assignments.extend([phase_name] * int(count))
+
+        phase_rng.shuffle(assignments)
+        return assignments
     
     def populate_atoms(self) -> None:
         self._progress("Populating atoms for all grains")
@@ -1959,7 +2149,7 @@ def analyze_structure(positions: np.ndarray, box_size: float, avg_nn_dist: float
 def main() -> None:
     import argparse
     parser = argparse.ArgumentParser(description="Generate synthetic atomistic datasets")
-    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_polycrystalline.yaml")
+    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_polycrystalline_balanced_geometries.yaml")
     parser.add_argument("--quiet", "-q", action="store_true")
     parser.add_argument("--skip-viz", action="store_true")
     parser.add_argument("--analyze", action="store_true")

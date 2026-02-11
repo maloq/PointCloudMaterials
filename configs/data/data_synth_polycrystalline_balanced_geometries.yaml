@@ -1,0 +1,172 @@
+# =============================================================================
+# POLYCRYSTALLINE METAL (BALANCED GEOMETRIES)
+# =============================================================================
+# Changes vs data_synth_polycrystalline.yaml:
+# - One phase/class per crystal geometry: BCC, FCC, HCP
+# - Added purely amorphous phase
+# - Unified crystal defect rate across grains/phases (slightly milder than old
+#   bcc_iron_defected settings)
+# - Balanced phase probabilities
+# - Reduced total grain count to 16
+# =============================================================================
+kind: synthetic
+data_path: output/synthetic_data/polycrystalline_balanced_geometries
+num_points: 128
+model_points: 80
+radius: 7.4
+sample_type: regular
+overlap_fraction: 0.1
+n_samples: 0
+train_ratio: 0.8
+drop_edge_samples: true
+pre_normalize: true
+normalize: true
+
+global:
+  L: 200.0
+  rho_target: 0.0849
+  avg_nn_dist: 2.49
+  grain_count: 16
+  intermediate_layer_thickness_factor: 2.0
+  random_seed: 12345
+  output_dir: output/synthetic_data/polycrystalline_balanced_geometries
+
+  parallel:
+    enabled: true
+    n_workers: null
+    chunk_size: 2
+
+  cell_size_factor: 1.5
+
+# =============================================================================
+# PHASE DEFINITIONS
+# =============================================================================
+phases:
+  # ---------------------------------------------------------------------------
+  # BCC IRON (single BCC class)
+  # ---------------------------------------------------------------------------
+  bcc_iron:
+    phase_type: crystal_bcc
+
+    structural_params:
+      density_target: 0.0849
+
+    perturbations:
+      temperature_K: 325.0
+      atomic_mass_amu: 55.845
+      p_dropout: 0.008
+      dropout_relax_radius: 6.5
+      dropout_relax_max_fraction: 0.10
+      use_elastic_relaxation: true
+      rot_bubble_prob: 0.40
+      rot_bubble_radius: 7.0
+      rot_bubble_angle_deg: 12.0
+      density_bubbles:
+        - expected_count: 1
+          radius: 4.5
+          alpha: -0.30
+        - expected_count: 1
+          radius: 3.5
+          alpha: 0.20
+
+  # ---------------------------------------------------------------------------
+  # FCC IRON (single FCC class)
+  # ---------------------------------------------------------------------------
+  fcc_iron:
+    phase_type: crystal_fcc
+
+    structural_params:
+      density_target: 0.0849
+
+    perturbations:
+      temperature_K: 325.0
+      atomic_mass_amu: 55.845
+      p_dropout: 0.008
+      dropout_relax_radius: 6.5
+      dropout_relax_max_fraction: 0.10
+      use_elastic_relaxation: true
+      rot_bubble_prob: 0.40
+      rot_bubble_radius: 7.0
+      rot_bubble_angle_deg: 12.0
+      density_bubbles:
+        - expected_count: 1
+          radius: 4.5
+          alpha: -0.30
+        - expected_count: 1
+          radius: 3.5
+          alpha: 0.20
+
+  # ---------------------------------------------------------------------------
+  # HCP IRON (additional geometry class)
+  # ---------------------------------------------------------------------------
+  hcp_iron:
+    phase_type: crystal_hcp
+
+    structural_params:
+      density_target: 0.0849
+
+    perturbations:
+      temperature_K: 325.0
+      atomic_mass_amu: 55.845
+      p_dropout: 0.008
+      dropout_relax_radius: 6.5
+      dropout_relax_max_fraction: 0.10
+      use_elastic_relaxation: true
+      rot_bubble_prob: 0.40
+      rot_bubble_radius: 7.0
+      rot_bubble_angle_deg: 12.0
+      density_bubbles:
+        - expected_count: 1
+          radius: 4.5
+          alpha: -0.30
+        - expected_count: 1
+          radius: 3.5
+          alpha: 0.20
+
+  # ---------------------------------------------------------------------------
+  # AMORPHOUS PHASE WITH SPARSE CRYSTAL NUCLEI
+  # ---------------------------------------------------------------------------
+  amorphous_pure:
+    phase_type: amorphous_mixed
+
+    structural_params:
+      min_pair_dist: 2.1
+      density_target: 0.078
+      embedded_crystal: crystal_fcc
+      embedded_probability: 0.05
+      embedded_radius: 4.0
+
+    liquid_structure:
+      method: rdf_constrained
+      target_coordination: 11.0
+      rdf_iterations: 600
+      rdf_tolerance: 0.06
+
+    perturbations:
+      sigma_thermal: 0.28
+      temperature_K: 0.0
+      atomic_mass_amu: 55.845
+      p_dropout: 0.008
+      dropout_relax_radius: 3.5
+      dropout_relax_max_fraction: 0.06
+      use_elastic_relaxation: false
+      rot_bubble_prob: 0.15
+      rot_bubble_radius: 5.0
+      rot_bubble_angle_deg: 8.0
+      density_bubbles:
+        - expected_count: 1
+          radius: 3.0
+          alpha: -0.15
+        - expected_count: 1
+          radius: 2.2
+          alpha: 0.10
+
+# =============================================================================
+# GRAIN ASSIGNMENT
+# =============================================================================
+grain_assignment:
+  probabilities:
+    bcc_iron: 0.25
+    fcc_iron: 0.25
+    hcp_iron: 0.25
+    amorphous_pure: 0.25

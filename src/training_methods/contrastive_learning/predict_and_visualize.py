@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 import os
 import sys
 import time
@@ -11,10 +12,10 @@ from hydra import compose, initialize
 from omegaconf import DictConfig, ListConfig
 
 sys.path.append(os.getcwd())
+logger = logging.getLogger(__name__)
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
 from src.training_methods.contrastive_learning.analysis_utils import (
-    _default_cluster_count,
     _sample_indices,
     build_real_coords_dataloader,
     cap_cluster_labels,
@@ -49,9 +50,24 @@ def _as_list_of_str(value: Any) -> list[str] | None:
         value = list(value)
     if isinstance(value, str):
         return [value]
-    if isinstance(value, list):
-        return [str(v) for v in value]
+    if isinstance(value, (list, tuple)) and all(isinstance(item, str) for item in value):
+        return list(value)
     return None
+
+
+def _as_list_of_int(value: Any, *, field_name: str = "value") -> list[int] | None:
+    if value is None:
+        return None
+    if isinstance(value, ListConfig):
+        value = list(value)
+    err = (
+        f"Invalid {field_name}: {value!r}. Expected format: [3, 4, 5] "
+        "(a non-empty list of integers)."
+    )
+    if not isinstance(value, list) or not value:
+        raise ValueError(err)
+        
+    return [int(v) for v in value]
 
 
 def _positive_int_or_none(value: Any) -> int | None:
@@ -61,28 +77,79 @@ def _positive_int_or_none(value: Any) -> int | None:
     return value if value > 0 else None
 
 
+def _build_int_to_str_map(
+    value: Any,
+    *,
+    pair_order: str,
+) -> Dict[int, str]:
+    if isinstance(value, ListConfig):
+        value = list(value)
+    if isinstance(value, dict):
+        pairs = value.items()
+    elif isinstance(value, (list, tuple)):
+        pairs = value
+    else:
+        return {}
+
+    if pair_order == "id_name":
+        return {int(class_id): str(class_name) for class_id, class_name in pairs}
+    if pair_order == "name_id":
+        return {int(class_id): str(class_name) for class_name, class_id in pairs}
+    raise ValueError(f"Invalid pair_order: {pair_order!r}")
+
+
 def _unwrap_dataset(dataset: Any) -> Any:
     while hasattr(dataset, "dataset"):
         dataset = dataset.dataset
     return dataset
 
 
-def _extract_class_names(dataset: Any) -> list[str] | None:
+def _extract_class_names(dataset: Any) -> Dict[int, str] | None:
     if dataset is None:
         return None
     dataset = _unwrap_dataset(dataset)
+
+    mapping = _build_int_to_str_map(
+        getattr(dataset, "idx_to_class", None),
+        pair_order="id_name",
+    )
+    if mapping:
+        return mapping
+
+    mapping = _build_int_to_str_map(
+        getattr(dataset, "class_to_idx", None),
+        pair_order="name_id",
+    )
+    if mapping:
+        return mapping
+
     names = getattr(dataset, "class_names", None)
-    return list(names) if names is not None else None
+    if names is None:
+        return None
+    if isinstance(names, ListConfig):
+        names = list(names)
 
+    if isinstance(names, dict):
+        mapping = _build_int_to_str_map(
+            names,
+            pair_order="id_name",
+        )
+        return mapping or None
 
-def _extra_k_values(best_k: int, num_samples: int) -> list[int]:
-    candidates = [int(best_k) + 1, int(best_k) + 2]
-    out: list[int] = []
-    for k_val in candidates:
-        k_val = max(2, min(k_val, num_samples))
-        if k_val != int(best_k) and k_val not in out:
-            out.append(k_val)
-    return out
+    if isinstance(names, (list, tuple)):
+        if all(isinstance(item, (list, tuple)) and len(item) == 2 for item in names):
+            mapping = _build_int_to_str_map(
+                names,
+                pair_order="id_name",
+            )
+            return mapping or None
+
+        # Per-sample class-name lists (with duplicates) are ambiguous; skip them.
+        if len({str(v) for v in names}) == len(names):
+            return {idx: str(value) for idx, value in enumerate(names)}
+        return None
+
+    return None
 
 
 def _fmt_metric(value: Any, digits: int = 4) -> str:
@@ -195,14 +262,15 @@ def run_post_training_analysis(
     cluster_pca_max_components = int(
         getattr(cfg, "analysis_cluster_pca_max_components", 32)
     )
-    cluster_silhouette_max_samples = int(
-        getattr(cfg, "analysis_cluster_silhouette_max_samples", 5000)
+    cluster_k_values_cfg = _as_list_of_int(
+        getattr(cfg, "analysis_cluster_k_values", None),
+        field_name="analysis_cluster_k_values",
     )
-    cluster_silhouette_tolerance = float(
-        getattr(cfg, "analysis_cluster_silhouette_tolerance", 0.03)
-    )
-    cluster_k_min = int(getattr(cfg, "analysis_cluster_k_min", 2))
-    cluster_k_max = int(getattr(cfg, "analysis_cluster_k_max", 12))
+    cluster_k_values = cluster_k_values_cfg or [3, 4, 5, 6]
+    cluster_k_values = [int(k) for k in cluster_k_values if int(k) >= 2]
+    cluster_k_values = list(dict.fromkeys(cluster_k_values))
+    if not cluster_k_values:
+        cluster_k_values = [3, 4, 5, 6]
     md_use_all_points = bool(getattr(cfg, "analysis_md_use_all_points", True))
     hdbscan_enabled = bool(getattr(cfg, "analysis_hdbscan_enabled", True))
     hdbscan_fit_fraction = float(getattr(cfg, "analysis_hdbscan_fit_fraction", 0.25))
@@ -252,19 +320,10 @@ def run_post_training_analysis(
     )
     grain_interactive_max_grains = max(0, int(getattr(cfg, "analysis_grain_interactive_max_grains", 80)))
     grain_tsne_max_grains = max(0, int(getattr(cfg, "analysis_grain_tsne_max_grains", 60)))
-
-    # Older checkpoint-local Hydra configs can carry analysis_extra_k_plots=false.
-    # Keep k+1/k+2 analyses always enabled for MD diagnostics.
-    extra_k_plots_cfg = bool(getattr(cfg, "analysis_extra_k_plots", True))
-    extra_k_plots = True
-    if not extra_k_plots_cfg:
-        print(
-            "[analysis] Overriding analysis_extra_k_plots=false from checkpoint config "
-            "-> enabled (k+1,k+2)."
-        )
     progress_every_batches = int(getattr(cfg, "analysis_progress_every_batches", 25))
     print(f"t-SNE sample cap: {tsne_max_samples}")
     print(f"Clustering metrics cap: {clustering_max_samples}")
+    print(f"Clustering k values (configured): {cluster_k_values}")
     _step("Building datamodule")
     dm = build_datamodule(cfg)
     is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
@@ -333,6 +392,8 @@ def run_post_training_analysis(
     n_samples = len(cache["inv_latents"])
     print(f"Collected {n_samples} samples for analysis")
     has_phases = cache["phases"].size == n_samples
+    gt_instance_ids = cache.get("instance_ids", np.empty((0,), dtype=int))
+    has_gt_grains = gt_instance_ids.size == n_samples and np.any(gt_instance_ids >= 0)
 
     all_metrics: Dict[str, Any] = {}
 
@@ -378,10 +439,7 @@ def run_post_training_analysis(
         standardize=cluster_standardize,
         pca_variance=cluster_pca_var,
         pca_max_components=cluster_pca_max_components,
-        silhouette_max_samples=cluster_silhouette_max_samples,
-        silhouette_tolerance=cluster_silhouette_tolerance,
-        k_min=cluster_k_min,
-        k_max=cluster_k_max,
+        k_values=cluster_k_values,
     )
     all_metrics["clustering"] = clustering_metrics
 
@@ -406,6 +464,41 @@ def run_post_training_analysis(
 
     md_metrics_key = "synthetic_md" if is_synthetic else "real_md"
     num_latents = len(cache["inv_latents"])
+    configured_k_values = []
+    if isinstance(clustering_metrics, dict):
+        configured_k_values = _as_list_of_int(
+            clustering_metrics.get("k_values_evaluated", None),
+            field_name="clustering.k_values_evaluated",
+        ) or []
+    if not configured_k_values:
+        configured_k_values = [int(k) for k in cluster_k_values]
+    configured_k_values = [max(2, min(int(k), num_latents)) for k in configured_k_values]
+    configured_k_values = list(dict.fromkeys(configured_k_values))
+    if not configured_k_values:
+        configured_k_values = [max(2, min(num_latents, 3))]
+
+    selected_method_by_k_cfg: Dict[int, str] = {}
+    selected_method_parse_errors = 0
+    selected_method_first_error: tuple[Any, Any] | None = None
+    if isinstance(clustering_metrics, dict):
+        raw_selected = clustering_metrics.get("selected_method_by_k", {})
+        if isinstance(raw_selected, dict):
+            for key, value in raw_selected.items():
+                if isinstance(key, bool) or not isinstance(key, (int, np.integer)):
+                    selected_method_parse_errors += 1
+                    if selected_method_first_error is None:
+                        selected_method_first_error = (key, value)
+                    continue
+                selected_method_by_k_cfg[int(key)] = str(value).lower()
+    if selected_method_parse_errors and selected_method_first_error is not None:
+        bad_key, bad_value = selected_method_first_error
+        logger.warning(
+            "Ignoring %d invalid entries in clustering.selected_method_by_k; "
+            "example key=%r value=%r",
+            selected_method_parse_errors,
+            bad_key,
+            bad_value,
+        )
 
     def _compute_labels_for_k(k_value: int, *, method_name: str):
         return compute_kmeans_labels(
@@ -416,26 +509,31 @@ def run_post_training_analysis(
             standardize=cluster_standardize,
             pca_variance=cluster_pca_var,
             pca_max_components=cluster_pca_max_components,
-            silhouette_max_samples=cluster_silhouette_max_samples,
             return_info=True,
         )
 
     if (not is_synthetic) or coords.size:
-        best_k = clustering_metrics.get("best_k_silhouette") if clustering_metrics else None
-        if not isinstance(best_k, int) or best_k <= 1:
-            best_k = _default_cluster_count(num_latents)
-        selected_method_for_best_k = (
-            str(clustering_metrics.get("best_method", cluster_method)).lower()
-            if clustering_metrics
-            else cluster_method
-        )
-        cluster_labels, cluster_fit_info = _compute_labels_for_k(
-            best_k,
-            method_name=selected_method_for_best_k,
-        )
-        cluster_label_method = str(cluster_fit_info.get("method", selected_method_for_best_k))
+        cluster_labels_by_k: Dict[int, np.ndarray] = {}
+        cluster_methods_by_k: Dict[int, str] = {}
+        for k_val in configured_k_values:
+            method_for_k = selected_method_by_k_cfg.get(int(k_val), cluster_method)
+            labels_k, fit_info_k = _compute_labels_for_k(
+                int(k_val),
+                method_name=method_for_k,
+            )
+            cluster_labels_by_k[int(k_val)] = labels_k
+            cluster_methods_by_k[int(k_val)] = str(fit_info_k.get("method", method_for_k))
+
+        primary_k = int(configured_k_values[0])
+        cluster_labels = cluster_labels_by_k[primary_k]
+        cluster_label_method = cluster_methods_by_k.get(primary_k, cluster_method)
         if "clustering" in all_metrics and isinstance(all_metrics["clustering"], dict):
             all_metrics["clustering"]["labels_k_method"] = cluster_label_method
+            all_metrics["clustering"]["labels_method_by_k"] = {
+                int(k): cluster_methods_by_k[int(k)] for k in configured_k_values
+            }
+            all_metrics["clustering"]["primary_k"] = int(primary_k)
+            all_metrics["clustering"]["k_values_used"] = [int(k) for k in configured_k_values]
 
         _step("Computing t-SNE visualization (clusters)")
         tsne_n_iter = int(getattr(cfg, "analysis_tsne_n_iter", 1000))
@@ -444,25 +542,17 @@ def run_post_training_analysis(
         tsne_perplexity = min(50, max(5, len(tsne_latents) // 100))
         tsne_coords = compute_tsne(tsne_latents, perplexity=tsne_perplexity, n_iter=tsne_n_iter)
 
-        save_tsne_plot_with_coords(
-            tsne_coords,
-            cluster_labels[tsne_idx],
-            out_dir,
-            out_name="latent_tsne_clusters.png",
-            title=f"Latent space t-SNE ({cluster_label_method}, k={best_k})",
-        )
-
-        if extra_k_plots:
-            for k_val in _extra_k_values(best_k, num_latents):
-                labels_k, labels_k_info = _compute_labels_for_k(k_val, method_name=cluster_method)
-                method_k = str(labels_k_info.get("method", cluster_method))
-                save_tsne_plot_with_coords(
-                    tsne_coords,
-                    labels_k[tsne_idx],
-                    out_dir,
-                    out_name=f"latent_tsne_clusters_k{k_val}.png",
-                    title=f"Latent space t-SNE ({method_k}, k={k_val})",
-                )
+        for idx_k, k_val in enumerate(configured_k_values):
+            labels_k = cluster_labels_by_k[int(k_val)]
+            method_k = cluster_methods_by_k.get(int(k_val), cluster_method)
+            out_name = "latent_tsne_clusters.png" if idx_k == 0 else f"latent_tsne_clusters_k{k_val}.png"
+            save_tsne_plot_with_coords(
+                tsne_coords,
+                labels_k[tsne_idx],
+                out_dir,
+                out_name=out_name,
+                title=f"Latent space t-SNE ({method_k}, k={k_val})",
+            )
 
         if coords.size and cluster_labels.size:
             _step("Saving coordinate-space clustering outputs")
@@ -486,34 +576,26 @@ def run_post_training_analysis(
                 interactive_path = None
                 interactive_paths: Dict[int, str] = {}
                 try:
-                    interactive_path = out_dir / "md_space_clusters.html"
-                    save_interactive_md_plot(
-                        coords,
-                        cluster_labels,
-                        interactive_path,
-                        palette="Set3",
-                        max_points=interactive_max_points,
-                        marker_size=3.0,
-                        marker_line_width=0.0,
-                        aspect_mode="cube",
-                    )
-                    interactive_paths[int(best_k)] = str(interactive_path)
-
-                    if extra_k_plots:
-                        for k_val in _extra_k_values(best_k, num_latents):
-                            labels_k, _ = _compute_labels_for_k(k_val, method_name=cluster_method)
-                            out_path = out_dir / f"md_space_clusters_k{k_val}.html"
-                            save_interactive_md_plot(
-                                coords,
-                                labels_k,
-                                out_path,
-                                palette="Set3",
-                                max_points=interactive_max_points,
-                                marker_size=3.0,
-                                marker_line_width=0.0,
-                                aspect_mode="cube",
-                            )
-                            interactive_paths[int(k_val)] = str(out_path)
+                    for idx_k, k_val in enumerate(configured_k_values):
+                        labels_k = cluster_labels_by_k[int(k_val)]
+                        out_path = (
+                            out_dir / "md_space_clusters.html"
+                            if idx_k == 0
+                            else out_dir / f"md_space_clusters_k{k_val}.html"
+                        )
+                        save_interactive_md_plot(
+                            coords,
+                            labels_k,
+                            out_path,
+                            palette="Set3",
+                            max_points=interactive_max_points,
+                            marker_size=3.0,
+                            marker_line_width=0.0,
+                            aspect_mode="cube",
+                        )
+                        if idx_k == 0:
+                            interactive_path = out_path
+                        interactive_paths[int(k_val)] = str(out_path)
                 except ImportError:
                     interactive_path = None
                     print("Plotly not installed; skipping interactive MD plot.")
@@ -578,8 +660,6 @@ def run_post_training_analysis(
                             )
                     except ImportError:
                         print("HDBSCAN package not installed; skipping HDBSCAN analysis.")
-                    except Exception as err:
-                        print(f"HDBSCAN analysis failed: {err}")
 
                 grain_info: Dict[str, Any] | None = None
                 grain_path = None
@@ -602,12 +682,24 @@ def run_post_training_analysis(
                             align_min_cluster_size=grain_align_min_cluster_size,
                             align_normalize_channels=grain_align_normalize_channels,
                             min_grain_size=grain_min_size,
+                            gt_grain_labels=gt_instance_ids if has_gt_grains else None,
                         )
                         grain_labels = np.asarray(
                             grain_result.get("grain_labels", np.empty((0,), dtype=int)),
                             dtype=int,
                         )
                         grain_info = grain_result.get("metrics", None)
+                        # Print GT comparison if available
+                        if grain_info and "gt_ari" in grain_info:
+                            print(
+                                f"  Grain GT comparison: "
+                                f"ARI={grain_info['gt_ari']:.4f}  "
+                                f"NMI={grain_info['gt_nmi']:.4f}  "
+                                f"mean_IoU={grain_info['gt_mean_iou']:.4f}  "
+                                f"weighted_IoU={grain_info['gt_weighted_iou']:.4f}  "
+                                f"(pred={grain_info['num_grains']} grains, "
+                                f"gt={grain_info['gt_num_grains']} grains)"
+                            )
                         if grain_labels.size == len(coords):
                             grain_labels_tsne = grain_labels
                             if grain_tsne_max_grains > 0:
@@ -693,11 +785,11 @@ def run_post_training_analysis(
                             )
                     except ImportError:
                         print("Scipy not installed; skipping grain segmentation.")
-                    except Exception as err:
-                        print(f"Grain segmentation failed: {err}")
 
                 unique_labels, counts = np.unique(cluster_labels, return_counts=True)
                 all_metrics[md_metrics_key] = {
+                    "primary_k": int(primary_k),
+                    "k_values_used": [int(k) for k in configured_k_values],
                     "n_clusters": int(len(unique_labels)),
                     "cluster_counts": {int(k): int(v) for k, v in zip(unique_labels, counts)},
                     "coords_files": coord_files,
@@ -748,19 +840,17 @@ def run_post_training_analysis(
         print(f"PCA: {all_metrics['pca'].get('n_components_95_var', 'N/A')} components for 95% variance")
 
     if "clustering" in all_metrics and all_metrics["clustering"]:
-        print(f"Best k (silhouette): {all_metrics['clustering'].get('best_k_silhouette', 'N/A')}")
-        print(
-            "Best silhouette score: "
-            f"{_fmt_metric(all_metrics['clustering'].get('best_silhouette_score', 'N/A'))}"
+        k_values_summary = all_metrics["clustering"].get(
+            "k_values_used",
+            all_metrics["clustering"].get("k_values_evaluated", "N/A"),
         )
+        print(f"Cluster k values: {k_values_summary}")
+        print(f"Primary k: {all_metrics['clustering'].get('primary_k', 'N/A')}")
+        if "labels_k_method" in all_metrics["clustering"]:
+            print(f"Primary k method: {all_metrics['clustering'].get('labels_k_method')}")
         if "ari_with_gt" in all_metrics["clustering"]:
             print(f"ARI with ground truth: {_fmt_metric(all_metrics['clustering']['ari_with_gt'])}")
             print(f"NMI with ground truth: {_fmt_metric(all_metrics['clustering']['nmi_with_gt'])}")
-        if "class_separation_ratio" in all_metrics["clustering"]:
-            print(
-                "Class separation ratio: "
-                f"{_fmt_metric(all_metrics['clustering']['class_separation_ratio'])}"
-            )
 
     if "equivariance" in all_metrics:
         eq = all_metrics["equivariance"]
@@ -806,9 +896,9 @@ def run_post_training_analysis(
         print("  - local_structure_coords_clusters.npz: local-structure centers + cluster IDs")
         print("  - md_space_clusters.png: 3D MD space clusters")
         print("  - md_space_clusters.html: interactive 3D MD space clusters")
-        if extra_k_plots:
-            print("  - md_space_clusters_k*.html: interactive 3D MD plots for k+1,k+2")
-            print("  - latent_tsne_clusters_k*.png: t-SNE plots for k+1,k+2")
+        if len(configured_k_values) > 1:
+            print("  - md_space_clusters_k*.html: interactive 3D MD plots for configured k values")
+            print("  - latent_tsne_clusters_k*.png: t-SNE plots for configured k values")
         if hdbscan_enabled:
             print("  - local_structure_hdbscan_coords_clusters.csv: MD centers with HDBSCAN labels")
             print("  - local_structure_hdbscan_coords_clusters.npz: MD centers + HDBSCAN labels")

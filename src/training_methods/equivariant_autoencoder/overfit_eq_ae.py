@@ -60,8 +60,11 @@ def apply_overfit_overrides(cfg: DictConfig) -> None:
     try:
         OmegaConf.set_readonly(cfg, False)
         OmegaConf.set_struct(cfg, False)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning(
+            "Could not relax OmegaConf readonly/struct flags before applying overfit overrides: %s",
+            exc,
+        )
 
     overrides = []
 

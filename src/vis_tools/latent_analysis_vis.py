@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Dict
+import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +10,6 @@ import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.mixture import GaussianMixture
-from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 
 from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
@@ -132,33 +132,6 @@ def _prepare_clustering_features(
     return x.astype(np.float32, copy=False), info
 
 
-def _safe_silhouette(
-    features: np.ndarray,
-    labels: np.ndarray,
-    *,
-    random_state: int,
-    max_samples: int,
-) -> float:
-    unique = np.unique(labels)
-    if len(unique) < 2:
-        return float("-inf")
-
-    x_eval = features
-    y_eval = labels
-    if len(features) > max_samples:
-        rng = np.random.default_rng(random_state)
-        idx = rng.choice(len(features), size=max_samples, replace=False)
-        x_eval = features[idx]
-        y_eval = labels[idx]
-        if len(np.unique(y_eval)) < 2:
-            return float("-inf")
-
-    try:
-        return float(silhouette_score(x_eval, y_eval))
-    except ValueError:
-        return float("-inf")
-
-
 def _fit_labels_single_method(
     features: np.ndarray,
     n_clusters: int,
@@ -217,50 +190,34 @@ def _cluster_with_method_selection(
     *,
     method: str,
     random_state: int,
-    silhouette_max_samples: int,
 ) -> tuple[np.ndarray, Dict[str, Any]]:
     candidates = _resolve_method_candidates(method, len(features))
-    best_labels: np.ndarray | None = None
-    best_info: Dict[str, Any] | None = None
+    candidate_errors: list[tuple[str, Exception]] = []
 
     for candidate in candidates:
-        try:
-            labels, info = _fit_labels_single_method(
-                features,
-                n_clusters,
-                method=candidate,
-                random_state=random_state,
-            )
-        except Exception:
-            continue
 
-        sil = _safe_silhouette(
+        labels, info = _fit_labels_single_method(
             features,
-            labels,
+            n_clusters,
+            method=candidate,
             random_state=random_state,
-            max_samples=silhouette_max_samples,
-        )
-        info = dict(info)
-        info["silhouette"] = sil
-
-        if best_info is None or sil > float(best_info.get("silhouette", float("-inf"))):
-            best_info = info
-            best_labels = labels
-
-    if best_labels is None or best_info is None:
-        # Guaranteed fallback.
-        best_labels, best_info = _fit_labels_single_method(
-            features, n_clusters, method="kmeans", random_state=random_state
-        )
-        best_info["silhouette"] = _safe_silhouette(
-            features,
-            best_labels,
-            random_state=random_state,
-            max_samples=silhouette_max_samples,
         )
 
-    best_info["requested_method"] = str(method).lower()
-    return best_labels, best_info
+        selected_info = dict(info)
+        selected_info["requested_method"] = str(method).lower()
+        selected_info["fallback_used"] = False
+
+
+    labels, info = _fit_labels_single_method(
+        features,
+        n_clusters,
+        method="kmeans",
+        random_state=random_state,
+    )
+    selected_info = dict(info)
+    selected_info["requested_method"] = str(method).lower()
+    selected_info["fallback_used"] = True
+    return labels, selected_info
 
 
 def compute_kmeans_labels(
@@ -274,7 +231,6 @@ def compute_kmeans_labels(
     standardize: bool = True,
     pca_variance: float | None = 0.98,
     pca_max_components: int = 32,
-    silhouette_max_samples: int = 5000,
     return_info: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
     if latents.size == 0 or len(latents) < 2:
@@ -304,7 +260,6 @@ def compute_kmeans_labels(
         n_clusters,
         method=method,
         random_state=random_state,
-        silhouette_max_samples=silhouette_max_samples,
     )
     if len(features_fit) == len(features):
         labels = labels_fit
@@ -318,7 +273,6 @@ def compute_kmeans_labels(
             n_clusters,
             method=selected_method,
             random_state=random_state,
-            silhouette_max_samples=silhouette_max_samples,
         )
 
     info = {
@@ -414,6 +368,7 @@ def compute_hdbscan_labels(
     best_clusterer = None
     best_labels_fit: np.ndarray | None = None
     best_score = None
+    fit_failures: list[tuple[int, int, Exception]] = []
 
     for mcs in min_cluster_size_candidates:
         ms = int(min_samples) if min_samples is not None else max(4, min(64, int(round(mcs * 0.35))))
@@ -427,7 +382,8 @@ def compute_hdbscan_labels(
                 prediction_data=True,
             )
             labels_fit = clusterer.fit_predict(fit_features).astype(int)
-        except Exception:
+        except Exception as exc:
+            fit_failures.append((int(mcs), int(ms), exc))
             continue
 
         valid = labels_fit[labels_fit >= 0]
@@ -452,6 +408,16 @@ def compute_hdbscan_labels(
             best_clusterer = clusterer
             best_labels_fit = labels_fit
 
+    if fit_failures:
+        failed_mcs, failed_ms, failed_exc = fit_failures[0]
+        warnings.warn(
+            f"HDBSCAN fitting failed for {len(fit_failures)} candidate setting(s); "
+            f"first failure min_cluster_size={failed_mcs}, min_samples={failed_ms}. "
+            f"Error: {failed_exc}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
     if best is None or best_clusterer is None or best_labels_fit is None:
         fallback = np.full((n_total,), -1, dtype=int)
         info = {
@@ -471,7 +437,12 @@ def compute_hdbscan_labels(
         try:
             labels_full, _ = hdbscan.approximate_predict(best_clusterer, features)
             labels_full = np.asarray(labels_full, dtype=int)
-        except Exception:
+        except Exception as exc:
+            warnings.warn(
+                f"hdbscan.approximate_predict failed; trying full refit. Error: {exc}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
             try:
                 clusterer_full = hdbscan.HDBSCAN(
                     min_cluster_size=int(best["min_cluster_size"]),
@@ -481,7 +452,13 @@ def compute_hdbscan_labels(
                     prediction_data=False,
                 )
                 labels_full = clusterer_full.fit_predict(features).astype(int)
-            except Exception:
+            except Exception as full_exc:
+                warnings.warn(
+                    "HDBSCAN full refit failed; using fit-sample labels and assigning "
+                    f"non-fit samples to noise. Error: {full_exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
                 labels_full = np.full((n_total,), -1, dtype=int)
                 labels_full[fit_idx] = best_labels_fit
 
@@ -1081,10 +1058,7 @@ def save_clustering_analysis(
     standardize: bool = True,
     pca_variance: float | None = 0.98,
     pca_max_components: int = 32,
-    silhouette_max_samples: int = 5000,
-    silhouette_tolerance: float = 0.03,
-    k_min: int = 2,
-    k_max: int = 12,
+    k_values: list[int] | None = None,
 ) -> Dict[str, Any]:
     """Perform clustering analysis on latent space and compute quality metrics."""
     if inv_latents.size == 0 or len(inv_latents) < 10:
@@ -1117,39 +1091,38 @@ def save_clustering_analysis(
         "cluster_method_requested": str(cluster_method).lower(),
     }
 
-    upper = min(int(k_max), max(2, len(features) // 20))
-    lower = max(2, int(k_min))
-    if upper < lower:
-        upper = lower
-    k_range = list(range(lower, upper + 1))
+    if k_values is None:
+        requested_k_values = [3, 4, 5, 6]
+    else:
+        requested_k_values = [int(v) for v in k_values]
+
+    k_range: list[int] = []
+    for k in requested_k_values:
+        if int(k) < 2:
+            continue
+        k_eff = int(min(int(k), len(features)))
+        if k_eff >= 2 and k_eff not in k_range:
+            k_range.append(k_eff)
+
+    if not k_range:
+        k_range = [max(2, min(len(features), 3))]
+
+    metrics["k_values_requested"] = [int(v) for v in requested_k_values]
+    metrics["k_values_evaluated"] = [int(v) for v in k_range]
     if len(k_range) < 1:
         return metrics
 
-    silhouette_vals: list[float] = []
     inertias: list[float] = []
     selected_methods: dict[int, str] = {}
     selected_model_scores: dict[int, float] = {}
 
     for k in k_range:
-        labels_k, info_k = _cluster_with_method_selection(
+        _, info_k = _cluster_with_method_selection(
             features,
             k,
             method=cluster_method,
             random_state=42,
-            silhouette_max_samples=silhouette_max_samples,
         )
-        sil_k = float(
-            info_k.get(
-                "silhouette",
-                _safe_silhouette(
-                    features,
-                    labels_k,
-                    random_state=42,
-                    max_samples=silhouette_max_samples,
-                ),
-            )
-        )
-        silhouette_vals.append(sil_k)
         selected_methods[int(k)] = str(info_k.get("method", "kmeans"))
         model_score = info_k.get("model_score", np.nan)
         selected_model_scores[int(k)] = float(model_score) if np.isfinite(model_score) else float("nan")
@@ -1159,33 +1132,15 @@ def save_clustering_analysis(
         km.fit(features)
         inertias.append(float(km.inertia_))
 
-    raw_best_idx = int(np.nanargmax(silhouette_vals))
-    raw_best_sil = float(silhouette_vals[raw_best_idx])
-
-    tol = max(0.0, float(silhouette_tolerance))
-    candidate_idx = [
-        idx for idx, sil in enumerate(silhouette_vals) if np.isfinite(sil) and sil >= (raw_best_sil - tol)
-    ]
-    if candidate_idx:
-        best_idx = int(min(candidate_idx))
-    else:
-        best_idx = raw_best_idx
-
-    best_k = int(k_range[best_idx])
-    best_method = selected_methods.get(best_k, "kmeans")
-    best_sil = float(silhouette_vals[best_idx])
-
-    metrics["silhouette_scores"] = {int(k): float(s) for k, s in zip(k_range, silhouette_vals)}
+    primary_k = int(k_range[0])
+    primary_method = selected_methods.get(primary_k, "kmeans")
     metrics["selected_method_by_k"] = {int(k): selected_methods[int(k)] for k in k_range}
     metrics["selected_model_score_by_k"] = {
         int(k): float(selected_model_scores[int(k)]) for k in k_range
     }
-    metrics["best_k_silhouette"] = best_k
-    metrics["best_method"] = best_method
-    metrics["best_silhouette_score"] = best_sil
-    metrics["best_k_silhouette_raw"] = int(k_range[raw_best_idx])
-    metrics["best_silhouette_score_raw"] = float(raw_best_sil)
-    metrics["silhouette_tolerance"] = float(tol)
+    metrics["inertia_by_k"] = {int(k): float(v) for k, v in zip(k_range, inertias)}
+    metrics["primary_k"] = int(primary_k)
+    metrics["primary_method"] = str(primary_method)
 
     if gt_labels is not None:
         from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
@@ -1196,28 +1151,21 @@ def save_clustering_analysis(
             n_true_clusters,
             method=cluster_method,
             random_state=42,
-            silhouette_max_samples=silhouette_max_samples,
         )
 
         ari = adjusted_rand_score(gt_labels, pred_labels)
         nmi = normalized_mutual_info_score(gt_labels, pred_labels)
-        gt_silhouette = _safe_silhouette(
-            features,
-            gt_labels,
-            random_state=42,
-            max_samples=silhouette_max_samples,
-        )
 
         metrics["ari_with_gt"] = float(ari)
         metrics["nmi_with_gt"] = float(nmi)
-        metrics["gt_silhouette_score"] = float(gt_silhouette)
 
+    unique_labels = np.array([], dtype=int)
+    class_centroids: dict[int, np.ndarray] = {}
     if gt_labels is not None:
         unique_labels = np.unique(gt_labels)
         if len(unique_labels) > 1:
             intra_dists = []
             inter_dists = []
-            class_centroids = {}
 
             for label in unique_labels:
                 mask = gt_labels == label
@@ -1241,24 +1189,38 @@ def save_clustering_analysis(
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5), dpi=150)
 
-    axes[0].plot(k_range, silhouette_vals, "b-o", markersize=6)
+    axes[0].plot(k_range, inertias, "g-o", markersize=6)
     axes[0].axvline(
-        x=metrics["best_k_silhouette"],
+        x=primary_k,
         color="r",
         linestyle="--",
-        label=f"Best k={metrics['best_k_silhouette']} ({best_method})",
+        label=f"Primary k={primary_k} ({primary_method})",
     )
     axes[0].set_xlabel("Number of Clusters (k)")
-    axes[0].set_ylabel("Silhouette Score")
-    axes[0].set_title("Silhouette Score vs. k")
+    axes[0].set_ylabel("Inertia (Within-cluster SS)")
+    axes[0].set_title("Elbow Plot (Configured k)")
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
 
-    axes[1].plot(k_range, inertias, "g-o", markersize=6)
-    axes[1].set_xlabel("Number of Clusters (k)")
-    axes[1].set_ylabel("Inertia (Within-cluster SS)")
-    axes[1].set_title("Elbow Plot")
-    axes[1].grid(True, alpha=0.3)
+    method_lines = [
+        f"requested: {str(cluster_method).lower()}",
+        f"k values: {', '.join(str(k) for k in k_range)}",
+        f"primary : {primary_k} ({primary_method})",
+        "method by k:",
+    ]
+    method_lines.extend([f"k={k:<2d} -> {selected_methods[int(k)]}" for k in k_range])
+    axes[1].axis("off")
+    axes[1].text(
+        0.02,
+        0.98,
+        "\n".join(method_lines),
+        transform=axes[1].transAxes,
+        ha="left",
+        va="top",
+        fontsize=9,
+        family="monospace",
+    )
+    axes[1].set_title("Configured Clustering")
 
     if gt_labels is not None and len(unique_labels) > 1:
         separation_data = []

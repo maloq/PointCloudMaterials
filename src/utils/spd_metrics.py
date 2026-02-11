@@ -3,6 +3,7 @@ Metrics for evaluating Shape-Pose Disentanglement model.
 Includes embedding quality, rotation equivariance, and reconstruction consistency metrics.
 """
 
+import logging
 import numpy as np
 import torch
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
@@ -14,6 +15,8 @@ from scipy.spatial.transform import Rotation
 
 from src.loss.reconstruction_loss import sinkhorn_distance
 from src.training_methods.spd.rot_heads import kabsch_rotation
+
+logger = logging.getLogger(__name__)
 
 
 def get_cubic_symmetry_matrices() -> np.ndarray:
@@ -223,8 +226,12 @@ def compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray, stage: str)
             assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
             metrics["ARI"] = float(adjusted_rand_score(labels, assignments))
             metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning(
+                "Failed to compute clustering metrics for stage='%s': %s",
+                stage,
+                exc,
+            )
     return metrics or None
 
 
@@ -279,8 +286,6 @@ def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarra
         metrics['intra_distance_mean'] = float(np.mean(intra_distances))
     if inter_distances:
         metrics['inter_distance_mean'] = float(np.mean(inter_distances))
-    if intra_distances and inter_distances:
-        metrics['separation_ratio'] = float(np.mean(inter_distances) / (np.mean(intra_distances) + 1e-8))
 
     # Embedding norm statistics (detect collapse)
     norms = np.linalg.norm(Z_inv, axis=1)

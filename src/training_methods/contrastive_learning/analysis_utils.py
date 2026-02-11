@@ -33,10 +33,10 @@ def _rotation_head_align_to_proto(
         stop = min(int(samples.shape[0]), start + step)
         chunk = samples[start:stop]
         proto_chunk = proto_b.expand(chunk.shape[0], -1, -1)
-        # Match training convention: cov(target, source) -> R_source->target.
-        cov = torch.einsum("bci,bcj->bij", proto_chunk, chunk)
-        r6 = pose_head(cov)
-        rots.append(sixd_to_so3(r6, eps=1e-6))
+
+        rot_hat, _, _ = pose_head.forward_pair_with_uncertainty(chunk, proto_chunk)
+        rots.append(rot_hat.to(dtype=chunk.dtype))
+
     return torch.cat(rots, dim=0)
 
 
@@ -203,14 +203,36 @@ def _rotation_geodesic_angles_np(
     rot_b: np.ndarray,
     *,
     eps: float = 1e-7,
+    symmetry_mats: np.ndarray | None = None,
 ) -> np.ndarray:
     if rot_a.size == 0 or rot_b.size == 0:
         return np.empty((0,), dtype=np.float32)
-    delta = np.matmul(np.transpose(rot_a, (0, 2, 1)), rot_b)
-    trace = np.trace(delta, axis1=1, axis2=2)
-    cos_theta = 0.5 * (trace - 1.0)
-    cos_theta = np.clip(cos_theta, -1.0 + eps, 1.0 - eps)
-    return np.arccos(cos_theta).astype(np.float32)
+
+    if symmetry_mats is None or np.size(symmetry_mats) == 0:
+        delta = np.matmul(np.transpose(rot_a, (0, 2, 1)), rot_b)
+        trace = np.trace(delta, axis1=1, axis2=2)
+        cos_theta = 0.5 * (trace - 1.0)
+        cos_theta = np.clip(cos_theta, -1.0 + eps, 1.0 - eps)
+        return np.arccos(cos_theta).astype(np.float32)
+
+    sym = np.asarray(symmetry_mats, dtype=np.float32)
+    if sym.ndim != 3 or sym.shape[-2:] != (3, 3):
+        raise ValueError(
+            f"Expected symmetry_mats with shape (S,3,3). Got {tuple(sym.shape)}"
+        )
+
+    out = np.empty((rot_a.shape[0],), dtype=np.float32)
+    chunk = 50000
+    for start in range(0, int(rot_a.shape[0]), chunk):
+        stop = min(int(rot_a.shape[0]), start + chunk)
+        a_t = np.transpose(rot_a[start:stop], (0, 2, 1))[:, None, :, :]
+        b_sym = np.matmul(rot_b[start:stop, None, :, :], sym[None, :, :, :])
+        delta = np.matmul(a_t, b_sym)
+        trace = np.trace(delta, axis1=-2, axis2=-1)
+        cos_theta = 0.5 * (trace - 1.0)
+        cos_theta = np.clip(cos_theta, -1.0 + eps, 1.0 - eps)
+        out[start:stop] = np.arccos(cos_theta).min(axis=1).astype(np.float32)
+    return out
 
 
 def _connected_components_from_edges(num_nodes: int, edges: np.ndarray) -> np.ndarray:
@@ -260,6 +282,233 @@ def _relabel_nonnegative(labels: np.ndarray) -> np.ndarray:
     return out
 
 
+def _compute_pairwise_edge_orientations(
+    model,
+    eq_latents: np.ndarray,
+    edges: np.ndarray,
+    *,
+    batch_size: int = 4096,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Predict relative rotation for each edge using the trained pose head.
+
+    For atoms *i*, *j* in the same grain the predicted rotation is close to
+    the identity (modulo crystal symmetry).  For different grains it captures
+    the misorientation.
+
+    Returns
+    -------
+    rotations : ndarray, shape (E, 3, 3)
+    logvars   : ndarray, shape (E, 3)  – per-axis log-variance (uncertainty)
+    """
+    import torch.nn.functional as F
+
+    pose_head = getattr(model, "pose_head", None)
+    if pose_head is None:
+        raise ValueError("pose_head is required for pairwise orientation estimation.")
+
+    device = model.device
+    n_edges = len(edges)
+
+    with torch.inference_mode():
+        eq_t = torch.as_tensor(eq_latents, device=device, dtype=torch.float32)
+        if hasattr(model, "_prepare_eq_latent"):
+            eq_t = model._prepare_eq_latent(eq_t)
+        if eq_t is None or eq_t.dim() != 3 or eq_t.shape[-1] != 3:
+            raise ValueError("Expected equivariant latents (N, C, 3) after preparation.")
+
+        # Mirror the preprocessing used during pose training.
+        if getattr(model, "pose_eq_center", False):
+            eq_t = eq_t - eq_t.mean(dim=1, keepdim=True)
+        if getattr(model, "pose_eq_l2_normalize", False):
+            eq_t = F.normalize(eq_t, dim=-1, eps=1e-6)
+
+        rotations = np.empty((n_edges, 3, 3), dtype=np.float32)
+        logvars = np.empty((n_edges, 3), dtype=np.float32)
+
+        step = max(1, int(batch_size))
+        for start in range(0, n_edges, step):
+            stop = min(n_edges, start + step)
+            src = torch.as_tensor(edges[start:stop, 0], device=device, dtype=torch.long)
+            dst = torch.as_tensor(edges[start:stop, 1], device=device, dtype=torch.long)
+            eq_src = eq_t.index_select(0, src)
+            eq_dst = eq_t.index_select(0, dst)
+            rot_hat, lv, _ = pose_head.forward_pair_with_uncertainty(eq_src, eq_dst)
+            rotations[start:stop] = rot_hat.detach().cpu().numpy()
+            logvars[start:stop] = lv.detach().cpu().numpy()
+
+    return rotations, logvars
+
+
+def _rotation_angles_to_identity_np(
+    rotations: np.ndarray,
+    *,
+    eps: float = 1e-7,
+    symmetry_mats: np.ndarray | None = None,
+) -> np.ndarray:
+    """Geodesic angle between each rotation and the identity.
+
+    When *symmetry_mats* is provided, returns the minimum angle over the
+    symmetry group (minimum disorientation from identity).
+    """
+    if rotations.size == 0:
+        return np.empty((0,), dtype=np.float32)
+
+    if symmetry_mats is None or np.size(symmetry_mats) == 0:
+        trace = np.trace(rotations, axis1=1, axis2=2)
+        cos_theta = np.clip(0.5 * (trace - 1.0), -1.0 + eps, 1.0 - eps)
+        return np.arccos(cos_theta).astype(np.float32)
+
+    sym = np.asarray(symmetry_mats, dtype=np.float32)  # (S, 3, 3)
+    out = np.empty((rotations.shape[0],), dtype=np.float32)
+    chunk = 50000
+    for start in range(0, rotations.shape[0], chunk):
+        stop = min(rotations.shape[0], start + chunk)
+        R = rotations[start:stop]                              # (B, 3, 3)
+        RS = np.matmul(R[:, None, :, :], sym[None, :, :, :])  # (B, S, 3, 3)
+        trace = np.trace(RS, axis1=-2, axis2=-1)               # (B, S)
+        cos_theta = np.clip(0.5 * (trace - 1.0), -1.0 + eps, 1.0 - eps)
+        out[start:stop] = np.arccos(cos_theta).min(axis=1).astype(np.float32)
+    return out
+
+
+def _merge_small_grains(
+    labels: np.ndarray,
+    edges: np.ndarray,
+    edge_weights: np.ndarray,
+    min_grain_size: int,
+) -> np.ndarray:
+    """Iteratively merge grains below *min_grain_size* into best neighbour."""
+    labels = labels.copy()
+
+    for _ in range(200):
+        unique, counts = np.unique(labels[labels >= 0], return_counts=True)
+        size_map = dict(zip(unique.tolist(), counts.tolist()))
+        small_set = {g for g, c in size_map.items() if c < min_grain_size}
+        if not small_set:
+            break
+
+        src_labels = labels[edges[:, 0]]
+        dst_labels = labels[edges[:, 1]]
+        diff_mask = src_labels != dst_labels
+
+        # Prefer merging small grains into larger neighbours.
+        merge_map: dict[int, tuple[int, float]] = {}
+        for e_idx in np.where(diff_mask)[0]:
+            w = float(edge_weights[e_idx])
+            gl, gr = int(src_labels[e_idx]), int(dst_labels[e_idx])
+            if gl < 0 or gr < 0:
+                continue
+            if gl in small_set and gr not in small_set:
+                if gl not in merge_map or w > merge_map[gl][1]:
+                    merge_map[gl] = (gr, w)
+            if gr in small_set and gl not in small_set:
+                if gr not in merge_map or w > merge_map[gr][1]:
+                    merge_map[gr] = (gl, w)
+
+        if not merge_map:
+            # Fallback: merge small into any neighbour (prefer larger).
+            for e_idx in np.where(diff_mask)[0]:
+                w = float(edge_weights[e_idx])
+                gl, gr = int(src_labels[e_idx]), int(dst_labels[e_idx])
+                if gl < 0 or gr < 0:
+                    continue
+                for sg, ng in [(gl, gr), (gr, gl)]:
+                    if sg in small_set and sg != ng:
+                        prev = merge_map.get(sg)
+                        ng_size = size_map.get(ng, 0)
+                        if prev is None or ng_size > size_map.get(prev[0], 0):
+                            merge_map[sg] = (ng, w)
+            if not merge_map:
+                break
+
+        for sg, (tg, _) in merge_map.items():
+            labels[labels == sg] = tg
+
+    return _relabel_nonnegative(labels)
+
+
+def _compute_grain_gt_metrics(
+    pred_labels: np.ndarray,
+    gt_labels: np.ndarray,
+) -> Dict[str, Any]:
+    """Compute grain segmentation quality metrics vs ground truth.
+
+    Metrics include:
+    - ARI (Adjusted Rand Index): clustering agreement, chance-corrected
+    - NMI (Normalized Mutual Information): information-theoretic similarity
+    - Mean IoU: average best-match Intersection-over-Union across GT grains
+    - Per-grain IoU: IoU for each GT grain's best-matching predicted grain
+    - GT/predicted grain counts
+    """
+    from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+
+    pred = np.asarray(pred_labels, dtype=int)
+    gt = np.asarray(gt_labels, dtype=int)
+
+    # Mask: only evaluate where both GT and pred are valid (>= 0)
+    valid = (gt >= 0) & (pred >= 0)
+    if valid.sum() < 2:
+        return {"status": "insufficient_valid_labels", "n_valid": int(valid.sum())}
+
+    pred_v = pred[valid]
+    gt_v = gt[valid]
+
+    ari = float(adjusted_rand_score(gt_v, pred_v))
+    nmi = float(normalized_mutual_info_score(gt_v, pred_v, average_method="arithmetic"))
+
+    # Per-GT-grain IoU: for each GT grain, find the predicted grain with
+    # the highest IoU and record it.
+    gt_ids = np.unique(gt_v)
+    pred_ids = np.unique(pred_v)
+
+    gt_iou: Dict[int, float] = {}
+    gt_best_pred: Dict[int, int] = {}
+    for g in gt_ids:
+        g_mask = gt_v == g
+        best_iou = 0.0
+        best_p = -1
+        for p in pred_ids:
+            p_mask = pred_v == p
+            intersection = int((g_mask & p_mask).sum())
+            if intersection == 0:
+                continue
+            union = int((g_mask | p_mask).sum())
+            iou = intersection / max(union, 1)
+            if iou > best_iou:
+                best_iou = iou
+                best_p = int(p)
+        gt_iou[int(g)] = best_iou
+        gt_best_pred[int(g)] = best_p
+
+    iou_values = list(gt_iou.values())
+    mean_iou = float(np.mean(iou_values)) if iou_values else 0.0
+    median_iou = float(np.median(iou_values)) if iou_values else 0.0
+
+    # Weighted mean IoU (weighted by GT grain size)
+    gt_sizes = {int(g): int((gt_v == g).sum()) for g in gt_ids}
+    total_size = sum(gt_sizes.values())
+    weighted_iou = (
+        sum(gt_iou[g] * gt_sizes[g] for g in gt_ids) / max(total_size, 1)
+        if total_size > 0
+        else 0.0
+    )
+
+    return {
+        "status": "ok",
+        "n_valid": int(valid.sum()),
+        "ari": ari,
+        "nmi": nmi,
+        "mean_iou": mean_iou,
+        "median_iou": median_iou,
+        "weighted_iou": float(weighted_iou),
+        "num_gt_grains": int(len(gt_ids)),
+        "num_pred_grains": int(len(pred_ids)),
+        "per_gt_grain_iou": gt_iou,
+        "per_gt_grain_best_pred": gt_best_pred,
+        "per_gt_grain_size": gt_sizes,
+    }
+
+
 def segment_grains_with_pose_head(
     model: BarlowTwinsModule,
     inv_latents: np.ndarray,
@@ -268,15 +517,26 @@ def segment_grains_with_pose_head(
     coords: np.ndarray,
     *,
     knn_k: int = 12,
-    edge_weight_threshold: float = 0.35,
+    edge_weight_threshold: float = 0.2,
     orientation_tau_deg: float = 18.0,
     alpha_scale_quantile: float = 0.75,
     align_n_iters: int = 5,
     align_min_cluster_size: int = 3,
     align_normalize_channels: bool = True,
     min_grain_size: int = 1,
+    gt_grain_labels: np.ndarray | None = None,
 ) -> Dict[str, Any]:
-    """Orientation-aware grain segmentation with motif boundary preservation."""
+    """Orientation-aware grain segmentation using pairwise pose-head comparison.
+
+    For each edge in the spatial kNN graph the trained pose head estimates the
+    relative rotation between the two equivariant latents.  Same-grain
+    neighbours produce rotations close to identity (modulo crystal symmetry),
+    while cross-grain neighbours produce large misorientations.  Combined with
+    an invariant-embedding similarity kernel the edge weight decides whether
+    the edge is kept.  Connected components of the surviving graph are the
+    grain labels.  Grains smaller than *min_grain_size* are merged into their
+    best-connected larger neighbour.
+    """
     inv_latents = np.asarray(inv_latents)
     eq_latents = np.asarray(eq_latents)
     motif_labels = np.asarray(motif_labels).astype(int, copy=False)
@@ -287,41 +547,22 @@ def segment_grains_with_pose_head(
         "grain_labels": np.empty((0,), dtype=int),
         "alpha": np.empty((0,), dtype=np.float32),
         "orientation_residuals": np.empty((0,), dtype=np.float32),
-        "metrics": {
-            "num_nodes": int(num_nodes),
-            "num_grains": 0,
-            "status": "empty",
-        },
+        "metrics": {"num_nodes": int(num_nodes), "num_grains": 0, "status": "empty"},
     }
     if num_nodes < 2:
         return empty
     if inv_latents.ndim != 2:
         inv_latents = np.reshape(inv_latents, (num_nodes, -1))
     if coords.ndim != 2 or coords.shape[1] < 3:
-        return {
-            **empty,
-            "metrics": {
-                "num_nodes": int(num_nodes),
-                "num_grains": 0,
-                "status": "invalid_coords",
-            },
-        }
+        return {**empty, "metrics": {**empty["metrics"], "status": "invalid_coords"}}
     if motif_labels.shape[0] != num_nodes or coords.shape[0] != num_nodes:
-        return {
-            **empty,
-            "metrics": {
-                "num_nodes": int(num_nodes),
-                "num_grains": 0,
-                "status": "shape_mismatch",
-            },
-        }
+        return {**empty, "metrics": {**empty["metrics"], "status": "shape_mismatch"}}
 
     coords3 = coords[:, :3].astype(np.float32, copy=False)
     edges = _build_knn_edges(coords3, k=knn_k)
     if edges.size == 0:
-        singleton_labels = np.arange(num_nodes, dtype=int)
         return {
-            "grain_labels": singleton_labels,
+            "grain_labels": np.arange(num_nodes, dtype=int),
             "alpha": np.ones((num_nodes,), dtype=np.float32),
             "orientation_residuals": np.full((num_nodes,), np.nan, dtype=np.float32),
             "metrics": {
@@ -332,55 +573,23 @@ def segment_grains_with_pose_head(
             },
         }
 
+    # ------------------------------------------------------------------
+    # Feature flags
+    # ------------------------------------------------------------------
     orientation_available = bool(
         getattr(model, "pose_head", None) is not None
         and eq_latents.ndim == 3
         and eq_latents.shape[0] == num_nodes
         and eq_latents.shape[-1] == 3
     )
-    alpha = np.ones((num_nodes,), dtype=np.float32)
-    residuals = np.full((num_nodes,), np.nan, dtype=np.float32)
-    rot_align = np.tile(np.eye(3, dtype=np.float32), (num_nodes, 1, 1))
+    symmetry_mats: np.ndarray | None = None
+    sym_buf = getattr(model, "symmetry_mats", None)
+    if torch.is_tensor(sym_buf) and sym_buf.ndim == 3 and sym_buf.shape[-2:] == (3, 3):
+        symmetry_mats = sym_buf.detach().to(device="cpu", dtype=torch.float32).numpy()
 
-    if orientation_available:
-        try:
-            align = compute_cluster_prototypes_and_alignments_with_rotation_head(
-                model,
-                eq_latents,
-                motif_labels,
-                n_iters=max(1, int(align_n_iters)),
-                min_cluster_size=max(2, int(align_min_cluster_size)),
-                normalize_channels=bool(align_normalize_channels),
-            )
-            rot_candidate = np.asarray(align.get("R_align", rot_align), dtype=np.float32)
-            if rot_candidate.shape == (num_nodes, 3, 3):
-                rot_align = rot_candidate
-            else:
-                orientation_available = False
-
-            res_candidate = np.asarray(
-                align.get("residuals", residuals),
-                dtype=np.float32,
-            )
-            if res_candidate.shape == (num_nodes,):
-                residuals = res_candidate
-
-            finite_res = residuals[np.isfinite(residuals)]
-            q = float(np.clip(alpha_scale_quantile, 0.05, 0.95))
-            if finite_res.size:
-                scale = float(np.quantile(finite_res, q))
-                scale = max(scale, 1e-6)
-                scaled = np.clip(residuals / scale, 0.0, 10.0)
-                alpha = np.exp(-(scaled ** 2)).astype(np.float32)
-                alpha[~np.isfinite(alpha)] = 0.0
-            else:
-                alpha = np.zeros((num_nodes,), dtype=np.float32)
-        except Exception:
-            orientation_available = False
-            alpha = np.ones((num_nodes,), dtype=np.float32)
-            residuals = np.full((num_nodes,), np.nan, dtype=np.float32)
-            rot_align = np.tile(np.eye(3, dtype=np.float32), (num_nodes, 1, 1))
-
+    # ------------------------------------------------------------------
+    # Edge-level motif (invariant embedding) similarity
+    # ------------------------------------------------------------------
     src = edges[:, 0]
     dst = edges[:, 1]
     same_motif = motif_labels[src] == motif_labels[dst]
@@ -390,38 +599,100 @@ def segment_grains_with_pose_head(
     dz_ref = dz2[same_motif] if same_motif.any() else dz2
     dz_pos = dz_ref[dz_ref > 0]
     if dz_pos.size:
-        sigma2 = float(np.median(dz_pos))
+        # Use 75th percentile so ~75% of same-motif edges keep high weight
+        sigma2 = float(np.percentile(dz_pos, 75))
     elif dz_ref.size:
         sigma2 = float(np.mean(dz_ref))
     else:
         sigma2 = 1.0
     sigma2 = max(sigma2, 1e-8)
-    motif_weight = np.exp(-dz2 / sigma2).astype(np.float32)
+    # Standard Gaussian kernel: exp(-d^2 / (2 sigma^2))
+    motif_weight = np.exp(-dz2 / (2.0 * sigma2)).astype(np.float32)
 
+    # ------------------------------------------------------------------
+    # Pairwise orientation angle via pose head
+    # ------------------------------------------------------------------
     theta = np.zeros((len(edges),), dtype=np.float32)
-    if orientation_available:
-        theta = _rotation_geodesic_angles_np(rot_align[src], rot_align[dst])
+    alpha = np.ones((num_nodes,), dtype=np.float32)
+    edge_confidence = np.ones((len(edges),), dtype=np.float32)
+    residuals = np.full((num_nodes,), np.nan, dtype=np.float32)
     tau_rad = max(np.deg2rad(max(1e-3, float(orientation_tau_deg))), 1e-6)
-    orient_weight = np.exp(
-        -((alpha[src] * alpha[dst]) * (theta ** 2)) / (tau_rad * tau_rad)
-    ).astype(np.float32)
 
-    edge_weight = motif_weight * orient_weight
+    same_motif_idx = np.where(same_motif)[0]
+
+    if orientation_available and len(same_motif_idx) > 0:
+        try:
+            same_motif_edges = edges[same_motif_idx]
+            edge_rots, edge_logvars = _compute_pairwise_edge_orientations(
+                model, eq_latents, same_motif_edges,
+            )
+            # Geodesic angle to identity (minimum over crystal symmetry group)
+            theta_sm = _rotation_angles_to_identity_np(
+                edge_rots, symmetry_mats=symmetry_mats,
+            )
+            theta[same_motif_idx] = theta_sm
+
+            # Per-edge confidence from pose head uncertainty
+            mean_lv = np.mean(edge_logvars, axis=-1)
+            conf = np.exp(-mean_lv.clip(-5, 5)).clip(0.0, 1.0).astype(np.float32)
+            edge_confidence[same_motif_idx] = conf
+
+            # Per-node alpha = mean edge confidence of incident same-motif edges
+            node_conf_sum = np.zeros(num_nodes, dtype=np.float64)
+            node_conf_cnt = np.zeros(num_nodes, dtype=np.float64)
+            np.add.at(node_conf_sum, same_motif_edges[:, 0], conf)
+            np.add.at(node_conf_sum, same_motif_edges[:, 1], conf)
+            np.add.at(node_conf_cnt, same_motif_edges[:, 0], 1.0)
+            np.add.at(node_conf_cnt, same_motif_edges[:, 1], 1.0)
+            has_edges = node_conf_cnt > 0
+            alpha[has_edges] = (node_conf_sum[has_edges] / node_conf_cnt[has_edges]).astype(np.float32)
+        except Exception as exc:
+            print(f"[grain] Pairwise orientation estimation failed: {exc}")
+            orientation_available = False
+            alpha[:] = 1.0
+            edge_confidence[:] = 1.0
+            theta[:] = 0.0
+
+    # ------------------------------------------------------------------
+    # Combined edge keeping: hard theta cutoff + motif similarity
+    # ------------------------------------------------------------------
+    # Use orientation_tau_deg as a HARD angular cutoff for orientation.
+    # This is much more robust than soft Gaussian weighting because it
+    # cleanly separates same-grain (theta < cutoff) from cross-grain.
+    theta_cutoff_rad = tau_rad  # tau_deg repurposed as hard cutoff
+
+    # Soft motif weight is still used for the merge step (which neighbor
+    # to merge small grains into).  For edge keeping we use hard criteria.
     threshold = float(np.clip(edge_weight_threshold, 0.0, 1.0))
-    keep_mask = same_motif & (edge_weight >= threshold)
+
+    # Three independent conditions for keeping an edge:
+    #   1. Must be in the same motif cluster
+    #   2. Invariant embeddings must be similar (motif_weight >= threshold)
+    #   3. Orientation angle must be below cutoff (when orientation available)
+    keep_mask = same_motif & (motif_weight >= threshold)
+    if orientation_available:
+        keep_mask = keep_mask & (theta <= theta_cutoff_rad)
+
+    # Soft edge weight for the merge step (prioritise merging into
+    # neighbours with high motif similarity AND low theta).
+    orient_weight = np.exp(-theta ** 2 / (2.0 * tau_rad * tau_rad)).astype(np.float32)
+    edge_weight = motif_weight * orient_weight
+
     kept_edges = edges[keep_mask]
 
     grain_labels = _connected_components_from_edges(num_nodes, kept_edges)
+
+    # ------------------------------------------------------------------
+    # Merge grains smaller than min_grain_size
+    # ------------------------------------------------------------------
     min_grain = max(1, int(min_grain_size))
     if min_grain > 1:
-        unique, counts = np.unique(grain_labels, return_counts=True)
-        small_labels = unique[counts < min_grain]
-        if small_labels.size:
-            small_mask = np.isin(grain_labels, small_labels)
-            grain_labels = grain_labels.astype(int, copy=True)
-            grain_labels[small_mask] = -1
+        grain_labels = _merge_small_grains(grain_labels, edges, edge_weight, min_grain)
     grain_labels = _relabel_nonnegative(grain_labels)
 
+    # ------------------------------------------------------------------
+    # Metrics
+    # ------------------------------------------------------------------
     valid_grains = grain_labels[grain_labels >= 0]
     grain_sizes = (
         np.unique(valid_grains, return_counts=True)[1]
@@ -441,6 +712,7 @@ def segment_grains_with_pose_head(
         "sigma_latent": float(np.sqrt(sigma2)),
         "orientation_tau_deg": float(orientation_tau_deg),
         "orientation_available": float(1.0 if orientation_available else 0.0),
+        "orientation_symmetry_count": int(symmetry_mats.shape[0]) if symmetry_mats is not None else 1,
         "alpha_mean": float(np.mean(alpha)),
         "alpha_median": float(np.median(alpha)),
         "num_grains": int(len(np.unique(valid_grains))),
@@ -449,18 +721,49 @@ def segment_grains_with_pose_head(
         "grain_size_max": int(np.max(grain_sizes)) if grain_sizes.size else 0,
     }
     if orientation_available and theta.size:
-        metrics["edge_theta_mean_deg"] = float(np.degrees(np.mean(theta)))
-        metrics["edge_theta_median_deg"] = float(np.degrees(np.median(theta)))
+        sm_theta = theta[same_motif_idx] if same_motif_idx.size else theta
+        if sm_theta.size:
+            sm_theta_deg = np.degrees(sm_theta)
+            metrics["edge_theta_mean_deg"] = float(np.mean(sm_theta_deg))
+            metrics["edge_theta_median_deg"] = float(np.median(sm_theta_deg))
+            # Percentile breakdown to help diagnose same-grain vs cross-grain separation
+            for pct in [10, 25, 50, 75, 90]:
+                metrics[f"edge_theta_p{pct}_deg"] = float(np.percentile(sm_theta_deg, pct))
+        kept_theta = theta[keep_mask]
+        if kept_theta.size:
+            kept_theta_deg = np.degrees(kept_theta)
+            metrics["kept_edge_theta_mean_deg"] = float(np.mean(kept_theta_deg))
+            metrics["kept_edge_theta_median_deg"] = float(np.median(kept_theta_deg))
+        metrics["theta_cutoff_deg"] = float(np.degrees(theta_cutoff_rad))
     finite_res = residuals[np.isfinite(residuals)]
     if finite_res.size:
         metrics["orientation_residual_mean"] = float(np.mean(finite_res))
         metrics["orientation_residual_median"] = float(np.median(finite_res))
+
+    # ------------------------------------------------------------------
+    # Ground truth comparison (if GT grain labels are provided)
+    # ------------------------------------------------------------------
+    gt_metrics: Dict[str, Any] | None = None
+    if gt_grain_labels is not None:
+        gt = np.asarray(gt_grain_labels, dtype=int)
+        if gt.shape[0] == num_nodes:
+            gt_metrics = _compute_grain_gt_metrics(grain_labels, gt)
+            # Promote key metrics into the main metrics dict for easy access
+            if gt_metrics.get("status") == "ok":
+                metrics["gt_ari"] = gt_metrics["ari"]
+                metrics["gt_nmi"] = gt_metrics["nmi"]
+                metrics["gt_mean_iou"] = gt_metrics["mean_iou"]
+                metrics["gt_median_iou"] = gt_metrics["median_iou"]
+                metrics["gt_weighted_iou"] = gt_metrics["weighted_iou"]
+                metrics["gt_num_grains"] = gt_metrics["num_gt_grains"]
+                metrics["gt_per_grain_iou"] = gt_metrics["per_gt_grain_iou"]
 
     return {
         "grain_labels": grain_labels.astype(int, copy=False),
         "alpha": alpha.astype(np.float32, copy=False),
         "orientation_residuals": residuals.astype(np.float32, copy=False),
         "metrics": metrics,
+        "gt_metrics": gt_metrics,
     }
 
 
@@ -483,11 +786,17 @@ def _looks_like_coords(value: Any) -> bool:
 
 def _extract_pc_phase_coords(
     batch: Any,
-) -> Tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None]:
+) -> Tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None, torch.Tensor | None]:
+    """Extract point cloud, phase (class_id), coords, and instance_id from a batch.
+
+    Returns (pc, phase, coords, instance_id).
+    """
+    instance_id = None
     if isinstance(batch, dict):
         pc = batch["points"]
         phase = batch.get("class_id", None)
         coords = batch.get("coords", None)
+        instance_id = batch.get("instance_id", None)
     elif isinstance(batch, (tuple, list)):
         pc = batch[0]
         phase = None
@@ -512,11 +821,13 @@ def _extract_pc_phase_coords(
         phase = torch.as_tensor(phase)
     if coords is not None and not torch.is_tensor(coords):
         coords = torch.as_tensor(coords)
-    return pc, phase, coords
+    if instance_id is not None and not torch.is_tensor(instance_id):
+        instance_id = torch.as_tensor(instance_id)
+    return pc, phase, coords, instance_id
 
 
 def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None]:
-    pc, phase, _ = _extract_pc_phase_coords(batch)
+    pc, phase, _, _ = _extract_pc_phase_coords(batch)
     return pc, phase
 
 
@@ -592,7 +903,7 @@ def gather_inference_batches(
     verbose: bool = False,
 ) -> Dict[str, np.ndarray]:
     """Collect inputs and latents from batches."""
-    inv_latents, eq_latents, phases, coords_list = [], [], [], []
+    inv_latents, eq_latents, phases, coords_list, instance_ids = [], [], [], [], []
     collected = 0
     max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
     every = max(1, int(progress_every_batches))
@@ -601,7 +912,7 @@ def gather_inference_batches(
         for batch_idx, batch in enumerate(dataloader):
             if max_batches is not None and batch_idx >= max_batches:
                 break
-            pc, phase, coords = _extract_pc_phase_coords(batch)
+            pc, phase, coords, instance_id = _extract_pc_phase_coords(batch)
             pc = pc.to(device)
             if hasattr(model, "_prepare_model_input"):
                 pc = model._prepare_model_input(pc)
@@ -636,6 +947,8 @@ def gather_inference_batches(
                 eq_latents.append(eq_z.detach().cpu()[:take])
             if phase is not None:
                 phases.append(phase.detach().view(-1).cpu()[:take])
+            if instance_id is not None:
+                instance_ids.append(instance_id.detach().view(-1).cpu()[:take])
 
             collected += int(take)
             if verbose and ((batch_idx + 1) % every == 0 or take != z_cpu.shape[0]):
@@ -663,6 +976,7 @@ def gather_inference_batches(
         "eq_latents": _cat(eq_latents),
         "phases": _cat(phases),
         "coords": _cat_coords(coords_list),
+        "instance_ids": _cat(instance_ids),
     }
 
 
@@ -796,9 +1110,6 @@ def evaluate_latent_equivariance(
     nondet = float(eq_unseeded.mean() - eq_seeded.mean()) if eq_seeded.size and eq_unseeded.size else float("nan")
     if eq_seeded.size and eq_unseeded.size:
         print(f"\nNON-DETERMINISM CONTRIBUTION: {nondet:.4f}")
-        if nondet > 0.1:
-            print("  WARNING: Significant non-determinism detected (likely FPS init).")
-        print()
 
     metrics = {
         "eq_latent_rel_error_mean": float(eq_seeded.mean()) if eq_seeded.size else float("nan"),

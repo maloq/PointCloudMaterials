@@ -1,6 +1,6 @@
 defaults:
- - data: data_synth_polycrystalline
-#  - data: synth_modelnet_objects
+ - data: data_synth_polycrystalline_balanced_geometries
+# - data: synth_modelnet_objects
 # - data: data_ae_Al_80
 project_name: pointnet
 experiment_name: BT_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
@@ -40,7 +40,7 @@ encoder:
     sa_npoints: [80, 40]
     sa_channels: [128, 256]
     attn_hidden: 256
-    num_layers: 4
+    num_layers: 5
 
 
 # Decoder config is required by the model factory but is not used for Barlow Twins
@@ -52,13 +52,13 @@ decoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 128
+batch_size: 256
 precision: bf16-true
 gradient_clip_val: 1.0
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 60
+epochs: 120
 max_samples: 0
 
 gpu: True
@@ -117,7 +117,9 @@ pose:
   weight: 0.4
   start_epoch: 10
   head_hidden: 256
-  jitter_std: 0.0
+  jitter_std: 0.002
+  strain_std: 0.002
+  strain_volume_preserve: true
   seeded_forward: true
   view_rotation_mode: full
   view_rotation_deg: 0.0
@@ -132,6 +134,8 @@ pose:
   head_loss_weight: 1.0
   procrustes_loss_weight: 0.35
   histogram_every_n_steps: 50
+  ambiguity_use_std: true
+  ambiguity_floor: 0.001
 
 symmetry:
   type: cubic24
@@ -154,10 +158,7 @@ analysis_cluster_l2_normalize: true
 analysis_cluster_standardize: true
 analysis_cluster_pca_var: 0.98
 analysis_cluster_pca_max_components: 32
-analysis_cluster_silhouette_max_samples: 5000
-analysis_cluster_silhouette_tolerance: 0.03
-analysis_cluster_k_min: 2
-analysis_cluster_k_max: 12
+analysis_cluster_k_values: [3, 4, 5, 6]
 analysis_num_workers: 0
 analysis_progress_every_batches: 20
 analysis_max_samples_total: 0
@@ -165,7 +166,6 @@ analysis_tsne_max_samples: 8000
 analysis_tsne_n_iter: 1000
 analysis_interactive_max_points: 0
 analysis_md_use_all_points: true
-analysis_extra_k_plots: true
 analysis_hdbscan_enabled: true
 analysis_hdbscan_fit_fraction: 0.25
 analysis_hdbscan_max_fit_samples: 50000
@@ -176,14 +176,14 @@ analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
 analysis_grain_enabled: true
-analysis_grain_knn_k: 12
-analysis_grain_edge_weight_threshold: 0.35
-analysis_grain_orientation_tau_deg: 18.0
+analysis_grain_knn_k: 16
+analysis_grain_edge_weight_threshold: 0.3
+analysis_grain_orientation_tau_deg: 20.0
 analysis_grain_alpha_scale_quantile: 0.75
 analysis_grain_align_n_iters: 5
 analysis_grain_align_min_cluster_size: 3
 analysis_grain_align_normalize_channels: true
-analysis_grain_min_size: 1
+analysis_grain_min_size: 20
 analysis_grain_interactive_max_points: 120000
 analysis_grain_interactive_max_grains: 80
 analysis_grain_tsne_max_grains: 60

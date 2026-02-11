@@ -585,7 +585,6 @@ def save_clustering_analysis(
             
             metrics["mean_intra_class_distance"] = float(np.mean(intra_dists))
             metrics["mean_inter_class_distance"] = float(np.mean(inter_dists))
-            metrics["class_separation_ratio"] = float(np.mean(inter_dists) / (np.mean(intra_dists) + 1e-8))
 
     # 4. Create clustering analysis figure
     fig, axes = plt.subplots(1, 3, figsize=(15, 5), dpi=150)
@@ -1089,8 +1088,6 @@ def run_post_training_analysis(
         if "ari_with_gt" in all_metrics["clustering"]:
             print(f"ARI with ground truth: {all_metrics['clustering']['ari_with_gt']:.4f}")
             print(f"NMI with ground truth: {all_metrics['clustering']['nmi_with_gt']:.4f}")
-        if "class_separation_ratio" in all_metrics["clustering"]:
-            print(f"Class separation ratio: {all_metrics['clustering']['class_separation_ratio']:.4f}")
     
     if "equivariance" in all_metrics:
         eq = all_metrics["equivariance"]

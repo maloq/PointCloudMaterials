@@ -158,6 +158,24 @@ def sample_pose_relative_rotation(module, batch_size: int, *, device, dtype) -> 
     return sample_axis_angle_rotation(module, batch_size, max_rad=max_rad, device=device, dtype=dtype)
 
 
+def apply_pose_strain(module, x: torch.Tensor) -> torch.Tensor:
+    if module.pose_strain_std <= 0:
+        return x
+    bsz = x.shape[0]
+    device = x.device
+    dtype = x.dtype
+    strain_dtype = torch.float32 if dtype in (torch.float16, torch.bfloat16) else dtype
+    rand = torch.randn(bsz, 3, 3, device=device, dtype=strain_dtype)
+    strain = 0.5 * (rand + rand.transpose(-1, -2))
+    if module.pose_strain_volume_preserve:
+        trace = strain.diagonal(dim1=-2, dim2=-1).sum(-1, keepdim=True)
+        strain = strain - (trace / 3.0).unsqueeze(-1) * torch.eye(3, device=device, dtype=strain_dtype)
+    strain = strain * float(module.pose_strain_std)
+    transform = torch.eye(3, device=device, dtype=strain_dtype).unsqueeze(0) + strain
+    out = torch.matmul(x.to(dtype=strain_dtype), transform)
+    return out.to(dtype=dtype)
+
+
 def prepare_eq_latent(eq_z: torch.Tensor | None) -> torch.Tensor | None:
     if eq_z is None:
         return None
@@ -270,6 +288,11 @@ def init_pose_components(module, cfg, latent_dim: int) -> None:
     module.pose_weight = float(getattr(cfg, "pose_weight", cfg_get(pose_cfg, "weight", 0.0)))
     module.pose_start_epoch = int(getattr(cfg, "pose_start_epoch", cfg_get(pose_cfg, "start_epoch", 0)))
     module.pose_jitter_std = float(getattr(cfg, "pose_jitter_std", cfg_get(pose_cfg, "jitter_std", 0.0)))
+    module.pose_strain_std = float(getattr(cfg, "pose_strain_std", cfg_get(pose_cfg, "strain_std", 0.0)))
+    module.pose_strain_std = max(0.0, module.pose_strain_std)
+    module.pose_strain_volume_preserve = bool(
+        getattr(cfg, "pose_strain_volume_preserve", cfg_get(pose_cfg, "strain_volume_preserve", True))
+    )
     module.pose_seeded_forward = bool(
         getattr(cfg, "pose_seeded_forward", cfg_get(pose_cfg, "seeded_forward", True))
     )
@@ -348,6 +371,13 @@ def init_pose_components(module, cfg, latent_dim: int) -> None:
     module.pose_histogram_every_n_steps = int(
         getattr(cfg, "pose_histogram_every_n_steps", cfg_get(pose_cfg, "histogram_every_n_steps", 50))
     )
+    module.pose_ambiguity_use_std = bool(
+        getattr(cfg, "pose_ambiguity_use_std", cfg_get(pose_cfg, "ambiguity_use_std", True))
+    )
+    module.pose_ambiguity_floor = float(
+        getattr(cfg, "pose_ambiguity_floor", cfg_get(pose_cfg, "ambiguity_floor", 1e-3))
+    )
+    module.pose_ambiguity_floor = max(0.0, module.pose_ambiguity_floor)
     module.pose_delta_max_deg = float(getattr(cfg, "pose_delta_max_deg", cfg_get(pose_cfg, "delta_max_deg", 25.0)))
     module.pose_delta_max_rad = math.radians(max(0.0, module.pose_delta_max_deg))
 
@@ -384,13 +414,15 @@ def compute_pose_loss(module, pc: torch.Tensor, batch_idx: int, stage: str):
         keep = bool(torch.rand((), device=pc.device) <= module.pose_known_rotation_prob)
         if not keep:
             zero = torch.zeros((), device=pc.device, dtype=torch.float32, requires_grad=True)
-            return zero, {"pose_known_rotation_applied": zero.detach()}
+            return zero, {}
 
     # Pose supervision uses two augmented views linked by a known relative rotation.
     xa_base = module._prepare_model_input(pc)
     if module.pose_jitter_std > 0:
         jitter = torch.randn_like(xa_base) * float(module.pose_jitter_std)
         xa_base = xa_base + jitter
+    if module.pose_strain_std > 0:
+        xa_base = apply_pose_strain(module, xa_base)
 
     bsz = xa_base.shape[0]
     device = xa_base.device
@@ -438,39 +470,34 @@ def compute_pose_loss(module, pc: torch.Tensor, batch_idx: int, stage: str):
         ambiguity = None
         eq_gate = torch.ones_like(eq_err_per)
         rot_loss = None
-        head_weight_mean = None
-        head_weight_std = None
-        base_angle = None
-        delta_angle = None
 
         if module.pose_head is not None and module.pose_rot_loss_weight > 0:
-            rot_base = None
-            delta_omega = None
             if module.pose_regressor_input == "cross_cov":
-                rot_hat, logvar, head_aux = module.pose_head.forward_pair_with_uncertainty(eq_a_f, eq_b_f)
-                weights = head_aux.get("weights")
-                rot_base = head_aux.get("rot_base")
-                delta_omega = head_aux.get("delta_omega")
-                if weights is not None:
-                    head_weight_mean = weights.mean()
-                    head_weight_std = weights.std(unbiased=False)
+                rot_hat, logvar, _ = module.pose_head.forward_pair_with_uncertainty(eq_a_f, eq_b_f)
+                rot_hat = rot_hat.to(dtype=torch.float32)
+                logvar = logvar.to(dtype=torch.float32)
             else:
                 pose_features = pose_regressor_features(module, eq_a_f, eq_b_f)
                 r6, logvar = module.pose_head.forward_with_uncertainty(pose_features)
-                rot_hat = sixd_to_so3(r6, eps=1e-6)
+                rot_hat = sixd_to_so3(r6.to(dtype=torch.float32), eps=1e-6)
+                logvar = logvar.to(dtype=torch.float32)
             logvar = logvar.clamp(min=float(module.pose_logvar_min), max=float(module.pose_logvar_max))
 
             residual = so3_log_map(rot_hat.transpose(-1, -2) @ rot_f, eps=float(module.pose_log_map_eps))
             rot_nll_per = (residual.pow(2) * torch.exp(-logvar) + logvar).sum(dim=-1)
+            # Keep NLL non-negative for logging/objective display by adding a constant floor shift.
+            # This does not change gradients because the shift is parameter-independent.
+            nll_shift = max(0.0, -float(module.pose_logvar_min)) * float(residual.shape[-1])
+            if nll_shift > 0.0:
+                rot_nll_per = rot_nll_per + nll_shift
             rot_angle = residual.norm(dim=-1)
             rot_loss = rot_nll_per.mean()
             ident = pose_identifiability(module, logvar)
-            ambiguity = torch.exp(logvar).mean(dim=-1)
-            if rot_base is not None:
-                base_residual = so3_log_map(rot_base.transpose(-1, -2) @ rot_f, eps=float(module.pose_log_map_eps))
-                base_angle = base_residual.norm(dim=-1)
-            if delta_omega is not None:
-                delta_angle = torch.linalg.vector_norm(delta_omega, dim=-1)
+            if module.pose_ambiguity_use_std:
+                ambiguity_vals = torch.exp(0.5 * logvar)
+            else:
+                ambiguity_vals = torch.exp(logvar)
+            ambiguity = ambiguity_vals.mean(dim=-1).clamp_min(float(module.pose_ambiguity_floor))
             if module.pose_eq_gate_by_identifiability:
                 eq_gate = ident.detach()
 
@@ -495,50 +522,19 @@ def compute_pose_loss(module, pc: torch.Tensor, batch_idx: int, stage: str):
         return pose_loss, metrics
 
     rad_to_deg = 180.0 / math.pi
-    metrics = {
-        "pose_known_rotation_applied": xa.new_tensor(1.0, dtype=torch.float32),
-    }
+    metrics = {}
     if rot_nll_per is not None:
         metrics["pose_rot_nll"] = rot_nll_per.mean().to(dtype=torch.float32)
     if rot_angle is not None:
         metrics["pose_rot_angle_mean_deg"] = (rot_angle * rad_to_deg).mean().to(dtype=torch.float32)
-    if logvar is not None:
-        metrics["pose_logvar_mean"] = logvar.mean().to(dtype=torch.float32)
-        metrics["pose_logvar_std"] = logvar.std(unbiased=False).to(dtype=torch.float32)
     if ident is not None:
         metrics["pose_identifiability_mean"] = ident.mean().to(dtype=torch.float32)
-    if head_weight_mean is not None:
-        metrics["pose_head_weight_mean"] = head_weight_mean.to(dtype=torch.float32)
-    if head_weight_std is not None:
-        metrics["pose_head_weight_std"] = head_weight_std.to(dtype=torch.float32)
-    if base_angle is not None:
-        metrics["pose_base_angle_mean_deg"] = (base_angle * rad_to_deg).mean().to(dtype=torch.float32)
-    if delta_angle is not None:
-        metrics["pose_delta_angle_mean_deg"] = (delta_angle * rad_to_deg).mean().to(dtype=torch.float32)
     if module.pose_eq_loss_weight > 0:
-        metrics["pose_eq_mse"] = eq_err_per.mean().to(dtype=torch.float32)
-        metrics["pose_eq_gate_mean"] = eq_gate.mean().to(dtype=torch.float32)
         metrics["pose_eq_mse_weighted"] = (eq_gate * eq_err_per).mean().to(dtype=torch.float32)
 
     module._log_pose_ambiguity_histogram(
         stage,
         ambiguity,
-        identifiability=ident,
-        logvar=logvar,
         batch_idx=batch_idx,
     )
-
-    target_cap_deg = math.degrees(
-        apply_pose_curriculum(module, pose_rotation_cap_rad(module, mode=module.pose_view_rotation_mode))
-    )
-    metrics = {
-        **metrics,
-        "pose_target_max_deg": xa.new_tensor(float(target_cap_deg), dtype=torch.float32),
-    }
-
-    with torch.no_grad():
-        rot_f = rot.to(dtype=torch.float32)
-        eye = torch.eye(3, device=rot_f.device, dtype=rot_f.dtype).unsqueeze(0).expand_as(rot_f)
-        target_ang, _ = rotation_geodesic_angles(eye, rot_f, eps=float(module.symmetry_angle_eps))
-        metrics["pose_target_angle_mean_deg"] = (target_ang * (180.0 / math.pi)).mean()
     return pose_loss, metrics

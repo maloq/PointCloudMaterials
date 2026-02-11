@@ -18,6 +18,7 @@ Improvements over v1:
 from __future__ import annotations
 
 import pathlib
+import warnings
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 from collections import Counter, defaultdict
 
@@ -1372,8 +1373,13 @@ def _plot_object(
                 p1, p2 = coords[i], coords[j]
                 ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
                        color='#555555', linewidth=0.5, alpha=0.3)
-        except Exception:
-            pass
+        except Exception as exc:
+            warnings.warn(
+                "Delaunay edge construction failed in _plot_object; "
+                f"continuing without object edges. Error: {exc}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
 
     limit = max_dist * 1.2
     ax.set_xlim(-limit, limit)

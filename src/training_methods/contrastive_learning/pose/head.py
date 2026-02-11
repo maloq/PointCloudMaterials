@@ -56,6 +56,10 @@ class PoseRotationHead(nn.Module):
         self.generic_rot = nn.Linear(hidden, 6)
         self.generic_logvar = nn.Linear(hidden, 3)
 
+    def _module_device_dtype(self) -> tuple[torch.device, torch.dtype]:
+        p = next(self.parameters())
+        return p.device, p.dtype
+
     @staticmethod
     def _procrustes_rotation_from_cov(cov: torch.Tensor) -> torch.Tensor:
         u, _, vh = torch.linalg.svd(cov, full_matrices=False)
@@ -226,13 +230,18 @@ class PoseRotationHead(nn.Module):
         self,
         cov: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        cov_flat = cov.reshape(cov.shape[0], -1)
-        svals = torch.linalg.svdvals(cov)
-        h = self.cov_stem(torch.cat([cov_flat, svals], dim=-1))
-        delta_omega = self._clip_delta(self.cov_delta(h))
-        logvar = self.cov_logvar(h)
+        # Keep rotation/SVD numerics in float32, but feed MLPs in module dtype.
+        cov_f = cov.to(dtype=torch.float32)
+        cov_flat = cov_f.reshape(cov_f.shape[0], -1)
+        svals = torch.linalg.svdvals(cov_f)
 
-        rot_base = self._procrustes_rotation_from_cov(cov)
+        _, module_dtype = self._module_device_dtype()
+        stem_in = torch.cat([cov_flat, svals], dim=-1).to(dtype=module_dtype)
+        h = self.cov_stem(stem_in)
+        delta_omega = self._clip_delta(self.cov_delta(h)).to(dtype=torch.float32)
+        logvar = self.cov_logvar(h).to(dtype=torch.float32)
+
+        rot_base = self._procrustes_rotation_from_cov(cov_f)
         rot_delta = self._axis_angle_to_matrix(delta_omega)
         rot_hat = rot_delta @ rot_base
         return rot_hat, logvar, rot_base, delta_omega
@@ -247,6 +256,12 @@ class PoseRotationHead(nn.Module):
                 "Expected eq_a and eq_b with identical shape (B,C,3). "
                 f"Got {tuple(eq_a.shape)} and {tuple(eq_b.shape)}"
             )
+        module_device, module_dtype = self._module_device_dtype()
+        if eq_a.device != module_device or eq_a.dtype != module_dtype:
+            eq_a = eq_a.to(device=module_device, dtype=module_dtype)
+        if eq_b.device != module_device or eq_b.dtype != module_dtype:
+            eq_b = eq_b.to(device=module_device, dtype=module_dtype)
+
         na = torch.linalg.vector_norm(eq_a, dim=-1)
         nb = torch.linalg.vector_norm(eq_b, dim=-1)
         dot = (eq_a * eq_b).sum(dim=-1)
@@ -280,8 +295,9 @@ class PoseRotationHead(nn.Module):
             )
 
         summary = self._generic_summary_from_flat(x)
-        h = self.generic_stem(summary)
-        return self.generic_rot(h), self.generic_logvar(h)
+        _, module_dtype = self._module_device_dtype()
+        h = self.generic_stem(summary.to(dtype=module_dtype))
+        return self.generic_rot(h).to(dtype=torch.float32), self.generic_logvar(h).to(dtype=torch.float32)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         rot6d, _ = self.forward_with_uncertainty(x)

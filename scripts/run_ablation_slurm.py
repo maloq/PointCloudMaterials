@@ -80,12 +80,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         help="Deprecated alias for --sbatch-arg.",
     )
     parser.add_argument(
-        "--max-parallel",
-        type=int,
-        default=0,
-        help="Reserved for backward compatibility (ignored in sbatch mode).",
-    )
-    parser.add_argument(
         "--poll-interval",
         type=float,
         default=5.0,
