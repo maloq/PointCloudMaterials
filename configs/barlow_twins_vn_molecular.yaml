@@ -1,5 +1,6 @@
 defaults:
  - data: data_synth_polycrystalline_balanced_geometries
+ - _self_
 # - data: synth_modelnet_objects
 # - data: data_ae_Al_80
 project_name: pointnet
@@ -11,7 +12,12 @@ latent_size: 60  # Number of equivariant channels for latent vectors
 
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
+# Full-state training resume (restores epoch/optimizer/scheduler state).
 resume_from_checkpoint: null  # e.g. output/2026-02-07/20-43-14/your_model.ckpt
+# Weights-only initialization (starts a fresh run from loaded model params).
+init_from_checkpoint: null
+# If true, require exact state-dict key match when loading init weights.
+init_from_checkpoint_strict: false
 
 # data:
 #   synthetic:
@@ -40,7 +46,7 @@ encoder:
     sa_npoints: [80, 40]
     sa_channels: [128, 256]
     attn_hidden: 256
-    num_layers: 5
+    transformer_depth: 5
 
 
 # Decoder config is required by the model factory but is not used for Barlow Twins
@@ -55,6 +61,7 @@ learning_rate: 0.003
 batch_size: 256
 precision: bf16-true
 gradient_clip_val: 1.0
+accumulate_grad_batches: 1
 
 enable_swa: False
 swa_epoch_start: 1000
@@ -62,15 +69,13 @@ epochs: 120
 max_samples: 0
 
 gpu: True
-devices: [0, 1]
+devices: [0]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
-debug_startup: false
-debug_faulthandler_timeout: 60
 
 decay_rate: 0.0000
 

@@ -1,18 +1,17 @@
 import argparse
 import json
-import logging
 import os
 import sys
 import time
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Tuple
 import numpy as np
 import torch
 from hydra import compose, initialize
-from omegaconf import DictConfig, ListConfig
+from omegaconf import DictConfig
 
 sys.path.append(os.getcwd())
-logger = logging.getLogger(__name__)
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
 from src.training_methods.contrastive_learning.analysis_utils import (
@@ -24,6 +23,14 @@ from src.training_methods.contrastive_learning.analysis_utils import (
     segment_grains_with_pose_head,
 )
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
+from src.training_methods.contrastive_learning.supervised_cache import (
+    _infer_test_cluster_eval_k,
+)
+from src.utils.spd_metrics import (
+    compute_cluster_metrics,
+    compute_embedding_quality_metrics,
+)
+from src.utils.spd_utils import apply_rotation
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 from src.vis_tools.md_cluster_plot import (
     save_interactive_md_plot,
@@ -46,28 +53,18 @@ from src.vis_tools.tsne_vis import compute_tsne
 def _as_list_of_str(value: Any) -> list[str] | None:
     if value is None:
         return None
-    if isinstance(value, ListConfig):
-        value = list(value)
     if isinstance(value, str):
         return [value]
-    if isinstance(value, (list, tuple)) and all(isinstance(item, str) for item in value):
-        return list(value)
-    return None
+    return [str(v) for v in list(value)]
 
 
 def _as_list_of_int(value: Any, *, field_name: str = "value") -> list[int] | None:
     if value is None:
         return None
-    if isinstance(value, ListConfig):
-        value = list(value)
-    err = (
-        f"Invalid {field_name}: {value!r}. Expected format: [3, 4, 5] "
-        "(a non-empty list of integers)."
-    )
-    if not isinstance(value, list) or not value:
-        raise ValueError(err)
-        
-    return [int(v) for v in value]
+    values = list(value)
+    if not values:
+        raise ValueError(f"Invalid {field_name}: expected a non-empty list")
+    return [int(v) for v in values]
 
 
 def _positive_int_or_none(value: Any) -> int | None:
@@ -77,27 +74,6 @@ def _positive_int_or_none(value: Any) -> int | None:
     return value if value > 0 else None
 
 
-def _build_int_to_str_map(
-    value: Any,
-    *,
-    pair_order: str,
-) -> Dict[int, str]:
-    if isinstance(value, ListConfig):
-        value = list(value)
-    if isinstance(value, dict):
-        pairs = value.items()
-    elif isinstance(value, (list, tuple)):
-        pairs = value
-    else:
-        return {}
-
-    if pair_order == "id_name":
-        return {int(class_id): str(class_name) for class_id, class_name in pairs}
-    if pair_order == "name_id":
-        return {int(class_id): str(class_name) for class_name, class_id in pairs}
-    raise ValueError(f"Invalid pair_order: {pair_order!r}")
-
-
 def _unwrap_dataset(dataset: Any) -> Any:
     while hasattr(dataset, "dataset"):
         dataset = dataset.dataset
@@ -105,57 +81,319 @@ def _unwrap_dataset(dataset: Any) -> Any:
 
 
 def _extract_class_names(dataset: Any) -> Dict[int, str] | None:
-    if dataset is None:
-        return None
     dataset = _unwrap_dataset(dataset)
-
-    mapping = _build_int_to_str_map(
-        getattr(dataset, "idx_to_class", None),
-        pair_order="id_name",
-    )
-    if mapping:
-        return mapping
-
-    mapping = _build_int_to_str_map(
-        getattr(dataset, "class_to_idx", None),
-        pair_order="name_id",
-    )
-    if mapping:
-        return mapping
-
-    names = getattr(dataset, "class_names", None)
-    if names is None:
-        return None
-    if isinstance(names, ListConfig):
-        names = list(names)
-
-    if isinstance(names, dict):
-        mapping = _build_int_to_str_map(
-            names,
-            pair_order="id_name",
-        )
-        return mapping or None
-
-    if isinstance(names, (list, tuple)):
-        if all(isinstance(item, (list, tuple)) and len(item) == 2 for item in names):
-            mapping = _build_int_to_str_map(
-                names,
-                pair_order="id_name",
-            )
-            return mapping or None
-
-        # Per-sample class-name lists (with duplicates) are ambiguous; skip them.
-        if len({str(v) for v in names}) == len(names):
-            return {idx: str(value) for idx, value in enumerate(names)}
-        return None
-
-    return None
+    class_names = dict(dataset.class_names)
+    return {int(k): str(v) for k, v in class_names.items()}
 
 
 def _fmt_metric(value: Any, digits: int = 4) -> str:
     if isinstance(value, (float, np.floating)):
         return f"{float(value):.{digits}f}"
     return str(value)
+
+
+def _as_int_mapping(value: Any) -> dict[str, int]:
+    if value is None:
+        return {}
+    if isinstance(value, DictConfig):
+        value = dict(value)
+    if not hasattr(value, "items"):
+        return {}
+
+    out: dict[str, int] = {}
+    for key, raw in value.items():
+        try:
+            runs = int(raw)
+        except Exception:
+            continue
+        if runs > 0:
+            out[str(key)] = runs
+    return out
+
+
+def _extract_pc_and_class_id(batch: Any) -> tuple[torch.Tensor, torch.Tensor | None]:
+    return batch["points"], batch["class_id"]
+
+
+def _random_rotation_matrices(
+    batch_size: int,
+    device: torch.device,
+    dtype: torch.dtype,
+    *,
+    seed: int | None = None,
+) -> torch.Tensor:
+    generator = None
+    if seed is not None:
+        generator = torch.Generator(device="cpu")
+        generator.manual_seed(int(seed))
+    rand = torch.randn(
+        (batch_size, 3, 3),
+        dtype=torch.float32,
+        device="cpu",
+        generator=generator,
+    )
+    q, r = torch.linalg.qr(rand)
+    d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
+    d = torch.where(d == 0, torch.ones_like(d), d)
+    q = q * d.unsqueeze(-2)
+    det = torch.det(q)
+    neg_mask = det < 0
+    if torch.any(neg_mask):
+        q[neg_mask, :, 0] *= -1.0
+    return q.to(device=device, dtype=dtype)
+
+
+@contextmanager
+def _temporary_disable_dataset_aug(dataloader: torch.utils.data.DataLoader):
+    changes: list[tuple[Any, str, float]] = []
+    ds = getattr(dataloader, "dataset", None)
+    while ds is not None:
+        for attr in ("rotation_scale", "noise_scale", "jitter_scale", "scaling_range"):
+            if hasattr(ds, attr):
+                prev = float(getattr(ds, attr))
+                changes.append((ds, attr, prev))
+                if prev != 0.0:
+                    setattr(ds, attr, 0.0)
+        ds = getattr(ds, "dataset", None)
+    try:
+        yield
+    finally:
+        for target, attr, prev in changes:
+            setattr(target, attr, float(prev))
+
+
+def _collect_test_latents_labels(
+    model: BarlowTwinsModule,
+    dataloader: torch.utils.data.DataLoader,
+    device: str,
+    *,
+    max_samples_total: int | None = None,
+    apply_random_rotations: bool = False,
+    rotation_seed_base: int | None = None,
+    progress_every_batches: int = 25,
+    verbose: bool = False,
+) -> tuple[np.ndarray, np.ndarray]:
+    latents: list[torch.Tensor] = []
+    labels: list[torch.Tensor] = []
+    collected = 0
+    max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
+    every = max(1, int(progress_every_batches))
+
+    with torch.inference_mode():
+        for batch_idx, batch in enumerate(dataloader):
+            pc, class_id = _extract_pc_and_class_id(batch)
+            pc = pc.to(device=device, dtype=model.dtype, non_blocking=True)
+            if apply_random_rotations:
+                seed = None
+                if rotation_seed_base is not None:
+                    seed = int(rotation_seed_base) + int(batch_idx)
+                rots = _random_rotation_matrices(
+                    int(pc.shape[0]),
+                    pc.device,
+                    pc.dtype,
+                    seed=seed,
+                )
+                pc = apply_rotation(pc, rots)
+            if hasattr(model, "_prepare_model_input"):
+                pc = model._prepare_model_input(pc)
+
+            z, _, _ = model(pc)
+            z_cpu = z.detach().to(dtype=torch.float32).cpu()
+            class_id = class_id.detach().view(-1).to(dtype=torch.long).cpu()
+            take = min(int(z_cpu.shape[0]), int(class_id.shape[0]))
+            if max_samples is not None:
+                take = min(take, max_samples - collected)
+            if take <= 0:
+                break
+
+            latents.append(z_cpu[:take])
+            labels.append(class_id[:take])
+
+            collected += int(take)
+            if verbose and (batch_idx + 1) % every == 0:
+                print(
+                    "[analysis][test] "
+                    f"batch={batch_idx + 1} samples={collected}"
+                    + (f"/{max_samples}" if max_samples is not None else "")
+                )
+            if max_samples is not None and collected >= max_samples:
+                break
+
+    lat_arr = torch.cat(latents, dim=0).numpy() if latents else np.empty((0,), dtype=np.float32)
+    label_arr = torch.cat(labels, dim=0).numpy() if labels else np.empty((0,), dtype=np.int64)
+    return lat_arr, label_arr
+
+
+def _resolve_test_metric_settings(cfg: DictConfig) -> Dict[str, Any]:
+    test_cluster_eval_k = int(getattr(cfg, "test_cluster_eval_k", _infer_test_cluster_eval_k(cfg)))
+    test_cluster_acc_methods = _as_list_of_str(
+        getattr(cfg, "test_cluster_acc_methods", ["kmeans", "kmeans++", "gmm_full"])
+    ) or ["kmeans", "kmeans++", "gmm_full"]
+    test_cluster_acc_runs = int(getattr(cfg, "test_cluster_acc_runs", 1))
+    test_cluster_acc_runs_by_method = _as_int_mapping(getattr(cfg, "test_cluster_acc_runs_by_method", {}))
+    cluster_acc_seed = int(getattr(cfg, "cluster_acc_seed", 0))
+
+    test_max_samples = _positive_int_or_none(getattr(cfg, "analysis_test_max_samples", None))
+    if test_max_samples is None:
+        test_max_samples = _positive_int_or_none(getattr(cfg, "max_test_samples", None))
+
+    rotation_runs = int(getattr(cfg, "analysis_test_rotation_runs", 5))
+    rotation_seed = int(getattr(cfg, "analysis_test_rotation_seed", 12345))
+
+    return {
+        "hungarian_eval_k": test_cluster_eval_k,
+        "acc_eval_methods": test_cluster_acc_methods,
+        "acc_eval_runs": test_cluster_acc_runs,
+        "acc_eval_runs_by_method": test_cluster_acc_runs_by_method,
+        "acc_random_seed": cluster_acc_seed,
+        "max_samples": test_max_samples,
+        "rotation_runs": rotation_runs,
+        "rotation_seed": rotation_seed,
+    }
+
+
+def _to_finite_float(value: Any) -> float | None:
+    try:
+        val = float(value)
+    except Exception:
+        return None
+    return val if np.isfinite(val) else None
+
+
+def _primary_accuracy_key(cluster_metrics: dict[str, Any], eval_k: int | None) -> str | None:
+    preferred = f"ACC_KMEANS_HUNGARIAN_K{eval_k}"
+    if preferred in cluster_metrics:
+        return preferred
+    return next(
+        key
+        for key in sorted(cluster_metrics.keys())
+        if key.startswith("ACC_")
+        and not key.endswith("_MEAN")
+        and not key.endswith("_STD")
+        and not key.endswith("_BEST")
+        and not key.endswith("_RUNS")
+    )
+
+
+def _aggregate_metric(values: list[float | None]) -> dict[str, Any]:
+    valid = [float(v) for v in values if _to_finite_float(v) is not None]
+    if not valid:
+        return {"mean": None, "std": None, "min": None, "max": None, "n_valid": 0}
+    arr = np.asarray(valid, dtype=np.float64)
+    return {
+        "mean": float(arr.mean()),
+        "std": float(arr.std()),
+        "min": float(arr.min()),
+        "max": float(arr.max()),
+        "n_valid": int(arr.size),
+    }
+
+
+def _evaluate_test_run(
+    model: BarlowTwinsModule,
+    dataloader: torch.utils.data.DataLoader,
+    device: str,
+    settings: dict[str, Any],
+    *,
+    progress_every_batches: int,
+    apply_random_rotations: bool,
+    rotation_seed_base: int | None = None,
+    include_embedding_metrics: bool = False,
+) -> dict[str, Any]:
+    latents, labels = _collect_test_latents_labels(
+        model,
+        dataloader,
+        device,
+        max_samples_total=settings["max_samples"],
+        apply_random_rotations=apply_random_rotations,
+        rotation_seed_base=rotation_seed_base,
+        progress_every_batches=progress_every_batches,
+        verbose=True,
+    )
+    cluster_metrics = (
+        compute_cluster_metrics(
+            latents,
+            labels,
+            stage="test",
+            hungarian_eval_k=settings["hungarian_eval_k"],
+            acc_eval_methods=settings["acc_eval_methods"],
+            acc_eval_runs=settings["acc_eval_runs"],
+            acc_eval_runs_by_method=settings["acc_eval_runs_by_method"],
+            acc_random_seed=settings["acc_random_seed"],
+        )
+        or {}
+    )
+    embedding_metrics = {}
+    if include_embedding_metrics:
+        embedding_metrics = (
+            compute_embedding_quality_metrics(
+                latents,
+                labels,
+                include_expensive=True,
+            )
+            or {}
+        )
+
+    acc_key = _primary_accuracy_key(cluster_metrics, settings["hungarian_eval_k"])
+    result = {
+        "num_samples": int(latents.shape[0]),
+        "labels_available": True,
+        "accuracy": _to_finite_float(cluster_metrics.get(acc_key)),
+        "nmi": _to_finite_float(cluster_metrics.get("NMI")),
+        "ari": _to_finite_float(cluster_metrics.get("ARI")),
+        "cluster_metrics": cluster_metrics,
+    }
+    result["accuracy_key"] = acc_key
+    if embedding_metrics:
+        result["embedding_metrics"] = embedding_metrics
+    return result
+
+
+def _run_test_phase_metrics(
+    model: BarlowTwinsModule,
+    dm: Any,
+    cfg: DictConfig,
+    device: str,
+    *,
+    progress_every_batches: int = 25,
+) -> Dict[str, Any]:
+    settings = _resolve_test_metric_settings(cfg)
+    test_dl = dm.test_dataloader()
+    with _temporary_disable_dataset_aug(test_dl):
+        canonical_result = _evaluate_test_run(
+            model,
+            test_dl,
+            device,
+            settings,
+            progress_every_batches=progress_every_batches,
+            apply_random_rotations=False,
+            include_embedding_metrics=True,
+        )
+        multi_rotation_runs = []
+        for run_idx in range(settings["rotation_runs"]):
+            run_result = _evaluate_test_run(
+                model,
+                test_dl,
+                device,
+                settings,
+                progress_every_batches=progress_every_batches,
+                apply_random_rotations=True,
+                rotation_seed_base=settings["rotation_seed"] + run_idx * 10000,
+            )
+            run_result["rotation_run"] = int(run_idx + 1)
+            multi_rotation_runs.append(run_result)
+
+    return {
+        "settings": settings,
+        "canonical": canonical_result,
+        "multi_rotation": {
+            "num_rotations": int(settings["rotation_runs"]),
+            "accuracy": _aggregate_metric([run.get("accuracy") for run in multi_rotation_runs]),
+            "nmi": _aggregate_metric([run.get("nmi") for run in multi_rotation_runs]),
+            "ari": _aggregate_metric([run.get("ari") for run in multi_rotation_runs]),
+            "runs": multi_rotation_runs,
+        },
+    }
 
 
 def load_barlow_model(
@@ -199,6 +437,8 @@ def run_post_training_analysis(
     max_batches_latent: int | None = None,
     max_samples_visualization: int | None = None,
     data_files_override: list[str] | None = None,
+    test_rotation_runs: int | None = None,
+    test_max_samples: int | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for Barlow Twins."""
     out_dir = Path(output_dir)
@@ -214,41 +454,36 @@ def run_post_training_analysis(
     _step("Loading model")
     model, cfg, device = load_barlow_model(checkpoint_path, cuda_device=cuda_device, cfg=cfg)
 
+    if test_rotation_runs is not None:
+        cfg.analysis_test_rotation_runs = int(test_rotation_runs)
+    if test_max_samples is not None:
+        cfg.analysis_test_max_samples = int(test_max_samples)
+
     def _resolve_analysis_files() -> list[str] | None:
-        if getattr(cfg, "data", None) is None:
-            return None
-        if getattr(cfg.data, "kind", None) != "real":
+        if cfg.data.kind != "real":
             return None
         if data_files_override:
             return data_files_override
-        files = _as_list_of_str(getattr(cfg.data, "analysis_data_files", None))
+        files = _as_list_of_str(cfg.data.analysis_data_files)
         if files:
             return files
-        if hasattr(cfg.data, "analysis_data_file"):
-            file = cfg.data.analysis_data_file
-            if isinstance(file, str):
-                return [file]
-        data_files = _as_list_of_str(getattr(cfg.data, "data_files", None))
-        if not data_files:
-            return None
-        analysis_single = bool(getattr(cfg.data, "analysis_single_timestep", True))
+        if cfg.data.analysis_data_file:
+            return [cfg.data.analysis_data_file]
+        data_files = _as_list_of_str(cfg.data.data_files)
+        analysis_single = bool(cfg.data.analysis_single_timestep)
         if not analysis_single:
             return data_files
         mid_idx = len(data_files) // 2
         return [data_files[mid_idx]]
 
     analysis_files = _resolve_analysis_files()
-    if analysis_files is not None and getattr(cfg, "data", None) is not None:
+    if analysis_files is not None:
         cfg.data.data_files = analysis_files
         print(f"Analysis data_files: {analysis_files}")
 
     # Prefer single-process data loading for analysis to avoid semaphore/shm issues
     # in restricted runtime environments. Can be overridden via config.
-    analysis_num_workers = int(getattr(cfg, "analysis_num_workers", 0))
-    if hasattr(cfg, "num_workers"):
-        cfg.num_workers = analysis_num_workers
-    if getattr(cfg, "data", None) is not None and hasattr(cfg.data, "num_workers"):
-        cfg.data.num_workers = analysis_num_workers
+    analysis_num_workers = 4
     print(f"Analysis dataloader workers: {analysis_num_workers}")
 
     tsne_max_samples = int(getattr(cfg, "analysis_tsne_max_samples", 8000))
@@ -277,7 +512,7 @@ def run_post_training_analysis(
     hdbscan_max_fit_samples = int(getattr(cfg, "analysis_hdbscan_max_fit_samples", 50000))
     hdbscan_target_k_min = int(getattr(cfg, "analysis_hdbscan_target_k_min", 5))
     hdbscan_target_k_max = int(getattr(cfg, "analysis_hdbscan_target_k_max", 6))
-    hdbscan_min_samples = getattr(cfg, "analysis_hdbscan_min_samples", None)
+    hdbscan_min_samples = cfg.analysis_hdbscan_min_samples
     if hdbscan_min_samples is not None:
         hdbscan_min_samples = int(hdbscan_min_samples)
     hdbscan_cluster_selection_epsilon = float(
@@ -286,16 +521,11 @@ def run_post_training_analysis(
     hdbscan_cluster_selection_method = str(
         getattr(cfg, "analysis_hdbscan_cluster_selection_method", "leaf")
     ).lower()
-    hdbscan_min_cluster_size_candidates_cfg = getattr(
-        cfg, "analysis_hdbscan_min_cluster_size_candidates", None
+    hdbscan_min_cluster_size_candidates = (
+        [int(v) for v in cfg.analysis_hdbscan_min_cluster_size_candidates]
+        if cfg.analysis_hdbscan_min_cluster_size_candidates is not None
+        else None
     )
-    hdbscan_min_cluster_size_candidates = None
-    if isinstance(hdbscan_min_cluster_size_candidates_cfg, ListConfig):
-        hdbscan_min_cluster_size_candidates = [
-            int(v) for v in hdbscan_min_cluster_size_candidates_cfg
-        ]
-    elif isinstance(hdbscan_min_cluster_size_candidates_cfg, list):
-        hdbscan_min_cluster_size_candidates = [int(v) for v in hdbscan_min_cluster_size_candidates_cfg]
     grain_enabled = bool(getattr(cfg, "analysis_grain_enabled", True))
     grain_knn_k = int(getattr(cfg, "analysis_grain_knn_k", 12))
     grain_edge_weight_threshold = float(
@@ -329,6 +559,18 @@ def run_post_training_analysis(
     is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
 
     dm.setup(stage="fit")
+    all_metrics: Dict[str, Any] = {}
+
+    _step("Running test-phase metrics")
+    test_phase_metrics = _run_test_phase_metrics(
+        model,
+        dm,
+        cfg,
+        device,
+        progress_every_batches=progress_every_batches,
+    )
+    all_metrics["test_phase"] = test_phase_metrics
+
     print("Using ALL dataset splits (train + test) for latent analysis")
 
     if is_synthetic:
@@ -340,11 +582,11 @@ def run_post_training_analysis(
         dl = torch.utils.data.DataLoader(
             combined_dataset,
             batch_size=cfg.batch_size,
-            num_workers=cfg.num_workers,
+            num_workers=4,
             shuffle=False,
             drop_last=False,
             pin_memory=True,
-            persistent_workers=cfg.num_workers > 0,
+            persistent_workers=True,
         )
     else:
         dl = build_real_coords_dataloader(cfg, dm, use_train_data=True, use_full_dataset=True)
@@ -352,13 +594,8 @@ def run_post_training_analysis(
             "Real data detected: using full dataset for local-structure clustering visualization"
         )
 
-    class_names = _extract_class_names(getattr(dm, "train_dataset", None))
-    if class_names is not None:
-        print(f"Loaded class names: {class_names}")
-    if class_names is None:
-        class_names = _extract_class_names(getattr(dl, "dataset", None))
-        if class_names is not None:
-            print(f"Loaded class names from DL: {class_names}")
+    class_names = _extract_class_names(dm.train_dataset)
+    print(f"Loaded class names: {class_names}")
 
     if max_batches_latent is None:
         max_batches_latent = _positive_int_or_none(getattr(cfg, "analysis_max_batches_latent", None))
@@ -394,8 +631,6 @@ def run_post_training_analysis(
     has_phases = cache["phases"].size == n_samples
     gt_instance_ids = cache.get("instance_ids", np.empty((0,), dtype=int))
     has_gt_grains = gt_instance_ids.size == n_samples and np.any(gt_instance_ids >= 0)
-
-    all_metrics: Dict[str, Any] = {}
 
     if is_synthetic:
         _step("Computing t-SNE visualization")
@@ -443,33 +678,14 @@ def run_post_training_analysis(
     )
     all_metrics["clustering"] = clustering_metrics
 
-    coords = cache.get("coords", np.empty((0, 3), dtype=np.float32))
-    has_valid_coords = (
-        coords.ndim == 2
-        and coords.shape[1] >= 3
-        and coords.shape[0] == len(cache["inv_latents"])
-    )
-    if not has_valid_coords:
-        if is_synthetic and not coords.size:
-            print(
-                "Synthetic dataset did not provide sample coordinates; "
-                "skipping MD-space clustering visualization."
-            )
-        else:
-            print(
-                "Warning: coordinate count does not match latent count; "
-                "skipping spatial clustering visualization."
-            )
-        coords = np.empty((0, 3), dtype=np.float32)
+    coords = cache["coords"]
 
     md_metrics_key = "synthetic_md" if is_synthetic else "real_md"
     num_latents = len(cache["inv_latents"])
-    configured_k_values = []
-    if isinstance(clustering_metrics, dict):
-        configured_k_values = _as_list_of_int(
-            clustering_metrics.get("k_values_evaluated", None),
-            field_name="clustering.k_values_evaluated",
-        ) or []
+    configured_k_values = _as_list_of_int(
+        clustering_metrics.get("k_values_evaluated", None),
+        field_name="clustering.k_values_evaluated",
+    ) or []
     if not configured_k_values:
         configured_k_values = [int(k) for k in cluster_k_values]
     configured_k_values = [max(2, min(int(k), num_latents)) for k in configured_k_values]
@@ -477,28 +693,10 @@ def run_post_training_analysis(
     if not configured_k_values:
         configured_k_values = [max(2, min(num_latents, 3))]
 
-    selected_method_by_k_cfg: Dict[int, str] = {}
-    selected_method_parse_errors = 0
-    selected_method_first_error: tuple[Any, Any] | None = None
-    if isinstance(clustering_metrics, dict):
-        raw_selected = clustering_metrics.get("selected_method_by_k", {})
-        if isinstance(raw_selected, dict):
-            for key, value in raw_selected.items():
-                if isinstance(key, bool) or not isinstance(key, (int, np.integer)):
-                    selected_method_parse_errors += 1
-                    if selected_method_first_error is None:
-                        selected_method_first_error = (key, value)
-                    continue
-                selected_method_by_k_cfg[int(key)] = str(value).lower()
-    if selected_method_parse_errors and selected_method_first_error is not None:
-        bad_key, bad_value = selected_method_first_error
-        logger.warning(
-            "Ignoring %d invalid entries in clustering.selected_method_by_k; "
-            "example key=%r value=%r",
-            selected_method_parse_errors,
-            bad_key,
-            bad_value,
-        )
+    selected_method_by_k_cfg: Dict[int, str] = {
+        int(key): str(value).lower()
+        for key, value in clustering_metrics.get("selected_method_by_k", {}).items()
+    }
 
     def _compute_labels_for_k(k_value: int, *, method_name: str):
         return compute_kmeans_labels(
@@ -512,49 +710,47 @@ def run_post_training_analysis(
             return_info=True,
         )
 
-    if (not is_synthetic) or coords.size:
-        cluster_labels_by_k: Dict[int, np.ndarray] = {}
-        cluster_methods_by_k: Dict[int, str] = {}
-        for k_val in configured_k_values:
-            method_for_k = selected_method_by_k_cfg.get(int(k_val), cluster_method)
-            labels_k, fit_info_k = _compute_labels_for_k(
-                int(k_val),
-                method_name=method_for_k,
-            )
-            cluster_labels_by_k[int(k_val)] = labels_k
-            cluster_methods_by_k[int(k_val)] = str(fit_info_k.get("method", method_for_k))
+    cluster_labels_by_k: Dict[int, np.ndarray] = {}
+    cluster_methods_by_k: Dict[int, str] = {}
+    for k_val in configured_k_values:
+        method_for_k = selected_method_by_k_cfg.get(int(k_val), cluster_method)
+        labels_k, fit_info_k = _compute_labels_for_k(
+            int(k_val),
+            method_name=method_for_k,
+        )
+        cluster_labels_by_k[int(k_val)] = labels_k
+        cluster_methods_by_k[int(k_val)] = str(fit_info_k.get("method", method_for_k))
 
-        primary_k = int(configured_k_values[0])
-        cluster_labels = cluster_labels_by_k[primary_k]
-        cluster_label_method = cluster_methods_by_k.get(primary_k, cluster_method)
-        if "clustering" in all_metrics and isinstance(all_metrics["clustering"], dict):
-            all_metrics["clustering"]["labels_k_method"] = cluster_label_method
-            all_metrics["clustering"]["labels_method_by_k"] = {
-                int(k): cluster_methods_by_k[int(k)] for k in configured_k_values
-            }
-            all_metrics["clustering"]["primary_k"] = int(primary_k)
-            all_metrics["clustering"]["k_values_used"] = [int(k) for k in configured_k_values]
+    primary_k = int(configured_k_values[0])
+    cluster_labels = cluster_labels_by_k[primary_k]
+    cluster_label_method = cluster_methods_by_k.get(primary_k, cluster_method)
+    all_metrics["clustering"]["labels_k_method"] = cluster_label_method
+    all_metrics["clustering"]["labels_method_by_k"] = {
+        int(k): cluster_methods_by_k[int(k)] for k in configured_k_values
+    }
+    all_metrics["clustering"]["primary_k"] = int(primary_k)
+    all_metrics["clustering"]["k_values_used"] = [int(k) for k in configured_k_values]
 
-        _step("Computing t-SNE visualization (clusters)")
-        tsne_n_iter = int(getattr(cfg, "analysis_tsne_n_iter", 1000))
-        tsne_idx = _sample_indices(len(cache["inv_latents"]), tsne_max_samples)
-        tsne_latents = cache["inv_latents"][tsne_idx]
-        tsne_perplexity = min(50, max(5, len(tsne_latents) // 100))
-        tsne_coords = compute_tsne(tsne_latents, perplexity=tsne_perplexity, n_iter=tsne_n_iter)
+    _step("Computing t-SNE visualization (clusters)")
+    tsne_n_iter = int(getattr(cfg, "analysis_tsne_n_iter", 1000))
+    tsne_idx = _sample_indices(len(cache["inv_latents"]), tsne_max_samples)
+    tsne_latents = cache["inv_latents"][tsne_idx]
+    tsne_perplexity = min(50, max(5, len(tsne_latents) // 100))
+    tsne_coords = compute_tsne(tsne_latents, perplexity=tsne_perplexity, n_iter=tsne_n_iter)
 
-        for idx_k, k_val in enumerate(configured_k_values):
-            labels_k = cluster_labels_by_k[int(k_val)]
-            method_k = cluster_methods_by_k.get(int(k_val), cluster_method)
-            out_name = "latent_tsne_clusters.png" if idx_k == 0 else f"latent_tsne_clusters_k{k_val}.png"
-            save_tsne_plot_with_coords(
-                tsne_coords,
-                labels_k[tsne_idx],
-                out_dir,
-                out_name=out_name,
-                title=f"Latent space t-SNE ({method_k}, k={k_val})",
-            )
+    for idx_k, k_val in enumerate(configured_k_values):
+        labels_k = cluster_labels_by_k[int(k_val)]
+        method_k = cluster_methods_by_k.get(int(k_val), cluster_method)
+        out_name = "latent_tsne_clusters.png" if idx_k == 0 else f"latent_tsne_clusters_k{k_val}.png"
+        save_tsne_plot_with_coords(
+            tsne_coords,
+            labels_k[tsne_idx],
+            out_dir,
+            out_name=out_name,
+            title=f"Latent space t-SNE ({method_k}, k={k_val})",
+        )
 
-        if coords.size and cluster_labels.size:
+        if idx_k == 0:
             _step("Saving coordinate-space clustering outputs")
             interactive_max_points = _positive_int_or_none(
                 getattr(cfg, "analysis_interactive_max_points", None)
@@ -836,6 +1032,24 @@ def run_post_training_analysis(
     print("=" * 60)
     print(f"Total samples analyzed: {n_samples}")
 
+    if "test_phase" in all_metrics:
+        test_phase = all_metrics["test_phase"]
+        canonical = test_phase.get("canonical", {})
+        multi_rotation = test_phase.get("multi_rotation", {})
+        print(
+            "Test canonical: "
+            f"ACC={_fmt_metric(canonical.get('accuracy', 'N/A'))}, "
+            f"NMI={_fmt_metric(canonical.get('nmi', 'N/A'))}, "
+            f"ARI={_fmt_metric(canonical.get('ari', 'N/A'))}"
+        )
+        print(
+            "Test multi-rotation (mean): "
+            f"ACC={_fmt_metric(multi_rotation.get('accuracy', {}).get('mean', 'N/A'))}, "
+            f"NMI={_fmt_metric(multi_rotation.get('nmi', {}).get('mean', 'N/A'))}, "
+            f"ARI={_fmt_metric(multi_rotation.get('ari', {}).get('mean', 'N/A'))}"
+        )
+        print(f"Test multi-rotation runs: {multi_rotation.get('num_rotations', 'N/A')}")
+
     if "pca" in all_metrics and all_metrics["pca"]:
         print(f"PCA: {all_metrics['pca'].get('n_components_95_var', 'N/A')} components for 95% variance")
 
@@ -954,6 +1168,18 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Override real data files (repeat for multiple). Example: --data_file 175ps.off",
     )
+    parser.add_argument(
+        "--test_rotation_runs",
+        type=int,
+        default=None,
+        help="Override number of random-rotation test runs (default: analysis_test_rotation_runs or 5).",
+    )
+    parser.add_argument(
+        "--test_max_samples",
+        type=int,
+        default=None,
+        help="Override max samples for test-phase metrics (default: analysis_test_max_samples or max_test_samples).",
+    )
     return parser.parse_args()
 
 
@@ -982,6 +1208,8 @@ def main() -> None:
         max_batches_latent=args.max_batches_latent,
         max_samples_visualization=args.max_samples_visualization,
         data_files_override=args.data_file,
+        test_rotation_runs=args.test_rotation_runs,
+        test_max_samples=args.test_max_samples,
     )
 
 

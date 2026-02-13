@@ -42,9 +42,23 @@ class BarlowTwinsModule(pl.LightningModule):
         self.encoder, _ = build_model(cfg)
 
         latent_dim = resolve_latent_dim(cfg)
-        self.barlow = BarlowTwinsLoss.from_config(cfg, input_dim=latent_dim)
+        self.norms_only_latent = bool(getattr(cfg, "contrastive_norms_only_latent", False))
+        invariant_mode_override = "norms" if self.norms_only_latent else None
+        self.barlow = BarlowTwinsLoss.from_config(
+            cfg,
+            input_dim=latent_dim,
+            invariant_mode_override=invariant_mode_override,
+        )
         vicreg_enabled = bool(getattr(cfg, "vicreg_enabled", False))
-        self.vicreg = VICRegLoss.from_config(cfg, input_dim=latent_dim) if vicreg_enabled else None
+        self.vicreg = (
+            VICRegLoss.from_config(
+                cfg,
+                input_dim=latent_dim,
+                invariant_mode_override=invariant_mode_override,
+            )
+            if vicreg_enabled
+            else None
+        )
 
         data_cfg = getattr(cfg, "data", None)
         self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
@@ -64,6 +78,7 @@ class BarlowTwinsModule(pl.LightningModule):
 
         init_pose_components(self, cfg, latent_dim)
         init_supervised_cache(self, cfg)
+        self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
 
     @property
     def barlow_projector(self):
@@ -98,13 +113,21 @@ class BarlowTwinsModule(pl.LightningModule):
                 raise ValueError("Encoder returned empty output")
             inv_z = enc_out[0]
             eq_z = None
-            if len(enc_out) > 1:
-                candidate = enc_out[1]
-                if torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3:
-                    if inv_z is not None and inv_z.dim() == 2 and candidate.shape[1] == inv_z.shape[1]:
+            for candidate in enc_out[1:]:
+                if not (torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3):
+                    continue
+                # Accept canonical equivariant outputs (B, C, 3) where C matches
+                # invariant width; reject auxiliary transform matrices (B, 3, 3).
+                if torch.is_tensor(inv_z) and inv_z.dim() == 2:
+                    if candidate.shape[1] == inv_z.shape[1]:
                         eq_z = candidate
-                    elif candidate.shape[1] != 3:
-                        eq_z = candidate
+                        break
+                    if candidate.shape[1] == 3:
+                        continue
+                # Fallback for encoders that only expose equivariant latents.
+                if candidate.shape[1] != 3:
+                    eq_z = candidate
+                    break
             return inv_z, eq_z
         return enc_out, None
 
@@ -146,11 +169,16 @@ class BarlowTwinsModule(pl.LightningModule):
         pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
         pc = self._prepare_model_input(pc_raw)
 
-        # Embeddings for metrics
-        inv_z, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
-        z = self._invariant_latent(inv_z, eq_z)
-        if z is not None and stage in self._supervised_cache:
-            self._cache_supervised_batch(stage, z, meta)
+        # Cache embeddings for supervised diagnostics only when requested.
+        should_cache_stage = stage in self._supervised_cache and (
+            stage != "train" or self.cache_train_supervised_metrics
+        )
+        if should_cache_stage:
+            with torch.no_grad():
+                inv_z, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
+                z = self._invariant_latent(inv_z, eq_z)
+            if z is not None:
+                self._cache_supervised_batch(stage, z, meta)
 
         losses = {}
 

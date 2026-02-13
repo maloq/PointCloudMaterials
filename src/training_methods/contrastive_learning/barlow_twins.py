@@ -21,7 +21,11 @@ class BarlowTwinsLoss(nn.Module):
         drop_ratio: float,
         view_points: int | None,
         neighbor_view: bool,
+        neighbor_view_mode: str,
         neighbor_k: int,
+        neighbor_max_relative_distance: float,
+        view_crop_mode: str,
+        drop_apply_to_both: bool,
         rotation_mode: str,
         rotation_deg: float,
         strain_std: float,
@@ -49,7 +53,11 @@ class BarlowTwinsLoss(nn.Module):
         self.drop_ratio = float(drop_ratio)
         self.view_points = int(view_points) if view_points is not None else None
         self.neighbor_view = bool(neighbor_view)
+        self.neighbor_view_mode = str(neighbor_view_mode).lower()
         self.neighbor_k = int(neighbor_k)
+        self.neighbor_max_relative_distance = max(0.0, float(neighbor_max_relative_distance))
+        self.view_crop_mode = str(view_crop_mode).lower()
+        self.drop_apply_to_both = bool(drop_apply_to_both)
         self.rotation_mode = str(rotation_mode).lower()
         self.rotation_deg = float(rotation_deg)
         self.strain_std = float(strain_std)
@@ -88,7 +96,7 @@ class BarlowTwinsLoss(nn.Module):
             )
 
     @classmethod
-    def from_config(cls, cfg, *, input_dim):
+    def from_config(cls, cfg, *, input_dim, invariant_mode_override: str | None = None):
         data_cfg = getattr(cfg, "data", None)
         view_points = getattr(cfg, "barlow_view_points", None)
         if view_points is None and data_cfg is not None:
@@ -99,6 +107,11 @@ class BarlowTwinsLoss(nn.Module):
         jitter_mode = str(getattr(cfg, "barlow_jitter_mode", "absolute")).lower()
         jitter_scale_cfg = getattr(cfg, "barlow_jitter_scale", None)
         jitter_scale = cls._resolve_jitter_scale(cfg, jitter_mode=jitter_mode, jitter_scale=jitter_scale_cfg)
+        invariant_mode = (
+            str(invariant_mode_override).lower()
+            if invariant_mode_override is not None
+            else str(getattr(cfg, "barlow_invariant_mode", "norms")).lower()
+        )
 
         return cls(
             enabled=bool(getattr(cfg, "barlow_enabled", False)),
@@ -112,7 +125,13 @@ class BarlowTwinsLoss(nn.Module):
             drop_ratio=float(getattr(cfg, "barlow_drop_ratio", 0.2)),
             view_points=int(view_points) if view_points is not None else None,
             neighbor_view=bool(getattr(cfg, "barlow_neighbor_view", False)),
+            neighbor_view_mode=str(getattr(cfg, "barlow_neighbor_view_mode", "both")),
             neighbor_k=int(getattr(cfg, "barlow_neighbor_k", 8)),
+            neighbor_max_relative_distance=float(
+                getattr(cfg, "barlow_neighbor_max_relative_distance", 0.0)
+            ),
+            view_crop_mode=str(getattr(cfg, "barlow_view_crop_mode", "random")),
+            drop_apply_to_both=bool(getattr(cfg, "barlow_drop_apply_to_both", True)),
             rotation_mode=str(getattr(cfg, "barlow_rotation_mode", "none")),
             rotation_deg=float(getattr(cfg, "barlow_rotation_deg", 0.0)),
             strain_std=float(getattr(cfg, "barlow_strain_std", 0.0)),
@@ -122,7 +141,7 @@ class BarlowTwinsLoss(nn.Module):
             occlusion_slab_frac=float(getattr(cfg, "barlow_occlusion_slab_frac", 0.4)),
             occlusion_cone_deg=float(getattr(cfg, "barlow_occlusion_cone_deg", 20.0)),
             input_dim=input_dim,
-            invariant_mode=str(getattr(cfg, "barlow_invariant_mode", "norms")),
+            invariant_mode=invariant_mode,
             invariant_max_factor=float(getattr(cfg, "barlow_invariant_max_factor", 4.0)),
             invariant_groups=int(getattr(cfg, "barlow_invariant_groups", 0)),
             invariant_use_third_order=bool(getattr(cfg, "barlow_invariant_use_third_order", True)),
@@ -171,18 +190,18 @@ class BarlowTwinsLoss(nn.Module):
         proj_dtype = next(self.projector.parameters()).dtype
         z_a = self.projector(inv_a.to(dtype=proj_dtype))
         z_b = self.projector(inv_b.to(dtype=proj_dtype))
-        loss = self._loss(z_a, z_b)
-        metrics = {}
+        loss, metrics = self._loss(z_a, z_b)
         if not torch.isfinite(loss).item():
             metrics["barlow_nonfinite"] = pc.new_tensor(1.0)
             loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
     def sample_view_pair(self, pc: torch.Tensor) -> dict[str, torch.Tensor]:
-        y_a, meta_a = self._augment(pc, use_neighbor=False, return_metadata=True)
+        use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
+        y_a, meta_a = self._augment(pc, use_neighbor=use_neighbor_a, return_metadata=True)
         y_b, meta_b = self._augment(
             pc,
-            use_neighbor=self.neighbor_view,
+            use_neighbor=use_neighbor_b,
             return_metadata=True,
         )
         return {
@@ -191,6 +210,27 @@ class BarlowTwinsLoss(nn.Module):
             "rot_a": meta_a["rotation"],
             "rot_b": meta_b["rotation"],
         }
+
+    def _resolve_neighbor_flags(self, *, device) -> tuple[bool, bool]:
+        if not self.neighbor_view:
+            return False, False
+        mode = self.neighbor_view_mode
+        if mode == "none":
+            return False, False
+        if mode == "first":
+            return True, False
+        if mode == "second":
+            return False, True
+        if mode == "random":
+            use_a = bool((torch.rand((), device=device) < 0.5).item())
+            use_b = bool((torch.rand((), device=device) < 0.5).item())
+            if not (use_a or use_b):
+                if bool((torch.rand((), device=device) < 0.5).item()):
+                    use_a = True
+                else:
+                    use_b = True
+            return use_a, use_b
+        return True, True
 
     def _augment(
         self,
@@ -202,9 +242,13 @@ class BarlowTwinsLoss(nn.Module):
         x = pc
         meta: dict[str, torch.Tensor] = {}
         if use_neighbor:
-            x = shift_to_neighbor(x, neighbor_k=self.neighbor_k)
+            x = shift_to_neighbor(
+                x,
+                neighbor_k=self.neighbor_k,
+                max_relative_distance=self.neighbor_max_relative_distance,
+            )
         if self.view_points is not None:
-            x = crop_to_num_points(x, self.view_points)
+            x = crop_to_num_points(x, self.view_points, mode=self.view_crop_mode)
         if return_metadata:
             x, rot = self._apply_rotation(x, return_rotation=True)
             meta["rotation"] = rot
@@ -219,7 +263,8 @@ class BarlowTwinsLoss(nn.Module):
                 x = self._occlude_cone(x)
         if self.jitter_std > 0:
             x = x + torch.randn_like(x) * (self.jitter_std * self.jitter_scale)
-        if self.drop_ratio > 0 and not use_neighbor:
+        apply_drop = self.drop_ratio > 0 and (self.drop_apply_to_both or (not use_neighbor))
+        if apply_drop:
             bsz, num_points, _ = x.shape
             keep = (torch.rand(bsz, num_points, device=x.device) > self.drop_ratio)
             keep[:, 0] = True
@@ -343,8 +388,9 @@ class BarlowTwinsLoss(nn.Module):
         span = (proj_max - proj_min).clamp_min(1e-6)
         half_width = 0.5 * frac * span
         center = 0.5 * (proj_min + proj_max)
-        mask = (proj - center.unsqueeze(-1)).abs() <= half_width.unsqueeze(-1)
-        return self._resample_masked(x, mask)
+        drop_mask = (proj - center.unsqueeze(-1)).abs() <= half_width.unsqueeze(-1)
+        keep_mask = ~drop_mask
+        return self._resample_masked(x, keep_mask)
 
     def _occlude_cone(self, x: torch.Tensor) -> torch.Tensor:
         angle_deg = float(self.occlusion_cone_deg)
@@ -356,24 +402,24 @@ class BarlowTwinsLoss(nn.Module):
         eps = 1e-8
         cos_theta = math.cos(math.radians(angle_deg))
         cos_val = (x * axis.unsqueeze(1)).sum(dim=-1) / (r.clamp_min(eps))
-        mask = cos_val >= cos_theta
-        mask = mask | (r <= eps)
-        return self._resample_masked(x, mask)
+        drop_mask = (cos_val >= cos_theta) & (r > eps)
+        keep_mask = ~drop_mask
+        return self._resample_masked(x, keep_mask)
 
     @staticmethod
-    def _resample_masked(x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-        if mask is None:
+    def _resample_masked(x: torch.Tensor, keep_mask: torch.Tensor) -> torch.Tensor:
+        if keep_mask is None:
             return x
         bsz, num_points, _ = x.shape
-        if mask.shape[:2] != (bsz, num_points):
+        if keep_mask.shape[:2] != (bsz, num_points):
             return x
-        keep_any = mask.any(dim=1)
+        keep_any = keep_mask.any(dim=1)
         if not keep_any.all():
-            mask = mask.clone()
-            mask[~keep_any, 0] = True
-        if mask.all():
+            keep_mask = keep_mask.clone()
+            keep_mask[~keep_any, 0] = True
+        if keep_mask.all():
             return x
-        weights = mask.float()
+        weights = keep_mask.float()
         weights = weights / (weights.sum(dim=1, keepdim=True) + 1e-8)
         idx = torch.multinomial(weights, num_samples=num_points, replacement=True)
         return x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
@@ -457,7 +503,7 @@ class BarlowTwinsLoss(nn.Module):
         trimmed = [chunk[:size] for chunk, size in zip(gathered, sizes)]
         return torch.cat(trimmed, dim=0)
 
-    def _loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> torch.Tensor:
+    def _loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
         if z_a.dtype != torch.float32:
             z_a = z_a.float()
         if z_b.dtype != torch.float32:
@@ -466,7 +512,11 @@ class BarlowTwinsLoss(nn.Module):
         z_b = self._gather_all(z_b)
         n, d = z_a.shape
         if n < 2:
-            return z_a.new_tensor(0.0)
+            zero = z_a.new_tensor(0.0)
+            return zero, {
+                "barlow_diag_mean": zero,
+                "barlow_offdiag_mean": zero,
+            }
 
         z_a_mean = z_a.mean(0)
         z_b_mean = z_b.mean(0)
@@ -477,12 +527,19 @@ class BarlowTwinsLoss(nn.Module):
 
         c = (z_a_norm.T @ z_b_norm) / n
         c_diff = (c - torch.eye(d, device=c.device, dtype=c.dtype)).pow(2)
+        diag_vals = torch.diagonal(c_diff)
+        off_vals = self._off_diagonal(c_diff)
 
-        off = self._off_diagonal(c_diff)
-        off.mul_(self.lambda_)
+        diag_sum = diag_vals.sum()
+        off_sum = off_vals.sum()
+        loss = diag_sum + self.lambda_ * off_sum
 
-        loss = torch.diagonal(c_diff).sum() + off.sum()
-        return loss
+        off_mean = off_vals.mean() if off_vals.numel() > 0 else diag_sum.new_tensor(0.0)
+        metrics = {
+            "barlow_diag_mean": diag_vals.mean().detach(),
+            "barlow_offdiag_mean": off_mean.detach(),
+        }
+        return loss, metrics
 
     def _invariant(self, inv_z, eq_z):
         if self.invariant_head is None:
@@ -492,4 +549,10 @@ class BarlowTwinsLoss(nn.Module):
             if eq_z is not None:
                 return eq_z.norm(dim=-1)
             return inv_z
+        # Keep passthrough behavior only when the invariant head output width already
+        # matches the provided invariant latent. Otherwise route through the head so
+        # projector input width stays consistent with initialization.
+        if eq_z is None and inv_z is not None and inv_z.dim() == 2:
+            if inv_z.shape[1] == int(self.invariant_head.output_dim):
+                return inv_z
         return self.invariant_head(inv_z, eq_z)

@@ -1,137 +1,198 @@
-import os
-import torch
-from torch.utils.data import Dataset, DataLoader
+import re
+from pathlib import Path
+from typing import Dict, List, Optional, Sequence, Tuple
+
 import pytorch_lightning as pl
-from typing import Optional, List, Union
-import numpy as np
+import torch
+from torch.utils.data import DataLoader, Dataset
+
+
+_FAST_FILE_RE = re.compile(r"^(?P<class_name>.+)_(?P<split>train|test)\.pt$")
+
+
+def _dedupe_keep_order(values: Sequence[str]) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for value in values:
+        name = str(value)
+        if name in seen:
+            continue
+        seen.add(name)
+        out.append(name)
+    return out
+
+
+def _scan_fast_files(root_dir: Path) -> Tuple[Dict[str, Dict[str, Path]], List[str]]:
+    per_split: Dict[str, Dict[str, Path]] = {"train": {}, "test": {}}
+    discovered_classes = set()
+
+    for file_path in root_dir.iterdir():
+        if not file_path.is_file() or file_path.suffix != ".pt":
+            continue
+        match = _FAST_FILE_RE.match(file_path.name)
+        if match is None:
+            continue
+        class_name = match.group("class_name")
+        split = match.group("split")
+        per_split[split][class_name] = file_path
+        discovered_classes.add(class_name)
+
+    return per_split, sorted(discovered_classes)
 
 class ModelNetFastDataset(Dataset):
-    def __init__(self, 
-                 root_dir: str, 
-                 split: str = 'train', 
-                 classes: Optional[List[str]] = None,
-                 n_points: int = 2048):
+    def __init__(
+        self,
+        root_dir: str,
+        split: str = "train",
+        classes: Optional[Sequence[str]] = None,
+        n_points: int = 2048,
+        strict_classes: bool = False,
+    ):
         """
         Args:
             root_dir: Path to directory containing .pt files (e.g., datasets/ModelNet40_fast).
             split: 'train' or 'test'.
             classes: List of class names to include. If None, include all found.
             n_points: Number of points to return per sample.
+            strict_classes: If True, raise when any requested class is missing.
         """
         self.root_dir = root_dir
         self.split = split
         self.n_points = n_points
-        
+        self.strict_classes = bool(strict_classes)
+
         self.points = []
         self.labels = []
         self.class_names = []
-        
-        # Find available files
-        if not os.path.exists(root_dir):
-            raise FileNotFoundError(f"Directory {root_dir} does not exist. Did you run the conversion script?")
-            
-        all_files = [f for f in os.listdir(root_dir) if f.endswith(f"_{split}.pt")]
-        
-        # Filter by classes if specified
-        if classes is not None:
-            # Create a set for faster lookup
-            classes_set = set(classes)
-            # Filter files: filename is {class_name}_{split}.pt
-            # We need to extract class_name. 
-            # Assumption: class_name does not contain '_train' or '_test' suffix except at the end.
-            # Actually, split is known.
-            suffix = f"_{split}.pt"
-            filtered_files = []
-            for f in all_files:
-                if f.endswith(suffix):
-                    c_name = f[:-len(suffix)]
-                    if c_name in classes_set:
-                        filtered_files.append(f)
-            all_files = filtered_files
-            
-        if not all_files:
-            print(f"Warning: No files found for split={split} in {root_dir}")
-            
-        # Sort for deterministic order
-        all_files.sort()
-        
-        # Load data
-        # We need a consistent class-to-idx mapping. 
-        # Ideally, this should be consistent with the original loader.
-        # We can infer it from the sorted list of all unique classes in the directory, 
-        # or pass it in. For now, let's build it from the files we found (or all files if classes is None).
-        
-        # To ensure consistency across train/test, we should probably scan all classes first.
-        # But if we provide `classes` argument, we can use that.
-        # If `classes` is None, we might get different mappings if train and test have different classes (unlikely for ModelNet).
-        
-        # Let's just use the sorted list of classes found in the current split for now, 
-        # or better, scan for all classes in the dir to build the map.
-        
-        # Scan for all classes to build global map
-        all_possible_files = os.listdir(root_dir)
-        all_class_names = set()
-        for f in all_possible_files:
-            if f.endswith("_train.pt"):
-                all_class_names.add(f[:-9])
-            elif f.endswith("_test.pt"):
-                all_class_names.add(f[:-8])
-        
-        self.class_to_idx = {cls: i for i, cls in enumerate(sorted(list(all_class_names)))}
+
+        if split not in {"train", "test"}:
+            raise ValueError(f"split must be 'train' or 'test', got {split!r}")
+
+        root_path = Path(root_dir)
+        if not root_path.exists():
+            raise FileNotFoundError(
+                f"Directory {root_dir} does not exist. Did you run the conversion script?"
+            )
+
+        split_to_files, discovered_classes = _scan_fast_files(root_path)
+        if not discovered_classes:
+            raise RuntimeError(
+                f"No ModelNet fast files found under {root_dir}. "
+                "Expected files named <class>_train.pt or <class>_test.pt."
+            )
+
+        self.requested_classes = (
+            _dedupe_keep_order(classes) if classes is not None else None
+        )
+        self.missing_requested_classes: List[str] = []
+
+        if self.requested_classes is None:
+            selected_classes = discovered_classes
+        else:
+            discovered_set = set(discovered_classes)
+            self.missing_requested_classes = [
+                c for c in self.requested_classes if c not in discovered_set
+            ]
+            if self.missing_requested_classes:
+                msg = (
+                    "Requested classes were not found in the fast dataset root "
+                    f"{root_dir}: {self.missing_requested_classes}"
+                )
+                if self.strict_classes:
+                    raise ValueError(msg)
+                print(f"Warning: {msg}")
+
+            selected_classes = [
+                c for c in self.requested_classes if c in discovered_set
+            ]
+            if not selected_classes:
+                raise RuntimeError(
+                    "No requested classes are available in the fast dataset root. "
+                    f"Requested={self.requested_classes}, discovered={discovered_classes}"
+                )
+
+        self.class_to_idx = {cls: i for i, cls in enumerate(selected_classes)}
         self.idx_to_class = {i: cls for cls, i in self.class_to_idx.items()}
-        
-        print(f"Loading {split} data from {len(all_files)} files...")
-        
-        for f in all_files:
-            path = os.path.join(root_dir, f)
-            data = torch.load(path)
-            
-            # data is dict: {'points': tensor, 'class_name': str, ...}
-            pts = data['points'] # (N_samples, Total_Points, 3)
-            c_name = data['class_name']
-            label = self.class_to_idx[c_name]
-            
-            num_samples = pts.shape[0]
-            
+
+        split_files = split_to_files[self.split]
+        missing_in_split = [c for c in selected_classes if c not in split_files]
+        if missing_in_split:
+            msg = (
+                f"Classes requested for split={self.split!r} are missing files in {root_dir}: "
+                f"{missing_in_split}"
+            )
+            if self.strict_classes:
+                raise ValueError(msg)
+            print(f"Warning: {msg}")
+
+        files_to_load = [
+            (class_name, split_files[class_name])
+            for class_name in selected_classes
+            if class_name in split_files
+        ]
+
+        if not files_to_load:
+            print(f"Warning: No files found for split={split} in {root_dir}")
+
+        print(f"Loading {split} data from {len(files_to_load)} files...")
+
+        for class_name, path in files_to_load:
+            data = torch.load(path, map_location="cpu")
+            if "points" not in data:
+                raise KeyError(f"Missing 'points' key in {path}")
+
+            pts = data["points"]
+            if not torch.is_tensor(pts):
+                pts = torch.as_tensor(pts, dtype=torch.float32)
+            else:
+                pts = pts.to(dtype=torch.float32)
+
+            if pts.dim() != 3 or pts.shape[-1] != 3:
+                raise ValueError(
+                    f"Expected points tensor with shape (N, P, 3) in {path}, got {tuple(pts.shape)}"
+                )
+
+            file_class_name = str(data.get("class_name", class_name))
+            if file_class_name != class_name:
+                print(
+                    f"Warning: class name mismatch in {path.name}: "
+                    f"filename={class_name}, payload={file_class_name}. Using filename."
+                )
+
+            label = self.class_to_idx[class_name]
+            num_samples = int(pts.shape[0])
+
             self.points.append(pts)
             self.labels.append(torch.full((num_samples,), label, dtype=torch.long))
-            self.class_names.extend([c_name] * num_samples)
-            
+            self.class_names.extend([class_name] * num_samples)
+
         if self.points:
-            self.points = torch.cat(self.points, dim=0) # (Total_Samples, Total_Points, 3)
+            self.points = torch.cat(self.points, dim=0)
             self.labels = torch.cat(self.labels, dim=0)
         else:
-            self.points = torch.empty(0, n_points, 3)
+            self.points = torch.empty((0, n_points, 3), dtype=torch.float32)
             self.labels = torch.empty(0, dtype=torch.long)
-            
+
         print(f"Loaded {len(self.points)} samples.")
 
     def __len__(self):
         return len(self.points)
-    
+
     def __getitem__(self, idx):
-        # Points are already loaded.
-        # We might need to downsample if stored points > n_points
-        # or upsample if stored points < n_points (unlikely if we converted with 2048)
-        
-        pts = self.points[idx] # (Total_Points, 3)
+        pts = self.points[idx]
         label = self.labels[idx]
         class_name = self.class_names[idx]
-        
+
         curr_n = pts.shape[0]
         if curr_n > self.n_points:
-            # Random choice or take first N?
-            # FPS is expensive to do on the fly. 
-            # Random choice is fast.
-            # Or just take the first N if we assume they are shuffled or FPS-ordered?
-            # The conversion used FPS, so the first N points are a good FPS subset!
-            # This is a key property of FPS.
             pts = pts[:self.n_points]
         elif curr_n < self.n_points:
-            # Upsample with replacement
-            choice = np.random.choice(curr_n, self.n_points, replace=True)
-            pts = pts[choice]
-            
+            if curr_n == 0:
+                pts = torch.zeros((self.n_points, 3), dtype=self.points.dtype)
+            else:
+                choice = torch.randint(curr_n, (self.n_points,), device=pts.device)
+                pts = pts.index_select(0, choice)
+
         return pts, label, class_name
 
 class ModelNetFastDataModule(pl.LightningDataModule):
@@ -148,26 +209,29 @@ class ModelNetFastDataModule(pl.LightningDataModule):
         self.classes = getattr(cfg.data, 'classes', None)
         if self.classes is not None:
             self.classes = list(self.classes)
-            
+        self.strict_classes = bool(getattr(cfg.data, "strict_classes", False))
+
         self.n_points = getattr(cfg.data, 'num_points', 1024)
-        
+
     def setup(self, stage=None):
         if stage != 'test':
             self.train_dataset = ModelNetFastDataset(
                 root_dir=self.data_path,
                 split='train',
                 classes=self.classes,
-                n_points=self.n_points
+                n_points=self.n_points,
+                strict_classes=self.strict_classes,
             )
-            
+
         self.val_dataset = ModelNetFastDataset(
             root_dir=self.data_path,
             split='test',
             classes=self.classes,
-            n_points=self.n_points
+            n_points=self.n_points,
+            strict_classes=self.strict_classes,
         )
         self.test_dataset = self.val_dataset
-        
+
     def train_dataloader(self):
         return DataLoader(
             self.train_dataset,

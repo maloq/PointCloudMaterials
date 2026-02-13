@@ -6,6 +6,7 @@ from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
     CenteredModelNetDataset,
+    CenteredModelNetBalancedTopKDataset,
 )
 import time
 import logging
@@ -151,23 +152,102 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         track_augmentation = getattr(aug_cfg, "track_augmentation", False) if aug_cfg else False
 
         dataset_type = self._get_param("dataset_type", data_cfg, synth_dict, default="synthetic_env")
-        if dataset_type == "modelnet_objects":
+        model_type = str(getattr(self.cfg, "model_type", "")).lower()
+        disable_dataset_aug_for_ssl = bool(getattr(self.cfg, "disable_dataset_augmentation_for_ssl", True))
+        uses_ssl_views = model_type == "barlow_twins" or bool(getattr(self.cfg, "vicreg_enabled", False))
+        if uses_ssl_views and disable_dataset_aug_for_ssl:
+            has_dataset_aug = any(
+                float(v or 0.0) != 0.0 for v in (rotation_scale, noise_scale, jitter_scale, scaling_range)
+            )
+            if has_dataset_aug:
+                logger.print(
+                    "Disabling dataset-level geometric augmentation for contrastive SSL; "
+                    "view augmentation is applied in the contrastive loss."
+                )
+            rotation_scale = 0.0
+            noise_scale = 0.0
+            jitter_scale = 0.0
+            scaling_range = 0.0
+            track_augmentation = False
+
+        if dataset_type in {"modelnet_objects", "modelnet_objects_balanced_topk"}:
             root_dir = self._get_param("data_path", data_cfg, synth_dict, required=True)
             num_points = self._get_param("num_points", data_cfg, synth_dict, required=True)
             pre_normalize = self._get_param("pre_normalize", data_cfg, synth_dict, default=True)
             normalize = self._get_param("normalize", data_cfg, synth_dict, default=False)
             dataset_max = self._get_param("dataset_max_samples", data_cfg, synth_dict, default=None)
-            modelnet_split = self._get_param("modelnet_split", data_cfg, synth_dict, default="train")
             add_center_point = self._get_param("add_center_point", data_cfg, synth_dict, default=True)
             fps_cache = self._get_param("fps_cache", data_cfg, synth_dict, default=True)
             fps_cache_dir = self._get_param("fps_cache_dir", data_cfg, synth_dict, default=None)
             fps_use_gpu = self._get_param("fps_use_gpu", data_cfg, synth_dict, default=True)
+            strict_classes = self._get_param("strict_classes", data_cfg, synth_dict, default=False)
             classes = self._get_param("classes", data_cfg, synth_dict, default=None)
             if classes is not None:
                 classes = _to_container(classes)
                 if isinstance(classes, str):
                     classes = [classes]
 
+            if dataset_type == "modelnet_objects_balanced_topk":
+                top_k_classes = int(self._get_param("top_k_classes", data_cfg, synth_dict, default=10))
+                class_selection_split = str(
+                    self._get_param("class_selection_split", data_cfg, synth_dict, default="train")
+                )
+                balance_mode = str(self._get_param("balance_mode", data_cfg, synth_dict, default="downsample"))
+                balance_seed = int(self._get_param("balance_seed", data_cfg, synth_dict, default=42))
+                modelnet_eval_split = str(
+                    self._get_param("modelnet_eval_split", data_cfg, synth_dict, default="test")
+                )
+
+                train_dataset = CenteredModelNetBalancedTopKDataset(
+                    root_dir=root_dir,
+                    split="train",
+                    top_k_classes=top_k_classes,
+                    selected_classes=classes,
+                    class_selection_split=class_selection_split,
+                    balance_mode=balance_mode,
+                    balance_seed=balance_seed,
+                    num_points=int(num_points),
+                    add_center_point=bool(add_center_point),
+                    pre_normalize=bool(pre_normalize),
+                    normalize=bool(normalize),
+                    max_samples=int(dataset_max) if dataset_max is not None else None,
+                    fps_cache=bool(fps_cache),
+                    fps_cache_dir=fps_cache_dir,
+                    fps_use_gpu=bool(fps_use_gpu),
+                    strict_classes=bool(strict_classes),
+                    rotation_scale=rotation_scale,
+                    noise_scale=noise_scale,
+                    jitter_scale=jitter_scale,
+                    scaling_range=scaling_range,
+                    track_augmentation=track_augmentation,
+                )
+
+                eval_dataset = CenteredModelNetBalancedTopKDataset(
+                    root_dir=root_dir,
+                    split=modelnet_eval_split,
+                    top_k_classes=top_k_classes,
+                    selected_classes=train_dataset.selected_classes,
+                    class_selection_split=class_selection_split,
+                    balance_mode=balance_mode,
+                    balance_seed=balance_seed,
+                    num_points=int(num_points),
+                    add_center_point=bool(add_center_point),
+                    pre_normalize=bool(pre_normalize),
+                    normalize=bool(normalize),
+                    max_samples=int(dataset_max) if dataset_max is not None else None,
+                    fps_cache=bool(fps_cache),
+                    fps_cache_dir=fps_cache_dir,
+                    fps_use_gpu=bool(fps_use_gpu),
+                    strict_classes=bool(strict_classes),
+                    rotation_scale=rotation_scale,
+                    noise_scale=noise_scale,
+                    jitter_scale=jitter_scale,
+                    scaling_range=scaling_range,
+                    track_augmentation=track_augmentation,
+                )
+                return train_dataset, eval_dataset
+
+            modelnet_split = self._get_param("modelnet_split", data_cfg, synth_dict, default="train")
             dataset = CenteredModelNetDataset(
                 root_dir=root_dir,
                 split=str(modelnet_split),
@@ -180,6 +260,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
                 fps_cache=bool(fps_cache),
                 fps_cache_dir=fps_cache_dir,
                 fps_use_gpu=bool(fps_use_gpu),
+                strict_classes=bool(strict_classes),
                 rotation_scale=rotation_scale,
                 noise_scale=noise_scale,
                 jitter_scale=jitter_scale,

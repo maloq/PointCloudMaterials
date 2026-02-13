@@ -1,0 +1,206 @@
+defaults:
+  - data: synth_modelnet_objects_balanced_top10
+  - _self_
+
+project_name: pointnet
+experiment_name: VICREG_MODELNET40_BAL10_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+wandb_mode: online
+
+model_type: vicreg
+latent_size: 120
+
+load_supervised_checkpoint: False
+# Full-state training resume (restores epoch/optimizer/scheduler state).
+resume_from_checkpoint: null
+# Weights-only initialization (starts a fresh run from loaded model params).
+init_from_checkpoint: output/2026-02-12/13-02-21/BT_MODELNET40_l96_N1025_M800_VN_REVNET_Backbone-epoch=235.ckpt
+# If true, require exact state-dict key match when loading init weights.
+init_from_checkpoint_strict: false
+
+encoder:
+  name: VN_REVNET_Backbone
+  kwargs:
+    latent_size: ${latent_size}
+    sa_npoints: [160, 80]
+    sa_channels: [200, 400]
+    attn_hidden: 400
+    transformer_depth: 5
+
+# encoder:
+#   name: PnE_L
+#   kwargs:
+#     latent_size: ${latent_size}
+#     num_points: ${data.model_points}
+
+# encoder:
+#   name: DGCNN
+#   kwargs:
+#     latent_size: ${latent_size}
+#     feature_dims: [128, 128, 256, 512]
+#     pooling: "max"
+
+# Required by the model factory (decoder is not used by contrastive training).
+decoder:
+  name: VN_REVNET_Anchor
+  kwargs:
+    num_points: ${data.model_points}
+    latent_size: ${latent_size}
+
+learning_rate: 0.0015
+
+batch_size: 100
+precision: bf16-true
+gradient_clip_val: 1.0
+accumulate_grad_batches: 10
+
+enable_swa: False
+swa_epoch_start: 1000
+epochs: 240
+max_samples: 0
+
+gpu: True
+devices: [0, 1]
+ddp_find_unused_parameters: True
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+scheduler_min_lr: 1e-6
+warmup_enabled: true
+warmup_epochs: 12
+warmup_start_factor: 0.1
+
+decay_rate: 0.0001
+
+# Cached samples used for class-level test metrics.
+max_supervised_samples: 12000
+max_test_samples: 12000
+cache_train_supervised_metrics: false
+disable_dataset_augmentation_for_ssl: true
+
+# Test clustering accuracies (Hungarian matching) will use K=10.
+test_cluster_eval_k: 10
+
+idec_enabled: False
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: True
+idec_normalize_z: True
+idec_init_kmeans: True
+
+barlow_enabled: False
+barlow_weight: 0.0
+barlow_lambda: 0.01
+barlow_embed_dim: 512
+barlow_start_epoch: 0
+barlow_jitter_std: 0.02
+barlow_jitter_mode: absolute
+barlow_drop_ratio: 0.12
+barlow_drop_apply_to_both: true
+barlow_neighbor_view: true
+barlow_neighbor_view_mode: both
+barlow_neighbor_k: 8
+barlow_neighbor_max_relative_distance: 0.10
+barlow_view_points: ${data.model_points}
+barlow_view_crop_mode: random
+barlow_rotation_mode: full
+barlow_rotation_deg: 0.0
+barlow_strain_std: 0.04
+barlow_strain_volume_preserve: true
+barlow_occlusion_mode: mixed
+barlow_occlusion_view: both
+barlow_occlusion_slab_frac: 0.2
+barlow_occlusion_cone_deg: 25.0
+barlow_invariant_mode: tensor_product
+barlow_invariant_max_factor: 4.0
+barlow_invariant_groups: 0
+barlow_invariant_use_third_order: true
+barlow_invariant_eps: 1e-6
+
+pose_enabled: false
+pose_weight: 0.0
+pose:
+  enabled: false
+  weight: 0.0
+
+symmetry:
+  type: none
+  beta: 30.0
+  angle_eps: 1e-6
+
+data:
+  modelnet_split: train
+  num_points: 1025
+  model_points: 800
+  train_ratio: 0.9
+  add_center_point: true
+  pre_normalize: true
+  normalize: true
+  augmentation:
+    rotation_scale: 0.0
+    noise_scale: 0.0
+    jitter_scale: 0.0
+    scaling_range: 0.0
+    track_augmentation: false
+
+vicreg_enabled: True
+# If true, force latent invariants to per-channel norms only (no Gram/tensor-product terms).
+contrastive_norms_only_latent: true
+vicreg_weight: 1.0
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+vicreg_embed_dim: 512
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.02
+vicreg_jitter_mode: absolute
+vicreg_drop_ratio: 0.12
+vicreg_drop_apply_to_both: true
+vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: both
+vicreg_neighbor_k: 8
+vicreg_neighbor_max_relative_distance: 0.10
+vicreg_view_points: ${data.model_points}
+vicreg_view_crop_mode: random
+vicreg_rotation_mode: full
+vicreg_rotation_deg: 0.0
+vicreg_strain_std: 0.04
+vicreg_strain_volume_preserve: true
+vicreg_occlusion_mode: mixed
+vicreg_occlusion_view: both
+vicreg_occlusion_slab_frac: 0.2
+vicreg_occlusion_cone_deg: 25.0
+vicreg_std_eps: 1e-4
+vicreg_std_target: 1.0
+vicreg_invariant_mode: tensor_product
+vicreg_invariant_max_factor: 4.0
+vicreg_invariant_groups: 0
+vicreg_invariant_use_third_order: true
+vicreg_invariant_eps: 1e-6
+
+analysis_cluster_method: auto
+analysis_cluster_l2_normalize: true
+analysis_cluster_standardize: true
+analysis_cluster_pca_var: 0.98
+analysis_cluster_pca_max_components: 32
+analysis_cluster_k_values: [10]
+analysis_num_workers: 0
+analysis_progress_every_batches: 20
+analysis_max_samples_total: 0
+analysis_tsne_max_samples: 8000
+analysis_tsne_n_iter: 1000
+analysis_interactive_max_points: 0
+analysis_md_use_all_points: true
+analysis_hdbscan_enabled: true
+analysis_hdbscan_fit_fraction: 0.25
+analysis_hdbscan_max_fit_samples: 50000
+analysis_hdbscan_target_k_min: 35
+analysis_hdbscan_target_k_max: 45
+analysis_hdbscan_min_cluster_size_candidates: []
+analysis_hdbscan_min_samples: null
+analysis_hdbscan_cluster_selection_epsilon: 0.0
+analysis_hdbscan_cluster_selection_method: leaf
+analysis_grain_enabled: false

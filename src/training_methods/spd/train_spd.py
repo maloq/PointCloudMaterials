@@ -30,37 +30,184 @@ torch.set_float32_matmul_precision('high')
 logger = setup_logging()
 
 
-def _resolve_resume_checkpoint(cfg: DictConfig) -> str | None:
-    """Resolve optional training resume checkpoint from config."""
-    resume_ckpt = getattr(cfg, "resume_from_checkpoint", None)
-    if resume_ckpt is None:
-        resume_ckpt = getattr(cfg, "resume_checkpoint_path", None)
-    if resume_ckpt is None:
+def _resolve_checkpoint_path(cfg: DictConfig, field_names: tuple[str, ...]) -> str | None:
+    """Resolve an optional checkpoint path from one of *field_names*."""
+    checkpoint_path = None
+    for field_name in field_names:
+        value = getattr(cfg, field_name, None)
+        if value is None:
+            continue
+        value_str = str(value).strip()
+        if not value_str:
+            continue
+        checkpoint_path = value_str
+        break
+
+    if checkpoint_path is None:
         return None
 
-    resume_ckpt = str(resume_ckpt).strip()
-    if not resume_ckpt:
-        return None
-
-    resume_ckpt = os.path.expanduser(resume_ckpt)
-    if not os.path.isabs(resume_ckpt):
+    checkpoint_path = os.path.expanduser(checkpoint_path)
+    if not os.path.isabs(checkpoint_path):
         base_dir = os.getcwd()
         try:
             base_dir = HydraConfig.get().runtime.cwd
         except Exception as exc:
             logger.warning(
-                "Hydra runtime cwd is unavailable; resolving resume checkpoint "
+                "Hydra runtime cwd is unavailable; resolving checkpoint "
                 "relative to current directory '%s'. Error: %s",
                 base_dir,
                 exc,
             )
-        resume_ckpt = os.path.join(base_dir, resume_ckpt)
-    resume_ckpt = os.path.abspath(resume_ckpt)
+        checkpoint_path = os.path.join(base_dir, checkpoint_path)
+    checkpoint_path = os.path.abspath(checkpoint_path)
 
-    if not os.path.exists(resume_ckpt):
-        raise FileNotFoundError(f"Resume checkpoint not found: {resume_ckpt}")
+    if not os.path.exists(checkpoint_path):
+        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
 
-    return resume_ckpt
+    return checkpoint_path
+
+
+def _resolve_resume_checkpoint(cfg: DictConfig) -> str | None:
+    """Resolve optional training resume checkpoint from config."""
+    return _resolve_checkpoint_path(
+        cfg,
+        ("resume_from_checkpoint", "resume_checkpoint_path"),
+    )
+
+
+def _resolve_init_checkpoint(cfg: DictConfig) -> str | None:
+    """Resolve optional model-initialization checkpoint from config."""
+    return _resolve_checkpoint_path(
+        cfg,
+        (
+            "init_from_checkpoint",
+            "init_weights_from_checkpoint",
+            "weights_checkpoint_path",
+        ),
+    )
+
+
+def _extract_state_dict(checkpoint) -> dict:
+    """Extract model weights dictionary from a Lightning/PyTorch checkpoint payload."""
+    if isinstance(checkpoint, dict):
+        state_dict = checkpoint.get("state_dict")
+        if isinstance(state_dict, dict):
+            return state_dict
+        model_state_dict = checkpoint.get("model_state_dict")
+        if isinstance(model_state_dict, dict):
+            return model_state_dict
+        if all(torch.is_tensor(v) for v in checkpoint.values()):
+            return checkpoint
+    raise ValueError(
+        "Checkpoint does not contain a recognized state dictionary "
+        "(`state_dict` or `model_state_dict`)."
+    )
+
+
+def _strip_state_dict_prefixes(state_dict: dict) -> dict:
+    """Strip common wrapper prefixes (e.g. model./module.) from state dict keys."""
+    prefixes = ("model.", "module.")
+    normalized = {}
+    for key, value in state_dict.items():
+        new_key = key
+        changed = True
+        while changed:
+            changed = False
+            for prefix in prefixes:
+                if new_key.startswith(prefix):
+                    new_key = new_key[len(prefix):]
+                    changed = True
+        normalized[new_key] = value
+    return normalized
+
+
+def _compatible_state_dict_for_model(state_dict: dict, model_state: dict) -> tuple[dict, list[str]]:
+    """Keep only tensors whose names and shapes match the current model."""
+    compatible = {}
+    shape_mismatch = []
+    for key, value in state_dict.items():
+        target = model_state.get(key)
+        if target is None:
+            continue
+        if tuple(target.shape) != tuple(value.shape):
+            shape_mismatch.append(key)
+            continue
+        compatible[key] = value
+    return compatible, shape_mismatch
+
+
+def _load_model_weights_from_checkpoint(model: pl.LightningModule, checkpoint_path: str, *, strict: bool = False) -> None:
+    """Load model weights from *checkpoint_path* without restoring trainer state."""
+    try:
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    except TypeError:
+        checkpoint = torch.load(checkpoint_path, map_location="cpu")
+
+    source_state_dict = _extract_state_dict(checkpoint)
+    model_state = model.state_dict()
+    ckpt_hp = checkpoint.get("hyper_parameters") if isinstance(checkpoint, dict) else None
+    ckpt_enc = getattr(getattr(ckpt_hp, "encoder", None), "name", None)
+    model_enc = getattr(getattr(getattr(model, "hparams", None), "encoder", None), "name", None)
+    if ckpt_enc and model_enc and str(ckpt_enc) != str(model_enc):
+        logger.print(
+            f"Warning: init checkpoint encoder differs from current config: "
+            f"checkpoint={ckpt_enc}, current={model_enc}. "
+            "Only tensors with matching names and shapes will be loaded."
+        )
+
+    raw_compatible, raw_shape_mismatch = _compatible_state_dict_for_model(source_state_dict, model_state)
+    stripped_state_dict = _strip_state_dict_prefixes(source_state_dict)
+    stripped_compatible, stripped_shape_mismatch = _compatible_state_dict_for_model(stripped_state_dict, model_state)
+
+    use_stripped = len(stripped_compatible) > len(raw_compatible)
+    selected_state_dict = stripped_compatible if use_stripped else raw_compatible
+    selected_shape_mismatch = stripped_shape_mismatch if use_stripped else raw_shape_mismatch
+
+    if not selected_state_dict:
+        raise RuntimeError(
+            f"No compatible tensors found when loading checkpoint '{checkpoint_path}'. "
+            "Check that the checkpoint matches the current architecture."
+        )
+
+    missing_keys, unexpected_keys = model.load_state_dict(selected_state_dict, strict=strict)
+
+    source_encoder_keys = sum(1 for k in source_state_dict if k.startswith("encoder."))
+    model_encoder_keys = sum(1 for k in model_state if k.startswith("encoder."))
+    loaded_encoder_keys = sum(1 for k in selected_state_dict if k.startswith("encoder."))
+
+    logger.print(f"Initialized model weights from checkpoint: {checkpoint_path}")
+    logger.print(
+        "Checkpoint load summary: "
+        f"loaded={len(selected_state_dict)} "
+        f"/ model_tensors={len(model_state)}, "
+        f"shape_mismatch_skipped={len(selected_shape_mismatch)}, "
+        f"missing_after_load={len(missing_keys)}, "
+        f"unexpected_after_load={len(unexpected_keys)}, "
+        f"strict={strict}"
+    )
+
+    if source_encoder_keys > 0 and model_encoder_keys > 0 and loaded_encoder_keys == 0:
+        logger.print(
+            "Warning: No encoder weights were loaded from init checkpoint. "
+            "Current encoder will remain randomly initialized."
+        )
+
+
+def _resolve_accumulate_grad_batches(cfg: DictConfig) -> int:
+    """Resolve gradient accumulation from config with backward-compatible aliases."""
+    value = getattr(cfg, "accumulate_grad_batches", None)
+    if value is None:
+        value = getattr(cfg, "gradient_accumulation_steps", None)
+    if value is None:
+        return 1
+
+    accum = int(value)
+    if accum < 1:
+        raise ValueError(
+            "Gradient accumulation must be >= 1. "
+            f"Got accumulate_grad_batches={value!r}."
+        )
+    return accum
 
 @rank_zero_only
 def get_rundir_name() -> str:
@@ -146,6 +293,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         ddp_strategy = DDPStrategy(find_unused_parameters=True)
 
     precision = getattr(cfg, "precision", "bf16-mixed")
+    accumulate_grad_batches = _resolve_accumulate_grad_batches(cfg)
     trainer_kwargs = dict(
         default_root_dir=run_dir,
         max_epochs=cfg.epochs,
@@ -157,7 +305,14 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         precision=precision,
         benchmark=True,
         check_val_every_n_epoch=4,
+        accumulate_grad_batches=accumulate_grad_batches,
     )
+
+    if accumulate_grad_batches > 1:
+        logger.print(
+            "Gradient accumulation enabled: "
+            f"accumulate_grad_batches={accumulate_grad_batches}"
+        )
     
     if hasattr(cfg, 'gradient_clip_val'):
         trainer_kwargs['gradient_clip_val'] = cfg.gradient_clip_val
@@ -169,9 +324,24 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     trainer = pl.Trainer(**trainer_kwargs)
 
     resume_ckpt_path = _resolve_resume_checkpoint(cfg)
-    if resume_ckpt_path is not None:
-        logger.print(f"Resuming training from checkpoint: {resume_ckpt_path}")
-    trainer.fit(model, dm, ckpt_path=resume_ckpt_path)
+    init_ckpt_path = _resolve_init_checkpoint(cfg)
+
+    if resume_ckpt_path is not None and init_ckpt_path is not None:
+        raise ValueError(
+            "Both resume and init checkpoints are set. Use only one mode:\n"
+            "- resume_from_checkpoint (full-state resume)\n"
+            "- init_from_checkpoint (weights-only initialization)"
+        )
+
+    if init_ckpt_path is not None:
+        init_strict = bool(getattr(cfg, "init_from_checkpoint_strict", False))
+        _load_model_weights_from_checkpoint(model, init_ckpt_path, strict=init_strict)
+        logger.print("Starting fresh training from loaded model weights (epoch/optimizer reset).")
+        trainer.fit(model, dm)
+    else:
+        if resume_ckpt_path is not None:
+            logger.print(f"Resuming training from checkpoint: {resume_ckpt_path}")
+        trainer.fit(model, dm, ckpt_path=resume_ckpt_path)
 
     # Run test after training completes
     if run_test:

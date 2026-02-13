@@ -1,12 +1,22 @@
 kind: synthetic
-dataset_type: modelnet_objects
+dataset_type: modelnet_objects_balanced_topk
 data_path: datasets/ModelNet40_fast
-modelnet_split: train
+
+# Keep only the top-K most frequent classes from the ranking split.
+top_k_classes: 10
+class_selection_split: train
+
+# Train split is balanced; eval split keeps natural class frequencies.
+balance_mode: downsample
+balance_seed: 42
+modelnet_eval_split: test
+
+# Optional explicit class list override. Keep null to auto-pick top-K.
 classes: null
 strict_classes: false
+
 num_points: 1024
 model_points: 800
-train_ratio: 0.8
 add_center_point: true
 pre_normalize: true
 normalize: true

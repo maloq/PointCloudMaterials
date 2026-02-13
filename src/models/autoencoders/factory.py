@@ -1,8 +1,10 @@
 import inspect
+import warnings
 from omegaconf import DictConfig
 from .registry import ENCODERS, DECODERS
 
 _REGISTRY_INITIALIZED = False
+_WARNED_DROPPED_KWARGS: set[tuple[str, tuple[str, ...]]] = set()
 
 
 def _ensure_registry_loaded() -> None:
@@ -28,7 +30,17 @@ def _filter_kwargs(cls, kwargs: dict) -> dict:
         return kwargs
     # Filter to only accepted parameter names
     valid_names = set(params.keys()) - {"self"}
-    return {k: v for k, v in kwargs.items() if k in valid_names}
+    filtered = {k: v for k, v in kwargs.items() if k in valid_names}
+    dropped = sorted(k for k in kwargs.keys() if k not in valid_names)
+    if dropped:
+        warn_key = (cls.__name__, tuple(dropped))
+        if warn_key not in _WARNED_DROPPED_KWARGS:
+            _WARNED_DROPPED_KWARGS.add(warn_key)
+            warnings.warn(
+                f"Ignoring unsupported kwargs for {cls.__name__}: {', '.join(dropped)}",
+                stacklevel=2,
+            )
+    return filtered
 
 
 def build_model(cfg: DictConfig, only_decoder: bool = False):

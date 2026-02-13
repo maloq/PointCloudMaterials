@@ -867,6 +867,7 @@ class CenteredModelNetDataset(Dataset):
         jitter_scale: float = 0.0,
         scaling_range: float = 0.0,
         track_augmentation: bool = False,
+        strict_classes: bool = False,
     ) -> None:
         super().__init__()
         if num_points <= 0:
@@ -883,6 +884,7 @@ class CenteredModelNetDataset(Dataset):
         self.fps_cache = bool(fps_cache)
         self.fps_cache_dir = Path(fps_cache_dir) if fps_cache_dir else (self.root_dir / "fps_cache")
         self.fps_use_gpu = bool(fps_use_gpu)
+        self.strict_classes = bool(strict_classes)
 
         # Augmentation params (applied in __getitem__)
         self.rotation_scale = float(rotation_scale)
@@ -908,28 +910,38 @@ class CenteredModelNetDataset(Dataset):
                 split="train",
                 classes=self.classes,
                 n_points=self.num_surface_points,
+                strict_classes=self.strict_classes,
             )
             test_ds = ModelNetFastDataset(
                 root_dir=str(self.root_dir),
                 split="test",
                 classes=self.classes,
                 n_points=self.num_surface_points,
+                strict_classes=self.strict_classes,
             )
             points = torch.cat([train_ds.points, test_ds.points], dim=0)
             labels = torch.cat([train_ds.labels, test_ds.labels], dim=0)
             sample_class_names = train_ds.class_names + test_ds.class_names
             class_to_idx = train_ds.class_to_idx
+            self.missing_requested_classes = sorted(
+                set(getattr(train_ds, "missing_requested_classes", []))
+                | set(getattr(test_ds, "missing_requested_classes", []))
+            )
         else:
             base_ds = ModelNetFastDataset(
                 root_dir=str(self.root_dir),
                 split=self.split,
                 classes=self.classes,
                 n_points=self.num_surface_points,
+                strict_classes=self.strict_classes,
             )
             points = base_ds.points
             labels = base_ds.labels
             sample_class_names = base_ds.class_names
             class_to_idx = base_ds.class_to_idx
+            self.missing_requested_classes = list(
+                getattr(base_ds, "missing_requested_classes", [])
+            )
 
         if len(points) == 0:
             raise RuntimeError("CenteredModelNetDataset constructed with zero samples")
@@ -938,6 +950,10 @@ class CenteredModelNetDataset(Dataset):
         if self.classes is not None:
             class_set = set(self.classes)
             self._class_to_idx = {name: idx for name, idx in self._class_to_idx.items() if name in class_set}
+        if self.missing_requested_classes:
+            logger.print(
+                f"ModelNet requested classes missing in {self.root_dir}: {self.missing_requested_classes}"
+            )
         
         source_points = points.shape[1]
         if self.num_surface_points != source_points:
@@ -978,10 +994,25 @@ class CenteredModelNetDataset(Dataset):
         max_dist = torch.clamp(max_dist, min=1e-6)
         return centered / max_dist
 
-    def _cache_key(self, source_points: int) -> str:
+    def _cache_key(self, source_points: int, dataset_signature: str) -> str:
         classes_key = "all" if self.classes is None else ",".join(sorted(self.classes))
         classes_hash = hashlib.md5(classes_key.encode("utf-8")).hexdigest()[:8]
-        return f"modelnet_{self.split}_fps{self.num_surface_points}_src{source_points}_{classes_hash}.pt"
+        return (
+            f"modelnet_{self.split}_fps{self.num_surface_points}_src{source_points}_"
+            f"{classes_hash}_{dataset_signature}.pt"
+        )
+
+    def _dataset_signature(self, labels: torch.Tensor) -> str:
+        if labels.numel() > 0:
+            max_label = int(labels.max().item())
+            counts = torch.bincount(labels.to(dtype=torch.long), minlength=max_label + 1).tolist()
+        else:
+            counts = []
+        class_map = "|".join(
+            f"{name}:{idx}" for name, idx in sorted(self._class_to_idx.items(), key=lambda item: item[1])
+        )
+        payload = f"{class_map};counts={counts};num_samples={int(labels.numel())}"
+        return hashlib.md5(payload.encode("utf-8")).hexdigest()[:10]
 
     def _load_or_build_fps_cache(
         self,
@@ -993,13 +1024,15 @@ class CenteredModelNetDataset(Dataset):
         if not self.fps_cache:
             return self._fps_downsample(points), labels, class_names
 
+        dataset_signature = self._dataset_signature(labels)
         self.fps_cache_dir.mkdir(parents=True, exist_ok=True)
-        cache_path = self.fps_cache_dir / self._cache_key(source_points)
+        cache_path = self.fps_cache_dir / self._cache_key(source_points, dataset_signature)
         if cache_path.exists():
             cached = torch.load(cache_path, map_location="cpu")
             if (
                 cached.get("num_points") == self.num_surface_points
                 and cached.get("source_points") == source_points
+                and cached.get("dataset_signature") == dataset_signature
             ):
                 return cached["points"], cached["labels"], cached["class_names"]
 
@@ -1014,6 +1047,7 @@ class CenteredModelNetDataset(Dataset):
             "class_to_idx": self._class_to_idx,
             "num_points": self.num_surface_points,
             "source_points": source_points,
+            "dataset_signature": dataset_signature,
         }
         torch.save(payload, cache_path)
         logger.print(f"Saved FPS cache: {cache_path}")
@@ -1131,6 +1165,211 @@ class CenteredModelNetDataset(Dataset):
             "instance_id": self._instance_ids[index],
             "rotation": rotation.to(dtype=torch.float32),
         }
+
+
+class CenteredModelNetBalancedTopKDataset(CenteredModelNetDataset):
+    """ModelNet subset that keeps top-K classes and balances only the train split."""
+
+    def __init__(
+        self,
+        root_dir: Union[str, Path],
+        *,
+        split: str = "train",
+        top_k_classes: int = 10,
+        selected_classes: Optional[Sequence[str]] = None,
+        class_selection_split: str = "train",
+        balance_mode: str = "downsample",
+        balance_seed: int = 42,
+        num_points: int = 1024,
+        add_center_point: bool = True,
+        pre_normalize: bool = True,
+        normalize: bool = False,
+        max_samples: Optional[int] = None,
+        fps_cache: bool = True,
+        fps_cache_dir: Optional[Union[str, Path]] = None,
+        fps_use_gpu: bool = True,
+        rotation_scale: float = 0.0,
+        noise_scale: float = 0.0,
+        jitter_scale: float = 0.0,
+        scaling_range: float = 0.0,
+        track_augmentation: bool = False,
+        strict_classes: bool = False,
+    ) -> None:
+        self.top_k_classes = int(top_k_classes)
+        self.class_selection_split = str(class_selection_split)
+        self.balance_mode = str(balance_mode).lower()
+        self.balance_seed = int(balance_seed)
+
+        if self.top_k_classes <= 0:
+            raise ValueError(f"top_k_classes must be > 0, got {self.top_k_classes}")
+        if self.class_selection_split not in {"train", "test"}:
+            raise ValueError(
+                "class_selection_split must be 'train' or 'test', "
+                f"got {self.class_selection_split!r}"
+            )
+        if self.balance_mode not in {"downsample", "upsample"}:
+            raise ValueError(
+                f"balance_mode must be one of ['downsample', 'upsample'], got {self.balance_mode!r}"
+            )
+
+        root_path = Path(root_dir)
+        if selected_classes is None:
+            resolved_classes = self._select_top_k_classes(
+                root_dir=root_path,
+                top_k_classes=self.top_k_classes,
+                split=self.class_selection_split,
+            )
+        else:
+            resolved_classes = self._dedupe_keep_order(selected_classes)
+            if not resolved_classes:
+                raise ValueError("selected_classes must not be empty when provided")
+
+        self.selected_classes = list(resolved_classes)
+        logger.print(
+            f"ModelNet top-{self.top_k_classes} classes ({self.class_selection_split}): "
+            f"{self.selected_classes}"
+        )
+
+        super().__init__(
+            root_dir=root_path,
+            split=split,
+            classes=self.selected_classes,
+            num_points=num_points,
+            add_center_point=add_center_point,
+            pre_normalize=pre_normalize,
+            normalize=normalize,
+            max_samples=max_samples,
+            fps_cache=fps_cache,
+            fps_cache_dir=fps_cache_dir,
+            fps_use_gpu=fps_use_gpu,
+            rotation_scale=rotation_scale,
+            noise_scale=noise_scale,
+            jitter_scale=jitter_scale,
+            scaling_range=scaling_range,
+            track_augmentation=track_augmentation,
+            strict_classes=strict_classes,
+        )
+
+        if self.split == "train":
+            self._balance_train_split()
+
+    @staticmethod
+    def _dedupe_keep_order(values: Sequence[str]) -> List[str]:
+        unique: List[str] = []
+        seen = set()
+        for value in values:
+            name = str(value)
+            if name in seen:
+                continue
+            seen.add(name)
+            unique.append(name)
+        return unique
+
+    @staticmethod
+    def _count_samples_per_class(root_dir: Path, split: str) -> Dict[str, int]:
+        from src.data_utils.modelnet_fast_loader import _scan_fast_files
+
+        split_to_files, _ = _scan_fast_files(root_dir)
+        split_files = split_to_files.get(split, {})
+        if not split_files:
+            raise RuntimeError(
+                f"No ModelNet files found for split={split!r} in {root_dir}"
+            )
+
+        counts: Dict[str, int] = {}
+        for class_name, file_path in split_files.items():
+            payload = torch.load(file_path, map_location="cpu")
+            if "points" not in payload:
+                raise KeyError(f"Missing 'points' key in {file_path}")
+            points = payload["points"]
+            if torch.is_tensor(points):
+                counts[class_name] = int(points.shape[0])
+            else:
+                counts[class_name] = int(len(points))
+        return counts
+
+    @classmethod
+    def _select_top_k_classes(
+        cls,
+        root_dir: Path,
+        top_k_classes: int,
+        split: str,
+    ) -> List[str]:
+        counts = cls._count_samples_per_class(root_dir=root_dir, split=split)
+        if len(counts) < top_k_classes:
+            raise ValueError(
+                f"Requested top_k_classes={top_k_classes}, but only {len(counts)} "
+                f"classes were found in split={split!r} at {root_dir}"
+            )
+        ranked = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+        return [class_name for class_name, _ in ranked[:top_k_classes]]
+
+    def _subset_by_indices(self, indices: torch.Tensor) -> None:
+        indices = indices.to(dtype=torch.long, device=self.points.device)
+        self.points = self.points.index_select(0, indices).contiguous()
+        self._class_ids = self._class_ids.index_select(0, indices)
+        self._instance_ids = self._instance_ids.index_select(0, indices)
+        selected_idx = indices.detach().cpu().tolist()
+        self._sample_class_names = [self._sample_class_names[i] for i in selected_idx]
+        if self._augmentation_metadata is not None:
+            self._augmentation_metadata = [None] * len(selected_idx)
+
+    def _balance_train_split(self) -> None:
+        class_ids = self._class_ids.to(dtype=torch.long)
+        unique_class_ids = torch.unique(class_ids, sorted=True)
+        if unique_class_ids.numel() <= 1:
+            return
+
+        per_class_indices: List[Tuple[int, torch.Tensor]] = []
+        for class_id in unique_class_ids.tolist():
+            indices = torch.where(class_ids == class_id)[0]
+            if indices.numel() > 0:
+                per_class_indices.append((class_id, indices))
+        if not per_class_indices:
+            return
+
+        class_sizes = [int(indices.numel()) for _, indices in per_class_indices]
+        if self.balance_mode == "downsample":
+            target_count = min(class_sizes)
+        else:
+            target_count = max(class_sizes)
+
+        if all(size == target_count for size in class_sizes):
+            logger.print(
+                f"ModelNet train split already balanced across {len(per_class_indices)} classes "
+                f"with {target_count} samples/class"
+            )
+            return
+
+        generator = torch.Generator().manual_seed(self.balance_seed)
+        selected_parts: List[torch.Tensor] = []
+
+        for _, class_indices in per_class_indices:
+            n_class = int(class_indices.numel())
+            if n_class >= target_count:
+                perm = torch.randperm(n_class, generator=generator)
+                picked = class_indices.index_select(0, perm[:target_count])
+            else:
+                choice = torch.randint(
+                    low=0,
+                    high=n_class,
+                    size=(target_count,),
+                    generator=generator,
+                )
+                picked = class_indices.index_select(0, choice)
+            selected_parts.append(picked)
+
+        selected_indices = torch.cat(selected_parts, dim=0)
+        perm = torch.randperm(selected_indices.numel(), generator=generator)
+        selected_indices = selected_indices.index_select(0, perm)
+        self._subset_by_indices(selected_indices)
+
+        total_samples = int(self._class_ids.shape[0])
+        logger.print(
+            "Balanced ModelNet train split "
+            f"({self.balance_mode}) to {target_count} samples/class "
+            f"across {len(per_class_indices)} classes ({total_samples} total)"
+        )
 
 
 class SoapCoordDataset(Dataset):

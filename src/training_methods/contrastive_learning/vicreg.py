@@ -24,7 +24,11 @@ class VICRegLoss(nn.Module):
         drop_ratio: float,
         view_points: int | None,
         neighbor_view: bool,
+        neighbor_view_mode: str,
         neighbor_k: int,
+        neighbor_max_relative_distance: float,
+        view_crop_mode: str,
+        drop_apply_to_both: bool,
         rotation_mode: str,
         rotation_deg: float,
         strain_std: float,
@@ -56,7 +60,11 @@ class VICRegLoss(nn.Module):
         self.drop_ratio = float(drop_ratio)
         self.view_points = int(view_points) if view_points is not None else None
         self.neighbor_view = bool(neighbor_view)
+        self.neighbor_view_mode = str(neighbor_view_mode).lower()
         self.neighbor_k = int(neighbor_k)
+        self.neighbor_max_relative_distance = max(0.0, float(neighbor_max_relative_distance))
+        self.view_crop_mode = str(view_crop_mode).lower()
+        self.drop_apply_to_both = bool(drop_apply_to_both)
         self.rotation_mode = str(rotation_mode).lower()
         self.rotation_deg = float(rotation_deg)
         self.strain_std = float(strain_std)
@@ -97,7 +105,7 @@ class VICRegLoss(nn.Module):
             )
 
     @classmethod
-    def from_config(cls, cfg, *, input_dim):
+    def from_config(cls, cfg, *, input_dim, invariant_mode_override: str | None = None):
         data_cfg = getattr(cfg, "data", None)
         view_points = getattr(cfg, "vicreg_view_points", None)
         if view_points is None and data_cfg is not None:
@@ -108,6 +116,13 @@ class VICRegLoss(nn.Module):
         jitter_mode = str(getattr(cfg, "vicreg_jitter_mode", "absolute")).lower()
         jitter_scale_cfg = getattr(cfg, "vicreg_jitter_scale", None)
         jitter_scale = cls._resolve_jitter_scale(cfg, jitter_mode=jitter_mode, jitter_scale=jitter_scale_cfg)
+        invariant_mode = (
+            str(invariant_mode_override).lower()
+            if invariant_mode_override is not None
+            else str(
+                getattr(cfg, "vicreg_invariant_mode", getattr(cfg, "barlow_invariant_mode", "norms"))
+            ).lower()
+        )
 
         return cls(
             enabled=bool(getattr(cfg, "vicreg_enabled", False)),
@@ -123,7 +138,13 @@ class VICRegLoss(nn.Module):
             drop_ratio=float(getattr(cfg, "vicreg_drop_ratio", 0.2)),
             view_points=int(view_points) if view_points is not None else None,
             neighbor_view=bool(getattr(cfg, "vicreg_neighbor_view", False)),
+            neighbor_view_mode=str(getattr(cfg, "vicreg_neighbor_view_mode", "both")),
             neighbor_k=int(getattr(cfg, "vicreg_neighbor_k", 8)),
+            neighbor_max_relative_distance=float(
+                getattr(cfg, "vicreg_neighbor_max_relative_distance", 0.0)
+            ),
+            view_crop_mode=str(getattr(cfg, "vicreg_view_crop_mode", "random")),
+            drop_apply_to_both=bool(getattr(cfg, "vicreg_drop_apply_to_both", True)),
             rotation_mode=str(getattr(cfg, "vicreg_rotation_mode", "none")),
             rotation_deg=float(getattr(cfg, "vicreg_rotation_deg", 0.0)),
             strain_std=float(getattr(cfg, "vicreg_strain_std", 0.0)),
@@ -135,9 +156,7 @@ class VICRegLoss(nn.Module):
             std_eps=float(getattr(cfg, "vicreg_std_eps", 1e-4)),
             std_target=float(getattr(cfg, "vicreg_std_target", 1.0)),
             input_dim=input_dim,
-            invariant_mode=str(
-                getattr(cfg, "vicreg_invariant_mode", getattr(cfg, "barlow_invariant_mode", "norms"))
-            ),
+            invariant_mode=invariant_mode,
             invariant_max_factor=float(
                 getattr(cfg, "vicreg_invariant_max_factor", getattr(cfg, "barlow_invariant_max_factor", 4.0))
             ),
@@ -171,8 +190,9 @@ class VICRegLoss(nn.Module):
     ):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
-        y_a = self._augment(pc, use_neighbor=False)
-        y_b = self._augment(pc, use_neighbor=self.neighbor_view)
+        use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
+        y_a = self._augment(pc, use_neighbor=use_neighbor_a)
+        y_b = self._augment(pc, use_neighbor=use_neighbor_b)
 
         enc_a = encoder(prepare_input(y_a))
         inv_a, eq_a = split_output(enc_a)
@@ -194,12 +214,37 @@ class VICRegLoss(nn.Module):
             loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
+    def _resolve_neighbor_flags(self, *, device) -> tuple[bool, bool]:
+        if not self.neighbor_view:
+            return False, False
+        mode = self.neighbor_view_mode
+        if mode == "none":
+            return False, False
+        if mode == "first":
+            return True, False
+        if mode == "second":
+            return False, True
+        if mode == "random":
+            use_a = bool((torch.rand((), device=device) < 0.5).item())
+            use_b = bool((torch.rand((), device=device) < 0.5).item())
+            if not (use_a or use_b):
+                if bool((torch.rand((), device=device) < 0.5).item()):
+                    use_a = True
+                else:
+                    use_b = True
+            return use_a, use_b
+        return True, True
+
     def _augment(self, pc: torch.Tensor, *, use_neighbor: bool) -> torch.Tensor:
         x = pc
         if use_neighbor:
-            x = shift_to_neighbor(x, neighbor_k=self.neighbor_k)
+            x = shift_to_neighbor(
+                x,
+                neighbor_k=self.neighbor_k,
+                max_relative_distance=self.neighbor_max_relative_distance,
+            )
         if self.view_points is not None:
-            x = crop_to_num_points(x, self.view_points)
+            x = crop_to_num_points(x, self.view_points, mode=self.view_crop_mode)
         x = self._apply_rotation(x)
         x = self._apply_strain(x)
         if self._should_occlude(use_neighbor):
@@ -210,7 +255,8 @@ class VICRegLoss(nn.Module):
                 x = self._occlude_cone(x)
         if self.jitter_std > 0:
             x = x + torch.randn_like(x) * (self.jitter_std * self.jitter_scale)
-        if self.drop_ratio > 0 and not use_neighbor:
+        apply_drop = self.drop_ratio > 0 and (self.drop_apply_to_both or (not use_neighbor))
+        if apply_drop:
             bsz, num_points, _ = x.shape
             keep = (torch.rand(bsz, num_points, device=x.device) > self.drop_ratio)
             keep[:, 0] = True
@@ -313,8 +359,9 @@ class VICRegLoss(nn.Module):
         span = (proj_max - proj_min).clamp_min(1e-6)
         half_width = 0.5 * frac * span
         center = 0.5 * (proj_min + proj_max)
-        mask = (proj - center.unsqueeze(-1)).abs() <= half_width.unsqueeze(-1)
-        return self._resample_masked(x, mask)
+        drop_mask = (proj - center.unsqueeze(-1)).abs() <= half_width.unsqueeze(-1)
+        keep_mask = ~drop_mask
+        return self._resample_masked(x, keep_mask)
 
     def _occlude_cone(self, x: torch.Tensor) -> torch.Tensor:
         angle_deg = float(self.occlusion_cone_deg)
@@ -326,24 +373,24 @@ class VICRegLoss(nn.Module):
         eps = 1e-8
         cos_theta = math.cos(math.radians(angle_deg))
         cos_val = (x * axis.unsqueeze(1)).sum(dim=-1) / (r.clamp_min(eps))
-        mask = cos_val >= cos_theta
-        mask = mask | (r <= eps)
-        return self._resample_masked(x, mask)
+        drop_mask = (cos_val >= cos_theta) & (r > eps)
+        keep_mask = ~drop_mask
+        return self._resample_masked(x, keep_mask)
 
     @staticmethod
-    def _resample_masked(x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-        if mask is None:
+    def _resample_masked(x: torch.Tensor, keep_mask: torch.Tensor) -> torch.Tensor:
+        if keep_mask is None:
             return x
         bsz, num_points, _ = x.shape
-        if mask.shape[:2] != (bsz, num_points):
+        if keep_mask.shape[:2] != (bsz, num_points):
             return x
-        keep_any = mask.any(dim=1)
+        keep_any = keep_mask.any(dim=1)
         if not keep_any.all():
-            mask = mask.clone()
-            mask[~keep_any, 0] = True
-        if mask.all():
+            keep_mask = keep_mask.clone()
+            keep_mask[~keep_any, 0] = True
+        if keep_mask.all():
             return x
-        weights = mask.float()
+        weights = keep_mask.float()
         weights = weights / (weights.sum(dim=1, keepdim=True) + 1e-8)
         idx = torch.multinomial(weights, num_samples=num_points, replacement=True)
         return x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
@@ -468,4 +515,10 @@ class VICRegLoss(nn.Module):
             if eq_z is not None:
                 return eq_z.norm(dim=-1)
             return inv_z
+        # Keep passthrough behavior only when the invariant head output width already
+        # matches the provided invariant latent. Otherwise route through the head so
+        # projector input width stays consistent with initialization.
+        if eq_z is None and inv_z is not None and inv_z.dim() == 2:
+            if inv_z.shape[1] == int(self.invariant_head.output_dim):
+                return inv_z
         return self.invariant_head(inv_z, eq_z)

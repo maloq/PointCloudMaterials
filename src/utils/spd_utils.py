@@ -5,8 +5,19 @@ Contains tensor operations, rotation utilities, batch processing, and configurat
 
 import torch
 from typing import Tuple, Dict, Any, Optional
+from bisect import bisect_right
 
-import torch
+
+class _SequentialLRNoEpoch(torch.optim.lr_scheduler.SequentialLR):
+    """SequentialLR variant that avoids deprecated scheduler.step(epoch=...)."""
+
+    def step(self):  # type: ignore[override]
+        self.last_epoch += 1
+        idx = bisect_right(self._milestones, self.last_epoch)
+        scheduler = self._schedulers[idx]
+        scheduler.step()
+        self._last_lr = scheduler.get_last_lr()
+
 
 def get_optimizers_and_scheduler(hparams, parameters):
     optimizer = torch.optim.AdamW(
@@ -21,6 +32,7 @@ def get_optimizers_and_scheduler(hparams, parameters):
         epochs_before_swa = hparams.epochs
 
     scheduler_name = hparams.scheduler_name
+    step_interval_scheduler = False
     if scheduler_name == 'Step':
         scheduler = torch.optim.lr_scheduler.StepLR(
             optimizer,
@@ -33,6 +45,7 @@ def get_optimizers_and_scheduler(hparams, parameters):
             max_lr=hparams.learning_rate, 
             total_steps=epochs_before_swa
         )
+        step_interval_scheduler = True
     elif scheduler_name == 'CosineAnnealingWarmRestarts':
         scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
             optimizer,
@@ -61,6 +74,27 @@ def get_optimizers_and_scheduler(hparams, parameters):
     else:
         raise ValueError(f"Scheduler {scheduler_name} not found")
 
+    # Optional epoch-level linear warmup for non-step schedulers.
+    warmup_enabled = bool(getattr(hparams, "warmup_enabled", False))
+    warmup_epochs = int(getattr(hparams, "warmup_epochs", 0) or 0)
+    warmup_start_factor = float(getattr(hparams, "warmup_start_factor", 0.1))
+    if warmup_enabled and warmup_epochs > 0 and not step_interval_scheduler:
+        warmup_epochs = min(warmup_epochs, max(1, int(epochs_before_swa)))
+        warmup_start_factor = min(max(warmup_start_factor, 1e-6), 1.0)
+        warmup_scheduler = torch.optim.lr_scheduler.LinearLR(
+            optimizer,
+            start_factor=warmup_start_factor,
+            end_factor=1.0,
+            total_iters=warmup_epochs,
+        )
+        scheduler = _SequentialLRNoEpoch(
+            optimizer,
+            schedulers=[warmup_scheduler, scheduler],
+            milestones=[warmup_epochs],
+        )
+
+    if step_interval_scheduler:
+        return [optimizer], [{"scheduler": scheduler, "interval": "step"}]
     return [optimizer], [scheduler] 
     
 # ============================================================================

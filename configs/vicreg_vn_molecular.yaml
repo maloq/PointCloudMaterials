@@ -12,13 +12,20 @@ latent_size: 80  # Number of VN channels for equivariant latent
 load_supervised_checkpoint: False
 
 # VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
+# encoder:
+#   name: VN_REVNET_Backbone
+#   kwargs:
+#     latent_size: ${latent_size}
+#     sa_npoints: [80, 40]
+#     sa_channels: [128, 256]
+#     attn_hidden: 256
+
 encoder:
-  name: VN_REVNET_Backbone
+  name: PnE_L
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [80, 40]
-    sa_channels: [128, 256]
-    attn_hidden: 256
+    num_points: ${data.model_points}
+
 
 
 # Decoder config is required by the model factory but is not used for VICReg
@@ -47,8 +54,6 @@ num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
-debug_startup: false
-debug_faulthandler_timeout: 60
 
 decay_rate: 0.0000
 

@@ -24,6 +24,84 @@ EXPERIMENT_CLASSES = [
 # Global device for GPU acceleration
 DEVICE = None
 
+
+def _has_split_subdirs(class_root: str) -> bool:
+    """Check whether class_root contains class dirs with train/test subdirs."""
+    if not os.path.isdir(class_root):
+        return False
+
+    for entry in os.scandir(class_root):
+        if not entry.is_dir():
+            continue
+        has_train = os.path.isdir(os.path.join(entry.path, "train"))
+        has_test = os.path.isdir(os.path.join(entry.path, "test"))
+        if has_train or has_test:
+            return True
+    return False
+
+
+def _resolve_modelnet_data_root(root_dir: str) -> str:
+    """
+    Resolve where class directories actually live.
+
+    Supports both:
+      - datasets/ModelNet40/<class>/<split>/*.off
+      - datasets/ModelNet40/ModelNet40/<class>/<split>/*.off
+    """
+    root_dir = os.path.abspath(root_dir)
+    candidates = [root_dir, os.path.join(root_dir, "ModelNet40")]
+
+    for candidate in candidates:
+        if _has_split_subdirs(candidate):
+            return candidate
+
+    raise FileNotFoundError(
+        f"Could not find ModelNet class folders under {root_dir}. "
+        "Expected <root>/<class>/<train|test>/*.off or <root>/ModelNet40/<class>/<train|test>/*.off"
+    )
+
+
+def build_modelnet_index(root_dir: str) -> pd.DataFrame:
+    """
+    Build metadata directly from directory structure.
+
+    Returns a DataFrame with columns:
+      object_id, class, split, object_path
+    """
+    root_dir = os.path.abspath(root_dir)
+    data_root = _resolve_modelnet_data_root(root_dir)
+    rows = []
+
+    for class_entry in sorted(os.scandir(data_root), key=lambda e: e.name):
+        if not class_entry.is_dir():
+            continue
+
+        class_name = class_entry.name
+        for split in ("train", "test"):
+            split_dir = os.path.join(class_entry.path, split)
+            if not os.path.isdir(split_dir):
+                continue
+
+            for file_entry in sorted(os.scandir(split_dir), key=lambda e: e.name):
+                if not file_entry.is_file() or not file_entry.name.lower().endswith(".off"):
+                    continue
+
+                rel_path = os.path.relpath(file_entry.path, root_dir)
+                rows.append(
+                    {
+                        "object_id": os.path.splitext(file_entry.name)[0],
+                        "class": class_name,
+                        "split": split,
+                        "object_path": rel_path,
+                    }
+                )
+
+    if not rows:
+        raise RuntimeError(f"No OFF files found under {data_root}")
+
+    return pd.DataFrame(rows)
+
+
 def get_device():
     """Get the best available device (CUDA if available, else CPU)."""
     global DEVICE
@@ -199,7 +277,7 @@ def drop_points_fps(points: np.ndarray, n_points: int, use_torch: bool = True) -
 
 def convert_modelnet(
     root_dir="datasets/ModelNet40",
-    metadata_file="datasets/metadata_modelnet40.csv",
+    metadata_file=None,
     output_dir="datasets/ModelNet40_fast",
     n_points=1024,
     classes=None,
@@ -218,13 +296,27 @@ def convert_modelnet(
     """
     os.makedirs(output_dir, exist_ok=True)
     
-    print(f"Reading metadata from {metadata_file}")
-    df = pd.read_csv(metadata_file)
+    if metadata_file:
+        print(
+            f"Note: --metadata_file={metadata_file} is ignored. "
+            "Dataset indexing is now discovered directly from the directory tree."
+        )
+
+    print(f"Scanning ModelNet files under {root_dir}")
+    df = build_modelnet_index(root_dir)
+    print(
+        f"Discovered {len(df)} samples across "
+        f"{df['class'].nunique()} classes."
+    )
     
     # Get unique classes and splits
     all_classes = sorted(df['class'].unique())
     if classes is not None:
-        classes = [c for c in classes if c in all_classes]
+        requested = list(dict.fromkeys(classes))
+        missing = sorted(set(requested) - set(all_classes))
+        if missing:
+            print(f"Warning: requested classes not found and will be skipped: {missing}")
+        classes = [c for c in requested if c in all_classes]
         print(f"Filtering to {len(classes)} classes: {classes}")
     else:
         classes = all_classes
@@ -340,7 +432,8 @@ if __name__ == "__main__":
         description="Convert ModelNet dataset to fast-loading format with FPS sampling"
     )
     parser.add_argument("--root_dir", default="datasets/ModelNet40")
-    parser.add_argument("--metadata_file", default="datasets/metadata_modelnet40.csv")
+    parser.add_argument("--metadata_file", default=None,
+                        help="Deprecated: kept for backward compatibility; ignored.")
     parser.add_argument("--output_dir", default="datasets/ModelNet40_fast")
     parser.add_argument("--n_points", type=int, default=1024)
     parser.add_argument("--classes", nargs="+", help="Specific classes to process")

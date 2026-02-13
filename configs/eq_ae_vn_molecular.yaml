@@ -104,8 +104,6 @@ num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
-debug_startup: false
-debug_faulthandler_timeout: 60
 
 decay_rate: 0.0000
 kl_latent_loss_scale: 0.0

@@ -10,6 +10,8 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.cluster import KMeans
+from sklearn.mixture import GaussianMixture
+from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import pdist, cdist
 from scipy.spatial.transform import Rotation
 
@@ -207,14 +209,136 @@ def rotation_geodesic_distance_np(R1: np.ndarray, R2: np.ndarray, eps: float = 1
     return np.rad2deg(angle_rad)
 
 
-def compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray, stage: str) -> dict:
+def _hungarian_cluster_accuracy(labels: np.ndarray, assignments: np.ndarray) -> float:
+    """Best label-permutation clustering accuracy via Hungarian matching."""
+    labels = np.asarray(labels)
+    assignments = np.asarray(assignments)
+    if labels.shape != assignments.shape or labels.size == 0:
+        raise ValueError("labels and assignments must have identical non-empty shape")
+
+    label_vals, label_inv = np.unique(labels, return_inverse=True)
+    cluster_vals, cluster_inv = np.unique(assignments, return_inverse=True)
+    contingency = np.zeros((label_vals.size, cluster_vals.size), dtype=np.int64)
+    np.add.at(contingency, (label_inv, cluster_inv), 1)
+
+    row_ind, col_ind = linear_sum_assignment(contingency.max() - contingency)
+    correct = contingency[row_ind, col_ind].sum()
+    return float(correct / labels.size)
+
+
+def _normalize_acc_eval_methods(acc_eval_methods) -> list[str]:
+    """Normalize ACC evaluator names to canonical method ids."""
+    if acc_eval_methods is None:
+        raw_methods = ["kmeans++"]
+    elif isinstance(acc_eval_methods, str):
+        raw_methods = [acc_eval_methods]
+    else:
+        raw_methods = list(acc_eval_methods)
+
+    methods: list[str] = []
+    seen: set[str] = set()
+    for raw in raw_methods:
+        key = str(raw).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
+        method = None
+        if key in {"kmeans", "kmeansrandom"}:
+            method = "kmeans"
+        elif key in {"kmeans++", "kmeansplusplus", "kmeanspp"}:
+            method = "kmeans++"
+        elif key in {"gmm", "gmmfull", "fullgmm", "gaussianmixture", "gaussianmixturefull"}:
+            method = "gmm_full"
+        if method is None:
+            logger.warning("Unknown ACC evaluator '%s'; skipping.", raw)
+            continue
+        if method in seen:
+            continue
+        seen.add(method)
+        methods.append(method)
+    return methods
+
+
+def _normalize_acc_eval_runs_by_method(acc_eval_runs_by_method) -> dict[str, int]:
+    """Normalize optional per-method run counts for ACC evaluators."""
+    if acc_eval_runs_by_method is None:
+        return {}
+    if not hasattr(acc_eval_runs_by_method, "items"):
+        logger.warning("acc_eval_runs_by_method must be a mapping; got %s", type(acc_eval_runs_by_method))
+        return {}
+
+    runs_by_method: dict[str, int] = {}
+    for raw_method, raw_runs in acc_eval_runs_by_method.items():
+        methods = _normalize_acc_eval_methods([raw_method])
+        if not methods:
+            continue
+        try:
+            runs = max(1, int(raw_runs))
+        except Exception:
+            logger.warning("Invalid ACC run count for method '%s': %s", raw_method, raw_runs)
+            continue
+        runs_by_method[methods[0]] = runs
+    return runs_by_method
+
+
+def _compute_cluster_assignments_for_acc(
+    latents: np.ndarray,
+    n_clusters: int,
+    method: str,
+    *,
+    seed: int,
+) -> np.ndarray:
+    if method == "kmeans":
+        model = KMeans(n_clusters=n_clusters, init="random", n_init=10, random_state=seed)
+        return model.fit_predict(latents)
+    if method == "kmeans++":
+        model = KMeans(n_clusters=n_clusters, init="k-means++", n_init=10, random_state=seed)
+        return model.fit_predict(latents)
+    if method == "gmm_full":
+        # Full-covariance GMM as requested for ACC evaluation.
+        model = GaussianMixture(
+            n_components=n_clusters,
+            covariance_type="full",
+            n_init=1,
+            reg_covar=1e-6,
+            random_state=seed,
+        )
+        return model.fit_predict(latents)
+    raise ValueError(f"Unsupported ACC evaluator method: {method}")
+
+
+def _acc_metric_prefix(method: str, k_eval: int) -> str:
+    if method == "kmeans":
+        return f"ACC_KMEANS_RANDOM_HUNGARIAN_K{k_eval}"
+    if method == "kmeans++":
+        return f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{k_eval}"
+    if method == "gmm_full":
+        return f"ACC_GMM_FULL_HUNGARIAN_K{k_eval}"
+    raise ValueError(f"Unsupported ACC evaluator method: {method}")
+
+
+def compute_cluster_metrics(
+    latents: np.ndarray,
+    labels: np.ndarray,
+    stage: str,
+    *,
+    hungarian_eval_k: int | None = None,
+    acc_eval_methods=None,
+    acc_eval_runs: int = 1,
+    acc_eval_runs_by_method=None,
+    acc_random_seed: int = 0,
+) -> dict:
     """
-    Compute clustering metrics (ARI, NMI, Silhouette).
+    Compute clustering metrics (ARI, NMI, plus optional Hungarian ACC metrics).
 
     Args:
         latents: (N, d) latent embeddings
         labels: (N,) ground truth labels
         stage: Stage name (e.g., 'train', 'val', 'test')
+        hungarian_eval_k: Optional fixed K for val/test-time clustering accuracy
+            with Hungarian matching.
+        acc_eval_methods: Optional method list for ACC evaluation. Supported:
+            "kmeans", "kmeans++", "gmm_full".
+        acc_eval_runs: Number of random-seed runs per ACC method.
+        acc_eval_runs_by_method: Optional per-method run-count overrides.
+        acc_random_seed: Base random seed for ACC runs.
 
     Returns:
         Dictionary of clustering metrics, or None if metrics cannot be computed
@@ -232,6 +356,58 @@ def compute_cluster_metrics(latents: np.ndarray, labels: np.ndarray, stage: str)
                 stage,
                 exc,
             )
+
+    stage_l = str(stage).lower()
+    k_eval = int(hungarian_eval_k) if hungarian_eval_k is not None else None
+    if stage_l in {"val", "test"} and k_eval is not None and k_eval >= 2 and latents.shape[0] >= k_eval:
+        methods = _normalize_acc_eval_methods(acc_eval_methods)
+        runs = max(1, int(acc_eval_runs))
+        runs_by_method = _normalize_acc_eval_runs_by_method(acc_eval_runs_by_method)
+        base_seed = int(acc_random_seed)
+        for method in methods:
+            method_runs = runs_by_method.get(method, runs)
+            acc_values: list[float] = []
+            for run_idx in range(method_runs):
+                run_seed = base_seed + run_idx
+                try:
+                    pred_labels = _compute_cluster_assignments_for_acc(
+                        latents,
+                        k_eval,
+                        method,
+                        seed=run_seed,
+                    )
+                    acc_values.append(_hungarian_cluster_accuracy(labels, pred_labels))
+                except Exception as exc:
+                    logger.warning(
+                        (
+                            "Failed ACC run for stage='%s' method='%s' "
+                            "(k=%d, run=%d, seed=%d): %s"
+                        ),
+                        stage,
+                        method,
+                        k_eval,
+                        run_idx,
+                        run_seed,
+                        exc,
+                    )
+
+            if not acc_values:
+                continue
+
+            prefix = _acc_metric_prefix(method, k_eval)
+            if len(acc_values) == 1:
+                metrics[prefix] = float(acc_values[0])
+            else:
+                acc_arr = np.asarray(acc_values, dtype=np.float32)
+                metrics[prefix] = float(acc_arr.mean())
+                metrics[f"{prefix}_MEAN"] = float(acc_arr.mean())
+                metrics[f"{prefix}_STD"] = float(acc_arr.std())
+                metrics[f"{prefix}_BEST"] = float(acc_arr.max())
+                metrics[f"{prefix}_RUNS"] = float(acc_arr.size)
+
+            # Backward-compatible key: keep historical naming mapped to k-means++.
+            if method == "kmeans++":
+                metrics[f"ACC_KMEANS_HUNGARIAN_K{k_eval}"] = float(np.mean(acc_values))
     return metrics or None
 
 
@@ -293,11 +469,10 @@ def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarra
     metrics['embedding_norm_std'] = float(norms.std())
 
     # Pairwise distance statistics (detect if embeddings too similar)
-    if len(Z_inv) > 1:
-        all_distances = pdist(Z_inv, metric='euclidean')
-        metrics['pairwise_distance_mean'] = float(all_distances.mean())
-        metrics['pairwise_distance_std'] = float(all_distances.std())
-        metrics['pairwise_distance_min'] = float(all_distances.min())
+    # if len(Z_inv) > 1:
+    #     all_distances = pdist(Z_inv, metric='euclidean')
+    #     metrics['pairwise_distance_mean'] = float(all_distances.mean())
+    #     metrics['pairwise_distance_std'] = float(all_distances.std())
 
     return metrics
 
