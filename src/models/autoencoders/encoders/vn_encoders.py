@@ -214,10 +214,6 @@ class VNResBlock(nn.Module):
         return self.conv2(self.conv1(x)) + x
 
 
-def _make_vn_layer(channels: int, num_blocks: int, dim: int = 4, **kwargs) -> nn.Sequential:
-    return nn.Sequential(*[VNResBlock(channels, dim=dim, **kwargs) for _ in range(num_blocks)])
-
-
 @register_encoder("PnE_VN")
 class PointNetEncoderVN(Encoder):
     def __init__(
@@ -288,7 +284,7 @@ class PointNetEncoderVN(Encoder):
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         x = x.permute(0, 2, 1)
-        batch_size, channels, num_points = x.size()
+        batch_size, _, num_points = x.size()
         x = x.unsqueeze(1)
 
         feat = get_graph_feature_cross(x, k=self.n_knn)
@@ -427,34 +423,22 @@ class VNDGCNNEncoder(Encoder):
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         x = x.permute(0, 2, 1)
-        batch_size, channels, num_points = x.size()
+        batch_size, _, num_points = x.size()
         x = x.unsqueeze(1)
 
-        if self.use_cross_product:
-            x = get_graph_feature_cross(x, k=self.n_knn)
-        else:
-            x = get_graph_feature(x, k=self.n_knn)
+        x = _get_graph_feature_with_mode(x, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv1(x)
         x1 = self.pool1(x)
 
-        if self.use_cross_product:
-            x = get_graph_feature_cross(x1, k=self.n_knn)
-        else:
-            x = get_graph_feature(x1, k=self.n_knn)
+        x = _get_graph_feature_with_mode(x1, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv2(x)
         x2 = self.pool2(x)
 
-        if self.use_cross_product:
-            x = get_graph_feature_cross(x2, k=self.n_knn)
-        else:
-            x = get_graph_feature(x2, k=self.n_knn)
+        x = _get_graph_feature_with_mode(x2, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv3(x)
         x3 = self.pool3(x)
 
-        if self.use_cross_product:
-            x = get_graph_feature_cross(x3, k=self.n_knn)
-        else:
-            x = get_graph_feature(x3, k=self.n_knn)
+        x = _get_graph_feature_with_mode(x3, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv4(x)
         x4 = self.pool4(x)
 
@@ -508,21 +492,22 @@ class STNkd(nn.Module):
         return self.fc3(x)
 
 
+def _project_to_rotation_group(rot_mat: torch.Tensor, strict: str) -> torch.Tensor:
+    if strict == 'None':
+        return rot_mat
+    u, _, v = torch.linalg.svd(rot_mat)
+    return u @ v.transpose(-1, -2)
+
+
 class SimpleRot(nn.Module):
     def __init__(self, in_ch: int, strict: str = 'None'):
         super().__init__()
         self.model = VNLinear(in_ch, 3)
         self.strict = strict
 
-    def constraint_rot(self, rot_mat: torch.Tensor) -> torch.Tensor:
-        if self.strict == 'None':
-            return rot_mat
-        u, _, v = torch.linalg.svd(rot_mat)
-        return u @ v.transpose(-1, -2)
-
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         rot_mat = self.model(x).squeeze(-1)
-        return self.constraint_rot(rot_mat)
+        return _project_to_rotation_group(rot_mat, self.strict)
 
 
 class ComplexRot(nn.Module):
@@ -534,19 +519,13 @@ class ComplexRot(nn.Module):
         self.linearR = VNLinear(in_ch, 3)
         self.strict = strict
 
-    def constraint_rot(self, rot_mat: torch.Tensor) -> torch.Tensor:
-        if self.strict == 'None':
-            return rot_mat
-        u, _, v = torch.linalg.svd(rot_mat)
-        return u @ v.transpose(-1, -2)
-
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.linear1(x)
         x = self.linear2(x)
         x = self.linear3(x)
         R = self.linearR(x)
         rot_mat = torch.mean(R, dim=-1)
-        return self.constraint_rot(rot_mat)
+        return _project_to_rotation_group(rot_mat, self.strict)
 
 
 def knn(x: torch.Tensor, k: int) -> torch.Tensor:
@@ -605,6 +584,21 @@ def get_graph_feature_cross(x: torch.Tensor, k: int = 20, idx: torch.Tensor | No
     feature = torch.cat((feature - x, x, cross), dim=3).permute(0, 3, 4, 1, 2).contiguous()
     return feature
 
+
+
+def _get_graph_feature_with_mode(
+    x: torch.Tensor,
+    k: int,
+    *,
+    use_cross_product: bool,
+    idx: torch.Tensor | None = None,
+    x_coord: torch.Tensor | None = None,
+) -> torch.Tensor:
+    if use_cross_product:
+        if x_coord is not None:
+            raise ValueError("x_coord is not supported when use_cross_product=True")
+        return get_graph_feature_cross(x, k=k, idx=idx)
+    return get_graph_feature(x, k=k, idx=idx, x_coord=x_coord)
 
 
 class VNRobustInvariantHead(nn.Module):
@@ -707,34 +701,22 @@ class VNDGCNNEncoderRefined(Encoder):
         x = x.unsqueeze(1) # (B, 1, 3, N)
 
         # Layer 1
-        if self.use_cross_product:
-            x_graph = get_graph_feature_cross(x, k=self.n_knn) # (B, 3*1, 3, N, k)
-        else:
-            x_graph = get_graph_feature(x, k=self.n_knn) # (B, 2*1, 3, N, k)
+        x_graph = _get_graph_feature_with_mode(x, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv1(x_graph) # (B, c1, 3, N, k)
         x1 = x.mean(dim=-1) # Pool neighbors -> (B, c1, 3, N)
 
         # Layer 2
-        if self.use_cross_product:
-            x_graph = get_graph_feature_cross(x1, k=self.n_knn)
-        else:
-            x_graph = get_graph_feature(x1, k=self.n_knn)
+        x_graph = _get_graph_feature_with_mode(x1, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv2(x_graph)
         x2 = x.mean(dim=-1)
 
         # Layer 3
-        if self.use_cross_product:
-            x_graph = get_graph_feature_cross(x2, k=self.n_knn)
-        else:
-            x_graph = get_graph_feature(x2, k=self.n_knn)
+        x_graph = _get_graph_feature_with_mode(x2, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv3(x_graph)
         x3 = x.mean(dim=-1)
 
         # Layer 4
-        if self.use_cross_product:
-            x_graph = get_graph_feature_cross(x3, k=self.n_knn)
-        else:
-            x_graph = get_graph_feature(x3, k=self.n_knn)
+        x_graph = _get_graph_feature_with_mode(x3, k=self.n_knn, use_cross_product=self.use_cross_product)
         x = self.conv4(x_graph)
         x4 = x.mean(dim=-1)
 
@@ -760,256 +742,6 @@ class VNDGCNNEncoderRefined(Encoder):
         return z_inv, z_eq, None
 
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from .vn_encoders import VNLinearLeakyReLU, VNLinear, VNStdFeature, VNBatchNorm
-
-# ---------------------------------------------------------------------------
-# 1. Invariant Geometric Feature Extractor
-# ---------------------------------------------------------------------------
-class InvariantGeometricFeatures(nn.Module):
-    """
-    Explicitly computes topological/geometric invariants:
-    1. Pairwise distances (Edge lengths)
-    2. Local densities
-    3. (Optional) Triplet angles
-    """
-    def __init__(self, num_points, n_knn=20):
-        super().__init__()
-        self.n_knn = n_knn
-        # Project geometric features to a higher dim
-        self.dist_embed = nn.Sequential(
-            nn.Conv2d(1, 16, 1),
-            nn.BatchNorm2d(16),
-            nn.LeakyReLU(0.2)
-        )
-
-    def forward(self, x):
-        # x: (B, 3, N) - Input Points
-        B, C, N = x.shape
-        
-        # 1. Compute Pairwise Distance Matrix (Invariant to Rotation)
-        # (B, N, N)
-        dist_mat = torch.cdist(x.transpose(1, 2), x.transpose(1, 2))
-        
-        # 2. Extract k-NN distances (Local Topology)
-        # We sort distances to get 'canonical' local neighborhood descriptions
-        knn_dists, _ = torch.topk(dist_mat, k=self.n_knn, dim=-1, largest=False)
-        
-        # (B, 1, N, k)
-        knn_dists = knn_dists.unsqueeze(1) 
-        
-        # Embed these scalar invariants
-        feat = self.dist_embed(knn_dists) # (B, 16, N, k)
-        
-        # Pool to get per-point invariant descriptors
-        feat = feat.max(dim=-1)[0] # (B, 16, N)
-        return feat
-
-# ---------------------------------------------------------------------------
-# 2. Vector Neuron Attention (VN-Attention)
-# ---------------------------------------------------------------------------
-class VNAttention(nn.Module):
-    """
-    Rotation Equivariant Self-Attention.
-    Allows the model to learn long-range topology without fixed k-NN.
-    """
-    def __init__(self, in_channels, num_heads=1, dim=4):
-        super().__init__()
-        assert in_channels % num_heads == 0, "in_channels must be divisible by num_heads"
-        self.in_channels = in_channels
-        self.num_heads = num_heads
-        self.head_dim = in_channels // num_heads
-        
-        self.q_conv = VNLinear(in_channels, in_channels)
-        self.k_conv = VNLinear(in_channels, in_channels)
-        self.v_conv = VNLinear(in_channels, in_channels)
-        self.out_conv = VNLinear(in_channels, in_channels)
-        self.dim = dim
-
-    def forward(self, x):
-        # x: (B, C, 3, N)
-        B, C, D, N = x.size()
-        H = self.num_heads
-        
-        Q = self.q_conv(x) # (B, C, 3, N)
-        K = self.k_conv(x) # (B, C, 3, N)
-        V = self.v_conv(x) # (B, C, 3, N)
-
-        # Reshape for heads: (B, H, C/H, 3, N) -> (B, H, N, C/H, 3)
-        q_reshaped = Q.view(B, H, self.head_dim, 3, N).permute(0, 1, 4, 2, 3)
-        k_reshaped = K.view(B, H, self.head_dim, 3, N).permute(0, 1, 4, 2, 3)
-        
-        # Energy: dot product over C/H and 3
-        # (B, H, N, C/H, 3) * (B, H, M, C/H, 3) -> (B, H, N, M)
-        energy = torch.einsum('bhnci,bhmci->bhnm', q_reshaped, k_reshaped)
-
-        attention = _softmax_fp32(energy / (self.head_dim**0.5), dim=-1) # (B, H, N, N)
-
-        # Apply attention to V
-        # V: (B, C, 3, N) -> (B, H, N, C/H, 3)
-        v_reshaped = V.view(B, H, self.head_dim, 3, N).permute(0, 1, 4, 2, 3)
-        
-        # (B, H, N, M) * (B, H, M, C/H, 3) -> (B, H, N, C/H, 3)
-        out = torch.einsum('bhnm,bhmci->bhnci', attention, v_reshaped)
-        
-        # Reshape back: (B, H, N, C/H, 3) -> (B, H, C/H, 3, N) -> (B, C, 3, N)
-        out = out.permute(0, 1, 3, 4, 2).reshape(B, C, 3, N)
-        
-        out = self.out_conv(out)
-        return out + x # Residual
-
-class VNFeedForward(nn.Module):
-    def __init__(self, in_channels, expansion_factor=2, dim=4):
-        super().__init__()
-        hidden_channels = in_channels * expansion_factor
-        self.net = nn.Sequential(
-            VNLinearLeakyReLU(in_channels, hidden_channels, dim=dim, negative_slope=0.0),
-            VNLinear(hidden_channels, in_channels)
-        )
-
-    def forward(self, x):
-        return self.net(x)
-
-class VNTransformerBlock(nn.Module):
-    def __init__(self, channels, num_heads=1, dim=4, expansion_factor=2):
-        super().__init__()
-        self.attn = VNAttention(channels, num_heads=num_heads, dim=dim)
-        self.norm1 = VNBatchNorm(channels, dim=dim)
-        self.ffn = VNFeedForward(channels, expansion_factor=expansion_factor, dim=dim)
-        self.norm2 = VNBatchNorm(channels, dim=dim)
-
-    def forward(self, x):
-        # Post-Norm architecture
-        # 1. Attention + Residual (VNAttention handles residual internally? No, wait, let's check VNAttention)
-        # Checking VNAttention code above: "return out + x # Residual"
-        # So VNAttention DOES add residual.
-        
-        x = self.norm1(self.attn(x))
-        x = x + self.ffn(x)
-        x = self.norm2(x)
-        return x
-
-# ---------------------------------------------------------------------------
-# 3. Geometry-Aware VN-Transformer Encoder
-# ---------------------------------------------------------------------------
-
-@register_encoder("VN_Transformer")
-class VNTransformerEncoder(nn.Module):
-    def __init__(self, latent_size=128, num_points=80, n_knn=20, hidden_dim=64, num_layers=1, num_heads=1, size_preset=None):
-        super().__init__()
-        
-        if size_preset is not None:
-            presets = {
-                'tiny': {'hidden_dim': 32, 'num_layers': 1, 'num_heads': 2},
-                'small': {'hidden_dim': 64, 'num_layers': 2, 'num_heads': 4},
-                'base': {'hidden_dim': 128, 'num_layers': 4, 'num_heads': 8},
-                'large': {'hidden_dim': 256, 'num_layers': 6, 'num_heads': 16},
-            }
-            if size_preset in presets:
-                config = presets[size_preset]
-                hidden_dim = config['hidden_dim']
-                num_layers = config['num_layers']
-                num_heads = config['num_heads']
-            else:
-                raise ValueError(f"Unknown preset {size_preset}. Available: {list(presets.keys())}")
-        
-        # 1. Explicit Topology Extractor (Invariant)
-        self.geo_extractor = InvariantGeometricFeatures(num_points, n_knn)
-        
-        # 2. Embedding Layers (Equivariant)
-        self.conv_pos = VNLinearLeakyReLU(1, hidden_dim // 2, dim=4, negative_slope=0.0)
-        self.conv1 = VNLinearLeakyReLU(hidden_dim // 2, hidden_dim, dim=4, negative_slope=0.0)
-        
-        # 3. Transformer Block (Global Topology)
-        self.transformer = nn.Sequential(*[
-            VNTransformerBlock(hidden_dim, num_heads=num_heads, dim=4, expansion_factor=2) 
-            for _ in range(num_layers)
-        ])
-        
-        # 4. Std Feature (Mixing invariant and equivariant)
-        # We augment the standard VN feature extraction with our explicit geometric features
-        self.std_feature = VNStdFeature(
-            hidden_dim * 2, # Doubled because of concatenation in forward
-            dim=4,
-            normalize_frame=False,
-            hidden_dims=(hidden_dim * 2, hidden_dim)
-        )
-        
-        # Fusion MLP for Invariant Latent
-        # Input: (StdFeature Invariants) + (Geometric Explicit Invariants)
-        inv_input_dim = (hidden_dim * 2 * 3) + 16 
-        self.inv_mlp = nn.Sequential(
-            nn.Linear(inv_input_dim, 256),
-            nn.BatchNorm1d(256),
-            nn.LeakyReLU(0.2),
-            nn.Linear(256, latent_size)
-        )
-        
-        # Head for Equivariant Latent (Orientation)
-        # Output shape: (B, latent_size, 3) to match VNRotationHead expectations
-        self.eq_mlp = VNLinear(hidden_dim, latent_size) 
-
-        # Head for Crystallinity detection (0=Liquid, 1=Crystal)
-        self.crystallinity_head = nn.Sequential(
-            nn.Linear(latent_size, 32),
-            nn.LeakyReLU(),
-            nn.Linear(32, 1),
-            nn.Sigmoid()
-        )
-
-    def forward(self, x):
-        # Input x: (B, N, 3) -> (B, 3, N)
-        x = x.permute(0, 2, 1)
-        
-        # A. Explicit Invariant Geometry (The "Topology" help)
-        geo_feats = self.geo_extractor(x) # (B, 16, N)
-        geo_global = geo_feats.mean(dim=-1) # (B, 16) Global descriptor
-        
-        # B. Equivariant Stream
-        x_eq = x.unsqueeze(1) # (B, 1, 3, N)
-        # Create initial graph feature to get local normals/directions
-        # (Assuming you have get_graph_feature from vn.txt)
-        # For simplicity in Transformer, we just embed position first
-        x_eq = self.conv_pos(x_eq.repeat(1, 1, 1, 1)) # Dummy expansion or use graph
-        
-        # Note: To strictly use your vn_encoders 'get_graph_feature', you would do:
-        # from .vn_encoders import get_graph_feature
-        # x_graph = get_graph_feature(x_eq, k=20)
-        # x_eq = self.conv_pos(x_graph).mean(dim=-1)
-        
-        # Let's assume simple VN embedding for the transformer demo:
-        x_eq = self.conv1(x_eq) # (B, 64, 3, N)
-        
-        # Transformer mixes information globally
-        x_eq = self.transformer(x_eq) # (B, 64, 3, N)
-        
-        # C. Feature Aggregation
-        x_mean = x_eq.mean(dim=-1, keepdim=True)
-        x_concat = torch.cat((x_eq, x_mean.expand_as(x_eq)), dim=1)
-        
-        # D. Get Invariant Features (V) and Equivariant Frames (Z0)
-        # V: (B, C, N), Z0: (B, C, 3)
-        V, Z0 = self.std_feature(x_concat) 
-        
-        # E. Latent Construction
-        # 1. Invariant Latent (Shape/Topology)
-        V = V.view(V.size(0), -1, V.size(-1))
-        V_pooled = V.max(dim=-1)[0] # (B, C_inv)
-        # FUSE explicit geometry with learned VN invariants
-        V_final = torch.cat([V_pooled, geo_global], dim=1)
-        z_inv = self.inv_mlp(V_final)
-        
-        # 2. Equivariant Latent (Orientation)
-        z_eq = self.eq_mlp(x_mean.squeeze(-1)) # (B, latent/3, 3)
-        
-        # 3. Crystallinity Score
-        crystallinity = self.crystallinity_head(z_inv)
-        
-        return z_inv, z_eq, crystallinity
-
-
 __all__ = [
     "PointNetEncoderVN",
     "VNDGCNNEncoder",
@@ -1025,7 +757,6 @@ __all__ = [
     "STNkd",
     "get_graph_feature",
     "get_graph_feature_cross",
-    "VNTransformerEncoder",
 ]
 
 
@@ -1515,5 +1246,405 @@ class VNRevnetBackboneEncoder(Encoder):
 
         # Invariant latent: channel norms + selected Gram dot products
         inv_z = self._invariant_features(eq_z)
+
+        return inv_z, eq_z, center
+
+
+# ---------------------------------------------------------------------------
+# Atomic REVNET: GPU-friendly VN encoder for local atomic environments (64-256 pts)
+# - No FPS (no Python loops)
+# - Cross-product VN embedding (better plane/normal cues)
+# - Multi-scale kNN EdgeConv (reuse single kNN at max_k)
+# - Cheap invariant "moment" + radial-RBF head (crystal vs liquid signal)
+# ---------------------------------------------------------------------------
+
+class AtomicGeometricInvariantHead(nn.Module):
+    """
+    Computes cheap rotation-invariant geometric descriptors from a local point patch.
+
+    Input:
+      xyz: (B, N, 3)
+      idx_knn_max: optional (B, N, Kmax) kNN indices (including self), computed once upstream.
+    Output:
+      geom: (B, out_dim)  (learned projection of raw invariants)
+    """
+    def __init__(
+        self,
+        k_geom: int = 16,
+        rbf_bins: int = 16,
+        rbf_max: float = 2.0,
+        rbf_sigma: float = 0.15,
+        proj_dim: int = 32,
+        use_dir_moments: bool = True,
+        eps: float = 1e-6,
+    ):
+        super().__init__()
+        self.k_geom = int(k_geom)
+        self.rbf_bins = int(rbf_bins)
+        self.rbf_max = float(rbf_max)
+        self.rbf_sigma = float(rbf_sigma)
+        self.use_dir_moments = bool(use_dir_moments)
+        self.eps = float(eps)
+
+        # centers on normalized distance (d / mean(d)) in [0, rbf_max]
+        mu = torch.linspace(0.0, self.rbf_max, self.rbf_bins)
+        self.register_buffer("rbf_mu", mu, persistent=False)
+
+        raw_dim = 0
+        # global covariance invariants: tr, fro2/tr^2, det/tr^3
+        raw_dim += 3
+        # local covariance invariants (mean+std): tr, anis, vol => 6
+        raw_dim += 6
+        if self.use_dir_moments:
+            # same on unit directions (mean+std): tr_dir, anis_dir => 4
+            raw_dim += 4
+        # radial histogram bins
+        raw_dim += self.rbf_bins
+
+        h = max(proj_dim, 8)
+        self.proj = nn.Sequential(
+            nn.Linear(raw_dim, h),
+            nn.LayerNorm(h),
+            nn.SiLU(inplace=True),
+            nn.Linear(h, proj_dim),
+        )
+
+    @staticmethod
+    def _det3x3(C: torch.Tensor) -> torch.Tensor:
+        # C: (..., 3, 3)
+        a = C[..., 0, 0]
+        b = C[..., 0, 1]
+        c = C[..., 0, 2]
+        d = C[..., 1, 0]
+        e = C[..., 1, 1]
+        f = C[..., 1, 2]
+        g = C[..., 2, 0]
+        h = C[..., 2, 1]
+        i = C[..., 2, 2]
+        return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
+
+    def _cov_invariants(self, C: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        # C: (..., 3, 3) symmetric PSD-ish
+        tr = C[..., 0, 0] + C[..., 1, 1] + C[..., 2, 2]
+        fro2 = (C * C).sum(dim=(-1, -2))
+        det = self._det3x3(C).clamp_min(0.0)
+        anis = fro2 / (tr * tr + self.eps)
+        vol = det / (tr * tr * tr + self.eps)
+        return tr, anis, vol
+
+    def forward(self, xyz: torch.Tensor, idx_knn_max: torch.Tensor | None = None) -> torch.Tensor:
+        if xyz.dim() != 3 or xyz.size(-1) != 3:
+            raise ValueError(f"Expected xyz (B, N, 3), got {tuple(xyz.shape)}")
+        B, N, _ = xyz.shape
+
+        # float32 for stable invariants (tiny overhead for N<=256)
+        xyz_f = xyz.float()
+
+        # ---- Global covariance invariants (patch-level) ----
+        centered = xyz_f - xyz_f.mean(dim=1, keepdim=True)  # (B,N,3)
+        Cg = torch.einsum("bni,bnj->bij", centered, centered) / (N + self.eps)  # (B,3,3)
+        tr_g, anis_g, vol_g = self._cov_invariants(Cg)
+        global_feat = torch.stack([tr_g, anis_g, vol_g], dim=-1)  # (B,3)
+
+        # ---- kNN (reuse idx if provided) ----
+        k_needed = min(self.k_geom + 1, N)
+        if idx_knn_max is None:
+            x_coord = xyz_f.permute(0, 2, 1)  # (B,3,N)
+            idx_knn_max = knn(x_coord, k=k_needed)  # includes self
+        else:
+            idx_knn_max = idx_knn_max[:, :, :k_needed]
+
+        # drop self neighbor (first one if present)
+        if idx_knn_max.size(-1) >= 2:
+            idx = idx_knn_max[:, :, 1 : 1 + min(self.k_geom, idx_knn_max.size(-1) - 1)]  # (B,N,k)
+        else:
+            # degenerate: no neighbors besides self
+            idx = idx_knn_max
+
+        neigh = index_points(xyz_f, idx)  # (B,N,k,3)
+        anchor = xyz_f[:, :, None, :]     # (B,N,1,3)
+        r = neigh - anchor                # (B,N,k,3)
+        d2 = (r * r).sum(dim=-1)          # (B,N,k)
+        d = torch.sqrt(d2 + self.eps)
+
+        # Smooth weights; sigma tied to mean neighbor distance (scale-robust)
+        d_mean = d.mean(dim=(1, 2), keepdim=True).clamp_min(self.eps)  # (B,1,1)
+        sigma = 0.75 * d_mean
+        w = torch.exp(-d2 / (2.0 * sigma * sigma + self.eps))  # (B,N,k)
+
+        # ---- Local covariance invariants (per point) ----
+        rw = r * w[..., None]
+        denom = w.sum(dim=-1, keepdim=True)[..., None] + self.eps
+        C = torch.einsum("bnki,bnkj->bnij", rw, r) / denom  # (B,N,3,3)
+        tr, anis, vol = self._cov_invariants(C)             # (B,N)
+
+        local_stats = torch.stack(
+            [tr.mean(dim=1), tr.std(dim=1),
+             anis.mean(dim=1), anis.std(dim=1),
+             vol.mean(dim=1), vol.std(dim=1)],
+            dim=-1,
+        )  # (B,6)
+
+        dir_stats = []
+        if self.use_dir_moments:
+            u = r / (d[..., None] + self.eps)               # (B,N,k,3)
+            uw = u * w[..., None]
+            Cd = torch.einsum("bnki,bnkj->bnij", uw, u) / denom
+            trd = Cd[..., 0, 0] + Cd[..., 1, 1] + Cd[..., 2, 2]
+            fro2d = (Cd * Cd).sum(dim=(-1, -2))
+            anisd = fro2d / (trd * trd + self.eps)
+            dir_stats = torch.stack(
+                [trd.mean(dim=1), trd.std(dim=1), anisd.mean(dim=1), anisd.std(dim=1)],
+                dim=-1,
+            )  # (B,4)
+
+        # ---- Radial soft histogram on normalized distances ----
+        dn = (d / d_mean).clamp_min(0.0)  # (B,N,k)
+        mu = self.rbf_mu.to(dn.device, dn.dtype)[None, None, None, :]  # (1,1,1,M)
+        rbf = torch.exp(-0.5 * ((dn[..., None] - mu) / self.rbf_sigma) ** 2)  # (B,N,k,M)
+        rbf = (rbf * w[..., None]).mean(dim=(1, 2))  # (B,M)
+
+        raw = [global_feat, local_stats]
+        if self.use_dir_moments:
+            raw.append(dir_stats)
+        raw.append(rbf)
+        raw = torch.cat(raw, dim=-1)  # (B, raw_dim)
+
+        # Invariants are computed in float32 for robustness; cast back to the
+        # projection dtype so bf16-true runs don't hit matmul dtype mismatches.
+        proj_dtype = self.proj[0].weight.dtype
+        if raw.dtype != proj_dtype:
+            raw = raw.to(dtype=proj_dtype)
+
+        return self.proj(raw)
+
+
+class VNEdgeConvMS(nn.Module):
+    """
+    GPU-friendly VN EdgeConv with optional multi-scale kNN fusion and optional cross-product feature.
+
+    Input:
+      feat: (B, C, 3, N)
+      idx_knn_max: (B, N, Kmax) indices for max K among k_list
+    Output:
+      out: (B, Cout, 3, N)
+    """
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        k_list: tuple[int, ...] = (16,),
+        use_cross: bool = False,
+        pooling: str = "mean",
+        negative_slope: float = 0.1,
+        use_batchnorm: bool = True,
+    ):
+        super().__init__()
+        self.k_list = tuple(int(k) for k in k_list)
+        self.use_cross = bool(use_cross)
+
+        pool = str(pooling).lower()
+        if pool not in {"mean", "max"}:
+            raise ValueError(f"Unsupported pooling={pool!r}")
+        self.pooling = pool
+
+        mult = 3 if self.use_cross else 2
+        self.edge_mlp = VNLinearLeakyReLU(
+            mult * in_channels,
+            out_channels,
+            dim=5,
+            negative_slope=negative_slope,
+            use_batchnorm=use_batchnorm,
+        )
+        self.norm = VNZCALayerNorm(out_channels)
+
+        self.pool = VNMaxPool(out_channels) if self.pooling == "max" else None
+
+    def forward(self, feat: torch.Tensor, idx_knn_max: torch.Tensor) -> torch.Tensor:
+        outs = []
+        Kmax = idx_knn_max.size(-1)
+
+        for k in self.k_list:
+            k = min(int(k), Kmax)
+            idx = idx_knn_max[:, :, :k]
+            if self.use_cross:
+                edge = get_graph_feature_cross(feat, k=k, idx=idx)
+            else:
+                edge = get_graph_feature(feat, k=k, idx=idx)
+
+            y = self.edge_mlp(edge)
+            y = self.pool(y) if self.pool is not None else y.mean(dim=-1)  # (B,Cout,3,N)
+            outs.append(y)
+
+        out = outs[0] if len(outs) == 1 else torch.stack(outs, dim=0).mean(dim=0)
+        return self.norm(out)
+
+
+@register_encoder("VN_REVNET_Atomic")
+class VNAtomicRevnetBackboneEncoder(Encoder):
+    """
+    Atomic REVNET: VN encoder tuned for local atomic neighborhoods (64-256 points).
+
+    Output:
+      inv_z: (B, latent_size + P + geom_dim)
+      eq_z:  (B, latent_size, 3)
+      center:(B, 3)
+    """
+    def __init__(
+        self,
+        latent_size: int = 256,
+        k_embed: int = 24,
+        k_list: tuple[int, ...] = (16, 32),
+        embed_channels: int = 48,
+        hidden_channels: tuple[int, int] = (96, 192),
+        geom_k: int = 16,
+        geom_dim: int = 32,
+        gram_pairs: int = 128,
+        gram_pair_mode: str = "nearest",
+        gram_pair_seed: int = 0,
+        global_pooling: str = "mean",
+        use_batchnorm: bool = True,
+        invariant_eps: float = 1e-6,
+    ):
+        super().__init__()
+        self.latent_size = int(latent_size)
+        self.k_embed = int(k_embed)
+        self.k_list = tuple(int(k) for k in k_list)
+        self.invariant_eps = float(invariant_eps)
+
+        # Cross-product embedding on raw coordinates: [neighbor-center, center, cross]
+        self.embed = VNLinearLeakyReLU(
+            3,  # from get_graph_feature_cross on 1-channel coords
+            embed_channels,
+            dim=5,
+            negative_slope=0.1,
+            use_batchnorm=use_batchnorm,
+        )
+
+        # Two VN EdgeConv stages (no FPS)
+        self.ec1 = VNEdgeConvMS(
+            in_channels=embed_channels,
+            out_channels=hidden_channels[0],
+            k_list=self.k_list,
+            use_cross=True,      # extra plane/normal cues
+            pooling="mean",
+            use_batchnorm=use_batchnorm,
+        )
+        self.ec2 = VNEdgeConvMS(
+            in_channels=hidden_channels[0],
+            out_channels=hidden_channels[1],
+            k_list=(max(self.k_list),),
+            use_cross=False,
+            pooling="mean",
+            use_batchnorm=use_batchnorm,
+        )
+
+        gp = str(global_pooling).lower()
+        if gp not in {"mean", "max"}:
+            raise ValueError(f"Unsupported global_pooling={gp!r}")
+        self.global_pooling = gp
+        self.global_pool = VNMaxPool(hidden_channels[1]) if gp == "max" else None
+
+        # Equivariant latent
+        self.out_eq = VNLinear(hidden_channels[1], latent_size)
+        self.eq_z_scale = nn.Parameter(torch.tensor(5.0))
+
+        # Invariant geometry head (moments + radial histogram)
+        self.geom_head = AtomicGeometricInvariantHead(k_geom=geom_k, proj_dim=geom_dim)
+
+        # Robust invariants from eq_z: norms + selected Gram dot products
+        pair_indices = self._build_gram_pairs(
+            num_channels=latent_size,
+            num_pairs=gram_pairs,
+            mode=gram_pair_mode,
+            seed=gram_pair_seed,
+        )
+        self.register_buffer("gram_pairs", pair_indices, persistent=False)
+        self.num_gram_pairs = int(pair_indices.shape[0])
+
+        inv_dim = latent_size + self.num_gram_pairs + int(geom_dim)
+        self.inv_norm = nn.LayerNorm(inv_dim)
+
+    @staticmethod
+    def _build_gram_pairs(num_channels: int, num_pairs: int, mode: str, seed: int) -> torch.Tensor:
+        num_channels = int(num_channels)
+        num_pairs = int(num_pairs)
+        if num_pairs <= 0 or num_channels < 2:
+            return torch.empty((0, 2), dtype=torch.long)
+
+        max_pairs = num_channels * (num_channels - 1) // 2
+        num_pairs = min(num_pairs, max_pairs)
+        mode = str(mode).lower()
+
+        if mode == "nearest":
+            pairs = []
+            for offset in range(1, num_channels):
+                for i in range(num_channels - offset):
+                    pairs.append((i, i + offset))
+                    if len(pairs) >= num_pairs:
+                        break
+                if len(pairs) >= num_pairs:
+                    break
+            return torch.tensor(pairs, dtype=torch.long)
+
+        if mode == "random":
+            g = torch.Generator()
+            g.manual_seed(int(seed))
+            idx = torch.triu_indices(num_channels, num_channels, offset=1)
+            perm = torch.randperm(idx.shape[1], generator=g)
+            selected = perm[:num_pairs]
+            return idx[:, selected].T.contiguous()
+
+        raise ValueError(f"Unsupported gram_pair_mode={mode!r}")
+
+    def _inv_from_eq(self, z_eq: torch.Tensor) -> torch.Tensor:
+        # z_eq: (B, C, 3)
+        norms = torch.sqrt((z_eq * z_eq).sum(dim=-1) + self.invariant_eps)  # (B, C)
+        if self.num_gram_pairs > 0:
+            pairs = self.gram_pairs
+            v1 = z_eq[:, pairs[:, 0], :]
+            v2 = z_eq[:, pairs[:, 1], :]
+            dots = (v1 * v2).sum(dim=-1)  # (B, P)
+            return torch.cat([norms, dots], dim=-1)
+        return norms
+
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        # x: (B, N, 3)
+        if x.dim() != 3 or x.shape[-1] != 3:
+            raise ValueError(f"Expected input (B, N, 3), got {tuple(x.shape)}")
+
+        B, N, _ = x.shape
+        center = x.mean(dim=1)  # (B, 3)
+
+        # Precompute kNN once (max_k across embed, edgeconv, geom (+1 for self-drop))
+        max_k = max(self.k_embed, max(self.k_list), self.geom_head.k_geom + 1)
+        max_k = min(int(max_k), N)
+
+        x_coord = x.permute(0, 2, 1)          # (B, 3, N)
+        idx_knn_max = knn(x_coord, k=max_k)   # (B, N, max_k), includes self
+
+        # VN coordinate input: (B,1,3,N)
+        x_vn = x.permute(0, 2, 1).unsqueeze(1)
+
+        # Cross-product embed on coordinates
+        k0 = min(self.k_embed, max_k)
+        idx_embed = idx_knn_max[:, :, :k0]
+        edge0 = get_graph_feature_cross(x_vn, k=k0, idx=idx_embed)  # (B, 3, 3, N, k)
+        feat = self.embed(edge0).mean(dim=-1)                       # (B, Cembed, 3, N)
+
+        # EdgeConv stages (no FPS)
+        feat = self.ec1(feat, idx_knn_max)  # (B, C1, 3, N)
+        feat = self.ec2(feat, idx_knn_max)  # (B, C2, 3, N)
+
+        # Global pooling
+        pooled = self.global_pool(feat) if self.global_pool is not None else feat.mean(dim=-1)  # (B, C2, 3)
+
+        # Equivariant latent
+        eq_z = self.out_eq(pooled) * self.eq_z_scale  # (B, latent_size, 3)
+
+        # Invariant latent = eq invariants + geometric invariants
+        inv_eq = self._inv_from_eq(eq_z)                       # (B, latent + P)
+        inv_geom = self.geom_head(x, idx_knn_max=idx_knn_max)  # (B, geom_dim)
+        inv_z = self.inv_norm(torch.cat([inv_eq, inv_geom], dim=-1))
 
         return inv_z, eq_z, center

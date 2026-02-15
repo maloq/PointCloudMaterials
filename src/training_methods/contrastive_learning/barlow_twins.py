@@ -81,10 +81,11 @@ class BarlowTwinsLoss(nn.Module):
             projector_input_dim = int(self.invariant_head.output_dim)
 
         self.projector = None
+        needs_projector = self.enabled and self.weight > 0
         if projector_input_dim is None:
-            if self.enabled and self.weight > 0:
+            if needs_projector:
                 raise ValueError("Barlow Twins requires latent_size to set projector input dim")
-        else:
+        elif needs_projector:
             self.projector = nn.Sequential(
                 nn.Linear(projector_input_dim, self.embed_dim, bias=False),
                 nn.BatchNorm1d(self.embed_dim),

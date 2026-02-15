@@ -1,8 +1,7 @@
 defaults:
- - data: data_synth_polycrystalline_balanced_geometries
+# - data: data_synth_polycrystalline_balanced_geometries
  - _self_
-# - data: synth_modelnet_objects
-# - data: data_ae_Al_80
+ - data: data_ae_Al_80
 project_name: pointnet
 experiment_name: BT_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
@@ -40,13 +39,13 @@ init_from_checkpoint_strict: false
 #     dropout_rate: 0.0
 
 encoder:
-  name: VN_REVNET_Backbone
+  name: VN_REVNET_Atomic
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [80, 40]
-    sa_channels: [128, 256]
-    attn_hidden: 256
-    transformer_depth: 5
+    embed_channels: 224
+    hidden_channels: [320, 1024]
+    geom_dim: 128
+    gram_pairs: 128
 
 
 # Decoder config is required by the model factory but is not used for Barlow Twins
@@ -69,7 +68,7 @@ epochs: 120
 max_samples: 0
 
 gpu: True
-devices: [0]
+devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
@@ -104,7 +103,7 @@ barlow_neighbor_k: 6
 barlow_view_points: ${data.model_points}
 barlow_rotation_mode: none
 barlow_rotation_deg: 0.0
-barlow_strain_std: 0.02
+barlow_strain_std: 0.03
 barlow_strain_volume_preserve: true
 barlow_occlusion_mode: mixed
 barlow_occlusion_view: second

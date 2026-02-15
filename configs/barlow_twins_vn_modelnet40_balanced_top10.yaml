@@ -27,10 +27,10 @@ init_from_checkpoint_strict: false
 #     transformer_depth: 5
 
 encoder:
-  name: DGCNN
+  name: VN_DGCNN_Refined
   kwargs:
     latent_size: ${latent_size}
-    feature_dims: [128, 128, 256, 512]
+    feature_dims: [128, 128, 256, 512, 1024]
     pooling: "max"
 
     
@@ -50,11 +50,11 @@ accumulate_grad_batches: 10
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 160
+epochs: 320
 max_samples: 0
 
 gpu: True
-devices: [0, 1]
+devices: [0, 1, 2]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6

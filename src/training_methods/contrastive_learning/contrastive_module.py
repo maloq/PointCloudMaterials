@@ -195,7 +195,7 @@ class BarlowTwinsModule(pl.LightningModule):
         for name, value in barlow_metrics.items():
             self._log_metric(stage, name, value)
 
-        # VICReg loss (self-supervised)
+        # VICReg loss (self-supervised, optionally with Radial-VICReg regularization).
         if self.vicreg is not None:
             vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
                 pc=pc_raw,

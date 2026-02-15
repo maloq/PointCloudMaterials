@@ -45,6 +45,11 @@ class VICRegLoss(nn.Module):
         invariant_groups: int = 0,
         invariant_use_third_order: bool = True,
         invariant_eps: float = 1e-6,
+        radial_enabled: bool = False,
+        radial_beta1: float = 1.0,
+        radial_beta2: float = 0.1,
+        radial_m: int | None = None,
+        radial_eps: float = 1e-8,
     ) -> None:
         super().__init__()
         self.enabled = bool(enabled)
@@ -75,6 +80,11 @@ class VICRegLoss(nn.Module):
         self.occlusion_cone_deg = float(occlusion_cone_deg)
         self.std_eps = float(std_eps)
         self.std_target = float(std_target)
+        self.radial_enabled = bool(radial_enabled)
+        self.radial_beta1 = float(radial_beta1)
+        self.radial_beta2 = float(radial_beta2)
+        self.radial_m = int(radial_m) if radial_m is not None and int(radial_m) > 0 else None
+        self.radial_eps = max(float(radial_eps), 1e-12)
 
         self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
@@ -90,10 +100,11 @@ class VICRegLoss(nn.Module):
             projector_input_dim = int(self.invariant_head.output_dim)
 
         self.projector = None
+        needs_projector = self.enabled and self.weight > 0
         if projector_input_dim is None:
-            if self.enabled and self.weight > 0:
+            if needs_projector:
                 raise ValueError("VICReg requires latent_size to set projector input dim")
-        else:
+        elif needs_projector:
             self.projector = nn.Sequential(
                 nn.Linear(projector_input_dim, self.embed_dim, bias=False),
                 nn.BatchNorm1d(self.embed_dim),
@@ -116,6 +127,11 @@ class VICRegLoss(nn.Module):
         jitter_mode = str(getattr(cfg, "vicreg_jitter_mode", "absolute")).lower()
         jitter_scale_cfg = getattr(cfg, "vicreg_jitter_scale", None)
         jitter_scale = cls._resolve_jitter_scale(cfg, jitter_mode=jitter_mode, jitter_scale=jitter_scale_cfg)
+        radial_m = getattr(cfg, "vicreg_radial_m", None)
+        if radial_m is not None:
+            radial_m = int(radial_m)
+            if radial_m <= 0:
+                radial_m = None
         invariant_mode = (
             str(invariant_mode_override).lower()
             if invariant_mode_override is not None
@@ -169,6 +185,11 @@ class VICRegLoss(nn.Module):
                 )
             ),
             invariant_eps=float(getattr(cfg, "vicreg_invariant_eps", getattr(cfg, "barlow_invariant_eps", 1e-6))),
+            radial_enabled=bool(getattr(cfg, "vicreg_radial_enabled", False)),
+            radial_beta1=float(getattr(cfg, "vicreg_radial_beta1", 1.0)),
+            radial_beta2=float(getattr(cfg, "vicreg_radial_beta2", 0.1)),
+            radial_m=radial_m,
+            radial_eps=float(getattr(cfg, "vicreg_radial_eps", 1e-8)),
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -488,6 +509,27 @@ class VICRegLoss(nn.Module):
         off = self._off_diagonal(cov)
         return (off.pow(2).sum() / d)
 
+    def _radial_gaussianization_loss(self, z: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        n, d = z.shape
+        r = torch.linalg.norm(z, dim=1)
+
+        ce = 0.5 * r.pow(2) - (float(d) - 1.0) * torch.log(r + self.radial_eps)
+        ce = self.radial_beta1 * ce.mean()
+
+        if self.radial_beta2 <= 0:
+            ent = z.new_tensor(0.0)
+        else:
+            m = self.radial_m
+            if m is None:
+                m = max(1, int(math.sqrt(n)))
+            m = min(max(1, int(m)), n - 1)
+            r_sorted = torch.sort(r).values
+            diffs = r_sorted[m:] - r_sorted[:-m]
+            ent_est = torch.log(((n + 1.0) / float(m)) * (diffs + self.radial_eps))
+            ent = self.radial_beta2 * ent_est.mean()
+
+        return ce - ent, ce, ent
+
     def _loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
         if z_a.dtype != torch.float32:
             z_a = z_a.float()
@@ -498,13 +540,30 @@ class VICRegLoss(nn.Module):
         n, _ = z_a.shape
         if n < 2:
             zero = z_a.new_tensor(0.0)
-            return zero, {"vicreg_sim": zero, "vicreg_std": zero, "vicreg_cov": zero}
+            metrics = {"vicreg_sim": zero, "vicreg_std": zero, "vicreg_cov": zero}
+            if self.radial_enabled:
+                metrics["vicreg_radial"] = zero
+                metrics["vicreg_radial_ce"] = zero
+                metrics["vicreg_radial_ent"] = zero
+            return zero, metrics
 
         sim_loss = F.mse_loss(z_a, z_b)
         std_loss = 0.5 * (self._variance_loss(z_a) + self._variance_loss(z_b))
         cov_loss = 0.5 * (self._covariance_loss(z_a) + self._covariance_loss(z_b))
         loss = self.sim_coeff * sim_loss + self.std_coeff * std_loss + self.cov_coeff * cov_loss
         metrics = {"vicreg_sim": sim_loss, "vicreg_std": std_loss, "vicreg_cov": cov_loss}
+
+        if self.radial_enabled:
+            radial_a, ce_a, ent_a = self._radial_gaussianization_loss(z_a)
+            radial_b, ce_b, ent_b = self._radial_gaussianization_loss(z_b)
+            radial_loss = 0.5 * (radial_a + radial_b)
+            radial_ce = 0.5 * (ce_a + ce_b)
+            radial_ent = 0.5 * (ent_a + ent_b)
+            loss = loss + radial_loss
+            metrics["vicreg_radial"] = radial_loss
+            metrics["vicreg_radial_ce"] = radial_ce
+            metrics["vicreg_radial_ent"] = radial_ent
+
         return loss, metrics
 
     def _invariant(self, inv_z, eq_z):
