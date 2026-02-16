@@ -17,14 +17,22 @@ init_from_checkpoint: null
 # If true, require exact state-dict key match when loading init weights.
 init_from_checkpoint_strict: false
 
+# encoder:
+#   name: VN_REVNET_Backbone
+#   kwargs:
+#     latent_size: ${latent_size}
+#     sa_npoints: [160, 80]
+#     sa_channels: [200, 400]
+#     attn_hidden: 400
+#     transformer_depth: 5
+
+
 encoder:
-  name: VN_REVNET_Backbone
+  name: PnE_VN
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [160, 80]
-    sa_channels: [200, 400]
-    attn_hidden: 400
-    transformer_depth: 5
+    # feature_dims: [128, 128, 256, 512, 1024]
+
 
 # Required by the model factory (decoder is not used by contrastive training).
 decoder:
@@ -35,14 +43,14 @@ decoder:
 
 learning_rate: 0.0015
 
-batch_size: 100
-precision: bf16-true
+batch_size: 128 
+precision: 32-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 4
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 360
+epochs: 120
 max_samples: 0
 
 gpu: True
@@ -79,33 +87,6 @@ idec_normalize_z: True
 idec_init_kmeans: True
 
 barlow_enabled: False
-barlow_weight: 0.0
-barlow_lambda: 0.01
-barlow_embed_dim: 512
-barlow_start_epoch: 0
-barlow_jitter_std: 0.02
-barlow_jitter_mode: absolute
-barlow_drop_ratio: 0.12
-barlow_drop_apply_to_both: true
-barlow_neighbor_view: true
-barlow_neighbor_view_mode: both
-barlow_neighbor_k: 8
-barlow_neighbor_max_relative_distance: 0.10
-barlow_view_points: ${data.model_points}
-barlow_view_crop_mode: random
-barlow_rotation_mode: full
-barlow_rotation_deg: 0.0
-barlow_strain_std: 0.04
-barlow_strain_volume_preserve: true
-barlow_occlusion_mode: mixed
-barlow_occlusion_view: both
-barlow_occlusion_slab_frac: 0.2
-barlow_occlusion_cone_deg: 25.0
-barlow_invariant_mode: tensor_product
-barlow_invariant_max_factor: 4.0
-barlow_invariant_groups: 0
-barlow_invariant_use_third_order: true
-barlow_invariant_eps: 1e-6
 
 pose_enabled: false
 pose_weight: 0.0
@@ -152,7 +133,7 @@ vicreg_neighbor_k: 8
 vicreg_neighbor_max_relative_distance: 0.10
 vicreg_view_points: ${data.model_points}
 vicreg_view_crop_mode: random
-vicreg_rotation_mode: full
+vicreg_rotation_mode: none
 vicreg_rotation_deg: 0.0
 vicreg_strain_std: 0.04
 vicreg_strain_volume_preserve: true

@@ -265,14 +265,23 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         dm = RealPointCloudDataModule(cfg)
     model = model_class(cfg)
 
+    checkpoint_monitor = str(getattr(cfg, "checkpoint_monitor", "val/loss"))
+    checkpoint_mode = str(getattr(cfg, "checkpoint_mode", "min")).strip().lower()
+    if checkpoint_mode not in {"min", "max"}:
+        raise ValueError(
+            f"checkpoint_mode must be 'min' or 'max', got {checkpoint_mode!r}"
+        )
+    checkpoint_save_top_k = int(getattr(cfg, "checkpoint_save_top_k", 3))
+    checkpoint_save_top_k = max(1, checkpoint_save_top_k)
+
     # Set up checkpoint callbacks
     if checkpoint_callbacks is None:
         checkpoint_callbacks = [ModelCheckpoint(
             dirpath=run_dir,
-            monitor='val/loss',
+            monitor=checkpoint_monitor,
             filename=f'{cfg.experiment_name}-{{epoch:02d}}',
-            save_top_k=3,
-            mode='min',
+            save_top_k=checkpoint_save_top_k,
+            mode=checkpoint_mode,
         )]
 
     lr_monitor = LearningRateMonitor(logging_interval='step')
@@ -304,7 +313,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         log_every_n_steps=cfg.log_every_n_steps,
         precision=precision,
         benchmark=True,
-        check_val_every_n_epoch=4,
+        check_val_every_n_epoch=30,
         accumulate_grad_batches=accumulate_grad_batches,
     )
 
@@ -343,10 +352,42 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             logger.print(f"Resuming training from checkpoint: {resume_ckpt_path}")
         trainer.fit(model, dm, ckpt_path=resume_ckpt_path)
 
+    # Resolve the checkpoint used for final test.
+    test_ckpt_path = None
+    for callback in checkpoint_callbacks:
+        path = getattr(callback, "best_model_path", "")
+        if isinstance(path, str) and path and os.path.exists(path):
+            test_ckpt_path = path
+            break
+    if test_ckpt_path is None:
+        for callback in checkpoint_callbacks:
+            path = getattr(callback, "last_model_path", "")
+            if isinstance(path, str) and path and os.path.exists(path):
+                test_ckpt_path = path
+                break
+
     # Run test after training completes
     if run_test:
         logger.print("Starting test phase...")
-        trainer.test(model, dm, ckpt_path='best')
+        run_test_single_device = bool(getattr(cfg, "test_single_device", True))
+        if cfg.gpu and len(devices) > 1 and run_test_single_device:
+            logger.print("Running test on a single device to avoid duplicated DDP samples.")
+            test_trainer_kwargs = dict(
+                default_root_dir=run_dir,
+                accelerator='gpu',
+                devices=1,
+                logger=wandb_logger,
+                precision=precision,
+                benchmark=True,
+                log_every_n_steps=cfg.log_every_n_steps,
+            )
+            if hasattr(cfg, 'gradient_clip_val'):
+                test_trainer_kwargs['gradient_clip_val'] = cfg.gradient_clip_val
+                test_trainer_kwargs['gradient_clip_algorithm'] = 'norm'
+            test_trainer = pl.Trainer(**test_trainer_kwargs)
+            test_trainer.test(model, dm, ckpt_path=test_ckpt_path)
+        else:
+            trainer.test(model, dm, ckpt_path=test_ckpt_path)
 
     return trainer, model, dm, checkpoint_callbacks
 

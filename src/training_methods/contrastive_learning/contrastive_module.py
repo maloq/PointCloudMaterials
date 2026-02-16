@@ -79,6 +79,7 @@ class BarlowTwinsModule(pl.LightningModule):
         init_pose_components(self, cfg, latent_dim)
         init_supervised_cache(self, cfg)
         self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
+        self._warned_cache_eq_fallback = False
 
     @property
     def barlow_projector(self):
@@ -111,15 +112,15 @@ class BarlowTwinsModule(pl.LightningModule):
         if isinstance(enc_out, (tuple, list)):
             if not enc_out:
                 raise ValueError("Encoder returned empty output")
-            inv_z = enc_out[0]
+            inv_latent_net = enc_out[0]
             eq_z = None
             for candidate in enc_out[1:]:
                 if not (torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3):
                     continue
                 # Accept canonical equivariant outputs (B, C, 3) where C matches
                 # invariant width; reject auxiliary transform matrices (B, 3, 3).
-                if torch.is_tensor(inv_z) and inv_z.dim() == 2:
-                    if candidate.shape[1] == inv_z.shape[1]:
+                if torch.is_tensor(inv_latent_net) and inv_latent_net.dim() == 2:
+                    if candidate.shape[1] == inv_latent_net.shape[1]:
                         eq_z = candidate
                         break
                     if candidate.shape[1] == 3:
@@ -128,7 +129,7 @@ class BarlowTwinsModule(pl.LightningModule):
                 if candidate.shape[1] != 3:
                     eq_z = candidate
                     break
-            return inv_z, eq_z
+            return inv_latent_net, eq_z
         return enc_out, None
 
     def _prepare_model_input(self, pc: torch.Tensor) -> torch.Tensor:
@@ -155,14 +156,43 @@ class BarlowTwinsModule(pl.LightningModule):
             return batch, {}
         return batch[0], {}
 
-    def _invariant_latent(self, inv_z, eq_z):
-        return self.barlow._invariant(inv_z, eq_z)
+    @torch.no_grad()
+    def _extract_supervised_features_from_batch(self, batch):
+        """Extract deterministic encoder features + labels for split-level SVM metrics."""
+        pc_raw, meta = self._unpack_batch(batch)
+        class_id = meta.get("class_id")
+        if class_id is None:
+            return None, None
+
+        pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
+        pc = self._prepare_model_input(pc_raw)
+        inv_latent_net, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
+        z_inv = self._invariant_latent(inv_latent_net, eq_z)
+        features = inv_latent_net if inv_latent_net is not None else z_inv
+        if features is None:
+            return None, None
+        return features.detach().to(torch.float32), class_id
+
+    def _invariant_latent(self, inv_latent_net, eq_z):
+        return self.barlow._invariant(inv_latent_net, eq_z)
+
+    def _invariant_from_eq_latent(self, eq_z, inv_latent_net=None, *, stage: str | None = None):
+        if eq_z is not None:
+            return self.barlow._invariant(None, eq_z)
+        if inv_latent_net is not None and not self._warned_cache_eq_fallback:
+            stage_name = stage if stage is not None else "unknown"
+            self.print(
+                f"[contrastive/cache] eq_z is missing at stage='{stage_name}'. "
+                "Falling back to encoder invariant output (inv_latent_net) for cached z_inv."
+            )
+            self._warned_cache_eq_fallback = True
+        return self.barlow._invariant(inv_latent_net, None)
 
     def forward(self, pc: torch.Tensor):
         enc_out = self.encoder(self._prepare_encoder_input(pc))
-        inv_z, eq_z = self._split_encoder_output(enc_out)
-        z = self._invariant_latent(inv_z, eq_z)
-        return z, inv_z, eq_z
+        inv_latent_net, eq_z = self._split_encoder_output(enc_out)
+        z_inv = self._invariant_latent(inv_latent_net, eq_z)
+        return z_inv, inv_latent_net, eq_z
 
     def _step(self, batch, batch_idx, stage: str):
         pc_raw, meta = self._unpack_batch(batch)
@@ -175,10 +205,10 @@ class BarlowTwinsModule(pl.LightningModule):
         )
         if should_cache_stage:
             with torch.no_grad():
-                inv_z, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
-                z = self._invariant_latent(inv_z, eq_z)
-            if z is not None:
-                self._cache_supervised_batch(stage, z, meta)
+                inv_latent_net, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
+                z_inv = self._invariant_from_eq_latent(eq_z, inv_latent_net=inv_latent_net, stage=stage)
+            if z_inv is not None:
+                self._cache_supervised_batch(stage, z_inv, meta, encoder_features=inv_latent_net)
 
         losses = {}
 
@@ -366,8 +396,14 @@ class BarlowTwinsModule(pl.LightningModule):
     def _cache_limit_for_stage(self, stage: str):
         return cache_limit_for_stage(self, stage)
 
-    def _cache_supervised_batch(self, stage: str, z: torch.Tensor, meta: dict) -> None:
-        cache_supervised_batch(self, stage, z, meta)
+    def _cache_supervised_batch(
+        self,
+        stage: str,
+        z_inv: torch.Tensor,
+        meta: dict,
+        encoder_features: torch.Tensor | None = None,
+    ) -> None:
+        cache_supervised_batch(self, stage, z_inv, meta, encoder_features=encoder_features)
 
     def _log_supervised_metrics(self, stage: str) -> None:
         log_supervised_metrics(self, stage)

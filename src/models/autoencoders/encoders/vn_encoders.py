@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -235,6 +237,7 @@ class PointNetEncoderVN(Encoder):
         super().__init__()
         self.n_knn = n_knn
         self.pooling = pooling
+        self._warned_low_precision = False
 
         c1 = hidden_dim1 // 3
         c2 = hidden_dim2 // 3
@@ -283,6 +286,13 @@ class PointNetEncoderVN(Encoder):
             self.pool = mean_pool
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        if x.dtype in (torch.float16, torch.bfloat16) and not self._warned_low_precision:
+            warnings.warn(
+                "PointNetEncoderVN in float16/bfloat16 can lose rotational equivariance; use 32-bit precision.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            self._warned_low_precision = True
         x = x.permute(0, 2, 1)
         batch_size, _, num_points = x.size()
         x = x.unsqueeze(1)
@@ -326,8 +336,8 @@ class VNDGCNNEncoder(Encoder):
         latent_size: int = 256,
         n_knn: int = 20,
         pooling: str = 'mean',
-        feature_dims: tuple[int, int, int, int, int] = (96, 96, 192, 384, 576),
-        global_mlp_dims: tuple[int, int] = (256, 128),
+        feature_dims: tuple[int, int, int, int, int] = (64, 64, 128, 256, 1024),
+        global_mlp_dims: tuple[int, int] = (512, 256),
         global_dropout: float = 0.5,
         share_nonlinearity: bool = True,
         std_feature_hidden_dims: tuple[int, int] | None = None,
@@ -389,7 +399,7 @@ class VNDGCNNEncoder(Encoder):
             c5 * 2,
             dim=4,
             normalize_frame=False,
-            negative_slope=0.0,
+            negative_slope=0.2,
             use_batchnorm=use_batchnorm,
             hidden_dims=std_feature_hidden_dims,
         )
@@ -422,7 +432,10 @@ class VNDGCNNEncoder(Encoder):
             self.pool4 = mean_pool
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        x = x.permute(0, 2, 1)
+        if x.dim() != 3 or x.shape[-1] != 3:
+            raise ValueError(f"VNDGCNNEncoder expects input shape (B,N,3), got {tuple(x.shape)}")
+        center_loc = x.mean(dim=1)
+        x = x.permute(0, 2, 1).contiguous()
         batch_size, _, num_points = x.size()
         x = x.unsqueeze(1)
 
@@ -449,7 +462,6 @@ class VNDGCNNEncoder(Encoder):
         eq_z = x.mean(dim=-1)  # (B, c5, 3)
         eq_z = self.out_eq_mlp(eq_z)  # (B, latent_size, 3)
         x_mean_out = x.mean(dim=-1, keepdim=True)
-        center_loc = x_mean_out.mean(dim=2)
 
         x_mean = x_mean_out.expand_as(x)
         x, _ = self.std_feature(torch.cat((x, x_mean), dim=1))

@@ -48,7 +48,9 @@ decoder:
 learning_rate: 0.0015
 
 batch_size: 128
-precision: bf16-true
+# PnE_VN is numerically sensitive in true bf16: kNN neighborhood selection can
+# drift under rotations and break measured equivariance. Keep full precision.
+precision: 32-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 10
 

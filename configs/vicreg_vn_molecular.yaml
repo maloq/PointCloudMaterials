@@ -1,6 +1,10 @@
 defaults:
-#  - data: data_synth_polycrystalline
-  - data: data_ae_Al_80
+  - data: data_synth_polycrystalline
+#  - data: data_ae_Al_80
+data:
+  analysis_data_files: ['175ps.off']
+  analysis_data_file: null
+  analysis_single_timestep: false
 project_name: pointnet
 experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
@@ -11,7 +15,7 @@ latent_size: 80  # Number of VN channels for equivariant latent
 # Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
 
-resume_from_checkpoint: output/2026-02-14/14-38-57/VICREG_l80_N128_M80_VN_REVNET_Atomic-epoch=91.ckpt
+resume_from_checkpoint: null
 
 # VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
 # encoder:
@@ -43,7 +47,7 @@ learning_rate: 0.003
 batch_size: 128
 precision: bf16-true
 gradient_clip_val: 1.0
-accumulate_grad_batches: 4
+accumulate_grad_batches: 6
 
 enable_swa: False
 swa_epoch_start: 1000
@@ -75,6 +79,7 @@ idec_max_iter: null
 idec_use_global_p: True
 idec_normalize_z: True
 idec_init_kmeans: True
+test_cluster_eval_k: 6
 
 # Barlow Twins (disabled)
 barlow_enabled: False
@@ -104,7 +109,7 @@ vicreg_occlusion_slab_frac: 0.0
 vicreg_occlusion_cone_deg: 0.0
 vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
-vicreg_radial_enabled: false
+vicreg_radial_enabled: true
 vicreg_radial_beta1: 1.0
 vicreg_radial_beta2: 0.1
 vicreg_radial_m: null
@@ -117,3 +122,30 @@ augmentation:
   jitter_scale: 0.0
   scaling_range: 0.0
   track_augmentation: false
+
+analysis_cluster_method: auto
+analysis_cluster_l2_normalize: true
+analysis_cluster_standardize: true
+analysis_cluster_pca_var: 0.98
+analysis_cluster_pca_max_components: 32
+analysis_cluster_k_values: [3, 4, 5, 6]
+analysis_num_workers: 0
+analysis_progress_every_batches: 20
+analysis_test_rotation_runs: 5
+analysis_test_max_samples: null
+analysis_max_samples_total: 0
+analysis_tsne_max_samples: 8000
+analysis_tsne_n_iter: 1000
+analysis_interactive_max_points: 0
+analysis_md_use_all_points: true
+analysis_hdbscan_enabled: true
+analysis_hdbscan_fit_fraction: 0.25
+analysis_hdbscan_max_fit_samples: 50000
+analysis_hdbscan_target_k_min: 5
+analysis_hdbscan_target_k_max: 6
+analysis_hdbscan_min_cluster_size_candidates: []
+analysis_hdbscan_min_samples: null
+analysis_hdbscan_cluster_selection_epsilon: 0.0
+analysis_hdbscan_cluster_selection_method: leaf
+analysis_data_files: ['175ps.off']
+analysis_grain_enabled: False

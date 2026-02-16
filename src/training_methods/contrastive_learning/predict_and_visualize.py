@@ -82,7 +82,10 @@ def _unwrap_dataset(dataset: Any) -> Any:
 
 def _extract_class_names(dataset: Any) -> Dict[int, str] | None:
     dataset = _unwrap_dataset(dataset)
-    class_names = dict(dataset.class_names)
+    class_names_raw = getattr(dataset, "class_names", None)
+    if class_names_raw is None:
+        return None
+    class_names = dict(class_names_raw)
     return {int(k): str(v) for k, v in class_names.items()}
 
 
@@ -112,7 +115,34 @@ def _as_int_mapping(value: Any) -> dict[str, int]:
 
 
 def _extract_pc_and_class_id(batch: Any) -> tuple[torch.Tensor, torch.Tensor | None]:
-    return batch["points"], batch["class_id"]
+    if isinstance(batch, dict):
+        if "points" not in batch:
+            raise KeyError("Batch dict is missing required key 'points'")
+        return batch["points"], batch.get("class_id")
+
+    if torch.is_tensor(batch):
+        return batch, None
+
+    if isinstance(batch, (tuple, list)) and len(batch) > 0:
+        points = batch[0]
+        class_id = None
+        if len(batch) > 1:
+            candidate = batch[1]
+            if torch.is_tensor(candidate):
+                if candidate.dtype in (
+                    torch.int8,
+                    torch.int16,
+                    torch.int32,
+                    torch.int64,
+                    torch.uint8,
+                    torch.long,
+                ) and candidate.dim() <= 1:
+                    class_id = candidate
+            elif isinstance(candidate, (int, np.integer)):
+                class_id = torch.as_tensor(candidate, dtype=torch.long)
+        return points, class_id
+
+    raise TypeError(f"Unsupported batch type for extraction: {type(batch)!r}")
 
 
 def _random_rotation_matrices(
@@ -172,9 +202,10 @@ def _collect_test_latents_labels(
     rotation_seed_base: int | None = None,
     progress_every_batches: int = 25,
     verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, bool]:
     latents: list[torch.Tensor] = []
     labels: list[torch.Tensor] = []
+    labels_available = True
     collected = 0
     max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
     every = max(1, int(progress_every_batches))
@@ -182,6 +213,8 @@ def _collect_test_latents_labels(
     with torch.inference_mode():
         for batch_idx, batch in enumerate(dataloader):
             pc, class_id = _extract_pc_and_class_id(batch)
+            if not torch.is_tensor(pc):
+                pc = torch.as_tensor(pc)
             pc = pc.to(device=device, dtype=model.dtype, non_blocking=True)
             if apply_random_rotations:
                 seed = None
@@ -199,15 +232,26 @@ def _collect_test_latents_labels(
 
             z, _, _ = model(pc)
             z_cpu = z.detach().to(dtype=torch.float32).cpu()
-            class_id = class_id.detach().view(-1).to(dtype=torch.long).cpu()
-            take = min(int(z_cpu.shape[0]), int(class_id.shape[0]))
+            batch_size = int(z_cpu.shape[0])
+            if class_id is None:
+                labels_available = False
+                class_id_cpu = torch.zeros((batch_size,), dtype=torch.long)
+            else:
+                if not torch.is_tensor(class_id):
+                    class_id = torch.as_tensor(class_id)
+                class_id = class_id.detach().view(-1)
+                if class_id.numel() == 1 and batch_size > 1:
+                    class_id = class_id.expand(batch_size)
+                class_id_cpu = class_id.to(dtype=torch.long).cpu()
+
+            take = min(int(z_cpu.shape[0]), int(class_id_cpu.shape[0]))
             if max_samples is not None:
                 take = min(take, max_samples - collected)
             if take <= 0:
                 break
 
             latents.append(z_cpu[:take])
-            labels.append(class_id[:take])
+            labels.append(class_id_cpu[:take])
 
             collected += int(take)
             if verbose and (batch_idx + 1) % every == 0:
@@ -220,8 +264,11 @@ def _collect_test_latents_labels(
                 break
 
     lat_arr = torch.cat(latents, dim=0).numpy() if latents else np.empty((0,), dtype=np.float32)
-    label_arr = torch.cat(labels, dim=0).numpy() if labels else np.empty((0,), dtype=np.int64)
-    return lat_arr, label_arr
+    if labels_available:
+        label_arr = torch.cat(labels, dim=0).numpy() if labels else np.empty((0,), dtype=np.int64)
+    else:
+        label_arr = np.zeros((int(lat_arr.shape[0]),), dtype=np.int64)
+    return lat_arr, label_arr, labels_available
 
 
 def _resolve_test_metric_settings(cfg: DictConfig) -> Dict[str, Any]:
@@ -264,15 +311,16 @@ def _primary_accuracy_key(cluster_metrics: dict[str, Any], eval_k: int | None) -
     preferred = f"ACC_KMEANS_HUNGARIAN_K{eval_k}"
     if preferred in cluster_metrics:
         return preferred
-    return next(
-        key
-        for key in sorted(cluster_metrics.keys())
-        if key.startswith("ACC_")
-        and not key.endswith("_MEAN")
-        and not key.endswith("_STD")
-        and not key.endswith("_BEST")
-        and not key.endswith("_RUNS")
-    )
+    for key in sorted(cluster_metrics.keys()):
+        if (
+            key.startswith("ACC_")
+            and not key.endswith("_MEAN")
+            and not key.endswith("_STD")
+            and not key.endswith("_BEST")
+            and not key.endswith("_RUNS")
+        ):
+            return key
+    return None
 
 
 def _aggregate_metric(values: list[float | None]) -> dict[str, Any]:
@@ -300,7 +348,7 @@ def _evaluate_test_run(
     rotation_seed_base: int | None = None,
     include_embedding_metrics: bool = False,
 ) -> dict[str, Any]:
-    latents, labels = _collect_test_latents_labels(
+    latents, labels, labels_available = _collect_test_latents_labels(
         model,
         dataloader,
         device,
@@ -310,25 +358,28 @@ def _evaluate_test_run(
         progress_every_batches=progress_every_batches,
         verbose=True,
     )
-    cluster_metrics = (
-        compute_cluster_metrics(
-            latents,
-            labels,
-            stage="test",
-            hungarian_eval_k=settings["hungarian_eval_k"],
-            acc_eval_methods=settings["acc_eval_methods"],
-            acc_eval_runs=settings["acc_eval_runs"],
-            acc_eval_runs_by_method=settings["acc_eval_runs_by_method"],
-            acc_random_seed=settings["acc_random_seed"],
+    cluster_metrics = {}
+    if labels_available:
+        cluster_metrics = (
+            compute_cluster_metrics(
+                latents,
+                labels,
+                stage="test",
+                hungarian_eval_k=settings["hungarian_eval_k"],
+                acc_eval_methods=settings["acc_eval_methods"],
+                acc_eval_runs=settings["acc_eval_runs"],
+                acc_eval_runs_by_method=settings["acc_eval_runs_by_method"],
+                acc_random_seed=settings["acc_random_seed"],
+            )
+            or {}
         )
-        or {}
-    )
     embedding_metrics = {}
     if include_embedding_metrics:
+        embedding_labels = labels if labels_available else np.zeros((int(latents.shape[0]),), dtype=np.int64)
         embedding_metrics = (
             compute_embedding_quality_metrics(
                 latents,
-                labels,
+                embedding_labels,
                 include_expensive=True,
             )
             or {}
@@ -337,12 +388,14 @@ def _evaluate_test_run(
     acc_key = _primary_accuracy_key(cluster_metrics, settings["hungarian_eval_k"])
     result = {
         "num_samples": int(latents.shape[0]),
-        "labels_available": True,
+        "labels_available": bool(labels_available),
         "accuracy": _to_finite_float(cluster_metrics.get(acc_key)),
         "nmi": _to_finite_float(cluster_metrics.get("NMI")),
         "ari": _to_finite_float(cluster_metrics.get("ARI")),
         "cluster_metrics": cluster_metrics,
     }
+    if not labels_available:
+        result["label_metrics_skipped_reason"] = "Batch does not provide class_id labels."
     result["accuracy_key"] = acc_key
     if embedding_metrics:
         result["embedding_metrics"] = embedding_metrics
@@ -483,7 +536,8 @@ def run_post_training_analysis(
 
     # Prefer single-process data loading for analysis to avoid semaphore/shm issues
     # in restricted runtime environments. Can be overridden via config.
-    analysis_num_workers = 4
+    analysis_num_workers = max(0, int(getattr(cfg, "analysis_num_workers", 0)))
+    cfg.num_workers = int(analysis_num_workers)
     print(f"Analysis dataloader workers: {analysis_num_workers}")
 
     tsne_max_samples = int(getattr(cfg, "analysis_tsne_max_samples", 8000))
