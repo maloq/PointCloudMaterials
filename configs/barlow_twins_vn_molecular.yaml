@@ -52,11 +52,13 @@ init_from_checkpoint_strict: false
 #     geom_dim: 128
 #     gram_pairs: 128
 
-
 encoder:
-  name: PnE_L
+  name: VN_REVNET_Backbone
   kwargs:
     latent_size: ${latent_size}
+    sa_npoints: [80, 40]
+    sa_channels: [128, 256]
+    attn_hidden: 256
 
 
 # Decoder config is required by the model factory but is not used for Barlow Twins
@@ -68,10 +70,10 @@ decoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 512
+batch_size: 256
 precision: bf16-true
 gradient_clip_val: 1.0
-accumulate_grad_batches: 4
+accumulate_grad_batches: 1
 auto_batch_size_search: false
 auto_batch_size_mode: power
 auto_batch_size_init_val: null
@@ -108,7 +110,6 @@ idec_max_iter: null
 idec_use_global_p: True
 idec_normalize_z: True
 idec_init_kmeans: True
-test_cluster_eval_k: 6
 
 # Barlow Twins (self-supervised)
 barlow_enabled: True
@@ -120,11 +121,12 @@ barlow_jitter_std: 0.01
 barlow_jitter_mode: physical
 barlow_drop_ratio: 0.0
 barlow_neighbor_view: true
+barlow_neighbor_view_mode: second
 barlow_neighbor_k: 6
 barlow_view_points: ${data.model_points}
 barlow_rotation_mode: none
 barlow_rotation_deg: 0.0
-barlow_strain_std: 0.03
+barlow_strain_std: 0.02
 barlow_strain_volume_preserve: true
 barlow_occlusion_mode: mixed
 barlow_occlusion_view: second
@@ -138,12 +140,12 @@ barlow_invariant_eps: 1e-6
 
 # Pose regression (symmetry-aware)
 pose:
-  enabled: False
+  enabled: True
   weight: 0.4
   start_epoch: 10
   head_hidden: 256
-  jitter_std: 0.002
-  strain_std: 0.002
+  jitter_std: 0.000
+  strain_std: 0.000
   strain_volume_preserve: true
   seeded_forward: true
   view_rotation_mode: full
@@ -184,7 +186,6 @@ analysis_cluster_standardize: true
 analysis_cluster_pca_var: 0.98
 analysis_cluster_pca_max_components: 32
 analysis_cluster_k_values: [3, 4, 5, 6]
-analysis_num_workers: 0
 analysis_progress_every_batches: 20
 analysis_test_rotation_runs: 5
 analysis_test_max_samples: null

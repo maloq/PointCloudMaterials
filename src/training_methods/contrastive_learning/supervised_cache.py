@@ -12,34 +12,6 @@ from src.utils.spd_metrics import compute_cluster_metrics, compute_embedding_qua
 from src.utils.spd_utils import cached_sample_count
 
 
-def _infer_test_cluster_eval_k(cfg):
-    configured = getattr(cfg, "test_cluster_eval_k", None)
-    if configured is not None:
-        return _parse_optional_eval_k(configured, field_name="test_cluster_eval_k")
-
-    data_cfg = getattr(cfg, "data", None)
-    if data_cfg is None:
-        return None
-    dataset_type = str(getattr(data_cfg, "dataset_type", "")).lower()
-    if dataset_type not in {"modelnet_objects", "modelnet_objects_balanced_topk"}:
-        return None
-    if dataset_type == "modelnet_objects_balanced_topk":
-        top_k = getattr(data_cfg, "top_k_classes", None)
-        if top_k is not None:
-            return _parse_optional_eval_k(top_k, field_name="data.top_k_classes")
-
-    classes = getattr(data_cfg, "classes", None)
-    if classes is None:
-        return 40
-    if isinstance(classes, (list, tuple)):
-        k = len(classes)
-        return k if k > 1 else None
-    if hasattr(classes, "__len__") and not isinstance(classes, (str, bytes, dict)):
-        k = len(classes)
-        return k if k > 1 else None
-    return None
-
-
 def _as_string_list(value, default: list[str]) -> list[str]:
     if value is None:
         return list(default)
@@ -378,21 +350,84 @@ def _infer_label_cluster_count(labels: np.ndarray) -> int | None:
     return k if k > 1 else None
 
 
+def _get_stage_dataset(module, stage: str):
+    trainer = getattr(module, "trainer", None)
+    datamodule = getattr(trainer, "datamodule", None)
+    if datamodule is None:
+        return None
+
+    split_name = f"{stage}_dataset"
+    dataset = getattr(datamodule, split_name, None)
+    if dataset is None and hasattr(datamodule, "impl"):
+        dataset = getattr(datamodule.impl, split_name, None)
+    while dataset is not None and hasattr(dataset, "dataset"):
+        inner = getattr(dataset, "dataset")
+        if inner is dataset:
+            break
+        dataset = inner
+    return dataset
+
+
+def _infer_dataset_class_count(module, stage: str) -> int | None:
+    dataset = _get_stage_dataset(module, stage)
+    if dataset is None:
+        return None
+
+    class_names = getattr(dataset, "class_names", None)
+    if class_names is not None:
+        if hasattr(class_names, "items"):
+            k = len(dict(class_names))
+            return k if k > 1 else None
+        if hasattr(class_names, "__len__") and not isinstance(class_names, (str, bytes)):
+            k = len(class_names)
+            return k if k > 1 else None
+
+    num_classes = getattr(dataset, "num_classes", None)
+    if callable(num_classes):
+        value = num_classes()
+    else:
+        value = num_classes
+    if value is not None:
+        try:
+            k = int(value)
+        except (TypeError, ValueError):
+            raise ValueError(
+                f"Invalid {stage}_dataset.num_classes={value!r}; expected integer-like value."
+            ) from None
+        return k if k > 1 else None
+    return None
+
+
 def _resolve_hungarian_eval_k(module, stage: str, labels: np.ndarray) -> int | None:
     stage_l = str(stage).lower()
-    if stage_l == "test":
-        # Test ACC uses explicit config when provided.
-        configured = getattr(module, "test_cluster_eval_k", None)
-        if configured is not None:
-            return configured
-        return _infer_label_cluster_count(labels)
-    if stage_l == "val":
-        # Validation ACC tracks the actual class count in the current validation split.
-        configured = getattr(module, "val_cluster_eval_k", None)
-        if configured is not None:
-            return configured
-        return _infer_label_cluster_count(labels)
-    return None
+    if stage_l not in {"val", "test"}:
+        return None
+
+    observed_k = _infer_label_cluster_count(labels)
+    dataset_k = _infer_dataset_class_count(module, stage_l)
+
+    if dataset_k is not None:
+        if observed_k is not None and observed_k != dataset_k:
+            raise ValueError(
+                "Hungarian ACC class-count mismatch: "
+                f"observed {observed_k} unique labels in cached {stage_l} embeddings, "
+                f"but dataset reports {dataset_k} classes. "
+                "This typically means sampling limits dropped classes; increase "
+                f"{'max_test_samples' if stage_l == 'test' else 'max_supervised_samples'} "
+                "or disable that limit."
+            )
+        inferred_k = dataset_k
+    else:
+        inferred_k = observed_k
+
+    configured = getattr(module, "val_cluster_eval_k", None) if stage_l == "val" else None
+    if configured is not None and inferred_k is not None and int(configured) != int(inferred_k):
+        raise ValueError(
+            "Hungarian ACC k must match the class count. "
+            f"Configured val_cluster_eval_k={int(configured)}, inferred classes={int(inferred_k)} "
+            f"for stage='{stage_l}'. Set val_cluster_eval_k=null (recommended) or to {int(inferred_k)}."
+        )
+    return inferred_k
 
 
 def init_supervised_cache(module, cfg) -> None:
@@ -403,7 +438,6 @@ def init_supervised_cache(module, cfg) -> None:
     }
     module.max_supervised_samples = cfg.max_supervised_samples if hasattr(cfg, "max_supervised_samples") else 8192
     module.max_test_samples = cfg.max_test_samples if hasattr(cfg, "max_test_samples") else 1000
-    module.test_cluster_eval_k = _infer_test_cluster_eval_k(cfg)
     module.val_cluster_eval_k = _parse_optional_eval_k(
         getattr(cfg, "val_cluster_eval_k", None),
         field_name="val_cluster_eval_k",

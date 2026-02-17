@@ -88,8 +88,7 @@ max_test_samples: 12000
 cache_train_supervised_metrics: false
 disable_dataset_augmentation_for_ssl: true
 
-# Test clustering accuracies (Hungarian matching) will use K=10.
-test_cluster_eval_k: 10
+# Test clustering accuracies (Hungarian matching) infer K from class labels.
 
 idec_enabled: False
 idec_num_clusters: 0
@@ -175,7 +174,6 @@ analysis_cluster_standardize: true
 analysis_cluster_pca_var: 0.98
 analysis_cluster_pca_max_components: 32
 analysis_cluster_k_values: [10]
-analysis_num_workers: 0
 analysis_progress_every_batches: 20
 analysis_max_samples_total: 0
 analysis_tsne_max_samples: 8000

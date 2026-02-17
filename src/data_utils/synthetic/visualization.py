@@ -1315,7 +1315,7 @@ def _render_local_galleries(
         atoms=atoms, atom_positions=atom_positions,
         positions_tree=positions_tree, global_cfg=global_cfg, rng=rng,
         edge_type='knn',
-        knn_k=4,
+        knn_k=3,
     )
     
     if intermediate_phases:
@@ -1401,7 +1401,7 @@ def _render_local_gallery(
     global_cfg: Any,
     rng: np.random.Generator,
     edge_type: str = 'delaunay',
-    knn_k: int = 4,
+    knn_k: int = 3,
 ) -> None:
     """Render gallery of local neighborhoods or whole objects."""
     if not selected_phases:
@@ -1509,7 +1509,7 @@ def _plot_local_neighborhood(
     global_cfg: Any,
     target_count: int,
     edge_type: str = 'delaunay',
-    knn_k: int = 4,
+    knn_k: int = 3,
 ) -> None:
     """Plot local atomic neighborhood with bonds.
     

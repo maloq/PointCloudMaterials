@@ -60,7 +60,6 @@ COMMON_OVERRIDES=(
   "latent_size=${latent_size}"
   "analysis_grain_enabled=false"
   "analysis_hdbscan_enabled=false"
-  "test_cluster_eval_k=40"
   "experiment_name=BT_MODELNET40_${encoder_key}"
   "${encoder_override}"
   "${run_dir_override}"

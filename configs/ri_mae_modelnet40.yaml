@@ -48,7 +48,6 @@ cache_train_supervised_metrics: false
 enable_train_split_svm_test_metric: true
 train_split_svm_max_samples: 12000
 train_split_svm_c: 0.018
-test_cluster_eval_k: 40
 val_cluster_acc_methods: [kmeans, kmeans++]
 val_cluster_acc_runs: 1
 test_cluster_acc_methods: [kmeans, kmeans++, gmm_full]

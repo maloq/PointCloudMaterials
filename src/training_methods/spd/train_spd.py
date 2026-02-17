@@ -516,7 +516,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         log_every_n_steps=cfg.log_every_n_steps,
         precision=precision,
         benchmark=True,
-        check_val_every_n_epoch=30,
+        check_val_every_n_epoch=10,
         accumulate_grad_batches=accumulate_grad_batches,
     )
 

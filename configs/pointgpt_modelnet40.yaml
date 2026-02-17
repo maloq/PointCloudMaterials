@@ -45,7 +45,6 @@ warmup_start_factor: 0.1
 max_supervised_samples: 12000
 max_test_samples: 12000
 cache_train_supervised_metrics: false
-test_cluster_eval_k: 40
 val_cluster_acc_methods: [kmeans]
 val_cluster_acc_runs: 1
 test_cluster_acc_methods: [kmeans, kmeans++, gmm_full]

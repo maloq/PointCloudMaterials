@@ -16,14 +16,13 @@ load_supervised_checkpoint: False
 
 resume_from_checkpoint: null
 
-# VN Encoder - produces equivariant latent (B, latent_size, 3) and invariant latent (B, latent_size)
-# encoder:
-#   name: VN_REVNET_Backbone
-#   kwargs:
-#     latent_size: ${latent_size}
-#     sa_npoints: [80, 40]
-#     sa_channels: [128, 256]
-#     attn_hidden: 256
+encoder:
+  name: VN_REVNET_Backbone
+  kwargs:
+    latent_size: ${latent_size}
+    sa_npoints: [80, 40]
+    sa_channels: [128, 256]
+    attn_hidden: 256
 
 # encoder:
 #   name: VN_REVNET_Atomic
@@ -34,10 +33,10 @@ resume_from_checkpoint: null
 #     geom_dim: 128
 #     gram_pairs: 128
 
-encoder:
-  name: DGCNN
-  kwargs:
-    latent_size: ${latent_size}
+# encoder:
+#   name: DGCNN
+#   kwargs:
+#     latent_size: ${latent_size}
 
 # Decoder config is required by the model factory but is not used for VICReg
 decoder:
@@ -92,7 +91,6 @@ idec_max_iter: null
 idec_use_global_p: True
 idec_normalize_z: True
 idec_init_kmeans: True
-test_cluster_eval_k: 4
 
 # Barlow Twins (disabled)
 barlow_enabled: False
@@ -114,7 +112,7 @@ vicreg_neighbor_k: 6
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
 vicreg_rotation_deg: 10.0
-vicreg_strain_std: 0.03
+vicreg_strain_std: 0.02
 vicreg_strain_volume_preserve: true
 vicreg_occlusion_mode: mixed
 vicreg_occlusion_view: second
@@ -134,6 +132,32 @@ vicreg_radial_m: null
 vicreg_radial_eps: 1e-8
 
 
+# Pose regression (symmetry-aware)
+pose:
+  enabled: True
+  weight: 0.4
+  start_epoch: 10
+  head_hidden: 256
+  jitter_std: 0.002
+  strain_std: 0.002
+  strain_volume_preserve: true
+  seeded_forward: true
+  view_rotation_mode: full
+  view_rotation_deg: 0.0
+  unambiguous_rotation: true
+  unambiguous_margin_deg: 1.0
+  curriculum_enabled: true
+  curriculum_epochs: 120
+  curriculum_start_deg: 8.0
+  eq_center: true
+  eq_l2_normalize: true
+  cov_normalize: true
+  head_loss_weight: 1.0
+  procrustes_loss_weight: 0.35
+  histogram_every_n_steps: 50
+  ambiguity_use_std: true
+  ambiguity_floor: 0.001
+
 # Data augmentation (applied in dataloaders)
 augmentation:
   rotation_scale: 0.0
@@ -148,7 +172,6 @@ analysis_cluster_standardize: true
 analysis_cluster_pca_var: 0.98
 analysis_cluster_pca_max_components: 32
 analysis_cluster_k_values: [3, 4, 5, 6]
-analysis_num_workers: 0
 analysis_progress_every_batches: 20
 analysis_test_rotation_runs: 5
 analysis_test_max_samples: null
