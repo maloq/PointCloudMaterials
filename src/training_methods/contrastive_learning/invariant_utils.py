@@ -1,3 +1,5 @@
+import warnings
+
 import torch
 import torch.nn as nn
 
@@ -150,15 +152,28 @@ class TensorProductInvariantHead(nn.Module):
             if eq_z.shape[-1] == 3:
                 return eq_z
             if eq_z.shape[1] == 3:
+                warnings.warn(
+                    f"Transposing eq_z from shape {tuple(eq_z.shape)} (assumed channel-first) "
+                    "to (B, C, 3). Ensure encoder output convention is correct.",
+                )
                 return eq_z.transpose(1, 2).contiguous()
-            return None
+            raise ValueError(
+                f"Cannot coerce 3D eq_z with shape {tuple(eq_z.shape)} to (B, C, 3): "
+                "neither last dim nor dim-1 equals 3."
+            )
         if eq_z.dim() == 4 and eq_z.shape[-1] == 3:
             if eq_z.shape[1] == self.channels:
                 return eq_z.mean(dim=2)
             if eq_z.shape[2] == self.channels:
                 return eq_z.mean(dim=1)
-            return eq_z.mean(dim=1)
-        return None
+            raise ValueError(
+                f"Cannot coerce 4D eq_z with shape {tuple(eq_z.shape)}: "
+                f"no dimension matches channels={self.channels}."
+            )
+        raise ValueError(
+            f"Unsupported eq_z shape {tuple(eq_z.shape)} (dim={eq_z.dim()}). "
+            "Expected 3D (B, C, 3) or 4D (B, C, ?, 3)."
+        )
 
     def _fit_output_dim(self, feat: torch.Tensor | None) -> torch.Tensor | None:
         if feat is None:
@@ -166,13 +181,17 @@ class TensorProductInvariantHead(nn.Module):
         if feat.dim() > 2:
             feat = feat.reshape(feat.shape[0], -1)
         if feat.dim() != 2:
-            return feat
+            raise ValueError(
+                f"Expected 2D feature tensor after reshape, got dim={feat.dim()} "
+                f"shape={tuple(feat.shape)}."
+            )
         if feat.shape[1] == self.output_dim:
             return feat
-        if feat.shape[1] > self.output_dim:
-            return feat[:, : self.output_dim]
-        pad = feat.new_zeros((feat.shape[0], self.output_dim - feat.shape[1]))
-        return torch.cat([feat, pad], dim=1)
+        raise ValueError(
+            f"Feature dimension mismatch: got {feat.shape[1]}, "
+            f"expected output_dim={self.output_dim}. "
+            "This likely indicates an encoder output size change."
+        )
 
     def _norms(self, eq_z: torch.Tensor) -> torch.Tensor:
         return torch.sqrt((eq_z * eq_z).sum(dim=-1) + self.eps)

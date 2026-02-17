@@ -208,6 +208,7 @@ class VICRegLoss(nn.Module):
         prepare_input,
         split_output,
         current_epoch: int,
+        invariant_transform=None,
     ):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
@@ -217,11 +218,17 @@ class VICRegLoss(nn.Module):
 
         enc_a = encoder(prepare_input(y_a))
         inv_a, eq_a = split_output(enc_a)
-        inv_a = self._invariant(inv_a, eq_a)
+        if invariant_transform is None:
+            inv_a = self._invariant(inv_a, eq_a)
+        else:
+            inv_a = invariant_transform(inv_a, eq_a)
 
         enc_b = encoder(prepare_input(y_b))
         inv_b, eq_b = split_output(enc_b)
-        inv_b = self._invariant(inv_b, eq_b)
+        if invariant_transform is None:
+            inv_b = self._invariant(inv_b, eq_b)
+        else:
+            inv_b = invariant_transform(inv_b, eq_b)
 
         if inv_a is None or inv_b is None:
             return None, {}
@@ -569,14 +576,22 @@ class VICRegLoss(nn.Module):
     def _invariant(self, inv_z, eq_z):
         if self.invariant_head is None:
             if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
+                import warnings
+                warnings.warn(
+                    "No invariant_head: reinterpreting inv_z (3D, last_dim=3) as eq_z "
+                    f"and reducing via norm. Shape: {tuple(inv_z.shape)}. "
+                    "Set invariant_mode explicitly if this is unintended.",
+                )
                 eq_z = inv_z
                 inv_z = None
             if eq_z is not None:
                 return eq_z.norm(dim=-1)
+            if inv_z is None:
+                raise ValueError(
+                    "Both inv_z and eq_z are None after invariant processing. "
+                    "Encoder must return at least one non-None latent."
+                )
             return inv_z
-        # Keep passthrough behavior only when the invariant head output width already
-        # matches the provided invariant latent. Otherwise route through the head so
-        # projector input width stays consistent with initialization.
         if eq_z is None and inv_z is not None and inv_z.dim() == 2:
             if inv_z.shape[1] == int(self.invariant_head.output_dim):
                 return inv_z

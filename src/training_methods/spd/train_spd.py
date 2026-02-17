@@ -225,11 +225,12 @@ def _set_model_hparam(model: pl.LightningModule, key: str, value) -> None:
     try:
         hparams[key] = value
         return
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("hparams[%r] = %r failed via __setitem__: %s", key, value, exc)
     try:
         setattr(hparams, key, value)
-    except Exception:
+    except Exception as exc:
+        logger.debug("setattr(hparams, %r, %r) also failed: %s", key, value, exc)
         return
 
 
@@ -574,6 +575,14 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         run_test_single_device = bool(getattr(cfg, "test_single_device", True))
         if cfg.gpu and len(devices) > 1 and run_test_single_device:
             logger.print("Running test on a single device to avoid duplicated DDP samples.")
+
+            # Tear down the DDP process group before creating a single-device
+            # Trainer, otherwise rank-1 blocks on NCCL collectives and the
+            # whole run hangs.
+            if torch.distributed.is_initialized():
+                torch.distributed.barrier()
+                torch.distributed.destroy_process_group()
+
             test_trainer_kwargs = dict(
                 default_root_dir=run_dir,
                 accelerator='gpu',

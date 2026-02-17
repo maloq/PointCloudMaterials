@@ -1,7 +1,8 @@
 defaults:
-# - data: data_synth_polycrystalline_balanced_geometries
+ - data: data_synth_polycrystalline_balanced_geometries
  - _self_
- - data: data_ae_Al_80
+# - data: data_ae_Al_80
+
 data:
   analysis_data_files: ['175ps.off']
   analysis_data_file: null
@@ -42,14 +43,20 @@ init_from_checkpoint_strict: false
 #     pooling: mean
 #     dropout_rate: 0.0
 
+# encoder:
+#   name: VN_REVNET_Atomic
+#   kwargs:
+#     latent_size: ${latent_size}
+#     embed_channels: 224
+#     hidden_channels: [320, 1024]
+#     geom_dim: 128
+#     gram_pairs: 128
+
+
 encoder:
-  name: VN_REVNET_Atomic
+  name: PnE_L
   kwargs:
     latent_size: ${latent_size}
-    embed_channels: 224
-    hidden_channels: [320, 1024]
-    geom_dim: 128
-    gram_pairs: 128
 
 
 # Decoder config is required by the model factory but is not used for Barlow Twins
@@ -61,10 +68,10 @@ decoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 256
+batch_size: 512
 precision: bf16-true
 gradient_clip_val: 1.0
-accumulate_grad_batches: 1
+accumulate_grad_batches: 4
 auto_batch_size_search: false
 auto_batch_size_mode: power
 auto_batch_size_init_val: null
@@ -131,7 +138,7 @@ barlow_invariant_eps: 1e-6
 
 # Pose regression (symmetry-aware)
 pose:
-  enabled: true
+  enabled: False
   weight: 0.4
   start_epoch: 10
   head_hidden: 256

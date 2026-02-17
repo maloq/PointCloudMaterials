@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
 
@@ -99,8 +100,12 @@ def draw_edges_on_ax(
                             p1, p2 = coords[edge[0]], coords[edge[1]]
                             ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
                                    color=edge_color, linewidth=edge_linewidth, alpha=edge_alpha)
-        except Exception:
-            # Fallback to KNN if Delaunay fails
+        except Exception as exc:
+            warnings.warn(
+                f"Delaunay triangulation failed; falling back to KNN edges. Error: {exc}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
             edge_type = 'knn'
     
     if edge_type == 'knn':

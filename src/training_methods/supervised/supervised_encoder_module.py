@@ -124,13 +124,15 @@ class SupervisedEncoder(pl.LightningModule):
         if hasattr(ds, "class_names"):
             try:
                 class_id_to_name = dict(ds.class_names)
-            except Exception:
+            except (TypeError, ValueError) as exc:
+                print(f"Warning: could not convert ds.class_names to dict: {exc}")
                 class_id_to_name = None
         num_classes = None
         if hasattr(ds, "num_classes"):
             try:
                 num_classes = int(ds.num_classes)
-            except Exception:
+            except (TypeError, ValueError) as exc:
+                print(f"Warning: could not convert ds.num_classes to int: {exc}")
                 num_classes = None
         if num_classes is None and class_id_to_name is not None:
             num_classes = len(class_id_to_name)
@@ -337,7 +339,8 @@ if __name__ == "__main__":
         radius = None
         try:
             text = yaml_path.read_text()
-        except Exception:
+        except (OSError, IOError) as exc:
+            print(f"Warning: could not read YAML file '{yaml_path}': {exc}")
             return data_path, radius
         for line in text.splitlines():
             line = line.strip()
@@ -346,7 +349,8 @@ if __name__ == "__main__":
             if line.startswith("radius:") and radius is None:
                 try:
                     radius = float(line.split(":", 1)[1].strip())
-                except Exception:
+                except (ValueError, IndexError) as exc:
+                    print(f"Warning: could not parse radius from line '{line}': {exc}")
                     radius = None
         return data_path, radius
 
@@ -399,7 +403,8 @@ if __name__ == "__main__":
     if meta_path.exists():
         try:
             meta = json.loads(meta_path.read_text())
-        except Exception:
+        except (OSError, IOError, json.JSONDecodeError) as exc:
+            print(f"Warning: could not parse metadata from '{meta_path}': {exc}")
             meta = None
     if meta and "reference_point_clouds" in meta:
         ref_section = meta["reference_point_clouds"]

@@ -1585,8 +1585,12 @@ def _plot_local_neighborhood(
                                 p1, p2 = coords[edge[0]], coords[edge[1]]
                                 ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
                                        color='#555555', linewidth=0.6, alpha=0.5)
-            except Exception:
-                # Fallback to KNN if Delaunay fails
+            except Exception as exc:
+                warnings.warn(
+                    f"Delaunay triangulation failed; falling back to KNN edges. Error: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
                 edge_type = 'knn'
         
         if edge_type == 'knn':

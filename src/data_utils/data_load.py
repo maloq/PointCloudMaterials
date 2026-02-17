@@ -176,7 +176,10 @@ def read_and_sample_mesh(filename, n_points=2048):
         if isinstance(mesh, trimesh.Scene):
             # Concatenate all geometries in the scene
             if len(mesh.geometry) == 0:
-                return np.zeros((n_points, 3))
+                raise ValueError(
+                    f"Mesh file '{filename}' loaded as an empty Scene (0 geometries). "
+                    "Cannot sample points from an empty mesh."
+                )
             mesh = trimesh.util.concatenate(
                 tuple(trimesh.Trimesh(vertices=g.vertices, faces=g.faces) 
                       for g in mesh.geometry.values())
@@ -189,9 +192,10 @@ def read_and_sample_mesh(filename, n_points=2048):
         return np.array(points, dtype=np.float32)
         
     except Exception as e:
-        print(f"Error loading {filename}: {e}")
-        # Fallback to zeros or handle error
-        return np.zeros((n_points, 3), dtype=np.float32)
+        raise RuntimeError(
+            f"Failed to load and sample mesh from '{filename}' "
+            f"(requested n_points={n_points}): {e}"
+        ) from e
         
 
 def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords, sampling_method="drop_farthest"):

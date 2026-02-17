@@ -85,15 +85,11 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
     model = model.to(device)
     model.eval()
 
-    try:
-        print(f"Model loaded successfully from {checkpoint_path}")
-        if hasattr(cfg, 'type'):
-            print(f"Model type: {cfg.type}")
-        if hasattr(cfg, 'latent_size'):
-            print(f"Latent size: {cfg.latent_size}")
-    except Exception:
-        # cfg might be a plain dict or have no such attributes – ignore.
-        pass
+    print(f"Model loaded successfully from {checkpoint_path}")
+    if hasattr(cfg, 'type'):
+        print(f"Model type: {cfg.type}")
+    if hasattr(cfg, 'latent_size'):
+        print(f"Latent size: {cfg.latent_size}")
 
     return model
 

@@ -108,7 +108,7 @@ def _load_point_cloud_from_dataset(
         return None
     try:
         item = dataset[int(sample_index)]
-    except Exception:
+    except (IndexError, KeyError):
         return None
     points = _extract_points_from_item(item)
     points_np = points.detach().cpu().numpy()

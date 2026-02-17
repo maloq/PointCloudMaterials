@@ -122,6 +122,11 @@ vicreg_occlusion_slab_frac: 0.0
 vicreg_occlusion_cone_deg: 0.0
 vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
+vicreg_invariant_mode: tensor_product
+vicreg_invariant_max_factor: 4.0
+vicreg_invariant_groups: 0
+vicreg_invariant_use_third_order: true
+vicreg_invariant_eps: 1e-6
 vicreg_radial_enabled: true
 vicreg_radial_beta1: 1.0
 vicreg_radial_beta2: 0.1

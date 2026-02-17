@@ -145,7 +145,11 @@ def _default_hdbscan_grids(X: np.ndarray, eps_scale_k: int = 5) -> Tuple[List[in
         dists, _ = nn.kneighbors(Xs, return_distance=True)
         scale = float(np.median(dists[:, -1]))
         eps_grid = sorted({max(0.0, float(e)) for e in [0.0, 0.25 * scale, 0.5 * scale, 1.0 * scale, 2.0 * scale]})
-    except Exception:
+    except Exception as exc:
+        _warn_once(
+            "eps_grid_fallback",
+            f"Failed to compute kNN-based epsilon grid; falling back to eps_grid=[0.0]. Error: {exc}",
+        )
         eps_grid = [0.0]
     ms_template = [None, 1]
     return mcs_grid, ms_template, eps_grid

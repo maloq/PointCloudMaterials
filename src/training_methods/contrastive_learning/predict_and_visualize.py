@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import time
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Tuple
@@ -21,10 +22,8 @@ from src.training_methods.contrastive_learning.cluster_profile_analysis import (
 from src.training_methods.contrastive_learning.analysis_utils import (
     _sample_indices,
     build_real_coords_dataloader,
-    cap_cluster_labels,
     evaluate_latent_equivariance,
     gather_inference_batches,
-    segment_grains_with_pose_head,
 )
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
 from src.training_methods.contrastive_learning.supervised_cache import (
@@ -111,7 +110,7 @@ def _as_int_mapping(value: Any) -> dict[str, int]:
     for key, raw in value.items():
         try:
             runs = int(raw)
-        except Exception:
+        except (TypeError, ValueError):
             continue
         if runs > 0:
             out[str(key)] = runs
@@ -142,6 +141,12 @@ def _extract_pc_and_class_id(batch: Any) -> tuple[torch.Tensor, torch.Tensor | N
                     torch.long,
                 ) and candidate.dim() <= 1:
                     class_id = candidate
+                elif candidate.dim() <= 1:
+                    warnings.warn(
+                        f"Batch element [1] has dtype={candidate.dtype} and dim={candidate.dim()}. "
+                        "Expected integer dtype for class_id. Skipping -- provide integer labels "
+                        "or use a dict batch to avoid silent label loss.",
+                    )
             elif isinstance(candidate, (int, np.integer)):
                 class_id = torch.as_tensor(candidate, dtype=torch.long)
         return points, class_id
@@ -306,7 +311,7 @@ def _resolve_test_metric_settings(cfg: DictConfig) -> Dict[str, Any]:
 def _to_finite_float(value: Any) -> float | None:
     try:
         val = float(value)
-    except Exception:
+    except (TypeError, ValueError):
         return None
     return val if np.isfinite(val) else None
 
@@ -364,30 +369,28 @@ def _evaluate_test_run(
     )
     cluster_metrics = {}
     if labels_available:
-        cluster_metrics = (
-            compute_cluster_metrics(
-                latents,
-                labels,
-                stage="test",
-                hungarian_eval_k=settings["hungarian_eval_k"],
-                acc_eval_methods=settings["acc_eval_methods"],
-                acc_eval_runs=settings["acc_eval_runs"],
-                acc_eval_runs_by_method=settings["acc_eval_runs_by_method"],
-                acc_random_seed=settings["acc_random_seed"],
-            )
-            or {}
+        cluster_metrics = compute_cluster_metrics(
+            latents,
+            labels,
+            stage="test",
+            hungarian_eval_k=settings["hungarian_eval_k"],
+            acc_eval_methods=settings["acc_eval_methods"],
+            acc_eval_runs=settings["acc_eval_runs"],
+            acc_eval_runs_by_method=settings["acc_eval_runs_by_method"],
+            acc_random_seed=settings["acc_random_seed"],
         )
+        if cluster_metrics is None:
+            cluster_metrics = {}
     embedding_metrics = {}
     if include_embedding_metrics:
         embedding_labels = labels if labels_available else np.zeros((int(latents.shape[0]),), dtype=np.int64)
-        embedding_metrics = (
-            compute_embedding_quality_metrics(
-                latents,
-                embedding_labels,
-                include_expensive=True,
-            )
-            or {}
+        embedding_metrics = compute_embedding_quality_metrics(
+            latents,
+            embedding_labels,
+            include_expensive=True,
         )
+        if embedding_metrics is None:
+            embedding_metrics = {}
 
     acc_key = _primary_accuracy_key(cluster_metrics, settings["hungarian_eval_k"])
     result = {
@@ -570,7 +573,7 @@ def run_post_training_analysis(
     hdbscan_max_fit_samples = int(getattr(cfg, "analysis_hdbscan_max_fit_samples", 50000))
     hdbscan_target_k_min = int(getattr(cfg, "analysis_hdbscan_target_k_min", 5))
     hdbscan_target_k_max = int(getattr(cfg, "analysis_hdbscan_target_k_max", 6))
-    hdbscan_min_samples = cfg.analysis_hdbscan_min_samples
+    hdbscan_min_samples = getattr(cfg, "analysis_hdbscan_min_samples", None)
     if hdbscan_min_samples is not None:
         hdbscan_min_samples = int(hdbscan_min_samples)
     hdbscan_cluster_selection_epsilon = float(
@@ -579,35 +582,12 @@ def run_post_training_analysis(
     hdbscan_cluster_selection_method = str(
         getattr(cfg, "analysis_hdbscan_cluster_selection_method", "leaf")
     ).lower()
+    _hdbscan_mcs_raw = getattr(cfg, "analysis_hdbscan_min_cluster_size_candidates", None)
     hdbscan_min_cluster_size_candidates = (
-        [int(v) for v in cfg.analysis_hdbscan_min_cluster_size_candidates]
-        if cfg.analysis_hdbscan_min_cluster_size_candidates is not None
+        [int(v) for v in _hdbscan_mcs_raw]
+        if _hdbscan_mcs_raw is not None
         else None
     )
-    grain_enabled = bool(getattr(cfg, "analysis_grain_enabled", True))
-    grain_knn_k = int(getattr(cfg, "analysis_grain_knn_k", 12))
-    grain_edge_weight_threshold = float(
-        getattr(cfg, "analysis_grain_edge_weight_threshold", 0.35)
-    )
-    grain_orientation_tau_deg = float(
-        getattr(cfg, "analysis_grain_orientation_tau_deg", 18.0)
-    )
-    grain_alpha_scale_quantile = float(
-        getattr(cfg, "analysis_grain_alpha_scale_quantile", 0.75)
-    )
-    grain_align_n_iters = int(getattr(cfg, "analysis_grain_align_n_iters", 5))
-    grain_align_min_cluster_size = int(
-        getattr(cfg, "analysis_grain_align_min_cluster_size", 3)
-    )
-    grain_align_normalize_channels = bool(
-        getattr(cfg, "analysis_grain_align_normalize_channels", True)
-    )
-    grain_min_size = int(getattr(cfg, "analysis_grain_min_size", 1))
-    grain_interactive_max_points = _positive_int_or_none(
-        getattr(cfg, "analysis_grain_interactive_max_points", 120000)
-    )
-    grain_interactive_max_grains = max(0, int(getattr(cfg, "analysis_grain_interactive_max_grains", 80)))
-    grain_tsne_max_grains = max(0, int(getattr(cfg, "analysis_grain_tsne_max_grains", 60)))
     progress_every_batches = int(getattr(cfg, "analysis_progress_every_batches", 25))
     cluster_profile_enabled = bool(getattr(cfg, "analysis_cluster_profile_enabled", True))
     cluster_profile_samples_per_cluster = max(
@@ -708,8 +688,6 @@ def run_post_training_analysis(
     n_samples = len(cache["inv_latents"])
     print(f"Collected {n_samples} samples for analysis")
     has_phases = cache["phases"].size == n_samples
-    gt_instance_ids = cache.get("instance_ids", np.empty((0,), dtype=int))
-    has_gt_grains = gt_instance_ids.size == n_samples and np.any(gt_instance_ids >= 0)
 
     if is_synthetic:
         _step("Computing t-SNE visualization")
@@ -851,12 +829,12 @@ def run_post_training_analysis(
                 interactive_path = None
                 interactive_paths: Dict[int, str] = {}
                 try:
-                    for idx_k, k_val in enumerate(configured_k_values):
-                        labels_k = cluster_labels_by_k[int(k_val)]
+                    for inner_idx, inner_k in enumerate(configured_k_values):
+                        labels_k = cluster_labels_by_k[int(inner_k)]
                         out_path = (
                             out_dir / "md_space_clusters.html"
-                            if idx_k == 0
-                            else out_dir / f"md_space_clusters_k{k_val}.html"
+                            if inner_idx == 0
+                            else out_dir / f"md_space_clusters_k{inner_k}.html"
                         )
                         save_interactive_md_plot(
                             coords,
@@ -868,9 +846,9 @@ def run_post_training_analysis(
                             marker_line_width=0.0,
                             aspect_mode="cube",
                         )
-                        if idx_k == 0:
+                        if inner_idx == 0:
                             interactive_path = out_path
-                        interactive_paths[int(k_val)] = str(out_path)
+                        interactive_paths[int(inner_k)] = str(out_path)
                 except ImportError:
                     interactive_path = None
                     print("Plotly not installed; skipping interactive MD plot.")
@@ -936,131 +914,6 @@ def run_post_training_analysis(
                     except ImportError:
                         print("HDBSCAN package not installed; skipping HDBSCAN analysis.")
 
-                grain_info: Dict[str, Any] | None = None
-                grain_path = None
-                grain_coord_files: Dict[str, str] = {}
-                grain_tsne_path = None
-                if grain_enabled:
-                    _step("Running grain segmentation")
-                    try:
-                        grain_result = segment_grains_with_pose_head(
-                            model,
-                            cache["inv_latents"],
-                            cache["eq_latents"],
-                            cluster_labels,
-                            coords,
-                            knn_k=grain_knn_k,
-                            edge_weight_threshold=grain_edge_weight_threshold,
-                            orientation_tau_deg=grain_orientation_tau_deg,
-                            alpha_scale_quantile=grain_alpha_scale_quantile,
-                            align_n_iters=grain_align_n_iters,
-                            align_min_cluster_size=grain_align_min_cluster_size,
-                            align_normalize_channels=grain_align_normalize_channels,
-                            min_grain_size=grain_min_size,
-                            gt_grain_labels=gt_instance_ids if has_gt_grains else None,
-                        )
-                        grain_labels = np.asarray(
-                            grain_result.get("grain_labels", np.empty((0,), dtype=int)),
-                            dtype=int,
-                        )
-                        grain_info = grain_result.get("metrics", None)
-                        # Print GT comparison if available
-                        if grain_info and "gt_ari" in grain_info:
-                            print(
-                                f"  Grain GT comparison: "
-                                f"ARI={grain_info['gt_ari']:.4f}  "
-                                f"NMI={grain_info['gt_nmi']:.4f}  "
-                                f"mean_IoU={grain_info['gt_mean_iou']:.4f}  "
-                                f"weighted_IoU={grain_info['gt_weighted_iou']:.4f}  "
-                                f"(pred={grain_info['num_grains']} grains, "
-                                f"gt={grain_info['gt_num_grains']} grains)"
-                            )
-                        if grain_labels.size == len(coords):
-                            grain_labels_tsne = grain_labels
-                            if grain_tsne_max_grains > 0:
-                                n_unique_grains = int(len(np.unique(grain_labels[grain_labels >= 0])))
-                                if n_unique_grains > grain_tsne_max_grains:
-                                    grain_labels_tsne = cap_cluster_labels(
-                                        grain_labels,
-                                        max_clusters=grain_tsne_max_grains,
-                                        other_label=-1,
-                                    )
-                            n_grains_tsne = int(
-                                len(np.unique(grain_labels_tsne[grain_labels_tsne >= 0]))
-                            )
-                            save_tsne_plot_with_coords(
-                                tsne_coords,
-                                grain_labels_tsne[tsne_idx],
-                                out_dir,
-                                out_name="latent_tsne_grains.png",
-                                title=(
-                                    "Latent space t-SNE "
-                                    f"(grains, shown={n_grains_tsne})"
-                                ),
-                                legend_title="grain",
-                            )
-                            grain_tsne_path = str(out_dir / "latent_tsne_grains.png")
-
-                            grain_coord_files = save_local_structure_assignments(
-                                coords,
-                                grain_labels,
-                                out_dir,
-                                prefix="local_structure_grains",
-                            )
-                            if grain_coord_files:
-                                save_md_space_clusters_plot(
-                                    coords,
-                                    grain_labels,
-                                    out_dir / "md_space_grains.png",
-                                    max_points=interactive_max_points,
-                                )
-                                try:
-                                    grain_path = out_dir / "md_space_grains.html"
-                                    grain_labels_plot = grain_labels
-                                    if grain_interactive_max_grains > 0:
-                                        n_unique_grains = int(
-                                            len(np.unique(grain_labels[grain_labels >= 0]))
-                                        )
-                                        if n_unique_grains > grain_interactive_max_grains:
-                                            grain_labels_plot = cap_cluster_labels(
-                                                grain_labels,
-                                                max_clusters=grain_interactive_max_grains,
-                                                other_label=-1,
-                                            )
-                                            print(
-                                                "Reducing interactive grain labels: "
-                                                f"{n_unique_grains} -> {grain_interactive_max_grains} "
-                                                "(smaller grains collapsed to -1)"
-                                            )
-                                    n_grains = int(
-                                        len(np.unique(grain_labels_plot[grain_labels_plot >= 0]))
-                                    )
-                                    save_interactive_md_plot(
-                                        coords,
-                                        grain_labels_plot,
-                                        grain_path,
-                                        palette="Set3",
-                                        max_points=grain_interactive_max_points,
-                                        marker_size=2.6,
-                                        marker_line_width=0.0,
-                                        title=(
-                                            "MD grain segmentation "
-                                            f"(n={len(coords)}, shown_grains={n_grains})"
-                                        ),
-                                        label_prefix="Grain",
-                                        aspect_mode="cube",
-                                    )
-                                except ImportError:
-                                    grain_path = None
-                                    print("Plotly not installed; skipping interactive MD grain plot.")
-                        else:
-                            print(
-                                "Warning: grain labels do not match coordinate count; "
-                                "skipping grain MD outputs."
-                            )
-                    except ImportError:
-                        print("Scipy not installed; skipping grain segmentation.")
-
                 unique_labels, counts = np.unique(cluster_labels, return_counts=True)
                 all_metrics[md_metrics_key] = {
                     "primary_k": int(primary_k),
@@ -1079,23 +932,6 @@ def run_post_training_analysis(
                         all_metrics[md_metrics_key]["hdbscan_coords_files"] = hdbscan_coord_files
                     if hdbscan_path is not None:
                         all_metrics[md_metrics_key]["hdbscan_interactive_html"] = str(hdbscan_path)
-                if grain_info is not None:
-                    all_metrics[md_metrics_key]["grains"] = grain_info
-                    all_metrics[md_metrics_key]["grains"]["interactive_max_points"] = (
-                        None if grain_interactive_max_points is None else int(grain_interactive_max_points)
-                    )
-                    all_metrics[md_metrics_key]["grains"]["interactive_max_grains"] = int(
-                        grain_interactive_max_grains
-                    )
-                    all_metrics[md_metrics_key]["grains"]["tsne_max_grains"] = int(
-                        grain_tsne_max_grains
-                    )
-                    if grain_coord_files:
-                        all_metrics[md_metrics_key]["grains_coords_files"] = grain_coord_files
-                    if grain_path is not None:
-                        all_metrics[md_metrics_key]["grains_interactive_html"] = str(grain_path)
-                    if grain_tsne_path is not None:
-                        all_metrics[md_metrics_key]["grains_tsne_png"] = grain_tsne_path
 
     if cluster_profile_enabled:
         _step("Generating per-cluster MD sample profiles")
@@ -1220,14 +1056,6 @@ def run_post_training_analysis(
             print("  - local_structure_hdbscan_coords_clusters.csv: MD centers with HDBSCAN labels")
             print("  - local_structure_hdbscan_coords_clusters.npz: MD centers + HDBSCAN labels")
             print("  - md_space_clusters_hdbscan.html: interactive 3D MD HDBSCAN clusters")
-        if "grains_coords_files" in all_metrics[md_metrics_key]:
-            print("  - local_structure_grains_coords_clusters.csv: MD centers with grain IDs")
-            print("  - local_structure_grains_coords_clusters.npz: MD centers + grain IDs")
-            print("  - md_space_grains.png: 3D MD grain segmentation")
-            if "grains_tsne_png" in all_metrics[md_metrics_key]:
-                print("  - latent_tsne_grains.png: t-SNE colored by grain IDs")
-            if "grains_interactive_html" in all_metrics[md_metrics_key]:
-                print("  - md_space_grains.html: interactive 3D MD grain segmentation")
         if "cluster_profiles" in all_metrics[md_metrics_key]:
             print("  - cluster_profiles_by_k/k_*/cluster_XX_structures.png: 8 structures per cluster")
             print("  - cluster_profiles_by_k/k_*/cluster_XX_properties.png: per-sample topology/material metrics")

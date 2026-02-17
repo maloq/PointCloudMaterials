@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import torch
 from sklearn.model_selection import cross_val_score
@@ -70,7 +72,12 @@ def _as_int_mapping(value, default: dict[str, int]) -> dict[str, int]:
             continue
         try:
             runs = int(raw)
-        except Exception:
+        except (TypeError, ValueError):
+            warnings.warn(
+                f"Ignoring non-integer run count for key '{k}': {raw!r}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
             continue
         if runs > 0:
             out[k] = runs
@@ -158,7 +165,8 @@ def _compute_linear_svm_accuracy(features: np.ndarray, labels: np.ndarray) -> fl
     )
     try:
         scores = cross_val_score(clf, x, y, cv=cv, scoring="accuracy", n_jobs=1)
-    except Exception:
+    except (ValueError, np.linalg.LinAlgError) as exc:
+        warnings.warn(f"Linear SVM cross-val failed: {exc}")
         return None
     if scores.size == 0:
         return None
@@ -191,7 +199,8 @@ def _compute_linear_svm_train_to_test_accuracy(
     try:
         clf.fit(x_train, y_train)
         pred = clf.predict(x_test)
-    except Exception:
+    except (ValueError, np.linalg.LinAlgError) as exc:
+        warnings.warn(f"Linear SVM train-to-test eval failed: {exc}")
         return None
     if pred.shape[0] == 0:
         return None
@@ -213,7 +222,8 @@ def _build_supervised_eval_loader(module, split: str) -> DataLoader | None:
         if callable(dataloader_fn):
             try:
                 return dataloader_fn()
-            except Exception:
+            except (TypeError, ValueError, RuntimeError) as exc:
+                warnings.warn(f"Dataloader construction failed for split '{split}': {exc}")
                 return None
         return None
 
@@ -560,21 +570,17 @@ def log_supervised_metrics(module, stage: str) -> None:
                 sync_dist=True,
             )
 
-    try:
-        emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=(stage == "test"))
-        # embedding/* metrics: geometry/quality scores of latent embedding with class labels.
-        for name, value in emb_metrics.items():
-            module._log_metric(
-                stage,
-                f"embedding/{name}",
-                value,
-                prog_bar=False,
-                on_step=False,
-                on_epoch=True,
-                sync_dist=True,
-            )
-    except Exception as exc:
-        print(f"Error computing embedding quality metrics: {exc}")
+    emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=(stage == "test"))
+    for name, value in emb_metrics.items():
+        module._log_metric(
+            stage,
+            f"embedding/{name}",
+            value,
+            prog_bar=False,
+            on_step=False,
+            on_epoch=True,
+            sync_dist=True,
+        )
 
     for key in cache:
         cache[key].clear()
