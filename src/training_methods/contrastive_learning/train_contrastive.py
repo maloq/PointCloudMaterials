@@ -71,7 +71,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
     return trainer, model, dm, checkpoint_callbacks
 
 
-@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='vicreg_vn_modelnet40.yaml')
+@hydra.main(version_base=None, config_path=os.path.join(os.getcwd(), 'configs'), config_name='vicreg_vn_molecular.yaml')
 def main(cfg: DictConfig):
     train(cfg)
 

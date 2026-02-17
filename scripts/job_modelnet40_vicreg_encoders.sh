@@ -1,9 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=BT_MN40_ENC
+#SBATCH --job-name=VICREG_MN40_ENC
 #SBATCH --output=output/slurm_outputs/%x_%A_%a.out
 #SBATCH --error=output/slurm_outputs/%x_%A_%a.err
 #SBATCH --partition=L40S
-#SBATCH --gpus-per-node=1
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=120G
@@ -54,16 +53,17 @@ encoder_override="${ENCODER_OVERRIDES[$task_idx]}"
 
 # Keep invariant latent width identical across all architectures.
 latent_size=96
-run_dir_override="hydra.run.dir=output/modelnet40_barlow/${encoder_key}/\${now:%Y-%m-%d}/\${now:%H-%M-%S}"
+run_dir_override="hydra.run.dir=output/modelnet40_vicreg/${encoder_key}/\${now:%Y-%m-%d}/\${now:%H-%M-%S}"
 
 COMMON_OVERRIDES=(
   "latent_size=${latent_size}"
   "analysis_grain_enabled=false"
   "analysis_hdbscan_enabled=false"
   "test_cluster_eval_k=40"
-  "experiment_name=BT_MODELNET40_${encoder_key}"
+  "experiment_name=VICREG_MODELNET40_${encoder_key}"
   "${encoder_override}"
   "${run_dir_override}"
+  "devices=[0]"
   "auto_batch_size_search=true"
   "accumulate_grad_batches=10"
 )
@@ -71,8 +71,10 @@ COMMON_OVERRIDES=(
 echo "Selected encoder: ${encoder_key}"
 echo "Hydra overrides: ${COMMON_OVERRIDES[*]} $*"
 
-srun python src/training_methods/contrastive_learning/train_contrastive.py \
-  --config-name barlow_twins_vn_modelnet40.yaml \
+# Run directly inside the batch allocation. Some clusters reject a nested srun
+# step with "Invalid generic resource (gres) specification".
+python src/training_methods/contrastive_learning/train_contrastive.py \
+  --config-name vicreg_vn_modelnet40.yaml \
   "${COMMON_OVERRIDES[@]}" \
   "$@"
 

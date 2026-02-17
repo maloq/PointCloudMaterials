@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_polycrystalline
+  - data: data_synth_polycrystalline_balanced_geometries
 #  - data: data_ae_Al_80
 data:
   analysis_data_files: ['175ps.off']
@@ -12,7 +12,6 @@ wandb_mode: online
 model_type: vicreg  # Self-supervised VICReg
 latent_size: 80  # Number of VN channels for equivariant latent
 
-# Optional: Load pretrained supervised encoder
 load_supervised_checkpoint: False
 
 resume_from_checkpoint: null
@@ -26,14 +25,19 @@ resume_from_checkpoint: null
 #     sa_channels: [128, 256]
 #     attn_hidden: 256
 
+# encoder:
+#   name: VN_REVNET_Atomic
+#   kwargs:
+#     latent_size: ${latent_size}
+#     embed_channels: 128
+#     hidden_channels: [320, 960]
+#     geom_dim: 128
+#     gram_pairs: 128
+
 encoder:
-  name: VN_REVNET_Atomic
+  name: DGCNN
   kwargs:
     latent_size: ${latent_size}
-    embed_channels: 128
-    hidden_channels: [320, 960]
-    geom_dim: 128
-    gram_pairs: 128
 
 # Decoder config is required by the model factory but is not used for VICReg
 decoder:
@@ -48,6 +52,15 @@ batch_size: 128
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 6
+auto_batch_size_search: false
+auto_batch_size_mode: power
+auto_batch_size_init_val: null
+auto_batch_size_max_trials: 12
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: true
+auto_batch_size_target_effective_batch: null
+auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000
@@ -55,7 +68,7 @@ epochs: 120
 max_samples: 0
 
 gpu: True
-devices: [0, 1, 2]
+devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
@@ -79,7 +92,7 @@ idec_max_iter: null
 idec_use_global_p: True
 idec_normalize_z: True
 idec_init_kmeans: True
-test_cluster_eval_k: 6
+test_cluster_eval_k: 4
 
 # Barlow Twins (disabled)
 barlow_enabled: False
@@ -99,7 +112,7 @@ vicreg_drop_ratio: 0.0
 vicreg_neighbor_view: true
 vicreg_neighbor_k: 6
 vicreg_view_points: ${data.model_points}
-vicreg_rotation_mode: small
+vicreg_rotation_mode: none
 vicreg_rotation_deg: 10.0
 vicreg_strain_std: 0.03
 vicreg_strain_volume_preserve: true
@@ -114,6 +127,7 @@ vicreg_radial_beta1: 1.0
 vicreg_radial_beta2: 0.1
 vicreg_radial_m: null
 vicreg_radial_eps: 1e-8
+
 
 # Data augmentation (applied in dataloaders)
 augmentation:

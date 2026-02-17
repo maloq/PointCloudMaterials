@@ -39,10 +39,24 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
     if module is None:
         from src.training_methods.spd.spd_module import ShapePoseDisentanglement as module
     model = None
-    try:
-        model = module(cfg)
-    except Exception:
-        model = module()
+    init_errors = []
+    if cfg is not None:
+        try:
+            model = module(cfg)
+        except TypeError as exc:
+            init_errors.append(exc)
+            try:
+                model = module(cfg=cfg)
+            except TypeError as exc_kw:
+                init_errors.append(exc_kw)
+    if model is None:
+        try:
+            model = module()
+        except Exception as exc_noarg:
+            init_errors.append(exc_noarg)
+            if init_errors:
+                raise init_errors[0]
+            raise
 
     # With PyTorch >=2.6 the default for `weights_only` became `True`,
     # which breaks loading checkpoints that contain objects beyond plain

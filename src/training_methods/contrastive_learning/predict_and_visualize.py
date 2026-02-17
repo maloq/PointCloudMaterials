@@ -14,6 +14,10 @@ from omegaconf import DictConfig
 sys.path.append(os.getcwd())
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
+from src.training_methods.contrastive_learning.cluster_profile_analysis import (
+    generate_cluster_profile_reports,
+    resolve_point_scale,
+)
 from src.training_methods.contrastive_learning.analysis_utils import (
     _sample_indices,
     build_real_coords_dataloader,
@@ -605,6 +609,27 @@ def run_post_training_analysis(
     grain_interactive_max_grains = max(0, int(getattr(cfg, "analysis_grain_interactive_max_grains", 80)))
     grain_tsne_max_grains = max(0, int(getattr(cfg, "analysis_grain_tsne_max_grains", 60)))
     progress_every_batches = int(getattr(cfg, "analysis_progress_every_batches", 25))
+    cluster_profile_enabled = bool(getattr(cfg, "analysis_cluster_profile_enabled", True))
+    cluster_profile_samples_per_cluster = max(
+        1,
+        int(getattr(cfg, "analysis_cluster_profile_samples_per_cluster", 8)),
+    )
+    profile_points_default = int(
+        getattr(
+            cfg.data,
+            "model_points",
+            getattr(cfg.data, "num_points", 48),
+        )
+    )
+    cluster_profile_target_points = max(8, profile_points_default)
+    cluster_profile_knn_k = max(
+        1,
+        int(getattr(cfg, "analysis_cluster_profile_knn_k", 4)),
+    )
+    cluster_profile_max_property_samples = max(
+        1,
+        int(getattr(cfg, "analysis_cluster_profile_max_property_samples", 256)),
+    )
     print(f"t-SNE sample cap: {tsne_max_samples}")
     print(f"Clustering metrics cap: {clustering_max_samples}")
     print(f"Clustering k values (configured): {cluster_k_values}")
@@ -1071,6 +1096,30 @@ def run_post_training_analysis(
                         all_metrics[md_metrics_key]["grains_interactive_html"] = str(grain_path)
                     if grain_tsne_path is not None:
                         all_metrics[md_metrics_key]["grains_tsne_png"] = grain_tsne_path
+
+    if cluster_profile_enabled:
+        _step("Generating per-cluster MD sample profiles")
+        point_scale = resolve_point_scale(cfg)
+        profile_root = out_dir / "cluster_profiles_by_k"
+        with _temporary_disable_dataset_aug(dl):
+            cluster_profile_summary = generate_cluster_profile_reports(
+                out_root=profile_root,
+                dataset=getattr(dl, "dataset", None),
+                latents=cache["inv_latents"],
+                coords=coords,
+                cluster_labels_by_k=cluster_labels_by_k,
+                cluster_methods_by_k=cluster_methods_by_k,
+                samples_per_cluster=cluster_profile_samples_per_cluster,
+                target_points=cluster_profile_target_points,
+                knn_k=cluster_profile_knn_k,
+                max_cluster_property_samples=cluster_profile_max_property_samples,
+                point_scale=point_scale,
+                random_seed=int(seed_base),
+            )
+        if md_metrics_key not in all_metrics:
+            all_metrics[md_metrics_key] = {}
+        all_metrics[md_metrics_key]["cluster_profiles"] = cluster_profile_summary
+
     _step("Evaluating equivariance")
     eq_metrics, eq_err = evaluate_latent_equivariance(model, dl, device, max_batches=2)
     save_equivariance_plot(eq_err, out_dir / "equivariance.png")
@@ -1179,6 +1228,11 @@ def run_post_training_analysis(
                 print("  - latent_tsne_grains.png: t-SNE colored by grain IDs")
             if "grains_interactive_html" in all_metrics[md_metrics_key]:
                 print("  - md_space_grains.html: interactive 3D MD grain segmentation")
+        if "cluster_profiles" in all_metrics[md_metrics_key]:
+            print("  - cluster_profiles_by_k/k_*/cluster_XX_structures.png: 8 structures per cluster")
+            print("  - cluster_profiles_by_k/k_*/cluster_XX_properties.png: per-sample topology/material metrics")
+            print("  - cluster_profiles_by_k/k_*/cluster_comparison_property_heatmap.png: cross-cluster properties")
+            print("  - cluster_profiles_by_k/k_*/cluster_comparison_distance_size.png: cross-cluster size/distance")
 
     return all_metrics
 

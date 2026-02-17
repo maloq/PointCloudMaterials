@@ -2,6 +2,7 @@ import os
 # Hack to fix multi-GPU training on this server (NCCL P2P hang)
 os.environ["NCCL_P2P_DISABLE"] = "1"
 
+import math
 import sys
 import time
 import traceback
@@ -13,7 +14,7 @@ from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.strategies import DDPStrategy
 from datetime import datetime
-from omegaconf import DictConfig, ListConfig
+from omegaconf import DictConfig, ListConfig, open_dict
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 import wandb
 
@@ -209,6 +210,159 @@ def _resolve_accumulate_grad_batches(cfg: DictConfig) -> int:
         )
     return accum
 
+
+def _set_cfg_value(cfg: DictConfig, key: str, value) -> None:
+    """Update a Hydra config value safely even when struct mode is enabled."""
+    with open_dict(cfg):
+        setattr(cfg, key, value)
+
+
+def _set_model_hparam(model: pl.LightningModule, key: str, value) -> None:
+    """Best-effort update of model hyperparameters after runtime auto-tuning."""
+    hparams = getattr(model, "hparams", None)
+    if hparams is None:
+        return
+    try:
+        hparams[key] = value
+        return
+    except Exception:
+        pass
+    try:
+        setattr(hparams, key, value)
+    except Exception:
+        return
+
+
+def _nearest_accumulate_grad_batches(target_effective_batch: int, batch_size: int) -> int:
+    """Choose accumulation steps that keep batch_size*accumulation close to target."""
+    if batch_size < 1:
+        raise ValueError(f"batch_size must be >= 1, got {batch_size}")
+    target = max(1, int(target_effective_batch))
+    ratio = float(target) / float(batch_size)
+    lower = max(1, int(math.floor(ratio)))
+    upper = max(1, int(math.ceil(ratio)))
+    if abs(lower * batch_size - target) <= abs(upper * batch_size - target):
+        return lower
+    return upper
+
+
+def _run_auto_batch_size_search(
+    *,
+    cfg: DictConfig,
+    model: pl.LightningModule,
+    dm,
+    run_dir: str,
+    precision,
+    devices: list[int],
+    ddp_strategy,
+) -> int | None:
+    """Run optional Lightning batch-size finder and return the selected batch size."""
+    if not bool(getattr(cfg, "auto_batch_size_search", False)):
+        return None
+
+    strict = bool(getattr(cfg, "auto_batch_size_strict", False))
+    mode = str(getattr(cfg, "auto_batch_size_mode", "power")).strip().lower()
+    if mode not in {"power", "binsearch"}:
+        raise ValueError(f"auto_batch_size_mode must be 'power' or 'binsearch', got {mode!r}")
+
+    init_val = getattr(cfg, "auto_batch_size_init_val", None)
+    if init_val is None:
+        init_val = getattr(cfg, "batch_size", 1)
+    init_val = max(1, int(init_val))
+    max_trials = max(1, int(getattr(cfg, "auto_batch_size_max_trials", 12)))
+    steps_per_trial = max(1, int(getattr(cfg, "auto_batch_size_steps_per_trial", 3)))
+    use_single_device = bool(getattr(cfg, "auto_batch_size_use_single_device", True))
+
+    search_devices: int | list[int]
+    search_strategy = ddp_strategy
+    if bool(getattr(cfg, "gpu", False)):
+        if use_single_device and len(devices) > 1:
+            search_devices = [int(devices[0])]
+            search_strategy = None
+            logger.print(
+                "Auto batch-size search will run on a single GPU before multi-GPU training "
+                f"(selected device index: {search_devices[0]})."
+            )
+        else:
+            search_devices = devices
+            if len(devices) <= 1:
+                search_strategy = None
+    else:
+        search_devices = 1
+        search_strategy = None
+
+    trainer_kwargs = dict(
+        default_root_dir=run_dir,
+        max_epochs=1,
+        accelerator='gpu' if cfg.gpu else 'cpu',
+        devices=search_devices,
+        logger=False,
+        callbacks=[],
+        enable_checkpointing=False,
+        log_every_n_steps=max(1, int(getattr(cfg, "log_every_n_steps", 1))),
+        precision=precision,
+        benchmark=True,
+        enable_model_summary=False,
+        num_sanity_val_steps=0,
+    )
+    if search_strategy is not None:
+        trainer_kwargs["strategy"] = search_strategy
+
+    try:
+        from pytorch_lightning.tuner import Tuner
+    except Exception as exc:
+        message = (
+            "Auto batch-size search is enabled, but Lightning Tuner is unavailable. "
+            f"Error: {exc}"
+        )
+        if strict:
+            raise RuntimeError(message) from exc
+        logger.print(f"Warning: {message}. Continuing with configured batch_size={cfg.batch_size}.")
+        return None
+
+    logger.print(
+        "Running auto batch-size search with "
+        f"mode={mode}, init_val={init_val}, max_trials={max_trials}, steps_per_trial={steps_per_trial}."
+    )
+    try:
+        search_trainer = pl.Trainer(**trainer_kwargs)
+        suggested = Tuner(search_trainer).scale_batch_size(
+            model,
+            datamodule=dm,
+            mode=mode,
+            init_val=init_val,
+            max_trials=max_trials,
+            steps_per_trial=steps_per_trial,
+            batch_arg_name="batch_size",
+        )
+    except Exception as exc:
+        message = f"Auto batch-size search failed with error: {exc}"
+        if strict:
+            raise RuntimeError(message) from exc
+        logger.print(f"Warning: {message}. Continuing with configured batch_size={cfg.batch_size}.")
+        return None
+    finally:
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+    if suggested is None:
+        suggested = getattr(dm, "batch_size", getattr(cfg, "batch_size", None))
+    if suggested is None:
+        message = "Auto batch-size search returned no batch size."
+        if strict:
+            raise RuntimeError(message)
+        logger.print(f"Warning: {message} Continuing with configured batch_size={cfg.batch_size}.")
+        return None
+
+    suggested = int(suggested)
+    if suggested < 1:
+        message = f"Auto batch-size search returned invalid batch size {suggested}."
+        if strict:
+            raise RuntimeError(message)
+        logger.print(f"Warning: {message} Continuing with configured batch_size={cfg.batch_size}.")
+        return None
+    return suggested
+
 @rank_zero_only
 def get_rundir_name() -> str:
     now = datetime.now()
@@ -302,7 +456,55 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         ddp_strategy = DDPStrategy(find_unused_parameters=True)
 
     precision = getattr(cfg, "precision", "bf16-mixed")
+    configured_batch_size = int(getattr(cfg, "batch_size", 1))
+    if configured_batch_size < 1:
+        raise ValueError(f"batch_size must be >= 1, got {configured_batch_size}")
     accumulate_grad_batches = _resolve_accumulate_grad_batches(cfg)
+    target_effective_batch = getattr(cfg, "auto_batch_size_target_effective_batch", None)
+    if target_effective_batch is None:
+        target_effective_batch = configured_batch_size * accumulate_grad_batches
+    target_effective_batch = int(target_effective_batch)
+    if target_effective_batch < 1:
+        raise ValueError(
+            "auto_batch_size_target_effective_batch must be >= 1 when set. "
+            f"Got {target_effective_batch!r}."
+        )
+
+    tuned_batch_size = _run_auto_batch_size_search(
+        cfg=cfg,
+        model=model,
+        dm=dm,
+        run_dir=run_dir,
+        precision=precision,
+        devices=devices,
+        ddp_strategy=ddp_strategy,
+    )
+    if tuned_batch_size is not None:
+        _set_cfg_value(cfg, "batch_size", tuned_batch_size)
+        dm.batch_size = tuned_batch_size
+        _set_model_hparam(model, "batch_size", tuned_batch_size)
+        logger.print(
+            "Auto batch-size search selected "
+            f"batch_size={tuned_batch_size} (previous={configured_batch_size})."
+        )
+
+        if bool(getattr(cfg, "auto_batch_size_adjust_accumulate", True)):
+            previous_accum = accumulate_grad_batches
+            accumulate_grad_batches = _nearest_accumulate_grad_batches(
+                target_effective_batch=target_effective_batch,
+                batch_size=tuned_batch_size,
+            )
+            _set_cfg_value(cfg, "accumulate_grad_batches", accumulate_grad_batches)
+            if hasattr(cfg, "gradient_accumulation_steps"):
+                _set_cfg_value(cfg, "gradient_accumulation_steps", accumulate_grad_batches)
+            _set_model_hparam(model, "accumulate_grad_batches", accumulate_grad_batches)
+            logger.print(
+                "Adjusted gradient accumulation after auto batch-size search: "
+                f"{previous_accum} -> {accumulate_grad_batches} "
+                f"(target_effective_batch_per_device={target_effective_batch}, "
+                f"actual={tuned_batch_size * accumulate_grad_batches})."
+            )
+
     trainer_kwargs = dict(
         default_root_dir=run_dir,
         max_epochs=cfg.epochs,

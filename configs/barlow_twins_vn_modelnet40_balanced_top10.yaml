@@ -47,6 +47,15 @@ batch_size: 100
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 10
+auto_batch_size_search: false
+auto_batch_size_mode: power
+auto_batch_size_init_val: null
+auto_batch_size_max_trials: 12
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: true
+auto_batch_size_target_effective_batch: null
+auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000

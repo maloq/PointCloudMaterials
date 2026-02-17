@@ -53,6 +53,15 @@ batch_size: 128
 precision: 32-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 10
+auto_batch_size_search: false
+auto_batch_size_mode: power
+auto_batch_size_init_val: null
+auto_batch_size_max_trials: 12
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: true
+auto_batch_size_target_effective_batch: null
+auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000
@@ -93,33 +102,6 @@ idec_normalize_z: True
 idec_init_kmeans: True
 
 barlow_enabled: False
-barlow_weight: 0.0
-barlow_lambda: 0.01
-barlow_embed_dim: 512
-barlow_start_epoch: 0
-barlow_jitter_std: 0.02
-barlow_jitter_mode: absolute
-barlow_drop_ratio: 0.12
-barlow_drop_apply_to_both: true
-barlow_neighbor_view: true
-barlow_neighbor_view_mode: both
-barlow_neighbor_k: 8
-barlow_neighbor_max_relative_distance: 0.10
-barlow_view_points: ${data.model_points}
-barlow_view_crop_mode: random
-barlow_rotation_mode: full
-barlow_rotation_deg: 0.0
-barlow_strain_std: 0.04
-barlow_strain_volume_preserve: true
-barlow_occlusion_mode: mixed
-barlow_occlusion_view: both
-barlow_occlusion_slab_frac: 0.2
-barlow_occlusion_cone_deg: 25.0
-barlow_invariant_mode: tensor_product
-barlow_invariant_max_factor: 4.0
-barlow_invariant_groups: 0
-barlow_invariant_use_third_order: true
-barlow_invariant_eps: 1e-6
 
 pose_enabled: false
 pose_weight: 0.0

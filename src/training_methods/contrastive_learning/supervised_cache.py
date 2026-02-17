@@ -13,8 +13,7 @@ from src.utils.spd_utils import cached_sample_count
 def _infer_test_cluster_eval_k(cfg):
     configured = getattr(cfg, "test_cluster_eval_k", None)
     if configured is not None:
-        k = int(configured)
-        return k if k > 1 else None
+        return _parse_optional_eval_k(configured, field_name="test_cluster_eval_k")
 
     data_cfg = getattr(cfg, "data", None)
     if data_cfg is None:
@@ -25,8 +24,7 @@ def _infer_test_cluster_eval_k(cfg):
     if dataset_type == "modelnet_objects_balanced_topk":
         top_k = getattr(data_cfg, "top_k_classes", None)
         if top_k is not None:
-            k = int(top_k)
-            return k if k > 1 else None
+            return _parse_optional_eval_k(top_k, field_name="data.top_k_classes")
 
     classes = getattr(data_cfg, "classes", None)
     if classes is None:
@@ -77,6 +75,20 @@ def _as_int_mapping(value, default: dict[str, int]) -> dict[str, int]:
         if runs > 0:
             out[k] = runs
     return out
+
+
+def _parse_optional_eval_k(value, *, field_name: str) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        raise ValueError(f"{field_name} must be null or integer >= 2, got bool {value!r}")
+    try:
+        k = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field_name} must be null or integer >= 2, got {value!r}") from exc
+    if k < 2:
+        raise ValueError(f"{field_name} must be null or integer >= 2, got {value!r}")
+    return k
 
 
 def _normalize_method_name(method) -> str:
@@ -346,6 +358,33 @@ def _infer_stage_acc_settings(cfg, stage: str) -> tuple[list[str], int, dict[str
     return [], 1, {}
 
 
+def _infer_label_cluster_count(labels: np.ndarray) -> int | None:
+    if labels is None:
+        return None
+    arr = np.asarray(labels).reshape(-1)
+    if arr.size == 0:
+        return None
+    k = int(np.unique(arr).size)
+    return k if k > 1 else None
+
+
+def _resolve_hungarian_eval_k(module, stage: str, labels: np.ndarray) -> int | None:
+    stage_l = str(stage).lower()
+    if stage_l == "test":
+        # Test ACC uses explicit config when provided.
+        configured = getattr(module, "test_cluster_eval_k", None)
+        if configured is not None:
+            return configured
+        return _infer_label_cluster_count(labels)
+    if stage_l == "val":
+        # Validation ACC tracks the actual class count in the current validation split.
+        configured = getattr(module, "val_cluster_eval_k", None)
+        if configured is not None:
+            return configured
+        return _infer_label_cluster_count(labels)
+    return None
+
+
 def init_supervised_cache(module, cfg) -> None:
     module._supervised_cache = {
         "train": {"latents": [], "encoder_features": [], "class_id": []},
@@ -355,6 +394,10 @@ def init_supervised_cache(module, cfg) -> None:
     module.max_supervised_samples = cfg.max_supervised_samples if hasattr(cfg, "max_supervised_samples") else 8192
     module.max_test_samples = cfg.max_test_samples if hasattr(cfg, "max_test_samples") else 1000
     module.test_cluster_eval_k = _infer_test_cluster_eval_k(cfg)
+    module.val_cluster_eval_k = _parse_optional_eval_k(
+        getattr(cfg, "val_cluster_eval_k", None),
+        field_name="val_cluster_eval_k",
+    )
     module.cluster_acc_seed = int(getattr(cfg, "cluster_acc_seed", 0))
     module.enable_train_split_svm_test_metric = bool(
         getattr(cfg, "enable_train_split_svm_test_metric", True)
@@ -480,11 +523,12 @@ def log_supervised_metrics(module, stage: str) -> None:
         acc_runs = 1
         acc_runs_by_method = {}
 
+    hungarian_eval_k = _resolve_hungarian_eval_k(module, stage_l, labels)
     metrics = compute_cluster_metrics(
         latents,
         labels,
         stage,
-        hungarian_eval_k=getattr(module, "test_cluster_eval_k", None),
+        hungarian_eval_k=hungarian_eval_k,
         acc_eval_methods=acc_methods,
         acc_eval_runs=max(1, acc_runs),
         acc_eval_runs_by_method=acc_runs_by_method,
