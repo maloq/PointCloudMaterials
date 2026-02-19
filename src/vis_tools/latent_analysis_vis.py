@@ -9,7 +9,6 @@ import numpy as np
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
 
 from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
@@ -149,39 +148,17 @@ def _fit_labels_single_method(
             "model_score": float(model.inertia_),
         }
 
-    if method in {"gmm", "gmm_diag", "gmm_full"}:
-        covariance = "diag" if method == "gmm_diag" else "full"
-        model = GaussianMixture(
-            n_components=n_clusters,
-            covariance_type=covariance,
-            random_state=random_state,
-            n_init=3,
-            reg_covar=1e-5,
-            max_iter=300,
-        )
-        model.fit(features)
-        labels = model.predict(features)
-        return labels.astype(int), {
-            "method": f"gmm_{covariance}",
-            "model_score_name": "bic",
-            "model_score": float(model.bic(features)),
-        }
-
     raise ValueError(f"Unsupported clustering method: {method}")
 
 
 def _resolve_method_candidates(method: str, num_samples: int) -> list[str]:
     method = str(method).lower()
-    if method in {"kmeans", "gmm", "gmm_diag", "gmm_full"}:
+    if method == "kmeans":
         return [method]
     if method != "auto":
         return ["kmeans"]
-
-    if num_samples > 25000:
-        return ["kmeans"]
-    if num_samples > 12000:
-        return ["kmeans", "gmm_diag"]
-    return ["kmeans", "gmm_diag", "gmm_full"]
+    _ = num_samples
+    return ["kmeans"]
 
 
 def _cluster_with_method_selection(
@@ -266,8 +243,6 @@ def compute_kmeans_labels(
     else:
         # Refit on full preprocessed features with selected method for consistent labels.
         selected_method = str(fit_info.get("method", "kmeans"))
-        if selected_method.startswith("gmm_"):
-            selected_method = selected_method
         labels, fit_info = _cluster_with_method_selection(
             features,
             n_clusters,

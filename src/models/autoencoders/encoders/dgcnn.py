@@ -59,7 +59,7 @@ class DGCNNEncoder(Encoder):
         n_knn: int = 20,
         feature_dims: Tuple[int, int, int, int] = (64, 64, 128, 256),
         emb_dims: int = 512,
-        pooling: str = "max",
+        pooling: str = "mean",
         dropout_rate: float = 0.2,
         use_batchnorm: bool = True,
     ) -> None:
@@ -133,4 +133,3 @@ class DGCNNEncoder(Encoder):
         global_feat = torch.cat((x_max, x_avg), dim=1)
         latent = self.head(global_feat)
         return latent
-

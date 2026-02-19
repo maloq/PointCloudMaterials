@@ -2,10 +2,13 @@ kind: synthetic
 dataset_type: modelnet_objects
 data_path: datasets/ModelNet40_fast
 modelnet_split: train
+# Official ModelNet40 eval split; avoids random val/test carved out of train.
+modelnet_eval_split: test
 classes: null
 strict_classes: false
 num_points: 1024
 model_points: 800
+# Used only when modelnet_eval_split is unset (legacy fallback behavior).
 train_ratio: 0.8
 add_center_point: true
 pre_normalize: true

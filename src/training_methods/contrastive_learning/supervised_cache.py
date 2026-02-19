@@ -1,4 +1,5 @@
 import warnings
+import re
 
 import numpy as np
 import torch
@@ -83,6 +84,97 @@ def _ensure_kmeans_plus_plus_method(methods: list[str]) -> list[str]:
     if not any(_is_kmeans_plus_plus_method(m) for m in out):
         out.append("kmeans++")
     return out
+
+
+def _to_finite_float(value) -> float | None:
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    return out if np.isfinite(out) else None
+
+
+def _primary_kmeansplusplus_hungarian_key(
+    cluster_metrics: dict[str, float],
+    eval_k: int | None,
+) -> str | None:
+    preferred_keys: list[str] = ["ACC_KMEANS_PLUSPLUS_HUNGARIAN"]
+    if eval_k is not None:
+        preferred_keys.insert(0, f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{eval_k}")
+    for preferred in preferred_keys:
+        if preferred in cluster_metrics:
+            return preferred
+    for key in sorted(cluster_metrics.keys()):
+        upper = str(key).upper()
+        if not upper.startswith("ACC_"):
+            continue
+        if "KMEANS_PLUSPLUS" not in upper or "HUNGARIAN" not in upper:
+            continue
+        if upper.endswith(("_MEAN", "_STD", "_BEST", "_RUNS", "_MIN", "_MAX")):
+            continue
+        return key
+    return None
+
+
+_ACC_K_SUFFIX_RE = re.compile(
+    r"^(ACC_[A-Z0-9_]+)_K\d+((?:_(?:MEAN|STD|BEST|RUNS|MIN|MAX))?)$"
+)
+
+
+def _stabilize_class_metric_keys(
+    metrics: dict[str, float],
+    *,
+    hungarian_eval_k: int | None,
+) -> dict[str, float]:
+    stable: dict[str, float] = {}
+    for raw_name, raw_value in metrics.items():
+        upper_name = str(raw_name).upper()
+        match = _ACC_K_SUFFIX_RE.match(upper_name)
+        if match is not None:
+            stable_name = f"{match.group(1)}{match.group(2)}"
+        else:
+            stable_name = upper_name
+        if stable_name in stable:
+            raise ValueError(
+                "Metric name collision while removing class-count suffixes: "
+                f"'{raw_name}' and another metric both map to '{stable_name}'."
+            )
+        val = _to_finite_float(raw_value)
+        if val is None:
+            raise ValueError(
+                f"Metric '{raw_name}' has non-finite value {raw_value!r}; cannot log stable metrics."
+            )
+        stable[stable_name] = val
+
+    if hungarian_eval_k is not None:
+        if "HUNGARIAN_EVAL_K" in stable:
+            raise ValueError(
+                "Metric key collision: computed metrics already include 'HUNGARIAN_EVAL_K'."
+            )
+        stable["HUNGARIAN_EVAL_K"] = float(int(hungarian_eval_k))
+    return stable
+
+
+def _random_rotation_matrices(
+    batch_size: int,
+    *,
+    device: torch.device,
+    dtype: torch.dtype,
+    seed: int,
+) -> torch.Tensor:
+    if batch_size < 1:
+        raise ValueError(f"batch_size must be >= 1, got {batch_size}.")
+    generator = torch.Generator(device="cpu")
+    generator.manual_seed(int(seed))
+    rand = torch.randn(batch_size, 3, 3, generator=generator, dtype=torch.float32)
+    q, r = torch.linalg.qr(rand)
+    d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
+    q = q * d.unsqueeze(-1)
+    det = torch.det(q)
+    neg = det < 0
+    if bool(neg.any()):
+        q[neg, :, 0] *= -1
+    return q.to(device=device, dtype=dtype)
 
 
 def _flatten_features(features: np.ndarray) -> np.ndarray:
@@ -279,6 +371,270 @@ def _collect_split_supervised_features(
     return features_np, labels_np
 
 
+def _extract_rotated_supervised_features_from_batch(
+    module,
+    batch,
+    *,
+    seed: int,
+) -> tuple[torch.Tensor | None, torch.Tensor | None]:
+    unpack = getattr(module, "_unpack_batch", None)
+    if not callable(unpack):
+        raise RuntimeError(
+            "Module does not expose _unpack_batch(batch); cannot compute rotated test metrics."
+        )
+
+    pc_raw, meta = unpack(batch)
+    class_id = meta.get("class_id") if isinstance(meta, dict) else None
+    if class_id is None:
+        return None, None
+
+    if not torch.is_tensor(pc_raw):
+        pc_raw = torch.as_tensor(pc_raw)
+    if pc_raw.dim() != 3 or int(pc_raw.shape[-1]) != 3:
+        raise ValueError(
+            "Expected point clouds with shape (B, N, 3) for rotated test metrics, "
+            f"got shape={tuple(pc_raw.shape)}."
+        )
+
+    pc_raw = pc_raw.to(device=module.device, dtype=module.dtype, non_blocking=True)
+    rots = _random_rotation_matrices(
+        int(pc_raw.shape[0]),
+        device=pc_raw.device,
+        dtype=pc_raw.dtype,
+        seed=int(seed),
+    )
+    # Row-vector convention: each point is rotated as x @ R.
+    pc_rot = torch.matmul(pc_raw, rots)
+    if hasattr(module, "_prepare_model_input"):
+        pc_rot = module._prepare_model_input(pc_rot)
+
+    out = module(pc_rot)
+    if not isinstance(out, (tuple, list)) or len(out) < 2:
+        raise RuntimeError(
+            "Expected module forward(pc) to return at least (z_inv, inv_latent_net, ...), "
+            f"got type={type(out)}."
+        )
+    z_inv = out[0]
+    inv_latent_net = out[1]
+    features = z_inv if z_inv is not None else inv_latent_net
+    if features is None:
+        raise RuntimeError(
+            "Model forward returned neither invariant latent nor fallback latent; "
+            "cannot compute rotated supervised metrics."
+        )
+    return features.detach().to(torch.float32), class_id
+
+
+def _collect_rotated_split_supervised_features(
+    module,
+    split: str,
+    *,
+    max_samples: int | None,
+    rotation_seed_base: int,
+    rotation_run_idx: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    if torch.distributed.is_available() and torch.distributed.is_initialized():
+        if torch.distributed.get_world_size() > 1:
+            raise RuntimeError(
+                "Rotated test metrics currently require single-device evaluation. "
+                "Set test_single_device=true (recommended) or disable distributed test."
+            )
+
+    loader = _build_supervised_eval_loader(module, split)
+    if loader is None:
+        raise RuntimeError(
+            f"Could not build dataloader for split='{split}' while computing rotated test metrics."
+        )
+
+    feature_parts: list[torch.Tensor] = []
+    label_parts: list[torch.Tensor] = []
+    collected = 0
+    limit = None if max_samples is None or int(max_samples) <= 0 else int(max_samples)
+
+    was_training = bool(module.training)
+    module.eval()
+    try:
+        with torch.no_grad():
+            for batch_idx, batch in enumerate(loader):
+                seed = int(rotation_seed_base) + int(rotation_run_idx) * 100000 + int(batch_idx)
+                features, labels = _extract_rotated_supervised_features_from_batch(
+                    module,
+                    batch,
+                    seed=seed,
+                )
+                if features is None or labels is None:
+                    raise RuntimeError(
+                        "Test batch does not provide class_id labels; "
+                        "cannot compute rotated class-accuracy metrics."
+                    )
+
+                if not torch.is_tensor(labels):
+                    labels = torch.as_tensor(labels)
+
+                features = features.detach().to(torch.float32)
+                if features.dim() == 1:
+                    features = features.unsqueeze(-1)
+                elif features.dim() > 2:
+                    features = features.reshape(features.shape[0], -1)
+                labels = labels.detach().view(-1).to(torch.long)
+
+                take = min(int(features.shape[0]), int(labels.shape[0]))
+                if limit is not None:
+                    take = min(take, int(limit - collected))
+                if take <= 0:
+                    break
+
+                feature_parts.append(features[:take].cpu())
+                label_parts.append(labels[:take].cpu())
+                collected += int(take)
+                if limit is not None and collected >= limit:
+                    break
+    finally:
+        if was_training:
+            module.train()
+
+    if not feature_parts or not label_parts:
+        raise RuntimeError(
+            f"Collected zero samples for rotated split='{split}' supervised metrics."
+        )
+    features_np = torch.cat(feature_parts, dim=0).numpy()
+    labels_np = torch.cat(label_parts, dim=0).numpy()
+    return features_np, labels_np
+
+
+def _compute_rotated_test_accuracy_metrics(
+    module,
+    *,
+    canonical_acc: float,
+    canonical_nmi: float | None,
+    canonical_ari: float | None,
+    canonical_hungarian_eval_k: int | None,
+) -> dict[str, float]:
+    if not bool(getattr(module, "enable_test_so3_metrics", True)):
+        return {}
+
+    rotation_runs = int(getattr(module, "test_so3_rotation_runs", 5))
+    if rotation_runs < 1:
+        raise ValueError(
+            f"test_so3_rotation_runs must be >= 1, got {rotation_runs}."
+        )
+    rotation_seed = int(getattr(module, "test_so3_rotation_seed", 12345))
+    sample_limit = cache_limit_for_stage(module, "test")
+
+    run_acc_values: list[float] = []
+    run_nmi_values: list[float] = []
+    run_ari_values: list[float] = []
+    resolved_k = canonical_hungarian_eval_k
+    for run_idx in range(rotation_runs):
+        run_features, run_labels = _collect_rotated_split_supervised_features(
+            module,
+            "test",
+            max_samples=sample_limit,
+            rotation_seed_base=rotation_seed,
+            rotation_run_idx=run_idx,
+        )
+        run_k = _resolve_hungarian_eval_k(module, "test", run_labels)
+        if run_k is None:
+            raise ValueError(
+                "Could not infer Hungarian evaluation k for rotated test metrics; "
+                "ensure class labels are present and contain at least two classes."
+            )
+        if resolved_k is None:
+            resolved_k = run_k
+        elif int(resolved_k) != int(run_k):
+            raise ValueError(
+                "Inconsistent class count across canonical and rotated test metrics: "
+                f"canonical k={resolved_k}, rotated k={run_k} (run {run_idx + 1})."
+            )
+
+        run_metrics = compute_cluster_metrics(
+            run_features,
+            run_labels,
+            stage="test",
+            hungarian_eval_k=int(resolved_k),
+            acc_eval_methods=["kmeans++"],
+            acc_eval_runs=1,
+            acc_eval_runs_by_method={},
+            acc_random_seed=rotation_seed + run_idx,
+        ) or {}
+        run_acc_key = _primary_kmeansplusplus_hungarian_key(run_metrics, int(resolved_k))
+        if run_acc_key is None:
+            raise RuntimeError(
+                "Rotated test metrics are missing kmeans++ Hungarian ACC. "
+                f"Available keys: {sorted(run_metrics.keys())}."
+            )
+        run_acc = _to_finite_float(run_metrics.get(run_acc_key))
+        if run_acc is None:
+            raise RuntimeError(
+                f"Rotated test metric '{run_acc_key}' is not finite: {run_metrics.get(run_acc_key)!r}."
+            )
+        run_nmi = _to_finite_float(run_metrics.get("NMI"))
+        if run_nmi is None:
+            raise RuntimeError(
+                "Rotated test metrics are missing finite NMI. "
+                f"Available keys: {sorted(run_metrics.keys())}."
+            )
+        run_ari = _to_finite_float(run_metrics.get("ARI"))
+        if run_ari is None:
+            raise RuntimeError(
+                "Rotated test metrics are missing finite ARI. "
+                f"Available keys: {sorted(run_metrics.keys())}."
+            )
+        run_acc_values.append(run_acc)
+        run_nmi_values.append(run_nmi)
+        run_ari_values.append(run_ari)
+
+    if not run_acc_values:
+        raise RuntimeError(
+            "Rotated test metrics produced no valid ACC values across SO(3) runs."
+        )
+    if not run_nmi_values:
+        raise RuntimeError(
+            "Rotated test metrics produced no valid NMI values across SO(3) runs."
+        )
+    if not run_ari_values:
+        raise RuntimeError(
+            "Rotated test metrics produced no valid ARI values across SO(3) runs."
+        )
+
+    if resolved_k is None:
+        raise RuntimeError("Resolved k is None after rotated test metric evaluation.")
+
+    acc_arr = np.asarray(run_acc_values, dtype=np.float64)
+    nmi_arr = np.asarray(run_nmi_values, dtype=np.float64)
+    ari_arr = np.asarray(run_ari_values, dtype=np.float64)
+    rotated_mean = float(acc_arr.mean())
+    rotated_nmi_mean = float(nmi_arr.mean())
+    rotated_ari_mean = float(ari_arr.mean())
+    metrics: dict[str, float] = {
+        "ACC_KMEANS_PLUSPLUS_HUNGARIAN_ROTATED": rotated_mean,
+        "ACC_KMEANS_PLUSPLUS_HUNGARIAN_ROTATED_STD": float(acc_arr.std()),
+        "ACC_KMEANS_PLUSPLUS_HUNGARIAN_ROTATED_MIN": float(acc_arr.min()),
+        "ACC_KMEANS_PLUSPLUS_HUNGARIAN_ROTATED_MAX": float(acc_arr.max()),
+        "ACC_KMEANS_PLUSPLUS_HUNGARIAN_ROTATED_RUNS": float(acc_arr.size),
+        "NMI_ROTATED": rotated_nmi_mean,
+        "NMI_ROTATED_STD": float(nmi_arr.std()),
+        "NMI_ROTATED_MIN": float(nmi_arr.min()),
+        "NMI_ROTATED_MAX": float(nmi_arr.max()),
+        "NMI_ROTATED_RUNS": float(nmi_arr.size),
+        "ARI_ROTATED": rotated_ari_mean,
+        "ARI_ROTATED_STD": float(ari_arr.std()),
+        "ARI_ROTATED_MIN": float(ari_arr.min()),
+        "ARI_ROTATED_MAX": float(ari_arr.max()),
+        "ARI_ROTATED_RUNS": float(ari_arr.size),
+        "SO3_ACCURACY_KMEANS_PLUSPLUS_HUNGARIAN": rotated_mean,
+        "SO3_VS_CANONICAL_ACC_DELTA": rotated_mean - float(canonical_acc),
+        "SO3_ROTATION_RUNS": float(acc_arr.size),
+    }
+    if canonical_nmi is not None:
+        metrics["SO3_VS_CANONICAL_NMI_DELTA"] = rotated_nmi_mean - float(canonical_nmi)
+    if canonical_ari is not None:
+        metrics["SO3_VS_CANONICAL_ARI_DELTA"] = rotated_ari_mean - float(canonical_ari)
+    if abs(float(canonical_acc)) > 1e-12:
+        metrics["SO3_VS_CANONICAL_ACC_RATIO"] = rotated_mean / float(canonical_acc)
+    return metrics
+
+
 def _compute_train_to_test_svm_accuracy(
     module,
     test_features: np.ndarray,
@@ -314,7 +670,7 @@ def _infer_stage_acc_settings(cfg, stage: str) -> tuple[list[str], int, dict[str
     if stage_l == "val":
         methods = _as_string_list(
             getattr(cfg, "val_cluster_acc_methods", None),
-            default=["kmeans", "kmeans++"],
+            default=["kmeans++"],
         )
         methods = _ensure_kmeans_plus_plus_method(methods)
         runs = int(getattr(cfg, "val_cluster_acc_runs", 1))
@@ -327,13 +683,13 @@ def _infer_stage_acc_settings(cfg, stage: str) -> tuple[list[str], int, dict[str
     if stage_l == "test":
         methods = _as_string_list(
             getattr(cfg, "test_cluster_acc_methods", None),
-            default=["kmeans", "kmeans++", "gmm_full"],
+            default=["kmeans++"],
         )
         methods = _ensure_kmeans_plus_plus_method(methods)
         runs = int(getattr(cfg, "test_cluster_acc_runs", 1))
         runs_by_method = _as_int_mapping(
             getattr(cfg, "test_cluster_acc_runs_by_method", None),
-            default={"kmeans": 20},
+            default={},
         )
         return methods, max(1, runs), runs_by_method
 
@@ -431,6 +787,8 @@ def _resolve_hungarian_eval_k(module, stage: str, labels: np.ndarray) -> int | N
 
 
 def init_supervised_cache(module, cfg) -> None:
+    module.enable_supervised_metrics = bool(getattr(cfg, "enable_supervised_metrics", True))
+    module.enable_embedding_metrics = bool(getattr(cfg, "enable_embedding_metrics", False))
     module._supervised_cache = {
         "train": {"latents": [], "encoder_features": [], "class_id": []},
         "val": {"latents": [], "encoder_features": [], "class_id": []},
@@ -460,6 +818,25 @@ def init_supervised_cache(module, cfg) -> None:
         module.test_cluster_acc_runs,
         module.test_cluster_acc_runs_by_method,
     ) = _infer_stage_acc_settings(cfg, "test")
+    module.enable_test_so3_metrics = bool(getattr(cfg, "enable_test_so3_metrics", True))
+    module.test_so3_rotation_runs = int(
+        getattr(
+            cfg,
+            "test_so3_rotation_runs",
+            getattr(cfg, "analysis_test_rotation_runs", 5),
+        )
+    )
+    if module.test_so3_rotation_runs < 1:
+        raise ValueError(
+            f"test_so3_rotation_runs must be >= 1, got {module.test_so3_rotation_runs}."
+        )
+    module.test_so3_rotation_seed = int(
+        getattr(
+            cfg,
+            "test_so3_rotation_seed",
+            getattr(cfg, "analysis_test_rotation_seed", 12345),
+        )
+    )
 
 
 def reset_supervised_cache(module, stage: str) -> None:
@@ -485,6 +862,9 @@ def cache_supervised_batch(
     meta: dict,
     encoder_features: torch.Tensor | None = None,
 ) -> None:
+    if not bool(getattr(module, "enable_supervised_metrics", True)):
+        return
+
     cache = module._supervised_cache.get(stage)
     if cache is None:
         return
@@ -533,6 +913,13 @@ def cache_supervised_batch(
 
 
 def log_supervised_metrics(module, stage: str) -> None:
+    if not bool(getattr(module, "enable_supervised_metrics", True)):
+        cache = module._supervised_cache.get(stage)
+        if cache is not None:
+            for key in cache:
+                cache[key].clear()
+        return
+
     cache = module._supervised_cache.get(stage)
     if cache is None:
         return
@@ -550,6 +937,18 @@ def log_supervised_metrics(module, stage: str) -> None:
     latents, labels, encoder_features = _gather_latents_labels_ddp(latents, labels, encoder_features)
 
     stage_l = str(stage).lower()
+    trainer = getattr(module, "trainer", None)
+    if stage_l in {"val", "test"} and bool(getattr(trainer, "sanity_checking", False)):
+        warnings.warn(
+            "Skipping supervised metric logging during Lightning sanity check because "
+            "sanity validation uses only a subset of batches and may not cover all classes.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        for key in cache:
+            cache[key].clear()
+        return
+
     if stage_l == "val":
         acc_methods = _ensure_kmeans_plus_plus_method(
             list(getattr(module, "val_cluster_acc_methods", []))
@@ -558,10 +957,10 @@ def log_supervised_metrics(module, stage: str) -> None:
         acc_runs_by_method = getattr(module, "val_cluster_acc_runs_by_method", {})
     elif stage_l == "test":
         acc_methods = _ensure_kmeans_plus_plus_method(
-            list(getattr(module, "test_cluster_acc_methods", ["kmeans", "kmeans++", "gmm_full"]))
+            list(getattr(module, "test_cluster_acc_methods", ["kmeans++"]))
         )
         acc_runs = int(getattr(module, "test_cluster_acc_runs", 1))
-        acc_runs_by_method = getattr(module, "test_cluster_acc_runs_by_method", {"kmeans": 20})
+        acc_runs_by_method = getattr(module, "test_cluster_acc_runs_by_method", {})
     else:
         acc_methods = []
         acc_runs = 1
@@ -578,6 +977,35 @@ def log_supervised_metrics(module, stage: str) -> None:
         acc_eval_runs_by_method=acc_runs_by_method,
         acc_random_seed=int(getattr(module, "cluster_acc_seed", 0)),
     ) or {}
+    if stage_l == "test" and hungarian_eval_k is not None:
+        canonical_acc_key = _primary_kmeansplusplus_hungarian_key(metrics, hungarian_eval_k)
+        if canonical_acc_key is None:
+            raise RuntimeError(
+                "Canonical test metrics are missing kmeans++ Hungarian ACC. "
+                f"Available keys: {sorted(metrics.keys())}."
+            )
+        canonical_acc = _to_finite_float(metrics.get(canonical_acc_key))
+        if canonical_acc is None:
+            raise RuntimeError(
+                f"Canonical test metric '{canonical_acc_key}' is not finite: "
+                f"{metrics.get(canonical_acc_key)!r}."
+            )
+        metrics["ACC_KMEANS_PLUSPLUS_HUNGARIAN_CANONICAL"] = canonical_acc
+        canonical_nmi = _to_finite_float(metrics.get("NMI"))
+        canonical_ari = _to_finite_float(metrics.get("ARI"))
+        metrics.update(
+            _compute_rotated_test_accuracy_metrics(
+                module,
+                canonical_acc=canonical_acc,
+                canonical_nmi=canonical_nmi,
+                canonical_ari=canonical_ari,
+                canonical_hungarian_eval_k=int(hungarian_eval_k),
+            )
+        )
+    metrics = _stabilize_class_metric_keys(
+        metrics,
+        hungarian_eval_k=hungarian_eval_k if stage_l in {"val", "test"} else None,
+    )
     if stage_l in {"val", "test"} and encoder_features is not None:
         svm_acc = _compute_linear_svm_accuracy(encoder_features, labels)
         if svm_acc is not None:
@@ -604,17 +1032,18 @@ def log_supervised_metrics(module, stage: str) -> None:
                 sync_dist=True,
             )
 
-    emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=(stage == "test"))
-    for name, value in emb_metrics.items():
-        module._log_metric(
-            stage,
-            f"embedding/{name}",
-            value,
-            prog_bar=False,
-            on_step=False,
-            on_epoch=True,
-            sync_dist=True,
-        )
+    if bool(getattr(module, "enable_embedding_metrics", False)):
+        emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=(stage == "test"))
+        for name, value in emb_metrics.items():
+            module._log_metric(
+                stage,
+                f"embedding/{name}",
+                value,
+                prog_bar=False,
+                on_step=False,
+                on_epoch=True,
+                sync_dist=True,
+            )
 
     for key in cache:
         cache[key].clear()

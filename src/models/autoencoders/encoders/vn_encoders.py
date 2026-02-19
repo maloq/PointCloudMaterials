@@ -224,7 +224,7 @@ class PointNetEncoderVN(Encoder):
         n_knn: int = 20,
         pooling: str = 'mean',
         feature_transform: bool = True,
-        hidden_dim1: int = 256,
+        hidden_dim1: int = 320,
         hidden_dim2: int = 1024,
         stn_hidden_dims: tuple[int, int, int] = (64, 128, 1024),
         stn_fc_dims: tuple[int, int] = (512, 256),
@@ -336,9 +336,9 @@ class VNDGCNNEncoder(Encoder):
         latent_size: int = 256,
         n_knn: int = 20,
         pooling: str = 'mean',
-        feature_dims: tuple[int, int, int, int, int] = (64, 64, 128, 256, 1024),
+        feature_dims: tuple[int, int, int, int, int] = (128, 128, 256, 512, 1024),
         global_mlp_dims: tuple[int, int] = (512, 256),
-        global_dropout: float = 0.5,
+        global_dropout: float = 0.05,
         share_nonlinearity: bool = True,
         std_feature_hidden_dims: tuple[int, int] | None = None,
         use_batchnorm: bool = True,
@@ -622,7 +622,7 @@ class VNRobustInvariantHead(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        dropout_rate: float = 0.5,
+        dropout_rate: float = 0.2,
         use_batchnorm: bool = True,
     ):
         super().__init__()
@@ -660,7 +660,7 @@ class VNDGCNNEncoderRefined(Encoder):
         pooling: str = 'mean',
         feature_dims: tuple[int, int, int, int, int] = (64, 64, 128, 256, 512),
         use_batchnorm: bool = True,
-        dropout_rate: float = 0.0,
+        dropout_rate: float = 0.2,
         use_cross_product: bool = False,
     ):
         super().__init__()
@@ -1064,7 +1064,7 @@ class VNRevnetBackboneEncoder(Encoder):
         global_pooling: str = "mean",
         use_zca_norm: bool = True,
         use_batchnorm: bool = True,
-        dropout_rate: float = 0.0,
+        dropout_rate: float = 0.2,
         gram_pairs: int = 128,
         gram_pair_mode: str = "nearest",
         gram_pair_seed: int = 0,

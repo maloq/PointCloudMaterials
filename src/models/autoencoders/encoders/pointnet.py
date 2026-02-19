@@ -186,7 +186,7 @@ class PointNetEncoderSmall(Encoder):
         *,
         channel: int = 3,
         feature_transform: bool = False,
-        dropout_rate: float = 0.0,
+        dropout_rate: float = 0.2,
     ):
         super().__init__()
         self.backbone = _PointNetBackbone(

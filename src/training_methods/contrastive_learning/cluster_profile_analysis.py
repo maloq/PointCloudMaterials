@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict
 
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -434,6 +435,7 @@ def _plot_local_structure_sample(
     *,
     target_count: int = 48,
     knn_k: int = 4,
+    draw_edges: bool = True,
 ) -> None:
     points = _safe_xyz(points)
     if points.size == 0:
@@ -448,10 +450,23 @@ def _plot_local_structure_sample(
         ax.axis("off")
         return
 
-    _draw_knn_edges(ax, coords, knn_k=knn_k)
+    if draw_edges:
+        _draw_knn_edges(ax, coords, knn_k=knn_k)
     dist = np.linalg.norm(coords, axis=1)
     vmax = float(np.max(dist)) if dist.size else 1.0
-    colors = plt.cm.viridis(dist / max(vmax, 1e-6))
+    if not np.isfinite(vmax) or vmax <= 0.0:
+        vmax = 1.0
+    dist_norm = np.clip(dist / vmax, 0.0, 1.0)
+
+    # Color fades toward light gray as distance from local center increases.
+    base_rgb = np.asarray(mcolors.to_rgb("#2A6FDB"), dtype=np.float32)
+    gray_rgb = np.asarray(mcolors.to_rgb("#D0D0D0"), dtype=np.float32)
+    fade = np.clip((dist_norm ** 0.85) * 0.82, 0.0, 0.82).astype(np.float32)
+    colors_rgb = (1.0 - fade[:, None]) * base_rgb[None, :] + fade[:, None] * gray_rgb[None, :]
+    colors = np.concatenate(
+        [colors_rgb, np.full((colors_rgb.shape[0], 1), 1.0, dtype=np.float32)],
+        axis=1,
+    )
     ax.scatter(
         coords[:, 0],
         coords[:, 1],
@@ -498,6 +513,7 @@ def _save_cluster_structures_figure(
     samples_per_cluster: int,
     target_points: int,
     knn_k: int,
+    draw_edges: bool = True,
 ) -> None:
     n_slots = max(1, int(samples_per_cluster))
     n_cols = 4 if n_slots >= 4 else n_slots
@@ -516,6 +532,7 @@ def _save_cluster_structures_figure(
             points,
             target_count=target_points,
             knn_k=knn_k,
+            draw_edges=draw_edges,
         )
         dist = rec.get("distance_to_center", float("nan"))
         sample_id = rec.get("sample_index", -1)
@@ -829,6 +846,7 @@ def generate_cluster_profile_reports(
                     prop_stds[key] = None
 
             structures_path = k_dir / f"cluster_{cluster_id:02d}_structures.png"
+            structures_points_only_path = k_dir / f"cluster_{cluster_id:02d}_structures_points_only.png"
             properties_path = k_dir / f"cluster_{cluster_id:02d}_properties.png"
             _save_cluster_structures_figure(
                 structures_path,
@@ -838,6 +856,17 @@ def generate_cluster_profile_reports(
                 samples_per_cluster=samples_per_cluster,
                 target_points=target_points,
                 knn_k=knn_k,
+                draw_edges=True,
+            )
+            _save_cluster_structures_figure(
+                structures_points_only_path,
+                cluster_id,
+                int(k_value),
+                sample_records,
+                samples_per_cluster=samples_per_cluster,
+                target_points=target_points,
+                knn_k=knn_k,
+                draw_edges=False,
             )
             _save_cluster_properties_figure(
                 properties_path,
@@ -863,6 +892,7 @@ def generate_cluster_profile_reports(
                 "properties_mean": prop_means,
                 "properties_std": prop_stds,
                 "structures_figure": str(structures_path),
+                "structures_points_only_figure": str(structures_points_only_path),
                 "properties_figure": str(properties_path),
             }
             cluster_summaries.append(cluster_summary)

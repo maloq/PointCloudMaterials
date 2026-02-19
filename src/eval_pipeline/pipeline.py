@@ -75,7 +75,7 @@ def _build_dataloader(
 def _cluster_latents(latents: np.ndarray, method: str, params: Dict[str, Any]) -> np.ndarray:
     """Cluster *latents* using *method* with given *params*.
 
-    Supports ``kmeans``, ``gmm`` and ``hdbscan``.
+    Supports ``kmeans`` and ``hdbscan``.
     """
 
     method = method.lower()
@@ -95,19 +95,6 @@ def _cluster_latents(latents: np.ndarray, method: str, params: Dict[str, Any]) -
             params["n_clusters"] = max(1, min(n_clusters, n_samples))
 
         model = KMeans(n_init="auto", **params)
-    elif method == "gmm":
-        from sklearn.mixture import GaussianMixture
-        
-        # Cap n_components to the number of samples when necessary
-        params = dict(params)  # shallow copy to avoid mutating caller
-        n_components = params.get("n_components")
-        if n_components is not None:
-            n_samples = latents.shape[0]
-            if n_samples < 1:
-                raise ValueError("Cannot cluster: no samples provided in latents.")
-            params["n_components"] = max(1, min(n_components, n_samples))
-
-        model = GaussianMixture(**params)
     elif method == "hdbscan":
         from hdbscan import HDBSCAN
         
@@ -234,8 +221,6 @@ def run(eval_config_path: str) -> Dict[str, Any]:
             params = m.get("params", {})
             if method == "kmeans":
                 key = f"{m.name}:{method}:{cparams['n_clusters']}"
-            elif method == "gmm":
-                key = f"{m.name}:{method}:{cparams['n_components']}"
             else:
                 key = f"{m.name}:{method}"
             

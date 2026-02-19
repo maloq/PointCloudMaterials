@@ -70,10 +70,10 @@ decoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 256
+batch_size: 128
 precision: bf16-true
 gradient_clip_val: 1.0
-accumulate_grad_batches: 1
+accumulate_grad_batches: 2
 auto_batch_size_search: false
 auto_batch_size_mode: power
 auto_batch_size_init_val: null
@@ -204,4 +204,3 @@ analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
 analysis_data_files: ['175ps.off']
-analysis_grain_enabled: False

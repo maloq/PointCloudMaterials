@@ -247,10 +247,87 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
                 )
                 return train_dataset, eval_dataset
 
-            modelnet_split = self._get_param("modelnet_split", data_cfg, synth_dict, default="train")
+            allowed_modelnet_splits = {"train", "test", "all"}
+            modelnet_split = str(self._get_param("modelnet_split", data_cfg, synth_dict, default="train")).lower()
+            if modelnet_split not in allowed_modelnet_splits:
+                raise ValueError(
+                    "modelnet_split must be one of "
+                    f"{sorted(allowed_modelnet_splits)}, got {modelnet_split!r}."
+                )
+
+            modelnet_eval_split_raw = self._get_param(
+                "modelnet_eval_split",
+                data_cfg,
+                synth_dict,
+                default=None,
+            )
+
+            # Preferred protocol for ModelNet: explicit train/eval split.
+            # Keeping the random split fallback preserves backward compatibility.
+            if modelnet_eval_split_raw is not None:
+                modelnet_eval_split = str(modelnet_eval_split_raw).lower()
+                if modelnet_eval_split not in allowed_modelnet_splits:
+                    raise ValueError(
+                        "modelnet_eval_split must be one of "
+                        f"{sorted(allowed_modelnet_splits)}, got {modelnet_eval_split!r}."
+                    )
+
+                train_dataset = CenteredModelNetDataset(
+                    root_dir=root_dir,
+                    split=modelnet_split,
+                    classes=classes,
+                    num_points=int(num_points),
+                    add_center_point=bool(add_center_point),
+                    pre_normalize=bool(pre_normalize),
+                    normalize=bool(normalize),
+                    max_samples=int(dataset_max) if dataset_max is not None else None,
+                    fps_cache=bool(fps_cache),
+                    fps_cache_dir=fps_cache_dir,
+                    fps_use_gpu=bool(fps_use_gpu),
+                    strict_classes=bool(strict_classes),
+                    rotation_scale=rotation_scale,
+                    noise_scale=noise_scale,
+                    jitter_scale=jitter_scale,
+                    scaling_range=scaling_range,
+                    track_augmentation=track_augmentation,
+                )
+
+                if classes is None:
+                    ordered_train_classes = [
+                        class_name
+                        for _, class_name in sorted(train_dataset.class_names.items(), key=lambda item: item[0])
+                    ]
+                else:
+                    ordered_train_classes = list(classes)
+
+                eval_dataset = CenteredModelNetDataset(
+                    root_dir=root_dir,
+                    split=modelnet_eval_split,
+                    classes=ordered_train_classes,
+                    num_points=int(num_points),
+                    add_center_point=bool(add_center_point),
+                    pre_normalize=bool(pre_normalize),
+                    normalize=bool(normalize),
+                    max_samples=int(dataset_max) if dataset_max is not None else None,
+                    fps_cache=bool(fps_cache),
+                    fps_cache_dir=fps_cache_dir,
+                    fps_use_gpu=bool(fps_use_gpu),
+                    strict_classes=bool(strict_classes),
+                    rotation_scale=rotation_scale,
+                    noise_scale=noise_scale,
+                    jitter_scale=jitter_scale,
+                    scaling_range=scaling_range,
+                    track_augmentation=track_augmentation,
+                )
+                return train_dataset, eval_dataset
+
+            logger.print(
+                "modelnet_eval_split is not set for dataset_type='modelnet_objects'; "
+                f"falling back to random split of '{modelnet_split}' with train_ratio."
+            )
             dataset = CenteredModelNetDataset(
                 root_dir=root_dir,
-                split=str(modelnet_split),
+                split=modelnet_split,
                 classes=classes,
                 num_points=int(num_points),
                 add_center_point=bool(add_center_point),

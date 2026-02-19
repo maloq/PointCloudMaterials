@@ -156,6 +156,11 @@ class BarlowTwinsModule(pl.LightningModule):
         return ref_spec
 
     def _shared_invariant(self, inv_latent_net, eq_z):
+        # If an equivariant latent is available, always derive invariants from eq_z.
+        # This keeps VN training/evaluation consistent with "eq->invariant" usage
+        # and avoids mixing in encoder-provided invariant branches.
+        if eq_z is not None:
+            inv_latent_net = None
         if "barlow" in self._active_invariant_losses:
             return self.barlow._invariant(inv_latent_net, eq_z)
         if "vicreg" in self._active_invariant_losses and self.vicreg is not None:
@@ -334,7 +339,9 @@ class BarlowTwinsModule(pl.LightningModule):
         pc = self._prepare_model_input(pc_raw)
         inv_latent_net, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
         z_inv = self._invariant_latent(inv_latent_net, eq_z)
-        features = inv_latent_net if inv_latent_net is not None else z_inv
+        # Keep supervised diagnostics aligned with contrastive objectives: use
+        # the invariant latent consumed by losses (prefer eq_z -> invariant).
+        features = z_inv if z_inv is not None else inv_latent_net
         if features is None:
             return None, None
         return features.detach().to(torch.float32), class_id
@@ -379,7 +386,8 @@ class BarlowTwinsModule(pl.LightningModule):
                 inv_latent_net, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
                 z_inv = self._invariant_from_eq_latent(eq_z, inv_latent_net=inv_latent_net, stage=stage)
             if z_inv is not None:
-                self._cache_supervised_batch(stage, z_inv, meta, encoder_features=inv_latent_net)
+                # Cache the same invariant representation that drives SSL loss.
+                self._cache_supervised_batch(stage, z_inv, meta, encoder_features=z_inv)
 
         losses = {}
 

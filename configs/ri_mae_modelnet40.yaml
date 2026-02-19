@@ -50,7 +50,7 @@ train_split_svm_max_samples: 12000
 train_split_svm_c: 0.018
 val_cluster_acc_methods: [kmeans, kmeans++]
 val_cluster_acc_runs: 1
-test_cluster_acc_methods: [kmeans, kmeans++, gmm_full]
+test_cluster_acc_methods: [kmeans, kmeans++]
 test_cluster_acc_runs: 1
 test_cluster_acc_runs_by_method:
   kmeans: 20
@@ -79,6 +79,7 @@ ri_mae:
 
 data:
   modelnet_split: train
+  modelnet_eval_split: test
   train_ratio: 0.9
   num_points: 1024
   model_points: 1024

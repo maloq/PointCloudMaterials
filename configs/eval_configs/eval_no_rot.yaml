@@ -29,18 +29,6 @@ metrics:
     - method: kmeans
       params:
         n_clusters: 6
-    - method: gmm
-      params:
-        n_components: 3
-    - method: gmm
-      params:
-        n_components: 4
-    - method: gmm
-      params:
-        n_components: 4
-    - method: gmm
-      params:
-        n_components: 6
     - method: hdbscan
       params:
         min_cluster_size: 10

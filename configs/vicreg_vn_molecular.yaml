@@ -80,6 +80,7 @@ warmup_start_factor: 0.1
 
 decay_rate: 0.0004
 contrastive_norms_only_latent: false
+enable_embedding_metrics: false
 
 # IDEC clustering (disabled by default; enable after pretraining)
 idec_enabled: False
@@ -108,6 +109,7 @@ vicreg_jitter_std: 0.01
 vicreg_jitter_mode: physical
 vicreg_drop_ratio: 0.0
 vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: second
 vicreg_neighbor_k: 6
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
@@ -138,8 +140,8 @@ pose:
   weight: 0.4
   start_epoch: 10
   head_hidden: 256
-  jitter_std: 0.002
-  strain_std: 0.002
+  jitter_std: 0.000
+  strain_std: 0.000
   strain_volume_preserve: true
   seeded_forward: true
   view_rotation_mode: full
@@ -190,4 +192,3 @@ analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
 analysis_data_files: ['175ps.off']
-analysis_grain_enabled: False

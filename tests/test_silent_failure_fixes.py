@@ -184,8 +184,8 @@ class TestSupervisedCacheIntParsing:
     def test_valid_int_values_pass_through(self):
         from src.training_methods.contrastive_learning.supervised_cache import _as_int_mapping
 
-        result = _as_int_mapping({"kmeans": 10, "gmm": "5"}, default={})
-        assert result == {"kmeans": 10, "gmm": 5}
+        result = _as_int_mapping({"kmeans": 10, "alternate": "5"}, default={})
+        assert result == {"kmeans": 10, "alternate": 5}
 
 
 # ---------------------------------------------------------------------------

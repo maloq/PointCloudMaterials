@@ -27,11 +27,33 @@ init_from_checkpoint_strict: false
 #     transformer_depth: 5
 
 
+# encoder:
+#   name: PnE_VN
+#   kwargs:
+#     latent_size: ${latent_size}
+#     n_knn: 20
+#     feature_transform: false
+#     hidden_dim1: 320
+#     hidden_dim2: 1024
+#     # feature_dims: [128, 128, 256, 512, 1024]
+
+
+# encoder:
+#   name: VN_DGCNN_Refined
+#   kwargs:
+#     latent_size: ${latent_size}
+#     feature_dims: [128, 256, 256, 512, 512]
+#     dropout_rate: 0.05
+
 encoder:
-  name: PnE_VN
+  name: EGNN_Encoder
   kwargs:
     latent_size: ${latent_size}
-    # feature_dims: [128, 128, 256, 512, 1024]
+    n_knn: 20
+    num_layers: 8
+    hidden_dim: 128
+    pooling: mean
+    use_fast_layer: true
 
 
 # Required by the model factory (decoder is not used by contrastive training).
@@ -41,9 +63,9 @@ decoder:
     num_points: ${data.model_points}
     latent_size: ${latent_size}
 
-learning_rate: 0.0015
+learning_rate: 0.0012
 
-batch_size: 128 
+batch_size: 32
 precision: 32-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 4
@@ -53,25 +75,25 @@ auto_batch_size_init_val: null
 auto_batch_size_max_trials: 12
 auto_batch_size_steps_per_trial: 3
 auto_batch_size_use_single_device: true
-auto_batch_size_adjust_accumulate: true
-auto_batch_size_target_effective_batch: null
+auto_batch_size_adjust_accumulate: false
+auto_batch_size_target_effective_batch: 1280
 auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 120
+epochs: 60
 max_samples: 0
 
 gpu: True
-devices: [0, 1, 2]
+devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
-scheduler_min_lr: 1e-6
+scheduler_min_lr: 5e-6
 warmup_enabled: true
-warmup_epochs: 12
+warmup_epochs: 8
 warmup_start_factor: 0.1
 
 decay_rate: 0.0001
@@ -80,9 +102,15 @@ decay_rate: 0.0001
 max_supervised_samples: 12000
 max_test_samples: 12000
 cache_train_supervised_metrics: false
+enable_embedding_metrics: false
 disable_dataset_augmentation_for_ssl: true
 
 # Test clustering accuracies (Hungarian matching) infer K from class labels.
+test_cluster_acc_methods: [kmeans++]
+test_cluster_acc_runs: 1
+test_so3_rotation_runs: 5
+test_so3_rotation_seed: 12345
+enable_test_so3_metrics: true
 
 idec_enabled: False
 idec_num_clusters: 0
@@ -109,6 +137,7 @@ symmetry:
 
 data:
   modelnet_split: train
+  modelnet_eval_split: test
   num_points: 1025
   model_points: 800
   train_ratio: 0.9
@@ -126,40 +155,40 @@ vicreg_enabled: True
 # If true, force latent invariants to per-channel norms only (no Gram/tensor-product terms).
 contrastive_norms_only_latent: false
 vicreg_weight: 1.0
-vicreg_sim_coeff: 25.0
-vicreg_std_coeff: 25.0
-vicreg_cov_coeff: 1.0
+vicreg_sim_coeff: 35.0
+vicreg_std_coeff: 35.0
+vicreg_cov_coeff: 0.5
 vicreg_embed_dim: 512
 vicreg_start_epoch: 0
-vicreg_jitter_std: 0.02
+vicreg_jitter_std: 0.0
 vicreg_jitter_mode: absolute
-vicreg_drop_ratio: 0.12
+vicreg_drop_ratio: 0.05
 vicreg_drop_apply_to_both: true
 vicreg_neighbor_view: true
-vicreg_neighbor_view_mode: both
+vicreg_neighbor_view_mode: first
 vicreg_neighbor_k: 8
 vicreg_neighbor_max_relative_distance: 0.10
 vicreg_view_points: ${data.model_points}
 vicreg_view_crop_mode: random
-vicreg_rotation_mode: none
+vicreg_rotation_mode: full
 vicreg_rotation_deg: 0.0
-vicreg_strain_std: 0.04
+vicreg_strain_std: 0.0
 vicreg_strain_volume_preserve: true
 vicreg_occlusion_mode: mixed
-vicreg_occlusion_view: both
+vicreg_occlusion_view: second
 vicreg_occlusion_slab_frac: 0.2
-vicreg_occlusion_cone_deg: 25.0
+vicreg_occlusion_cone_deg: 35.0
 vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
 vicreg_radial_enabled: true
-vicreg_radial_beta1: 1.0
-vicreg_radial_beta2: 0.1
+vicreg_radial_beta1: 0.5
+vicreg_radial_beta2: 0.05
 vicreg_radial_m: null
 vicreg_radial_eps: 1e-8
 vicreg_invariant_mode: tensor_product
-vicreg_invariant_max_factor: 4.0
+vicreg_invariant_max_factor: 3.0
 vicreg_invariant_groups: 0
-vicreg_invariant_use_third_order: true
+vicreg_invariant_use_third_order: false
 vicreg_invariant_eps: 1e-6
 
 analysis_cluster_method: auto
@@ -183,4 +212,3 @@ analysis_hdbscan_min_cluster_size_candidates: []
 analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
-analysis_grain_enabled: false

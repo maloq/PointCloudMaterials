@@ -12,9 +12,6 @@ from pytorch_lightning.utilities.rank_zero import rank_zero_only
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
-from src.training_methods.contrastive_learning.predict_and_visualize import (
-    run_post_training_analysis,
-)
 from src.training_methods.spd.train_spd import train_model
 
 torch.set_float32_matmul_precision('high')
@@ -30,6 +27,9 @@ def run_post_training_analysis_safe(
 ):
     """Run post-training analysis with error handling."""
     try:
+        from src.training_methods.contrastive_learning.predict_and_visualize import (
+            run_post_training_analysis,
+        )
         logger.print("\n" + "=" * 60)
         logger.print("Starting Barlow Twins analysis...")
         logger.print("=" * 60)
@@ -50,7 +50,14 @@ def run_post_training_analysis_safe(
 
 def train(cfg: DictConfig, run_analysis: bool = True):
     """Barlow Twins contrastive training."""
-    trainer, model, dm, checkpoint_callbacks = train_model(cfg, BarlowTwinsModule)
+    run_test = bool(getattr(cfg, "run_test_after_training", True))
+    trainer, model, dm, checkpoint_callbacks = train_model(
+        cfg,
+        BarlowTwinsModule,
+        run_test=run_test,
+    )
+
+    run_analysis = bool(getattr(cfg, "run_post_training_analysis", run_analysis))
 
     if run_analysis:
         best_ckpt = checkpoint_callbacks[0].best_model_path if checkpoint_callbacks else ""
@@ -73,7 +80,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 
 @hydra.main(version_base=None,
             config_path=os.path.join(os.getcwd(), 'configs'),
-            config_name='barlow_twins_vn_molecular.yaml')
+            config_name='vicreg_vn_modelnet40.yaml')
 def main(cfg: DictConfig):
     train(cfg)
 

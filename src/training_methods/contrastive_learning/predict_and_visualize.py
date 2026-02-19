@@ -4,7 +4,6 @@ import json
 import os
 import sys
 import time
-import warnings
 from contextlib import contextmanager
 from itertools import combinations
 from pathlib import Path
@@ -15,8 +14,8 @@ import numpy as np
 import torch
 from hydra import compose, initialize
 from omegaconf import DictConfig
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
 
 sys.path.append(os.getcwd())
@@ -33,11 +32,6 @@ from src.training_methods.contrastive_learning.analysis_utils import (
     gather_inference_batches,
 )
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
-from src.utils.spd_metrics import (
-    compute_cluster_metrics,
-    compute_embedding_quality_metrics,
-)
-from src.utils.spd_utils import apply_rotation
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 from src.vis_tools.md_cluster_plot import (
     save_interactive_md_plot,
@@ -102,25 +96,6 @@ def _fmt_metric(value: Any, digits: int = 4) -> str:
     return str(value)
 
 
-def _as_int_mapping(value: Any) -> dict[str, int]:
-    if value is None:
-        return {}
-    if isinstance(value, DictConfig):
-        value = dict(value)
-    if not hasattr(value, "items"):
-        return {}
-
-    out: dict[str, int] = {}
-    for key, raw in value.items():
-        try:
-            runs = int(raw)
-        except (TypeError, ValueError):
-            continue
-        if runs > 0:
-            out[str(key)] = runs
-    return out
-
-
 def _l2_normalize_rows(x: np.ndarray, eps: float = 1e-8) -> np.ndarray:
     norms = np.linalg.norm(x, axis=1, keepdims=True)
     return x / np.clip(norms, eps, None)
@@ -129,15 +104,18 @@ def _l2_normalize_rows(x: np.ndarray, eps: float = 1e-8) -> np.ndarray:
 def _cluster_palette(n_colors: int) -> list[str]:
     if n_colors <= 0:
         return []
+    # High-contrast, non-pastel palette for dense MD cluster views.
     base = [
-        "#b30000",  # red
-        "#e6a6ef",  # pink
-        "#5a189a",  # purple
-        "#0ea323",  # green
-        "#1f36d6",  # blue
-        "#f2b30b",  # orange
-        "#1f7a8c",
-        "#888888",
+        "#d7263d",  # red
+        "#1f4ed8",  # blue
+        "#1faa59",  # green
+        "#ff7f11",  # orange
+        "#6a00f4",  # purple
+        "#00a6a6",  # cyan/teal
+        "#f72585",  # magenta
+        "#ffbe0b",  # yellow
+        "#118ab2",  # azure
+        "#073b4c",  # deep blue-green
     ]
     if n_colors <= len(base):
         return base[:n_colors]
@@ -414,10 +392,10 @@ def _save_md_cluster_snapshot(
     title: str,
     visible_cluster_ids: list[int] | None = None,
     max_points: int | None = None,
-    point_size: float = 4.0,
-    alpha: float = 0.96,
-    halo_scale: float = 5.0,
-    halo_alpha: float = 0.26,
+    point_size: float = 5.6,
+    alpha: float = 0.62,
+    halo_scale: float = 1.0,
+    halo_alpha: float = 0.0,
     view_elev: float = 24.0,
     view_azim: float = 35.0,
 ) -> dict[str, Any]:
@@ -457,12 +435,8 @@ def _save_md_cluster_snapshot(
     ax = fig.add_subplot(111, projection="3d")
     if float(point_size) <= 0.0:
         raise ValueError(f"point_size must be > 0, got {point_size}.")
-    if float(halo_scale) <= 0.0:
-        raise ValueError(f"halo_scale must be > 0, got {halo_scale}.")
     if not (0.0 <= float(alpha) <= 1.0):
         raise ValueError(f"alpha must be in [0, 1], got {alpha}.")
-    if not (0.0 <= float(halo_alpha) <= 1.0):
-        raise ValueError(f"halo_alpha must be in [0, 1], got {halo_alpha}.")
     if not np.isfinite(float(view_elev)) or not np.isfinite(float(view_azim)):
         raise ValueError(
             f"view_elev/view_azim must be finite, got elev={view_elev}, azim={view_azim}."
@@ -475,17 +449,6 @@ def _save_md_cluster_snapshot(
         if not np.any(cluster_mask):
             continue
         color = color_map.get(cluster_id, "#777777")
-        if float(halo_alpha) > 0.0 and float(halo_scale) > 1.0:
-            ax.scatter(
-                coords_plot[cluster_mask, 0],
-                coords_plot[cluster_mask, 1],
-                coords_plot[cluster_mask, 2],
-                c=color,
-                s=float(point_size) * float(halo_scale),
-                alpha=float(halo_alpha) * float(alpha),
-                linewidths=0.0,
-                depthshade=False,
-            )
         ax.scatter(
             coords_plot[cluster_mask, 0],
             coords_plot[cluster_mask, 1],
@@ -910,16 +873,14 @@ def _compute_icl_curve(
     covariance_type: str = "diag",
     random_state: int = 42,
 ) -> dict[int, dict[str, float]]:
-    if covariance_type not in {"full", "diag", "spherical", "tied"}:
-        raise ValueError(
-            "Invalid covariance_type for ICL curve. "
-            f"Expected one of full/diag/spherical/tied, got {covariance_type!r}."
-        )
     x = np.asarray(features, dtype=np.float32)
     if x.ndim != 2:
         raise ValueError(f"features must be 2D, got shape {x.shape}.")
     if x.shape[0] < 3:
         raise ValueError(f"Need at least 3 samples for ICL curve, got {x.shape[0]}.")
+
+    # Keep covariance_type for backward-compatible function signature.
+    _ = covariance_type
 
     curve: dict[int, dict[str, float]] = {}
     for k in k_values:
@@ -930,28 +891,24 @@ def _compute_icl_curve(
             raise ValueError(
                 f"Invalid k value {k_eff}: must be < number of samples ({x.shape[0]})."
             )
-        model = GaussianMixture(
-            n_components=k_eff,
-            covariance_type=covariance_type,
-            random_state=random_state,
-            n_init=3,
-            reg_covar=1e-5,
-            max_iter=300,
-        )
+        model = KMeans(n_clusters=k_eff, random_state=random_state, n_init=10)
         try:
-            model.fit(x)
+            labels = model.fit_predict(x)
         except Exception as exc:
             raise RuntimeError(
-                "Failed to fit GaussianMixture for ICL curve "
-                f"at k={k_eff}, covariance_type={covariance_type}."
+                "Failed to fit KMeans for ICL curve "
+                f"at k={k_eff}."
             ) from exc
-        bic = float(model.bic(x))
-        probs = model.predict_proba(x)
+
+        # KMeans surrogate for model-selection curve:
+        # lower inertia is better; entropy term penalizes highly fragmented assignments.
+        inertia = float(model.inertia_)
+        counts = np.bincount(labels, minlength=k_eff).astype(np.float64)
+        probs = counts / np.clip(counts.sum(), 1.0, None)
         entropy = float(-np.sum(probs * np.log(np.clip(probs, 1e-12, None))))
-        # ICL approximation: BIC penalized by soft-assignment entropy.
-        icl = float(bic - 2.0 * entropy)
+        icl = float(inertia + entropy)
         curve[k_eff] = {
-            "bic": bic,
+            "bic": inertia,
             "entropy": entropy,
             "icl": icl,
         }
@@ -1245,71 +1202,6 @@ def _save_fixed_k_cluster_figure_set(
     }
 
 
-def _extract_pc_and_class_id(batch: Any) -> tuple[torch.Tensor, torch.Tensor | None]:
-    if isinstance(batch, dict):
-        if "points" not in batch:
-            raise KeyError("Batch dict is missing required key 'points'")
-        return batch["points"], batch.get("class_id")
-
-    if torch.is_tensor(batch):
-        return batch, None
-
-    if isinstance(batch, (tuple, list)) and len(batch) > 0:
-        points = batch[0]
-        class_id = None
-        if len(batch) > 1:
-            candidate = batch[1]
-            if torch.is_tensor(candidate):
-                if candidate.dtype in (
-                    torch.int8,
-                    torch.int16,
-                    torch.int32,
-                    torch.int64,
-                    torch.uint8,
-                    torch.long,
-                ) and candidate.dim() <= 1:
-                    class_id = candidate
-                elif candidate.dim() <= 1:
-                    warnings.warn(
-                        f"Batch element [1] has dtype={candidate.dtype} and dim={candidate.dim()}. "
-                        "Expected integer dtype for class_id. Skipping -- provide integer labels "
-                        "or use a dict batch to avoid silent label loss.",
-                    )
-            elif isinstance(candidate, (int, np.integer)):
-                class_id = torch.as_tensor(candidate, dtype=torch.long)
-        return points, class_id
-
-    raise TypeError(f"Unsupported batch type for extraction: {type(batch)!r}")
-
-
-def _random_rotation_matrices(
-    batch_size: int,
-    device: torch.device,
-    dtype: torch.dtype,
-    *,
-    seed: int | None = None,
-) -> torch.Tensor:
-    generator = None
-    if seed is not None:
-        generator = torch.Generator(device="cpu")
-        generator.manual_seed(int(seed))
-    rand = torch.randn(
-        (batch_size, 3, 3),
-        dtype=torch.float32,
-        device="cpu",
-        generator=generator,
-    )
-    q, r = torch.linalg.qr(rand)
-    d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
-    d = torch.where(d == 0, torch.ones_like(d), d)
-    q = q * d.unsqueeze(-2)
-    det = torch.det(q)
-    neg_mask = det < 0
-    if torch.any(neg_mask):
-        q[neg_mask, :, 0] *= -1.0
-    return q.to(device=device, dtype=dtype)
-
-
 @contextmanager
 def _temporary_disable_dataset_aug(dataloader: torch.utils.data.DataLoader):
     changes: list[tuple[Any, str, float]] = []
@@ -1327,277 +1219,6 @@ def _temporary_disable_dataset_aug(dataloader: torch.utils.data.DataLoader):
     finally:
         for target, attr, prev in changes:
             setattr(target, attr, float(prev))
-
-
-def _collect_test_latents_labels(
-    model: BarlowTwinsModule,
-    dataloader: torch.utils.data.DataLoader,
-    device: str,
-    *,
-    max_samples_total: int | None = None,
-    apply_random_rotations: bool = False,
-    rotation_seed_base: int | None = None,
-    progress_every_batches: int = 25,
-    verbose: bool = False,
-) -> tuple[np.ndarray, np.ndarray, bool]:
-    latents: list[torch.Tensor] = []
-    labels: list[torch.Tensor] = []
-    labels_available = True
-    collected = 0
-    max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
-    every = max(1, int(progress_every_batches))
-
-    with torch.inference_mode():
-        for batch_idx, batch in enumerate(dataloader):
-            pc, class_id = _extract_pc_and_class_id(batch)
-            if not torch.is_tensor(pc):
-                pc = torch.as_tensor(pc)
-            pc = pc.to(device=device, dtype=model.dtype, non_blocking=True)
-            if apply_random_rotations:
-                seed = None
-                if rotation_seed_base is not None:
-                    seed = int(rotation_seed_base) + int(batch_idx)
-                rots = _random_rotation_matrices(
-                    int(pc.shape[0]),
-                    pc.device,
-                    pc.dtype,
-                    seed=seed,
-                )
-                pc = apply_rotation(pc, rots)
-            if hasattr(model, "_prepare_model_input"):
-                pc = model._prepare_model_input(pc)
-
-            z, _, _ = model(pc)
-            z_cpu = z.detach().to(dtype=torch.float32).cpu()
-            batch_size = int(z_cpu.shape[0])
-            if class_id is None:
-                labels_available = False
-                class_id_cpu = torch.zeros((batch_size,), dtype=torch.long)
-            else:
-                if not torch.is_tensor(class_id):
-                    class_id = torch.as_tensor(class_id)
-                class_id = class_id.detach().view(-1)
-                if class_id.numel() == 1 and batch_size > 1:
-                    class_id = class_id.expand(batch_size)
-                class_id_cpu = class_id.to(dtype=torch.long).cpu()
-
-            take = min(int(z_cpu.shape[0]), int(class_id_cpu.shape[0]))
-            if max_samples is not None:
-                take = min(take, max_samples - collected)
-            if take <= 0:
-                break
-
-            latents.append(z_cpu[:take])
-            labels.append(class_id_cpu[:take])
-
-            collected += int(take)
-            if verbose and (batch_idx + 1) % every == 0:
-                print(
-                    "[analysis][test] "
-                    f"batch={batch_idx + 1} samples={collected}"
-                    + (f"/{max_samples}" if max_samples is not None else "")
-                )
-            if max_samples is not None and collected >= max_samples:
-                break
-
-    lat_arr = torch.cat(latents, dim=0).numpy() if latents else np.empty((0,), dtype=np.float32)
-    if labels_available:
-        label_arr = torch.cat(labels, dim=0).numpy() if labels else np.empty((0,), dtype=np.int64)
-    else:
-        label_arr = np.zeros((int(lat_arr.shape[0]),), dtype=np.int64)
-    return lat_arr, label_arr, labels_available
-
-
-def _resolve_test_metric_settings(cfg: DictConfig) -> Dict[str, Any]:
-    test_cluster_acc_methods = _as_list_of_str(
-        getattr(cfg, "test_cluster_acc_methods", ["kmeans", "kmeans++", "gmm_full"])
-    ) or ["kmeans", "kmeans++", "gmm_full"]
-    test_cluster_acc_runs = int(getattr(cfg, "test_cluster_acc_runs", 1))
-    test_cluster_acc_runs_by_method = _as_int_mapping(getattr(cfg, "test_cluster_acc_runs_by_method", {}))
-    cluster_acc_seed = int(getattr(cfg, "cluster_acc_seed", 0))
-
-    test_max_samples = _positive_int_or_none(getattr(cfg, "analysis_test_max_samples", None))
-    if test_max_samples is None:
-        test_max_samples = _positive_int_or_none(getattr(cfg, "max_test_samples", None))
-
-    rotation_runs = int(getattr(cfg, "analysis_test_rotation_runs", 5))
-    rotation_seed = int(getattr(cfg, "analysis_test_rotation_seed", 12345))
-
-    return {
-        "acc_eval_methods": test_cluster_acc_methods,
-        "acc_eval_runs": test_cluster_acc_runs,
-        "acc_eval_runs_by_method": test_cluster_acc_runs_by_method,
-        "acc_random_seed": cluster_acc_seed,
-        "max_samples": test_max_samples,
-        "rotation_runs": rotation_runs,
-        "rotation_seed": rotation_seed,
-    }
-
-
-def _to_finite_float(value: Any) -> float | None:
-    try:
-        val = float(value)
-    except (TypeError, ValueError):
-        return None
-    return val if np.isfinite(val) else None
-
-
-def _primary_accuracy_key(cluster_metrics: dict[str, Any], eval_k: int | None) -> str | None:
-    preferred = f"ACC_KMEANS_HUNGARIAN_K{eval_k}"
-    if preferred in cluster_metrics:
-        return preferred
-    for key in sorted(cluster_metrics.keys()):
-        if (
-            key.startswith("ACC_")
-            and not key.endswith("_MEAN")
-            and not key.endswith("_STD")
-            and not key.endswith("_BEST")
-            and not key.endswith("_RUNS")
-        ):
-            return key
-    return None
-
-
-def _aggregate_metric(values: list[float | None]) -> dict[str, Any]:
-    valid = [float(v) for v in values if _to_finite_float(v) is not None]
-    if not valid:
-        return {"mean": None, "std": None, "min": None, "max": None, "n_valid": 0}
-    arr = np.asarray(valid, dtype=np.float64)
-    return {
-        "mean": float(arr.mean()),
-        "std": float(arr.std()),
-        "min": float(arr.min()),
-        "max": float(arr.max()),
-        "n_valid": int(arr.size),
-    }
-
-
-def _infer_label_cluster_count(labels: np.ndarray) -> int | None:
-    labels_arr = np.asarray(labels).reshape(-1)
-    if labels_arr.size == 0:
-        return None
-    k = int(np.unique(labels_arr).size)
-    return k if k > 1 else None
-
-
-def _resolve_hungarian_eval_k_from_labels(
-    labels: np.ndarray,
-) -> int | None:
-    inferred_k = _infer_label_cluster_count(labels)
-    return inferred_k
-
-
-def _evaluate_test_run(
-    model: BarlowTwinsModule,
-    dataloader: torch.utils.data.DataLoader,
-    device: str,
-    settings: dict[str, Any],
-    *,
-    progress_every_batches: int,
-    apply_random_rotations: bool,
-    rotation_seed_base: int | None = None,
-    include_embedding_metrics: bool = False,
-) -> dict[str, Any]:
-    latents, labels, labels_available = _collect_test_latents_labels(
-        model,
-        dataloader,
-        device,
-        max_samples_total=settings["max_samples"],
-        apply_random_rotations=apply_random_rotations,
-        rotation_seed_base=rotation_seed_base,
-        progress_every_batches=progress_every_batches,
-        verbose=True,
-    )
-    cluster_metrics = {}
-    resolved_eval_k = None
-    if labels_available:
-        resolved_eval_k = _resolve_hungarian_eval_k_from_labels(labels)
-        cluster_metrics = compute_cluster_metrics(
-            latents,
-            labels,
-            stage="test",
-            hungarian_eval_k=resolved_eval_k,
-            acc_eval_methods=settings["acc_eval_methods"],
-            acc_eval_runs=settings["acc_eval_runs"],
-            acc_eval_runs_by_method=settings["acc_eval_runs_by_method"],
-            acc_random_seed=settings["acc_random_seed"],
-        )
-        if cluster_metrics is None:
-            cluster_metrics = {}
-    embedding_metrics = {}
-    if include_embedding_metrics:
-        embedding_labels = labels if labels_available else np.zeros((int(latents.shape[0]),), dtype=np.int64)
-        embedding_metrics = compute_embedding_quality_metrics(
-            latents,
-            embedding_labels,
-            include_expensive=True,
-        )
-        if embedding_metrics is None:
-            embedding_metrics = {}
-
-    acc_key = _primary_accuracy_key(cluster_metrics, resolved_eval_k)
-    result = {
-        "num_samples": int(latents.shape[0]),
-        "labels_available": bool(labels_available),
-        "accuracy": _to_finite_float(cluster_metrics.get(acc_key)),
-        "nmi": _to_finite_float(cluster_metrics.get("NMI")),
-        "ari": _to_finite_float(cluster_metrics.get("ARI")),
-        "cluster_metrics": cluster_metrics,
-        "hungarian_eval_k": resolved_eval_k,
-    }
-    if not labels_available:
-        result["label_metrics_skipped_reason"] = "Batch does not provide class_id labels."
-    result["accuracy_key"] = acc_key
-    if embedding_metrics:
-        result["embedding_metrics"] = embedding_metrics
-    return result
-
-
-def _run_test_phase_metrics(
-    model: BarlowTwinsModule,
-    dm: Any,
-    cfg: DictConfig,
-    device: str,
-    *,
-    progress_every_batches: int = 25,
-) -> Dict[str, Any]:
-    settings = _resolve_test_metric_settings(cfg)
-    test_dl = dm.test_dataloader()
-    with _temporary_disable_dataset_aug(test_dl):
-        canonical_result = _evaluate_test_run(
-            model,
-            test_dl,
-            device,
-            settings,
-            progress_every_batches=progress_every_batches,
-            apply_random_rotations=False,
-            include_embedding_metrics=True,
-        )
-        multi_rotation_runs = []
-        for run_idx in range(settings["rotation_runs"]):
-            run_result = _evaluate_test_run(
-                model,
-                test_dl,
-                device,
-                settings,
-                progress_every_batches=progress_every_batches,
-                apply_random_rotations=True,
-                rotation_seed_base=settings["rotation_seed"] + run_idx * 10000,
-            )
-            run_result["rotation_run"] = int(run_idx + 1)
-            multi_rotation_runs.append(run_result)
-
-    return {
-        "settings": settings,
-        "canonical": canonical_result,
-        "multi_rotation": {
-            "num_rotations": int(settings["rotation_runs"]),
-            "accuracy": _aggregate_metric([run.get("accuracy") for run in multi_rotation_runs]),
-            "nmi": _aggregate_metric([run.get("nmi") for run in multi_rotation_runs]),
-            "ari": _aggregate_metric([run.get("ari") for run in multi_rotation_runs]),
-            "runs": multi_rotation_runs,
-        },
-    }
 
 
 def _build_inference_cache_spec(
@@ -1777,8 +1398,6 @@ def run_post_training_analysis(
     max_batches_latent: int | None = None,
     max_samples_visualization: int | None = None,
     data_files_override: list[str] | None = None,
-    test_rotation_runs: int | None = None,
-    test_max_samples: int | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for Barlow Twins."""
     out_dir = Path(output_dir)
@@ -1793,11 +1412,6 @@ def run_post_training_analysis(
 
     _step("Loading model")
     model, cfg, device = load_barlow_model(checkpoint_path, cuda_device=cuda_device, cfg=cfg)
-
-    if test_rotation_runs is not None:
-        cfg.analysis_test_rotation_runs = int(test_rotation_runs)
-    if test_max_samples is not None:
-        cfg.analysis_test_max_samples = int(test_max_samples)
 
     def _resolve_analysis_files() -> list[str] | None:
         if cfg.data.kind != "real":
@@ -1916,16 +1530,16 @@ def run_post_training_analysis(
         getattr(cfg, "analysis_cluster_figure_md_max_points", None)
     )
     cluster_figure_md_point_size = float(
-        getattr(cfg, "analysis_cluster_figure_md_point_size", 4.0)
+        getattr(cfg, "analysis_cluster_figure_md_point_size", 5.6)
     )
     cluster_figure_md_alpha = float(
-        getattr(cfg, "analysis_cluster_figure_md_alpha", 0.96)
+        getattr(cfg, "analysis_cluster_figure_md_alpha", 0.62)
     )
     cluster_figure_md_halo_scale = float(
-        getattr(cfg, "analysis_cluster_figure_md_halo_scale", 5.0)
+        getattr(cfg, "analysis_cluster_figure_md_halo_scale", 1.0)
     )
     cluster_figure_md_halo_alpha = float(
-        getattr(cfg, "analysis_cluster_figure_md_halo_alpha", 0.26)
+        getattr(cfg, "analysis_cluster_figure_md_halo_alpha", 0.0)
     )
     cluster_figure_md_view_elev = float(
         getattr(cfg, "analysis_cluster_figure_md_view_elev", 24.0)
@@ -1952,15 +1566,6 @@ def run_post_training_analysis(
     if not (0.0 <= cluster_figure_md_alpha <= 1.0):
         raise ValueError(
             f"analysis_cluster_figure_md_alpha must be in [0, 1], got {cluster_figure_md_alpha}."
-        )
-    if cluster_figure_md_halo_scale <= 0.0:
-        raise ValueError(
-            f"analysis_cluster_figure_md_halo_scale must be > 0, got {cluster_figure_md_halo_scale}."
-        )
-    if not (0.0 <= cluster_figure_md_halo_alpha <= 1.0):
-        raise ValueError(
-            "analysis_cluster_figure_md_halo_alpha must be in [0, 1], "
-            f"got {cluster_figure_md_halo_alpha}."
         )
     if not np.isfinite(cluster_figure_md_view_elev) or not np.isfinite(cluster_figure_md_view_azim):
         raise ValueError(
@@ -2019,21 +1624,6 @@ def run_post_training_analysis(
 
     dm.setup(stage="fit")
     all_metrics: Dict[str, Any] = {}
-
-    if is_synthetic:
-        _step("Running test-phase metrics")
-        test_phase_metrics = _run_test_phase_metrics(
-            model,
-            dm,
-            cfg,
-            device,
-            progress_every_batches=progress_every_batches,
-        )
-        all_metrics["test_phase"] = test_phase_metrics
-    else:
-        print(
-            "Skipping test-phase metrics for real data: dataset batches do not include class_id labels."
-        )
 
     print("Using ALL dataset splits (train + test) for latent analysis")
 
@@ -2471,24 +2061,6 @@ def run_post_training_analysis(
     print("=" * 60)
     print(f"Total samples analyzed: {n_samples}")
 
-    if "test_phase" in all_metrics:
-        test_phase = all_metrics["test_phase"]
-        canonical = test_phase.get("canonical", {})
-        multi_rotation = test_phase.get("multi_rotation", {})
-        print(
-            "Test canonical: "
-            f"ACC={_fmt_metric(canonical.get('accuracy', 'N/A'))}, "
-            f"NMI={_fmt_metric(canonical.get('nmi', 'N/A'))}, "
-            f"ARI={_fmt_metric(canonical.get('ari', 'N/A'))}"
-        )
-        print(
-            "Test multi-rotation (mean): "
-            f"ACC={_fmt_metric(multi_rotation.get('accuracy', {}).get('mean', 'N/A'))}, "
-            f"NMI={_fmt_metric(multi_rotation.get('nmi', {}).get('mean', 'N/A'))}, "
-            f"ARI={_fmt_metric(multi_rotation.get('ari', {}).get('mean', 'N/A'))}"
-        )
-        print(f"Test multi-rotation runs: {multi_rotation.get('num_rotations', 'N/A')}")
-
     if "pca" in all_metrics and all_metrics["pca"]:
         print(f"PCA: {all_metrics['pca'].get('n_components_95_var', 'N/A')} components for 95% variance")
 
@@ -2592,6 +2164,7 @@ def run_post_training_analysis(
             print("  - md_space_clusters_hdbscan.html: interactive 3D MD HDBSCAN clusters")
         if "cluster_profiles" in all_metrics[md_metrics_key]:
             print("  - cluster_profiles_by_k/k_*/cluster_XX_structures.png: 8 structures per cluster")
+            print("  - cluster_profiles_by_k/k_*/cluster_XX_structures_points_only.png: same structures without connecting lines")
             print("  - cluster_profiles_by_k/k_*/cluster_XX_properties.png: per-sample topology/material metrics")
             print("  - cluster_profiles_by_k/k_*/cluster_comparison_property_heatmap.png: cross-cluster properties")
             print("  - cluster_profiles_by_k/k_*/cluster_comparison_distance_size.png: cross-cluster size/distance")
@@ -2638,18 +2211,6 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Override real data files (repeat for multiple). Example: --data_file 175ps.off",
     )
-    parser.add_argument(
-        "--test_rotation_runs",
-        type=int,
-        default=None,
-        help="Override number of random-rotation test runs (default: analysis_test_rotation_runs or 5).",
-    )
-    parser.add_argument(
-        "--test_max_samples",
-        type=int,
-        default=None,
-        help="Override max samples for test-phase metrics (default: analysis_test_max_samples or max_test_samples).",
-    )
     return parser.parse_args()
 
 
@@ -2678,8 +2239,6 @@ def main() -> None:
         max_batches_latent=args.max_batches_latent,
         max_samples_visualization=args.max_samples_visualization,
         data_files_override=args.data_file,
-        test_rotation_runs=args.test_rotation_runs,
-        test_max_samples=args.test_max_samples,
     )
 
 

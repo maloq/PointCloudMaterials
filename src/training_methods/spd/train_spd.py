@@ -457,6 +457,16 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         ddp_strategy = DDPStrategy(find_unused_parameters=True)
 
     precision = getattr(cfg, "precision", "bf16-mixed")
+    check_val_every_n_epoch = int(getattr(cfg, "check_val_every_n_epoch", 10))
+    if check_val_every_n_epoch < 1:
+        raise ValueError(
+            f"check_val_every_n_epoch must be >= 1, got {check_val_every_n_epoch}"
+        )
+    num_sanity_val_steps = int(getattr(cfg, "num_sanity_val_steps", 2))
+    if num_sanity_val_steps < 0:
+        raise ValueError(
+            f"num_sanity_val_steps must be >= 0, got {num_sanity_val_steps}"
+        )
     configured_batch_size = int(getattr(cfg, "batch_size", 1))
     if configured_batch_size < 1:
         raise ValueError(f"batch_size must be >= 1, got {configured_batch_size}")
@@ -516,7 +526,8 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         log_every_n_steps=cfg.log_every_n_steps,
         precision=precision,
         benchmark=True,
-        check_val_every_n_epoch=10,
+        check_val_every_n_epoch=check_val_every_n_epoch,
+        num_sanity_val_steps=num_sanity_val_steps,
         accumulate_grad_batches=accumulate_grad_batches,
     )
 

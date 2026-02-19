@@ -10,7 +10,6 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.cluster import KMeans
-from sklearn.mixture import GaussianMixture
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import pdist, cdist
 from scipy.spatial.transform import Rotation
@@ -241,11 +240,13 @@ def _normalize_acc_eval_methods(acc_eval_methods) -> list[str]:
         key = str(raw).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
         method = None
         if key in {"kmeans", "kmeansrandom"}:
-            method = "kmeans"
+            logger.warning(
+                "ACC evaluator '%s' has been removed. Use 'kmeans++' (or aliases) instead; skipping.",
+                raw,
+            )
+            continue
         elif key in {"kmeans++", "kmeansplusplus", "kmeanspp"}:
             method = "kmeans++"
-        elif key in {"gmm", "gmmfull", "fullgmm", "gaussianmixture", "gaussianmixturefull"}:
-            method = "gmm_full"
         if method is None:
             logger.warning("Unknown ACC evaluator '%s'; skipping.", raw)
             continue
@@ -285,32 +286,15 @@ def _compute_cluster_assignments_for_acc(
     *,
     seed: int,
 ) -> np.ndarray:
-    if method == "kmeans":
-        model = KMeans(n_clusters=n_clusters, init="random", n_init=10, random_state=seed)
-        return model.fit_predict(latents)
     if method == "kmeans++":
         model = KMeans(n_clusters=n_clusters, init="k-means++", n_init=10, random_state=seed)
-        return model.fit_predict(latents)
-    if method == "gmm_full":
-        # Full-covariance GMM as requested for ACC evaluation.
-        model = GaussianMixture(
-            n_components=n_clusters,
-            covariance_type="full",
-            n_init=1,
-            reg_covar=1e-6,
-            random_state=seed,
-        )
         return model.fit_predict(latents)
     raise ValueError(f"Unsupported ACC evaluator method: {method}")
 
 
 def _acc_metric_prefix(method: str, k_eval: int) -> str:
-    if method == "kmeans":
-        return f"ACC_KMEANS_RANDOM_HUNGARIAN_K{k_eval}"
     if method == "kmeans++":
         return f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{k_eval}"
-    if method == "gmm_full":
-        return f"ACC_GMM_FULL_HUNGARIAN_K{k_eval}"
     raise ValueError(f"Unsupported ACC evaluator method: {method}")
 
 
@@ -335,7 +319,7 @@ def compute_cluster_metrics(
         hungarian_eval_k: Optional fixed K for val/test-time clustering accuracy
             with Hungarian matching.
         acc_eval_methods: Optional method list for ACC evaluation. Supported:
-            "kmeans", "kmeans++", "gmm_full".
+            "kmeans++".
         acc_eval_runs: Number of random-seed runs per ACC method.
         acc_eval_runs_by_method: Optional per-method run-count overrides.
         acc_random_seed: Base random seed for ACC runs.
@@ -405,9 +389,6 @@ def compute_cluster_metrics(
                 metrics[f"{prefix}_BEST"] = float(acc_arr.max())
                 metrics[f"{prefix}_RUNS"] = float(acc_arr.size)
 
-            # Backward-compatible key: keep historical naming mapped to k-means++.
-            if method == "kmeans++":
-                metrics[f"ACC_KMEANS_HUNGARIAN_K{k_eval}"] = float(np.mean(acc_values))
     return metrics or None
 
 

@@ -550,8 +550,6 @@ class VICRegLoss(nn.Module):
             metrics = {"vicreg_sim": zero, "vicreg_std": zero, "vicreg_cov": zero}
             if self.radial_enabled:
                 metrics["vicreg_radial"] = zero
-                metrics["vicreg_radial_ce"] = zero
-                metrics["vicreg_radial_ent"] = zero
             return zero, metrics
 
         sim_loss = F.mse_loss(z_a, z_b)
@@ -568,8 +566,6 @@ class VICRegLoss(nn.Module):
             radial_ent = 0.5 * (ent_a + ent_b)
             loss = loss + radial_loss
             metrics["vicreg_radial"] = radial_loss
-            metrics["vicreg_radial_ce"] = radial_ce
-            metrics["vicreg_radial_ent"] = radial_ent
 
         return loss, metrics
 
