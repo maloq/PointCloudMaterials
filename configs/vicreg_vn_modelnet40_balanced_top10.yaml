@@ -27,21 +27,21 @@ init_from_checkpoint_strict: false
 #     attn_hidden: 400
 #     transformer_depth: 5
 
-# encoder:
-#   name: PnE_L
-#   kwargs:
-#     latent_size: ${latent_size}
-#     num_points: ${data.model_points}
-
 encoder:
-  name: PnE_VN
+  name: PnE_L
   kwargs:
     latent_size: ${latent_size}
-    n_knn: 20
-    feature_transform: false
-    hidden_dim1: 320
-    hidden_dim2: 1024
-    # feature_dims: [128, 128, 256, 512, 1024]
+    num_points: ${data.model_points}
+
+# encoder:
+#   name: PnE_VN
+#   kwargs:
+#     latent_size: ${latent_size}
+#     n_knn: 20
+#     feature_transform: false
+#     hidden_dim1: 320
+#     hidden_dim2: 1024
+#     # feature_dims: [128, 128, 256, 512, 1024]
 
 decoder:
   name: VN_REVNET_Anchor
@@ -54,7 +54,7 @@ learning_rate: 0.0012
 batch_size: 128
 # PnE_VN is numerically sensitive in true bf16: kNN neighborhood selection can
 # drift under rotations and break measured equivariance. Keep full precision.
-precision: 32-true
+precision: 16-bf
 gradient_clip_val: 1.0
 accumulate_grad_batches: 10
 auto_batch_size_search: false

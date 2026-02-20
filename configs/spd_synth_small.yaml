@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_polycrystalline
+  - data: data_synth_polycrystalline_balanced_geometries
 project_name: pointnet
 experiment_name: synth_SPD_${decoder.name}_l${latent_size}_P${data.num_points}_${loss}_${batch_size}
 wandb_mode: offline

@@ -100,13 +100,57 @@ def _read_metrics_json(run_dir: Path) -> Optional[Dict[str, Any]]:
     return None
 
 
+def _find_slurm_logs(run_dir: Path, plan_name: str = "") -> List[Path]:
+    """Locate SLURM .out log files that belong to this run directory.
+
+    The runner places SLURM logs in ``<output_dir>/slurm_logs/`` with names
+    ``{plan_name}_{stage}_{experiment}_{jobid}.out``.  From a run dir like
+    ``<output_dir>/<stage>/<experiment>/`` we walk up to find the
+    ``slurm_logs/`` sibling and match on the exact job-name prefix.
+    """
+    # run_dir is <output_dir>/<stage>/<exp_name>
+    output_dir = run_dir.parent.parent
+    slurm_dir = output_dir / "slurm_logs"
+    if not slurm_dir.is_dir():
+        return []
+
+    exp_name = run_dir.name
+    stage_name = run_dir.parent.name
+
+    # The sbatch job name is "{plan_name}_{stage}_{experiment}" (see slurm.py).
+    # The SLURM log file is "{job_name}_{jobid}.out".
+    # We need the full prefix to avoid "pointnet" matching "vn_pointnet".
+    if plan_name:
+        prefix = f"{plan_name}_{stage_name}_{exp_name}_"
+    else:
+        prefix = f"{stage_name}_{exp_name}_"
+
+    matches: List[Path] = []
+    for f in slurm_dir.iterdir():
+        if f.suffix != ".out":
+            continue
+        # With plan_name: exact prefix match (e.g. "vicreg_encoders_default_pointnet_")
+        # Without: fall back to substring but require trailing underscore + digits
+        if plan_name and f.name.startswith(prefix):
+            matches.append(f)
+        elif not plan_name and f"_{stage_name}_{exp_name}_" in f.name:
+            matches.append(f)
+
+    return sorted(matches, key=lambda p: p.stat().st_mtime, reverse=True)
+
+
 def collect_metrics_for_run(
     run_dir: Path,
     metric_names: Sequence[str],
+    plan_name: str = "",
 ) -> Dict[str, Optional[float]]:
     """Collect metric values for a single experiment run directory.
 
-    Tries multiple sources in order: final_metrics.json, log files, checkpoints.
+    Tries multiple sources in order:
+      1. final_metrics.json (from ablation-style runs)
+      2. Log files inside the run dir
+      3. SLURM stdout logs (in the sibling slurm_logs/ directory)
+      4. Checkpoint callback state
     """
     result: Dict[str, Optional[float]] = {m: None for m in metric_names}
 
@@ -120,12 +164,15 @@ def collect_metrics_for_run(
                 except (TypeError, ValueError):
                     pass
 
-    # Source 2: Parse training logs.
-    log_candidates = [
+    # Source 2: Parse training logs inside the run directory.
+    log_candidates: List[Path] = [
         run_dir / "train.log",
         run_dir / "train_contrastive.log",
         run_dir / "sweep_driver.log",
     ]
+    # Source 3: SLURM stdout logs (contain Lightning progress bars + test results).
+    log_candidates.extend(_find_slurm_logs(run_dir, plan_name=plan_name))
+
     for name in metric_names:
         if result[name] is not None:
             continue
@@ -135,7 +182,7 @@ def collect_metrics_for_run(
                 result[name] = val
                 break
 
-    # Source 3: Checkpoint callback state.
+    # Source 4: Checkpoint callback state (only stores monitored metrics).
     for name in metric_names:
         if result[name] is not None:
             continue
@@ -224,10 +271,10 @@ def collect_all_results(
                 ))
                 continue
 
-            final = collect_metrics_for_run(run_dir, plan.metrics.final)
+            final = collect_metrics_for_run(run_dir, plan.metrics.final, plan_name=plan.name)
             best: Dict[str, Optional[Dict[str, Any]]] = {}
             for spec in plan.metrics.best:
-                val = collect_metrics_for_run(run_dir, [spec.name]).get(spec.name)
+                val = collect_metrics_for_run(run_dir, [spec.name], plan_name=plan.name).get(spec.name)
                 if val is not None:
                     best[spec.name] = {"value": val}
                 else:

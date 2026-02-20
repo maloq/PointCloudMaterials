@@ -6,7 +6,7 @@ modelnet_split: train
 modelnet_eval_split: test
 classes: null
 strict_classes: false
-num_points: 1024
+num_points: 1025
 model_points: 800
 # Used only when modelnet_eval_split is unset (legacy fallback behavior).
 train_ratio: 0.8

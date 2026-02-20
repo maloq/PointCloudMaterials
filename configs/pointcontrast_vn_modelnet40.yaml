@@ -1,0 +1,162 @@
+defaults:
+  - data: synth_modelnet_objects
+  - _self_
+
+project_name: pointnet
+experiment_name: POINTCONTRAST_MODELNET40_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+wandb_mode: online
+
+model_type: pointcontrast
+latent_size: 96
+
+load_supervised_checkpoint: false
+resume_from_checkpoint: null
+init_from_checkpoint: null
+init_from_checkpoint_strict: false
+
+encoder:
+  name: EGNN_Encoder
+  kwargs:
+    latent_size: ${latent_size}
+    n_knn: 20
+    num_layers: 8
+    hidden_dim: 128
+    pooling: mean
+    use_fast_layer: true
+
+decoder:
+  name: VN_REVNET_Anchor
+  kwargs:
+    num_points: ${data.model_points}
+    latent_size: ${latent_size}
+
+learning_rate: 0.0012
+decay_rate: 0.0001
+
+batch_size: 32
+precision: 32-true
+gradient_clip_val: 1.0
+accumulate_grad_batches: 4
+auto_batch_size_search: false
+auto_batch_size_mode: power
+auto_batch_size_init_val: null
+auto_batch_size_max_trials: 12
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: false
+auto_batch_size_target_effective_batch: 1280
+auto_batch_size_strict: false
+
+enable_swa: false
+swa_epoch_start: 1000
+epochs: 60
+max_samples: 0
+
+gpu: true
+devices: [0, 1]
+ddp_find_unused_parameters: true
+log_every_n_steps: 5
+num_workers: 6
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+scheduler_min_lr: 5e-6
+warmup_enabled: true
+warmup_epochs: 8
+warmup_start_factor: 0.1
+
+max_supervised_samples: 12000
+max_test_samples: 12000
+cache_train_supervised_metrics: false
+enable_embedding_metrics: false
+disable_dataset_augmentation_for_ssl: true
+
+# Test clustering accuracies (Hungarian matching) infer K from class labels.
+test_cluster_acc_methods: [kmeans++]
+test_cluster_acc_runs: 1
+test_so3_rotation_runs: 5
+test_so3_rotation_seed: 12345
+enable_test_so3_metrics: true
+
+barlow_enabled: false
+vicreg_enabled: false
+
+pointcontrast_enabled: true
+pointcontrast_weight: 1.0
+pointcontrast_temperature: 0.10
+pointcontrast_embed_dim: 512
+pointcontrast_start_epoch: 0
+pointcontrast_queue_size: 0
+pointcontrast_symmetric: true
+pointcontrast_normalize_embeddings: true
+pointcontrast_jitter_std: 0.0
+pointcontrast_jitter_mode: absolute
+pointcontrast_drop_ratio: 0.05
+pointcontrast_drop_apply_to_both: true
+pointcontrast_neighbor_view: true
+pointcontrast_neighbor_view_mode: first
+pointcontrast_neighbor_k: 8
+pointcontrast_neighbor_max_relative_distance: 0.10
+pointcontrast_view_points: ${data.model_points}
+pointcontrast_view_crop_mode: random
+pointcontrast_rotation_mode: full
+pointcontrast_rotation_deg: 0.0
+pointcontrast_strain_std: 0.0
+pointcontrast_strain_volume_preserve: true
+pointcontrast_occlusion_mode: mixed
+pointcontrast_occlusion_view: second
+pointcontrast_occlusion_slab_frac: 0.2
+pointcontrast_occlusion_cone_deg: 35.0
+pointcontrast_invariant_mode: tensor_product
+pointcontrast_invariant_max_factor: 3.0
+pointcontrast_invariant_groups: 0
+pointcontrast_invariant_use_third_order: false
+pointcontrast_invariant_eps: 1e-6
+
+pose_enabled: false
+pose_weight: 0.0
+pose:
+  enabled: false
+  weight: 0.0
+
+symmetry:
+  type: none
+  beta: 30.0
+  angle_eps: 1e-6
+
+data:
+  modelnet_split: train
+  modelnet_eval_split: test
+  num_points: 1025
+  model_points: 800
+  train_ratio: 0.9
+  add_center_point: true
+  pre_normalize: true
+  normalize: true
+  augmentation:
+    rotation_scale: 0.0
+    noise_scale: 0.0
+    jitter_scale: 0.0
+    scaling_range: 0.0
+    track_augmentation: false
+
+analysis_cluster_method: auto
+analysis_cluster_l2_normalize: true
+analysis_cluster_standardize: true
+analysis_cluster_pca_var: 0.98
+analysis_cluster_pca_max_components: 32
+analysis_cluster_k_values: [40]
+analysis_progress_every_batches: 20
+analysis_max_samples_total: 0
+analysis_tsne_max_samples: 8000
+analysis_tsne_n_iter: 1000
+analysis_interactive_max_points: 0
+analysis_md_use_all_points: true
+analysis_hdbscan_enabled: true
+analysis_hdbscan_fit_fraction: 0.25
+analysis_hdbscan_max_fit_samples: 50000
+analysis_hdbscan_target_k_min: 35
+analysis_hdbscan_target_k_max: 45
+analysis_hdbscan_min_cluster_size_candidates: []
+analysis_hdbscan_min_samples: null
+analysis_hdbscan_cluster_selection_epsilon: 0.0
+analysis_hdbscan_cluster_selection_method: leaf

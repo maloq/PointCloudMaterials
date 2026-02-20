@@ -94,6 +94,107 @@ def _to_finite_float(value) -> float | None:
     return out if np.isfinite(out) else None
 
 
+def _format_label_histogram(labels: np.ndarray, *, max_entries: int = 10) -> str:
+    arr = np.asarray(labels).reshape(-1)
+    if arr.size == 0:
+        return "[]"
+    unique, counts = np.unique(arr, return_counts=True)
+    order = np.argsort(-counts)
+    parts: list[str] = []
+    for idx in order[:max_entries]:
+        try:
+            label_text = str(int(unique[idx]))
+        except (TypeError, ValueError):
+            label_text = str(unique[idx])
+        parts.append(f"{label_text}:{int(counts[idx])}")
+    if unique.size > max_entries:
+        parts.append(f"...(+{int(unique.size - max_entries)} classes)")
+    return "[" + ", ".join(parts) + "]"
+
+
+def _validate_cached_supervised_arrays(
+    stage: str,
+    latents: np.ndarray,
+    labels: np.ndarray,
+    encoder_features: np.ndarray | None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
+    lat = np.asarray(latents, dtype=np.float32)
+    if lat.ndim == 1:
+        lat = lat.reshape(-1, 1)
+    elif lat.ndim > 2:
+        lat = lat.reshape(lat.shape[0], -1)
+
+    y = np.asarray(labels).reshape(-1)
+
+    if lat.shape[0] != y.shape[0]:
+        raise RuntimeError(
+            "Cached supervised arrays have mismatched sample counts: "
+            f"stage='{stage}', latents.shape={tuple(lat.shape)}, labels.shape={tuple(y.shape)}."
+        )
+
+    enc = None
+    if encoder_features is not None:
+        enc = np.asarray(encoder_features, dtype=np.float32)
+        if enc.ndim == 1:
+            enc = enc.reshape(-1, 1)
+        elif enc.ndim > 2:
+            enc = enc.reshape(enc.shape[0], -1)
+        if enc.shape[0] != lat.shape[0]:
+            raise RuntimeError(
+                "Cached encoder feature array has mismatched sample count: "
+                f"stage='{stage}', encoder_features.shape={tuple(enc.shape)}, "
+                f"latents.shape={tuple(lat.shape)}."
+            )
+
+    n_samples = int(lat.shape[0])
+    if n_samples <= 0:
+        raise RuntimeError(
+            f"Cached supervised arrays are empty for stage='{stage}'; cannot compute metrics."
+        )
+
+    latent_bad_rows = ~np.isfinite(lat).all(axis=1)
+    label_bad_rows = (
+        ~np.isfinite(y.astype(np.float64, copy=False))
+        if np.issubdtype(y.dtype, np.floating)
+        else np.zeros(n_samples, dtype=bool)
+    )
+    enc_bad_rows = (
+        ~np.isfinite(enc).all(axis=1)
+        if enc is not None
+        else np.zeros(n_samples, dtype=bool)
+    )
+    bad_rows = latent_bad_rows | label_bad_rows | enc_bad_rows
+    bad_count = int(bad_rows.sum())
+    if bad_count == 0:
+        return lat, y, enc
+
+    good_count = int(n_samples - bad_count)
+    details = (
+        f"stage='{stage}', total_rows={n_samples}, invalid_rows={bad_count}, "
+        f"invalid_latent_rows={int(latent_bad_rows.sum())}, "
+        f"invalid_label_rows={int(label_bad_rows.sum())}, "
+        f"invalid_encoder_feature_rows={int(enc_bad_rows.sum())}, "
+        f"label_histogram={_format_label_histogram(y)}."
+    )
+    if good_count <= 0:
+        raise RuntimeError(
+            "All cached supervised rows are non-finite; cannot compute supervised metrics. "
+            f"{details} This indicates non-finite encoder outputs/checkpoint weights."
+        )
+
+    warnings.warn(
+        "Dropping non-finite cached supervised rows before metric computation. "
+        f"{details}",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+    lat = lat[~bad_rows]
+    y = y[~bad_rows]
+    if enc is not None:
+        enc = enc[~bad_rows]
+    return lat, y, enc
+
+
 def _primary_kmeansplusplus_hungarian_key(
     cluster_metrics: dict[str, float],
     eval_k: int | None,
@@ -906,9 +1007,25 @@ def cache_supervised_batch(
     if effective_batch <= 0:
         return
 
-    cache["latents"].append(z_inv[:effective_batch].detach().to(torch.float32).cpu())
+    lat_chunk = z_inv[:effective_batch].detach().to(torch.float32)
+    if not bool(torch.isfinite(lat_chunk).all()):
+        nonfinite = int((~torch.isfinite(lat_chunk)).sum().item())
+        raise RuntimeError(
+            "Non-finite invariant latents detected while caching supervised metrics: "
+            f"stage='{stage}', batch_rows={effective_batch}, latent_shape={tuple(lat_chunk.shape)}, "
+            f"nonfinite_values={nonfinite}/{lat_chunk.numel()}."
+        )
+    cache["latents"].append(lat_chunk.cpu())
     if enc is not None:
-        cache["encoder_features"].append(enc[:effective_batch].cpu())
+        enc_chunk = enc[:effective_batch]
+        if not bool(torch.isfinite(enc_chunk).all()):
+            nonfinite = int((~torch.isfinite(enc_chunk)).sum().item())
+            raise RuntimeError(
+                "Non-finite encoder features detected while caching supervised metrics: "
+                f"stage='{stage}', batch_rows={effective_batch}, feature_shape={tuple(enc_chunk.shape)}, "
+                f"nonfinite_values={nonfinite}/{enc_chunk.numel()}."
+            )
+        cache["encoder_features"].append(enc_chunk.cpu())
     cache["class_id"].append(class_id[:effective_batch].cpu())
 
 
@@ -935,6 +1052,12 @@ def log_supervised_metrics(module, stage: str) -> None:
     if cache.get("encoder_features"):
         encoder_features = torch.cat(cache["encoder_features"], dim=0).numpy()
     latents, labels, encoder_features = _gather_latents_labels_ddp(latents, labels, encoder_features)
+    latents, labels, encoder_features = _validate_cached_supervised_arrays(
+        stage,
+        latents,
+        labels,
+        encoder_features,
+    )
 
     stage_l = str(stage).lower()
     trainer = getattr(module, "trainer", None)
@@ -967,6 +1090,14 @@ def log_supervised_metrics(module, stage: str) -> None:
         acc_runs_by_method = {}
 
     hungarian_eval_k = _resolve_hungarian_eval_k(module, stage_l, labels)
+    if stage_l in {"val", "test"} and hungarian_eval_k is not None:
+        if int(latents.shape[0]) < int(hungarian_eval_k):
+            raise RuntimeError(
+                "Insufficient finite samples for Hungarian ACC evaluation: "
+                f"stage='{stage_l}', samples={int(latents.shape[0])}, "
+                f"hungarian_eval_k={int(hungarian_eval_k)}. "
+                "Increase supervised cache limits or inspect non-finite latent rows."
+            )
     metrics = compute_cluster_metrics(
         latents,
         labels,
@@ -981,8 +1112,15 @@ def log_supervised_metrics(module, stage: str) -> None:
         canonical_acc_key = _primary_kmeansplusplus_hungarian_key(metrics, hungarian_eval_k)
         if canonical_acc_key is None:
             raise RuntimeError(
-                "Canonical test metrics are missing kmeans++ Hungarian ACC. "
-                f"Available keys: {sorted(metrics.keys())}."
+                "Canonical test metrics are missing kmeans++ Hungarian ACC after clustering evaluation. "
+                f"stage='test', samples={int(latents.shape[0])}, latent_dim={int(latents.shape[1])}, "
+                f"unique_labels={int(np.unique(labels).size)}, "
+                f"label_histogram={_format_label_histogram(labels)}, "
+                f"hungarian_eval_k={int(hungarian_eval_k)}, "
+                f"acc_methods={list(acc_methods)}, acc_runs={max(1, int(acc_runs))}, "
+                f"acc_runs_by_method={acc_runs_by_method}, "
+                f"available_keys={sorted(metrics.keys())}. "
+                "This usually indicates clustering failures in all ACC runs."
             )
         canonical_acc = _to_finite_float(metrics.get(canonical_acc_key))
         if canonical_acc is None:

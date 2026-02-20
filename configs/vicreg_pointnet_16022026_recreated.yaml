@@ -3,59 +3,23 @@ defaults:
   - _self_
 
 project_name: pointnet
-experiment_name: VICREG_MODELNET40_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: VICREG_MODELNET40_pointnet
 wandb_mode: online
 
 model_type: vicreg
 latent_size: 96
 
-load_supervised_checkpoint: False
-# Full-state training resume (restores epoch/optimizer/scheduler state).
+load_supervised_checkpoint: false
 resume_from_checkpoint: null
-# Weights-only initialization (starts a fresh run from loaded model params).
 init_from_checkpoint: null
-# If true, require exact state-dict key match when loading init weights.
 init_from_checkpoint_strict: false
-
-# encoder:
-#   name: VN_REVNET_Backbone
-#   kwargs:
-#     latent_size: ${latent_size}
-#     sa_npoints: [160, 80]
-#     sa_channels: [200, 400]
-#     attn_hidden: 400
-#     transformer_depth: 5
-
-
-# encoder:
-#   name: PnE_VN
-#   kwargs:
-#     latent_size: ${latent_size}
-#     n_knn: 20
-#     feature_transform: false
-#     hidden_dim1: 320
-#     hidden_dim2: 1024
-#     # feature_dims: [128, 128, 256, 512, 1024]
-
 
 encoder:
   name: PnE_L
   kwargs:
     latent_size: ${latent_size}
 
-
-# encoder:
-#   name: EGNN_Encoder
-#   kwargs:
-#     latent_size: ${latent_size}
-#     n_knn: 20
-#     num_layers: 8
-#     hidden_dim: 128
-#     pooling: mean
-#     use_fast_layer: true
-
-
-# Required by the model factory (decoder is not used by contrastive training).
+# Required by model factory; not used by contrastive objective directly.
 decoder:
   name: VN_REVNET_Anchor
   kwargs:
@@ -63,9 +27,10 @@ decoder:
     latent_size: ${latent_size}
 
 learning_rate: 0.0015
+decay_rate: 0.0001
 
 batch_size: 128
-precision: bf16-true
+precision: 32-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 10
 auto_batch_size_search: true
@@ -78,14 +43,14 @@ auto_batch_size_adjust_accumulate: true
 auto_batch_size_target_effective_batch: null
 auto_batch_size_strict: false
 
-enable_swa: False
+enable_swa: false
 swa_epoch_start: 1000
 epochs: 120
 max_samples: 0
 
-gpu: True
-devices: [0, 1]
-ddp_find_unused_parameters: True
+gpu: true
+devices: [0]
+ddp_find_unused_parameters: true
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
@@ -95,33 +60,28 @@ warmup_enabled: true
 warmup_epochs: 12
 warmup_start_factor: 0.1
 
-decay_rate: 0.0001
-
-# Cached samples used for class-level test metrics.
 max_supervised_samples: 12000
 max_test_samples: 12000
 cache_train_supervised_metrics: false
 enable_embedding_metrics: false
 disable_dataset_augmentation_for_ssl: true
 
-# Test clustering accuracies (Hungarian matching) infer K from class labels.
-test_cluster_acc_methods: [kmeans++]
-test_cluster_acc_runs: 1
+test_cluster_eval_k: 40
+enable_test_so3_metrics: true
 test_so3_rotation_runs: 5
 test_so3_rotation_seed: 12345
-enable_test_so3_metrics: true
 
-idec_enabled: False
+idec_enabled: false
 idec_num_clusters: 0
 idec_gamma: 0.1
 idec_update_interval: 200
 idec_delta: 0.001
 idec_max_iter: null
-idec_use_global_p: True
-idec_normalize_z: True
-idec_init_kmeans: True
+idec_use_global_p: true
+idec_normalize_z: true
+idec_init_kmeans: true
 
-barlow_enabled: False
+barlow_enabled: false
 
 pose_enabled: false
 pose_weight: 0.0
@@ -134,24 +94,7 @@ symmetry:
   beta: 30.0
   angle_eps: 1e-6
 
-data:
-  modelnet_split: train
-  modelnet_eval_split: test
-  num_points: 1025
-  model_points: 800
-  train_ratio: 0.9
-  add_center_point: true
-  pre_normalize: true
-  normalize: true
-  augmentation:
-    rotation_scale: 0.0
-    noise_scale: 0.0
-    jitter_scale: 0.0
-    scaling_range: 0.0
-    track_augmentation: false
-
-vicreg_enabled: True
-# If true, force latent invariants to per-channel norms only (no Gram/tensor-product terms).
+vicreg_enabled: true
 contrastive_norms_only_latent: false
 vicreg_weight: 1.0
 vicreg_sim_coeff: 25.0
@@ -166,7 +109,7 @@ vicreg_drop_apply_to_both: true
 vicreg_neighbor_view: true
 vicreg_neighbor_view_mode: both
 vicreg_neighbor_k: 8
-vicreg_neighbor_max_relative_distance: 0.10
+vicreg_neighbor_max_relative_distance: 0.1
 vicreg_view_points: ${data.model_points}
 vicreg_view_crop_mode: random
 vicreg_rotation_mode: none
@@ -174,7 +117,7 @@ vicreg_rotation_deg: 0.0
 vicreg_strain_std: 0.04
 vicreg_strain_volume_preserve: true
 vicreg_occlusion_mode: mixed
-vicreg_occlusion_view: second
+vicreg_occlusion_view: both
 vicreg_occlusion_slab_frac: 0.2
 vicreg_occlusion_cone_deg: 25.0
 vicreg_std_eps: 1e-4
@@ -211,3 +154,5 @@ analysis_hdbscan_min_cluster_size_candidates: []
 analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
+analysis_grain_enabled: false
+analysis_num_workers: 0

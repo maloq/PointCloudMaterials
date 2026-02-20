@@ -1,0 +1,79 @@
+# Ablation: contrastive_norms_only_latent with bigger latent vs off.
+# Uses polycrystalline balanced geometries dataset with VN_REVNET_Backbone.
+# When norms_only_latent=True the invariant head uses per-channel norms only,
+# producing a smaller effective representation.  We compensate by increasing
+# latent_size and compare against the baseline (norms_only_latent=False).
+#
+# Usage:
+#   python scripts/run_experiments.py --plan experiments/norms_only_latent_ablation.yaml
+#   python scripts/run_experiments.py --plan experiments/norms_only_latent_ablation.yaml --dry-run
+
+name: norms_only_latent_ablation
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_vn_molecular.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 120G
+  time: "24:00:00"
+
+base_overrides:
+  - "encoder.name=VN_REVNET_Backbone"
+  - auto_batch_size_search=true
+  - auto_batch_size_adjust_accumulate=false
+  - batch_size=64
+  - accumulate_grad_batches=8
+  - analysis_hdbscan_enabled=false
+  - "devices=[0]"
+
+experiments:
+  # --- norms_only_latent ON  +  larger latent sizes ---
+  - name: norms_only_L160
+    overrides:
+      - "contrastive_norms_only_latent=true"
+      - "latent_size=160"
+  - name: norms_only_L240
+    overrides:
+      - "contrastive_norms_only_latent=true"
+      - "latent_size=240"
+  - name: norms_only_L320
+    overrides:
+      - "contrastive_norms_only_latent=true"
+      - "latent_size=320"
+
+  # --- norms_only_latent OFF  (baseline, default tensor_product mode) ---
+  - name: baseline_L80
+    overrides:
+      - "contrastive_norms_only_latent=false"
+      - "latent_size=80"
+  - name: baseline_L160
+    overrides:
+      - "contrastive_norms_only_latent=false"
+      - "latent_size=160"
+
+metrics:
+  final:
+    - test/loss
+    - test/class/encoder_linear_svm_accuracy
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian_rotated
+    - test/class/nmi_rotated
+    - test/class/ari_rotated
+    - test/class/ari_rotated_std
+    - test/class/nmi_rotated_std
+
+  best:
+    - name: val/class/encoder_linear_svm_accuracy
+      mode: max
+    - name: val/loss
+      mode: min
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+
+output_root: output/experiments

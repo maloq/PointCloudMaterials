@@ -41,8 +41,8 @@ experiments:
     overrides: ["encoder.name=EGNN_Encoder"]
 metrics:
   final:
-    - val/loss
-    - val/class/encoder_linear_svm_accuracy
+    - test/loss
+    - test/class/encoder_linear_svm_accuracy
     - test/class/acc_kmeans_plusplus_hungarian
     - test/class/nmi
     - test/class/ari

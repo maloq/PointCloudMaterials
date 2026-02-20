@@ -23,6 +23,7 @@ from src.training_methods.contrastive_learning.supervised_cache import (
     log_supervised_metrics,
     reset_supervised_cache,
 )
+from src.training_methods.contrastive_learning.pointcontrast import PointContrastLoss
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 from src.training_methods.equivariant_autoencoder.idec import resolve_latent_dim
 from src.utils.pointcloud_ops import crop_to_num_points
@@ -31,7 +32,7 @@ from src.utils.spd_utils import get_optimizers_and_scheduler
 
 class BarlowTwinsModule(pl.LightningModule):
     """
-    Self-supervised Barlow Twins / VICReg training for point cloud encoders.
+    Self-supervised Barlow Twins / VICReg / PointContrast training for point cloud encoders.
     """
 
     def __init__(self, cfg):
@@ -58,6 +59,11 @@ class BarlowTwinsModule(pl.LightningModule):
             )
             if vicreg_enabled
             else None
+        )
+        self.pointcontrast = PointContrastLoss.from_config(
+            cfg,
+            input_dim=latent_dim,
+            invariant_mode_override=invariant_mode_override,
         )
         self._active_invariant_losses = self._resolve_active_invariant_losses()
         self._shared_invariant_spec = self._resolve_shared_invariant_spec()
@@ -94,6 +100,10 @@ class BarlowTwinsModule(pl.LightningModule):
     def vicreg_projector(self):
         return self.vicreg.projector if self.vicreg is not None else None
 
+    @property
+    def pointcontrast_projector(self):
+        return self.pointcontrast.projector if self.pointcontrast is not None else None
+
     def _resolve_active_invariant_losses(self) -> dict[str, object]:
         losses: dict[str, object] = {}
         if getattr(self.barlow, "invariant_head", None) is not None and self.barlow.enabled and self.barlow.weight > 0:
@@ -105,6 +115,13 @@ class BarlowTwinsModule(pl.LightningModule):
             and self.vicreg.weight > 0
         ):
             losses["vicreg"] = self.vicreg
+        if (
+            self.pointcontrast is not None
+            and getattr(self.pointcontrast, "invariant_head", None) is not None
+            and self.pointcontrast.enabled
+            and self.pointcontrast.weight > 0
+        ):
+            losses["pointcontrast"] = self.pointcontrast
         if losses:
             return losses
 
@@ -113,6 +130,8 @@ class BarlowTwinsModule(pl.LightningModule):
             return {"barlow": self.barlow}
         if self.vicreg is not None and getattr(self.vicreg, "invariant_head", None) is not None:
             return {"vicreg": self.vicreg}
+        if self.pointcontrast is not None and getattr(self.pointcontrast, "invariant_head", None) is not None:
+            return {"pointcontrast": self.pointcontrast}
         return {}
 
     @staticmethod
@@ -149,9 +168,9 @@ class BarlowTwinsModule(pl.LightningModule):
         for name in names[1:]:
             if named_specs[name] != ref_spec:
                 raise ValueError(
-                    "Barlow and VICReg invariant inputs must match when both are active, but specs differ: "
+                    "Active contrastive objectives must use matching invariant specs, but got: "
                     f"{ref_name}={ref_spec}, {name}={named_specs[name]}. "
-                    "Set vicreg_invariant_* to match barlow_invariant_* (or disable one objective)."
+                    "Align *invariant_* settings across objectives (or disable one objective)."
                 )
         return ref_spec
 
@@ -165,6 +184,8 @@ class BarlowTwinsModule(pl.LightningModule):
             return self.barlow._invariant(inv_latent_net, eq_z)
         if "vicreg" in self._active_invariant_losses and self.vicreg is not None:
             return self.vicreg._invariant(inv_latent_net, eq_z)
+        if "pointcontrast" in self._active_invariant_losses and self.pointcontrast is not None:
+            return self.pointcontrast._invariant(inv_latent_net, eq_z)
         return self.barlow._invariant(inv_latent_net, eq_z)
 
     @staticmethod
@@ -420,6 +441,20 @@ class BarlowTwinsModule(pl.LightningModule):
             for name, value in vicreg_metrics.items():
                 self._log_metric(stage, name, value)
 
+        if self.pointcontrast is not None:
+            pointcontrast_loss, pointcontrast_metrics = self.pointcontrast.compute_loss(
+                pc=pc_raw,
+                encoder=self.encoder,
+                prepare_input=self._prepare_encoder_input,
+                split_output=self._split_encoder_output,
+                current_epoch=int(self.current_epoch),
+                invariant_transform=self._shared_invariant,
+            )
+            if pointcontrast_loss is not None:
+                losses["pointcontrast"] = pointcontrast_loss
+            for name, value in pointcontrast_metrics.items():
+                self._log_metric(stage, name, value)
+
         # Pose loss (relative-rotation NLL + optional equivariance consistency)
         pose_loss, pose_metrics = self._compute_pose_loss(pc, batch_idx, stage)
         if pose_loss is not None:
@@ -433,6 +468,9 @@ class BarlowTwinsModule(pl.LightningModule):
         if "vicreg" in losses and self.vicreg is not None:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
+        if "pointcontrast" in losses and self.pointcontrast is not None:
+            pointcontrast_total = self.pointcontrast.weight * losses["pointcontrast"]
+            total_loss = pointcontrast_total if total_loss is None else total_loss + pointcontrast_total
         if "pose" in losses:
             pose_total = self.pose_weight * losses["pose"]
             total_loss = pose_total if total_loss is None else total_loss + pose_total
@@ -461,6 +499,9 @@ class BarlowTwinsModule(pl.LightningModule):
         if "vicreg" in losses:
             # Unweighted VICReg objective term.
             metrics_to_log["vicreg"] = losses["vicreg"]
+        if "pointcontrast" in losses:
+            # Unweighted PointContrast objective term.
+            metrics_to_log["pointcontrast"] = losses["pointcontrast"]
         if "pose" in losses:
             # Unweighted pose-regression objective term.
             metrics_to_log["pose"] = losses["pose"]
@@ -597,4 +638,8 @@ class BarlowTwinsModule(pl.LightningModule):
         log_supervised_metrics(self, stage)
 
 
-__all__ = ["BarlowTwinsModule", "PoseRotationHead"]
+class PointContrastModule(BarlowTwinsModule):
+    """Alias for clarity when running PointContrast-specific experiments."""
+
+
+__all__ = ["BarlowTwinsModule", "PointContrastModule", "PoseRotationHead"]

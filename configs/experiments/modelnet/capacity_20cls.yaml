@@ -1,9 +1,0 @@
-# Experiment 3: Capacity (20 classes)
-
-data:
-  classes: [
-    "airplane", "bathtub", "table", "bench", "bookshelf", 
-    "bottle", "bowl", "car", "chair", "cone", 
-    "cup", "curtain", "desk", "door", "dresser", 
-    "flower_pot", "glass_box", "guitar", "keyboard", "lamp"
-  ]

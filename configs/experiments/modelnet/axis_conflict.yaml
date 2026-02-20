@@ -1,6 +1,0 @@
-# Experiment 1: Axis Conflict
-# Class A (Tall): lamp or bottle
-# Class B (Flat/Long): airplane or car
-
-data:
-  classes: ["lamp", "airplane"]

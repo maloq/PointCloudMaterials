@@ -154,7 +154,12 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         dataset_type = self._get_param("dataset_type", data_cfg, synth_dict, default="synthetic_env")
         model_type = str(getattr(self.cfg, "model_type", "")).lower()
         disable_dataset_aug_for_ssl = bool(getattr(self.cfg, "disable_dataset_augmentation_for_ssl", True))
-        uses_ssl_views = model_type == "barlow_twins" or bool(getattr(self.cfg, "vicreg_enabled", False))
+        uses_ssl_views = (
+            model_type in {"barlow_twins", "vicreg", "pointcontrast"}
+            or bool(getattr(self.cfg, "barlow_enabled", False))
+            or bool(getattr(self.cfg, "vicreg_enabled", False))
+            or bool(getattr(self.cfg, "pointcontrast_enabled", False))
+        )
         if uses_ssl_views and disable_dataset_aug_for_ssl:
             has_dataset_aug = any(
                 float(v or 0.0) != 0.0 for v in (rotation_scale, noise_scale, jitter_scale, scaling_range)

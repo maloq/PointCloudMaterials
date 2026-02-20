@@ -1,6 +1,0 @@
-# Experiment 2: Symmetry & Ambiguity
-# Symmetric: bottle
-# Directional: car
-
-data:
-  classes: ["bottle", "car"]
