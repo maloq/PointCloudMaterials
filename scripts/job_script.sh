@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=VICREG_VN_MN40        # Name of your job
+#SBATCH --job-name=VICREG_VN       # Name of your job
 #SBATCH --output=output/slurm_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=output/slurm_outputs/%x_%j.err             # Error file
-#SBATCH --partition=L40S              # Partition to submit to (A100, V100, etc.)
-#SBATCH --gpus-per-node=2             # Request 1 node
-#SBATCH --gres=gpu:2                  # Request 1 GPU
+#SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --gpus-per-node=1             # Request 1 node
+#SBATCH --gres=gpu:1                  # Request 1 GPU
 #SBATCH --cpus-per-task=16             # Request 8 CPU cores
 #SBATCH --mem=94G                     # Request 32 GB of memory
 #SBATCH --time=24:00:00               # Time limit for the job (hh:mm:ss)
@@ -23,5 +23,5 @@ export PYTHONPATH=$PYTHONPATH:/home/infres/vmorozov/PointCloudMaterials
 
 # Run the Python script
 # srun python src/training_methods/spd/train_spd.py --config-name spd
-srun python src/training_methods/contrastive_learning/train_contrastive.py --config-name vicreg_vn_modelnet40
+srun python src/training_methods/contrastive_learning/train_contrastive.py --config-name vicreg_vn_molecular
 echo "Job finished at: $(date)"

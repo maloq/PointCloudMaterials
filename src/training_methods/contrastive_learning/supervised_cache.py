@@ -909,6 +909,7 @@ def init_supervised_cache(module, cfg) -> None:
         getattr(cfg, "train_split_svm_max_samples", 0) or 0
     )
     module.train_split_svm_c = float(getattr(cfg, "train_split_svm_c", 0.018))
+    module.enable_svm_accuracy = bool(getattr(cfg, "enable_svm_accuracy", True))
     (
         module.val_cluster_acc_methods,
         module.val_cluster_acc_runs,
@@ -1144,19 +1145,20 @@ def log_supervised_metrics(module, stage: str) -> None:
         metrics,
         hungarian_eval_k=hungarian_eval_k if stage_l in {"val", "test"} else None,
     )
-    if stage_l in {"val", "test"} and encoder_features is not None:
-        svm_acc = _compute_linear_svm_accuracy(encoder_features, labels)
-        if svm_acc is not None:
-            metrics["ENCODER_LINEAR_SVM_ACCURACY"] = svm_acc
-    if stage_l == "test":
-        svm_eval_features = encoder_features if encoder_features is not None else latents
-        train_to_test_svm = _compute_train_to_test_svm_accuracy(
-            module,
-            svm_eval_features,
-            labels,
-        )
-        if train_to_test_svm is not None:
-            metrics["ENCODER_LINEAR_SVM_TRAIN_TO_TEST_ACCURACY"] = train_to_test_svm
+    if bool(getattr(module, "enable_svm_accuracy", True)):
+        if stage_l in {"val", "test"} and encoder_features is not None:
+            svm_acc = _compute_linear_svm_accuracy(encoder_features, labels)
+            if svm_acc is not None:
+                metrics["ENCODER_LINEAR_SVM_ACCURACY"] = svm_acc
+        if stage_l == "test":
+            svm_eval_features = encoder_features if encoder_features is not None else latents
+            train_to_test_svm = _compute_train_to_test_svm_accuracy(
+                module,
+                svm_eval_features,
+                labels,
+            )
+            if train_to_test_svm is not None:
+                metrics["ENCODER_LINEAR_SVM_TRAIN_TO_TEST_ACCURACY"] = train_to_test_svm
     if metrics:
         # class/* metrics: clustering/classification quality against class_id labels.
         for name, value in metrics.items():

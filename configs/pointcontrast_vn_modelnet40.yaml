@@ -15,14 +15,10 @@ init_from_checkpoint: null
 init_from_checkpoint_strict: false
 
 encoder:
-  name: EGNN_Encoder
+  name: PnE_L
   kwargs:
     latent_size: ${latent_size}
-    n_knn: 20
-    num_layers: 8
-    hidden_dim: 128
-    pooling: mean
-    use_fast_layer: true
+
 
 decoder:
   name: VN_REVNET_Anchor

@@ -27,7 +27,7 @@ from src.training_methods.contrastive_learning.pointcontrast import PointContras
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 from src.training_methods.equivariant_autoencoder.idec import resolve_latent_dim
 from src.utils.pointcloud_ops import crop_to_num_points
-from src.utils.spd_utils import get_optimizers_and_scheduler
+from src.utils.spd_utils import get_optimizers_and_scheduler, cached_sample_count
 
 
 class BarlowTwinsModule(pl.LightningModule):
@@ -398,17 +398,10 @@ class BarlowTwinsModule(pl.LightningModule):
         pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
         pc = self._prepare_model_input(pc_raw)
 
-        # Cache embeddings for supervised diagnostics only when requested.
+        # Determine whether to cache embeddings for supervised diagnostics.
         should_cache_stage = stage in self._supervised_cache and (
             stage != "train" or self.cache_train_supervised_metrics
         )
-        if should_cache_stage:
-            with torch.no_grad():
-                inv_latent_net, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
-                z_inv = self._invariant_from_eq_latent(eq_z, inv_latent_net=inv_latent_net, stage=stage)
-            if z_inv is not None:
-                # Cache the same invariant representation that drives SSL loss.
-                self._cache_supervised_batch(stage, z_inv, meta, encoder_features=z_inv)
 
         losses = {}
 
@@ -509,6 +502,24 @@ class BarlowTwinsModule(pl.LightningModule):
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():
             self._log_metric(stage, name, value, prog_bar=(name in prog_bar_keys))
+
+        # Cache embeddings for supervised diagnostics.  Skip the encoder
+        # forward pass entirely once the sample-count limit has been reached
+        # to avoid unnecessary GPU work on remaining validation batches.
+        if should_cache_stage:
+            limit = self._cache_limit_for_stage(stage)
+            cache = self._supervised_cache.get(stage)
+            already_cached = cached_sample_count(cache) if cache is not None else 0
+            if limit is None or already_cached < limit:
+                with torch.no_grad():
+                    inv_latent_net, eq_z = self._split_encoder_output(
+                        self.encoder(self._prepare_encoder_input(pc))
+                    )
+                    z_inv = self._invariant_from_eq_latent(
+                        eq_z, inv_latent_net=inv_latent_net, stage=stage
+                    )
+                if z_inv is not None:
+                    self._cache_supervised_batch(stage, z_inv, meta, encoder_features=z_inv)
 
         return total_loss
 

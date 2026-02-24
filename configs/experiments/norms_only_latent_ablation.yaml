@@ -23,10 +23,11 @@ base_overrides:
   - "encoder.name=VN_REVNET_Backbone"
   - auto_batch_size_search=true
   - auto_batch_size_adjust_accumulate=false
-  - batch_size=64
-  - accumulate_grad_batches=8
+  - batch_size=32
+  - accumulate_grad_batches=16
   - analysis_hdbscan_enabled=false
   - "devices=[0]"
+  - "pose.enabled=false"
 
 experiments:
   # --- norms_only_latent ON  +  larger latent sizes ---

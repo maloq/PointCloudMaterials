@@ -7,7 +7,7 @@ experiment_name: VICREG_MODELNET40_l${latent_size}_N${data.num_points}_M${data.m
 wandb_mode: online
 
 model_type: vicreg
-latent_size: 96
+latent_size: 200
 
 load_supervised_checkpoint: False
 # Full-state training resume (restores epoch/optimizer/scheduler state).
@@ -38,21 +38,21 @@ init_from_checkpoint_strict: false
 #     # feature_dims: [128, 128, 256, 512, 1024]
 
 
-encoder:
-  name: PnE_L
-  kwargs:
-    latent_size: ${latent_size}
-
-
 # encoder:
-#   name: EGNN_Encoder
+#   name: PnE_L
 #   kwargs:
 #     latent_size: ${latent_size}
-#     n_knn: 20
-#     num_layers: 8
-#     hidden_dim: 128
-#     pooling: mean
-#     use_fast_layer: true
+
+
+encoder:
+  name: EGNN_Encoder
+  kwargs:
+    latent_size: ${latent_size}
+    n_knn: 20
+    num_layers: 8
+    hidden_dim: 128
+    pooling: mean
+    use_fast_layer: true
 
 
 # Required by the model factory (decoder is not used by contrastive training).
@@ -62,7 +62,7 @@ decoder:
     num_points: ${data.model_points}
     latent_size: ${latent_size}
 
-learning_rate: 0.0015
+learning_rate: 0.001
 
 batch_size: 128
 precision: bf16-true
@@ -98,10 +98,12 @@ warmup_start_factor: 0.1
 decay_rate: 0.0001
 
 # Cached samples used for class-level test metrics.
-max_supervised_samples: 12000
-max_test_samples: 12000
+max_supervised_samples: 4000
+max_test_samples: 4000
 cache_train_supervised_metrics: false
 enable_embedding_metrics: false
+enable_svm_accuracy: false
+check_val_every_n_epoch: 20
 disable_dataset_augmentation_for_ssl: true
 
 # Test clustering accuracies (Hungarian matching) infer K from class labels.
