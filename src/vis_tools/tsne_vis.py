@@ -1,4 +1,5 @@
 import os
+import inspect
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Dict, Any
@@ -10,13 +11,18 @@ def compute_tsne(
     *,
     random_state: int = 42,
     perplexity: int | None = None,
-    n_iter: int  = 1000,
+    n_iter: int = 1000,
 ) -> np.ndarray:
     """Project high-dimensional latents to 2D using t-SNE.
 
     Picks a safe perplexity based on the number of samples when not provided.
     """
-    num_samples = int(latents.shape[0])
+    arr = np.asarray(latents, dtype=np.float32)
+    if arr.ndim != 2:
+        raise ValueError(
+            f"latents must be a 2D array of shape (N, D), got {arr.shape}."
+        )
+    num_samples = int(arr.shape[0])
     if num_samples < 2:
         raise ValueError("Cannot compute t-SNE with fewer than 2 samples.")
 
@@ -24,6 +30,13 @@ def compute_tsne(
         # Ensure 2 <= perplexity < num_samples
         auto = max(2, min(30, (num_samples - 1) // 3))
         perplexity = min(auto, num_samples - 1)
+    else:
+        perplexity = int(perplexity)
+    if perplexity < 1 or perplexity >= num_samples:
+        raise ValueError(
+            "Invalid t-SNE perplexity. Expected 1 <= perplexity < number of samples, "
+            f"got perplexity={perplexity}, num_samples={num_samples}."
+        )
 
     # Build kwargs to avoid passing None for sklearn parameters
     tsne_kwargs: Dict[str, Any] = {
@@ -34,10 +47,23 @@ def compute_tsne(
         "perplexity": perplexity,
     }
     if n_iter is not None:
-        tsne_kwargs["n_iter"] = int(n_iter)
+        n_iter_int = int(n_iter)
+        if n_iter_int <= 0:
+            raise ValueError(f"n_iter must be > 0, got {n_iter_int}.")
+        tsne_params = inspect.signature(TSNE.__init__).parameters
+        if "max_iter" in tsne_params:
+            tsne_kwargs["max_iter"] = n_iter_int
+        elif "n_iter" in tsne_params:
+            tsne_kwargs["n_iter"] = n_iter_int
+        else:
+            raise RuntimeError(
+                "Unsupported sklearn TSNE signature: expected parameter "
+                "'max_iter' or 'n_iter', but found neither. "
+                f"Available parameters: {sorted(tsne_params.keys())}."
+            )
 
     tsne = TSNE(**tsne_kwargs)
-    return tsne.fit_transform(latents)
+    return tsne.fit_transform(arr)
 
 
 def save_tsne_plot(

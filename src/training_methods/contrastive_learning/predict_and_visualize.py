@@ -21,6 +21,9 @@ from sklearn.preprocessing import StandardScaler
 sys.path.append(os.getcwd())
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
+from src.training_methods.contrastive_learning.cluster_figure_utils import (
+    _save_fixed_k_cluster_figure_set,
+)
 from src.training_methods.contrastive_learning.cluster_profile_analysis import (
     generate_cluster_profile_reports,
     resolve_point_scale,
@@ -94,1112 +97,6 @@ def _fmt_metric(value: Any, digits: int = 4) -> str:
     if isinstance(value, (float, np.floating)):
         return f"{float(value):.{digits}f}"
     return str(value)
-
-
-def _l2_normalize_rows(x: np.ndarray, eps: float = 1e-8) -> np.ndarray:
-    norms = np.linalg.norm(x, axis=1, keepdims=True)
-    return x / np.clip(norms, eps, None)
-
-
-def _cluster_palette(n_colors: int) -> list[str]:
-    if n_colors <= 0:
-        return []
-    # High-contrast, non-pastel palette for dense MD cluster views.
-    base = [
-        "#d7263d",  # red
-        "#1f4ed8",  # blue
-        "#1faa59",  # green
-        "#ff7f11",  # orange
-        "#6a00f4",  # purple
-        "#00a6a6",  # cyan/teal
-        "#f72585",  # magenta
-        "#ffbe0b",  # yellow
-        "#118ab2",  # azure
-        "#073b4c",  # deep blue-green
-    ]
-    if n_colors <= len(base):
-        return base[:n_colors]
-    extras = [mcolors.to_hex(c) for c in plt.cm.tab20(np.linspace(0, 1, 20))]
-    palette = list(base)
-    for color in extras:
-        if len(palette) >= n_colors:
-            break
-        if color not in palette:
-            palette.append(color)
-    if len(palette) < n_colors:
-        raise RuntimeError(
-            f"Failed to build enough distinct colors for {n_colors} clusters; got {len(palette)}."
-        )
-    return palette
-
-
-def _build_cluster_color_map(cluster_labels: np.ndarray) -> dict[int, str]:
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
-    valid_ids = sorted(int(v) for v in np.unique(labels) if int(v) >= 0)
-    if not valid_ids:
-        raise ValueError("Cannot build cluster color map: no non-negative cluster IDs were found.")
-    colors = _cluster_palette(len(valid_ids))
-    return {cid: colors[i] for i, cid in enumerate(valid_ids)}
-
-
-def _compute_local_crystal_order_score(
-    points: np.ndarray,
-    *,
-    knn_k: int = 6,
-) -> float:
-    pts = np.asarray(points, dtype=np.float32)
-    if pts.ndim != 2 or pts.shape[1] < 3:
-        raise ValueError(
-            f"Expected points with shape (N, >=3) for crystal order scoring, got {pts.shape}."
-        )
-    pts = pts[:, :3]
-    if pts.shape[0] <= int(knn_k):
-        raise ValueError(
-            f"Need more than knn_k={knn_k} points to score local order, got {pts.shape[0]}."
-        )
-
-    center_idx = int(np.argmin(np.linalg.norm(pts, axis=1)))
-    pts = pts - pts[center_idx]
-    dmat = np.linalg.norm(pts[:, None, :] - pts[None, :, :], axis=-1)
-    np.fill_diagonal(dmat, np.inf)
-    nn = np.sort(dmat, axis=1)[:, : int(knn_k)]
-    if not np.all(np.isfinite(nn)):
-        raise ValueError("Encountered non-finite nearest-neighbor distances while scoring order.")
-
-    nn_flat = nn.reshape(-1)
-    nn_mean = float(np.mean(nn_flat))
-    if not np.isfinite(nn_mean) or nn_mean <= 1e-12:
-        raise ValueError(
-            f"Invalid nearest-neighbor mean distance computed for score: {nn_mean}."
-        )
-    nn_cv = float(np.std(nn_flat) / nn_mean)
-
-    first_nn = nn[:, 0]
-    cutoff = float(np.median(first_nn) * 1.35)
-    if not np.isfinite(cutoff) or cutoff <= 0.0:
-        raise ValueError(f"Invalid coordination cutoff computed from nearest neighbors: {cutoff}.")
-    coord = np.sum(dmat <= cutoff, axis=1).astype(np.float32)
-    coord_mean = float(np.mean(coord))
-    coord_cv = float(np.std(coord) / max(coord_mean, 1e-6))
-    shell_cv = float(np.std(first_nn) / max(float(np.mean(first_nn)), 1e-6))
-
-    disorder = nn_cv + 0.7 * coord_cv + 0.6 * shell_cv
-    return float(1.0 / max(disorder, 1e-6))
-
-
-def _resolve_crystal_like_clusters(
-    dataset: Any,
-    cluster_labels: np.ndarray,
-    *,
-    point_scale: float,
-    min_clusters: int = 2,
-    score_quantile: float = 0.6,
-    score_samples_per_cluster: int = 64,
-    score_knn_k: int = 6,
-    random_seed: int = 0,
-) -> dict[str, Any]:
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
-    if labels.size == 0:
-        raise ValueError("Cannot resolve crystal-like clusters: cluster_labels is empty.")
-    if not hasattr(dataset, "__getitem__"):
-        raise TypeError(
-            "Cannot resolve crystal-like clusters: dataset is not indexable and sample "
-            "point clouds cannot be evaluated."
-        )
-
-    cluster_ids = sorted(int(v) for v in np.unique(labels) if int(v) >= 0)
-    if not cluster_ids:
-        raise ValueError("Cannot resolve crystal-like clusters: no non-negative cluster IDs were found.")
-    min_clusters_eff = max(1, min(int(min_clusters), len(cluster_ids)))
-    q = float(score_quantile)
-    if not (0.0 <= q <= 1.0):
-        raise ValueError(
-            f"score_quantile must be in [0, 1], got {q}."
-        )
-    samples_per_cluster = max(1, int(score_samples_per_cluster))
-    knn_k = max(2, int(score_knn_k))
-
-    rng = np.random.default_rng(int(random_seed))
-    cluster_stats: dict[int, dict[str, Any]] = {}
-    score_by_cluster: dict[int, float] = {}
-
-    for cluster_id in cluster_ids:
-        idx = np.flatnonzero(labels == int(cluster_id))
-        if idx.size == 0:
-            continue
-        if idx.size > samples_per_cluster:
-            eval_idx = np.sort(rng.choice(idx, size=samples_per_cluster, replace=False))
-        else:
-            eval_idx = idx
-        sample_scores: list[float] = []
-        for sample_idx in eval_idx:
-            points = _load_points_from_dataset(
-                dataset,
-                int(sample_idx),
-                point_scale=float(point_scale),
-            )
-            sample_scores.append(
-                _compute_local_crystal_order_score(points, knn_k=knn_k)
-            )
-        if not sample_scores:
-            raise ValueError(
-                f"Cluster {cluster_id} produced no valid samples for crystal-order scoring."
-            )
-        arr = np.asarray(sample_scores, dtype=np.float64)
-        cluster_score = float(np.median(arr))
-        score_by_cluster[int(cluster_id)] = cluster_score
-        cluster_stats[int(cluster_id)] = {
-            "cluster_size": int(idx.size),
-            "score_samples": int(arr.size),
-            "order_score_mean": float(np.mean(arr)),
-            "order_score_median": cluster_score,
-            "order_score_std": float(np.std(arr)),
-            "order_score_min": float(np.min(arr)),
-            "order_score_max": float(np.max(arr)),
-        }
-
-    if len(score_by_cluster) < min_clusters_eff:
-        raise ValueError(
-            "Not enough clusters were scored for crystal-like selection: "
-            f"required at least {min_clusters_eff}, got {len(score_by_cluster)}."
-        )
-
-    ranked = sorted(score_by_cluster.items(), key=lambda kv: kv[1], reverse=True)
-    threshold = float(np.quantile(np.asarray(list(score_by_cluster.values()), dtype=np.float64), q))
-    selected = [cid for cid, score in ranked if float(score) >= threshold]
-    if len(selected) < min_clusters_eff:
-        selected = [cid for cid, _ in ranked[:min_clusters_eff]]
-
-    return {
-        "cluster_ids": [int(v) for v in sorted(selected)],
-        "min_clusters_requested": int(min_clusters),
-        "min_clusters_effective": int(min_clusters_eff),
-        "score_quantile": float(q),
-        "score_threshold": float(threshold),
-        "score_samples_per_cluster": int(samples_per_cluster),
-        "score_knn_k": int(knn_k),
-        "order_score_by_cluster": {int(k): float(v) for k, v in score_by_cluster.items()},
-        "cluster_stats": cluster_stats,
-        "selection_method": "unsupervised_local_order_score",
-    }
-
-
-def _set_equal_axes_3d(ax: Any, coords: np.ndarray) -> None:
-    mins = np.min(coords, axis=0)
-    maxs = np.max(coords, axis=0)
-    center = 0.5 * (mins + maxs)
-    span = float(np.max(maxs - mins))
-    if not np.isfinite(span) or span <= 0.0:
-        span = 1.0
-    half = 0.5 * span
-    ax.set_xlim(center[0] - half, center[0] + half)
-    ax.set_ylim(center[1] - half, center[1] + half)
-    ax.set_zlim(center[2] - half, center[2] + half)
-    if hasattr(ax, "set_box_aspect"):
-        ax.set_box_aspect((1.0, 1.0, 1.0))
-
-
-def _draw_cube_wireframe(
-    ax: Any,
-    mins: np.ndarray,
-    maxs: np.ndarray,
-    *,
-    color: str = "black",
-    linewidth: float = 1.0,
-    alpha: float = 0.95,
-) -> None:
-    x0, y0, z0 = [float(v) for v in mins]
-    x1, y1, z1 = [float(v) for v in maxs]
-    corners = np.asarray(
-        [
-            [x0, y0, z0],
-            [x1, y0, z0],
-            [x1, y1, z0],
-            [x0, y1, z0],
-            [x0, y0, z1],
-            [x1, y0, z1],
-            [x1, y1, z1],
-            [x0, y1, z1],
-        ],
-        dtype=np.float32,
-    )
-    edges = [
-        (0, 1), (1, 2), (2, 3), (3, 0),
-        (4, 5), (5, 6), (6, 7), (7, 4),
-        (0, 4), (1, 5), (2, 6), (3, 7),
-    ]
-    for a, b in edges:
-        ax.plot(
-            [corners[a, 0], corners[b, 0]],
-            [corners[a, 1], corners[b, 1]],
-            [corners[a, 2], corners[b, 2]],
-            color=color,
-            linewidth=linewidth,
-            alpha=alpha,
-        )
-
-
-def _sample_indices_stratified(
-    labels: np.ndarray,
-    max_points: int | None,
-    *,
-    random_seed: int = 0,
-) -> np.ndarray:
-    labels = np.asarray(labels).reshape(-1)
-    n_samples = int(labels.size)
-    if max_points is None or max_points <= 0 or n_samples <= int(max_points):
-        return np.arange(n_samples, dtype=int)
-
-    max_points = int(max_points)
-    unique, counts = np.unique(labels, return_counts=True)
-    weights = counts.astype(np.float64) / max(1, int(np.sum(counts)))
-    raw = np.floor(weights * max_points).astype(int)
-    raw = np.maximum(raw, 1)
-
-    while int(np.sum(raw)) > max_points:
-        idx = int(np.argmax(raw))
-        if raw[idx] <= 1:
-            break
-        raw[idx] -= 1
-    while int(np.sum(raw)) < max_points:
-        idx = int(np.argmax(counts - raw))
-        raw[idx] += 1
-
-    rng = np.random.default_rng(int(random_seed))
-    selected_parts: list[np.ndarray] = []
-    for cluster_label, quota in zip(unique, raw):
-        members = np.flatnonzero(labels == cluster_label)
-        if members.size <= int(quota):
-            selected_parts.append(members)
-            continue
-        picked = rng.choice(members, size=int(quota), replace=False)
-        selected_parts.append(np.sort(picked))
-
-    if not selected_parts:
-        return np.arange(min(max_points, n_samples), dtype=int)
-    selected = np.concatenate(selected_parts)
-    if selected.size > max_points:
-        selected = rng.choice(selected, size=max_points, replace=False)
-    return np.sort(selected.astype(int, copy=False))
-
-
-def _save_md_cluster_snapshot(
-    coords: np.ndarray,
-    cluster_labels: np.ndarray,
-    color_map: dict[int, str],
-    out_file: Path,
-    *,
-    title: str,
-    visible_cluster_ids: list[int] | None = None,
-    max_points: int | None = None,
-    point_size: float = 5.6,
-    alpha: float = 0.62,
-    halo_scale: float = 1.0,
-    halo_alpha: float = 0.0,
-    view_elev: float = 24.0,
-    view_azim: float = 35.0,
-) -> dict[str, Any]:
-    coords_arr = np.asarray(coords, dtype=np.float32)
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
-    if coords_arr.ndim != 2 or coords_arr.shape[1] < 3:
-        raise ValueError(
-            f"coords must have shape (N, >=3), got {coords_arr.shape}."
-        )
-    coords_arr = coords_arr[:, :3]
-    if labels.size != coords_arr.shape[0]:
-        raise ValueError(
-            "coords and cluster_labels length mismatch: "
-            f"{coords_arr.shape[0]} vs {labels.size}."
-        )
-
-    mask = labels >= 0
-    if visible_cluster_ids is not None:
-        visible = np.asarray(sorted(set(int(v) for v in visible_cluster_ids)), dtype=int)
-        if visible.size == 0:
-            raise ValueError("visible_cluster_ids was provided but empty after normalization.")
-        mask &= np.isin(labels, visible)
-    if not np.any(mask):
-        raise ValueError("No points remained after applying cluster visibility filters.")
-
-    coords_use = coords_arr[mask]
-    labels_use = labels[mask]
-
-    sample_idx = _sample_indices_stratified(labels_use, max_points, random_seed=0)
-    coords_plot = coords_use[sample_idx]
-    labels_plot = labels_use[sample_idx]
-    unique_labels = sorted(int(v) for v in np.unique(labels_plot) if int(v) >= 0)
-    if not unique_labels:
-        raise ValueError("No non-negative cluster labels available for plotting.")
-
-    fig = plt.figure(figsize=(7.8, 7.8), dpi=220)
-    ax = fig.add_subplot(111, projection="3d")
-    if float(point_size) <= 0.0:
-        raise ValueError(f"point_size must be > 0, got {point_size}.")
-    if not (0.0 <= float(alpha) <= 1.0):
-        raise ValueError(f"alpha must be in [0, 1], got {alpha}.")
-    if not np.isfinite(float(view_elev)) or not np.isfinite(float(view_azim)):
-        raise ValueError(
-            f"view_elev/view_azim must be finite, got elev={view_elev}, azim={view_azim}."
-        )
-
-    fig.patch.set_facecolor("white")
-    ax.set_facecolor("white")
-    for cluster_id in unique_labels:
-        cluster_mask = labels_plot == cluster_id
-        if not np.any(cluster_mask):
-            continue
-        color = color_map.get(cluster_id, "#777777")
-        ax.scatter(
-            coords_plot[cluster_mask, 0],
-            coords_plot[cluster_mask, 1],
-            coords_plot[cluster_mask, 2],
-            c=color,
-            s=float(point_size),
-            alpha=alpha,
-            linewidths=0.0,
-            depthshade=False,
-        )
-
-    _set_equal_axes_3d(ax, coords_arr)
-    ax.view_init(elev=float(view_elev), azim=float(view_azim))
-    _draw_cube_wireframe(
-        ax,
-        np.min(coords_arr, axis=0),
-        np.max(coords_arr, axis=0),
-        linewidth=1.2,
-    )
-    ax.set_title(title, fontsize=13, pad=6)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_zticks([])
-    ax.grid(False)
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_zlabel("")
-    for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
-        if hasattr(axis, "pane"):
-            axis.pane.fill = False
-            axis.pane.set_edgecolor("white")
-    fig.subplots_adjust(left=0.01, right=0.99, bottom=0.01, top=0.95)
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
-
-    return {
-        "out_file": str(out_file),
-        "num_points_total": int(coords_arr.shape[0]),
-        "num_points_visible": int(coords_use.shape[0]),
-        "num_points_rendered": int(coords_plot.shape[0]),
-        "clusters_rendered": unique_labels,
-        "view_elev": float(view_elev),
-        "view_azim": float(view_azim),
-    }
-
-
-def _enumerate_cluster_combinations(
-    cluster_ids: list[int],
-    order_scores: dict[int, float],
-    *,
-    min_size: int,
-    max_size: int,
-    max_outputs: int,
-) -> list[tuple[int, ...]]:
-    if not cluster_ids:
-        return []
-    min_size = max(1, int(min_size))
-    max_size = max(min_size, int(max_size))
-    max_size = min(max_size, len(cluster_ids))
-    max_outputs = max(1, int(max_outputs))
-
-    combos: list[tuple[int, ...]] = []
-    for size in range(min_size, max_size + 1):
-        combos.extend(tuple(int(v) for v in c) for c in combinations(cluster_ids, size))
-    if not combos:
-        return []
-
-    def _combo_score(combo: tuple[int, ...]) -> tuple[float, int]:
-        vals = [float(order_scores.get(int(cid), 0.0)) for cid in combo]
-        return (float(np.mean(vals)), len(combo))
-
-    combos_sorted = sorted(
-        combos,
-        key=lambda c: (_combo_score(c)[0], _combo_score(c)[1]),
-        reverse=True,
-    )
-    return combos_sorted[:max_outputs]
-
-
-def _save_cluster_combination_library(
-    *,
-    out_dir: Path,
-    coords: np.ndarray,
-    cluster_labels: np.ndarray,
-    color_map: dict[int, str],
-    k_value: int,
-    order_scores: dict[int, float],
-    min_size: int,
-    max_size: int,
-    max_outputs: int,
-    max_points: int | None,
-    point_size: float,
-    alpha: float,
-    halo_scale: float,
-    halo_alpha: float,
-    view_elev: float,
-    view_azim: float,
-) -> dict[str, Any]:
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    cluster_ids = sorted(int(v) for v in np.unique(np.asarray(cluster_labels, dtype=int)) if int(v) >= 0)
-    combos = _enumerate_cluster_combinations(
-        cluster_ids,
-        order_scores,
-        min_size=int(min_size),
-        max_size=int(max_size),
-        max_outputs=int(max_outputs),
-    )
-    if not combos:
-        raise ValueError("No cluster combinations were generated for visualization.")
-
-    records: list[dict[str, Any]] = []
-    for idx, combo in enumerate(combos, start=1):
-        combo_tag = "-".join(str(int(v)) for v in combo)
-        out_path = out_dir / f"combo_{idx:03d}_clusters_{combo_tag}.png"
-        title = f"MD clusters combo {idx:03d} (k={k_value}, ids={combo_tag})"
-        panel = _save_md_cluster_snapshot(
-            coords,
-            cluster_labels,
-            color_map,
-            out_path,
-            title=title,
-            visible_cluster_ids=[int(v) for v in combo],
-            max_points=max_points,
-            point_size=point_size,
-            alpha=alpha,
-            halo_scale=halo_scale,
-            halo_alpha=halo_alpha,
-            view_elev=view_elev,
-            view_azim=view_azim,
-        )
-        panel["combo_index"] = int(idx)
-        panel["cluster_ids"] = [int(v) for v in combo]
-        panel["combo_score"] = float(
-            np.mean([float(order_scores.get(int(cid), 0.0)) for cid in combo])
-        )
-        records.append(panel)
-
-    return {
-        "out_dir": str(out_dir),
-        "num_outputs": int(len(records)),
-        "min_size": int(min_size),
-        "max_size": int(max_size),
-        "max_outputs_requested": int(max_outputs),
-        "records": records,
-    }
-
-
-def _extract_points_from_sample(sample: Any) -> np.ndarray:
-    if isinstance(sample, dict):
-        if "points" not in sample:
-            raise KeyError("Dataset sample dict is missing required key 'points'.")
-        points = sample["points"]
-    elif torch.is_tensor(sample):
-        points = sample
-    elif isinstance(sample, (tuple, list)) and len(sample) > 0:
-        points = sample[0]
-    else:
-        raise TypeError(f"Unsupported dataset sample type: {type(sample)!r}.")
-
-    if not torch.is_tensor(points):
-        points = torch.as_tensor(points)
-    pts = points.detach().cpu().numpy()
-    if pts.ndim == 3 and pts.shape[0] == 1:
-        pts = pts[0]
-    if pts.ndim != 2:
-        pts = np.reshape(pts, (-1, pts.shape[-1]))
-    if pts.shape[1] < 3:
-        raise ValueError(
-            "Sample points must have at least 3 columns for xyz coordinates, "
-            f"got shape {pts.shape}."
-        )
-    pts = pts[:, :3]
-    finite = np.all(np.isfinite(pts), axis=1)
-    pts = pts[finite]
-    if pts.size == 0:
-        raise ValueError("Sample contains no finite xyz points.")
-    return pts.astype(np.float32, copy=False)
-
-
-def _load_points_from_dataset(
-    dataset: Any,
-    sample_index: int,
-    *,
-    point_scale: float = 1.0,
-) -> np.ndarray:
-    if dataset is None or not hasattr(dataset, "__getitem__"):
-        raise TypeError(
-            "Dataset does not support indexing; cannot extract representative cluster samples."
-        )
-    idx = int(sample_index)
-    if idx < 0:
-        raise ValueError(f"Sample index must be non-negative, got {idx}.")
-    try:
-        sample = dataset[idx]
-    except Exception as exc:
-        raise IndexError(
-            f"Failed to access dataset sample at index {idx}. Dataset type: {type(dataset)!r}."
-        ) from exc
-    points = _extract_points_from_sample(sample)
-    if point_scale != 1.0:
-        points = points * float(point_scale)
-    return points
-
-
-def _draw_local_knn_edges(
-    ax: Any,
-    points: np.ndarray,
-    *,
-    knn_k: int = 4,
-    edge_color: str = "#6f6f6f",
-) -> None:
-    if len(points) < 2:
-        return
-    k = max(1, min(int(knn_k), len(points) - 1))
-    dmat = np.linalg.norm(points[:, None, :] - points[None, :, :], axis=-1)
-    nn_idx = np.argsort(dmat, axis=1)[:, 1 : k + 1]
-    drawn: set[tuple[int, int]] = set()
-    for i in range(len(points)):
-        for j in nn_idx[i]:
-            j = int(j)
-            edge = (min(i, j), max(i, j))
-            if edge in drawn:
-                continue
-            drawn.add(edge)
-            p1, p2 = points[edge[0]], points[edge[1]]
-            ax.plot(
-                [p1[0], p2[0]],
-                [p1[1], p2[1]],
-                [p1[2], p2[2]],
-                color=edge_color,
-                linewidth=0.8,
-                alpha=0.6,
-            )
-
-
-def _compute_cluster_representative_indices(
-    latents: np.ndarray,
-    cluster_labels: np.ndarray,
-) -> dict[int, int]:
-    lat = np.asarray(latents, dtype=np.float32)
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
-    if lat.ndim != 2:
-        lat = np.reshape(lat, (lat.shape[0], -1))
-    if labels.size != lat.shape[0]:
-        raise ValueError(
-            "latents and cluster_labels length mismatch: "
-            f"{lat.shape[0]} vs {labels.size}."
-        )
-    representatives: dict[int, int] = {}
-    for cluster_id in sorted(int(v) for v in np.unique(labels) if int(v) >= 0):
-        idx = np.flatnonzero(labels == cluster_id)
-        if idx.size == 0:
-            continue
-        center = lat[idx].mean(axis=0, keepdims=True)
-        dists = np.linalg.norm(lat[idx] - center, axis=1)
-        representatives[cluster_id] = int(idx[int(np.argmin(dists))])
-    if not representatives:
-        raise ValueError("No non-negative clusters found to select representative samples.")
-    return representatives
-
-
-def _save_cluster_representatives_figure(
-    dataset: Any,
-    latents: np.ndarray,
-    cluster_labels: np.ndarray,
-    color_map: dict[int, str],
-    out_file: Path,
-    *,
-    k_value: int,
-    point_scale: float,
-    target_points: int = 64,
-    knn_k: int = 4,
-) -> dict[str, Any]:
-    reps = _compute_cluster_representative_indices(latents, cluster_labels)
-    cluster_ids = sorted(reps.keys())
-    n_clusters = len(cluster_ids)
-    n_cols = min(3, n_clusters)
-    n_rows = int(np.ceil(n_clusters / max(1, n_cols)))
-    fig = plt.figure(figsize=(4.1 * n_cols, 4.2 * n_rows), dpi=220)
-
-    records: list[dict[str, Any]] = []
-    for pos, cluster_id in enumerate(cluster_ids):
-        ax = fig.add_subplot(n_rows, n_cols, pos + 1, projection="3d")
-        sample_idx = int(reps[cluster_id])
-        points = _load_points_from_dataset(
-            dataset,
-            sample_idx,
-            point_scale=point_scale,
-        )
-        center_idx = int(np.argmin(np.linalg.norm(points, axis=1)))
-        centered = points - points[center_idx]
-        d = np.linalg.norm(centered, axis=1)
-        keep = np.argsort(d)[: min(int(target_points), len(centered))]
-        local = centered[keep]
-        if local.size == 0:
-            raise ValueError(
-                f"Representative sample at index {sample_idx} for cluster {cluster_id} has no points after filtering."
-            )
-        _draw_local_knn_edges(ax, local, knn_k=knn_k)
-        color = color_map.get(cluster_id, "#777777")
-        ax.scatter(
-            local[:, 0],
-            local[:, 1],
-            local[:, 2],
-            c=color,
-            s=56,
-            alpha=0.94,
-            edgecolors="black",
-            linewidths=0.25,
-            depthshade=False,
-        )
-        _set_equal_axes_3d(ax, local)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_zticks([])
-        ax.grid(False)
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-        ax.set_zlabel("")
-        panel_label = f"C{pos + 1}"
-        ax.set_title(
-            panel_label,
-            fontsize=11,
-            color=color,
-            pad=3,
-            fontweight="bold",
-        )
-        records.append(
-            {
-                "panel_label": panel_label,
-                "cluster_id": int(cluster_id),
-                "sample_index": sample_idx,
-                "num_points_plotted": int(local.shape[0]),
-            }
-        )
-
-    fig.suptitle(
-        f"Cluster representatives nearest latent centroids (k={k_value})",
-        fontsize=13,
-        fontweight="bold",
-    )
-    fig.tight_layout(rect=[0.0, 0.0, 1.0, 0.96])
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
-    return {
-        "out_file": str(out_file),
-        "representatives": records,
-    }
-
-
-def _prepare_icl_features(
-    latents: np.ndarray,
-    *,
-    l2_normalize: bool,
-    standardize: bool,
-    pca_variance: float | None,
-    pca_max_components: int,
-    random_state: int,
-) -> tuple[np.ndarray, dict[str, Any]]:
-    x = np.asarray(latents, dtype=np.float32)
-    if x.ndim != 2:
-        x = np.reshape(x, (x.shape[0], -1))
-    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
-    if x.shape[0] < 3:
-        raise ValueError(
-            f"Need at least 3 samples to compute ICL curve, got {x.shape[0]}."
-        )
-
-    info: dict[str, Any] = {
-        "input_dim": int(x.shape[1]),
-        "l2_normalize": bool(l2_normalize),
-        "standardize": bool(standardize),
-    }
-
-    if l2_normalize:
-        x = _l2_normalize_rows(x)
-    if standardize and x.shape[0] > 1:
-        scaler = StandardScaler()
-        x = scaler.fit_transform(x)
-
-    if (
-        pca_variance is not None
-        and float(pca_variance) > 0.0
-        and x.shape[1] > 2
-        and x.shape[0] > 3
-    ):
-        n_max = min(int(pca_max_components), x.shape[1], x.shape[0] - 1)
-        if n_max >= 2:
-            pca = PCA(n_components=n_max, random_state=random_state)
-            proj = pca.fit_transform(x)
-            if float(pca_variance) >= 1.0:
-                keep = n_max
-            else:
-                csum = np.cumsum(pca.explained_variance_ratio_)
-                keep = int(np.searchsorted(csum, float(pca_variance)) + 1)
-                keep = max(2, min(keep, n_max))
-            x = proj[:, :keep]
-            info["pca_components"] = int(keep)
-            info["pca_explained_variance"] = float(
-                np.sum(pca.explained_variance_ratio_[:keep])
-            )
-        else:
-            info["pca_components"] = int(x.shape[1])
-            info["pca_explained_variance"] = 1.0
-    else:
-        info["pca_components"] = int(x.shape[1])
-        info["pca_explained_variance"] = 1.0
-
-    info["output_dim"] = int(x.shape[1])
-    return x.astype(np.float32, copy=False), info
-
-
-def _compute_icl_curve(
-    features: np.ndarray,
-    k_values: list[int],
-    *,
-    covariance_type: str = "diag",
-    random_state: int = 42,
-) -> dict[int, dict[str, float]]:
-    x = np.asarray(features, dtype=np.float32)
-    if x.ndim != 2:
-        raise ValueError(f"features must be 2D, got shape {x.shape}.")
-    if x.shape[0] < 3:
-        raise ValueError(f"Need at least 3 samples for ICL curve, got {x.shape[0]}.")
-
-    # Keep covariance_type for backward-compatible function signature.
-    _ = covariance_type
-
-    curve: dict[int, dict[str, float]] = {}
-    for k in k_values:
-        k_eff = int(k)
-        if k_eff < 2:
-            raise ValueError(f"Invalid k value {k_eff}; expected >= 2.")
-        if k_eff >= x.shape[0]:
-            raise ValueError(
-                f"Invalid k value {k_eff}: must be < number of samples ({x.shape[0]})."
-            )
-        model = KMeans(n_clusters=k_eff, random_state=random_state, n_init=10)
-        try:
-            labels = model.fit_predict(x)
-        except Exception as exc:
-            raise RuntimeError(
-                "Failed to fit KMeans for ICL curve "
-                f"at k={k_eff}."
-            ) from exc
-
-        # KMeans surrogate for model-selection curve:
-        # lower inertia is better; entropy term penalizes highly fragmented assignments.
-        inertia = float(model.inertia_)
-        counts = np.bincount(labels, minlength=k_eff).astype(np.float64)
-        probs = counts / np.clip(counts.sum(), 1.0, None)
-        entropy = float(-np.sum(probs * np.log(np.clip(probs, 1e-12, None))))
-        icl = float(inertia + entropy)
-        curve[k_eff] = {
-            "bic": inertia,
-            "entropy": entropy,
-            "icl": icl,
-        }
-    return curve
-
-
-def _save_icl_curve_figure(
-    icl_curve: dict[int, dict[str, float]],
-    *,
-    selected_k: int,
-    out_file: Path,
-    y_label: str = "ICL",
-) -> dict[str, Any]:
-    if not icl_curve:
-        raise ValueError("ICL curve is empty; nothing to plot.")
-    k_values = sorted(int(k) for k in icl_curve.keys())
-    scores = [float(icl_curve[k]["icl"]) for k in k_values]
-    if selected_k not in icl_curve:
-        raise ValueError(
-            f"selected_k={selected_k} is missing from ICL curve keys {k_values}."
-        )
-
-    fig, ax = plt.subplots(figsize=(6.0, 5.0), dpi=220)
-    ax.plot(
-        k_values,
-        scores,
-        color="black",
-        linestyle="--",
-        linewidth=1.6,
-        marker="o",
-        markersize=6.5,
-        markerfacecolor="black",
-        markeredgewidth=0.0,
-    )
-    ax.axvline(
-        x=float(selected_k),
-        color="black",
-        linewidth=1.2,
-        linestyle=(0, (5, 5)),
-    )
-    ax.set_xlabel("Number of clusters")
-    ax.set_ylabel(y_label)
-    ax.set_xticks(k_values)
-    ax.grid(True, axis="y", alpha=0.25)
-    fig.tight_layout()
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
-
-    argmin_idx = int(np.argmin(np.asarray(scores, dtype=np.float64)))
-    return {
-        "out_file": str(out_file),
-        "k_values": [int(v) for v in k_values],
-        "icl_values": [float(v) for v in scores],
-        "icl_best_k": int(k_values[argmin_idx]),
-        "icl_value_selected_k": float(icl_curve[int(selected_k)]["icl"]),
-    }
-
-
-def _save_fixed_k_cluster_figure_set(
-    *,
-    out_dir: Path,
-    dataset: Any,
-    latents: np.ndarray,
-    coords: np.ndarray,
-    cluster_labels: np.ndarray,
-    k_value: int,
-    point_scale: float,
-    l2_normalize: bool,
-    standardize: bool,
-    pca_variance: float | None,
-    pca_max_components: int,
-    min_crystal_clusters: int,
-    crystal_score_quantile: float,
-    crystal_score_samples_per_cluster: int,
-    crystal_score_knn_k: int,
-    md_max_points: int | None,
-    icl_k_min: int,
-    icl_k_max: int,
-    icl_max_samples: int | None,
-    icl_covariance_type: str,
-    representative_points: int,
-    md_point_size: float,
-    md_point_alpha: float,
-    md_halo_scale: float,
-    md_halo_alpha: float,
-    md_view_elev: float,
-    md_view_azim: float,
-    combo_min_size: int,
-    combo_max_size: int,
-    combo_max_outputs: int,
-) -> dict[str, Any]:
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
-    coords_arr = np.asarray(coords, dtype=np.float32)
-    lat_arr = np.asarray(latents, dtype=np.float32)
-    if lat_arr.ndim != 2:
-        lat_arr = np.reshape(lat_arr, (lat_arr.shape[0], -1))
-    if labels.size != lat_arr.shape[0]:
-        raise ValueError(
-            "cluster_labels and latents size mismatch: "
-            f"{labels.size} vs {lat_arr.shape[0]}."
-        )
-    if coords_arr.ndim != 2 or coords_arr.shape[1] < 3:
-        raise ValueError(
-            f"coords must have shape (N, >=3), got {coords_arr.shape}."
-        )
-    if coords_arr.shape[0] != labels.size:
-        raise ValueError(
-            "coords and cluster_labels size mismatch: "
-            f"{coords_arr.shape[0]} vs {labels.size}."
-        )
-
-    cluster_ids = sorted(int(v) for v in np.unique(labels) if int(v) >= 0)
-    if len(cluster_ids) != int(k_value):
-        raise ValueError(
-            f"Expected exactly k={k_value} non-negative clusters, but found {len(cluster_ids)}: {cluster_ids}."
-        )
-    color_map = _build_cluster_color_map(labels)
-
-    all_view_specs = [
-        ("view1", float(md_view_elev), float(md_view_azim)),
-        ("view2", float(md_view_elev), float(md_view_azim + 90.0)),
-        ("view3", float(md_view_elev), float(md_view_azim + 180.0)),
-        ("view4", float(md_view_elev), float(md_view_azim + 270.0)),
-    ]
-    panel_all_views: list[dict[str, Any]] = []
-    for view_name, elev, azim in all_view_specs:
-        out_name = (
-            f"02_md_clusters_all_k{k_value}.png"
-            if view_name == "view1"
-            else f"02_md_clusters_all_k{k_value}_{view_name}.png"
-        )
-        panel_view = _save_md_cluster_snapshot(
-            coords_arr,
-            labels,
-            color_map,
-            out_dir / out_name,
-            title=f"MD space clusters (k={k_value}, all clusters, {view_name})",
-            max_points=md_max_points,
-            point_size=float(md_point_size),
-            alpha=float(md_point_alpha),
-            halo_scale=float(md_halo_scale),
-            halo_alpha=float(md_halo_alpha),
-            view_elev=float(elev),
-            view_azim=float(azim),
-        )
-        panel_view["view_name"] = str(view_name)
-        panel_all_views.append(panel_view)
-    panel_all = panel_all_views[0]
-
-    crystal_info = _resolve_crystal_like_clusters(
-        dataset,
-        labels,
-        point_scale=float(point_scale),
-        min_clusters=int(min_crystal_clusters),
-        score_quantile=float(crystal_score_quantile),
-        score_samples_per_cluster=int(crystal_score_samples_per_cluster),
-        score_knn_k=int(crystal_score_knn_k),
-        random_seed=0,
-    )
-    order_scores = {
-        int(cid): float(score)
-        for cid, score in crystal_info.get("order_score_by_cluster", {}).items()
-    }
-    if not order_scores:
-        raise ValueError(
-            "Crystal-like selection did not produce order_score_by_cluster."
-        )
-
-    combination_library = _save_cluster_combination_library(
-        out_dir=out_dir / f"01b_cluster_combinations_k{k_value}",
-        coords=coords_arr,
-        cluster_labels=labels,
-        color_map=color_map,
-        k_value=int(k_value),
-        order_scores=order_scores,
-        min_size=int(combo_min_size),
-        max_size=int(combo_max_size),
-        max_outputs=int(combo_max_outputs),
-        max_points=md_max_points,
-        point_size=float(md_point_size),
-        alpha=float(md_point_alpha),
-        halo_scale=float(md_halo_scale),
-        halo_alpha=float(md_halo_alpha),
-        view_elev=float(md_view_elev),
-        view_azim=float(md_view_azim),
-    )
-    panel_crystal_path = out_dir / f"01_md_clusters_crystal_only_k{k_value}.png"
-    crystal_ids = [int(v) for v in crystal_info.get("cluster_ids", [])]
-    if len(crystal_ids) < max(1, int(min_crystal_clusters)):
-        raise ValueError(
-            "Crystal-only panel requires at least "
-            f"{int(min_crystal_clusters)} crystal-like clusters, but only "
-            f"{len(crystal_ids)} were selected: {crystal_ids}."
-        )
-    panel_crystal = _save_md_cluster_snapshot(
-        coords_arr,
-        labels,
-        color_map,
-        panel_crystal_path,
-        title=(
-            f"MD space clusters (k={k_value}, crystal-like only, "
-            f"top quantile={float(crystal_info['score_quantile']):.2f})"
-        ),
-        visible_cluster_ids=crystal_ids,
-        max_points=md_max_points,
-        point_size=float(md_point_size),
-        alpha=float(md_point_alpha),
-        halo_scale=float(md_halo_scale),
-        halo_alpha=float(md_halo_alpha),
-        view_elev=float(md_view_elev),
-        view_azim=float(md_view_azim),
-    )
-
-    lat_for_icl = lat_arr
-    if icl_max_samples is not None and lat_arr.shape[0] > int(icl_max_samples):
-        idx = _sample_indices(lat_arr.shape[0], int(icl_max_samples))
-        lat_for_icl = lat_arr[idx]
-    icl_features, icl_prep = _prepare_icl_features(
-        lat_for_icl,
-        l2_normalize=l2_normalize,
-        standardize=standardize,
-        pca_variance=pca_variance,
-        pca_max_components=pca_max_components,
-        random_state=42,
-    )
-    if int(icl_k_min) < 2:
-        raise ValueError(f"icl_k_min must be >= 2, got {icl_k_min}.")
-    if int(icl_k_max) < int(icl_k_min):
-        raise ValueError(
-            f"icl_k_max must be >= icl_k_min, got min={icl_k_min}, max={icl_k_max}."
-        )
-    k_values_icl = [int(k) for k in range(int(icl_k_min), int(icl_k_max) + 1)]
-    if int(k_value) not in k_values_icl:
-        k_values_icl.append(int(k_value))
-    k_values_icl = sorted(set(k_values_icl))
-    max_valid_k = int(icl_features.shape[0] - 1)
-    k_values_icl = [k for k in k_values_icl if k <= max_valid_k]
-    if int(k_value) not in k_values_icl:
-        raise ValueError(
-            f"Cannot evaluate ICL at k={k_value}; available max k is {max_valid_k} "
-            f"for {icl_features.shape[0]} ICL samples."
-        )
-    icl_curve = _compute_icl_curve(
-        icl_features,
-        k_values_icl,
-        covariance_type=icl_covariance_type,
-        random_state=42,
-    )
-    panel_icl = _save_icl_curve_figure(
-        icl_curve,
-        selected_k=int(k_value),
-        out_file=out_dir / f"03_cluster_count_icl_k{k_value}.png",
-    )
-
-    panel_reps = _save_cluster_representatives_figure(
-        dataset,
-        lat_arr,
-        labels,
-        color_map,
-        out_dir / f"04_cluster_representatives_k{k_value}.png",
-        k_value=int(k_value),
-        point_scale=float(point_scale),
-        target_points=int(representative_points),
-        knn_k=4,
-    )
-
-    return {
-        "k_value": int(k_value),
-        "output_dir": str(out_dir),
-        "cluster_ids": cluster_ids,
-        "cluster_color_map": {int(k): str(v) for k, v in color_map.items()},
-        "panel_01_crystal_only": panel_crystal,
-        "panel_01b_cluster_combinations": combination_library,
-        "panel_02_all_clusters": panel_all,
-        "panel_02_all_clusters_views": panel_all_views,
-        "panel_03_cluster_count_icl": panel_icl,
-        "panel_04_cluster_representatives": panel_reps,
-        "crystal_like_selection": crystal_info,
-        "icl_curve_raw": {
-            int(k): {key: float(val) for key, val in metrics.items()}
-            for k, metrics in icl_curve.items()
-        },
-        "icl_feature_prep": icl_prep,
-        "icl_num_samples": int(icl_features.shape[0]),
-        "icl_covariance_type": str(icl_covariance_type),
-    }
 
 
 @contextmanager
@@ -1398,6 +295,9 @@ def run_post_training_analysis(
     max_batches_latent: int | None = None,
     max_samples_visualization: int | None = None,
     data_files_override: list[str] | None = None,
+    visible_cluster_sets: list[list[int]] | None = None,
+    pretty_render_resolution: int = 2200,
+    pretty_render_sphere_radius: int = 12,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for Barlow Twins."""
     out_dir = Path(output_dir)
@@ -1507,25 +407,6 @@ def run_post_training_analysis(
         getattr(cfg, "analysis_cluster_figure_set_enabled", True)
     )
     cluster_figure_k = max(2, int(getattr(cfg, "analysis_cluster_figure_set_k", 6)))
-    cluster_figure_min_crystal_clusters = max(
-        1,
-        int(getattr(cfg, "analysis_cluster_figure_min_crystal_clusters", 2)),
-    )
-    cluster_figure_crystal_score_quantile = float(
-        getattr(
-            cfg,
-            "analysis_cluster_figure_crystal_score_quantile",
-            getattr(cfg, "analysis_cluster_figure_crystal_min_fraction", 0.6),
-        )
-    )
-    cluster_figure_crystal_score_samples = max(
-        1,
-        int(getattr(cfg, "analysis_cluster_figure_crystal_score_samples", 64)),
-    )
-    cluster_figure_crystal_score_knn = max(
-        2,
-        int(getattr(cfg, "analysis_cluster_figure_crystal_score_knn", 6)),
-    )
     cluster_figure_md_max_points = _positive_int_or_none(
         getattr(cfg, "analysis_cluster_figure_md_max_points", None)
     )
@@ -1547,18 +428,12 @@ def run_post_training_analysis(
     cluster_figure_md_view_azim = float(
         getattr(cfg, "analysis_cluster_figure_md_view_azim", 35.0)
     )
-    cluster_figure_combo_min_size = max(
-        1,
-        int(getattr(cfg, "analysis_cluster_figure_combo_min_size", 1)),
-    )
-    cluster_figure_combo_max_size = max(
-        cluster_figure_combo_min_size,
-        int(getattr(cfg, "analysis_cluster_figure_combo_max_size", 3)),
-    )
-    cluster_figure_combo_max_outputs = max(
-        1,
-        int(getattr(cfg, "analysis_cluster_figure_combo_max_outputs", 40)),
-    )
+    _cfg_visible_sets_raw = getattr(cfg, "analysis_cluster_figure_visible_sets", None)
+    if _cfg_visible_sets_raw is not None and visible_cluster_sets is None:
+        visible_cluster_sets = [
+            [int(v) for v in str(s).split(",")]
+            for s in _cfg_visible_sets_raw
+        ]
     if cluster_figure_md_point_size <= 0.0:
         raise ValueError(
             f"analysis_cluster_figure_md_point_size must be > 0, got {cluster_figure_md_point_size}."
@@ -1595,6 +470,38 @@ def run_post_training_analysis(
             )
         ),
     )
+    cluster_figure_representative_orientation = str(
+        getattr(cfg, "analysis_cluster_figure_representative_orientation", "pca")
+    ).strip().lower()
+    cluster_figure_representative_view_elev = float(
+        getattr(cfg, "analysis_cluster_figure_representative_view_elev", 22.0)
+    )
+    cluster_figure_representative_view_azim = float(
+        getattr(cfg, "analysis_cluster_figure_representative_view_azim", 38.0)
+    )
+    cluster_figure_representative_projection = str(
+        getattr(cfg, "analysis_cluster_figure_representative_projection", "ortho")
+    ).strip().lower()
+    if cluster_figure_representative_orientation not in {"pca", "none"}:
+        raise ValueError(
+            "analysis_cluster_figure_representative_orientation must be one of "
+            f"['pca', 'none'], got {cluster_figure_representative_orientation!r}."
+        )
+    if (
+        not np.isfinite(cluster_figure_representative_view_elev)
+        or not np.isfinite(cluster_figure_representative_view_azim)
+    ):
+        raise ValueError(
+            "analysis_cluster_figure_representative_view_elev and "
+            "analysis_cluster_figure_representative_view_azim must be finite, got "
+            f"elev={cluster_figure_representative_view_elev}, "
+            f"azim={cluster_figure_representative_view_azim}."
+        )
+    if cluster_figure_representative_projection not in {"ortho", "persp"}:
+        raise ValueError(
+            "analysis_cluster_figure_representative_projection must be one of "
+            f"['ortho', 'persp'], got {cluster_figure_representative_projection!r}."
+        )
     inference_cache_enabled = bool(
         getattr(cfg, "analysis_inference_cache_enabled", True)
     )
@@ -1613,10 +520,13 @@ def run_post_training_analysis(
         "Fixed-k figure set: "
         f"enabled={cluster_figure_set_enabled}, "
         f"k={cluster_figure_k}, "
-        f"min_crystal_clusters={cluster_figure_min_crystal_clusters}, "
-        f"score_quantile={cluster_figure_crystal_score_quantile:.2f}, "
-        f"combo_size=[{cluster_figure_combo_min_size},{cluster_figure_combo_max_size}], "
-        f"combo_max_outputs={cluster_figure_combo_max_outputs}"
+        f"visible_sets={visible_cluster_sets or []}, "
+        f"rep_orientation={cluster_figure_representative_orientation}, "
+        "rep_view=("
+        f"{cluster_figure_representative_view_elev:.1f},"
+        f"{cluster_figure_representative_view_azim:.1f}"
+        "), "
+        f"rep_projection={cluster_figure_representative_projection}"
     )
     _step("Building datamodule")
     dm = build_datamodule(cfg)
@@ -1856,10 +766,6 @@ def run_post_training_analysis(
                 standardize=cluster_standardize,
                 pca_variance=cluster_pca_var,
                 pca_max_components=cluster_pca_max_components,
-                min_crystal_clusters=cluster_figure_min_crystal_clusters,
-                crystal_score_quantile=cluster_figure_crystal_score_quantile,
-                crystal_score_samples_per_cluster=cluster_figure_crystal_score_samples,
-                crystal_score_knn_k=cluster_figure_crystal_score_knn,
                 md_max_points=cluster_figure_md_max_points,
                 icl_k_min=cluster_figure_icl_k_min,
                 icl_k_max=cluster_figure_icl_k_max,
@@ -1872,9 +778,13 @@ def run_post_training_analysis(
                 md_halo_alpha=cluster_figure_md_halo_alpha,
                 md_view_elev=cluster_figure_md_view_elev,
                 md_view_azim=cluster_figure_md_view_azim,
-                combo_min_size=cluster_figure_combo_min_size,
-                combo_max_size=cluster_figure_combo_max_size,
-                combo_max_outputs=cluster_figure_combo_max_outputs,
+                representative_orientation_method=cluster_figure_representative_orientation,
+                representative_view_elev=cluster_figure_representative_view_elev,
+                representative_view_azim=cluster_figure_representative_view_azim,
+                representative_projection=cluster_figure_representative_projection,
+                visible_cluster_sets=visible_cluster_sets,
+                pretty_render_resolution=pretty_render_resolution,
+                pretty_render_sphere_radius=pretty_render_sphere_radius,
             )
         all_metrics["cluster_figure_set"] = figure_set_metrics
 
@@ -2119,29 +1029,21 @@ def run_post_training_analysis(
     if "cluster_figure_set" in all_metrics:
         k_fig = all_metrics["cluster_figure_set"].get("k_value", "N/A")
         print(
-            f"  - cluster_figure_set_k{k_fig}/01_md_clusters_crystal_only_k{k_fig}.png: "
-            "MD space (crystal-like clusters only)"
+            f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*].png: "
+            "MD space (all clusters, 4 views)"
         )
         print(
-            f"  - cluster_figure_set_k{k_fig}/02_md_clusters_all_k{k_fig}.png: "
-            "MD space (all clusters)"
+            f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*]_pretty.png: "
+            "sphere renders (all views)"
         )
-        print(
-            f"  - cluster_figure_set_k{k_fig}/02_md_clusters_all_k{k_fig}_view2.png: "
-            "MD space (all clusters, side view 2)"
-        )
-        print(
-            f"  - cluster_figure_set_k{k_fig}/02_md_clusters_all_k{k_fig}_view3.png: "
-            "MD space (all clusters, side view 3)"
-        )
-        print(
-            f"  - cluster_figure_set_k{k_fig}/02_md_clusters_all_k{k_fig}_view4.png: "
-            "MD space (all clusters, side view 4)"
-        )
-        print(
-            f"  - cluster_figure_set_k{k_fig}/01b_cluster_combinations_k{k_fig}/combo_*.png: "
-            "cluster-subset combinations for manual selection"
-        )
+        vis_sets = all_metrics["cluster_figure_set"].get("visible_cluster_sets", [])
+        if vis_sets:
+            for s in vis_sets:
+                tag = "-".join(str(c) for c in s)
+                print(
+                    f"  - cluster_figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}[_pretty].png: "
+                    f"clusters {tag}"
+                )
         print(
             f"  - cluster_figure_set_k{k_fig}/03_cluster_count_icl_k{k_fig}.png: "
             "ICL vs number of clusters"
@@ -2211,6 +1113,29 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Override real data files (repeat for multiple). Example: --data_file 175ps.off",
     )
+    parser.add_argument(
+        "--visible_cluster_sets",
+        nargs="+",
+        default=None,
+        metavar="IDS",
+        help=(
+            "Cluster ID sets for separate subset views.  Each argument is a "
+            "comma-separated list of cluster IDs.  "
+            "Example: --visible_cluster_sets '0,1,2' '3,4,5'"
+        ),
+    )
+    parser.add_argument(
+        "--pretty_render_resolution",
+        type=int,
+        default=2200,
+        help="Image width/height in pixels for pretty renders (default: 2200).",
+    )
+    parser.add_argument(
+        "--pretty_render_sphere_radius",
+        type=int,
+        default=12,
+        help="Sphere radius in pixels for pretty renders (default: 12).",
+    )
     return parser.parse_args()
 
 
@@ -2231,6 +1156,13 @@ def main() -> None:
         if not os.path.isabs(output_dir):
             output_dir = os.path.join(os.getcwd(), output_dir)
 
+    vis_sets: list[list[int]] | None = None
+    if args.visible_cluster_sets is not None:
+        vis_sets = [
+            [int(v) for v in s.split(",")]
+            for s in args.visible_cluster_sets
+        ]
+
     run_post_training_analysis(
         checkpoint_path=checkpoint_path,
         output_dir=output_dir,
@@ -2239,6 +1171,9 @@ def main() -> None:
         max_batches_latent=args.max_batches_latent,
         max_samples_visualization=args.max_samples_visualization,
         data_files_override=args.data_file,
+        visible_cluster_sets=vis_sets,
+        pretty_render_resolution=int(args.pretty_render_resolution),
+        pretty_render_sphere_radius=int(args.pretty_render_sphere_radius),
     )
 
 
