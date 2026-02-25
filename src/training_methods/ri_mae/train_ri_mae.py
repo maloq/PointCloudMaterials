@@ -22,7 +22,7 @@ def train(cfg: DictConfig):
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="ri_mae_modelnet40",
+    config_name="ri_mae_molecular",
 )
 def main(cfg: DictConfig):
     train(cfg)

@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import json
+import shutil
+import subprocess
+import tempfile
+import textwrap
 from itertools import combinations
 from pathlib import Path
 from typing import Any
@@ -24,19 +29,8 @@ def _l2_normalize_rows(x: np.ndarray, eps: float = 1e-8) -> np.ndarray:
 def _cluster_palette(n_colors: int) -> list[str]:
     if n_colors <= 0:
         return []
-    # High-contrast, non-pastel palette for dense MD cluster views.
-    base = [
-        "#d7263d",  # red
-        "#1f4ed8",  # blue
-        "#1faa59",  # green
-        "#ff7f11",  # orange
-        "#6a00f4",  # purple
-        "#00a6a6",  # cyan/teal
-        "#f72585",  # magenta
-        "#ffbe0b",  # yellow
-        "#118ab2",  # azure
-        "#073b4c",  # deep blue-green
-    ]
+    # Use matplotlib's tab10 categorical palette for cluster labeling.
+    base = [mcolors.to_hex(c) for c in plt.get_cmap("tab10")(np.linspace(0, 1, 10))]
     if n_colors <= len(base):
         return base[:n_colors]
     extras = [mcolors.to_hex(c) for c in plt.cm.tab20(np.linspace(0, 1, 20))]
@@ -62,12 +56,124 @@ def _build_cluster_color_map(cluster_labels: np.ndarray) -> dict[int, str]:
     return {cid: colors[i] for i, cid in enumerate(valid_ids)}
 
 
+def _boost_saturation(colors: np.ndarray, factor: float) -> np.ndarray:
+    arr = np.asarray(colors, dtype=np.float32)
+    if arr.ndim != 2 or arr.shape[1] != 3:
+        raise ValueError(
+            f"colors must have shape (N, 3) for saturation boost, got {arr.shape}."
+        )
+    if float(factor) <= 0.0:
+        raise ValueError(f"saturation factor must be > 0, got {factor}.")
+    if abs(float(factor) - 1.0) < 1e-6:
+        return arr.copy()
+    # Rec.709 luminance weights preserve perceived brightness while boosting chroma.
+    lum = (
+        0.2126 * arr[:, 0:1]
+        + 0.7152 * arr[:, 1:2]
+        + 0.0722 * arr[:, 2:3]
+    )
+    out = lum + (arr - lum) * float(factor)
+    return np.clip(out, 0.0, 1.0).astype(np.float32, copy=False)
+
+
+def _srgb_to_linear(colors: np.ndarray) -> np.ndarray:
+    arr = np.asarray(colors, dtype=np.float32)
+    if np.any(arr < 0.0) or np.any(arr > 1.0):
+        raise ValueError(
+            "sRGB input must be in [0, 1] for linear conversion; "
+            f"got min={float(np.min(arr)):.4f}, max={float(np.max(arr)):.4f}."
+        )
+    return np.power(arr, 2.2).astype(np.float32, copy=False)
+
+
+def _linear_to_srgb(colors: np.ndarray) -> np.ndarray:
+    arr = np.asarray(colors, dtype=np.float32)
+    arr = np.clip(arr, 0.0, 1.0)
+    return np.power(arr, 1.0 / 2.2).astype(np.float32, copy=False)
+
+
+def _estimate_ball_radius_world(
+    points: np.ndarray,
+    *,
+    sample_limit: int = 1024,
+    random_seed: int = 0,
+) -> float:
+    """Estimate a non-overlapping sphere radius from point spacing.
+
+    The returned radius is chosen so spheres touch at the closest sampled
+    nearest-neighbor distance without overlap (uniform global radius).
+    """
+    pts = np.asarray(points, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] < 3:
+        raise ValueError(
+            f"points must have shape (N, >=3) for radius estimation, got {pts.shape}."
+        )
+    pts = pts[:, :3]
+    n_pts = int(pts.shape[0])
+    if n_pts == 0:
+        raise ValueError("Cannot estimate sphere radius from zero points.")
+    finite = np.all(np.isfinite(pts), axis=1)
+    if not np.any(finite):
+        raise ValueError("All points are non-finite; cannot estimate sphere radius.")
+    pts = pts[finite]
+    n_pts = int(pts.shape[0])
+    if n_pts == 0:
+        raise ValueError("No finite points remain after filtering; cannot estimate sphere radius.")
+
+    mins = np.min(pts, axis=0).astype(np.float64)
+    maxs = np.max(pts, axis=0).astype(np.float64)
+    extents = np.maximum(maxs - mins, 1e-8)
+    volume = float(extents[0] * extents[1] * extents[2])
+    if not np.isfinite(volume) or volume <= 0.0:
+        raise ValueError(
+            f"Invalid bounding-box volume for radius estimation: {volume}."
+        )
+    spacing_density = float(np.cbrt(volume / max(1, n_pts)))
+
+    spacing_nn_min = None
+    if n_pts >= 3:
+        m = min(int(sample_limit), n_pts)
+        if m >= 3:
+            rng = np.random.default_rng(int(random_seed))
+            sample_idx = (
+                np.arange(n_pts, dtype=int)
+                if m == n_pts
+                else rng.choice(n_pts, size=m, replace=False)
+            )
+            sample_pts = pts[sample_idx].astype(np.float32, copy=False)
+            diff = sample_pts[:, None, :] - sample_pts[None, :, :]
+            dist2 = np.sum(diff * diff, axis=2, dtype=np.float32)
+            np.fill_diagonal(dist2, np.inf)
+            nn = np.sqrt(np.min(dist2, axis=1, initial=np.inf))
+            nn_valid = nn[np.isfinite(nn) & (nn > 1e-9)]
+            if nn_valid.size >= 16:
+                spacing_nn_min = float(np.min(nn_valid))
+
+    if spacing_nn_min is None:
+        spacing = spacing_density
+    else:
+        spacing = float(spacing_nn_min)
+
+    if not np.isfinite(spacing) or spacing <= 1e-9:
+        raise ValueError(
+            "Computed invalid point spacing for sphere radius estimation: "
+            f"spacing={spacing}, spacing_density={spacing_density}, spacing_nn_min={spacing_nn_min}."
+        )
+
+    radius = 0.499 * spacing
+    if not np.isfinite(radius) or radius <= 1e-9:
+        raise ValueError(
+            f"Computed invalid sphere radius from spacing={spacing}: radius={radius}."
+        )
+    return float(radius)
+
+
 def _compute_center_to_edge_colors(
     points: np.ndarray,
     base_color: str,
     *,
-    center_lighten: float = 0.70,
-    edge_darken: float = 0.08,
+    center_lighten: float = 0.85,
+    edge_darken: float = 0.10,
     radius_percentile: float = 95.0,
     gamma: float = 0.85,
 ) -> np.ndarray:
@@ -79,20 +185,6 @@ def _compute_center_to_edge_colors(
     pts = pts[:, :3]
     if pts.shape[0] == 0:
         raise ValueError("Cannot compute radial colors for zero points.")
-    if not (0.0 <= float(center_lighten) <= 1.0):
-        raise ValueError(
-            f"center_lighten must be in [0, 1], got {center_lighten}."
-        )
-    if not (0.0 <= float(edge_darken) <= 1.0):
-        raise ValueError(
-            f"edge_darken must be in [0, 1], got {edge_darken}."
-        )
-    if not (0.0 < float(radius_percentile) <= 100.0):
-        raise ValueError(
-            f"radius_percentile must be in (0, 100], got {radius_percentile}."
-        )
-    if float(gamma) <= 0.0:
-        raise ValueError(f"gamma must be > 0, got {gamma}.")
 
     try:
         base_rgb = np.asarray(mcolors.to_rgb(str(base_color)), dtype=np.float32)
@@ -1005,41 +1097,120 @@ def _project_to_screen(
     img_w: int,
     img_h: int,
     margin_frac: float = 0.06,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Orthographic projection of 3D points to pixel coordinates.
+    projection: str = "orthographic",
+    perspective_fov_deg: float = 34.0,
+    perspective_distance_factor: float = 1.4,
+) -> tuple[np.ndarray, np.ndarray, dict[str, float]]:
+    """Project 3D points to screen space.
 
-    Returns ``(screen_xy (N, 2), depth (N,))`` with screen-y flipped so that
-    world-up corresponds to image-up.
+    Returns ``(screen_xy (N, 2), depth (N,), meta)`` with screen-y flipped so
+    that world-up corresponds to image-up.
     """
+    proj_mode = str(projection).strip().lower()
+    if proj_mode not in {"orthographic", "ortho", "perspective", "persp"}:
+        raise ValueError(
+            "projection must be one of ['orthographic', 'ortho', 'perspective', 'persp'], "
+            f"got {projection!r}."
+        )
+
     pts = np.asarray(coords_3d, dtype=np.float64)
     if pts.ndim != 2 or pts.shape[1] < 3:
         raise ValueError(f"Expected (N, >=3) coordinate array, got shape {pts.shape}.")
 
-    sx = pts[:, :3] @ right
-    sy = pts[:, :3] @ up
-    depth = pts[:, :3] @ forward
-
-    x_min, x_max = float(sx.min()), float(sx.max())
-    y_min, y_max = float(sy.min()), float(sy.max())
-    max_range = max(x_max - x_min, y_max - y_min, 1e-12)
-
-    margin_px = margin_frac * min(img_w, img_h)
+    pts3 = pts[:, :3]
+    margin_px = float(margin_frac) * min(img_w, img_h)
     usable = min(img_w, img_h) - 2.0 * margin_px
+    if usable <= 1.0:
+        raise ValueError(
+            f"Projection usable pixel span must be > 1, got {usable} "
+            f"(img_w={img_w}, img_h={img_h}, margin_frac={margin_frac})."
+        )
+
+    if proj_mode in {"orthographic", "ortho"}:
+        sx = pts3 @ right
+        sy = pts3 @ up
+        depth = pts3 @ forward
+
+        x_min, x_max = float(sx.min()), float(sx.max())
+        y_min, y_max = float(sy.min()), float(sy.max())
+        max_range = max(x_max - x_min, y_max - y_min, 1e-12)
+        scale = usable / max_range
+
+        cx = (sx - 0.5 * (x_min + x_max)) * scale + img_w * 0.5
+        cy = -(sy - 0.5 * (y_min + y_max)) * scale + img_h * 0.5
+        meta = {
+            "projection": "orthographic",
+            "screen_scale": float(scale),
+            "camera_distance": 0.0,
+        }
+        return np.stack([cx, cy], axis=1), depth, meta
+
+    if not (5.0 <= float(perspective_fov_deg) <= 130.0):
+        raise ValueError(
+            f"perspective_fov_deg must be in [5, 130], got {perspective_fov_deg}."
+        )
+    if float(perspective_distance_factor) < 1.05:
+        raise ValueError(
+            "perspective_distance_factor must be >= 1.05 to avoid clipping, "
+            f"got {perspective_distance_factor}."
+        )
+
+    center = np.mean(pts3, axis=0, dtype=np.float64)
+    rel = pts3 - center[None, :]
+    x_rel = rel @ right
+    y_rel = rel @ up
+    z_rel = rel @ (-forward)
+
+    fov_rad = np.deg2rad(float(perspective_fov_deg))
+    xy_extent = max(
+        float(np.max(np.abs(x_rel))),
+        float(np.max(np.abs(y_rel))),
+        1e-8,
+    )
+    z_extent = max(float(np.max(np.abs(z_rel))), 1e-8)
+    dist_from_fov = xy_extent / np.tan(0.5 * fov_rad)
+    camera_distance = z_extent + max(
+        dist_from_fov,
+        float(perspective_distance_factor) * xy_extent,
+    )
+    z_cam = z_rel + camera_distance
+    min_z = float(np.min(z_cam))
+    if min_z <= 1e-6:
+        raise ValueError(
+            "Perspective camera produced non-positive depth. "
+            f"min_z={min_z:.6f}, camera_distance={camera_distance:.6f}, "
+            f"z_extent={z_extent:.6f}."
+        )
+
+    x_proj = x_rel / z_cam
+    y_proj = y_rel / z_cam
+    x_min, x_max = float(x_proj.min()), float(x_proj.max())
+    y_min, y_max = float(y_proj.min()), float(y_proj.max())
+    max_range = max(x_max - x_min, y_max - y_min, 1e-12)
     scale = usable / max_range
-
-    cx = (sx - 0.5 * (x_min + x_max)) * scale + img_w * 0.5
-    cy = -(sy - 0.5 * (y_min + y_max)) * scale + img_h * 0.5
-
-    return np.stack([cx, cy], axis=1), depth
+    cx = (x_proj - 0.5 * (x_min + x_max)) * scale + img_w * 0.5
+    cy = -(y_proj - 0.5 * (y_min + y_max)) * scale + img_h * 0.5
+    depth = -z_cam
+    meta = {
+        "projection": "perspective",
+        "screen_scale": float(scale),
+        "camera_distance": float(camera_distance),
+    }
+    return np.stack([cx, cy], axis=1), depth, meta
 
 
 def _render_sphere_shading(
     radius_px: int,
-    light_dir: tuple[float, float, float] = (-0.4, -0.5, 0.75),
-    ambient: float = 0.38,
-    diffuse_coeff: float = 0.52,
-    specular_coeff: float = 0.18,
-    shininess: float = 40.0,
+    light_dir: tuple[float, float, float] = (-0.35, -0.45, 0.82),
+    fill_light_dir: tuple[float, float, float] = (0.55, 0.22, 0.46),
+    ambient: float = 0.22,
+    diffuse_coeff: float = 0.68,
+    fill_diffuse_coeff: float = 0.22,
+    specular_coeff: float = 0.15,
+    shininess: float = 42.0,
+    sss_strength: float = 0.22,
+    sss_wrap: float = 0.55,
+    sss_falloff: float = 1.8,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Pre-compute Blinn-Phong shading for a sphere sprite.
 
@@ -1067,17 +1238,48 @@ def _render_sphere_shading(
     if L_len < 1e-12:
         raise ValueError("light_dir must be non-zero.")
     L = L / L_len
+    L_fill = np.asarray(fill_light_dir, dtype=np.float64)
+    L_fill_len = np.linalg.norm(L_fill)
+    if L_fill_len < 1e-12:
+        raise ValueError("fill_light_dir must be non-zero.")
+    L_fill = L_fill / L_fill_len
 
     NdotL = np.clip(nx * L[0] + ny * L[1] + nz * L[2], 0.0, 1.0)
+    NdotL_fill = np.clip(nx * L_fill[0] + ny * L_fill[1] + nz * L_fill[2], 0.0, 1.0)
 
     Hx, Hy, Hz = L[0], L[1], L[2] + 1.0
     H_len = np.sqrt(Hx**2 + Hy**2 + Hz**2)
     Hx, Hy, Hz = Hx / H_len, Hy / H_len, Hz / H_len
     NdotH = np.clip(nx * Hx + ny * Hy + nz * Hz, 0.0, 1.0)
 
-    diff = np.clip(float(ambient) + float(diffuse_coeff) * NdotL, 0.0, 1.0)
+    Hfx, Hfy, Hfz = L_fill[0], L_fill[1], L_fill[2] + 1.0
+    Hf_len = np.sqrt(Hfx**2 + Hfy**2 + Hfz**2)
+    Hfx, Hfy, Hfz = Hfx / Hf_len, Hfy / Hf_len, Hfz / Hf_len
+    NdotH_fill = np.clip(nx * Hfx + ny * Hfy + nz * Hfz, 0.0, 1.0)
+
+    sss_wrap_val = float(sss_wrap)
+    if not (0.0 <= sss_wrap_val <= 1.0):
+        raise ValueError(f"sss_wrap must be in [0, 1], got {sss_wrap}.")
+    sss_falloff_val = float(sss_falloff)
+    if sss_falloff_val <= 0.0:
+        raise ValueError(f"sss_falloff must be > 0, got {sss_falloff}.")
+    # Fast approximate subsurface scattering using wrapped back-lighting.
+    back_light = np.clip((-NdotL + sss_wrap_val) / max(1.0 + sss_wrap_val, 1e-6), 0.0, 1.0)
+    sss = float(sss_strength) * np.power(back_light, sss_falloff_val)
+
+    diff = np.clip(
+        float(ambient)
+        + float(diffuse_coeff) * NdotL
+        + float(fill_diffuse_coeff) * NdotL_fill
+        + sss,
+        0.0,
+        1.0,
+    )
     diff[~inside] = 0.0
-    spec = float(specular_coeff) * (NdotH ** float(shininess))
+    spec = (
+        float(specular_coeff) * (NdotH ** float(shininess))
+        + 0.35 * float(specular_coeff) * (NdotH_fill ** max(4.0, 0.55 * float(shininess)))
+    )
     spec[~inside] = 0.0
 
     dist = np.sqrt(dist2)
@@ -1152,23 +1354,35 @@ def _save_md_cluster_snapshot_pretty(
     image_width: int = 2200,
     image_height: int = 2200,
     sphere_radius_px: int = 12,
-    light_dir: tuple[float, float, float] = (-0.4, -0.5, 0.75),
+    projection: str = "perspective",
+    perspective_fov_deg: float = 34.0,
+    perspective_distance_factor: float = 1.4,
+    perspective_near_radius_scale: float = 1.35,
+    perspective_far_radius_scale: float = 0.78,
+    color_mode: str = "matplotlib_match",
+    saturation_boost: float = 1.06,
+    light_dir: tuple[float, float, float] = (-0.35, -0.45, 0.82),
+    fill_light_dir: tuple[float, float, float] = (0.55, 0.22, 0.46),
     bg_color: tuple[float, float, float] = (1.0, 1.0, 1.0),
-    ambient: float = 0.35,
-    diffuse: float = 0.72,
-    specular: float = 0.08,
-    shininess: float = 14.0,
+    ambient: float = 0.22,
+    diffuse: float = 0.68,
+    fill_diffuse: float = 0.22,
+    specular: float = 0.15,
+    shininess: float = 42.0,
+    sss_strength: float = 0.22,
+    sss_wrap: float = 0.55,
+    sss_falloff: float = 1.8,
     wireframe_color: tuple[int, int, int] = (30, 30, 30),
     wireframe_width: int = 2,
-    depth_fade: float = 0.0,
     ssao_enabled: bool = True,
-    ssao_strength: float = 0.45,
+    ssao_strength: float = 0.52,
     ssao_samples: int = 32,
+    linear_color_pipeline: bool = True,
 ) -> dict[str, Any]:
     """Render a publication-quality 3D sphere visualization.
 
-    Each data point is drawn as a Blinn-Phong-shaded sphere with back-to-front
-    depth sorting and screen-space ambient occlusion for contact shadows.
+    Each point is rendered as a shaded sprite with perspective projection,
+    back-to-front compositing, and SSAO contact shadows.
     """
     try:
         from PIL import Image, ImageDraw, ImageFont
@@ -1187,12 +1401,21 @@ def _save_md_cluster_snapshot_pretty(
         raise ValueError(
             f"coords and cluster_labels length mismatch: {coords_arr.shape[0]} vs {labels.size}."
         )
+    image_width = max(128, int(image_width))
+    image_height = max(128, int(image_height))
+    sphere_radius_px = max(1, int(sphere_radius_px))
+    wireframe_width = max(0, int(wireframe_width))
+    ssao_samples = max(1, int(ssao_samples))
+    ssao_strength = float(np.clip(float(ssao_strength), 0.0, 1.0))
+    perspective_far_radius_scale = max(1e-6, float(perspective_far_radius_scale))
+    perspective_near_radius_scale = max(
+        perspective_far_radius_scale,
+        float(perspective_near_radius_scale),
+    )
 
     mask = labels >= 0
     if visible_cluster_ids is not None:
         visible = np.asarray(sorted(set(int(v) for v in visible_cluster_ids)), dtype=int)
-        if visible.size == 0:
-            raise ValueError("visible_cluster_ids was provided but empty.")
         mask &= np.isin(labels, visible)
     if not np.any(mask):
         raise ValueError("No points remained after applying cluster visibility filters.")
@@ -1204,19 +1427,31 @@ def _save_md_cluster_snapshot_pretty(
     coords_plot = coords_use[sample_idx]
     labels_plot = labels_use[sample_idx]
     unique_labels = sorted(int(v) for v in np.unique(labels_plot) if int(v) >= 0)
-    if not unique_labels:
-        raise ValueError("No non-negative cluster labels for rendering.")
-
     n_pts = coords_plot.shape[0]
+    color_mode_norm = str(color_mode).strip().lower()
+    if color_mode_norm != "matplotlib_match":
+        color_mode_norm = "flat"
+
     point_colors = np.zeros((n_pts, 3), dtype=np.float32)
     for cluster_id in unique_labels:
         cmask = labels_plot == cluster_id
         if not np.any(cmask):
             continue
         base_color = color_map.get(cluster_id, "#777777")
-        point_colors[cmask] = np.asarray(
-            mcolors.to_rgb(str(base_color)), dtype=np.float32,
-        )
+        if color_mode_norm == "matplotlib_match":
+            point_colors[cmask] = _compute_center_to_edge_colors(
+                coords_plot[cmask],
+                base_color,
+            )
+        else:
+            point_colors[cmask] = np.asarray(
+                mcolors.to_rgb(str(base_color)),
+                dtype=np.float32,
+            )
+
+    if abs(float(saturation_boost) - 1.0) > 1e-6:
+        point_colors = _boost_saturation(point_colors, float(saturation_boost))
+    point_colors = np.clip(point_colors, 0.0, 1.0)
 
     right, up, forward = _build_ortho_camera(view_elev, view_azim)
 
@@ -1237,10 +1472,19 @@ def _save_md_cluster_snapshot_pretty(
     )
 
     title_margin = 60
-    render_h = image_height - title_margin
+    render_h = max(65, image_height - title_margin)
     all_coords = np.concatenate([coords_plot, box_corners], axis=0)
-    all_screen, all_depth = _project_to_screen(
-        all_coords, right, up, forward, image_width, render_h, margin_frac=0.08
+    all_screen, all_depth, proj_meta = _project_to_screen(
+        all_coords,
+        right,
+        up,
+        forward,
+        image_width,
+        render_h,
+        margin_frac=0.08,
+        projection=projection,
+        perspective_fov_deg=perspective_fov_deg,
+        perspective_distance_factor=perspective_distance_factor,
     )
     all_screen[:, 1] += title_margin
 
@@ -1249,29 +1493,72 @@ def _save_md_cluster_snapshot_pretty(
     box_screen = all_screen[n_pts:]
     box_depth = all_depth[n_pts:]
 
-    diff_shade, spec_shade, alpha_tmpl = _render_sphere_shading(
-        sphere_radius_px, light_dir, ambient, diffuse, specular, shininess
+    # Estimate radius from the full labeled cloud so sampling/subset renders
+    # keep physically consistent ball size.
+    radius_ref_points = coords_arr[labels >= 0]
+    auto_radius_world = _estimate_ball_radius_world(
+        radius_ref_points,
+        sample_limit=1024,
+        random_seed=0,
     )
+    # Backward-compatible user control: sphere_radius_px acts as a size multiplier
+    # around the new physically derived default.
+    user_radius_scale = max(1e-6, float(sphere_radius_px) / 12.0)
+    sphere_radius_world = max(1e-9, float(auto_radius_world * user_radius_scale))
+    max_radius_cap = max(2, int(0.08 * min(image_width, render_h)))
 
-    r = sphere_radius_px
-    d = 2 * r + 1
+    proj_mode = str(proj_meta["projection"]).strip().lower()
+    if proj_mode == "perspective":
+        z_cam = np.clip(-pt_depth, 1e-9, None)
+        radius_raw = (
+            sphere_radius_world * float(proj_meta["screen_scale"]) / z_cam
+        )
+        radius_med = max(1e-9, float(np.median(radius_raw)))
+        radius_raw = np.clip(
+            radius_raw,
+            float(perspective_far_radius_scale) * radius_med,
+            float(perspective_near_radius_scale) * radius_med,
+        )
+        point_radii = np.maximum(
+            1,
+            np.round(radius_raw).astype(np.int32),
+        )
+        point_radii = np.clip(point_radii, 1, int(max_radius_cap))
+        point_depth_per_px = (z_cam / max(float(proj_meta["screen_scale"]), 1e-9)).astype(np.float32)
+    else:
+        radius_px_const = float(sphere_radius_world * float(proj_meta["screen_scale"]))
+        radius_px_const = float(np.clip(radius_px_const, 1.0, float(max_radius_cap)))
+        point_radii = np.full(n_pts, int(round(radius_px_const)), dtype=np.int32)
+        point_depth_per_px = np.full(
+            n_pts,
+            float(1.0 / max(float(proj_meta["screen_scale"]), 1e-9)),
+            dtype=np.float32,
+        )
 
-    # Per-pixel sphere surface depth offset so SSAO detects valleys between
-    # adjacent spheres.  Compute pixel-to-depth scale from projection geometry.
-    all_sx = all_coords[:, :3] @ right
-    all_sy = all_coords[:, :3] @ up
-    proj_max_range = max(
-        float(all_sx.max() - all_sx.min()),
-        float(all_sy.max() - all_sy.min()),
-        1e-12,
-    )
-    margin_px = 0.08 * min(image_width, render_h)
-    usable_px = min(image_width, render_h) - 2.0 * margin_px
-    px_to_depth = proj_max_range / max(usable_px, 1.0)
+    sprite_cache: dict[int, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = {}
 
-    yy_s, xx_s = np.mgrid[-r : r + 1, -r : r + 1].astype(np.float64)
-    z_px = np.sqrt(np.clip(float(r * r) - (xx_s ** 2 + yy_s ** 2), 0.0, None))
-    depth_offset_tmpl = (z_px * px_to_depth).astype(np.float32)
+    def _get_sprite(radius: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        r = int(radius)
+        if r in sprite_cache:
+            return sprite_cache[r]
+        diff_t, spec_t, alpha_t = _render_sphere_shading(
+            r,
+            light_dir=light_dir,
+            fill_light_dir=fill_light_dir,
+            ambient=ambient,
+            diffuse_coeff=diffuse,
+            fill_diffuse_coeff=fill_diffuse,
+            specular_coeff=specular,
+            shininess=shininess,
+            sss_strength=sss_strength,
+            sss_wrap=sss_wrap,
+            sss_falloff=sss_falloff,
+        )
+        yy_s, xx_s = np.mgrid[-r : r + 1, -r : r + 1].astype(np.float64)
+        z_px = np.sqrt(np.clip(float(r * r) - (xx_s ** 2 + yy_s ** 2), 0.0, None))
+        z_px = z_px.astype(np.float32)
+        sprite_cache[r] = (diff_t, spec_t, alpha_t, z_px)
+        return sprite_cache[r]
 
     # -- Split box edges into back (behind spheres) and front (on top) ----------
     all_box_edges = [
@@ -1301,24 +1588,23 @@ def _save_md_cluster_snapshot_pretty(
                          width=wireframe_width)
 
     img = np.asarray(bg_pil, dtype=np.float32) / 255.0
+    if bool(linear_color_pipeline):
+        img = _srgb_to_linear(img)
+        point_colors = _srgb_to_linear(point_colors)
 
     # -- Render spheres back-to-front with depth buffer -----------------------
     depth_buf = np.full((image_height, image_width), -np.inf, dtype=np.float32)
 
     order = np.argsort(pt_depth)
 
-    if depth_fade > 0 and pt_depth.size > 1:
-        d_min, d_max = float(pt_depth.min()), float(pt_depth.max())
-        d_range = max(d_max - d_min, 1e-8)
-        depth_factor = 1.0 - depth_fade * (1.0 - (pt_depth - d_min) / d_range)
-    else:
-        depth_factor = np.ones(n_pts, dtype=np.float32)
-
     for idx in order:
         cx_f, cy_f = float(pt_screen[idx, 0]), float(pt_screen[idx, 1])
         ix, iy = int(round(cx_f)), int(round(cy_f))
+        radius_i = int(point_radii[idx])
+        diff_shade, spec_shade, alpha_tmpl, z_px = _get_sprite(radius_i)
+        d = 2 * radius_i + 1
 
-        x0, y0 = ix - r, iy - r
+        x0, y0 = ix - radius_i, iy - radius_i
         sx0 = max(0, -x0)
         sy0 = max(0, -y0)
         sx1 = min(d, image_width - x0)
@@ -1335,10 +1621,9 @@ def _save_md_cluster_snapshot_pretty(
         ss = spec_shade[sy0:sy1, sx0:sx1]
 
         color = point_colors[idx]
-        dfactor = float(depth_factor[idx])
 
         sphere_rgb = np.clip(
-            color[None, None, :] * ds[:, :, None] * dfactor + ss[:, :, None],
+            color[None, None, :] * ds[:, :, None] + ss[:, :, None],
             0.0,
             1.0,
         )
@@ -1349,7 +1634,7 @@ def _save_md_cluster_snapshot_pretty(
         )
 
         depth_mask = a > 0.1
-        local_depth = float(pt_depth[idx]) + depth_offset_tmpl[sy0:sy1, sx0:sx1]
+        local_depth = float(pt_depth[idx]) + z_px[sy0:sy1, sx0:sx1] * float(point_depth_per_px[idx])
         patch = depth_buf[dy0:dy1, dx0:dx1]
         patch[depth_mask] = local_depth[depth_mask]
 
@@ -1360,12 +1645,14 @@ def _save_md_cluster_snapshot_pretty(
         img = _apply_ssao(
             img,
             depth_buf,
-            kernel_radius=max(3, int(sphere_radius_px * 1.5)),
+            kernel_radius=max(3, int(np.median(point_radii) * 1.6)),
             n_samples=ssao_samples,
             strength=ssao_strength,
         )
 
     # -- Front wireframe edges (on top of spheres) + Title ---------------------
+    if bool(linear_color_pipeline):
+        img = _linear_to_srgb(img)
     img_uint8 = (np.clip(img, 0.0, 1.0) * 255.0).astype(np.uint8)
     pil_img = Image.fromarray(img_uint8, mode="RGB")
     draw = ImageDraw.Draw(pil_img)
@@ -1399,7 +1686,598 @@ def _save_md_cluster_snapshot_pretty(
         "view_azim": float(view_azim),
         "image_size": (int(image_width), int(image_height)),
         "sphere_radius_px": int(sphere_radius_px),
+        "sphere_radius_reference_points": int(radius_ref_points.shape[0]),
+        "sphere_radius_world_auto": float(auto_radius_world),
+        "sphere_radius_world_used": float(sphere_radius_world),
+        "sphere_radius_user_scale": float(user_radius_scale),
+        "projection": str(proj_mode),
+        "color_mode": str(color_mode_norm),
+        "saturation_boost": float(saturation_boost),
+        "contrast_boost": 1.0,
+        "point_radius_min": int(np.min(point_radii)),
+        "point_radius_max": int(np.max(point_radii)),
+        "point_radius_median": float(np.median(point_radii)),
         "render_mode": "pretty",
+    }
+
+
+def _resolve_blender_executable(blender_executable: str) -> str:
+    exe = str(blender_executable).strip()
+    if exe == "":
+        raise ValueError("blender_executable must be a non-empty string.")
+    if "/" in exe or "\\" in exe:
+        path = Path(exe).expanduser()
+        if not path.exists():
+            raise FileNotFoundError(f"Blender executable does not exist: {path}")
+        if not path.is_file():
+            raise ValueError(f"Blender executable path is not a file: {path}")
+        return str(path)
+    resolved = shutil.which(exe)
+    if resolved is None:
+        raise FileNotFoundError(
+            "Blender executable was not found in PATH. "
+            f"Tried '{exe}'. Install Blender or provide an absolute path."
+        )
+    return str(resolved)
+
+
+def _save_md_cluster_snapshot_raytrace_blender(
+    coords: np.ndarray,
+    cluster_labels: np.ndarray,
+    color_map: dict[int, str],
+    out_file: Path,
+    *,
+    title: str,
+    visible_cluster_ids: list[int] | None = None,
+    max_points: int | None = None,
+    view_elev: float = 24.0,
+    view_azim: float = 35.0,
+    image_width: int = 1600,
+    image_height: int = 1600,
+    projection: str = "perspective",
+    perspective_fov_deg: float = 34.0,
+    camera_distance_factor: float = 2.8,
+    sphere_radius_fraction: float = 0.0105,
+    blender_executable: str = "blender",
+    cycles_samples: int = 64,
+    use_denoise: bool = True,
+    use_gpu: bool = False,
+    timeout_seconds: int = 1200,
+    wireframe_enabled: bool = True,
+    wireframe_width_fraction: float = 0.0017,
+) -> dict[str, Any]:
+    """Render a raytraced MD snapshot with Blender Cycles.
+
+    This is an additive renderer used alongside the existing matplotlib and
+    software-shaded outputs. It requires a Blender executable.
+    """
+    coords_arr = np.asarray(coords, dtype=np.float32)
+    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
+    if coords_arr.ndim != 2 or coords_arr.shape[1] < 3:
+        raise ValueError(f"coords must have shape (N, >=3), got {coords_arr.shape}.")
+    coords_arr = coords_arr[:, :3]
+    if labels.size != coords_arr.shape[0]:
+        raise ValueError(
+            f"coords and cluster_labels length mismatch: {coords_arr.shape[0]} vs {labels.size}."
+        )
+    image_width = max(256, int(image_width))
+    image_height = max(256, int(image_height))
+    cycles_samples = max(1, int(cycles_samples))
+    timeout_seconds = max(30, int(timeout_seconds))
+    projection_norm = str(projection).strip().lower()
+    if projection_norm not in {"perspective", "persp", "orthographic", "ortho"}:
+        projection_norm = "perspective"
+    perspective_fov_deg = float(np.clip(float(perspective_fov_deg), 5.0, 130.0))
+    camera_distance_factor = max(1.01, float(camera_distance_factor))
+    sphere_radius_fraction = max(1e-6, float(sphere_radius_fraction))
+    wireframe_width_fraction = max(0.0, float(wireframe_width_fraction))
+    if max_points is not None:
+        raise ValueError(
+            "Raytrace renderer requires all points and does not support downsampling. "
+            f"Expected max_points=None, got {max_points}."
+        )
+
+    mask = labels >= 0
+    if visible_cluster_ids is not None:
+        visible = np.asarray(sorted(set(int(v) for v in visible_cluster_ids)), dtype=int)
+        mask &= np.isin(labels, visible)
+    if not np.any(mask):
+        raise ValueError("No points remained after applying cluster visibility filters.")
+
+    coords_use = coords_arr[mask]
+    labels_use = labels[mask]
+    coords_plot = coords_use
+    labels_plot = labels_use
+    unique_labels = sorted(int(v) for v in np.unique(labels_plot) if int(v) >= 0)
+
+    bbox_min = np.min(coords_arr, axis=0)
+    bbox_max = np.max(coords_arr, axis=0)
+    bbox_diag = max(1e-8, float(np.linalg.norm(bbox_max - bbox_min)))
+    # Keep physical sizing anchored to the full labeled cloud so downsampling
+    # and subset views do not inflate sphere diameter.
+    radius_ref_points = coords_arr[labels >= 0]
+    auto_radius_world = _estimate_ball_radius_world(
+        radius_ref_points,
+        sample_limit=1024,
+        random_seed=0,
+    )
+    # Keep backward compatibility with existing config value while making size
+    # physically data-driven by default.
+    user_radius_scale = max(1e-6, float(sphere_radius_fraction) / 0.0105)
+    sphere_radius_world = max(1e-9, float(auto_radius_world * user_radius_scale))
+    wireframe_width_world = float(wireframe_width_fraction) * bbox_diag
+
+    clusters_payload: list[dict[str, Any]] = []
+    for cluster_id in unique_labels:
+        cmask = labels_plot == cluster_id
+        pts = coords_plot[cmask]
+        if pts.shape[0] == 0:
+            continue
+        color_rgb = np.asarray(
+            mcolors.to_rgb(str(color_map.get(cluster_id, "#777777"))),
+            dtype=np.float32,
+        )
+        clusters_payload.append(
+            {
+                "cluster_id": int(cluster_id),
+                "color": [float(color_rgb[0]), float(color_rgb[1]), float(color_rgb[2]), 1.0],
+                "points": np.round(pts.astype(np.float64), 6).tolist(),
+            }
+        )
+    blender_exec = _resolve_blender_executable(blender_executable)
+    out_file = Path(out_file)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+
+    payload = {
+        "title": str(title),
+        "bbox_min": [float(v) for v in bbox_min],
+        "bbox_max": [float(v) for v in bbox_max],
+        "clusters": clusters_payload,
+        "render": {
+            "image_width": int(image_width),
+            "image_height": int(image_height),
+            "projection": str(projection_norm),
+            "view_elev": float(view_elev),
+            "view_azim": float(view_azim),
+            "perspective_fov_deg": float(perspective_fov_deg),
+            "camera_distance_factor": float(camera_distance_factor),
+            "sphere_radius_world": float(sphere_radius_world),
+            "cycles_samples": int(cycles_samples),
+            "use_denoise": bool(use_denoise),
+            "use_gpu": bool(use_gpu),
+            "wireframe_enabled": bool(wireframe_enabled),
+            "wireframe_width_world": float(wireframe_width_world),
+            "wireframe_color": [0.12, 0.12, 0.12, 1.0],
+            "background_color": [1.0, 1.0, 1.0, 1.0],
+            "background_strength": 1.0,
+        },
+        "out_file": str(out_file),
+    }
+
+    blender_script = textwrap.dedent(
+        """
+        import argparse
+        import json
+        import math
+        import shutil
+        import sys
+        from pathlib import Path
+
+        import bpy
+        from mathutils import Vector
+
+
+        def _parse_args():
+            argv = sys.argv
+            if "--" not in argv:
+                raise RuntimeError("Blender script expected '--' argument separator.")
+            argv = argv[argv.index("--") + 1 :]
+            p = argparse.ArgumentParser(description="Raytrace MD clusters via Blender.")
+            p.add_argument("--payload_json", type=str, required=True)
+            return p.parse_args(argv)
+
+
+        def _principled_input(node, names):
+            for name in names:
+                if name in node.inputs:
+                    return node.inputs[name]
+            return None
+
+        def _build_material(name, rgba):
+            mat = bpy.data.materials.new(name=name)
+            mat.use_nodes = True
+            nt = mat.node_tree
+            nt.nodes.clear()
+            out = nt.nodes.new("ShaderNodeOutputMaterial")
+            out.location = (300, 0)
+            bsdf = nt.nodes.new("ShaderNodeBsdfPrincipled")
+            bsdf.location = (0, 0)
+            nt.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+
+            base_col = (float(rgba[0]), float(rgba[1]), float(rgba[2]), 1.0)
+            _principled_input(bsdf, ["Base Color"]).default_value = base_col
+
+            sss_inp = _principled_input(bsdf, ["Subsurface", "Subsurface Weight"])
+            if sss_inp is not None:
+                sss_inp.default_value = 0.05
+            sss_col = _principled_input(bsdf, ["Subsurface Color"])
+            if sss_col is not None:
+                sss_col.default_value = base_col
+            sss_rad = _principled_input(bsdf, ["Subsurface Radius"])
+            if sss_rad is not None:
+                sss_rad.default_value = (1.0, 0.35, 0.22)
+
+            rough = _principled_input(bsdf, ["Roughness"])
+            if rough is not None:
+                rough.default_value = 0.34
+            spec = _principled_input(bsdf, ["Specular", "Specular IOR Level"])
+            if spec is not None:
+                spec.default_value = 0.32
+            return mat
+
+
+        def _add_area_light(name, center, location, energy, size):
+            light_data = bpy.data.lights.new(name=name, type="AREA")
+            light_data.energy = float(energy)
+            light_data.size = float(size)
+            obj = bpy.data.objects.new(name, light_data)
+            bpy.context.scene.collection.objects.link(obj)
+            obj.location = Vector(location)
+            direction = center - obj.location
+            obj.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+            return obj
+
+
+        def _add_wireframe_box(bbox_min, bbox_max, width_world, color_rgba):
+            x0, y0, z0 = bbox_min
+            x1, y1, z1 = bbox_max
+            corners = [
+                (x0, y0, z0),
+                (x1, y0, z0),
+                (x1, y1, z0),
+                (x0, y1, z0),
+                (x0, y0, z1),
+                (x1, y0, z1),
+                (x1, y1, z1),
+                (x0, y1, z1),
+            ]
+            edges = [
+                (0, 1), (1, 2), (2, 3), (3, 0),
+                (4, 5), (5, 6), (6, 7), (7, 4),
+                (0, 4), (1, 5), (2, 6), (3, 7),
+            ]
+            curve = bpy.data.curves.new("MDBoxEdges", "CURVE")
+            curve.dimensions = "3D"
+            curve.bevel_depth = max(float(width_world), 1e-6)
+            curve.bevel_resolution = 1
+            for a_idx, b_idx in edges:
+                spline = curve.splines.new("POLY")
+                spline.points.add(1)
+                xa, ya, za = corners[a_idx]
+                xb, yb, zb = corners[b_idx]
+                spline.points[0].co = (xa, ya, za, 1.0)
+                spline.points[1].co = (xb, yb, zb, 1.0)
+            obj = bpy.data.objects.new("MDBoxWire", curve)
+            bpy.context.scene.collection.objects.link(obj)
+            mat = _build_material("MDBoxWireMat", color_rgba)
+            obj.data.materials.append(mat)
+            return obj
+
+
+        def main():
+            args = _parse_args()
+            payload_path = Path(args.payload_json)
+            if not payload_path.exists():
+                raise FileNotFoundError(f"Payload JSON is missing: {payload_path}")
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            cfg = payload["render"]
+
+            bpy.ops.wm.read_factory_settings(use_empty=True)
+            scene = bpy.context.scene
+            scene.render.engine = "CYCLES"
+            scene.render.resolution_x = int(cfg["image_width"])
+            scene.render.resolution_y = int(cfg["image_height"])
+            scene.render.resolution_percentage = 100
+            scene.render.image_settings.file_format = "PNG"
+            scene.render.film_transparent = False
+            out_path = Path(str(payload["out_file"])).expanduser()
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            scene.render.filepath = str(out_path)
+            scene.cycles.samples = int(cfg["cycles_samples"])
+            if hasattr(scene.cycles, "use_adaptive_sampling"):
+                scene.cycles.use_adaptive_sampling = True
+            if hasattr(scene.cycles, "use_denoising"):
+                scene.cycles.use_denoising = bool(cfg["use_denoise"])
+            scene.view_settings.view_transform = "Standard"
+            scene.view_settings.look = "None"
+            scene.view_settings.exposure = 0.0
+            scene.view_settings.gamma = 1.0
+
+            if bool(cfg.get("use_gpu", False)):
+                prefs = bpy.context.preferences
+                addon = prefs.addons.get("cycles", None)
+                if addon is None:
+                    raise RuntimeError("Cycles addon is unavailable; cannot enable GPU raytracing.")
+                cprefs = addon.preferences
+                cprefs.get_devices()
+                gpu_count = 0
+                for dev in cprefs.devices:
+                    dev.use = True
+                    if dev.type != "CPU":
+                        gpu_count += 1
+                if gpu_count <= 0:
+                    raise RuntimeError(
+                        "use_gpu=True was requested but no GPU Cycles device is available."
+                    )
+                scene.cycles.device = "GPU"
+            else:
+                scene.cycles.device = "CPU"
+
+            world = bpy.data.worlds.new("MDWorld")
+            scene.world = world
+            world.use_nodes = True
+            bg = world.node_tree.nodes.get("Background", None)
+            if bg is None:
+                raise RuntimeError("Blender world background node is missing.")
+            bg.inputs[0].default_value = tuple(float(v) for v in cfg["background_color"])
+            bg.inputs[1].default_value = float(cfg.get("background_strength", 1.0))
+
+            bbox_min = Vector(tuple(float(v) for v in payload["bbox_min"]))
+            bbox_max = Vector(tuple(float(v) for v in payload["bbox_max"]))
+            center = 0.5 * (bbox_min + bbox_max)
+            extent = bbox_max - bbox_min
+            span = max(float(extent.x), float(extent.y), float(extent.z))
+            if not math.isfinite(span) or span <= 1e-8:
+                span = 1.0
+
+            camera_data = bpy.data.cameras.new("MDCamera")
+            camera_obj = bpy.data.objects.new("MDCamera", camera_data)
+            scene.collection.objects.link(camera_obj)
+            scene.camera = camera_obj
+
+            elev = math.radians(float(cfg["view_elev"]))
+            azim = math.radians(float(cfg["view_azim"]))
+            cam_dir = Vector(
+                (
+                    math.cos(elev) * math.cos(azim),
+                    math.cos(elev) * math.sin(azim),
+                    math.sin(elev),
+                )
+            )
+            cam_dist = float(cfg["camera_distance_factor"]) * span
+            camera_obj.location = center + cam_dir * cam_dist
+            camera_obj.rotation_euler = (center - camera_obj.location).to_track_quat("-Z", "Y").to_euler()
+            proj = str(cfg["projection"]).lower()
+            if proj in {"perspective", "persp"}:
+                camera_data.type = "PERSP"
+                camera_data.lens_unit = "FOV"
+                camera_data.angle = math.radians(float(cfg["perspective_fov_deg"]))
+            elif proj in {"orthographic", "ortho"}:
+                camera_data.type = "ORTHO"
+                camera_data.ortho_scale = 2.25 * span
+            else:
+                raise ValueError(f"Unsupported projection mode for Blender render: {proj!r}.")
+
+            light_size = 0.65 * span
+            _add_area_light(
+                "KeyLight",
+                center,
+                center + Vector((1.9 * span, -1.7 * span, 2.1 * span)),
+                energy=600.0,
+                size=light_size,
+            )
+            _add_area_light(
+                "FillLight",
+                center,
+                center + Vector((-2.2 * span, 1.6 * span, 0.9 * span)),
+                energy=170.0,
+                size=0.9 * light_size,
+            )
+            _add_area_light(
+                "RimLight",
+                center,
+                center + Vector((-0.4 * span, -2.0 * span, 1.8 * span)),
+                energy=280.0,
+                size=0.8 * light_size,
+            )
+
+            pointcloud_add_supported = False
+            if hasattr(bpy.data, "pointclouds"):
+                probe_pc = bpy.data.pointclouds.new("MDPointCloudProbe")
+                pointcloud_add_supported = hasattr(probe_pc.points, "add")
+                bpy.data.pointclouds.remove(probe_pc)
+
+            if pointcloud_add_supported:
+                for cluster in payload["clusters"]:
+                    pts = cluster["points"]
+                    if len(pts) == 0:
+                        continue
+                    cid = int(cluster["cluster_id"])
+                    pc_data = bpy.data.pointclouds.new(f"Cluster_{cid:02d}_Points")
+                    pc_data.points.add(len(pts))
+                    co_flat = [float(v) for p in pts for v in p]
+                    rad_flat = [float(cfg["sphere_radius_world"])] * len(pts)
+                    pc_data.points.foreach_set("co", co_flat)
+                    pc_data.points.foreach_set("radius", rad_flat)
+
+                    obj = bpy.data.objects.new(f"Cluster_{cid:02d}", pc_data)
+                    scene.collection.objects.link(obj)
+                    mat = _build_material(f"Cluster_{cid:02d}_Mat", cluster["color"])
+                    obj.data.materials.append(mat)
+            else:
+                # Blender 5.x removed PointCloud.points.add(). Use fast
+                # vertex-instancing fallback that works in Cycles.
+                print(
+                    "INFO: PointCloud points.add API unavailable; "
+                    "using mesh-vertex instancing fallback."
+                )
+                inst_offset = Vector((max(50.0 * span, 10.0), 0.0, 0.0))
+                sphere_radius = float(cfg["sphere_radius_world"])
+                if not math.isfinite(sphere_radius) or sphere_radius <= 0.0:
+                    raise RuntimeError(
+                        f"Invalid sphere radius for instancing fallback: {sphere_radius}."
+                    )
+                for cluster in payload["clusters"]:
+                    pts = cluster["points"]
+                    if len(pts) == 0:
+                        continue
+                    cid = int(cluster["cluster_id"])
+                    mesh = bpy.data.meshes.new(f"Cluster_{cid:02d}_Verts")
+                    shifted_pts = [
+                        (
+                            float(p[0]) - float(inst_offset.x),
+                            float(p[1]) - float(inst_offset.y),
+                            float(p[2]) - float(inst_offset.z),
+                        )
+                        for p in pts
+                    ]
+                    mesh.from_pydata(shifted_pts, [], [])
+                    mesh.update()
+
+                    instancer = bpy.data.objects.new(f"Cluster_{cid:02d}_Instancer", mesh)
+                    scene.collection.objects.link(instancer)
+                    instancer.instance_type = "VERTS"
+                    instancer.show_instancer_for_render = False
+                    instancer.show_instancer_for_viewport = False
+
+                    bpy.ops.mesh.primitive_ico_sphere_add(
+                        subdivisions=2,
+                        radius=sphere_radius,
+                        location=(float(inst_offset.x), float(inst_offset.y), float(inst_offset.z)),
+                    )
+                    sphere_obj = bpy.context.active_object
+                    if sphere_obj is None:
+                        raise RuntimeError(
+                            f"Failed to create template sphere for cluster {cid}."
+                        )
+                    sphere_obj.name = f"Cluster_{cid:02d}_TemplateSphere"
+                    sphere_obj.parent = instancer
+                    sphere_obj.matrix_parent_inverse = instancer.matrix_world.inverted()
+                    bpy.ops.object.shade_smooth()
+
+                    mat = _build_material(f"Cluster_{cid:02d}_Mat", cluster["color"])
+                    sphere_obj.data.materials.append(mat)
+
+            if bool(cfg.get("wireframe_enabled", True)) and float(cfg.get("wireframe_width_world", 0.0)) > 0.0:
+                _add_wireframe_box(
+                    bbox_min,
+                    bbox_max,
+                    float(cfg["wireframe_width_world"]),
+                    cfg["wireframe_color"],
+                )
+
+            result = bpy.ops.render.render(write_still=True)
+            if "FINISHED" not in set(result):
+                raise RuntimeError(
+                    "Blender render operator did not finish successfully: "
+                    f"result={result}."
+                )
+
+            # Blender may resolve output path with frame tokens depending on
+            # internal render settings/version. Ensure requested output exists.
+            expected = out_path
+            if not expected.exists():
+                resolved = Path(
+                    bpy.path.abspath(scene.render.frame_path(frame=scene.frame_current))
+                )
+                if resolved.exists():
+                    shutil.copy2(resolved, expected)
+                else:
+                    candidates = sorted(
+                        expected.parent.glob(f"{expected.stem}*{expected.suffix}")
+                    )
+                    if len(candidates) == 1 and candidates[0].exists():
+                        shutil.copy2(candidates[0], expected)
+                    else:
+                        raise FileNotFoundError(
+                            "Blender render finished but output is missing. "
+                            f"expected={expected}, resolved={resolved}, "
+                            f"candidates={[str(p) for p in candidates]}."
+                        )
+
+
+        if __name__ == "__main__":
+            main()
+        """
+    )
+
+    with tempfile.TemporaryDirectory(prefix="md_raytrace_blender_") as tmp_dir:
+        tmp_root = Path(tmp_dir)
+        payload_path = tmp_root / "payload.json"
+        script_path = tmp_root / "render_md_clusters.py"
+        payload_path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
+        script_path.write_text(blender_script, encoding="utf-8")
+
+        cmd = [
+            blender_exec,
+            "-b",
+            "--factory-startup",
+            "-P",
+            str(script_path),
+            "--",
+            "--payload_json",
+            str(payload_path),
+        ]
+        try:
+            proc = subprocess.run(
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=int(timeout_seconds),
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise TimeoutError(
+                "Blender raytrace render timed out after "
+                f"{timeout_seconds}s for output {out_file}. "
+                "Increase timeout_seconds or reduce raytrace sample count/point count."
+            ) from exc
+        if proc.returncode != 0:
+            raise RuntimeError(
+                "Blender raytrace render failed with non-zero exit code "
+                f"{proc.returncode} for output {out_file}. "
+                f"Command: {' '.join(cmd)}\n"
+                f"STDOUT:\n{proc.stdout[-4000:]}\n"
+                f"STDERR:\n{proc.stderr[-4000:]}"
+            )
+        if "Traceback (most recent call last):" in proc.stderr:
+            raise RuntimeError(
+                "Blender raytrace script raised a Python exception "
+                "even though Blender returned exit code 0. "
+                f"Output target: {out_file}\n"
+                f"Command: {' '.join(cmd)}\n"
+                f"STDOUT:\n{proc.stdout[-4000:]}\n"
+                f"STDERR:\n{proc.stderr[-4000:]}"
+            )
+
+    if not out_file.exists():
+        candidates = sorted(out_file.parent.glob(f"{out_file.stem}*{out_file.suffix}"))
+        raise FileNotFoundError(
+            "Blender reported success but output image is missing. "
+            f"expected={out_file}, candidates={[str(p) for p in candidates]}.\n"
+            f"STDOUT (tail):\n{proc.stdout[-4000:]}\n"
+            f"STDERR (tail):\n{proc.stderr[-4000:]}"
+        )
+
+    return {
+        "out_file": str(out_file),
+        "num_points_total": int(coords_arr.shape[0]),
+        "num_points_visible": int(coords_use.shape[0]),
+        "num_points_rendered": int(coords_plot.shape[0]),
+        "clusters_rendered": unique_labels,
+        "view_elev": float(view_elev),
+        "view_azim": float(view_azim),
+        "projection": str(projection_norm),
+        "image_size": (int(image_width), int(image_height)),
+        "cycles_samples": int(cycles_samples),
+        "sphere_radius_reference_points": int(radius_ref_points.shape[0]),
+        "sphere_radius_world_auto": float(auto_radius_world),
+        "sphere_radius_user_scale": float(user_radius_scale),
+        "sphere_radius_world": float(sphere_radius_world),
+        "color_saturation_boost": 1.0,
+        "color_contrast_boost": 1.0,
+        "blender_executable": str(blender_exec),
+        "render_mode": "raytrace_blender",
     }
 
 
@@ -1600,6 +2478,22 @@ def _save_fixed_k_cluster_figure_set(
     visible_cluster_sets: list[list[int]] | None = None,
     pretty_render_resolution: int = 2200,
     pretty_render_sphere_radius: int = 7,
+    pretty_render_projection: str = "perspective",
+    pretty_render_perspective_fov_deg: float = 34.0,
+    pretty_render_perspective_distance_factor: float = 1.4,
+    pretty_render_color_mode: str = "matplotlib_match",
+    pretty_render_saturation_boost: float = 1.06,
+    pretty_render_wireframe_width: int = 1,
+    raytrace_render_enabled: bool = False,
+    raytrace_blender_executable: str = "blender",
+    raytrace_render_resolution: int = 1600,
+    raytrace_render_max_points: int | None = None,
+    raytrace_render_samples: int = 64,
+    raytrace_render_projection: str = "perspective",
+    raytrace_render_fov_deg: float = 34.0,
+    raytrace_render_camera_distance_factor: float = 2.8,
+    raytrace_render_sphere_radius_fraction: float = 0.0105,
+    raytrace_render_timeout_sec: int = 1200,
 ) -> dict[str, Any]:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1630,9 +2524,71 @@ def _save_fixed_k_cluster_figure_set(
             f"Expected exactly k={k_value} non-negative clusters, but found {len(cluster_ids)}: {cluster_ids}."
         )
     color_map = _build_cluster_color_map(labels)
+    projection_norm = str(pretty_render_projection).strip().lower()
+    if projection_norm not in {"orthographic", "ortho", "perspective", "persp"}:
+        projection_norm = "perspective"
+    pretty_render_resolution = max(128, int(pretty_render_resolution))
+    pretty_render_sphere_radius = max(1, int(pretty_render_sphere_radius))
+    color_mode_norm = str(pretty_render_color_mode).strip().lower()
+    if color_mode_norm != "matplotlib_match":
+        color_mode_norm = "flat"
+    pretty_render_saturation_boost = max(1e-6, float(pretty_render_saturation_boost))
+    pretty_render_wireframe_width = max(0, int(pretty_render_wireframe_width))
+    raytrace_projection_norm = str(raytrace_render_projection).strip().lower()
+    if raytrace_projection_norm not in {"orthographic", "ortho", "perspective", "persp"}:
+        raytrace_projection_norm = "perspective"
+    raytrace_render_resolution = max(256, int(raytrace_render_resolution))
+    if raytrace_render_max_points is not None:
+        raise ValueError(
+            "raytrace_render_max_points is unsupported: raytrace renderer always uses "
+            "all points. Set it to null/0 or remove the override."
+        )
+    raytrace_render_samples = max(1, int(raytrace_render_samples))
+    raytrace_render_fov_deg = float(np.clip(float(raytrace_render_fov_deg), 5.0, 130.0))
+    raytrace_render_camera_distance_factor = max(
+        1.01,
+        float(raytrace_render_camera_distance_factor),
+    )
+    raytrace_render_sphere_radius_fraction = max(
+        1e-6,
+        float(raytrace_render_sphere_radius_fraction),
+    )
+    raytrace_render_timeout_sec = max(30, int(raytrace_render_timeout_sec))
 
-    # -- 01  All-clusters views (4 rotations) with pretty sphere renders ------
+    md_snapshot_kwargs = {
+        "max_points": md_max_points,
+        "point_size": float(md_point_size),
+        "alpha": float(md_point_alpha),
+        "halo_scale": float(md_halo_scale),
+        "halo_alpha": float(md_halo_alpha),
+    }
+    pretty_render_kwargs = {
+        "max_points": md_max_points,
+        "image_width": pretty_render_resolution,
+        "image_height": pretty_render_resolution,
+        "sphere_radius_px": pretty_render_sphere_radius,
+        "projection": projection_norm,
+        "perspective_fov_deg": float(pretty_render_perspective_fov_deg),
+        "perspective_distance_factor": float(pretty_render_perspective_distance_factor),
+        "color_mode": color_mode_norm,
+        "saturation_boost": pretty_render_saturation_boost,
+        "wireframe_width": pretty_render_wireframe_width,
+    }
+    raytrace_render_kwargs = {
+        "max_points": raytrace_render_max_points,
+        "image_width": raytrace_render_resolution,
+        "image_height": raytrace_render_resolution,
+        "projection": raytrace_projection_norm,
+        "perspective_fov_deg": raytrace_render_fov_deg,
+        "camera_distance_factor": raytrace_render_camera_distance_factor,
+        "sphere_radius_fraction": raytrace_render_sphere_radius_fraction,
+        "blender_executable": str(raytrace_blender_executable),
+        "cycles_samples": raytrace_render_samples,
+        "timeout_seconds": raytrace_render_timeout_sec,
+        "wireframe_enabled": bool(pretty_render_wireframe_width > 0),
+    }
 
+    # -- 01  All-clusters views (4 rotations) with pretty + optional raytrace --
     all_view_specs = [
         ("view1", float(md_view_elev), float(md_view_azim)),
         ("view2", float(md_view_elev), float(md_view_azim + 90.0)),
@@ -1654,13 +2610,9 @@ def _save_fixed_k_cluster_figure_set(
             color_map,
             snapshot_path,
             title=snapshot_title,
-            max_points=md_max_points,
-            point_size=float(md_point_size),
-            alpha=float(md_point_alpha),
-            halo_scale=float(md_halo_scale),
-            halo_alpha=float(md_halo_alpha),
             view_elev=float(elev),
             view_azim=float(azim),
+            **md_snapshot_kwargs,
         )
         pretty_path = snapshot_path.with_stem(snapshot_path.stem + "_pretty")
         pretty_info = _save_md_cluster_snapshot_pretty(
@@ -1669,14 +2621,24 @@ def _save_fixed_k_cluster_figure_set(
             color_map,
             pretty_path,
             title=snapshot_title,
-            max_points=md_max_points,
             view_elev=float(elev),
             view_azim=float(azim),
-            image_width=pretty_render_resolution,
-            image_height=pretty_render_resolution,
-            sphere_radius_px=pretty_render_sphere_radius,
+            **pretty_render_kwargs,
         )
         panel_view["pretty_render"] = pretty_info
+        if bool(raytrace_render_enabled):
+            raytrace_path = snapshot_path.with_stem(snapshot_path.stem + "_raytrace")
+            raytrace_info = _save_md_cluster_snapshot_raytrace_blender(
+                coords_arr,
+                labels,
+                color_map,
+                raytrace_path,
+                title=snapshot_title,
+                view_elev=float(elev),
+                view_azim=float(azim),
+                **raytrace_render_kwargs,
+            )
+            panel_view["raytrace_render"] = raytrace_info
         panel_view["view_name"] = str(view_name)
         panel_all_views.append(panel_view)
     panel_all = panel_all_views[0]
@@ -1703,13 +2665,9 @@ def _save_fixed_k_cluster_figure_set(
                 set_path,
                 title=set_title,
                 visible_cluster_ids=ids,
-                max_points=md_max_points,
-                point_size=float(md_point_size),
-                alpha=float(md_point_alpha),
-                halo_scale=float(md_halo_scale),
-                halo_alpha=float(md_halo_alpha),
                 view_elev=float(md_view_elev),
                 view_azim=float(md_view_azim),
+                **md_snapshot_kwargs,
             )
             pretty_set_path = set_path.with_stem(set_path.stem + "_pretty")
             pretty_set = _save_md_cluster_snapshot_pretty(
@@ -1719,14 +2677,25 @@ def _save_fixed_k_cluster_figure_set(
                 pretty_set_path,
                 title=set_title,
                 visible_cluster_ids=ids,
-                max_points=md_max_points,
                 view_elev=float(md_view_elev),
                 view_azim=float(md_view_azim),
-                image_width=pretty_render_resolution,
-                image_height=pretty_render_resolution,
-                sphere_radius_px=pretty_render_sphere_radius,
+                **pretty_render_kwargs,
             )
             panel_set["pretty_render"] = pretty_set
+            if bool(raytrace_render_enabled):
+                raytrace_set_path = set_path.with_stem(set_path.stem + "_raytrace")
+                raytrace_set = _save_md_cluster_snapshot_raytrace_blender(
+                    coords_arr,
+                    labels,
+                    color_map,
+                    raytrace_set_path,
+                    title=set_title,
+                    visible_cluster_ids=ids,
+                    view_elev=float(md_view_elev),
+                    view_azim=float(md_view_azim),
+                    **raytrace_render_kwargs,
+                )
+                panel_set["raytrace_render"] = raytrace_set
             panel_set["cluster_ids_shown"] = ids
             panel_selected_sets.append(panel_set)
 
@@ -1801,6 +2770,30 @@ def _save_fixed_k_cluster_figure_set(
         "panel_selected_sets": panel_selected_sets,
         "panel_icl": panel_icl,
         "panel_representatives": panel_reps,
+        "pretty_render_settings": {
+            "resolution": int(pretty_render_resolution),
+            "sphere_radius_px": int(pretty_render_sphere_radius),
+            "projection": str(projection_norm),
+            "perspective_fov_deg": float(pretty_render_perspective_fov_deg),
+            "perspective_distance_factor": float(pretty_render_perspective_distance_factor),
+            "color_mode": str(color_mode_norm),
+            "saturation_boost": float(pretty_render_saturation_boost),
+            "wireframe_width": int(pretty_render_wireframe_width),
+        },
+        "raytrace_render_settings": {
+            "enabled": bool(raytrace_render_enabled),
+            "blender_executable": str(raytrace_blender_executable),
+            "resolution": int(raytrace_render_resolution),
+            "max_points": (
+                None if raytrace_render_max_points is None else int(raytrace_render_max_points)
+            ),
+            "samples": int(raytrace_render_samples),
+            "projection": str(raytrace_projection_norm),
+            "fov_deg": float(raytrace_render_fov_deg),
+            "camera_distance_factor": float(raytrace_render_camera_distance_factor),
+            "sphere_radius_fraction": float(raytrace_render_sphere_radius_fraction),
+            "timeout_sec": int(raytrace_render_timeout_sec),
+        },
         "visible_cluster_sets": [
             sorted(int(v) for v in s) for s in (visible_cluster_sets or [])
         ],
@@ -1812,5 +2805,3 @@ def _save_fixed_k_cluster_figure_set(
         "icl_num_samples": int(icl_features.shape[0]),
         "icl_covariance_type": str(icl_covariance_type),
     }
-
-

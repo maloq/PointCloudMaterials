@@ -36,8 +36,7 @@ _DIAGONAL_DIRECTION = np.array([1.0, 1.0, 1.0], dtype=float) / np.sqrt(3.0)
 _DEFAULT_GRAY_RGBA = tuple(mcolors.to_rgba("gray"))
 
 # Color schemes
-PHASE_CMAP = cm.get_cmap("Set2")
-GRAIN_CMAP = cm.get_cmap("gist_ncar")
+PHASE_CMAP = cm.get_cmap("tab10")
 CRYSTAL_COLOR = "#4ECDC4"
 LIQUID_COLOR = "#FF6B6B"
 INTERFACE_COLOR = "#FFE66D"

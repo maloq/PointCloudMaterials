@@ -18,6 +18,44 @@ from src.utils.logging_config import setup_logging
 logger = setup_logging()
 
 
+def _resolve_split_seed(cfg, *, default: int = 42) -> int:
+    data_cfg = getattr(cfg, "data", None)
+    raw_seed = getattr(data_cfg, "split_seed", None) if data_cfg is not None else None
+    if raw_seed is None:
+        raw_seed = getattr(cfg, "split_seed", default)
+    try:
+        seed = int(raw_seed)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"split_seed must be an integer >= 0, got {raw_seed!r}"
+        ) from exc
+    if seed < 0:
+        raise ValueError(f"split_seed must be >= 0, got {seed}")
+    return seed
+
+
+def _seeded_random_split(dataset, lengths: list[int], *, seed: int, context: str):
+    if not hasattr(dataset, "__len__"):
+        raise TypeError(
+            f"{context}: dataset must define __len__, got {type(dataset)}"
+        )
+    split_lengths = [int(v) for v in lengths]
+    if any(v < 0 for v in split_lengths):
+        raise ValueError(
+            f"{context}: split lengths must be non-negative, got {split_lengths}"
+        )
+    total = int(sum(split_lengths))
+    n_items = int(len(dataset))
+    if total != n_items:
+        raise ValueError(
+            f"{context}: split lengths must sum to dataset length, "
+            f"got sum(lengths)={total}, len(dataset)={n_items}, lengths={split_lengths}."
+        )
+    generator = torch.Generator()
+    generator.manual_seed(int(seed))
+    return random_split(dataset, split_lengths, generator=generator)
+
+
 class RealPointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
@@ -25,21 +63,32 @@ class RealPointCloudDataModule(pl.LightningDataModule):
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
         self.max_samples = cfg.max_samples
+        self.split_seed = _resolve_split_seed(cfg)
+        self._datasets_initialized = False
 
     def setup(self, stage=None):
         start_time = time.time()
-        self.train_dataset, self.val_dataset = self._setup_real_dataset()
-        # Test dataset is same as val for metrics
-        self.test_dataset = self.val_dataset
-
-        if self.max_samples > 0:
-            max_train = min(self.max_samples, len(self.train_dataset))
-            max_val = min(self.max_samples, len(self.val_dataset))
-            self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
-            self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+        initialized_now = False
+        if not self._datasets_initialized:
+            self.train_dataset, self.val_dataset = self._setup_real_dataset()
+            # Test dataset is same as val for metrics.
             self.test_dataset = self.val_dataset
 
+            if self.max_samples > 0:
+                max_train = min(self.max_samples, len(self.train_dataset))
+                max_val = min(self.max_samples, len(self.val_dataset))
+                self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
+                self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+                self.test_dataset = self.val_dataset
+            self._datasets_initialized = True
+            initialized_now = True
+
         elapsed_time = time.time() - start_time
+        if not initialized_now:
+            logger.print(
+                f"Reusing existing real dataset split for stage={stage!r} "
+                f"(split_seed={self.split_seed})."
+            )
         logger.print(f"Train dataset size: {len(self.train_dataset)}")
         logger.print(f"Val dataset size: {len(self.val_dataset)}")
         logger.print(f"Test dataset size: {len(self.test_dataset)}")
@@ -69,7 +118,12 @@ class RealPointCloudDataModule(pl.LightningDataModule):
         val_size = len(full_dataset) - train_size
         if train_size <= 0 or val_size <= 0:
             raise ValueError("Dataset split resulted in empty train or val set")
-        train_ds, val_ds = random_split(full_dataset, [train_size, val_size])
+        train_ds, val_ds = _seeded_random_split(
+            full_dataset,
+            [train_size, val_size],
+            seed=self.split_seed,
+            context="RealPointCloudDataModule._setup_real_dataset",
+        )
         return train_ds, val_ds
 
     def train_dataloader(self):
@@ -113,25 +167,36 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
         self.max_samples = cfg.max_samples
+        self.split_seed = _resolve_split_seed(cfg)
         self._phase_info_logged = False
+        self._datasets_initialized = False
 
     def setup(self, stage=None):
         start_time = time.time()
-        self.train_dataset, self.val_dataset = self._build_datasets()
-        # Test dataset is same as val for metrics
-        self.test_dataset = self.val_dataset
-
-        if self.max_samples > 0:
-            max_train = min(self.max_samples, len(self.train_dataset))
-            max_val = min(self.max_samples, len(self.val_dataset))
-            self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
-            self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+        initialized_now = False
+        if not self._datasets_initialized:
+            self.train_dataset, self.val_dataset = self._build_datasets()
+            # Test dataset is same as val for metrics.
             self.test_dataset = self.val_dataset
+
+            if self.max_samples > 0:
+                max_train = min(self.max_samples, len(self.train_dataset))
+                max_val = min(self.max_samples, len(self.val_dataset))
+                self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
+                self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+                self.test_dataset = self.val_dataset
+            self._datasets_initialized = True
+            initialized_now = True
 
         if (stage is None or stage == 'fit') and not self._phase_info_logged:
             self._log_class_mapping()
 
         elapsed_time = time.time() - start_time
+        if not initialized_now:
+            logger.print(
+                f"Reusing existing synthetic dataset split for stage={stage!r} "
+                f"(split_seed={self.split_seed})."
+            )
         logger.print(f"Synth train dataset size: {len(self.train_dataset)}")
         logger.print(f"Synth val dataset size: {len(self.val_dataset)}")
         logger.print(f"Synth test dataset size: {len(self.test_dataset)}")
@@ -355,7 +420,12 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             val_size = len(dataset) - train_size
             if train_size <= 0 or val_size <= 0:
                 raise ValueError("Synthetic dataset split resulted in empty train or val set")
-            return random_split(dataset, [train_size, val_size])
+            return _seeded_random_split(
+                dataset,
+                [train_size, val_size],
+                seed=self.split_seed,
+                context="SyntheticPointCloudDataModule._build_datasets(modelnet fallback)",
+            )
 
         env_dirs = self._resolve_env_dirs(data_cfg, synth_dict)
         radius = self._get_param("radius", data_cfg, synth_dict, required=True)
@@ -397,7 +467,12 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         val_size = len(dataset) - train_size
         if train_size <= 0 or val_size <= 0:
             raise ValueError("Synthetic dataset split resulted in empty train or val set")
-        return random_split(dataset, [train_size, val_size])
+        return _seeded_random_split(
+            dataset,
+            [train_size, val_size],
+            seed=self.split_seed,
+            context="SyntheticPointCloudDataModule._build_datasets(synthetic)",
+        )
 
     def _resolve_env_dirs(self, data_cfg, synth_dict):
         env_dirs = []

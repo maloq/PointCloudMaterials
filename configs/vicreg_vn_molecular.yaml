@@ -1,5 +1,5 @@
 defaults:
-  # - data: data_synth_polycrystalline_balanced_geometries
+# - data: data_synth_polycrystalline_balanced_geometries
  - data: data_ae_Al_80
 data:
   analysis_data_files: ['175ps.off']
@@ -10,33 +10,32 @@ experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points
 wandb_mode: online
 
 model_type: vicreg  # Self-supervised VICReg
-latent_size: 240  # Number of VN channels for equivariant latent
+latent_size: 768  # For RI_MAE_Invariant this must equal 2 * trans_dim.
 
-load_supervised_checkpoint: False
+load_supervised_checkpoint: output/2026-02-25/23-55-50/VICREG_l768_N128_M80_RI_MAE_Invariant-epoch=119.ckpt
 
 resume_from_checkpoint: null
 
-# encoder:
-#   name: VN_REVNET_Backbone
-#   kwargs:
-#     latent_size: ${latent_size}
-#     sa_npoints: [80, 80]
-#     sa_channels: [128, 256]
-#     attn_hidden: 256
-
+# Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
+# VN_REVNET_Backbone, PnE_VN, VN_DGCNN, DGCNN, EGNN_Encoder, PnE_L, PnE_S, MLP).
 encoder:
-  name: VN_REVNET_Atomic
+  name: RI_MAE_Invariant
   kwargs:
     latent_size: ${latent_size}
-    embed_channels: 128
-    hidden_channels: [320, 960]
-    geom_dim: 128
-    gram_pairs: 128
-
-# encoder:
-#   name: DGCNN
-#   kwargs:
-#     latent_size: ${latent_size}
+    num_group: 24
+    group_size: 12
+    encoder_dims: 384
+    trans_dim: 384
+    depth: 8
+    predictor_depth: 2
+    num_heads: 6
+    mlp_ratio: 4.0
+    dropout: 0.0
+    mask_ratio: 0.6
+    ema_decay: 0.996
+    deterministic_fps: false
+    sorting_mode: nearest
+    center_input: true
 
 # Decoder config is required by the model factory but is not used for VICReg
 decoder:
@@ -47,10 +46,10 @@ decoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 128
+batch_size: 2048
 precision: bf16-true
 gradient_clip_val: 1.0
-accumulate_grad_batches: 6
+accumulate_grad_batches: 1
 auto_batch_size_search: false
 auto_batch_size_mode: power
 auto_batch_size_init_val: null
@@ -63,11 +62,11 @@ auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 240
+epochs: 120
 max_samples: 0
 
 gpu: True
-devices: [0]
+devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 6
@@ -122,7 +121,7 @@ vicreg_occlusion_slab_frac: 0.0
 vicreg_occlusion_cone_deg: 0.0
 vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
-vicreg_invariant_mode: tensor_product
+vicreg_invariant_mode: passthrough
 vicreg_invariant_max_factor: 4.0
 vicreg_invariant_groups: 0
 vicreg_invariant_use_third_order: true

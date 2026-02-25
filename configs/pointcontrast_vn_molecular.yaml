@@ -36,8 +36,8 @@ decoder:
 learning_rate: 0.003
 decay_rate: 0.0004
 
-batch_size: 128
-precision: bf16-true
+batch_size: 256
+precision: 32-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 6
 auto_batch_size_search: false
@@ -113,7 +113,7 @@ pointcontrast_invariant_eps: 1e-6
 
 # Keep symmetry-aware pose objective available for molecular experiments.
 pose:
-  enabled: true
+  enabled: false
   weight: 0.4
   start_epoch: 10
   head_hidden: 256
@@ -163,7 +163,7 @@ analysis_tsne_max_samples: 8000
 analysis_tsne_n_iter: 1000
 analysis_interactive_max_points: 0
 analysis_md_use_all_points: true
-analysis_hdbscan_enabled: true
+analysis_hdbscan_enabled: false
 analysis_hdbscan_fit_fraction: 0.25
 analysis_hdbscan_max_fit_samples: 50000
 analysis_hdbscan_target_k_min: 5

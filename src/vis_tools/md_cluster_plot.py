@@ -37,9 +37,35 @@ def _resolve_palette(palette: str | None):
     except ImportError as exc:
         raise ImportError("Plotly is required for interactive MD plots.") from exc
 
+    tab10 = [
+        "#1f77b4",
+        "#ff7f0e",
+        "#2ca02c",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#e377c2",
+        "#7f7f7f",
+        "#bcbd22",
+        "#17becf",
+    ]
+    palette_norm = "" if palette is None else str(palette).strip().lower()
+    if palette_norm in {"tab10", "t10"}:
+        return tab10
     if palette and hasattr(px.colors.qualitative, palette):
-        return getattr(px.colors.qualitative, palette)
-    return px.colors.qualitative.Set3
+        return list(getattr(px.colors.qualitative, palette))
+    if palette and str(palette).strip().lower() == "accent":
+        return [
+            "#7fc97f",
+            "#beaed4",
+            "#fdc086",
+            "#ffff99",
+            "#386cb0",
+            "#f0027f",
+            "#bf5b17",
+            "#666666",
+        ]
+    return tab10
 
 
 def _normalize_sizes(
@@ -71,7 +97,7 @@ def save_interactive_md_plot(
     clusters: np.ndarray,
     out_file: Path,
     *,
-    palette: str | None = "Set3",
+    palette: str | None = "tab10",
     max_points: int | None = None,
     marker_size: float = 3.0,
     marker_line_width: float = 0.0,
@@ -166,7 +192,7 @@ def render_interactive_md_clusters(
     analysis_dir: Path,
     *,
     out_file: Path | None = None,
-    palette: str | None = "Set3",
+    palette: str | None = "tab10",
     max_points: int | None = None,
     marker_size: float = 3.0,
     marker_line_width: float = 0.0,
@@ -286,7 +312,7 @@ def save_interactive_md_two_layer_plot(
     values: np.ndarray,
     out_file: Path,
     *,
-    palette: str | None = "Set3",
+    palette: str | None = "tab10",
     max_points: int | None = None,
     base_marker_size: float = 2.5,
     base_opacity: float = 0.35,

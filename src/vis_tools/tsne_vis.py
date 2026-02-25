@@ -94,7 +94,7 @@ def save_tsne_plot(
         return v in {-1, -1.0, "-1"}
 
     non_noise_labels = [v for v in unique_labels if not is_noise_label(v)]
-    colormap = plt.cm.get_cmap("tab20", max(1, len(non_noise_labels)))
+    tab10_colors = plt.cm.tab10(np.linspace(0, 1, 10)).astype(np.float32)
     label_to_color: Dict[Any, Any] = {}
     color_index = 0
     # Sort with noise last for visibility
@@ -102,7 +102,7 @@ def save_tsne_plot(
         if is_noise_label(lbl):
             label_to_color[lbl] = "lightgray"
         else:
-            label_to_color[lbl] = colormap(color_index)
+            label_to_color[lbl] = tab10_colors[color_index % len(tab10_colors)]
             color_index += 1
 
     plt.figure(figsize=(7, 6), dpi=150)

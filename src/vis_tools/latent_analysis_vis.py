@@ -14,6 +14,28 @@ from sklearn.preprocessing import StandardScaler
 from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
 
 
+def _tab10_colors(n_colors: int) -> np.ndarray:
+    if int(n_colors) <= 0:
+        return np.empty((0, 4), dtype=np.float32)
+    base = plt.cm.tab10(np.linspace(0, 1, 10)).astype(np.float32)
+    n = int(n_colors)
+    if n <= base.shape[0]:
+        return base[:n]
+    extras = plt.cm.tab20(np.linspace(0, 1, 20)).astype(np.float32)
+    colors = [base[i] for i in range(base.shape[0])]
+    for extra in extras:
+        if len(colors) >= n:
+            break
+        if not any(np.allclose(extra, c, atol=1e-6) for c in colors):
+            colors.append(extra)
+    out = np.asarray(colors, dtype=np.float32)
+    if out.shape[0] < n:
+        raise RuntimeError(
+            f"Failed to create {n} colors for tab10 palette; got {out.shape[0]}."
+        )
+    return out[:n]
+
+
 def save_latent_tsne(
     inv_latents: np.ndarray,
     phases: np.ndarray,
@@ -729,7 +751,7 @@ def save_md_space_clusters_plot(
         labels_plot = cluster_labels[idx]
 
     unique_labels = np.unique(labels_plot)
-    colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+    colors = _tab10_colors(len(unique_labels))
 
     fig = plt.figure(figsize=(10, 8), dpi=150)
     ax = fig.add_subplot(111, projection="3d")
@@ -799,7 +821,7 @@ def save_pca_visualization(
 
     if gt_labels is not None:
         unique_labels = np.unique(gt_labels)
-        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+        colors = _tab10_colors(len(unique_labels))
         for i, label in enumerate(unique_labels):
             mask = gt_labels == label
             label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
@@ -917,7 +939,7 @@ def save_latent_statistics(
 
     if has_phases:
         unique_labels = np.unique(phases)
-        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+        colors = _tab10_colors(len(unique_labels))
         for i, label in enumerate(unique_labels):
             mask = phases == label
             label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
@@ -1211,7 +1233,7 @@ def save_clustering_analysis(
             labels_list.append(label_text)
 
         bp = axes[2].boxplot(separation_data, labels=labels_list, patch_artist=True)
-        colors = plt.cm.tab20(np.linspace(0, 1, len(unique_labels)))
+        colors = _tab10_colors(len(unique_labels))
         for patch, color in zip(bp["boxes"], colors):
             patch.set_facecolor(color)
             patch.set_alpha(0.6)

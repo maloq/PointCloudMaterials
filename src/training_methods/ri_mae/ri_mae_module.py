@@ -22,7 +22,7 @@ from src.training_methods.pointgpt.pointgpt_module import (
     PositionEmbeddingCoordsSine,
 )
 from src.utils.pointcloud_ops import crop_to_num_points
-from src.utils.spd_utils import get_optimizers_and_scheduler
+from src.utils.spd_utils import cached_sample_count, get_optimizers_and_scheduler
 
 
 def _to_bn3(points: torch.Tensor) -> torch.Tensor:
@@ -415,7 +415,13 @@ class RIMAEModule(pl.LightningModule):
             sorting_mode=str(_ri_get("sorting_mode", "nearest")),
         )
 
-        self.crop_mode = str(_ri_get("crop_mode", "random"))
+        legacy_crop_mode = str(_ri_get("crop_mode", "random")).strip()
+        self.crop_mode_train = str(_ri_get("crop_mode_train", legacy_crop_mode)).strip()
+        self.crop_mode_eval = str(_ri_get("crop_mode_eval", legacy_crop_mode)).strip()
+        if not self.crop_mode_train:
+            raise ValueError("ri_mae crop_mode_train must be a non-empty string.")
+        if not self.crop_mode_eval:
+            raise ValueError("ri_mae crop_mode_eval must be a non-empty string.")
         data_cfg = getattr(cfg, "data", None)
         model_points = getattr(data_cfg, "model_points", None) if data_cfg is not None else None
         if model_points is None:
@@ -439,11 +445,29 @@ class RIMAEModule(pl.LightningModule):
             return batch[0], {}
         return batch, {}
 
-    def _prepare_points(self, batch_points: torch.Tensor) -> torch.Tensor:
+    def _resolve_crop_mode(self, stage: str | None = None) -> str:
+        if stage is None:
+            return self.crop_mode_train if self.training else self.crop_mode_eval
+
+        stage_name = str(stage).strip().lower()
+        if stage_name == "train":
+            return self.crop_mode_train
+        if stage_name in {"val", "test", "predict"}:
+            return self.crop_mode_eval
+        raise ValueError(
+            f"Unsupported stage {stage!r} for crop-mode resolution. "
+            "Expected one of {'train', 'val', 'test', 'predict'} or None."
+        )
+
+    def _prepare_points(self, batch_points: torch.Tensor, *, stage: str | None = None) -> torch.Tensor:
         points = _to_bn3(batch_points)
         points = points.to(device=self.device, dtype=self.dtype, non_blocking=True)
         if self.model_points is not None:
-            points = crop_to_num_points(points, self.model_points, mode=self.crop_mode)
+            points = crop_to_num_points(
+                points,
+                self.model_points,
+                mode=self._resolve_crop_mode(stage),
+            )
         points = points - points.mean(dim=1, keepdim=True)
         return points
 
@@ -454,13 +478,29 @@ class RIMAEModule(pl.LightningModule):
         class_id = meta.get("class_id")
         if class_id is None:
             return None, None
-        points = self._prepare_points(points_raw)
+        points = self._prepare_points(points_raw, stage="test")
         features = self.model.forward_eval(points, use_teacher=True)
         return features.detach().to(torch.float32), class_id
 
+    def forward(self, batch_points: torch.Tensor, *, use_teacher: bool = True):
+        """Return invariant features in contrastive-compatible tuple format."""
+        points = self._prepare_points(batch_points)
+        features = self.model.forward_eval(points, use_teacher=use_teacher)
+        if not torch.is_tensor(features):
+            raise RuntimeError(
+                "RI-MAE forward_eval returned non-tensor features; "
+                f"got type={type(features)}."
+            )
+        if features.dim() != 2:
+            raise RuntimeError(
+                "RI-MAE forward_eval must return a 2D feature tensor (B, D), "
+                f"got shape={tuple(features.shape)}."
+            )
+        return features, features, None
+
     def _step(self, batch, stage: str) -> torch.Tensor:
         points_raw, meta = self._unpack_batch(batch)
-        points = self._prepare_points(points_raw)
+        points = self._prepare_points(points_raw, stage=stage)
 
         loss, global_latent, mask_fraction, patch_centroids = self.model(points)
 
@@ -468,18 +508,22 @@ class RIMAEModule(pl.LightningModule):
             stage != "train" or self.cache_train_supervised_metrics
         )
         if should_cache and global_latent is not None:
-            cached_latents = global_latent
-            cached_features = global_latent
-            if stage in {"val", "test"}:
-                with torch.no_grad():
-                    cached_features = self.model.forward_eval(points, use_teacher=True)
-                cached_latents = cached_features
-            self._cache_supervised_batch(
-                stage,
-                cached_latents,
-                meta,
-                encoder_features=cached_features,
-            )
+            limit = self._cache_limit_for_stage(stage)
+            cache = self._supervised_cache.get(stage)
+            already_cached = cached_sample_count(cache) if cache is not None else 0
+            if limit is None or already_cached < limit:
+                cached_latents = global_latent
+                cached_features = global_latent
+                if stage in {"val", "test"}:
+                    with torch.no_grad():
+                        cached_features = self.model.forward_eval(points, use_teacher=True)
+                    cached_latents = cached_features
+                self._cache_supervised_batch(
+                    stage,
+                    cached_latents,
+                    meta,
+                    encoder_features=cached_features,
+                )
 
         with torch.no_grad():
             latent_std = global_latent.to(torch.float32).std(dim=0).mean()

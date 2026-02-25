@@ -53,7 +53,23 @@ Results are written to `<checkpoint_dir>/analysis/` by default.
 | `--data_file FILE` | config value | Override input data files (repeat for multiple) |
 | `--visible_cluster_sets IDS [...]` | none | Cluster ID subsets for separate views (comma-separated per set) |
 | `--pretty_render_resolution N` | `2200` | Image width/height in pixels for sphere renders |
-| `--pretty_render_sphere_radius N` | `7` | Sphere radius in pixels for sphere renders |
+| `--pretty_render_sphere_radius N` | `12` | Size scale for auto-estimated ball radius (`12` = 1.0x) |
+| `--pretty_render_projection MODE` | config/default | `perspective` or `orthographic` |
+| `--pretty_render_perspective_fov_deg N` | config/default | Perspective FOV in degrees |
+| `--pretty_render_perspective_distance_factor N` | config/default | Camera distance scaling (perspective) |
+| `--pretty_render_color_mode MODE` | config/default | `matplotlib_match` or `flat` |
+| `--pretty_render_saturation_boost N` | config/default | Global saturation multiplier |
+| `--pretty_render_wireframe_width N` | config/default | Cube wireframe line width (`0` disables) |
+| `--raytrace_render_enabled` | `false` | Also generate Blender Cycles `*_raytrace.png` renders |
+| `--raytrace_blender_executable PATH` | config/default | Blender executable path/name |
+| `--raytrace_render_resolution N` | config/default | Raytrace image width/height |
+| `--raytrace_render_max_points N` | deprecated | Raytrace always uses all points (set `0` or omit) |
+| `--raytrace_render_samples N` | config/default | Cycles sample count |
+| `--raytrace_render_projection MODE` | config/default | `perspective` or `orthographic` |
+| `--raytrace_render_fov_deg N` | config/default | Perspective FOV for raytrace |
+| `--raytrace_render_camera_distance_factor N` | config/default | Camera distance scaling for raytrace |
+| `--raytrace_render_sphere_radius_fraction N` | config/default | Size scale for auto-estimated raytrace ball radius (`0.0105` = 1.0x) |
+| `--raytrace_render_timeout_sec N` | config/default | Timeout per Blender render |
 
 ### Output files
 
@@ -76,8 +92,10 @@ The script writes the following into the output directory:
 
 #### Cluster figure set (`cluster_figure_set_k<K>/`)
 
-Every MD cluster view is produced in two versions: a fast matplotlib scatter
-and a Blinn-Phong sphere render (`*_pretty.png`) comparable to OVITO.
+Every MD cluster view is produced in two versions by default: a fast matplotlib
+scatter and a perspective sphere render (`*_pretty.png`) with subsurface-style
+shading and SSAO contact shadows.  An optional third Blender Cycles raytraced
+render (`*_raytrace.png`) can be enabled.
 
 | File | Description |
 |---|---|
@@ -86,8 +104,10 @@ and a Blinn-Phong sphere render (`*_pretty.png`) comparable to OVITO.
 | `01_md_clusters_all_k<K>_view3.png` | Same, rotated 180 degrees |
 | `01_md_clusters_all_k<K>_view4.png` | Same, rotated 270 degrees |
 | `01_*_pretty.png` | Sphere renders of the above (always generated) |
+| `01_*_raytrace.png` | Blender Cycles raytraced renders (when enabled) |
 | `02_md_clusters_set_<IDS>_k<K>.png` | Selected cluster subset (if `--visible_cluster_sets` given) |
 | `02_*_pretty.png` | Sphere render of each subset view |
+| `02_*_raytrace.png` | Blender Cycles raytraced subset renders (when enabled) |
 | `03_cluster_count_icl_k<K>.png` | ICL curve vs number of clusters |
 | `04_cluster_representatives_k<K>.png` | Nearest-centroid representative per cluster |
 
@@ -112,9 +132,27 @@ analysis_cluster_figure_visible_sets: ["0,1,2", "3,4,5"]
 Tune the render quality with:
 
 ```bash
---pretty_render_resolution 3000   # larger image (default 2200)
---pretty_render_sphere_radius 10  # bigger spheres (default 7)
+--pretty_render_resolution 3000                   # larger image (default 2200)
+--pretty_render_sphere_radius 10                  # bigger spheres (default 12)
+--pretty_render_projection perspective            # perspective depth cues
+--pretty_render_perspective_fov_deg 32            # stronger/weaker perspective
+--pretty_render_perspective_distance_factor 1.35  # camera distance
+--pretty_render_color_mode matplotlib_match       # match static matplotlib colors
+--pretty_render_saturation_boost 1.06             # richer colors
+--pretty_render_wireframe_width 0                 # disable cube lines
+--raytrace_render_enabled                          # add Blender Cycles renders
+--raytrace_render_samples 64                       # Cycles sample count
+--raytrace_render_resolution 1600                  # raytrace output size
+--raytrace_render_max_points 0                     # deprecated; raytrace uses all points
+--raytrace_blender_executable blender              # executable name/path
 ```
+
+Both pretty and raytraced renderers now estimate physically consistent ball size
+from the full labeled MD-space cloud (not the sampled render subset); the size
+flags above act as multiplicative scales.
+
+Raytraced outputs require a working Blender executable (`blender`) in PATH
+or an explicit absolute path via `--raytrace_blender_executable`.
 
 ### Hydra configuration
 
@@ -128,6 +166,22 @@ checkpoint. Key settings include:
 | `analysis_cluster_figure_set_enabled` | `true` | Generate the fixed-k figure set |
 | `analysis_cluster_figure_set_k` | `6` | K used for the figure set |
 | `analysis_cluster_figure_visible_sets` | `[]` | Cluster ID subsets for separate views (list of comma-separated strings) |
+| `analysis_cluster_figure_pretty_projection` | `perspective` | Pretty-render projection mode |
+| `analysis_cluster_figure_pretty_fov_deg` | `34.0` | Perspective field-of-view |
+| `analysis_cluster_figure_pretty_distance_factor` | `1.4` | Perspective camera distance factor |
+| `analysis_cluster_figure_pretty_color_mode` | `matplotlib_match` | Pretty-render color assignment |
+| `analysis_cluster_figure_pretty_saturation_boost` | `1.06` | Pretty-render saturation multiplier |
+| `analysis_cluster_figure_pretty_wireframe_width` | `1` | Pretty-render cube wireframe width |
+| `analysis_cluster_figure_raytrace_enabled` | `false` | Enable Blender Cycles raytrace renders |
+| `analysis_cluster_figure_raytrace_blender_executable` | `blender` | Blender executable path/name |
+| `analysis_cluster_figure_raytrace_resolution` | `1600` | Raytrace image width/height |
+| `analysis_cluster_figure_raytrace_max_points` | `null` | Deprecated; raytrace always uses all points |
+| `analysis_cluster_figure_raytrace_samples` | `64` | Cycles sample count |
+| `analysis_cluster_figure_raytrace_projection` | `perspective` | Raytrace camera projection |
+| `analysis_cluster_figure_raytrace_fov_deg` | `34.0` | Raytrace perspective FOV |
+| `analysis_cluster_figure_raytrace_camera_distance_factor` | `2.8` | Raytrace camera distance factor |
+| `analysis_cluster_figure_raytrace_sphere_radius_fraction` | `0.0105` | Size scale for auto-estimated raytrace ball radius (`0.0105` = 1.0x) |
+| `analysis_cluster_figure_raytrace_timeout_sec` | `1200` | Timeout per Blender render |
 | `analysis_tsne_max_samples` | `8000` | t-SNE sample cap |
 | `analysis_hdbscan_enabled` | `false` | Run HDBSCAN in addition to KMeans |
 | `analysis_cluster_profile_enabled` | `true` | Generate per-cluster structure profiles |

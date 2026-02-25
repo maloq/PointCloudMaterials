@@ -39,10 +39,43 @@ class BarlowTwinsModule(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters(cfg)
 
+        if bool(getattr(cfg, "vicreg_use_ri_mae_backbone", False)):
+            raise ValueError(
+                "vicreg_use_ri_mae_backbone is deprecated. "
+                "Use encoder.name='RI_MAE_Invariant' with vicreg_invariant_mode='passthrough'."
+            )
+
+        enc_cfg = getattr(cfg, "encoder", None)
+        enc_name = str(getattr(enc_cfg, "name", "")).strip()
+        if enc_name == "RI_MAE_Invariant":
+            vic_mode = str(getattr(cfg, "vicreg_invariant_mode", "norms")).lower()
+            if vic_mode not in {"passthrough", "norms"}:
+                raise ValueError(
+                    "RI_MAE_Invariant returns invariant 2D features directly. "
+                    f"Unsupported vicreg_invariant_mode='{vic_mode}'. "
+                    "Use 'passthrough' (recommended) or 'norms'."
+                )
+
         # Build encoder (decoder is not used for contrastive training)
         self.encoder, _ = build_model(cfg)
-
         latent_dim = resolve_latent_dim(cfg)
+
+        data_cfg = getattr(cfg, "data", None)
+        self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
+        model_points = getattr(data_cfg, "model_points", None) if data_cfg is not None else None
+        if model_points is None:
+            model_points = getattr(cfg, "model_points", None)
+        if model_points is not None:
+            model_points = int(model_points)
+            if model_points <= 0:
+                model_points = None
+        self.model_points = model_points
+
+        if self.model_points is not None and self.sample_points and self.model_points > self.sample_points:
+            raise ValueError(
+                f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
+            )
+
         self.norms_only_latent = bool(getattr(cfg, "contrastive_norms_only_latent", False))
         invariant_mode_override = "norms" if self.norms_only_latent else None
         self.barlow = BarlowTwinsLoss.from_config(
@@ -67,22 +100,6 @@ class BarlowTwinsModule(pl.LightningModule):
         )
         self._active_invariant_losses = self._resolve_active_invariant_losses()
         self._shared_invariant_spec = self._resolve_shared_invariant_spec()
-
-        data_cfg = getattr(cfg, "data", None)
-        self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
-        model_points = getattr(data_cfg, "model_points", None) if data_cfg is not None else None
-        if model_points is None:
-            model_points = getattr(cfg, "model_points", None)
-        if model_points is not None:
-            model_points = int(model_points)
-            if model_points <= 0:
-                model_points = None
-        self.model_points = model_points
-
-        if self.model_points is not None and self.sample_points and self.model_points > self.sample_points:
-            raise ValueError(
-                f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
-            )
 
         init_pose_components(self, cfg, latent_dim)
         init_supervised_cache(self, cfg)
@@ -584,11 +601,6 @@ class BarlowTwinsModule(pl.LightningModule):
 
         exp = self._get_wandb_experiment()
         if exp is None:
-            return
-
-        try:
-            import wandb
-        except ImportError:
             return
 
         with torch.no_grad():

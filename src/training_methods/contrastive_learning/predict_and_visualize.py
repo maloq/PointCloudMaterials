@@ -298,6 +298,22 @@ def run_post_training_analysis(
     visible_cluster_sets: list[list[int]] | None = None,
     pretty_render_resolution: int = 2200,
     pretty_render_sphere_radius: int = 12,
+    pretty_render_projection: str | None = None,
+    pretty_render_perspective_fov_deg: float | None = None,
+    pretty_render_perspective_distance_factor: float | None = None,
+    pretty_render_color_mode: str | None = None,
+    pretty_render_saturation_boost: float | None = None,
+    pretty_render_wireframe_width: int | None = None,
+    raytrace_render_enabled: bool | None = None,
+    raytrace_blender_executable: str | None = None,
+    raytrace_render_resolution: int | None = None,
+    raytrace_render_max_points: int | None = None,
+    raytrace_render_samples: int | None = None,
+    raytrace_render_projection: str | None = None,
+    raytrace_render_fov_deg: float | None = None,
+    raytrace_render_camera_distance_factor: float | None = None,
+    raytrace_render_sphere_radius_fraction: float | None = None,
+    raytrace_render_timeout_sec: int | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for Barlow Twins."""
     out_dir = Path(output_dir)
@@ -428,6 +444,141 @@ def run_post_training_analysis(
     cluster_figure_md_view_azim = float(
         getattr(cfg, "analysis_cluster_figure_md_view_azim", 35.0)
     )
+    pretty_render_projection_cfg = str(
+        getattr(cfg, "analysis_cluster_figure_pretty_projection", "perspective")
+    ).strip().lower()
+    pretty_render_projection_use = (
+        pretty_render_projection_cfg
+        if pretty_render_projection is None
+        else str(pretty_render_projection).strip().lower()
+    )
+    pretty_render_fov_cfg = float(
+        getattr(cfg, "analysis_cluster_figure_pretty_fov_deg", 34.0)
+    )
+    pretty_render_fov_use = float(
+        pretty_render_fov_cfg
+        if pretty_render_perspective_fov_deg is None
+        else pretty_render_perspective_fov_deg
+    )
+    pretty_render_distance_cfg = float(
+        getattr(cfg, "analysis_cluster_figure_pretty_distance_factor", 1.4)
+    )
+    pretty_render_distance_use = float(
+        pretty_render_distance_cfg
+        if pretty_render_perspective_distance_factor is None
+        else pretty_render_perspective_distance_factor
+    )
+    pretty_render_color_mode_cfg = str(
+        getattr(cfg, "analysis_cluster_figure_pretty_color_mode", "matplotlib_match")
+    ).strip().lower()
+    pretty_render_color_mode_use = (
+        pretty_render_color_mode_cfg
+        if pretty_render_color_mode is None
+        else str(pretty_render_color_mode).strip().lower()
+    )
+    pretty_render_saturation_cfg = float(
+        getattr(cfg, "analysis_cluster_figure_pretty_saturation_boost", 1.06)
+    )
+    pretty_render_saturation_use = float(
+        pretty_render_saturation_cfg
+        if pretty_render_saturation_boost is None
+        else pretty_render_saturation_boost
+    )
+    pretty_render_wireframe_cfg = int(
+        getattr(cfg, "analysis_cluster_figure_pretty_wireframe_width", 1)
+    )
+    pretty_render_wireframe_use = int(
+        pretty_render_wireframe_cfg
+        if pretty_render_wireframe_width is None
+        else pretty_render_wireframe_width
+    )
+    raytrace_render_enabled_cfg = bool(
+        getattr(cfg, "analysis_cluster_figure_raytrace_enabled", False)
+    )
+    raytrace_render_enabled_use = (
+        raytrace_render_enabled_cfg
+        if raytrace_render_enabled is None
+        else bool(raytrace_render_enabled)
+    )
+    raytrace_blender_executable_cfg = str(
+        getattr(cfg, "analysis_cluster_figure_raytrace_blender_executable", "blender")
+    ).strip()
+    raytrace_blender_executable_use = (
+        raytrace_blender_executable_cfg
+        if raytrace_blender_executable is None
+        else str(raytrace_blender_executable).strip()
+    )
+    raytrace_render_resolution_cfg = int(
+        getattr(cfg, "analysis_cluster_figure_raytrace_resolution", 1600)
+    )
+    raytrace_render_resolution_use = int(
+        raytrace_render_resolution_cfg
+        if raytrace_render_resolution is None
+        else raytrace_render_resolution
+    )
+    raytrace_render_max_points_cfg = _positive_int_or_none(
+        getattr(cfg, "analysis_cluster_figure_raytrace_max_points", None)
+    )
+    raytrace_render_max_points_cli = _positive_int_or_none(raytrace_render_max_points)
+    if raytrace_render_max_points_cli is not None:
+        raise ValueError(
+            "raytrace_render_max_points is no longer supported because raytrace "
+            "rendering now always uses all points. Remove the flag or set it <= 0."
+        )
+    if raytrace_render_max_points_cfg is not None:
+        print(
+            "[analysis] ignoring analysis_cluster_figure_raytrace_max_points="
+            f"{raytrace_render_max_points_cfg}; raytrace now uses all points."
+        )
+    raytrace_render_max_points_use = None
+    raytrace_render_samples_cfg = int(
+        getattr(cfg, "analysis_cluster_figure_raytrace_samples", 64)
+    )
+    raytrace_render_samples_use = int(
+        raytrace_render_samples_cfg
+        if raytrace_render_samples is None
+        else raytrace_render_samples
+    )
+    raytrace_render_projection_cfg = str(
+        getattr(cfg, "analysis_cluster_figure_raytrace_projection", "perspective")
+    ).strip().lower()
+    raytrace_render_projection_use = (
+        raytrace_render_projection_cfg
+        if raytrace_render_projection is None
+        else str(raytrace_render_projection).strip().lower()
+    )
+    raytrace_render_fov_cfg = float(
+        getattr(cfg, "analysis_cluster_figure_raytrace_fov_deg", 34.0)
+    )
+    raytrace_render_fov_use = float(
+        raytrace_render_fov_cfg
+        if raytrace_render_fov_deg is None
+        else raytrace_render_fov_deg
+    )
+    raytrace_render_camera_distance_cfg = float(
+        getattr(cfg, "analysis_cluster_figure_raytrace_camera_distance_factor", 2.8)
+    )
+    raytrace_render_camera_distance_use = float(
+        raytrace_render_camera_distance_cfg
+        if raytrace_render_camera_distance_factor is None
+        else raytrace_render_camera_distance_factor
+    )
+    raytrace_render_sphere_radius_fraction_cfg = float(
+        getattr(cfg, "analysis_cluster_figure_raytrace_sphere_radius_fraction", 0.0105)
+    )
+    raytrace_render_sphere_radius_fraction_use = float(
+        raytrace_render_sphere_radius_fraction_cfg
+        if raytrace_render_sphere_radius_fraction is None
+        else raytrace_render_sphere_radius_fraction
+    )
+    raytrace_render_timeout_sec_cfg = int(
+        getattr(cfg, "analysis_cluster_figure_raytrace_timeout_sec", 1200)
+    )
+    raytrace_render_timeout_sec_use = int(
+        raytrace_render_timeout_sec_cfg
+        if raytrace_render_timeout_sec is None
+        else raytrace_render_timeout_sec
+    )
     _cfg_visible_sets_raw = getattr(cfg, "analysis_cluster_figure_visible_sets", None)
     if _cfg_visible_sets_raw is not None and visible_cluster_sets is None:
         visible_cluster_sets = [
@@ -447,6 +598,97 @@ def run_post_training_analysis(
             "analysis_cluster_figure_md_view_elev and analysis_cluster_figure_md_view_azim "
             f"must be finite, got elev={cluster_figure_md_view_elev}, "
             f"azim={cluster_figure_md_view_azim}."
+        )
+    if int(pretty_render_resolution) < 128:
+        raise ValueError(
+            f"pretty_render_resolution must be >= 128, got {pretty_render_resolution}."
+        )
+    if int(pretty_render_sphere_radius) < 1:
+        raise ValueError(
+            f"pretty_render_sphere_radius must be >= 1, got {pretty_render_sphere_radius}."
+        )
+    if pretty_render_projection_use not in {"orthographic", "ortho", "perspective", "persp"}:
+        raise ValueError(
+            "pretty_render_projection must be one of "
+            "['orthographic', 'ortho', 'perspective', 'persp'], got "
+            f"{pretty_render_projection_use!r}."
+        )
+    if not np.isfinite(pretty_render_fov_use) or not (5.0 <= pretty_render_fov_use <= 130.0):
+        raise ValueError(
+            "pretty_render_perspective_fov_deg must be finite and in [5, 130], got "
+            f"{pretty_render_fov_use}."
+        )
+    if (
+        not np.isfinite(pretty_render_distance_use)
+        or pretty_render_distance_use < 1.05
+    ):
+        raise ValueError(
+            "pretty_render_perspective_distance_factor must be finite and >= 1.05, got "
+            f"{pretty_render_distance_use}."
+        )
+    if pretty_render_color_mode_use not in {"matplotlib_match", "flat"}:
+        raise ValueError(
+            "pretty_render_color_mode must be one of ['matplotlib_match', 'flat'], got "
+            f"{pretty_render_color_mode_use!r}."
+        )
+    if (
+        not np.isfinite(pretty_render_saturation_use)
+        or pretty_render_saturation_use <= 0.0
+    ):
+        raise ValueError(
+            "pretty_render_saturation_boost must be finite and > 0, got "
+            f"{pretty_render_saturation_use}."
+        )
+    if int(pretty_render_wireframe_use) < 0:
+        raise ValueError(
+            "pretty_render_wireframe_width must be >= 0, got "
+            f"{pretty_render_wireframe_use}."
+        )
+    if raytrace_blender_executable_use == "":
+        raise ValueError("raytrace_blender_executable must be a non-empty string.")
+    if int(raytrace_render_resolution_use) < 256:
+        raise ValueError(
+            "raytrace_render_resolution must be >= 256, got "
+            f"{raytrace_render_resolution_use}."
+        )
+    if int(raytrace_render_samples_use) < 1:
+        raise ValueError(
+            f"raytrace_render_samples must be >= 1, got {raytrace_render_samples_use}."
+        )
+    if raytrace_render_projection_use not in {"orthographic", "ortho", "perspective", "persp"}:
+        raise ValueError(
+            "raytrace_render_projection must be one of "
+            "['orthographic', 'ortho', 'perspective', 'persp'], got "
+            f"{raytrace_render_projection_use!r}."
+        )
+    if (
+        not np.isfinite(raytrace_render_fov_use)
+        or not (5.0 <= raytrace_render_fov_use <= 130.0)
+    ):
+        raise ValueError(
+            "raytrace_render_fov_deg must be finite and in [5, 130], got "
+            f"{raytrace_render_fov_use}."
+        )
+    if (
+        not np.isfinite(raytrace_render_camera_distance_use)
+        or raytrace_render_camera_distance_use <= 1.0
+    ):
+        raise ValueError(
+            "raytrace_render_camera_distance_factor must be finite and > 1.0, got "
+            f"{raytrace_render_camera_distance_use}."
+        )
+    if (
+        not np.isfinite(raytrace_render_sphere_radius_fraction_use)
+        or raytrace_render_sphere_radius_fraction_use <= 0.0
+    ):
+        raise ValueError(
+            "raytrace_render_sphere_radius_fraction must be finite and > 0, got "
+            f"{raytrace_render_sphere_radius_fraction_use}."
+        )
+    if int(raytrace_render_timeout_sec_use) < 30:
+        raise ValueError(
+            "raytrace_render_timeout_sec must be >= 30, got "
+            f"{raytrace_render_timeout_sec_use}."
         )
     cluster_figure_icl_k_min = int(
         getattr(cfg, "analysis_cluster_figure_icl_k_min", 2)
@@ -521,6 +763,17 @@ def run_post_training_analysis(
         f"enabled={cluster_figure_set_enabled}, "
         f"k={cluster_figure_k}, "
         f"visible_sets={visible_cluster_sets or []}, "
+        f"pretty_projection={pretty_render_projection_use}, "
+        f"pretty_fov={pretty_render_fov_use:.1f}, "
+        f"pretty_dist={pretty_render_distance_use:.2f}, "
+        f"pretty_color_mode={pretty_render_color_mode_use}, "
+        f"pretty_saturation={pretty_render_saturation_use:.2f}, "
+        f"pretty_wireframe={pretty_render_wireframe_use}, "
+        f"raytrace_enabled={raytrace_render_enabled_use}, "
+        f"raytrace_projection={raytrace_render_projection_use}, "
+        f"raytrace_samples={raytrace_render_samples_use}, "
+        f"raytrace_res={raytrace_render_resolution_use}, "
+        f"raytrace_max_points={raytrace_render_max_points_use}, "
         f"rep_orientation={cluster_figure_representative_orientation}, "
         "rep_view=("
         f"{cluster_figure_representative_view_elev:.1f},"
@@ -785,6 +1038,22 @@ def run_post_training_analysis(
                 visible_cluster_sets=visible_cluster_sets,
                 pretty_render_resolution=pretty_render_resolution,
                 pretty_render_sphere_radius=pretty_render_sphere_radius,
+                pretty_render_projection=pretty_render_projection_use,
+                pretty_render_perspective_fov_deg=pretty_render_fov_use,
+                pretty_render_perspective_distance_factor=pretty_render_distance_use,
+                pretty_render_color_mode=pretty_render_color_mode_use,
+                pretty_render_saturation_boost=pretty_render_saturation_use,
+                pretty_render_wireframe_width=pretty_render_wireframe_use,
+                raytrace_render_enabled=raytrace_render_enabled_use,
+                raytrace_blender_executable=raytrace_blender_executable_use,
+                raytrace_render_resolution=raytrace_render_resolution_use,
+                raytrace_render_max_points=raytrace_render_max_points_use,
+                raytrace_render_samples=raytrace_render_samples_use,
+                raytrace_render_projection=raytrace_render_projection_use,
+                raytrace_render_fov_deg=raytrace_render_fov_use,
+                raytrace_render_camera_distance_factor=raytrace_render_camera_distance_use,
+                raytrace_render_sphere_radius_fraction=raytrace_render_sphere_radius_fraction_use,
+                raytrace_render_timeout_sec=raytrace_render_timeout_sec_use,
             )
         all_metrics["cluster_figure_set"] = figure_set_metrics
 
@@ -840,7 +1109,7 @@ def run_post_training_analysis(
                             coords,
                             labels_k,
                             out_path,
-                            palette="Set3",
+                            palette="tab10",
                             max_points=interactive_max_points,
                             marker_size=3.0,
                             marker_line_width=0.0,
@@ -892,7 +1161,7 @@ def run_post_training_analysis(
                                     coords,
                                     hdbscan_labels,
                                     hdbscan_path,
-                                    palette="Set3",
+                                    palette="tab10",
                                     max_points=interactive_max_points,
                                     marker_size=3.0,
                                     marker_line_width=0.0,
@@ -1036,6 +1305,12 @@ def run_post_training_analysis(
             f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*]_pretty.png: "
             "sphere renders (all views)"
         )
+        raytrace_settings = all_metrics["cluster_figure_set"].get("raytrace_render_settings", {})
+        if bool(raytrace_settings.get("enabled", False)):
+            print(
+                f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*]_raytrace.png: "
+                "Blender Cycles raytraced renders (all views)"
+            )
         vis_sets = all_metrics["cluster_figure_set"].get("visible_cluster_sets", [])
         if vis_sets:
             for s in vis_sets:
@@ -1044,6 +1319,11 @@ def run_post_training_analysis(
                     f"  - cluster_figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}[_pretty].png: "
                     f"clusters {tag}"
                 )
+                if bool(raytrace_settings.get("enabled", False)):
+                    print(
+                        f"  - cluster_figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}_raytrace.png: "
+                        f"Blender Cycles raytraced clusters {tag}"
+                    )
         print(
             f"  - cluster_figure_set_k{k_fig}/03_cluster_count_icl_k{k_fig}.png: "
             "ICL vs number of clusters"
@@ -1134,7 +1414,158 @@ def _parse_args() -> argparse.Namespace:
         "--pretty_render_sphere_radius",
         type=int,
         default=12,
-        help="Sphere radius in pixels for pretty renders (default: 12).",
+        help=(
+            "Sphere size scale for pretty renders (default: 12). "
+            "Actual ball size is auto-estimated from MD point density and multiplied by this value/12."
+        ),
+    )
+    parser.add_argument(
+        "--pretty_render_projection",
+        type=str,
+        default=None,
+        choices=["orthographic", "ortho", "perspective", "persp"],
+        help=(
+            "Projection mode for pretty renders. If omitted, uses "
+            "analysis_cluster_figure_pretty_projection from config."
+        ),
+    )
+    parser.add_argument(
+        "--pretty_render_perspective_fov_deg",
+        type=float,
+        default=None,
+        help=(
+            "Perspective field-of-view in degrees for pretty renders. If omitted, "
+            "uses analysis_cluster_figure_pretty_fov_deg from config."
+        ),
+    )
+    parser.add_argument(
+        "--pretty_render_perspective_distance_factor",
+        type=float,
+        default=None,
+        help=(
+            "Camera distance factor for perspective renders. If omitted, uses "
+            "analysis_cluster_figure_pretty_distance_factor from config."
+        ),
+    )
+    parser.add_argument(
+        "--pretty_render_color_mode",
+        type=str,
+        default=None,
+        choices=["matplotlib_match", "flat"],
+        help=(
+            "Color mode for pretty renders. 'matplotlib_match' reuses the same "
+            "per-point color logic as static matplotlib snapshots."
+        ),
+    )
+    parser.add_argument(
+        "--pretty_render_saturation_boost",
+        type=float,
+        default=None,
+        help=(
+            "Global color saturation multiplier for pretty renders. If omitted, "
+            "uses analysis_cluster_figure_pretty_saturation_boost from config."
+        ),
+    )
+    parser.add_argument(
+        "--pretty_render_wireframe_width",
+        type=int,
+        default=None,
+        help=(
+            "Cube wireframe line width for pretty renders. Set 0 to disable. "
+            "If omitted, uses analysis_cluster_figure_pretty_wireframe_width."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_enabled",
+        action="store_true",
+        default=None,
+        help=(
+            "Generate additional Blender Cycles raytraced renders "
+            "(*_raytrace.png) alongside existing outputs."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_blender_executable",
+        type=str,
+        default=None,
+        help=(
+            "Blender executable path/name for raytrace rendering. If omitted, uses "
+            "analysis_cluster_figure_raytrace_blender_executable."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_resolution",
+        type=int,
+        default=None,
+        help=(
+            "Image width/height for raytraced renders. If omitted, uses "
+            "analysis_cluster_figure_raytrace_resolution."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_max_points",
+        type=int,
+        default=None,
+        help=(
+            "Deprecated. Raytraced rendering now always uses all points. "
+            "Set <=0 or omit this argument."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_samples",
+        type=int,
+        default=None,
+        help=(
+            "Cycles samples for raytraced render. If omitted, uses "
+            "analysis_cluster_figure_raytrace_samples."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_projection",
+        type=str,
+        default=None,
+        choices=["orthographic", "ortho", "perspective", "persp"],
+        help=(
+            "Projection mode for raytraced render. If omitted, uses "
+            "analysis_cluster_figure_raytrace_projection."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_fov_deg",
+        type=float,
+        default=None,
+        help=(
+            "Perspective FOV for raytraced render. If omitted, uses "
+            "analysis_cluster_figure_raytrace_fov_deg."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_camera_distance_factor",
+        type=float,
+        default=None,
+        help=(
+            "Camera distance factor for raytraced render. If omitted, uses "
+            "analysis_cluster_figure_raytrace_camera_distance_factor."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_sphere_radius_fraction",
+        type=float,
+        default=None,
+        help=(
+            "Raytrace sphere size scale (default config value 0.0105 corresponds to 1.0x "
+            "auto-estimated physical size). If omitted, uses "
+            "analysis_cluster_figure_raytrace_sphere_radius_fraction."
+        ),
+    )
+    parser.add_argument(
+        "--raytrace_render_timeout_sec",
+        type=int,
+        default=None,
+        help=(
+            "Timeout in seconds for each Blender raytrace render. If omitted, uses "
+            "analysis_cluster_figure_raytrace_timeout_sec."
+        ),
     )
     return parser.parse_args()
 
@@ -1174,6 +1605,22 @@ def main() -> None:
         visible_cluster_sets=vis_sets,
         pretty_render_resolution=int(args.pretty_render_resolution),
         pretty_render_sphere_radius=int(args.pretty_render_sphere_radius),
+        pretty_render_projection=args.pretty_render_projection,
+        pretty_render_perspective_fov_deg=args.pretty_render_perspective_fov_deg,
+        pretty_render_perspective_distance_factor=args.pretty_render_perspective_distance_factor,
+        pretty_render_color_mode=args.pretty_render_color_mode,
+        pretty_render_saturation_boost=args.pretty_render_saturation_boost,
+        pretty_render_wireframe_width=args.pretty_render_wireframe_width,
+        raytrace_render_enabled=args.raytrace_render_enabled,
+        raytrace_blender_executable=args.raytrace_blender_executable,
+        raytrace_render_resolution=args.raytrace_render_resolution,
+        raytrace_render_max_points=args.raytrace_render_max_points,
+        raytrace_render_samples=args.raytrace_render_samples,
+        raytrace_render_projection=args.raytrace_render_projection,
+        raytrace_render_fov_deg=args.raytrace_render_fov_deg,
+        raytrace_render_camera_distance_factor=args.raytrace_render_camera_distance_factor,
+        raytrace_render_sphere_radius_fraction=args.raytrace_render_sphere_radius_fraction,
+        raytrace_render_timeout_sec=args.raytrace_render_timeout_sec,
     )
 
 

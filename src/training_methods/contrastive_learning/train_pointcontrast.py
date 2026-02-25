@@ -82,7 +82,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="pointcontrast_vn_modelnet40.yaml",
+    config_name="pointcontrast_vn_molecular.yaml",
 )
 def main(cfg: DictConfig):
     train(cfg)
