@@ -1,9 +1,9 @@
 defaults:
-  - data: data_synth_polycrystalline_balanced_geometries
+  - data: data_synth_polycrystalline_balanced_geometries_v2
   - _self_
 
 data:
-  analysis_data_files: ['175ps.off']
+  analysis_data_files: ['175ps.npy']
   analysis_data_file: null
   analysis_single_timestep: false
 
@@ -19,14 +19,33 @@ resume_from_checkpoint: null
 init_from_checkpoint: null
 init_from_checkpoint_strict: false
 
+# encoder:
+#   name: VN_REVNET_Backbone
+#   kwargs:
+#     latent_size: ${latent_size}
+#     sa_npoints: [80, 40]
+#     sa_channels: [128, 256]
+#     attn_hidden: 256
+
 encoder:
-  name: VN_REVNET_Backbone
+  name: RI_MAE_Invariant
   kwargs:
     latent_size: ${latent_size}
-    sa_npoints: [80, 40]
-    sa_channels: [128, 256]
-    attn_hidden: 256
-
+    num_group: 24
+    group_size: 12
+    encoder_dims: 384
+    trans_dim: 384
+    depth: 8
+    predictor_depth: 2
+    num_heads: 6
+    mlp_ratio: 4.0
+    dropout: 0.0
+    mask_ratio: 0.6
+    ema_decay: 0.996
+    deterministic_fps: false
+    sorting_mode: nearest
+    center_input: true
+    
 decoder:
   name: VN_REVNET_Anchor
   kwargs:
@@ -172,4 +191,4 @@ analysis_hdbscan_min_cluster_size_candidates: []
 analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
-analysis_data_files: ['175ps.off']
+analysis_data_files: ['175ps.npy']

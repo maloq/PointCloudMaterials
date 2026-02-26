@@ -1,90 +1,125 @@
-import os, sys
+import os, sys, glob, argparse
 sys.path.append(os.getcwd())
 import numpy as np
 
-from src.data_utils.prepare_data import read_off_file
 
+def read_pos_file(filename: str) -> np.ndarray:
+    """Read atomic positions from LAMMPS .pos dump file.
 
-def read_xyz_file(filename):
-    """Read atomic positions from the input file."""
+    Returns float32 array of shape (N, 3).
+    """
     atoms = []
     with open(filename, 'r') as f:
         lines = f.readlines()
-        
-    # Find where the atomic coordinates start
+
+    start_idx = None
     for i, line in enumerate(lines):
         if "ITEM: ATOMS" in line:
             start_idx = i + 1
             break
-    
-    # Read atomic positions
+    if start_idx is None:
+        raise ValueError(f"No 'ITEM: ATOMS' header found in {filename}")
+
     for line in lines[start_idx:]:
         parts = line.strip().split()
         if len(parts) >= 5:
-            _, _, x, y, z = parts[:5]  # We only need x, y, z coordinates
+            x, y, z = parts[2], parts[3], parts[4]
             atoms.append([float(x), float(y), float(z)])
-    
-    return atoms
 
-def write_off_file(atoms, output_filename):
-    """Write atomic positions to OFF format."""
-    with open(output_filename, 'w') as f:
-        # Write header
-        f.write("OFF\n")
-        
-        # Write number of vertices, faces, and edges
-        # Just writing vertices (no faces/edges)
-        f.write(f"{len(atoms)} 0 0\n")
-        # Write vertex coordinates
-        for x, y, z in atoms:
-            f.write(f"{x:.6f} {y:.6f} {z:.6f}\n")
+    if not atoms:
+        raise ValueError(f"No atoms parsed from {filename}")
+
+    return np.array(atoms, dtype=np.float32)
 
 
-def write_npz_file(atoms, output_filename):
-    """Write atomic positions to NPZ format."""
-    np_atoms = np.array(atoms, dtype=np.float32) # Convert to NumPy array
-    np.savez(output_filename, positions=np_atoms)
+def convert_pos_to_npy(input_path: str, output_path: str) -> None:
+    """Convert .pos file to .npy float32."""
+    atoms = read_pos_file(input_path)
+    np.save(output_path, atoms)
+    print(f"  {os.path.basename(input_path)} -> {os.path.basename(output_path)}  ({atoms.shape[0]} atoms)")
 
-def convert_xyz_to_off(input_filename, output_filename):
-    """Convert XYZ format to OFF format."""
-    atoms = read_xyz_file(input_filename)
-    
-    write_off_file(atoms, output_filename)
-    
-    print(f"Conversion complete! Wrote {len(atoms)} vertices to {output_filename}")
 
-def convert_xyz_to_npz(input_filename, output_filename):
-    """Convert XYZ format to NPZ format."""
-    atoms = read_xyz_file(input_filename)
-    
-    write_npz_file(atoms, output_filename)
-    
-    print(f"Conversion complete! Wrote {len(atoms)} vertices to {output_filename} (NPZ format)")
+def convert_npz_to_npy(input_path: str, output_path: str) -> None:
+    """Convert .npz (with 'positions' key) to .npy float32."""
+    data = np.load(input_path)
+    atoms = data['positions'].astype(np.float32)
+    np.save(output_path, atoms)
+    print(f"  {os.path.basename(input_path)} -> {os.path.basename(output_path)}  ({atoms.shape[0]} atoms)")
 
-def convert_off_to_npz(input_filename, output_filename):
-    """Convert OFF format to NPZ format."""
-    atoms = read_off_file(input_filename)
-    
-    write_npz_file(atoms, output_filename)
-    
-    print(f"Conversion complete! Wrote {len(atoms)} vertices from {input_filename} to {output_filename} (NPZ format)")
+
+def ensure_npy_float32(npy_path: str) -> bool:
+    """Re-save .npy file as float32 if needed. Returns True if rewritten."""
+    arr = np.load(npy_path)
+    if arr.dtype == np.float32:
+        return False
+    arr32 = arr.astype(np.float32)
+    np.save(npy_path, arr32)
+    print(f"  {os.path.basename(npy_path)}: {arr.dtype} -> float32")
+    return True
+
+
+def convert_directory(directory: str) -> None:
+    """Convert all .pos files in a directory to .npy float32."""
+    pos_files = sorted(glob.glob(os.path.join(directory, "*.pos")))
+    if not pos_files:
+        print(f"  No .pos files found in {directory}")
+        return
+    for pos_file in pos_files:
+        base = os.path.splitext(pos_file)[0]
+        npy_file = base + ".npy"
+        if os.path.exists(npy_file):
+            arr = np.load(npy_file)
+            if arr.dtype == np.float32:
+                print(f"  {os.path.basename(npy_file)} already exists (float32), skipping")
+                continue
+        convert_pos_to_npy(pos_file, npy_file)
+
+
+def upgrade_al_directory(directory: str) -> None:
+    """Ensure Al .npy files are float32, convert from .npz if only npz exists."""
+    for npz_file in sorted(glob.glob(os.path.join(directory, "*.npz"))):
+        base = os.path.splitext(npz_file)[0]
+        npy_file = base + ".npy"
+        if not os.path.exists(npy_file):
+            convert_npz_to_npy(npz_file, npy_file)
+
+    for npy_file in sorted(glob.glob(os.path.join(directory, "*.npy"))):
+        ensure_npy_float32(npy_file)
+
+
+def delete_non_npy(directory: str, extensions: list[str]) -> None:
+    """Delete files with given extensions from directory."""
+    for ext in extensions:
+        for path in sorted(glob.glob(os.path.join(directory, f"*{ext}"))):
+            size_mb = os.path.getsize(path) / (1024 * 1024)
+            os.remove(path)
+            print(f"  Deleted {os.path.basename(path)} ({size_mb:.1f} MB)")
 
 
 if __name__ == "__main__":
-    original_folder = "datasets/Al/inherent_configurations_off"
-    output_folder = "datasets/Al/inherent_configurations_off"
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-    input_files = ["166ps.pos", "170ps.pos", "174ps.pos", "175ps.pos", "177ps.pos", "240ps.pos"]
-    input_files_off = ["166ps.off", "170ps.off", "174ps.off", "175ps.off", "177ps.off", "240ps.off"]
+    parser = argparse.ArgumentParser(description="Convert atomistic data to .npy float32")
+    parser.add_argument("--no-delete", action="store_true", help="Skip deleting old formats")
+    args = parser.parse_args()
 
-    # for in_file in input_files: 
-    #     in_file_path = os.path.join(original_folder, in_file)
-    #     out_file_path = os.path.join(output_folder, in_file.replace(".pos", ".off"))
-    #     convert_xyz_to_off(in_file_path, out_file_path)
+    datasets = {
+        "datasets/Al/inherent_configurations_off": {"action": "upgrade_al", "delete_exts": [".off", ".npz"]},
+        "datasets/Mg/inherent_configurations": {"action": "convert_pos", "delete_exts": [".pos"]},
+        "datasets/Ta/inherent_configurations": {"action": "convert_pos", "delete_exts": [".pos"]},
+        "datasets/Zr/inherent_configurations": {"action": "convert_pos", "delete_exts": [".pos"]},
+        "datasets/Al50Ni50/inherent_configurations": {"action": "convert_pos", "delete_exts": [".pos"]},
+    }
 
-    for in_file_off in input_files_off:
-        in_file_path = os.path.join(original_folder, in_file_off)
-        out_file_path_npz = os.path.join(output_folder, in_file_off.replace(".off", ".npz"))
-        convert_off_to_npz(in_file_path, out_file_path_npz)
+    for directory, spec in datasets.items():
+        if not os.path.isdir(directory):
+            print(f"SKIP {directory} (not found)")
+            continue
+
+        print(f"\n=== {directory} ===")
+        if spec["action"] == "convert_pos":
+            convert_directory(directory)
+        elif spec["action"] == "upgrade_al":
+            upgrade_al_directory(directory)
+
+        if not args.no_delete:
+            delete_non_npy(directory, spec["delete_exts"])
 

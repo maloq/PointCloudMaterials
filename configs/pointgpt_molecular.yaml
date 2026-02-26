@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_polycrystalline
+  - data: data_synth_polycrystalline_balanced_geometries
   - _self_
 
 project_name: pointnet

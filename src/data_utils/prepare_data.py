@@ -107,19 +107,21 @@ def drop_points_random(points: np.ndarray, n_points: int) -> np.ndarray:
 def drop_points_farthest(points: np.ndarray, n_points: int) -> np.ndarray:
     """Adjust points to have exactly n_points.
 
-    If len(points) > n_points, drop the farthest points from the center.
-    If len(points) < n_points, add points symmetrically with respect to the center.
+    If len(points) > n_points, drop the farthest points from the centroid.
+    If len(points) < n_points, add points symmetrically with respect to the centroid.
     """
-    center = np.mean(points, axis=0)
-    distances = np.linalg.norm(points - center, axis=1)
-    if len(points) == n_points:
+    n = len(points)
+    if n == n_points:
         return points
-    elif len(points) > n_points:
-        indices = np.argsort(distances)[:n_points]
+    center = np.mean(points, axis=0)
+    if n > n_points:
+        diff = points - center
+        dist_sq = np.einsum('ij,ij->i', diff, diff)
+        indices = np.argpartition(dist_sq, n_points)[:n_points]
         return points[indices]
     else:
-        num_to_add = n_points - len(points)
-        idx = np.random.choice(len(points), num_to_add, replace=True)
+        num_to_add = n_points - n
+        idx = np.random.choice(n, num_to_add, replace=True)
         new_points = 2 * center - points[idx]
         return np.vstack((points, new_points))
 
@@ -201,6 +203,14 @@ def process_sample(points, tree, center, size, n_points, sampling_method="drop_f
     return sample_points, added, dropped
 
 
+def _resolve_drop_func(sampling_method: str):
+    if sampling_method == "fps":
+        return drop_points_fps
+    if sampling_method == "drop_farthest":
+        return drop_points_farthest
+    raise ValueError(f"Unknown sampling method: {sampling_method!r}")
+
+
 def generate_samples(
     points: np.ndarray,
     tree: KDTree,
@@ -214,51 +224,63 @@ def generate_samples(
     drop_edge_samples: bool = True,
     sampling_method: str = "drop_farthest"
 ) -> Tuple[List, int, int]:
-    samples = []
-    added_points = dropped_points = 0
-
-    # Determine loop ranges based on drop_edge_samples
-    loop_range_i = range(dims[0])
-    loop_range_j = range(dims[1])
-    loop_range_k = range(dims[2])
+    drop_func = _resolve_drop_func(sampling_method)
 
     if drop_edge_samples:
-        if dims[0] >= 3:
-            loop_range_i = range(1, dims[0] - 1)
-        else:
-            loop_range_i = range(0)  # Empty range
+        ranges = [(1, int(d) - 1) if d >= 3 else (0, 0) for d in dims]
+    else:
+        ranges = [(0, int(d)) for d in dims]
 
-        if dims[1] >= 3:
-            loop_range_j = range(1, dims[1] - 1)
-        else:
-            loop_range_j = range(0)  # Empty range
+    if any(s >= e for s, e in ranges):
+        return [], 0, 0
 
-        if dims[2] >= 3:
-            loop_range_k = range(1, dims[2] - 1)
-        else:
-            loop_range_k = range(0)  # Empty range
+    # Vectorized grid center computation via meshgrid
+    grid_arrays = [np.arange(s, e) for s, e in ranges]
+    mesh = np.meshgrid(*grid_arrays, indexing='ij')
+    grid_ijk = np.column_stack([m.ravel() for m in mesh]).astype(np.float64)
 
-    for i in loop_range_i:
-        for j in loop_range_j:
-            for k in loop_range_k:
-                # Compute the grid center as before.
-                computed_center = calculate_center(min_coords, stride, i, j, k, size)
-                # Adjust the center so that it matches an atom by snapping to the nearest input point.
-                _, nearest_index = tree.query(computed_center)
-                center = points[nearest_index]
-                # Proceed as before using the adjusted center.
-                sample_points, add, drop = process_sample(points, tree, center, size, n_points, sampling_method)
-                added_points += add
-                dropped_points += drop
-                if sample_points is not None:
-                    sample_points = sample_points - center
-                    if return_coords:
-                        samples.append((sample_points, np.array(center)))
-                    else:
-                        samples.append(sample_points)
-                    if len(samples) >= max_samples:
-                        return samples, added_points, dropped_points
-    return samples, added_points, dropped_points
+    M = min(len(grid_ijk), int(max_samples))
+    grid_ijk = grid_ijk[:M]
+
+    computed_centers = min_coords + grid_ijk * stride + size
+
+    # Batch snap all grid centers to nearest atoms (one C call instead of M Python calls)
+    _, nearest_indices = tree.query(computed_centers)
+    snapped_centers = points[nearest_indices]
+
+    # Batch radius query (one C call instead of M Python calls)
+    neighbor_lists = tree.query_ball_point(snapped_centers, size)
+
+    samples: list = []
+    total_added = total_dropped = 0
+
+    for center, nbrs in zip(snapped_centers, neighbor_lists):
+        if not nbrs:
+            continue
+        sample_pts = points[nbrs]
+        n_have = len(sample_pts)
+        added = max(n_points - n_have, 0)
+        dropped = max(n_have - n_points, 0)
+        total_added += added
+        total_dropped += dropped
+
+        sample_pts = drop_func(sample_pts, n_points)
+
+        # Ensure center atom present
+        diff = sample_pts - center
+        dist_sq = np.einsum('ij,ij->i', diff, diff)
+        if not np.any(dist_sq < 1e-16):
+            sample_pts[int(np.argmax(dist_sq))] = center
+
+        sample_pts = sample_pts - center
+        if return_coords:
+            samples.append((sample_pts, np.array(center)))
+        else:
+            samples.append(sample_pts)
+        if len(samples) >= max_samples:
+            break
+
+    return samples, total_added, total_dropped
 
 
 
@@ -386,7 +408,7 @@ def get_random_samples(
     sampling_method: str = "drop_farthest"
 ) -> List[np.ndarray]:
     """Same as get_regular_samples but with random center points.
-    
+
     Args:
         points: Nx3 array of points (more than 10^5 points)
         n_samples: Number of samples to extract
@@ -396,42 +418,84 @@ def get_random_samples(
     Returns:
         List of arrays containing points within each sample
     """
-    
-
-    
-    samples = []
+    drop_func = _resolve_drop_func(sampling_method)
     tree = KDTree(points)
     min_coords, max_coords = get_min_max_coords(points)
-    dropped_points = 0
-    added_points = 0
 
+    # Generate all random centers in one batch (with extra to account for empty ones)
+    n_generate = int(n_samples * 1.05) + 64
+    random_centers = np.random.uniform(
+        low=min_coords + size,
+        high=max_coords - size,
+        size=(n_generate, 3),
+    )
+
+    # Batch snap to nearest atoms
+    _, nearest_indices = tree.query(random_centers)
+    snapped_centers = points[nearest_indices]
+
+    # Batch radius query
+    neighbor_lists = tree.query_ball_point(snapped_centers, size)
+
+    samples: list = []
+    total_added = total_dropped = 0
+
+    for center, nbrs in zip(snapped_centers, neighbor_lists):
+        if not nbrs:
+            continue
+        sample_pts = points[nbrs]
+        n_have = len(sample_pts)
+        added = max(n_points - n_have, 0)
+        dropped = max(n_have - n_points, 0)
+        total_added += added
+        total_dropped += dropped
+
+        sample_pts = drop_func(sample_pts, n_points)
+
+        diff = sample_pts - center
+        dist_sq = np.einsum('ij,ij->i', diff, diff)
+        if not np.any(dist_sq < 1e-16):
+            sample_pts[int(np.argmax(dist_sq))] = center
+
+        sample_pts = sample_pts - center
+        if return_coords:
+            samples.append((sample_pts, center.astype(np.float64)))
+        else:
+            samples.append(sample_pts)
+        if len(samples) >= n_samples:
+            break
+
+    # Rare fallback: if batch didn't produce enough, generate individually
     while len(samples) < n_samples:
-        # Random center point for sample
-        center = np.random.uniform(
-            low=min_coords + (size),
-            high=max_coords - (size)
-        )
-        center = np.asarray(center, dtype=np.float64)
-        # Snap to nearest atom so the origin corresponds to a real atom.
+        center = np.random.uniform(low=min_coords + size, high=max_coords - size)
         _, nearest_index = tree.query(center)
         center = points[nearest_index]
-        
-        sample_points, add, drop = process_sample(points, tree, center, size, n_points, sampling_method)
-        if sample_points is not None:
-            sample_points = sample_points - center
-            if return_coords:
-                samples.append((sample_points, center.astype(np.float64)))
-            else:
-                samples.append(sample_points)
-            added_points += add
-            dropped_points += drop
+        nbrs = tree.query_ball_point(center, size)
+        if not nbrs:
+            continue
+        sample_pts = points[nbrs]
+        n_have = len(sample_pts)
+        total_added += max(n_points - n_have, 0)
+        total_dropped += max(n_have - n_points, 0)
+        sample_pts = drop_func(sample_pts, n_points)
+        diff = sample_pts - center
+        dist_sq = np.einsum('ij,ij->i', diff, diff)
+        if not np.any(dist_sq < 1e-16):
+            sample_pts[int(np.argmax(dist_sq))] = center
+        sample_pts = sample_pts - center
+        if return_coords:
+            samples.append((sample_pts, center.astype(np.float64)))
+        else:
+            samples.append(sample_pts)
 
-    logger.print(f"Avg added {round(added_points/len(samples), 2)} points, avg dropped {round(dropped_points/len(samples), 2)} points")
+    avg_added = round(total_added / len(samples), 2)
+    avg_dropped = round(total_dropped / len(samples), 2)
+    logger.print(f"Avg added {avg_added} points, avg dropped {avg_dropped} points")
     return samples
 
 
 if __name__ == "__main__":
-    points = read_off_file("datasets/Al/inherent_configurations_off/240ps.off")
+    points = read_off_file("datasets/Al/inherent_configurations_off/240ps.npy")
 
   
 

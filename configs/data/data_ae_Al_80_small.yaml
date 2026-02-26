@@ -8,4 +8,4 @@ overlap_fraction: 0.5
 dr: 0.01 # to calculate rdf
 data_path: 'datasets/Al/inherent_configurations_off'
 data_files:
-  - '240ps.off'
+  - '240ps.npy'

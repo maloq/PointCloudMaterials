@@ -265,7 +265,7 @@ if __name__ == "__main__":
         model_type=model_type,
         save_folder="output",
         checkpoint_path="output/2025-07-31/00-06-11/PnE_L_FoldingSphereAttn_l64_P80_Sinkhorn_4096-epoch=09-val_loss=0.02.ckpt",
-        liquid_file_paths=["166ps.off"],
-        crystal_file_paths=["240ps.off"],
+        liquid_file_paths=["166ps.npy"],
+        crystal_file_paths=["240ps.npy"],
         max_samples=1000,
     )

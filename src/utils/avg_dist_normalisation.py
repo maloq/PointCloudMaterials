@@ -5,7 +5,8 @@ from tqdm import tqdm
 import sys,os
 sys.path.append(os.getcwd())
 from src.data_utils.data_load import PointCloudDataset, pc_normalize
-from src.data_utils.prepare_data import read_off_file, calculate_stride, compute_dimensions
+from src.data_utils.prepare_data import calculate_stride, compute_dimensions
+from src.data_utils.data_load import _load_points
 
 
 def mean_pairwise_distance(points: np.ndarray) -> float:
@@ -20,15 +21,13 @@ def mean_pairwise_distance(points: np.ndarray) -> float:
 
 def main() -> None:
     root = "datasets/Al/inherent_configurations_off"
-    off_files = [f for f in os.listdir(root) if f.endswith(".off")]
-    if not off_files:
-        print(f"No .off files found under {root}")
+    npy_files = sorted(f for f in os.listdir(root) if f.endswith(".npy"))
+    if not npy_files:
+        print(f"No .npy files found under {root}")
         return
 
-    # Print simulation box dimensions and density from the first file
-    first_file = sorted(off_files)[0]
-    first_path = os.path.join(root, first_file)
-    points_full = read_off_file(first_path, verbose=False)
+    first_path = os.path.join(root, npy_files[0])
+    points_full = _load_points(first_path)
     min_coords = points_full.min(axis=0)
     max_coords = points_full.max(axis=0)
     box_lengths = max_coords - min_coords
@@ -82,7 +81,7 @@ def main() -> None:
     # 10 000 random samples, 128 atoms each, radius 8 Å
     ds = PointCloudDataset(
         root=root,
-        data_files=off_files,
+        data_files=npy_files,
         sample_type="random",
         n_samples=10_000,
         num_points=80,

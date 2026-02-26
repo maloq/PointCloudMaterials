@@ -78,6 +78,17 @@ def _positive_int_or_none(value: Any) -> int | None:
     return value if value > 0 else None
 
 
+def _validate_overlap_fraction(value: Any, *, field_name: str) -> float:
+    overlap = float(value)
+    if not np.isfinite(overlap):
+        raise ValueError(f"{field_name} must be finite, got {overlap}.")
+    if overlap < 0.0 or overlap >= 1.0:
+        raise ValueError(
+            f"{field_name} must be in [0, 1), got {overlap}."
+        )
+    return overlap
+
+
 def _unwrap_dataset(dataset: Any) -> Any:
     while hasattr(dataset, "dataset"):
         dataset = dataset.dataset
@@ -132,6 +143,11 @@ def _build_inference_cache_spec(
         "data_kind": str(getattr(cfg.data, "kind", "unknown")),
         "data_path": str(getattr(cfg.data, "data_path", "")),
         "data_files": _as_list_of_str(getattr(cfg.data, "data_files", None)) or [],
+        "data_radius": float(getattr(cfg.data, "radius", 0.0)),
+        "data_sample_type": str(getattr(cfg.data, "sample_type", "")),
+        "data_overlap_fraction": float(getattr(cfg.data, "overlap_fraction", 0.0)),
+        "data_n_samples": int(getattr(cfg.data, "n_samples", 0)),
+        "data_num_points": int(getattr(cfg.data, "num_points", 0)),
         "batch_size": int(getattr(cfg, "batch_size", 0)),
         "max_batches_latent": None if max_batches_latent is None else int(max_batches_latent),
         "max_samples_total": None if max_samples_total is None else int(max_samples_total),
@@ -376,26 +392,65 @@ def run_post_training_analysis(
     cluster_k_values = list(dict.fromkeys(cluster_k_values))
     if not cluster_k_values:
         cluster_k_values = [3, 4, 5, 6]
+    data_overlap_fraction = _validate_overlap_fraction(
+        getattr(cfg.data, "overlap_fraction", 0.0),
+        field_name="data.overlap_fraction",
+    )
+    analysis_md_overlap_boost = float(getattr(cfg, "analysis_md_overlap_boost", 0.25))
+    analysis_md_overlap_fraction_raw = getattr(cfg, "analysis_md_overlap_fraction", None)
+    if not np.isfinite(analysis_md_overlap_boost) or analysis_md_overlap_boost < 0.0:
+        raise ValueError(
+            "analysis_md_overlap_boost must be finite and >= 0, got "
+            f"{analysis_md_overlap_boost}."
+        )
+    if analysis_md_overlap_fraction_raw is None:
+        analysis_md_overlap_fraction = min(
+            0.95,
+            data_overlap_fraction + analysis_md_overlap_boost,
+        )
+    else:
+        analysis_md_overlap_fraction = _validate_overlap_fraction(
+            analysis_md_overlap_fraction_raw,
+            field_name="analysis_md_overlap_fraction",
+        )
+    if analysis_md_overlap_fraction < data_overlap_fraction:
+        raise ValueError(
+            "analysis_md_overlap_fraction cannot be lower than data.overlap_fraction "
+            f"for analysis runs. Got data.overlap_fraction={data_overlap_fraction}, "
+            f"analysis_md_overlap_fraction={analysis_md_overlap_fraction}."
+        )
+    cfg.data.overlap_fraction = float(analysis_md_overlap_fraction)
     md_use_all_points = bool(getattr(cfg, "analysis_md_use_all_points", True))
     hdbscan_enabled = bool(getattr(cfg, "analysis_hdbscan_enabled", True))
-    hdbscan_fit_fraction = float(getattr(cfg, "analysis_hdbscan_fit_fraction", 0.25))
+    hdbscan_fit_fraction = float(getattr(cfg, "analysis_hdbscan_fit_fraction", 0.75))
     hdbscan_max_fit_samples = int(getattr(cfg, "analysis_hdbscan_max_fit_samples", 50000))
     hdbscan_target_k_min = int(getattr(cfg, "analysis_hdbscan_target_k_min", 5))
     hdbscan_target_k_max = int(getattr(cfg, "analysis_hdbscan_target_k_max", 6))
     hdbscan_min_samples = getattr(cfg, "analysis_hdbscan_min_samples", None)
     if hdbscan_min_samples is not None:
         hdbscan_min_samples = int(hdbscan_min_samples)
+    _hdbscan_ms_raw = getattr(cfg, "analysis_hdbscan_min_samples_candidates", None)
+    hdbscan_min_samples_candidates = (
+        [int(v) for v in _hdbscan_ms_raw]
+        if _hdbscan_ms_raw is not None
+        else None
+    )
+    if hdbscan_min_samples_candidates is not None and len(hdbscan_min_samples_candidates) == 0:
+        hdbscan_min_samples_candidates = None
     hdbscan_cluster_selection_epsilon = float(
         getattr(cfg, "analysis_hdbscan_cluster_selection_epsilon", 0.0)
     )
     hdbscan_cluster_selection_method = str(
-        getattr(cfg, "analysis_hdbscan_cluster_selection_method", "leaf")
+        getattr(cfg, "analysis_hdbscan_cluster_selection_method", "auto")
     ).lower()
     _hdbscan_mcs_raw = getattr(cfg, "analysis_hdbscan_min_cluster_size_candidates", None)
     hdbscan_min_cluster_size_candidates = (
         [int(v) for v in _hdbscan_mcs_raw]
         if _hdbscan_mcs_raw is not None
         else None
+    )
+    hdbscan_refit_full_data = bool(
+        getattr(cfg, "analysis_hdbscan_refit_full_data", True)
     )
     progress_every_batches = int(getattr(cfg, "analysis_progress_every_batches", 25))
     cluster_profile_enabled = bool(getattr(cfg, "analysis_cluster_profile_enabled", True))
@@ -589,6 +644,49 @@ def run_post_training_analysis(
         raise ValueError(
             f"analysis_cluster_figure_md_point_size must be > 0, got {cluster_figure_md_point_size}."
         )
+    if not np.isfinite(hdbscan_fit_fraction) or not (0.0 < hdbscan_fit_fraction <= 1.0):
+        raise ValueError(
+            "analysis_hdbscan_fit_fraction must be finite and in (0, 1], got "
+            f"{hdbscan_fit_fraction}."
+        )
+    if hdbscan_max_fit_samples <= 1:
+        raise ValueError(
+            "analysis_hdbscan_max_fit_samples must be > 1, got "
+            f"{hdbscan_max_fit_samples}."
+        )
+    if hdbscan_target_k_min < 2:
+        raise ValueError(
+            "analysis_hdbscan_target_k_min must be >= 2, got "
+            f"{hdbscan_target_k_min}."
+        )
+    if hdbscan_target_k_max < hdbscan_target_k_min:
+        raise ValueError(
+            "analysis_hdbscan_target_k_max must be >= analysis_hdbscan_target_k_min, got "
+            f"min={hdbscan_target_k_min}, max={hdbscan_target_k_max}."
+        )
+    if hdbscan_min_samples is not None and hdbscan_min_samples < 1:
+        raise ValueError(
+            f"analysis_hdbscan_min_samples must be >= 1, got {hdbscan_min_samples}."
+        )
+    if hdbscan_min_samples is not None and hdbscan_min_samples_candidates is not None:
+        raise ValueError(
+            "Set only one of analysis_hdbscan_min_samples or "
+            "analysis_hdbscan_min_samples_candidates, not both."
+        )
+    if (
+        not np.isfinite(hdbscan_cluster_selection_epsilon)
+        or hdbscan_cluster_selection_epsilon < 0.0
+    ):
+        raise ValueError(
+            "analysis_hdbscan_cluster_selection_epsilon must be finite and >= 0, got "
+            f"{hdbscan_cluster_selection_epsilon}."
+        )
+    if hdbscan_cluster_selection_method not in {"leaf", "eom", "auto"}:
+        raise ValueError(
+            "analysis_hdbscan_cluster_selection_method must be one of "
+            "['leaf', 'eom', 'auto'], got "
+            f"{hdbscan_cluster_selection_method!r}."
+        )
     if not (0.0 <= cluster_figure_md_alpha <= 1.0):
         raise ValueError(
             f"analysis_cluster_figure_md_alpha must be in [0, 1], got {cluster_figure_md_alpha}."
@@ -758,6 +856,18 @@ def run_post_training_analysis(
     print(f"t-SNE sample cap: {tsne_max_samples}")
     print(f"Clustering metrics cap: {clustering_max_samples}")
     print(f"Clustering k values (configured): {cluster_k_values}")
+    print(
+        "MD overlap fraction (analysis): "
+        f"{data_overlap_fraction:.3f} -> {analysis_md_overlap_fraction:.3f}"
+    )
+    print(
+        "HDBSCAN settings: "
+        f"fit_fraction={hdbscan_fit_fraction:.3f}, "
+        f"max_fit_samples={hdbscan_max_fit_samples}, "
+        f"target_k=[{hdbscan_target_k_min}, {hdbscan_target_k_max}], "
+        f"selection_method={hdbscan_cluster_selection_method}, "
+        f"refit_full_data={hdbscan_refit_full_data}"
+    )
     print(
         "Fixed-k figure set: "
         f"enabled={cluster_figure_set_enabled}, "
@@ -1141,10 +1251,58 @@ def run_post_training_analysis(
                             target_clusters_max=hdbscan_target_k_max,
                             min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
                             min_samples=hdbscan_min_samples,
+                            min_samples_candidates=hdbscan_min_samples_candidates,
                             cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
                             cluster_selection_method=hdbscan_cluster_selection_method,
+                            refit_full_data=hdbscan_refit_full_data,
                             return_info=True,
                         )
+                        n_hdb_clusters_full = int(hdbscan_info.get("n_clusters_full", -1))
+                        if (
+                            hdbscan_cluster_selection_method != "auto"
+                            and n_hdb_clusters_full >= 0
+                            and n_hdb_clusters_full < hdbscan_target_k_min
+                        ):
+                            print(
+                                "[analysis][hdbscan] cluster count below target "
+                                f"({n_hdb_clusters_full} < {hdbscan_target_k_min}); "
+                                "retrying with cluster_selection_method='auto'."
+                            )
+                            hdbscan_labels_retry, hdbscan_info_retry = compute_hdbscan_labels(
+                                cache["inv_latents"],
+                                sample_fraction=hdbscan_fit_fraction,
+                                max_fit_samples=hdbscan_max_fit_samples,
+                                random_state=42,
+                                l2_normalize=cluster_l2_normalize,
+                                standardize=cluster_standardize,
+                                pca_variance=cluster_pca_var,
+                                pca_max_components=cluster_pca_max_components,
+                                target_clusters_min=hdbscan_target_k_min,
+                                target_clusters_max=hdbscan_target_k_max,
+                                min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
+                                min_samples=hdbscan_min_samples,
+                                min_samples_candidates=hdbscan_min_samples_candidates,
+                                cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
+                                cluster_selection_method="auto",
+                                refit_full_data=hdbscan_refit_full_data,
+                                return_info=True,
+                            )
+                            retry_clusters = int(hdbscan_info_retry.get("n_clusters_full", -1))
+                            retry_noise = float(hdbscan_info_retry.get("noise_fraction_full", 1.0))
+                            base_noise = float(hdbscan_info.get("noise_fraction_full", 1.0))
+                            if (
+                                retry_clusters > n_hdb_clusters_full
+                                or (
+                                    retry_clusters == n_hdb_clusters_full
+                                    and retry_noise < base_noise
+                                )
+                            ):
+                                hdbscan_labels = hdbscan_labels_retry
+                                hdbscan_info = hdbscan_info_retry
+                                print(
+                                    "[analysis][hdbscan] using retry result: "
+                                    f"clusters={retry_clusters}, noise={retry_noise:.4f}."
+                                )
                         if hdbscan_labels.size == len(coords):
                             hdbscan_coord_files = save_local_structure_assignments(
                                 coords,
@@ -1391,7 +1549,7 @@ def _parse_args() -> argparse.Namespace:
         "--data_file",
         action="append",
         default=None,
-        help="Override real data files (repeat for multiple). Example: --data_file 175ps.off",
+        help="Override real data files (repeat for multiple). Example: --data_file 175ps.npy",
     )
     parser.add_argument(
         "--visible_cluster_sets",

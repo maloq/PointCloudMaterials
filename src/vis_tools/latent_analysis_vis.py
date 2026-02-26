@@ -296,8 +296,10 @@ def compute_hdbscan_labels(
     target_clusters_max: int = 6,
     min_cluster_size_candidates: list[int] | None = None,
     min_samples: int | None = None,
+    min_samples_candidates: list[int] | None = None,
     cluster_selection_epsilon: float = 0.0,
     cluster_selection_method: str = "leaf",
+    refit_full_data: bool = True,
     return_info: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
     if latents.size == 0 or len(latents) < 2:
@@ -305,6 +307,30 @@ def compute_hdbscan_labels(
         if return_info:
             return empty, {"method": "hdbscan", "status": "empty"}
         return empty
+
+    if min_samples is not None and min_samples_candidates is not None:
+        raise ValueError(
+            "Specify only one of min_samples or min_samples_candidates."
+        )
+    if not np.isfinite(sample_fraction) or float(sample_fraction) <= 0.0:
+        raise ValueError(
+            f"sample_fraction must be finite and > 0, got {sample_fraction}."
+        )
+    if float(sample_fraction) > 1.0:
+        raise ValueError(
+            f"sample_fraction must be <= 1.0, got {sample_fraction}."
+        )
+    if max_fit_samples is not None and int(max_fit_samples) < 2:
+        raise ValueError(
+            f"max_fit_samples must be >= 2 when provided, got {max_fit_samples}."
+        )
+    if min_samples is not None and int(min_samples) < 1:
+        raise ValueError(f"min_samples must be >= 1, got {min_samples}.")
+    if not np.isfinite(cluster_selection_epsilon) or float(cluster_selection_epsilon) < 0.0:
+        raise ValueError(
+            "cluster_selection_epsilon must be finite and >= 0, got "
+            f"{cluster_selection_epsilon}."
+        )
 
     try:
         import hdbscan
@@ -334,12 +360,18 @@ def compute_hdbscan_labels(
         fit_idx = np.arange(n_total)
     fit_features = features[fit_idx]
 
-    if min_cluster_size_candidates is None:
-        ratios = [0.003, 0.005, 0.0075, 0.010, 0.015, 0.020, 0.030, 0.040]
+    if min_cluster_size_candidates is None or len(min_cluster_size_candidates) == 0:
+        ratio_candidates = [0.0010, 0.0015, 0.0025, 0.0040, 0.0060, 0.0090, 0.0130, 0.0200, 0.0300, 0.0500]
+        abs_candidates = [2, 3, 4, 5, 6, 8, 10, 12, 16, 24, 32, 48, 64]
         min_cluster_size_candidates = sorted(
             {
-                max(5, min(fit_size, int(round(fit_size * ratio))))
-                for ratio in ratios
+                max(2, min(fit_size, int(round(fit_size * ratio))))
+                for ratio in ratio_candidates
+            }
+            | {
+                max(2, min(fit_size, int(v)))
+                for v in abs_candidates
+                if int(v) <= fit_size
             }
         )
     else:
@@ -351,11 +383,18 @@ def compute_hdbscan_labels(
             }
         )
     if not min_cluster_size_candidates:
-        min_cluster_size_candidates = [max(5, min(fit_size, fit_size // 30))]
+        min_cluster_size_candidates = [max(2, min(fit_size, fit_size // 40))]
 
-    selection_method = str(cluster_selection_method).strip().lower()
-    if selection_method not in {"eom", "leaf"}:
-        selection_method = "leaf"
+    requested_selection_method = str(cluster_selection_method).strip().lower()
+    if requested_selection_method == "auto":
+        selection_methods = ["leaf", "eom"]
+    elif requested_selection_method in {"leaf", "eom"}:
+        selection_methods = [requested_selection_method]
+    else:
+        raise ValueError(
+            "cluster_selection_method must be one of ['leaf', 'eom', 'auto'], "
+            f"got {cluster_selection_method!r}."
+        )
 
     target_low = max(2, int(target_clusters_min))
     target_high = max(target_low, int(target_clusters_max))
@@ -364,58 +403,123 @@ def compute_hdbscan_labels(
     best: Dict[str, Any] | None = None
     best_clusterer = None
     best_labels_fit: np.ndarray | None = None
+    best_selection_method: str | None = None
     best_score = None
-    fit_failures: list[tuple[int, int, Exception]] = []
+    fit_failures: list[tuple[int, int, str, Exception]] = []
+    trials_evaluated = 0
+
+    def _resolve_min_samples_candidates(mcs: int) -> list[int]:
+        mcs = int(mcs)
+        if mcs < 1:
+            raise ValueError(f"Internal error: min_cluster_size must be >= 1, got {mcs}.")
+        if min_samples is not None:
+            return [max(1, min(mcs, int(min_samples)))]
+        if min_samples_candidates is not None and len(min_samples_candidates) > 0:
+            resolved = sorted(
+                {
+                    max(1, min(mcs, int(v)))
+                    for v in min_samples_candidates
+                    if int(v) >= 1
+                }
+            )
+            if resolved:
+                return resolved
+        auto_candidates = {
+            1,
+            2,
+            3,
+            int(round(mcs * 0.05)),
+            int(round(mcs * 0.10)),
+            int(round(mcs * 0.20)),
+            int(round(np.sqrt(float(mcs)))),
+            int(round(np.log2(float(mcs) + 1.0))),
+        }
+        resolved_auto = sorted(
+            {
+                max(1, min(mcs, int(v)))
+                for v in auto_candidates
+                if int(v) >= 1
+            }
+        )
+        if not resolved_auto:
+            return [1]
+        return resolved_auto
 
     for mcs in min_cluster_size_candidates:
-        ms = int(min_samples) if min_samples is not None else max(4, min(64, int(round(mcs * 0.35))))
-        ms = max(1, min(ms, mcs))
-        try:
-            clusterer = hdbscan.HDBSCAN(
-                min_cluster_size=int(mcs),
-                min_samples=int(ms),
-                cluster_selection_method=selection_method,
-                cluster_selection_epsilon=float(cluster_selection_epsilon),
-                prediction_data=True,
-            )
-            labels_fit = clusterer.fit_predict(fit_features).astype(int)
-        except Exception as exc:
-            fit_failures.append((int(mcs), int(ms), exc))
-            continue
+        min_samples_grid = _resolve_min_samples_candidates(int(mcs))
+        for method_name in selection_methods:
+            for ms in min_samples_grid:
+                try:
+                    clusterer = hdbscan.HDBSCAN(
+                        min_cluster_size=int(mcs),
+                        min_samples=int(ms),
+                        cluster_selection_method=str(method_name),
+                        cluster_selection_epsilon=float(cluster_selection_epsilon),
+                        prediction_data=True,
+                    )
+                    labels_fit = clusterer.fit_predict(fit_features).astype(int)
+                except Exception as exc:
+                    fit_failures.append((int(mcs), int(ms), str(method_name), exc))
+                    continue
+                trials_evaluated += 1
 
-        valid = labels_fit[labels_fit >= 0]
-        n_clusters = int(len(np.unique(valid)))
-        noise_frac = float(np.mean(labels_fit < 0))
+                valid = labels_fit[labels_fit >= 0]
+                n_clusters = int(len(np.unique(valid)))
+                noise_frac = float(np.mean(labels_fit < 0))
+                if valid.size > 0:
+                    _, valid_counts = np.unique(valid, return_counts=True)
+                    dominant_frac = float(np.max(valid_counts) / max(1, valid.size))
+                    cluster_balance_std = float(
+                        np.std(valid_counts.astype(np.float64) / max(1.0, float(valid.size)))
+                    )
+                else:
+                    dominant_frac = 1.0
+                    cluster_balance_std = 1.0
 
-        in_target = target_low <= n_clusters <= target_high
-        distance_to_target = 0.0 if in_target else abs(n_clusters - target_mid)
-        score = (
-            float(distance_to_target),
-            float(noise_frac),
-            float(abs(n_clusters - target_mid)),
-        )
-        if best_score is None or score < best_score:
-            best_score = score
-            best = {
-                "min_cluster_size": int(mcs),
-                "min_samples": int(ms),
-                "n_clusters_fit": int(n_clusters),
-                "noise_fraction_fit": float(noise_frac),
-            }
-            best_clusterer = clusterer
-            best_labels_fit = labels_fit
+                under_target = max(0, target_low - n_clusters)
+                over_target = max(0, n_clusters - target_high)
+                cluster_penalty = float(2.0 * under_target + over_target)
+                if n_clusters <= 1:
+                    cluster_penalty += 4.0
+                score = (
+                    cluster_penalty,
+                    float(abs(n_clusters - target_mid)),
+                    float(noise_frac),
+                    float(dominant_frac),
+                    float(cluster_balance_std),
+                    float(-n_clusters),
+                )
+                if best_score is None or score < best_score:
+                    best_score = score
+                    best = {
+                        "min_cluster_size": int(mcs),
+                        "min_samples": int(ms),
+                        "n_clusters_fit": int(n_clusters),
+                        "noise_fraction_fit": float(noise_frac),
+                        "dominant_cluster_fraction_fit": float(dominant_frac),
+                        "cluster_balance_std_fit": float(cluster_balance_std),
+                    }
+                    best_clusterer = clusterer
+                    best_labels_fit = labels_fit
+                    best_selection_method = str(method_name)
 
     if fit_failures:
-        failed_mcs, failed_ms, failed_exc = fit_failures[0]
+        failed_mcs, failed_ms, failed_method, failed_exc = fit_failures[0]
         warnings.warn(
             f"HDBSCAN fitting failed for {len(fit_failures)} candidate setting(s); "
-            f"first failure min_cluster_size={failed_mcs}, min_samples={failed_ms}. "
+            f"first failure min_cluster_size={failed_mcs}, min_samples={failed_ms}, "
+            f"selection_method={failed_method}. "
             f"Error: {failed_exc}",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if best is None or best_clusterer is None or best_labels_fit is None:
+    if (
+        best is None
+        or best_clusterer is None
+        or best_labels_fit is None
+        or best_selection_method is None
+    ):
         fallback = np.full((n_total,), -1, dtype=int)
         info = {
             **prep_info,
@@ -423,12 +527,50 @@ def compute_hdbscan_labels(
             "status": "failed",
             "fit_samples": int(fit_size),
             "total_samples": int(n_total),
+            "target_clusters_min": int(target_low),
+            "target_clusters_max": int(target_high),
+            "cluster_selection_method_requested": requested_selection_method,
+            "trials_evaluated": int(trials_evaluated),
+            "trials_failed": int(len(fit_failures)),
         }
         if return_info:
             return fallback, info
         return fallback
 
-    if fit_size == n_total:
+    if refit_full_data:
+        try:
+            clusterer_full = hdbscan.HDBSCAN(
+                min_cluster_size=int(best["min_cluster_size"]),
+                min_samples=int(best["min_samples"]),
+                cluster_selection_method=str(best_selection_method),
+                cluster_selection_epsilon=float(cluster_selection_epsilon),
+                prediction_data=False,
+            )
+            labels_full = clusterer_full.fit_predict(features).astype(int)
+        except Exception as full_exc:
+            warnings.warn(
+                "HDBSCAN full-data refit failed; falling back to sampled-fit labels/predictions. "
+                f"Error: {full_exc}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            if fit_size == n_total:
+                labels_full = best_labels_fit
+            else:
+                try:
+                    labels_full, _ = hdbscan.approximate_predict(best_clusterer, features)
+                    labels_full = np.asarray(labels_full, dtype=int)
+                except Exception as approx_exc:
+                    warnings.warn(
+                        "hdbscan.approximate_predict failed after refit failure; assigning "
+                        "non-fit samples to noise. "
+                        f"Error: {approx_exc}",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
+                    labels_full = np.full((n_total,), -1, dtype=int)
+                    labels_full[fit_idx] = best_labels_fit
+    elif fit_size == n_total:
         labels_full = best_labels_fit
     else:
         try:
@@ -444,7 +586,7 @@ def compute_hdbscan_labels(
                 clusterer_full = hdbscan.HDBSCAN(
                     min_cluster_size=int(best["min_cluster_size"]),
                     min_samples=int(best["min_samples"]),
-                    cluster_selection_method=selection_method,
+                    cluster_selection_method=str(best_selection_method),
                     cluster_selection_epsilon=float(cluster_selection_epsilon),
                     prediction_data=False,
                 )
@@ -473,7 +615,12 @@ def compute_hdbscan_labels(
         "target_clusters_min": int(target_low),
         "target_clusters_max": int(target_high),
         "sample_fraction_requested": float(sample_fraction),
-        "cluster_selection_method": selection_method,
+        "cluster_selection_method_requested": requested_selection_method,
+        "cluster_selection_method": str(best_selection_method),
+        "refit_full_data": bool(refit_full_data),
+        "trials_evaluated": int(trials_evaluated),
+        "trials_failed": int(len(fit_failures)),
+        "min_cluster_size_candidates_evaluated": [int(v) for v in min_cluster_size_candidates],
     }
     if return_info:
         return labels_full, info

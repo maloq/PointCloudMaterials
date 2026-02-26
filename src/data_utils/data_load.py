@@ -198,40 +198,74 @@ def read_and_sample_mesh(filename, n_points=2048):
         ) from e
         
 
-def read_and_sample_off_file(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords, sampling_method="drop_farthest"):
-    """
-    Read an OFF file and sample points from it.
-    """
-    samples = []
-    for off_file in data_files:
-        logger.debug(f"Reading {off_file}")
-        points = read_off_file(os.path.join(root, off_file), verbose=False)
-        if sample_type == 'regular':
-            samples = get_regular_samples(points,
-                                            size=radius,
-                                            n_points=n_points,
-                                            overlap_fraction=overlap_fraction,
-                                            return_coords=return_coords,
-                                            sampling_method=sampling_method)
-        elif sample_type == 'random':
-            samples = get_random_samples(points,
-                                            n_samples=n_samples,
-                                            size=radius,
-                                            n_points=n_points,
-                                            return_coords=return_coords,
-                                            sampling_method=sampling_method)
-        else:
-            raise ValueError(f"Invalid sample type: {sample_type}")
-    if samples:
-        return samples
+def _load_points(filepath: str) -> np.ndarray:
+    """Load point cloud from .npy or .off file. Returns float32 (N, 3) array."""
+    ext = os.path.splitext(filepath)[1].lower()
+    if ext == '.npy':
+        points = np.load(filepath)
+    elif ext == '.off':
+        points = read_off_file(filepath, verbose=False)
     else:
-        raise ValueError(f"No samples found for {data_files}")
+        raise ValueError(f"Unsupported file extension {ext!r} for {filepath}. Use .npy or .off")
+    if points.ndim != 2 or points.shape[1] != 3:
+        raise ValueError(f"Expected (N, 3) array from {filepath}, got shape {points.shape}")
+    return points.astype(np.float32, copy=False)
+
+
+def _sample_single_file(filepath, sample_type, radius, n_points, overlap_fraction, n_samples, return_coords, sampling_method):
+    """Load one file and generate samples. Standalone function for multiprocessing."""
+    points = _load_points(filepath)
+    if sample_type == 'regular':
+        return get_regular_samples(
+            points, size=radius, n_points=n_points,
+            overlap_fraction=overlap_fraction,
+            return_coords=return_coords,
+            sampling_method=sampling_method,
+        )
+    elif sample_type == 'random':
+        return get_random_samples(
+            points, n_samples=n_samples, size=radius,
+            n_points=n_points, return_coords=return_coords,
+            sampling_method=sampling_method,
+        )
+    else:
+        raise ValueError(f"Invalid sample type: {sample_type!r}")
+
+
+def read_and_sample_files(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords, sampling_method="drop_farthest"):
+    """Read point cloud files and sample sub-clouds. Processes files in parallel when possible."""
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing
+
+    filepaths = [os.path.join(root, f) for f in data_files]
+    n_files = len(filepaths)
+    max_workers = min(n_files, max(1, multiprocessing.cpu_count() // 2))
+    args = (sample_type, radius, n_points, overlap_fraction, n_samples, return_coords, sampling_method)
+
+    all_samples: list = []
+
+    if n_files > 1 and max_workers > 1:
+        logger.info(f"Processing {n_files} files in parallel with {max_workers} workers")
+        with ProcessPoolExecutor(max_workers=max_workers) as pool:
+            futures = [pool.submit(_sample_single_file, fp, *args) for fp in filepaths]
+            for future in futures:
+                file_samples = future.result()
+                all_samples.extend(file_samples)
+    else:
+        for fp in filepaths:
+            file_samples = _sample_single_file(fp, *args)
+            all_samples.extend(file_samples)
+
+    if not all_samples:
+        raise ValueError(f"No samples found for {data_files} in {root}")
+    return all_samples
 
 
 class PointCloudDataset(Dataset):
     def __init__(self,
-                 root: str,
-                 data_files: list[str],
+                 root: str = "",
+                 data_files: list[str] | None = None,
+                 data_sources: list[dict] | None = None,
                  return_coords=False,
                  sample_type='regular',
                  radius=8,
@@ -241,24 +275,43 @@ class PointCloudDataset(Dataset):
                  pre_normalize=True,
                  normalize=True,
                  sampling_method="drop_farthest"):
-        """Initialize the dataset with samples from OFF files.
+        """Initialize the dataset with samples from point cloud files.
+
+        Supports two configuration modes:
+
+        1. **Single source** (backward-compatible): provide ``root`` + ``data_files``.
+        2. **Multi source**: provide ``data_sources``, a list of dicts each with
+           ``data_path`` and ``data_files`` keys.  Samples from all sources are
+           concatenated into a single dataset.
+
         Args:
-            root: Path to directory containing OFF files
+            root: Directory containing data files (single-source mode).
+            data_files: List of filenames relative to *root* (single-source mode).
+            data_sources: List of ``{"data_path": str, "data_files": [str, ...]}``
+                dicts (multi-source mode).  When provided, *root* and *data_files*
+                are ignored.
         """
-        self.root = root
         self.pre_normalize = pre_normalize
         self.normalize = normalize
         self.return_coords = return_coords
         self.radius = radius
-        self.samples = read_and_sample_off_file(root,
-                                                data_files,
-                                                radius,
-                                                num_points,
-                                                overlap_fraction,
-                                                sample_type,
-                                                n_samples,
-                                                return_coords,
-                                                sampling_method)
+
+        sources = self._resolve_sources(root, data_files, data_sources)
+
+        all_samples: list = []
+        for src_root, src_files in sources:
+            samples = read_and_sample_files(
+                src_root, src_files, radius, num_points,
+                overlap_fraction, sample_type, n_samples,
+                return_coords, sampling_method,
+            )
+            all_samples.extend(samples)
+
+        if not all_samples:
+            raise ValueError("No samples generated from any data source")
+
+        self.samples = all_samples
+
         if self.return_coords:
             self.samples, self.coords = zip(*self.samples)
             self.samples = list(self.samples)
@@ -270,6 +323,41 @@ class PointCloudDataset(Dataset):
         elif not normalize:
             print("Point Cloud normalization skipped")
         logger.info(f"Point set shape: {self.samples[0].shape}")
+
+    @staticmethod
+    def _resolve_sources(
+        root: str,
+        data_files: list[str] | None,
+        data_sources: list[dict] | None,
+    ) -> list[tuple[str, list[str]]]:
+        """Return list of (root_path, file_list) tuples."""
+        if data_sources:
+            sources = []
+            for src in data_sources:
+                if not isinstance(src, dict):
+                    raise TypeError(f"Each data_source entry must be a dict, got {type(src)}")
+                src_path = src.get("data_path")
+                src_files = src.get("data_files")
+                if not src_path or not src_files:
+                    raise ValueError(
+                        "Each data_source must have 'data_path' and 'data_files'. "
+                        f"Got keys: {list(src.keys())}"
+                    )
+                if isinstance(src_files, str):
+                    src_files = [src_files]
+                sources.append((str(src_path), list(src_files)))
+            if not sources:
+                raise ValueError("data_sources list is empty")
+            return sources
+
+        if not data_files:
+            raise ValueError(
+                "Must provide either 'data_sources' (multi-source) "
+                "or 'root' + 'data_files' (single-source)"
+            )
+        if isinstance(data_files, str):
+            data_files = [data_files]
+        return [(root, list(data_files))]
 
     def __len__(self):
         return len(self.samples)
@@ -1442,7 +1530,7 @@ class SoapCoordDataset(Dataset):
 
 if __name__ == '__main__':
     data = PointCloudDataset(root="datasets/Al/inherent_configurations_off",
-                         data_files=["240ps.off"],
+                         data_files=["240ps.npy"],
                          n_samples=6000,
                          num_points=200)
     

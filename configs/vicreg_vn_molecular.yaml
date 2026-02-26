@@ -1,8 +1,9 @@
 defaults:
 # - data: data_synth_polycrystalline_balanced_geometries
- - data: data_ae_Al_80
+ - data: data_ae_multi_material
+# - data: data_synth_polycrystalline_balanced_geometries_v2
 data:
-  analysis_data_files: ['175ps.off']
+  analysis_data_files: ['175ps.npy']
   analysis_data_file: null
   analysis_single_timestep: false
 project_name: pointnet
@@ -10,7 +11,7 @@ experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points
 wandb_mode: online
 
 model_type: vicreg  # Self-supervised VICReg
-latent_size: 768  # For RI_MAE_Invariant this must equal 2 * trans_dim.
+latent_size: 512  # For RI_MAE_Invariant this must equal 2 * trans_dim.
 
 load_supervised_checkpoint: output/2026-02-25/23-55-50/VICREG_l768_N128_M80_RI_MAE_Invariant-epoch=119.ckpt
 
@@ -24,11 +25,11 @@ encoder:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
-    encoder_dims: 384
-    trans_dim: 384
+    encoder_dims: 512
+    trans_dim: 256
     depth: 8
-    predictor_depth: 2
-    num_heads: 6
+    predictor_depth: 3
+    num_heads: 8
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6
@@ -46,7 +47,7 @@ decoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 2048
+batch_size: 4096
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1
@@ -64,6 +65,7 @@ enable_swa: False
 swa_epoch_start: 1000
 epochs: 120
 max_samples: 0
+check_val_every_n_epoch: 20
 
 gpu: True
 devices: [0, 1]
@@ -80,6 +82,7 @@ warmup_start_factor: 0.1
 decay_rate: 0.0004
 contrastive_norms_only_latent: true
 enable_embedding_metrics: false
+enable_svm_accuracy: false
 
 # IDEC clustering (disabled by default; enable after pretraining)
 idec_enabled: False
@@ -172,7 +175,7 @@ analysis_cluster_l2_normalize: true
 analysis_cluster_standardize: true
 analysis_cluster_pca_var: 0.98
 analysis_cluster_pca_max_components: 32
-analysis_cluster_k_values: [3, 4, 5, 6]
+analysis_cluster_k_values: [5, 6, 7, 8]
 analysis_progress_every_batches: 20
 analysis_test_rotation_runs: 5
 analysis_test_max_samples: null
@@ -181,7 +184,7 @@ analysis_tsne_max_samples: 8000
 analysis_tsne_n_iter: 1000
 analysis_interactive_max_points: 0
 analysis_md_use_all_points: true
-analysis_hdbscan_enabled: true
+analysis_hdbscan_enabled: false
 analysis_hdbscan_fit_fraction: 0.25
 analysis_hdbscan_max_fit_samples: 50000
 analysis_hdbscan_target_k_min: 5
@@ -190,4 +193,4 @@ analysis_hdbscan_min_cluster_size_candidates: []
 analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
-analysis_data_files: ['175ps.off']
+analysis_data_files: ['175ps.npy']

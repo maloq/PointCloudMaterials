@@ -150,7 +150,7 @@ def predict_single_reconstruction(
 
 if __name__ == "__main__":
     CKPT = "output/2025-07-28/19-55-08/SPD_FoldingSphereAttn_l72_P80_Sinkhorn_1024-epoch=224-val_loss=0.02.ckpt"
-    FILE = '240ps.off'
+    FILE = '240ps.npy'
 
     model, cfg, device = load_spd_model(CKPT)
     dl = create_spd_dataloader(cfg, FILE)

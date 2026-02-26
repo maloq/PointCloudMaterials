@@ -1,0 +1,51 @@
+# Multi-material real point cloud data config
+kind: real
+radius: 7.2
+sample_type: 'regular'
+n_samples: 8000000
+num_points: 128
+model_points: 80
+overlap_fraction: 0.3
+dr: 0.01
+
+# Multiple data sources: each entry has a path and list of .npy files
+data_sources:
+  - data_path: 'datasets/Al/inherent_configurations_off'
+    data_files:
+      - '166ps.npy'
+      - '170ps.npy'
+      - '174ps.npy'
+      - '175ps.npy'
+      - '177ps.npy'
+      - '240ps.npy'
+  - data_path: 'datasets/Mg/inherent_configurations'
+    data_files:
+      - '940ps.npy'
+      - '960ps.npy'
+      - '980ps.npy'
+      - '990ps.npy'
+      - '1000ps.npy'
+      - '1500ps.npy'
+  - data_path: 'datasets/Ta/inherent_configurations'
+    data_files:
+      - '2.7ns.npy'
+      - '2.8ns.npy'
+      - '2.9ns.npy'
+      - '3.0ns.npy'
+      - '3.60ns.npy'
+  - data_path: 'datasets/Zr/inherent_configurations'
+    data_files:
+      - '160ps.npy'
+      - '200ps.npy'
+      - '240ps.npy'
+      - '280ps.npy'
+      - '310ps.npy'
+      - '1560ps.npy'
+  - data_path: 'datasets/Al50Ni50/inherent_configurations'
+    data_files:
+      - '0.3ns.npy'
+      - '0.5ns.npy'
+      - '0.7ns.npy'
+      - '0.9ns.npy'
+      - '2ns.npy'
+      - '5ns.npy'

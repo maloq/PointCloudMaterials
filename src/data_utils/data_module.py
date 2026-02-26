@@ -96,22 +96,43 @@ class RealPointCloudDataModule(pl.LightningDataModule):
 
     def _setup_real_dataset(self):
         data_cfg = self.cfg.data
-        data_files = getattr(data_cfg, "data_files", None)
-        if not data_files:
-            raise ValueError("No dataset under data_files files provided")
 
-        file_list = _to_container(data_files)
-        if isinstance(file_list, str):
-            file_list = [file_list]
-        full_dataset = PointCloudDataset(
-            root=data_cfg.data_path,
-            data_files=file_list,
-            radius=data_cfg.radius,
-            sample_type=data_cfg.sample_type,
-            overlap_fraction=data_cfg.overlap_fraction,
-            n_samples=data_cfg.n_samples,
-            num_points=data_cfg.num_points,
-        )
+        data_sources_raw = getattr(data_cfg, "data_sources", None)
+        data_files_raw = getattr(data_cfg, "data_files", None)
+
+        if data_sources_raw is not None:
+            data_sources = _to_container(data_sources_raw)
+            if not isinstance(data_sources, list) or not data_sources:
+                raise ValueError("data_sources must be a non-empty list of {data_path, data_files} dicts")
+            full_dataset = PointCloudDataset(
+                data_sources=data_sources,
+                radius=data_cfg.radius,
+                sample_type=data_cfg.sample_type,
+                overlap_fraction=data_cfg.overlap_fraction,
+                n_samples=data_cfg.n_samples,
+                num_points=data_cfg.num_points,
+            )
+        elif data_files_raw is not None:
+            file_list = _to_container(data_files_raw)
+            if isinstance(file_list, str):
+                file_list = [file_list]
+            data_path = getattr(data_cfg, "data_path", None)
+            if not data_path:
+                raise ValueError("data_path is required when using data_files (single-source mode)")
+            full_dataset = PointCloudDataset(
+                root=data_path,
+                data_files=file_list,
+                radius=data_cfg.radius,
+                sample_type=data_cfg.sample_type,
+                overlap_fraction=data_cfg.overlap_fraction,
+                n_samples=data_cfg.n_samples,
+                num_points=data_cfg.num_points,
+            )
+        else:
+            raise ValueError(
+                "Data config must provide either 'data_sources' (multi-material) "
+                "or 'data_files' + 'data_path' (single-material)"
+            )
 
         train_ratio = getattr(data_cfg, "train_ratio", 0.8)
         train_size = int(train_ratio * len(full_dataset))

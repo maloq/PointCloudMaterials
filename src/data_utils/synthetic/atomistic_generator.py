@@ -21,7 +21,7 @@ import time
 import warnings
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from functools import partial
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 import multiprocessing as mp
@@ -80,6 +80,10 @@ class LiquidStructureConfig:
     first_peak_height: float = 2.8
     second_peak_position: float = 0.0
     use_frank_kasper: bool = False
+    mro_cluster_fraction: float = 0.45
+    mro_cluster_radius: float = 6.0
+    mro_radial_jitter: float = 0.10
+    mro_tetra_fraction: float = 0.35
 
 
 @dataclass
@@ -427,8 +431,16 @@ class LiquidMetalGenerator:
             return self._generate_quench()
         elif method == "icosahedral":
             return self._generate_icosahedral()
-        else:
+        elif method == "mro_clustered":
+            return self._generate_mro_clustered()
+        elif method == "simple":
             return self._generate_simple()
+        else:
+            supported_methods = ["simple", "rdf_constrained", "quench", "icosahedral", "mro_clustered"]
+            raise ValueError(
+                f"Unsupported liquid_structure.method={self.config.method!r}. "
+                f"Supported methods: {supported_methods}"
+            )
             
     def _generate_simple(self) -> np.ndarray:
         """Generate amorphous positions with batch rejection sampling.
@@ -708,6 +720,160 @@ class LiquidMetalGenerator:
                             
         return positions[:self.n_atoms].astype(np.float32)
 
+    def _relax_overlaps(self, positions: np.ndarray, min_dist: float, max_iterations: int = 4) -> np.ndarray:
+        """Resolve close contacts by iteratively pushing overlapping pairs apart."""
+        if min_dist <= 0:
+            raise ValueError(f"min_dist must be positive, got {min_dist}")
+        if max_iterations <= 0:
+            raise ValueError(f"max_iterations must be positive, got {max_iterations}")
+
+        if len(positions) < 2:
+            return positions.astype(np.float32, copy=False)
+
+        relaxed = positions.astype(np.float32, copy=True)
+        for _ in range(max_iterations):
+            tree = cKDTree(relaxed)
+            pairs = tree.query_pairs(r=min_dist, output_type="ndarray")
+            if len(pairs) == 0:
+                break
+
+            i_idx = pairs[:, 0]
+            j_idx = pairs[:, 1]
+            vec = relaxed[j_idx] - relaxed[i_idx]
+            dist = np.linalg.norm(vec, axis=1)
+
+            near_zero = dist < 1e-8
+            if np.any(near_zero):
+                random_dirs = self.rng.normal(size=(int(np.sum(near_zero)), 3)).astype(np.float32)
+                random_dirs /= np.linalg.norm(random_dirs, axis=1, keepdims=True) + 1e-8
+                vec[near_zero] = random_dirs
+                dist[near_zero] = 1.0
+
+            direction = vec / dist[:, None]
+            overlap = np.maximum(0.0, min_dist - dist)
+            push_vec = 0.55 * overlap[:, None] * direction
+
+            adjustments = np.zeros_like(relaxed)
+            np.add.at(adjustments, i_idx, -push_vec)
+            np.add.at(adjustments, j_idx, push_vec)
+            relaxed += adjustments
+            relaxed = np.clip(relaxed, 0.0, self.box_size)
+
+        return relaxed.astype(np.float32)
+
+    def _generate_mro_clustered(self) -> np.ndarray:
+        """
+        Generate amorphous metal with medium-range-order (MRO) clusters.
+
+        Workflow:
+        1. Generate baseline amorphous cloud via rejection sampling.
+        2. Select sparse cluster centers.
+        3. Locally pull neighbors toward two preferred shells while preserving disorder.
+        4. Relax overlaps to satisfy minimum pair distance.
+        """
+        cluster_fraction = float(self.config.mro_cluster_fraction)
+        cluster_radius = float(self.config.mro_cluster_radius)
+        radial_jitter = float(self.config.mro_radial_jitter)
+        tetra_fraction = float(self.config.mro_tetra_fraction)
+
+        if not (0.0 <= cluster_fraction <= 1.0):
+            raise ValueError(
+                f"mro_cluster_fraction must be in [0, 1], got {cluster_fraction}"
+            )
+        if cluster_radius <= 0:
+            raise ValueError(f"mro_cluster_radius must be > 0, got {cluster_radius}")
+        if cluster_radius <= self.min_pair_dist:
+            raise ValueError(
+                f"mro_cluster_radius={cluster_radius} must exceed min_pair_dist={self.min_pair_dist}"
+            )
+        if radial_jitter < 0:
+            raise ValueError(f"mro_radial_jitter must be >= 0, got {radial_jitter}")
+        if not (0.0 <= tetra_fraction <= 1.0):
+            raise ValueError(f"mro_tetra_fraction must be in [0, 1], got {tetra_fraction}")
+
+        positions = self._generate_simple()
+        if len(positions) == 0 or cluster_fraction == 0.0:
+            return positions
+
+        est_atoms_per_cluster = max(
+            8,
+            int(round((4.0 / 3.0) * np.pi * (cluster_radius ** 3) * self.target_density)),
+        )
+        target_cluster_atoms = max(1, int(round(cluster_fraction * len(positions))))
+        n_clusters = int(np.ceil(target_cluster_atoms / est_atoms_per_cluster))
+        n_clusters = int(np.clip(n_clusters, 1, 256))
+
+        min_center_sep = 1.25 * cluster_radius
+        perm = self.rng.permutation(len(positions))
+        cluster_centers: List[np.ndarray] = []
+        for atom_idx in perm:
+            candidate = positions[int(atom_idx)]
+            if not cluster_centers:
+                cluster_centers.append(candidate)
+            else:
+                dists = np.linalg.norm(np.array(cluster_centers) - candidate, axis=1)
+                if np.all(dists >= min_center_sep):
+                    cluster_centers.append(candidate)
+            if len(cluster_centers) >= n_clusters:
+                break
+
+        if len(cluster_centers) == 0:
+            raise RuntimeError(
+                "mro_clustered could not place any cluster centers. "
+                f"Requested n_clusters={n_clusters}, min_center_sep={min_center_sep:.3f}, "
+                f"n_atoms={len(positions)}"
+            )
+
+        if len(cluster_centers) < n_clusters:
+            warnings.warn(
+                "mro_clustered placed fewer cluster centers than requested "
+                f"({len(cluster_centers)} < {n_clusters}).",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
+        tree = cKDTree(positions)
+        first_shell = self.avg_nn_dist
+        second_shell = (1.55 + 0.20 * (1.0 - tetra_fraction)) * self.avg_nn_dist
+        shell_cutoff = (1.20 + 0.25 * tetra_fraction) * self.avg_nn_dist
+
+        for center in cluster_centers:
+            neighbor_idx = tree.query_ball_point(center, cluster_radius)
+            if len(neighbor_idx) < 8:
+                continue
+
+            neighbor_idx_arr = np.asarray(neighbor_idx, dtype=np.int64)
+            offsets = positions[neighbor_idx_arr] - center
+            dists = np.linalg.norm(offsets, axis=1)
+            valid = dists > 1e-8
+            if np.sum(valid) < 6:
+                continue
+
+            idx_valid = neighbor_idx_arr[valid]
+            vec_valid = offsets[valid]
+            dist_valid = dists[valid]
+
+            target_r = np.where(dist_valid <= shell_cutoff, first_shell, second_shell)
+            rescaled = vec_valid * (target_r / dist_valid)[:, None]
+            weights = np.clip(1.0 - (dist_valid / cluster_radius) ** 2, 0.0, 1.0)
+
+            random_dirs = self.rng.normal(size=rescaled.shape).astype(np.float32)
+            radial_dir = rescaled / (np.linalg.norm(rescaled, axis=1, keepdims=True) + 1e-8)
+            tangent = random_dirs - np.sum(random_dirs * radial_dir, axis=1, keepdims=True) * radial_dir
+            tangent /= np.linalg.norm(tangent, axis=1, keepdims=True) + 1e-8
+            tangent *= (radial_jitter * self.avg_nn_dist * weights)[:, None]
+
+            updated = (
+                center
+                + (1.0 - weights)[:, None] * vec_valid
+                + weights[:, None] * rescaled
+                + tangent
+            )
+            positions[idx_valid] = updated.astype(np.float32)
+
+        positions = np.clip(positions, 0.0, self.box_size).astype(np.float32)
+        return self._relax_overlaps(positions, min_dist=self.min_pair_dist, max_iterations=4)
+
 
 # ---------------------------------------------------------------------------
 # Configuration Loading
@@ -780,6 +946,10 @@ def load_config(path: str | pathlib.Path) -> Tuple[GlobalConfig, Dict[str, Phase
                 first_peak_height=float(liquid_raw.get("first_peak_height", 2.8)),
                 second_peak_position=float(liquid_raw.get("second_peak_position", 0.0)),
                 use_frank_kasper=bool(liquid_raw.get("use_frank_kasper", False)),
+                mro_cluster_fraction=float(liquid_raw.get("mro_cluster_fraction", 0.45)),
+                mro_cluster_radius=float(liquid_raw.get("mro_cluster_radius", 6.0)),
+                mro_radial_jitter=float(liquid_raw.get("mro_radial_jitter", 0.10)),
+                mro_tetra_fraction=float(liquid_raw.get("mro_tetra_fraction", 0.35)),
             )
             
         phase_configs[phase_name] = PhaseConfig(
@@ -1025,6 +1195,42 @@ def _inject_crystal_nuclei(
     return np.vstack([remaining_positions, nucleus_positions]).astype(np.float32)
 
 
+def _estimate_local_amorphous_box(
+    seed_position: np.ndarray,
+    all_grain_seeds: Optional[np.ndarray],
+    L: float,
+    avg_nn_dist: float,
+    grain_count: int,
+    expansion_factor: float = 1.0,
+) -> Tuple[np.ndarray, float]:
+    """
+    Estimate a local cubic generation box around a grain seed for amorphous phases.
+
+    The box is intentionally larger than an average Voronoi grain so local generation
+    captures most of the grain with margin, while avoiding full-domain amorphous generation.
+    Uses a conservative grain-count-based estimate to avoid pathological oversizing.
+    """
+    if L <= 0:
+        raise ValueError(f"L must be positive, got {L}")
+    if avg_nn_dist <= 0:
+        raise ValueError(f"avg_nn_dist must be positive, got {avg_nn_dist}")
+    if grain_count <= 0:
+        raise ValueError(f"grain_count must be positive, got {grain_count}")
+    if expansion_factor <= 0:
+        raise ValueError(f"expansion_factor must be positive, got {expansion_factor}")
+
+    avg_grain_volume = (L ** 3) / float(grain_count)
+    eq_radius = float((3.0 * avg_grain_volume / (4.0 * np.pi)) ** (1.0 / 3.0))
+    # Keep the baseline tied to average grain volume. Do not upscale by local
+    # seed spacing directly, because sparse outliers can push this close to full-box.
+    base_radius = 1.05 * eq_radius + 2.5 * avg_nn_dist
+
+    radius = min(L / 2.0, base_radius * expansion_factor)
+    cube_size = min(L, max(4.0 * avg_nn_dist, 2.0 * radius))
+    lower = np.clip(seed_position - 0.5 * cube_size, 0.0, L - cube_size)
+    return lower.astype(np.float32), float(cube_size)
+
+
 def _populate_grain_worker(
     grain_data: Dict[str, Any], global_cfg_dict: Dict[str, Any],
     phase_recipe: Dict[str, Any], seed: int,
@@ -1044,40 +1250,98 @@ def _populate_grain_worker(
     L = global_cfg_dict['L']
     avg_nn_dist = global_cfg_dict['avg_nn_dist']
     rho_target = global_cfg_dict['rho_target']
+    grain_count_raw = global_cfg_dict.get('grain_count')
+    if grain_count_raw is None:
+        raise KeyError("global_cfg_dict is missing required key 'grain_count'")
+    grain_count = int(grain_count_raw)
+    if grain_count <= 0:
+        raise ValueError(f"grain_count must be > 0, got {grain_count}")
     
     phase_type = phase_recipe['phase_type']
+    grain_tree = cKDTree(all_grain_seeds) if all_grain_seeds is not None and len(all_grain_seeds) > 1 else None
     
     # Generate candidate positions
     if phase_type.startswith('crystal_') or phase_type == 'amorphous_repeat':
         positions = _generate_structured_cloud(phase_recipe, rotation, seed_position, L, avg_nn_dist)
-    elif phase_type in ('amorphous_random', 'liquid_metal'):
-        liquid_config = phase_recipe.get('liquid_config')
-        config = LiquidStructureConfig(**liquid_config) if liquid_config else LiquidStructureConfig(method='rdf_constrained')
-        min_pair_dist = phase_recipe.get('min_pair_dist')  # From config YAML
-        generator = LiquidMetalGenerator(L, rho_target, avg_nn_dist, config, rng, min_pair_dist=min_pair_dist)
-        positions = generator.generate()
-    elif phase_type == 'amorphous_mixed':
+    elif phase_type in ('amorphous_random', 'liquid_metal', 'amorphous_mixed'):
         liquid_config = phase_recipe.get('liquid_config')
         config = LiquidStructureConfig(**liquid_config) if liquid_config else LiquidStructureConfig(method='simple')
         min_pair_dist = phase_recipe.get('min_pair_dist')  # From config YAML
-        generator = LiquidMetalGenerator(L, rho_target, avg_nn_dist, config, rng, min_pair_dist=min_pair_dist)
-        positions = generator.generate()
-        positions = _inject_crystal_nuclei(
-            amorphous_positions=positions,
-            phase_recipe=phase_recipe,
-            rng=rng,
-            avg_nn_dist=avg_nn_dist,
-            rho_target=rho_target,
-            L=L,
-        )
+        expected_atoms_per_grain = max(1, int(round(rho_target * (L ** 3) / grain_count)))
+        min_filtered_atoms_target = max(1, int(round(0.25 * expected_atoms_per_grain)))
+
+        best_positions_world: Optional[np.ndarray] = None
+        best_filtered_count = -1
+        expansion_factors = (1.0, 1.35, 1.7)
+
+        for expansion_factor in expansion_factors:
+            local_origin, local_box_size = _estimate_local_amorphous_box(
+                seed_position=seed_position,
+                all_grain_seeds=all_grain_seeds,
+                L=L,
+                avg_nn_dist=avg_nn_dist,
+                grain_count=grain_count,
+                expansion_factor=expansion_factor,
+            )
+
+            generator = LiquidMetalGenerator(
+                local_box_size,
+                rho_target,
+                avg_nn_dist,
+                config,
+                rng,
+                min_pair_dist=min_pair_dist,
+            )
+            local_positions = generator.generate()
+
+            if phase_type == 'amorphous_mixed' and len(local_positions) > 0:
+                local_positions = _inject_crystal_nuclei(
+                    amorphous_positions=local_positions,
+                    phase_recipe=phase_recipe,
+                    rng=rng,
+                    avg_nn_dist=avg_nn_dist,
+                    rho_target=rho_target,
+                    L=local_box_size,
+                )
+
+            if len(local_positions) == 0:
+                continue
+
+            positions_world = local_positions + local_origin[None, :]
+            positions_world = np.clip(positions_world, 0.0, L).astype(np.float32)
+
+            if grain_tree is not None:
+                _, nearest_grains_local = grain_tree.query(positions_world)
+                filtered_count = int(np.sum(nearest_grains_local == grain_id))
+            else:
+                filtered_count = len(positions_world)
+
+            if filtered_count > best_filtered_count:
+                best_filtered_count = filtered_count
+                best_positions_world = positions_world
+
+            if filtered_count >= min_filtered_atoms_target:
+                break
+
+        if best_positions_world is None:
+            raise RuntimeError(
+                "Local amorphous generation failed for grain "
+                f"{grain_id} (phase={phase_id}, seed={seed_position.tolist()})"
+            )
+        if best_filtered_count < min_filtered_atoms_target:
+            warnings.warn(
+                "Local amorphous generation produced fewer Voronoi-filtered atoms than target "
+                f"for grain {grain_id}: got {best_filtered_count}, target {min_filtered_atoms_target}. "
+                "Proceeding with best available local sample.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        positions = best_positions_world
     else:
         positions = np.zeros((0, 3), dtype=np.float32)
     
     # CRITICAL: Filter to only atoms within this grain's Voronoi cell
-    if len(positions) > 0 and all_grain_seeds is not None and len(all_grain_seeds) > 1:
-        # Build KD-tree of all grain seeds
-        grain_tree = cKDTree(all_grain_seeds)
-        
+    if len(positions) > 0 and grain_tree is not None:
         # Find nearest grain for each atom position
         _, nearest_grains = grain_tree.query(positions)
         
@@ -1181,14 +1445,7 @@ class SyntheticAtomisticDatasetGenerator:
             min_pair = float(phase_cfg.structural_params.get("min_pair_dist", 0.85 * avg_nn))
             recipe = {"phase_type": phase_type, "min_pair_dist": min_pair}
             if phase_cfg.liquid_config:
-                recipe["liquid_config"] = {
-                    "method": phase_cfg.liquid_config.method,
-                    "rdf_iterations": phase_cfg.liquid_config.rdf_iterations,
-                    "rdf_tolerance": phase_cfg.liquid_config.rdf_tolerance,
-                    "first_peak_height": phase_cfg.liquid_config.first_peak_height,
-                    "target_coordination": phase_cfg.liquid_config.target_coordination,
-                    "icosahedral_fraction": phase_cfg.liquid_config.icosahedral_fraction,
-                }
+                recipe["liquid_config"] = asdict(phase_cfg.liquid_config)
         elif phase_type == "amorphous_mixed":
             recipe = {
                 "phase_type": phase_type,
@@ -1197,6 +1454,8 @@ class SyntheticAtomisticDatasetGenerator:
                 "embedded_probability": float(phase_cfg.structural_params.get("embedded_probability", 0.25)),
                 "embedded_radius": float(phase_cfg.structural_params.get("embedded_radius", 2.0 * avg_nn)),
             }
+            if phase_cfg.liquid_config:
+                recipe["liquid_config"] = asdict(phase_cfg.liquid_config)
         else:
             raise ValueError(f"Unsupported phase type: {phase_type}")
             
@@ -1419,6 +1678,7 @@ class SyntheticAtomisticDatasetGenerator:
         global_cfg_dict = {
             'L': self.global_cfg.L, 'avg_nn_dist': self.global_cfg.avg_nn_dist,
             'rho_target': self.global_cfg.rho_target,
+            'grain_count': self.global_cfg.grain_count,
         }
         worker_seeds = self.rng.integers(0, 2**31, size=len(self.grains))
         
@@ -2149,7 +2409,7 @@ def analyze_structure(positions: np.ndarray, box_size: float, avg_nn_dist: float
 def main() -> None:
     import argparse
     parser = argparse.ArgumentParser(description="Generate synthetic atomistic datasets")
-    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_polycrystalline_balanced_geometries.yaml")
+    parser.add_argument("config", type=str, nargs="?", default="configs/data/data_synth_polycrystalline_balanced_geometries_v2.yaml")
     parser.add_argument("--quiet", "-q", action="store_true")
     parser.add_argument("--skip-viz", action="store_true")
     parser.add_argument("--analyze", action="store_true")
