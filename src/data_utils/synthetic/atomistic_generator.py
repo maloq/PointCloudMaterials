@@ -910,6 +910,12 @@ def load_config(path: str | pathlib.Path) -> Tuple[GlobalConfig, Dict[str, Phase
         cell_size_factor=float(global_raw.get("cell_size_factor", 1.5)),
     )
     global_cfg.t_layer = global_cfg.intermediate_layer_thickness_factor * global_cfg.avg_nn_dist
+    sampling_cfg = _extract_dataset_sampling_config(
+        raw,
+        context=f"generator config {config_path}",
+    )
+    if sampling_cfg is not None:
+        global_cfg.additional["dataset_sampling"] = sampling_cfg
     
     phases_section = raw.get("phases", {})
     phase_configs: Dict[str, PhaseConfig] = {}
@@ -972,6 +978,91 @@ def load_config(path: str | pathlib.Path) -> Tuple[GlobalConfig, Dict[str, Phase
         assignment_cfg = GrainAssignmentConfig(mode="probabilistic", probabilities=dict(probs))
         
     return global_cfg, phase_configs, assignment_cfg
+
+
+def _extract_dataset_sampling_config(
+    raw_config: Dict[str, Any],
+    *,
+    context: str,
+) -> Optional[Dict[str, Any]]:
+    if not isinstance(raw_config, dict):
+        raise TypeError(f"{context}: raw_config must be a dict, got {type(raw_config)!r}.")
+
+    sampling_keys = {
+        "radius",
+        "sample_type",
+        "overlap_fraction",
+        "n_samples",
+        "num_points",
+        "drop_edge_samples",
+        "sampling_method",
+        "model_points",
+    }
+    if not any(key in raw_config for key in sampling_keys):
+        return None
+
+    if "radius" not in raw_config:
+        raise ValueError(f"{context}: missing required sampling key 'radius'.")
+    if "sample_type" not in raw_config:
+        raise ValueError(f"{context}: missing required sampling key 'sample_type'.")
+
+    radius = float(raw_config["radius"])
+    if radius <= 0.0:
+        raise ValueError(f"{context}: radius must be positive, got {radius}.")
+
+    sample_type = str(raw_config["sample_type"]).strip().lower()
+    if sample_type not in {"regular", "random"}:
+        raise ValueError(
+            f"{context}: sample_type must be 'regular' or 'random', got {raw_config['sample_type']!r}."
+        )
+
+    sampling_method = str(raw_config.get("sampling_method", "drop_farthest")).strip().lower()
+    if sampling_method not in {"drop_farthest", "fps"}:
+        raise ValueError(
+            f"{context}: sampling_method must be 'drop_farthest' or 'fps', got {sampling_method!r}."
+        )
+
+    sampling_cfg: Dict[str, Any] = {
+        "radius": radius,
+        "sample_type": sample_type,
+        "sampling_method": sampling_method,
+        "drop_edge_samples": bool(raw_config.get("drop_edge_samples", True)),
+    }
+
+    num_points_raw = raw_config.get("num_points")
+    if num_points_raw is not None:
+        num_points = int(num_points_raw)
+        if num_points <= 0:
+            raise ValueError(f"{context}: num_points must be positive, got {num_points}.")
+        sampling_cfg["num_points"] = num_points
+
+    model_points_raw = raw_config.get("model_points")
+    if model_points_raw is not None:
+        model_points = int(model_points_raw)
+        if model_points <= 0:
+            raise ValueError(f"{context}: model_points must be positive, got {model_points}.")
+        sampling_cfg["model_points"] = model_points
+
+    if sample_type == "regular":
+        if "overlap_fraction" not in raw_config:
+            raise ValueError(
+                f"{context}: regular sampling requires 'overlap_fraction' to reproduce local-structure centers."
+            )
+        overlap_fraction = float(raw_config["overlap_fraction"])
+        if not (0.0 <= overlap_fraction < 1.0):
+            raise ValueError(
+                f"{context}: overlap_fraction must satisfy 0 <= overlap_fraction < 1, got {overlap_fraction}."
+            )
+        sampling_cfg["overlap_fraction"] = overlap_fraction
+    else:
+        n_samples = int(raw_config.get("n_samples", 0))
+        if n_samples <= 0:
+            raise ValueError(
+                f"{context}: random sampling requires n_samples > 0, got {n_samples}."
+            )
+        sampling_cfg["n_samples"] = n_samples
+
+    return sampling_cfg
 
 
 # ---------------------------------------------------------------------------
@@ -2235,22 +2326,34 @@ class SyntheticAtomisticDatasetGenerator:
     def create_visualizations(self) -> None:
         if self.skip_visualization:
             return
+        if self.atoms is None:
+            raise RuntimeError("Cannot create visualizations before atoms have been populated.")
+
+        import sys
+        import os
+
+        sys.path.append(os.getcwd())
         try:
-            import sys, os
-            sys.path.append(os.getcwd())
             from src.data_utils.synthetic.visualization import generate_visualizations
-            output_dir = self.global_cfg.data_path
-            alive_mask = self.atoms['alive'][:self.atom_count]
-            final_atoms = self.atoms[:self.atom_count][alive_mask]
-            atoms_list = [{"final_index": i, "position": a['position'], 
-                          "phase_id": PHASE_NAME_MAP.get(a['phase_id'], f"unknown_{a['phase_id']}"),
-                          "grain_id": int(a['grain_id']), "orientation": a['orientation'].reshape(3,3)}
-                         for i, a in enumerate(final_atoms)]
-            generate_visualizations(self.global_cfg, self.grains, atoms_list, self.metadata, self.rng, output_dir)
-        except ImportError:
-            self._progress("Visualization module not available")
-        except Exception as e:
-            self._progress(f"Visualization failed: {e}")
+        except ImportError as exc:
+            raise ImportError(
+                "Failed to import src.data_utils.synthetic.visualization.generate_visualizations. "
+                "Ensure visualization dependencies are installed and the repository root is on PYTHONPATH."
+            ) from exc
+
+        output_dir = self.global_cfg.data_path
+        alive_mask = self.atoms['alive'][:self.atom_count]
+        final_atoms = self.atoms[:self.atom_count][alive_mask]
+        atoms_list = _build_visualization_atoms_list(final_atoms, PHASE_NAME_MAP)
+        generate_visualizations(
+            self.global_cfg,
+            self.grains,
+            atoms_list,
+            self.metadata,
+            self.rng,
+            output_dir,
+            sampling_cfg=self.global_cfg.additional.get("dataset_sampling"),
+        )
             
     def _compute_nn_diagnostics(self, stage_name: str) -> dict:
         """Compute and log NN distance statistics at a generation stage.
@@ -2348,9 +2451,20 @@ class SyntheticAtomisticDatasetGenerator:
 # ---------------------------------------------------------------------------
 
 def compute_rdf(positions: np.ndarray, box_size: float, r_max: Optional[float] = None, n_bins: int = 100) -> Tuple[np.ndarray, np.ndarray]:
+    positions = np.asarray(positions, dtype=np.float32)
+    if positions.ndim != 2 or positions.shape[1] != 3:
+        raise ValueError(f"positions must have shape (N, 3), got {positions.shape}.")
     n = len(positions)
+    if n < 2:
+        raise ValueError(f"Need at least 2 positions to compute RDF, got {n}.")
+    if box_size <= 0.0:
+        raise ValueError(f"box_size must be positive, got {box_size}.")
+    if n_bins < 2:
+        raise ValueError(f"n_bins must be >= 2, got {n_bins}.")
     if r_max is None:
         r_max = box_size / 2
+    if r_max <= 0.0:
+        raise ValueError(f"r_max must be positive, got {r_max}.")
     cell_list = CellList(box_size, r_max / 5)
     cell_list.build(positions)
     
@@ -2378,10 +2492,26 @@ def compute_rdf(positions: np.ndarray, box_size: float, r_max: Optional[float] =
 
 
 def analyze_structure(positions: np.ndarray, box_size: float, avg_nn_dist: float) -> Dict[str, Any]:
+    positions = np.asarray(positions, dtype=np.float32)
+    if positions.ndim != 2 or positions.shape[1] != 3:
+        raise ValueError(f"positions must have shape (N, 3), got {positions.shape}.")
+    if len(positions) < 2:
+        raise ValueError(f"Need at least 2 positions to analyze structure, got {len(positions)}.")
+    if box_size <= 0.0:
+        raise ValueError(f"box_size must be positive, got {box_size}.")
+    if avg_nn_dist <= 0.0:
+        raise ValueError(f"avg_nn_dist must be positive, got {avg_nn_dist}.")
+
     r, gr = compute_rdf(positions, box_size)
-    peak_idx = np.argmax(gr[r > 0.5 * avg_nn_dist])
-    first_peak_r = r[r > 0.5 * avg_nn_dist][peak_idx]
-    first_peak_g = gr[r > 0.5 * avg_nn_dist][peak_idx]
+    peak_mask = r > 0.5 * avg_nn_dist
+    if not np.any(peak_mask):
+        raise RuntimeError(
+            "RDF peak detection window is empty. "
+            f"avg_nn_dist={avg_nn_dist}, min_r={float(np.min(r))}, max_r={float(np.max(r))}."
+        )
+    peak_idx = np.argmax(gr[peak_mask])
+    first_peak_r = r[peak_mask][peak_idx]
+    first_peak_g = gr[peak_mask][peak_idx]
     
     cutoff = 1.4 * avg_nn_dist
     cell_list = CellList(box_size, cutoff * 1.5)
@@ -2402,6 +2532,257 @@ def analyze_structure(positions: np.ndarray, box_size: float, avg_nn_dist: float
     }
 
 
+def _build_visualization_atoms_list(
+    structured_atoms: np.ndarray,
+    phase_name_map: Dict[int, str],
+) -> List[Dict[str, Any]]:
+    required_fields = {"position", "phase_id", "grain_id", "orientation"}
+    dtype_names = set(structured_atoms.dtype.names or ())
+    missing_fields = sorted(required_fields - dtype_names)
+    if missing_fields:
+        raise ValueError(
+            "structured_atoms is missing required fields for visualization: "
+            f"{missing_fields}. dtype_names={sorted(dtype_names)}."
+        )
+
+    atoms_list: List[Dict[str, Any]] = []
+    for idx, atom in enumerate(structured_atoms):
+        phase_int = int(atom["phase_id"])
+        if phase_int not in phase_name_map:
+            raise KeyError(
+                f"Missing phase name for phase_id={phase_int} while building visualization atoms list."
+            )
+        orientation = np.asarray(atom["orientation"], dtype=np.float32)
+        if orientation.size != 9:
+            raise ValueError(
+                "Atom orientation must contain 9 elements to reshape into a 3x3 matrix, "
+                f"got size={orientation.size} for atom index {idx}."
+            )
+        atoms_list.append(
+            {
+                "final_index": int(idx),
+                "position": np.asarray(atom["position"], dtype=np.float32),
+                "phase_id": str(phase_name_map[phase_int]),
+                "grain_id": int(atom["grain_id"]),
+                "orientation": orientation.reshape(3, 3),
+            }
+        )
+    return atoms_list
+
+
+def _load_metadata_json(metadata_path: pathlib.Path) -> Dict[str, Any]:
+    if not metadata_path.exists():
+        raise FileNotFoundError(f"Missing metadata file: {metadata_path}.")
+    with metadata_path.open("r") as f:
+        metadata = json.load(f)
+    if not isinstance(metadata, dict):
+        raise ValueError(
+            f"metadata.json must decode to a dict, got {type(metadata)!r} from {metadata_path}."
+        )
+    return metadata
+
+
+def _load_phase_name_map(output_dir: pathlib.Path) -> Dict[int, str]:
+    phase_mapping_path = output_dir / "phase_mapping.json"
+    if not phase_mapping_path.exists():
+        raise FileNotFoundError(
+            f"Missing phase mapping file required for rerun analysis: {phase_mapping_path}."
+        )
+    with phase_mapping_path.open("r") as f:
+        phase_mapping = json.load(f)
+    if not isinstance(phase_mapping, dict):
+        raise ValueError(
+            f"phase_mapping.json must decode to a dict, got {type(phase_mapping)!r}."
+        )
+    id_to_name_raw = phase_mapping.get("id_to_name")
+    if not isinstance(id_to_name_raw, dict) or not id_to_name_raw:
+        raise ValueError(
+            "phase_mapping.json must contain a non-empty 'id_to_name' mapping, "
+            f"got keys={sorted(phase_mapping.keys())}."
+        )
+    return {int(k): str(v) for k, v in id_to_name_raw.items()}
+
+
+def _build_global_cfg_from_metadata(
+    metadata: Dict[str, Any],
+    output_dir: pathlib.Path,
+) -> GlobalConfig:
+    global_meta = metadata.get("global")
+    if not isinstance(global_meta, dict):
+        raise ValueError(
+            "metadata.json must contain a 'global' object to rerun analysis."
+        )
+
+    required_keys = {"box_size", "rho_target", "avg_nn_dist", "grain_count"}
+    missing_keys = sorted(key for key in required_keys if key not in global_meta)
+    if missing_keys:
+        raise ValueError(
+            "metadata.json global section is missing required keys: "
+            f"{missing_keys}. Available keys={sorted(global_meta.keys())}."
+        )
+
+    global_cfg = GlobalConfig(
+        L=float(global_meta["box_size"]),
+        rho_target=float(global_meta["rho_target"]),
+        avg_nn_dist=float(global_meta["avg_nn_dist"]),
+        grain_count=int(global_meta["grain_count"]),
+        intermediate_layer_thickness_factor=0.0,
+        random_seed=int(global_meta.get("random_seed", 0)),
+        data_path=output_dir,
+    )
+    global_cfg.t_layer = float(global_meta.get("t_layer", 0.0))
+    return global_cfg
+
+
+def _build_grains_from_metadata(metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
+    grain_records = metadata.get("grains")
+    if not isinstance(grain_records, list):
+        raise ValueError(
+            "metadata.json must contain a 'grains' list to rerun visual analysis."
+        )
+
+    grains: List[Dict[str, Any]] = []
+    for idx, record in enumerate(grain_records):
+        if not isinstance(record, dict):
+            raise ValueError(
+                f"metadata['grains'][{idx}] must be a dict, got {type(record)!r}."
+            )
+        orientation = np.asarray(record.get("orientation_matrix"), dtype=np.float32)
+        if orientation.shape != (3, 3):
+            raise ValueError(
+                "Each grain orientation_matrix must have shape (3, 3), "
+                f"got {orientation.shape} for grain record index {idx}."
+            )
+        seed_position = np.asarray(record.get("seed_position"), dtype=np.float32)
+        if seed_position.shape != (3,):
+            raise ValueError(
+                "Each grain seed_position must have shape (3,), "
+                f"got {seed_position.shape} for grain record index {idx}."
+            )
+        grains.append(
+            {
+                "grain_id": int(record["grain_id"]),
+                "base_phase_id": str(record.get("base_phase_id", "unknown")),
+                "seed_position": seed_position,
+                "base_rotation": orientation,
+            }
+        )
+    return grains
+
+
+def _print_structure_analysis(stats: Dict[str, Any]) -> None:
+    print(f"\n{'='*60}\nStructure Analysis\n{'='*60}")
+    print(f"  Atoms: {stats['n_atoms']}")
+    print(f"  Density: {stats['density']:.4f}")
+    print(f"  First RDF peak: r={stats['first_peak_position']:.3f}, g={stats['first_peak_height']:.2f}")
+    print(f"  Mean coordination: {stats['mean_coordination']:.1f} ± {stats['std_coordination']:.1f}")
+
+
+def rerun_existing_dataset_analysis(
+    config_path: Optional[str],
+    *,
+    data_dir: Optional[str],
+    progress: bool,
+    skip_visualization: bool,
+    analyze: bool,
+    viz_target: Optional[str],
+) -> None:
+    if skip_visualization and not analyze:
+        raise ValueError(
+            "--rerun-analysis with --skip-viz requires --analyze; otherwise no analysis steps remain."
+        )
+    if viz_target is not None and skip_visualization:
+        raise ValueError(
+            "--viz-target cannot be used together with --skip-viz because visualization output is disabled."
+        )
+
+    config_global_cfg: Optional[GlobalConfig] = None
+    sampling_cfg: Optional[Dict[str, Any]] = None
+    if config_path is not None:
+        config_global_cfg, _, _ = load_config(config_path)
+        sampling_cfg = config_global_cfg.additional.get("dataset_sampling")
+
+    if data_dir is None:
+        if config_global_cfg is None:
+            raise ValueError(
+                "rerun_existing_dataset_analysis requires either data_dir or config_path to resolve the dataset location."
+            )
+        output_dir = config_global_cfg.data_path
+    else:
+        output_dir = pathlib.Path(data_dir)
+
+    output_dir = pathlib.Path(output_dir)
+    if not output_dir.exists():
+        raise FileNotFoundError(
+            f"Cannot rerun analysis because the dataset output directory does not exist: {output_dir}."
+        )
+
+    if viz_target == "global_diagonal_cut_paper":
+        if sampling_cfg is None:
+            raise ValueError(
+                "global_diagonal_cut_paper requires dataset sampling parameters from the data config "
+                "(radius, sample_type, overlap_fraction, drop_edge_samples). Pass the matching config path."
+            )
+        if config_global_cfg is not None:
+            config_output_dir = pathlib.Path(config_global_cfg.data_path).resolve()
+            if config_output_dir != output_dir.resolve():
+                raise ValueError(
+                    "global_diagonal_cut_paper reproduces sampled local-structure centers from the provided config, "
+                    f"but config output_dir={config_output_dir} does not match data_dir={output_dir.resolve()}. "
+                    "Pass the matching dataset config."
+                )
+
+    def _progress(msg: str) -> None:
+        if progress:
+            print(msg)
+
+    _progress(f"Loading existing dataset from {output_dir}")
+
+    metadata = _load_metadata_json(output_dir / "metadata.json")
+    phase_name_map = _load_phase_name_map(output_dir)
+    global_cfg = _build_global_cfg_from_metadata(metadata, output_dir)
+    grains = _build_grains_from_metadata(metadata)
+
+    atoms_full_path = output_dir / "atoms_full.npy"
+    if not atoms_full_path.exists():
+        raise FileNotFoundError(
+            f"Missing atoms_full.npy required for rerun analysis: {atoms_full_path}."
+        )
+    atoms_full = np.load(atoms_full_path, allow_pickle=False)
+    atoms_list = _build_visualization_atoms_list(atoms_full, phase_name_map)
+
+    if not skip_visualization:
+        _progress("Re-running visualizations")
+        import sys
+        import os
+
+        sys.path.append(os.getcwd())
+        try:
+            from src.data_utils.synthetic.visualization import generate_visualizations
+        except ImportError as exc:
+            raise ImportError(
+                "Failed to import src.data_utils.synthetic.visualization.generate_visualizations. "
+                "Ensure visualization dependencies are installed and the repository root is on PYTHONPATH."
+            ) from exc
+        rng = np.random.default_rng(global_cfg.random_seed)
+        generate_visualizations(
+            global_cfg,
+            grains,
+            atoms_list,
+            metadata,
+            rng,
+            output_dir,
+            viz_target=viz_target,
+            sampling_cfg=sampling_cfg,
+        )
+
+    if analyze:
+        _progress("Re-running structure analysis")
+        positions = np.asarray(atoms_full["position"], dtype=np.float32)
+        stats = analyze_structure(positions, global_cfg.L, global_cfg.avg_nn_dist)
+        _print_structure_analysis(stats)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -2413,9 +2794,47 @@ def main() -> None:
     parser.add_argument("--quiet", "-q", action="store_true")
     parser.add_argument("--skip-viz", action="store_true")
     parser.add_argument("--analyze", action="store_true")
+    parser.add_argument(
+        "--rerun-analysis",
+        action="store_true",
+        help="Rerun visualization and/or structure analysis for an existing dataset without regenerating atoms.",
+    )
+    parser.add_argument(
+        "--data-dir",
+        type=str,
+        default=None,
+        help="Existing dataset output directory used with --rerun-analysis. Defaults to the output_dir from the config.",
+    )
+    parser.add_argument(
+        "--viz-target",
+        type=str,
+        choices=["closeup_paper", "global_diagonal_cut_paper", "local_base", "local_base_paper"],
+        default=None,
+        help=(
+            "Visualization target to rebuild during --rerun-analysis. "
+            "Currently supported: closeup_paper, global_diagonal_cut_paper, "
+            "local_base, local_base_paper."
+        ),
+    )
     parser.add_argument("--workers", "-w", type=int, default=16)
     args = parser.parse_args()
-    
+
+    if args.viz_target is not None and not args.rerun_analysis:
+        raise ValueError(
+            "--viz-target is currently only supported together with --rerun-analysis."
+        )
+
+    if args.rerun_analysis:
+        rerun_existing_dataset_analysis(
+            args.config,
+            data_dir=args.data_dir,
+            progress=not args.quiet,
+            skip_visualization=args.skip_viz,
+            analyze=args.analyze,
+            viz_target=args.viz_target,
+        )
+        return
+
     generator = SyntheticAtomisticDatasetGenerator(args.config, progress=not args.quiet, skip_visualization=args.skip_viz)
     if args.workers is not None:
         generator.global_cfg.parallel.n_workers = args.workers
@@ -2424,11 +2843,7 @@ def main() -> None:
     if args.analyze:
         positions = np.load(generator.global_cfg.data_path / "atoms.npy")
         stats = analyze_structure(positions, generator.global_cfg.L, generator.global_cfg.avg_nn_dist)
-        print(f"\n{'='*60}\nStructure Analysis\n{'='*60}")
-        print(f"  Atoms: {stats['n_atoms']}")
-        print(f"  Density: {stats['density']:.4f}")
-        print(f"  First RDF peak: r={stats['first_peak_position']:.3f}, g={stats['first_peak_height']:.2f}")
-        print(f"  Mean coordination: {stats['mean_coordination']:.1f} ± {stats['std_coordination']:.1f}")
+        _print_structure_analysis(stats)
 
 
 if __name__ == "__main__":

@@ -99,6 +99,18 @@ class RealPointCloudDataModule(pl.LightningDataModule):
 
         data_sources_raw = getattr(data_cfg, "data_sources", None)
         data_files_raw = getattr(data_cfg, "data_files", None)
+        auto_cutoff_cfg = _to_container(getattr(data_cfg, "auto_cutoff", None))
+        dataset_common_kwargs = dict(
+            radius=data_cfg.radius,
+            sample_type=getattr(data_cfg, "sample_type", "regular"),
+            overlap_fraction=getattr(data_cfg, "overlap_fraction", 0.0),
+            n_samples=getattr(data_cfg, "n_samples", 1000),
+            num_points=getattr(data_cfg, "num_points", 100),
+            pre_normalize=bool(getattr(data_cfg, "pre_normalize", True)),
+            normalize=bool(getattr(data_cfg, "normalize", True)),
+            sampling_method=getattr(data_cfg, "sampling_method", "drop_farthest"),
+            auto_cutoff_config=auto_cutoff_cfg,
+        )
 
         if data_sources_raw is not None:
             data_sources = _to_container(data_sources_raw)
@@ -106,11 +118,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
                 raise ValueError("data_sources must be a non-empty list of {data_path, data_files} dicts")
             full_dataset = PointCloudDataset(
                 data_sources=data_sources,
-                radius=data_cfg.radius,
-                sample_type=data_cfg.sample_type,
-                overlap_fraction=data_cfg.overlap_fraction,
-                n_samples=data_cfg.n_samples,
-                num_points=data_cfg.num_points,
+                **dataset_common_kwargs,
             )
         elif data_files_raw is not None:
             file_list = _to_container(data_files_raw)
@@ -122,11 +130,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             full_dataset = PointCloudDataset(
                 root=data_path,
                 data_files=file_list,
-                radius=data_cfg.radius,
-                sample_type=data_cfg.sample_type,
-                overlap_fraction=data_cfg.overlap_fraction,
-                n_samples=data_cfg.n_samples,
-                num_points=data_cfg.num_points,
+                **dataset_common_kwargs,
             )
         else:
             raise ValueError(
@@ -241,9 +245,10 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         model_type = str(getattr(self.cfg, "model_type", "")).lower()
         disable_dataset_aug_for_ssl = bool(getattr(self.cfg, "disable_dataset_augmentation_for_ssl", True))
         uses_ssl_views = (
-            model_type in {"barlow_twins", "vicreg", "pointcontrast"}
+            model_type in {"barlow_twins", "vicreg", "wmse", "pointcontrast"}
             or bool(getattr(self.cfg, "barlow_enabled", False))
             or bool(getattr(self.cfg, "vicreg_enabled", False))
+            or bool(getattr(self.cfg, "wmse_enabled", False))
             or bool(getattr(self.cfg, "pointcontrast_enabled", False))
         )
         if uses_ssl_views and disable_dataset_aug_for_ssl:

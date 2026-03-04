@@ -1,0 +1,74 @@
+# Point-count sweep for VICReg on the polycrystalline molecular config.
+#
+# Uses the existing `vicreg_vn_molecular.yaml` training config and varies the
+# actual point count seen by the model. We override both `data.num_points` and
+# `data.model_points` together so the encoder input matches the requested point
+# count and smaller runs remain valid (`model_points` must not exceed
+# `data.num_points`).
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_num_points.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_num_points.yaml --local
+
+name: vicreg_vn_molecular_num_points
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_vn_molecular.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 120G
+  time: "24:00:00"
+
+base_overrides:
+  - "devices=[0]"
+  - "load_supervised_checkpoint=false"
+  - "++run_post_training_analysis=false"
+  - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
+  - "++checkpoint_mode=max"
+
+experiments:
+  - name: points_024
+    overrides:
+      - "data.num_points=24"
+      - "data.model_points=24"
+
+  - name: points_040
+    overrides:
+      - "data.num_points=40"
+      - "data.model_points=40"
+
+  - name: points_080
+    overrides:
+      - "data.num_points=80"
+      - "data.model_points=80"
+
+  - name: points_120
+    overrides:
+      - "data.num_points=120"
+      - "data.model_points=120"
+
+  - name: points_160
+    overrides:
+      - "data.num_points=160"
+      - "data.model_points=160"
+
+metrics:
+  final:
+    - test/loss
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: val/loss
+      mode: min
+
+output_root: output/experiments

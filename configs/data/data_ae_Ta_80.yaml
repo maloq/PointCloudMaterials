@@ -1,0 +1,16 @@
+# Autoencoder
+kind: real
+radius: 7.2
+sample_type: 'regular'
+n_samples: 8000000
+num_points: 128
+model_points: 80
+overlap_fraction: 0.3
+dr: 0.01 # to calculate rdf
+data_path: 'datasets/Ta/inherent_configurations'
+data_files:
+  - '2.7ns.npy'
+  - '2.8ns.npy'
+  - '2.9ns.npy'
+  - '3.0ns.npy'
+  - '3.60ns.npy'

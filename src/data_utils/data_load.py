@@ -274,7 +274,8 @@ class PointCloudDataset(Dataset):
                  num_points=100,
                  pre_normalize=True,
                  normalize=True,
-                 sampling_method="drop_farthest"):
+                 sampling_method="drop_farthest",
+                 auto_cutoff_config: dict[str, Any] | None = None):
         """Initialize the dataset with samples from point cloud files.
 
         Supports two configuration modes:
@@ -294,70 +295,229 @@ class PointCloudDataset(Dataset):
         self.pre_normalize = pre_normalize
         self.normalize = normalize
         self.return_coords = return_coords
-        self.radius = radius
+        self.sample_type = sample_type
+        self.sampling_method = sampling_method
+        self.radius = float(radius)
+        self.num_points = int(num_points)
+
+        auto_cfg = self._resolve_auto_cutoff_config(
+            auto_cutoff_config,
+            default_target_points=self.num_points,
+            default_radius=self.radius,
+        )
 
         sources = self._resolve_sources(root, data_files, data_sources)
-
+        self.source_radii: dict[str, float] = {}
+        self.sample_source_names: list[str] = []
+        all_sample_radii: list[float] = []
         all_samples: list = []
-        for src_root, src_files in sources:
+
+        for source in sources:
+            src_name = source["name"]
+            src_root = source["root"]
+            src_files = source["files"]
+
+            src_radius = self._resolve_source_cutoff_radius(
+                source=source,
+                default_radius=self.radius,
+                auto_cutoff_config=auto_cfg,
+                num_points=self.num_points,
+            )
+            self.source_radii[src_name] = src_radius
+
             samples = read_and_sample_files(
-                src_root, src_files, radius, num_points,
+                src_root, src_files, src_radius, self.num_points,
                 overlap_fraction, sample_type, n_samples,
                 return_coords, sampling_method,
             )
             all_samples.extend(samples)
+            all_sample_radii.extend([src_radius] * len(samples))
+            self.sample_source_names.extend([src_name] * len(samples))
 
         if not all_samples:
             raise ValueError("No samples generated from any data source")
 
         self.samples = all_samples
+        self.sample_radii = all_sample_radii
 
         if self.return_coords:
             self.samples, self.coords = zip(*self.samples)
             self.samples = list(self.samples)
+            self.coords = list(self.coords)
         else:
             self.coords = None
 
-        if pre_normalize and normalize:
-            self.samples = [pc_normalize(s, self.radius).astype(np.float32) for s in self.samples]
-        elif not normalize:
+        if self.pre_normalize and self.normalize:
+            self.samples = [
+                pc_normalize(sample, sample_radius).astype(np.float32)
+                for sample, sample_radius in zip(self.samples, self.sample_radii)
+            ]
+        elif not self.normalize:
             print("Point Cloud normalization skipped")
         logger.info(f"Point set shape: {self.samples[0].shape}")
+        if len(self.source_radii) > 1:
+            formatted = ", ".join(
+                f"{name}: {radius_val:.4f}"
+                for name, radius_val in sorted(self.source_radii.items(), key=lambda kv: kv[0])
+            )
+            logger.print(f"Per-source cutoff radii: {formatted}")
 
     @staticmethod
     def _resolve_sources(
         root: str,
         data_files: list[str] | None,
         data_sources: list[dict] | None,
-    ) -> list[tuple[str, list[str]]]:
-        """Return list of (root_path, file_list) tuples."""
+    ) -> list[dict[str, Any]]:
+        """Return list of source descriptors."""
         if data_sources:
             sources = []
-            for src in data_sources:
-                if not isinstance(src, dict):
-                    raise TypeError(f"Each data_source entry must be a dict, got {type(src)}")
-                src_path = src.get("data_path")
-                src_files = src.get("data_files")
-                if not src_path or not src_files:
-                    raise ValueError(
-                        "Each data_source must have 'data_path' and 'data_files'. "
-                        f"Got keys: {list(src.keys())}"
-                    )
+            for source_index, src in enumerate(data_sources):
+                src_path = src["data_path"]
+                src_files = src["data_files"]
                 if isinstance(src_files, str):
                     src_files = [src_files]
-                sources.append((str(src_path), list(src_files)))
-            if not sources:
-                raise ValueError("data_sources list is empty")
+                source_name_raw = src.get("name", None)
+                source_name = (
+                    str(source_name_raw)
+                    if source_name_raw is not None
+                    else (Path(str(src_path)).name or f"source_{source_index}")
+                )
+                sources.append(
+                    {
+                        "index": int(source_index),
+                        "name": source_name,
+                        "root": str(src_path),
+                        "files": list(src_files),
+                        "radius_override": src.get("radius", None),
+                    }
+                )
             return sources
 
-        if not data_files:
-            raise ValueError(
-                "Must provide either 'data_sources' (multi-source) "
-                "or 'root' + 'data_files' (single-source)"
-            )
         if isinstance(data_files, str):
             data_files = [data_files]
-        return [(root, list(data_files))]
+        if not data_files:
+            data_files = []
+        source_name = Path(str(root)).name if str(root) else "single_source"
+        return [
+            {
+                "index": 0,
+                "name": source_name or "single_source",
+                "root": str(root),
+                "files": list(data_files),
+                "radius_override": None,
+            }
+        ]
+
+    @staticmethod
+    def _resolve_auto_cutoff_config(
+        auto_cutoff_config: dict[str, Any] | None,
+        *,
+        default_target_points: int,
+        default_radius: float,
+    ) -> dict[str, Any] | None:
+        if not auto_cutoff_config or not auto_cutoff_config.get("enabled", False):
+            return None
+        return {
+            "target_points": int(auto_cutoff_config.get("target_points", default_target_points)),
+            "quantile": float(auto_cutoff_config.get("quantile", 1.0)),
+            "estimation_samples_per_file": int(auto_cutoff_config.get("estimation_samples_per_file", 4096)),
+            "seed": int(auto_cutoff_config.get("seed", 0)),
+            "safety_factor": float(auto_cutoff_config.get("safety_factor", 1.0)),
+            "boundary_margin": auto_cutoff_config.get("boundary_margin", default_radius),
+        }
+
+    def _resolve_source_cutoff_radius(
+        self,
+        *,
+        source: dict[str, Any],
+        default_radius: float,
+        auto_cutoff_config: dict[str, Any] | None,
+        num_points: int,
+    ) -> float:
+        source_name = str(source["name"])
+        source_root = str(source["root"])
+        source_files = source["files"]
+        radius_override = source.get("radius_override", None)
+
+        if radius_override is not None:
+            return float(radius_override)
+
+        if auto_cutoff_config is None:
+            return float(default_radius)
+
+        target_points = max(int(auto_cutoff_config["target_points"]), int(num_points))
+
+        seed = int(auto_cutoff_config["seed"]) + int(source["index"])
+        estimated_radius, coverage = self._estimate_source_cutoff_radius(
+            source_root=source_root,
+            source_files=source_files,
+            target_points=target_points,
+            quantile=float(auto_cutoff_config["quantile"]),
+            estimation_samples_per_file=int(auto_cutoff_config["estimation_samples_per_file"]),
+            seed=seed,
+            safety_factor=float(auto_cutoff_config["safety_factor"]),
+            boundary_margin=auto_cutoff_config["boundary_margin"],
+        )
+        logger.print(
+            "[auto_cutoff] "
+            f"source={source_name!r}, target_points={target_points}, "
+            f"quantile={float(auto_cutoff_config['quantile']):.4f}, "
+            f"coverage~{coverage * 100.0:.2f}%, "
+            f"radius={estimated_radius:.4f} (default={default_radius:.4f})."
+        )
+        return estimated_radius
+
+    @staticmethod
+    def _estimate_source_cutoff_radius(
+        *,
+        source_root: str,
+        source_files: list[str],
+        target_points: int,
+        quantile: float,
+        estimation_samples_per_file: int,
+        seed: int,
+        safety_factor: float,
+        boundary_margin: float | None,
+    ) -> tuple[float, float]:
+        rng = np.random.default_rng(seed)
+        kth_distances_all: list[np.ndarray] = []
+
+        for file_name in source_files:
+            filepath = os.path.join(source_root, file_name)
+            points = _load_points(filepath)
+            num_atoms = len(points)
+            candidate_indices = np.arange(num_atoms, dtype=np.int64)
+            if boundary_margin is not None and boundary_margin > 0.0:
+                boundary_margin = float(boundary_margin)
+                min_coords = points.min(axis=0)
+                max_coords = points.max(axis=0)
+                interior_mask = np.all(
+                    (points >= (min_coords + boundary_margin))
+                    & (points <= (max_coords - boundary_margin)),
+                    axis=1,
+                )
+                interior_indices = np.flatnonzero(interior_mask)
+                if interior_indices.size > 0:
+                    candidate_indices = interior_indices.astype(np.int64, copy=False)
+
+            centers_to_sample = min(estimation_samples_per_file, int(candidate_indices.size))
+            center_indices = rng.choice(candidate_indices, size=centers_to_sample, replace=False)
+
+            tree = cKDTree(points)
+            k = min(int(target_points), num_atoms)
+            dists, _ = tree.query(points[center_indices], k=k)
+            dists = np.asarray(dists, dtype=np.float64)
+            if k == 1:
+                kth_dist = dists.reshape(-1)
+            else:
+                kth_dist = dists[:, k - 1]
+            kth_distances_all.append(kth_dist)
+
+        kth_all = np.concatenate(kth_distances_all).astype(np.float64, copy=False)
+        estimated_radius = float(np.quantile(kth_all, quantile)) * float(safety_factor)
+
+        coverage = float(np.mean(kth_all <= estimated_radius))
+        return estimated_radius, coverage
 
     def __len__(self):
         return len(self.samples)
@@ -365,7 +525,7 @@ class PointCloudDataset(Dataset):
     def __getitem__(self, index):
         point_set = self.samples[index]
         if not self.pre_normalize and self.normalize:
-            point_set = pc_normalize(point_set, self.radius).astype(np.float32)
+            point_set = pc_normalize(point_set, float(self.sample_radii[index])).astype(np.float32)
         point_set_tensor = torch.tensor(point_set, dtype=torch.float32)
         
         if self.return_coords:

@@ -3,6 +3,7 @@ log
 lightning_logs
 checkpoints
 output
+outputs
 spd_modelnet_experiments
 wandb
 .claude
@@ -123,3 +124,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 plot_analysis
+.nfs000000000193b0b2000003a8

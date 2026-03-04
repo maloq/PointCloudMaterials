@@ -34,6 +34,7 @@ class BarlowTwinsLoss(nn.Module):
         occlusion_view: str,
         occlusion_slab_frac: float,
         occlusion_cone_deg: float,
+        occlusion_prob: float,
         input_dim,
         invariant_mode: str = "norms",
         invariant_max_factor: float = 4.0,
@@ -66,6 +67,11 @@ class BarlowTwinsLoss(nn.Module):
         self.occlusion_view = str(occlusion_view).lower()
         self.occlusion_slab_frac = float(occlusion_slab_frac)
         self.occlusion_cone_deg = float(occlusion_cone_deg)
+        self.occlusion_prob = float(occlusion_prob)
+        if not (0.0 <= self.occlusion_prob <= 1.0):
+            raise ValueError(
+                f"barlow_occlusion_prob must be in [0, 1], got {self.occlusion_prob}"
+            )
 
         self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
@@ -141,6 +147,7 @@ class BarlowTwinsLoss(nn.Module):
             occlusion_view=str(getattr(cfg, "barlow_occlusion_view", "second")),
             occlusion_slab_frac=float(getattr(cfg, "barlow_occlusion_slab_frac", 0.4)),
             occlusion_cone_deg=float(getattr(cfg, "barlow_occlusion_cone_deg", 20.0)),
+            occlusion_prob=float(getattr(cfg, "barlow_occlusion_prob", 1.0)),
             input_dim=input_dim,
             invariant_mode=invariant_mode,
             invariant_max_factor=float(getattr(cfg, "barlow_invariant_max_factor", 4.0)),
@@ -206,10 +213,21 @@ class BarlowTwinsLoss(nn.Module):
 
     def sample_view_pair(self, pc: torch.Tensor) -> dict[str, torch.Tensor]:
         use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
-        y_a, meta_a = self._augment(pc, use_neighbor=use_neighbor_a, return_metadata=True)
+        apply_occlusion_a, apply_occlusion_b = self._resolve_pair_occlusion_flags(
+            use_neighbor_a=use_neighbor_a,
+            use_neighbor_b=use_neighbor_b,
+            device=pc.device,
+        )
+        y_a, meta_a = self._augment(
+            pc,
+            use_neighbor=use_neighbor_a,
+            apply_occlusion=apply_occlusion_a,
+            return_metadata=True,
+        )
         y_b, meta_b = self._augment(
             pc,
             use_neighbor=use_neighbor_b,
+            apply_occlusion=apply_occlusion_b,
             return_metadata=True,
         )
         return {
@@ -245,6 +263,7 @@ class BarlowTwinsLoss(nn.Module):
         pc: torch.Tensor,
         *,
         use_neighbor: bool,
+        apply_occlusion: bool,
         return_metadata: bool = False,
     ) -> torch.Tensor | tuple[torch.Tensor, dict[str, torch.Tensor]]:
         x = pc
@@ -263,7 +282,7 @@ class BarlowTwinsLoss(nn.Module):
         else:
             x = self._apply_rotation(x)
         x = self._apply_strain(x)
-        if self._should_occlude(use_neighbor):
+        if apply_occlusion:
             mode = self._resolve_occlusion_mode(device=x.device)
             if mode == "slab":
                 x = self._occlude_slab(x)
@@ -323,6 +342,26 @@ class BarlowTwinsLoss(nn.Module):
         if self.occlusion_view == "first":
             return not use_neighbor
         return use_neighbor
+
+    def _sample_pair_occlusion(self, *, device) -> bool:
+        if self.occlusion_mode == "none":
+            return False
+        if self.occlusion_prob <= 0.0:
+            return False
+        if self.occlusion_prob >= 1.0:
+            return True
+        return bool((torch.rand((), device=device) < self.occlusion_prob).item())
+
+    def _resolve_pair_occlusion_flags(
+        self,
+        *,
+        use_neighbor_a: bool,
+        use_neighbor_b: bool,
+        device,
+    ) -> tuple[bool, bool]:
+        if not self._sample_pair_occlusion(device=device):
+            return False, False
+        return self._should_occlude(use_neighbor_a), self._should_occlude(use_neighbor_b)
 
     def _resolve_occlusion_mode(self, *, device) -> str:
         if self.occlusion_mode != "mixed":

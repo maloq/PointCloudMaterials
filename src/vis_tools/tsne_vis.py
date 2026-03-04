@@ -75,10 +75,12 @@ def save_tsne_plot(
     show: bool = False,
     legend_title: str = "cluster",
     class_names: Dict[Any, str] | None = None,
+    cluster_color_map: Dict[int, str] | None = None,
 ) -> None:
     """Save a t-SNE scatter plot, colored by labels, to *out_file*.
 
     Label ``-1`` (e.g., HDBSCAN noise) is colored light gray.
+    If *cluster_color_map* is provided, use those colors instead of tab10.
     """
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
@@ -101,14 +103,16 @@ def save_tsne_plot(
     for lbl in sorted(unique_labels, key=lambda x: (is_noise_label(x), str(x))):
         if is_noise_label(lbl):
             label_to_color[lbl] = "lightgray"
+        elif cluster_color_map is not None and int(lbl) in cluster_color_map:
+            label_to_color[lbl] = cluster_color_map[int(lbl)]
         else:
             label_to_color[lbl] = tab10_colors[color_index % len(tab10_colors)]
             color_index += 1
 
-    plt.figure(figsize=(7, 6), dpi=150)
+    fig, ax = plt.subplots(figsize=(8, 7), dpi=200)
     for lbl in unique_labels:
         mask = labels == lbl
-        
+
         # Determine label text
         if class_names is not None and lbl in class_names:
              label_text = class_names[lbl]
@@ -116,26 +120,39 @@ def save_tsne_plot(
              label_text = class_names[int(lbl)]
         else:
              label_text = str(lbl)
-             
-        plt.scatter(
+
+        ax.scatter(
             tsne_coords[mask, 0],
             tsne_coords[mask, 1],
-            s=6,
-            alpha=0.8,
+            s=18,
+            alpha=0.85,
             c=[label_to_color[lbl]],
             label=label_text,
             linewidths=0,
+            rasterized=True,
         )
 
-    plt.title(title)
-    plt.xticks([])
-    plt.yticks([])
+    ax.set_title(title, fontsize=14, fontweight="bold", pad=10)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
     # Only show legend if number of labels is manageable
     if len(unique_labels) <= 20:
-        plt.legend(title=legend_title, markerscale=2, fontsize=8, loc="best", frameon=False)
-    plt.tight_layout()
-    plt.savefig(out_file, bbox_inches="tight")
+        legend = ax.legend(
+            title=legend_title,
+            markerscale=3,
+            fontsize=11,
+            title_fontsize=12,
+            loc="best",
+            frameon=True,
+            fancybox=True,
+            framealpha=0.85,
+            edgecolor="0.8",
+        )
+    fig.tight_layout()
+    fig.savefig(out_file, bbox_inches="tight")
     if show:
         plt.show()
     else:
-        plt.close()
+        plt.close(fig)

@@ -1,0 +1,46 @@
+# Classical local-structure descriptor baselines on the balanced polycrystalline
+# synthetic dataset. Each run computes the same class/* clustering metrics used
+# by contrastive evaluation, excluding the SVM-only metrics.
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/descriptor_baselines_polycrystalline.yaml --local
+
+name: descriptor_baselines_polycrystalline
+train_script: src/baselines/run_descriptor_baselines.py
+config_name: descriptor_baselines.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 64G
+  time: "12:00:00"
+
+experiments:
+  - name: steinhardt
+    overrides:
+      - "descriptor.name=steinhardt"
+
+  - name: soap
+    overrides:
+      - "descriptor.name=soap"
+
+  - name: cna
+    overrides:
+      - "descriptor.name=cna"
+
+metrics:
+  final:
+    - val/class/acc_kmeans_plusplus_hungarian
+    - val/class/nmi
+    - val/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian_rotated
+    - test/class/nmi_rotated
+    - test/class/ari_rotated
+    - test/class/ari_rotated_std
+    - test/class/nmi_rotated_std
+
+output_root: output/experiments

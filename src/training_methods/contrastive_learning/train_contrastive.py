@@ -31,7 +31,7 @@ def run_post_training_analysis_safe(
             run_post_training_analysis,
         )
         logger.print("\n" + "=" * 60)
-        logger.print("Starting Barlow Twins analysis...")
+        logger.print("Starting contrastive analysis...")
         logger.print("=" * 60)
 
         run_post_training_analysis(
@@ -49,7 +49,7 @@ def run_post_training_analysis_safe(
 
 
 def train(cfg: DictConfig, run_analysis: bool = True):
-    """Barlow Twins contrastive training."""
+    """Contrastive self-supervised training."""
     run_test = bool(getattr(cfg, "run_test_after_training", True))
     trainer, model, dm, checkpoint_callbacks = train_model(
         cfg,
@@ -80,7 +80,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 
 @hydra.main(version_base=None,
             config_path=os.path.join(os.getcwd(), 'configs'),
-            config_name='vicreg_vn_molecular.yaml')
+            config_name='vicreg_vn_modelnet40.yaml')
 def main(cfg: DictConfig):
     train(cfg)
 

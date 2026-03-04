@@ -18,6 +18,7 @@ Improvements over v1:
 from __future__ import annotations
 
 import pathlib
+import textwrap
 import warnings
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 from collections import Counter, defaultdict
@@ -40,6 +41,32 @@ PHASE_CMAP = cm.get_cmap("tab10")
 CRYSTAL_COLOR = "#4ECDC4"
 LIQUID_COLOR = "#FF6B6B"
 INTERFACE_COLOR = "#FFE66D"
+_PAPER_FAMILY_DISPLAY_COLORS: Dict[str, str] = {
+    "bcc": "#2F6DB3",
+    "fcc": "#E3872D",
+    "hcp": "#4E9C63",
+    "amorphous": "#BE5A5A",
+}
+
+
+def _normalize_visualization_target(viz_target: Optional[str]) -> Optional[str]:
+    if viz_target is None:
+        return None
+    target = str(viz_target).strip().lower()
+    if target == "":
+        raise ValueError("viz_target must be a non-empty string when provided.")
+    supported_targets = {
+        "closeup_paper",
+        "global_diagonal_cut_paper",
+        "local_base",
+        "local_base_paper",
+    }
+    if target not in supported_targets:
+        raise ValueError(
+            "Unsupported visualization target. "
+            f"Expected one of {sorted(supported_targets)}, got {viz_target!r}."
+        )
+    return target
 
 
 def generate_visualizations(
@@ -49,11 +76,14 @@ def generate_visualizations(
     metadata: Dict[str, Any],
     rng: np.random.Generator,
     output_dir: pathlib.Path,
+    viz_target: Optional[str] = None,
+    sampling_cfg: Optional[Dict[str, Any]] = None,
 ) -> None:
     """
     Create comprehensive diagnostic visualizations for the generated dataset.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+    viz_target_norm = _normalize_visualization_target(viz_target)
     
     # Extract arrays
     atoms_array = np.asarray([atom["position"] for atom in atoms], dtype=float)
@@ -65,6 +95,62 @@ def generate_visualizations(
     
     # Build color maps
     color_map = _build_phase_color_map(phases)
+    if viz_target_norm == "local_base":
+        print("  Generating visualizations (target=local_base)...")
+        print("    • Local base gallery")
+        _render_local_base_gallery(
+            global_cfg,
+            atoms,
+            atoms_array,
+            phases,
+            output_dir,
+            rng,
+            color_map,
+        )
+        print("  Visualizations complete")
+        return
+    if viz_target_norm == "local_base_paper":
+        print("  Generating visualizations (target=local_base_paper)...")
+        print("    • Local base paper figure")
+        _render_local_base_paper_gallery(
+            global_cfg,
+            atoms,
+            atoms_array,
+            phases,
+            output_dir,
+            rng,
+            color_map,
+        )
+        print("  Visualizations complete")
+        return
+    if viz_target_norm == "closeup_paper":
+        print("  Generating visualizations (target=closeup_paper)...")
+        print("    • Paper close-up figures")
+        _render_closeup_paper_views(
+            global_cfg,
+            atoms_array,
+            output_dir,
+        )
+        print("  Visualizations complete")
+        return
+    if viz_target_norm == "global_diagonal_cut_paper":
+        print("  Generating visualizations (target=global_diagonal_cut_paper)...")
+        print("    • Paper diagonal-cut overview")
+        _render_global_structure_diagonal_cut_paper(
+            global_cfg,
+            grains,
+            atoms,
+            atoms_array,
+            phases,
+            grain_ids,
+            output_dir / "figure_global_diagonal_cut_paper.png",
+            rng,
+            sampling_cfg=sampling_cfg,
+            view_angles=_view_from_vector(_DIAGONAL_DIRECTION),
+        )
+        print("  Visualizations complete")
+        return
+
     grain_color_map = _build_grain_color_map(grains)
     
     print("  Generating visualizations...")
@@ -118,7 +204,7 @@ def generate_visualizations(
     # 7. Local galleries
     print("    • Local galleries")
     _render_local_galleries(
-        global_cfg, atoms, atoms_array, phases, metadata, output_dir, rng
+        global_cfg, atoms, atoms_array, phases, metadata, output_dir, rng, color_map
     )
     
     # 8. Grain analysis (NEW)
@@ -1065,6 +1151,390 @@ def _render_global_structure_diagonal_cut(
     )
 
 
+def _paper_family_color_for_phase(phase: str) -> str:
+    phase_text = str(phase).strip().lower()
+    if phase_text == "":
+        raise ValueError("phase must be a non-empty string when resolving paper family colors.")
+    if "bcc" in phase_text:
+        return _PAPER_FAMILY_DISPLAY_COLORS["bcc"]
+    if "fcc" in phase_text:
+        return _PAPER_FAMILY_DISPLAY_COLORS["fcc"]
+    if "hcp" in phase_text:
+        return _PAPER_FAMILY_DISPLAY_COLORS["hcp"]
+    if "amorphous" in phase_text or "glassy" in phase_text:
+        return _PAPER_FAMILY_DISPLAY_COLORS["amorphous"]
+    return "#7A7A7A"
+
+
+def _sample_display_indices(
+    n_points: int,
+    sample_limit: int,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    n_total = int(n_points)
+    if n_total < 0:
+        raise ValueError(f"n_points must be non-negative, got {n_points}.")
+    sample_limit_int = max(0, int(sample_limit))
+    if n_total <= sample_limit_int:
+        return np.arange(n_total, dtype=int)
+    return np.sort(rng.choice(n_total, size=sample_limit_int, replace=False).astype(int, copy=False))
+
+
+def _compute_group_centroids(
+    positions: np.ndarray,
+    group_ids: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray]:
+    pos = np.asarray(positions, dtype=np.float32)
+    gids = np.asarray(group_ids, dtype=int)
+    if pos.ndim != 2 or pos.shape[1] != 3:
+        raise ValueError(f"positions must have shape (N, 3), got {pos.shape}.")
+    if gids.shape != (pos.shape[0],):
+        raise ValueError(
+            f"group_ids must have shape ({pos.shape[0]},), got {gids.shape} for positions shape {pos.shape}."
+        )
+    valid_mask = gids >= 0
+    if not np.any(valid_mask):
+        return np.zeros((0, 3), dtype=np.float32), np.zeros((0,), dtype=int)
+
+    centroids: List[np.ndarray] = []
+    centroid_group_ids: List[int] = []
+    for gid in np.unique(gids[valid_mask]):
+        member_positions = pos[gids == int(gid)]
+        if member_positions.shape[0] == 0:
+            continue
+        centroids.append(np.mean(member_positions, axis=0, dtype=np.float64).astype(np.float32))
+        centroid_group_ids.append(int(gid))
+
+    if not centroids:
+        return np.zeros((0, 3), dtype=np.float32), np.zeros((0,), dtype=int)
+    return np.stack(centroids, axis=0).astype(np.float32, copy=False), np.asarray(centroid_group_ids, dtype=int)
+
+
+def _scatter_paper_global_panel(
+    ax: Any,
+    positions: np.ndarray,
+    colors: Sequence[Any],
+    *,
+    box_size: float,
+    title: str,
+    point_size: float,
+    linewidth: float,
+    alpha: float,
+    view_angles: Optional[Tuple[float, float]],
+    point_edgecolors: Any = "black",
+) -> None:
+    pts = _ensure_point_array(positions).astype(np.float32, copy=False)
+    color_values = list(colors)
+    if pts.shape[0] != len(color_values):
+        raise ValueError(
+            f"positions length {pts.shape[0]} must match colors length {len(color_values)} for panel {title!r}."
+        )
+
+    ax.set_facecolor("white")
+    if hasattr(ax, "set_proj_type"):
+        ax.set_proj_type("ortho")
+    if pts.shape[0] > 0:
+        ax.scatter(
+            pts[:, 0],
+            pts[:, 1],
+            pts[:, 2],
+            c=color_values,
+            s=float(point_size),
+            depthshade=False,
+            edgecolors=point_edgecolors,
+            linewidths=float(linewidth),
+            alpha=float(alpha),
+        )
+    _set_cube_axes(ax, box_size)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_zlabel("")
+    ax.set_title(title, fontsize=11, fontweight="bold", pad=8)
+    if view_angles is not None:
+        ax.view_init(elev=float(view_angles[0]), azim=float(view_angles[1]))
+
+
+def _compute_regular_sample_center_atoms(
+    atom_positions: np.ndarray,
+    *,
+    radius: float,
+    overlap_fraction: float,
+    drop_edge_samples: bool,
+) -> Tuple[np.ndarray, np.ndarray]:
+    pts = _ensure_point_array(atom_positions).astype(np.float32, copy=False)
+    if pts.shape[0] == 0:
+        raise ValueError("Cannot compute regular sample centers from an empty atom array.")
+
+    radius_use = float(radius)
+    if radius_use <= 0.0:
+        raise ValueError(f"Regular sample-center radius must be positive, got {radius}.")
+    overlap_use = float(overlap_fraction)
+    if not (0.0 <= overlap_use < 1.0):
+        raise ValueError(
+            f"Regular sample-center overlap_fraction must satisfy 0 <= overlap_fraction < 1, got {overlap_fraction}."
+        )
+
+    stride = radius_use * (1.0 - overlap_use)
+    if stride <= 0.0:
+        raise ValueError(
+            f"Regular sample-center stride must be positive, got radius={radius_use}, overlap_fraction={overlap_use}."
+        )
+
+    min_coords = np.min(pts, axis=0)
+    max_coords = np.max(pts, axis=0)
+    min_center = min_coords + radius_use
+    max_center = max_coords - radius_use
+    if np.any(min_center >= max_center):
+        raise RuntimeError(
+            "Regular sample-center region is empty after edge padding. "
+            f"min_center={min_center.tolist()}, max_center={max_center.tolist()}, radius={radius_use}."
+        )
+
+    dims = np.ceil((max_center - min_center) / stride).astype(int)
+    if np.any(dims <= 0):
+        raise RuntimeError(
+            "Regular sample-center grid has non-positive dimensions. "
+            f"dims={dims.tolist()}, min_center={min_center.tolist()}, max_center={max_center.tolist()}, stride={stride}."
+        )
+
+    if bool(drop_edge_samples):
+        ranges = [(1, int(dim) - 1) if int(dim) >= 3 else (0, 0) for dim in dims.tolist()]
+    else:
+        ranges = [(0, int(dim)) for dim in dims.tolist()]
+    if any(start >= stop for start, stop in ranges):
+        raise RuntimeError(
+            "Regular sample-center grid has zero valid centers after applying drop_edge_samples. "
+            f"dims={dims.tolist()}, ranges={ranges}, drop_edge_samples={bool(drop_edge_samples)}."
+        )
+
+    grid_axes = [np.arange(start, stop, dtype=np.float64) for start, stop in ranges]
+    mesh = np.meshgrid(*grid_axes, indexing="ij")
+    grid_ijk = np.column_stack([axis.ravel() for axis in mesh]).astype(np.float64, copy=False)
+    computed_centers = min_center[None, :] + grid_ijk * stride + radius_use
+
+    tree = cKDTree(pts)
+    _, nearest_indices = tree.query(computed_centers, k=1)
+    nearest_indices = np.asarray(nearest_indices, dtype=int).reshape(-1)
+    if nearest_indices.size == 0:
+        raise RuntimeError(
+            "Regular sample-center reconstruction produced zero snapped centers after KD-tree snapping."
+        )
+    snapped_centers = pts[nearest_indices]
+    return snapped_centers.astype(np.float32, copy=False), nearest_indices
+
+
+def _compute_local_structure_sample_centers(
+    atom_positions: np.ndarray,
+    sampling_cfg: Dict[str, Any],
+) -> Tuple[np.ndarray, np.ndarray]:
+    if not isinstance(sampling_cfg, dict):
+        raise TypeError(
+            f"sampling_cfg must be a dict when reconstructing local-structure centers, got {type(sampling_cfg)!r}."
+        )
+    sample_type = str(sampling_cfg.get("sample_type", "")).strip().lower()
+    if sample_type == "":
+        raise ValueError("sampling_cfg is missing required key 'sample_type'.")
+    if sample_type != "regular":
+        raise ValueError(
+            "global_diagonal_cut_paper currently supports only regular synthetic local-structure sampling "
+            "because random sample centers are not persisted in the generated dataset. "
+            f"Got sample_type={sample_type!r}."
+        )
+    if "radius" not in sampling_cfg:
+        raise ValueError("sampling_cfg is missing required key 'radius' for regular sample-center reconstruction.")
+    if "overlap_fraction" not in sampling_cfg:
+        raise ValueError(
+            "sampling_cfg is missing required key 'overlap_fraction' for regular sample-center reconstruction."
+        )
+    return _compute_regular_sample_center_atoms(
+        atom_positions,
+        radius=float(sampling_cfg["radius"]),
+        overlap_fraction=float(sampling_cfg["overlap_fraction"]),
+        drop_edge_samples=bool(sampling_cfg.get("drop_edge_samples", True)),
+    )
+
+
+def _compute_neighbor_grain_boundary_mask(
+    positions: np.ndarray,
+    grain_ids: np.ndarray,
+    *,
+    cutoff: float,
+) -> np.ndarray:
+    pts = _ensure_point_array(positions).astype(np.float32, copy=False)
+    gids = np.asarray(grain_ids, dtype=int)
+    if gids.shape != (pts.shape[0],):
+        raise ValueError(
+            f"grain_ids must have shape ({pts.shape[0]},), got {gids.shape} for positions shape {pts.shape}."
+        )
+    cutoff_use = float(cutoff)
+    if cutoff_use <= 0.0:
+        raise ValueError(f"Boundary-neighbor cutoff must be positive, got {cutoff}.")
+
+    boundary_mask = np.zeros((pts.shape[0],), dtype=bool)
+    if pts.shape[0] < 2:
+        return boundary_mask
+
+    tree = cKDTree(pts)
+    pair_indices = np.asarray(tree.query_pairs(cutoff_use, output_type="ndarray"), dtype=int)
+    if pair_indices.size == 0:
+        return boundary_mask
+    pair_indices = pair_indices.reshape(-1, 2)
+
+    g0 = gids[pair_indices[:, 0]]
+    g1 = gids[pair_indices[:, 1]]
+    diff_mask = (g0 >= 0) & (g1 >= 0) & (g0 != g1)
+    if not np.any(diff_mask):
+        return boundary_mask
+
+    diff_pairs = pair_indices[diff_mask]
+    boundary_mask[diff_pairs[:, 0]] = True
+    boundary_mask[diff_pairs[:, 1]] = True
+    return boundary_mask
+
+
+def _render_global_structure_diagonal_cut_paper(
+    global_cfg: Any,
+    grains: Sequence[Dict[str, Any]],
+    atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    phases: Sequence[str],
+    grain_ids: np.ndarray,
+    output_path: pathlib.Path,
+    rng: np.random.Generator,
+    sampling_cfg: Optional[Dict[str, Any]] = None,
+    view_angles: Optional[Tuple[float, float]] = None,
+) -> None:
+    if len(atoms) == 0:
+        raise ValueError("Cannot render paper diagonal-cut overview because atoms is empty.")
+    if sampling_cfg is None:
+        raise ValueError(
+            "Cannot render paper diagonal-cut overview without sampling_cfg because the center panels "
+            "must reproduce synthetic local-structure sample centers."
+        )
+
+    mask = _diagonal_cut_mask(atom_positions, global_cfg.L)
+    if not np.any(mask):
+        raise RuntimeError("Diagonal cut mask kept zero atoms; cannot render paper diagonal-cut overview.")
+
+    kept_indices = np.flatnonzero(mask)
+    filtered_positions = np.asarray(atom_positions[mask], dtype=np.float32)
+    filtered_phases = np.asarray(phases, dtype=object)[mask]
+    filtered_grain_ids = np.asarray(grain_ids, dtype=int)[mask]
+
+    phase_raw_positions = filtered_positions
+    phase_raw_colors = [_paper_family_color_for_phase(str(phase)) for phase in filtered_phases.tolist()]
+
+    sampled_center_positions_all, sampled_center_atom_indices = _compute_local_structure_sample_centers(
+        atom_positions,
+        sampling_cfg,
+    )
+    center_mask = _diagonal_cut_mask(sampled_center_positions_all, global_cfg.L)
+    if not np.any(center_mask):
+        raise RuntimeError(
+            "The reconstructed local-structure sample-center set has zero points inside the diagonal cut."
+        )
+    phase_center_positions = np.asarray(sampled_center_positions_all[center_mask], dtype=np.float32)
+    phase_center_atom_indices = np.asarray(sampled_center_atom_indices[center_mask], dtype=int)
+    full_to_filtered = np.full((atom_positions.shape[0],), -1, dtype=int)
+    full_to_filtered[kept_indices] = np.arange(kept_indices.shape[0], dtype=int)
+    phase_center_filtered_indices = np.asarray(full_to_filtered[phase_center_atom_indices], dtype=int)
+    if np.any(phase_center_filtered_indices < 0):
+        raise RuntimeError(
+            "Some reconstructed local-structure centers fell inside the diagonal cut, but their snapped atom indices "
+            "were not found in the diagonal-cut atom set. This indicates an internal indexing inconsistency."
+        )
+    phase_center_phases = np.asarray(phases, dtype=object)[phase_center_atom_indices]
+    phase_center_grain_ids = np.asarray(grain_ids, dtype=int)[phase_center_atom_indices]
+    phase_center_colors = [
+        _paper_family_color_for_phase(str(phase))
+        for phase in phase_center_phases.tolist()
+    ]
+
+    boundary_mask = _compute_neighbor_grain_boundary_mask(
+        filtered_positions,
+        filtered_grain_ids,
+        cutoff=1.5 * float(global_cfg.avg_nn_dist),
+    )
+    boundary_positions = filtered_positions[boundary_mask]
+    boundary_phases = filtered_phases[boundary_mask]
+
+    boundary_raw_positions = boundary_positions
+    boundary_raw_colors = [
+        _paper_family_color_for_phase(str(phase))
+        for phase in boundary_phases.tolist()
+    ]
+
+    sampled_center_boundary_mask = np.asarray(boundary_mask[phase_center_filtered_indices], dtype=bool)
+    boundary_center_positions = np.asarray(phase_center_positions[sampled_center_boundary_mask], dtype=np.float32)
+    boundary_center_phases = np.asarray(phase_center_phases, dtype=object)[sampled_center_boundary_mask]
+    boundary_center_colors = [
+        _paper_family_color_for_phase(str(phase))
+        for phase in boundary_center_phases.tolist()
+    ]
+
+    fig = plt.figure(figsize=(15.0, 13.2), dpi=360, facecolor="white")
+    ax1 = fig.add_subplot(2, 2, 1, projection="3d")
+    ax2 = fig.add_subplot(2, 2, 2, projection="3d")
+    ax3 = fig.add_subplot(2, 2, 3, projection="3d")
+    ax4 = fig.add_subplot(2, 2, 4, projection="3d")
+
+    _scatter_paper_global_panel(
+        ax1,
+        phase_center_positions,
+        phase_center_colors,
+        box_size=float(global_cfg.L),
+        title="Phase Overview · Sample Centers",
+        point_size=5.8,
+        linewidth=0.12,
+        alpha=0.92,
+        view_angles=view_angles,
+    )
+    _scatter_paper_global_panel(
+        ax2,
+        phase_raw_positions,
+        phase_raw_colors,
+        box_size=float(global_cfg.L),
+        title="Phase Overview · Raw Points",
+        point_size=1.2,
+        linewidth=0.0,
+        alpha=0.78,
+        view_angles=view_angles,
+        point_edgecolors="none",
+    )
+    _scatter_paper_global_panel(
+        ax3,
+        boundary_center_positions,
+        boundary_center_colors,
+        box_size=float(global_cfg.L),
+        title="Grain Boundaries · Sample Centers",
+        point_size=5.8,
+        linewidth=0.12,
+        alpha=0.92,
+        view_angles=view_angles,
+    )
+    _scatter_paper_global_panel(
+        ax4,
+        boundary_raw_positions,
+        boundary_raw_colors,
+        box_size=float(global_cfg.L),
+        title="Grain Boundaries · Raw Points",
+        point_size=1.4,
+        linewidth=0.0,
+        alpha=0.80,
+        view_angles=view_angles,
+        point_edgecolors="none",
+    )
+
+    fig.suptitle("Global Structure Overview (Diagonal Cut)", fontsize=17, fontweight="bold", y=0.975)
+    fig.subplots_adjust(left=0.02, right=0.985, bottom=0.03, top=0.93, wspace=0.03, hspace=0.12)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    plt.close(fig)
+
+
 def _render_global_structure_core(
     global_cfg: Any,
     grains: Sequence[Dict[str, Any]],
@@ -1232,8 +1702,7 @@ def _render_closeup_view(
     if len(atoms) == 0:
         return
     
-    L = global_cfg.L
-    corner_max = np.array([L/2, L/2, L/4])
+    corner_max = _compute_closeup_corner_max(global_cfg.L, volume_divisor=16)
     
     mask = np.all((atom_positions >= 0) & (atom_positions <= corner_max), axis=1)
     closeup_indices = np.flatnonzero(mask)
@@ -1281,6 +1750,1001 @@ def _render_closeup_view(
     plt.close(fig)
 
 
+def _compute_closeup_corner_max(
+    box_size: float,
+    *,
+    volume_divisor: float,
+    region_shape: Sequence[float] = (2.0, 2.0, 1.0),
+) -> np.ndarray:
+    if not np.isfinite(box_size) or float(box_size) <= 0.0:
+        raise ValueError(f"box_size must be positive and finite, got {box_size}.")
+    if not np.isfinite(volume_divisor) or float(volume_divisor) <= 0.0:
+        raise ValueError(f"volume_divisor must be positive and finite, got {volume_divisor}.")
+
+    shape = np.asarray(region_shape, dtype=np.float64)
+    if shape.shape != (3,):
+        raise ValueError(f"region_shape must have shape (3,), got {shape.shape}.")
+    if np.any(~np.isfinite(shape)) or np.any(shape <= 0.0):
+        raise ValueError(
+            f"region_shape must contain positive finite values, got {shape.tolist()}."
+        )
+
+    scale = ((1.0 / float(volume_divisor)) / float(np.prod(shape))) ** (1.0 / 3.0)
+    corner_max = float(box_size) * shape * scale
+    if np.any(corner_max <= 0.0):
+        raise RuntimeError(
+            "Computed close-up extents must be positive, "
+            f"got {corner_max.tolist()} for volume_divisor={volume_divisor}."
+        )
+    if np.any(corner_max > float(box_size) + 1e-8):
+        raise RuntimeError(
+            "Computed close-up extents exceed the simulation box, "
+            f"got {corner_max.tolist()} for box_size={box_size}."
+        )
+    return corner_max.astype(np.float32, copy=False)
+
+
+def _style_closeup_paper_3d_axes(ax3d: Any) -> None:
+    ax3d.set_xticks([])
+    ax3d.set_yticks([])
+    ax3d.set_zticks([])
+    ax3d.set_xlabel("")
+    ax3d.set_ylabel("")
+    ax3d.set_zlabel("")
+    ax3d.grid(False)
+    for axis in (ax3d.xaxis, ax3d.yaxis, ax3d.zaxis):
+        if hasattr(axis, "pane"):
+            axis.pane.fill = False
+            axis.pane.set_edgecolor((1.0, 1.0, 1.0, 1.0))
+        if hasattr(axis, "line"):
+            axis.line.set_color((0.0, 0.0, 0.0, 1.0))
+
+
+def _style_closeup_paper_2d_axes(ax2d: Any) -> None:
+    ax2d.set_xticks([])
+    ax2d.set_yticks([])
+    ax2d.set_xlabel("")
+    ax2d.set_ylabel("")
+    ax2d.grid(False)
+    for spine in ax2d.spines.values():
+        spine.set_color("black")
+        spine.set_linewidth(1.0)
+
+
+def _style_closeup_paper_axes(ax3d: Any, ax2d: Any) -> None:
+    _style_closeup_paper_3d_axes(ax3d)
+    _style_closeup_paper_2d_axes(ax2d)
+
+
+def _save_closeup_paper_3d_svg(
+    closeup_positions: np.ndarray,
+    corner_max: np.ndarray,
+    output_path: pathlib.Path,
+    *,
+    point_color: Any,
+    point_edge_color: str,
+    point_size_3d: float,
+) -> None:
+    svg_fig = plt.figure(figsize=(5.4, 5.4), dpi=260, facecolor="white")
+    svg_ax = svg_fig.add_subplot(1, 1, 1, projection="3d")
+    svg_ax.scatter(
+        closeup_positions[:, 0],
+        closeup_positions[:, 1],
+        closeup_positions[:, 2],
+        color=point_color,
+        s=float(point_size_3d),
+        depthshade=True,
+        alpha=0.94,
+        edgecolors=point_edge_color,
+        linewidths=0.32,
+    )
+    svg_ax.set_xlim(0.0, float(corner_max[0]))
+    svg_ax.set_ylim(0.0, float(corner_max[1]))
+    svg_ax.set_zlim(0.0, float(corner_max[2]))
+    if hasattr(svg_ax, "set_box_aspect"):
+        svg_ax.set_box_aspect(
+            (float(corner_max[0]), float(corner_max[1]), float(corner_max[2]))
+        )
+    if hasattr(svg_ax, "set_proj_type"):
+        svg_ax.set_proj_type("ortho")
+    svg_ax.view_init(elev=21.0, azim=36.0)
+    _style_closeup_paper_3d_axes(svg_ax)
+    svg_fig.subplots_adjust(left=0.01, right=0.99, bottom=0.01, top=0.99)
+    svg_fig.savefig(output_path, bbox_inches="tight")
+    plt.close(svg_fig)
+
+
+def _render_closeup_paper_view(
+    global_cfg: Any,
+    atom_positions: np.ndarray,
+    output_path: pathlib.Path,
+    *,
+    volume_divisor: int,
+    point_color: Any = "#DADADA",
+    point_edge_color: str = "#000000",
+    point_size_3d: float = 34.0,
+    point_size_xy: float = 26.0,
+) -> None:
+    if atom_positions.ndim != 2 or atom_positions.shape[1] != 3:
+        raise ValueError(
+            f"atom_positions must have shape (N, 3), got {atom_positions.shape}."
+        )
+    if atom_positions.shape[0] == 0:
+        raise ValueError("Cannot render a paper close-up figure because atom_positions is empty.")
+
+    corner_max = _compute_closeup_corner_max(
+        global_cfg.L,
+        volume_divisor=volume_divisor,
+        region_shape=(1.0, 1.0, 1.0),
+    )
+    mask = np.all((atom_positions >= 0.0) & (atom_positions <= corner_max[None, :]), axis=1)
+    closeup_indices = np.flatnonzero(mask)
+    if closeup_indices.size == 0:
+        raise RuntimeError(
+            "Paper close-up selection produced no atoms for "
+            f"volume_divisor=1/{volume_divisor} and extents {corner_max.tolist()}."
+        )
+
+    closeup_positions = atom_positions[closeup_indices]
+    fig = plt.figure(figsize=(11.0, 5.2), dpi=260, facecolor="white")
+
+    ax1 = fig.add_subplot(1, 2, 1, projection="3d")
+    ax1.scatter(
+        closeup_positions[:, 0],
+        closeup_positions[:, 1],
+        closeup_positions[:, 2],
+        color=point_color,
+        s=float(point_size_3d),
+        depthshade=True,
+        alpha=0.94,
+        edgecolors=point_edge_color,
+        linewidths=0.32,
+    )
+    ax1.set_xlim(0.0, float(corner_max[0]))
+    ax1.set_ylim(0.0, float(corner_max[1]))
+    ax1.set_zlim(0.0, float(corner_max[2]))
+    if hasattr(ax1, "set_box_aspect"):
+        ax1.set_box_aspect(
+            (float(corner_max[0]), float(corner_max[1]), float(corner_max[2]))
+        )
+    if hasattr(ax1, "set_proj_type"):
+        ax1.set_proj_type("ortho")
+    ax1.view_init(elev=21.0, azim=36.0)
+    ax1.set_title(f"Corner close-up (1/{volume_divisor} volume, {closeup_indices.size:,} atoms)")
+
+    ax2 = fig.add_subplot(1, 2, 2)
+    ax2.scatter(
+        closeup_positions[:, 0],
+        closeup_positions[:, 1],
+        color=point_color,
+        s=float(point_size_xy),
+        alpha=0.86,
+        edgecolors=point_edge_color,
+        linewidths=0.24,
+    )
+    ax2.set_xlim(0.0, float(corner_max[0]))
+    ax2.set_ylim(0.0, float(corner_max[1]))
+    ax2.set_aspect("equal")
+    ax2.set_title("XY projection")
+
+    _style_closeup_paper_axes(ax1, ax2)
+
+    fig.subplots_adjust(left=0.03, right=0.99, bottom=0.03, top=0.91, wspace=0.08)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    _save_closeup_paper_3d_svg(
+        closeup_positions,
+        corner_max,
+        output_path.with_suffix(".svg"),
+        point_color=point_color,
+        point_edge_color=point_edge_color,
+        point_size_3d=point_size_3d,
+    )
+    plt.close(fig)
+
+
+def _render_closeup_paper_views(
+    global_cfg: Any,
+    atom_positions: np.ndarray,
+    output_dir: pathlib.Path,
+) -> None:
+    _render_closeup_paper_view(
+        global_cfg,
+        atom_positions,
+        output_dir / "figure_closeup_paper.png",
+        volume_divisor=16,
+    )
+    _render_closeup_paper_view(
+        global_cfg,
+        atom_positions,
+        output_dir / "figure_closeup_paper_1_32.png",
+        volume_divisor=32,
+    )
+
+
+def _render_local_base_gallery(
+    global_cfg: Any,
+    atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    phases: Sequence[str],
+    output_dir: pathlib.Path,
+    rng: np.random.Generator,
+    color_map: Dict[str, Any],
+    *,
+    positions_tree: Optional[cKDTree] = None,
+) -> None:
+    if len(atom_positions) == 0:
+        return
+
+    base_phases = sorted({p for p in phases if not str(p).startswith('intermediate_')})
+    if not base_phases:
+        return
+
+    positions_tree_use = positions_tree if positions_tree is not None else cKDTree(atom_positions)
+    use_objects = bool(
+        len(atoms) > 0 and hasattr(global_cfg, 'objects_per_grain') and 'object_id' in atoms[0]
+    )
+    if use_objects:
+        _render_local_gallery(
+            title='Base Phases - Whole Objects',
+            filename=output_dir / 'figure_local_base.png',
+            selected_phases=base_phases,
+            atoms=atoms,
+            atom_positions=atom_positions,
+            positions_tree=positions_tree_use,
+            global_cfg=global_cfg,
+            rng=rng,
+            edge_type='delaunay',
+        )
+        return
+
+    _render_local_representative_gallery(
+        title='Base Phase Representatives (PCA Reciprocal)',
+        filename=output_dir / 'figure_local_base.png',
+        selected_phases=base_phases,
+        atoms=atoms,
+        atom_positions=atom_positions,
+        positions_tree=positions_tree_use,
+        global_cfg=global_cfg,
+        rng=rng,
+        color_map=color_map,
+    )
+
+
+def _load_reference_point_clouds(output_dir: pathlib.Path) -> Dict[str, np.ndarray]:
+    reference_path = output_dir / "reference_point_clouds.npy"
+    if not reference_path.exists():
+        raise FileNotFoundError(
+            "Paper local-base figure requires saved reference point clouds, "
+            f"but the file is missing: {reference_path}."
+        )
+    loaded = np.load(reference_path, allow_pickle=True)
+    if loaded.shape != ():
+        raise ValueError(
+            "reference_point_clouds.npy must store a dict-like object array, "
+            f"got array shape {loaded.shape} from {reference_path}."
+        )
+    reference_point_clouds = loaded.item()
+    if not isinstance(reference_point_clouds, dict):
+        raise ValueError(
+            "reference_point_clouds.npy must decode to a dict, "
+            f"got {type(reference_point_clouds)!r} from {reference_path}."
+        )
+    return {
+        str(key): np.asarray(value, dtype=np.float32)
+        for key, value in reference_point_clouds.items()
+    }
+
+
+def _paper_family_specs(
+    available_phases: Sequence[str],
+    reference_point_clouds: Dict[str, np.ndarray],
+) -> List[Dict[str, Any]]:
+    available_set = {str(phase) for phase in available_phases}
+    specs = [
+        {
+            "family": "BCC",
+            "pure_phase": "bcc_iron",
+            "pure_source": "reference",
+            "perturbed_phase": "bcc_iron_perturbed",
+            "display_color": "#2F6DB3",
+        },
+        {
+            "family": "FCC",
+            "pure_phase": "fcc_iron",
+            "pure_source": "reference",
+            "perturbed_phase": "fcc_iron_perturbed",
+            "display_color": "#E3872D",
+        },
+        {
+            "family": "HCP",
+            "pure_phase": "hcp_iron",
+            "pure_source": "reference",
+            "perturbed_phase": "hcp_iron_perturbed",
+            "display_color": "#4E9C63",
+        },
+        {
+            "family": "Amorphous",
+            "pure_phase": "amorphous_pure",
+            "pure_source": "dataset",
+            "perturbed_phase": None,
+            "display_color": "#BE5A5A",
+        },
+    ]
+
+    missing_items: List[str] = []
+    resolved_specs: List[Dict[str, Any]] = []
+    for spec in specs:
+        pure_phase = spec["pure_phase"]
+        perturbed_phase = spec["perturbed_phase"]
+        pure_source = str(spec["pure_source"])
+        if pure_source == "reference":
+            if pure_phase not in reference_point_clouds:
+                missing_items.append(f"reference:{pure_phase}")
+                continue
+        elif pure_source == "dataset":
+            if pure_phase not in available_set:
+                missing_items.append(f"dataset:{pure_phase}")
+                continue
+        else:
+            raise ValueError(
+                f"Unsupported pure_source {pure_source!r} for paper family spec {spec!r}."
+            )
+        if perturbed_phase is not None and perturbed_phase not in available_set:
+            missing_items.append(f"dataset:{perturbed_phase}")
+            continue
+        resolved_specs.append(spec)
+
+    if missing_items:
+        raise ValueError(
+            "Paper local-base figure requires all crystal family pairs to be available. "
+            f"Missing entries: {missing_items}."
+        )
+    return resolved_specs
+
+
+def _prepare_reference_local_points(
+    reference_points: np.ndarray,
+    *,
+    target_count: int,
+) -> np.ndarray:
+    pts = np.asarray(reference_points, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] != 3:
+        raise ValueError(f"reference_points must have shape (N, 3), got {pts.shape}.")
+    if pts.shape[0] == 0:
+        raise ValueError("reference_points must be non-empty.")
+
+    center_idx = int(np.argmin(np.linalg.norm(pts, axis=1)))
+    centered = pts - pts[center_idx]
+    dists = np.linalg.norm(centered, axis=1)
+    keep = np.argsort(dists)[: min(int(target_count), pts.shape[0])]
+    local = centered[keep]
+    if local.shape[0] == 0:
+        raise RuntimeError("No local points remain after selecting a centered reference neighborhood.")
+    return local.astype(np.float32, copy=False)
+
+
+def _match_local_structure_scale(
+    source_points: np.ndarray,
+    target_points: np.ndarray,
+    *,
+    radius_percentile: float = 90.0,
+) -> np.ndarray:
+    source = np.asarray(source_points, dtype=np.float32)
+    target = np.asarray(target_points, dtype=np.float32)
+    if source.ndim != 2 or source.shape[1] != 3:
+        raise ValueError(f"source_points must have shape (N, 3), got {source.shape}.")
+    if target.ndim != 2 or target.shape[1] != 3:
+        raise ValueError(f"target_points must have shape (N, 3), got {target.shape}.")
+    if source.shape[0] == 0 or target.shape[0] == 0:
+        raise ValueError(
+            "Cannot match local structure scale with empty point clouds: "
+            f"source shape {source.shape}, target shape {target.shape}."
+        )
+
+    source_scale = float(np.percentile(np.linalg.norm(source, axis=1), float(radius_percentile)))
+    target_scale = float(np.percentile(np.linalg.norm(target, axis=1), float(radius_percentile)))
+    if not np.isfinite(source_scale) or source_scale <= 1e-8:
+        raise ValueError(
+            "Computed invalid source scale while matching local structure scale: "
+            f"source_scale={source_scale}, radius_percentile={radius_percentile}."
+        )
+    if not np.isfinite(target_scale) or target_scale <= 1e-8:
+        raise ValueError(
+            "Computed invalid target scale while matching local structure scale: "
+            f"target_scale={target_scale}, radius_percentile={radius_percentile}."
+        )
+    return (source * (target_scale / source_scale)).astype(np.float32, copy=False)
+
+
+def _ensure_connected_edges(
+    points: np.ndarray,
+    edges: Sequence[Tuple[int, int]],
+) -> List[Tuple[int, int]]:
+    pts = np.asarray(points, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] != 3:
+        raise ValueError(f"points must have shape (N, 3), got {pts.shape}.")
+    n_points = int(pts.shape[0])
+    if n_points <= 1:
+        return []
+
+    parent = list(range(n_points))
+    rank = [0] * n_points
+
+    def _find(node: int) -> int:
+        while parent[node] != node:
+            parent[node] = parent[parent[node]]
+            node = parent[node]
+        return node
+
+    def _union(a: int, b: int) -> bool:
+        root_a = _find(a)
+        root_b = _find(b)
+        if root_a == root_b:
+            return False
+        if rank[root_a] < rank[root_b]:
+            parent[root_a] = root_b
+        elif rank[root_a] > rank[root_b]:
+            parent[root_b] = root_a
+        else:
+            parent[root_b] = root_a
+            rank[root_a] += 1
+        return True
+
+    edge_set: set[Tuple[int, int]] = set()
+    for raw_edge in edges:
+        i = int(raw_edge[0])
+        j = int(raw_edge[1])
+        if i == j:
+            continue
+        edge = (min(i, j), max(i, j))
+        edge_set.add(edge)
+        _union(edge[0], edge[1])
+
+    if len({_find(i) for i in range(n_points)}) == 1:
+        return sorted(edge_set)
+
+    dmat = np.linalg.norm(pts[:, None, :] - pts[None, :, :], axis=-1)
+    candidate_edges: List[Tuple[float, Tuple[int, int]]] = []
+    for i in range(n_points):
+        for j in range(i + 1, n_points):
+            candidate_edges.append((float(dmat[i, j]), (i, j)))
+    candidate_edges.sort(key=lambda item: item[0])
+
+    for _, edge in candidate_edges:
+        if _union(edge[0], edge[1]):
+            edge_set.add(edge)
+        if len({_find(i) for i in range(n_points)}) == 1:
+            break
+
+    if len({_find(i) for i in range(n_points)}) != 1:
+        raise RuntimeError(
+            "Failed to construct a connected edge graph for the paper local-base structure."
+        )
+    return sorted(edge_set)
+
+
+def _paper_xyz_filename(family: str, column_kind: str) -> str:
+    slug = str(family).strip().lower().replace(" ", "_")
+    kind = str(column_kind).strip().lower().replace(" ", "_")
+    return f"{kind}_{slug}.xyz"
+
+
+def _save_structure_xyz(
+    output_dir: pathlib.Path,
+    file_name: str,
+    points: np.ndarray,
+    *,
+    comment: str,
+    element: str = "Fe",
+) -> None:
+    pts = np.asarray(points, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] != 3:
+        raise ValueError(f"points must have shape (N, 3), got {pts.shape}.")
+    if pts.shape[0] == 0:
+        raise ValueError(f"Cannot save empty XYZ structure to {output_dir / file_name}.")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    out_path = output_dir / file_name
+    with out_path.open("w") as f:
+        f.write(f"{pts.shape[0]}\n")
+        f.write(f"{comment}\n")
+        for point in pts:
+            f.write(
+                f"{element} {float(point[0]):.8f} {float(point[1]):.8f} {float(point[2]):.8f}\n"
+            )
+
+
+def _prepare_local_structure_geometry(points: np.ndarray) -> Dict[str, Any]:
+    local_oriented, _ = _orient_points_for_representative_view(points)
+    edges, _ = _build_local_coordination_edges(
+        local_oriented,
+        min_shell_neighbors=2,
+        max_shell_neighbors=5,
+        shell_gap_ratio=1.22,
+        edge_mode="coordination_shell_mutual",
+    )
+    return {
+        "points": local_oriented,
+        "edges": _ensure_connected_edges(local_oriented, edges),
+    }
+
+
+def _compute_local_structure_half_span(points: np.ndarray) -> float:
+    pts = np.asarray(points, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] != 3:
+        raise ValueError(f"points must have shape (N, 3), got {pts.shape}.")
+    mins = np.min(pts, axis=0)
+    maxs = np.max(pts, axis=0)
+    span = float(np.max(maxs - mins))
+    if not np.isfinite(span) or span <= 0.0:
+        raise ValueError(f"Computed invalid structure span {span} for points shape {pts.shape}.")
+    return 0.5 * span
+
+
+def _compute_radial_colormap_colors(
+    points: np.ndarray,
+    *,
+    cmap_name: str = "viridis",
+    radius_percentile: float = 88.0,
+    gamma: float = 0.86,
+) -> np.ndarray:
+    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    if pts.ndim != 2 or pts.shape[1] != 3:
+        raise ValueError(f"points must have shape (N, 3), got {pts.shape}.")
+    if pts.shape[0] == 0:
+        raise ValueError("Cannot compute colormap colors for an empty point cloud.")
+
+    centroid = np.mean(pts, axis=0, dtype=np.float64)
+    dists = np.linalg.norm(pts - centroid[None, :], axis=1)
+    radius_scale = float(np.percentile(dists, float(radius_percentile)))
+    if radius_scale <= 1e-12:
+        t = np.zeros_like(dists, dtype=np.float32)
+    else:
+        t = np.clip(dists / radius_scale, 0.0, 1.0).astype(np.float32, copy=False)
+    t = np.power(t, float(gamma)).astype(np.float32, copy=False)
+
+    cmap = cm.get_cmap(str(cmap_name))
+    colors = np.asarray(cmap(0.10 + 0.82 * (1.0 - t)), dtype=np.float32)
+    if colors.shape[1] < 3:
+        raise RuntimeError(
+            f"Colormap {cmap_name!r} returned an invalid color array with shape {colors.shape}."
+        )
+    return np.clip(colors[:, :3], 0.0, 1.0).astype(np.float32, copy=False)
+
+
+def _resolve_local_structure_colors(
+    points: np.ndarray,
+    *,
+    color_mode: str,
+    base_color: Any,
+    cmap_name: str = "viridis",
+) -> np.ndarray:
+    mode = str(color_mode).strip().lower()
+    if mode == "family":
+        return _compute_center_to_edge_colors(points, base_color)
+    if mode == "colormap":
+        return _compute_radial_colormap_colors(points, cmap_name=cmap_name)
+    raise ValueError(
+        "Unsupported paper local-base color_mode. "
+        f"Expected one of ['family', 'colormap'], got {color_mode!r}."
+    )
+
+
+def _draw_local_structure_panel(
+    ax: Any,
+    points: np.ndarray,
+    edges: Sequence[Tuple[int, int]],
+    *,
+    point_colors: np.ndarray,
+    view_elev: float,
+    view_azim: float,
+    point_size: float,
+    point_linewidth: float,
+    edge_alpha: float,
+    edge_linewidth: float,
+    display_half_span: Optional[float] = None,
+) -> None:
+    local_oriented = np.asarray(points, dtype=np.float32)
+    local_edges = [(int(edge[0]), int(edge[1])) for edge in edges]
+    local_colors = np.asarray(point_colors, dtype=np.float32)
+    if local_oriented.ndim != 2 or local_oriented.shape[1] != 3:
+        raise ValueError(f"points must have shape (N, 3), got {local_oriented.shape}.")
+    if local_colors.shape != (local_oriented.shape[0], 3):
+        raise ValueError(
+            "point_colors must have shape (N, 3) matching points. "
+            f"Got points shape {local_oriented.shape} and point_colors shape {local_colors.shape}."
+        )
+
+    ax.set_facecolor("white")
+    if hasattr(ax, "set_proj_type"):
+        ax.set_proj_type("ortho")
+    ax.view_init(elev=float(view_elev), azim=float(view_azim))
+    _draw_edges(
+        ax,
+        local_oriented,
+        local_edges,
+        point_colors=local_colors,
+        edge_alpha=float(edge_alpha),
+        edge_linewidth=float(edge_linewidth),
+    )
+    ax.scatter(
+        local_oriented[:, 0],
+        local_oriented[:, 1],
+        local_oriented[:, 2],
+        c=local_colors,
+        s=float(point_size),
+        alpha=0.97,
+        edgecolors="#222222",
+        linewidths=float(point_linewidth),
+        depthshade=False,
+    )
+    _set_equal_axes_3d(ax, local_oriented, half_span=display_half_span)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.grid(False)
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_zlabel("")
+    for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        if hasattr(axis, "pane"):
+            axis.pane.fill = False
+            axis.pane.set_edgecolor((1.0, 1.0, 1.0, 1.0))
+        if hasattr(axis, "line"):
+            axis.line.set_color((1.0, 1.0, 1.0, 1.0))
+
+
+def _compute_paper_display_half_span(records: Sequence[Dict[str, Any]]) -> float:
+    half_spans: List[float] = []
+    for record in records:
+        pure_geometry = record.get("pure_geometry")
+        if pure_geometry is None:
+            raise ValueError(f"Paper record is missing pure_geometry: keys={sorted(record.keys())}.")
+        half_spans.append(_compute_local_structure_half_span(pure_geometry["points"]))
+        perturbed_geometry = record.get("perturbed_geometry")
+        if perturbed_geometry is not None:
+            half_spans.append(_compute_local_structure_half_span(perturbed_geometry["points"]))
+    if not half_spans:
+        raise ValueError("Cannot compute paper display half-span because no panel geometries were prepared.")
+    return float(max(half_spans) * 0.94)
+
+
+def _layout_local_base_paper_axes(fig: Any, axes_arr: np.ndarray) -> Dict[str, float]:
+    n_rows, n_cols = axes_arr.shape
+    if n_cols != 2:
+        raise ValueError(f"Expected exactly 2 columns for paper local-base layout, got shape {axes_arr.shape}.")
+
+    left_x = 0.160
+    axis_width = 0.385
+    column_gap = -0.004
+    right_x = left_x + axis_width + column_gap
+    top = 0.922
+    bottom = 0.040
+    row_gap = -0.014
+    axis_height = (top - bottom - row_gap * (n_rows - 1)) / n_rows
+    if axis_height <= 0.0:
+        raise RuntimeError(
+            "Invalid paper local-base layout: computed non-positive axis_height "
+            f"{axis_height} for n_rows={n_rows}."
+        )
+
+    for row_idx in range(n_rows):
+        y0 = top - (row_idx + 1) * axis_height - row_gap * row_idx
+        axes_arr[row_idx, 0].set_position([left_x, y0, axis_width, axis_height])
+        axes_arr[row_idx, 1].set_position([right_x, y0, axis_width, axis_height])
+
+    return {
+        "left_header_x": left_x + 0.5 * axis_width,
+        "right_header_x": right_x + 0.5 * axis_width,
+        "row_label_x": left_x - 0.028,
+        "header_y": 0.972,
+    }
+
+
+def _render_local_base_paper_variant(
+    records: Sequence[Dict[str, Any]],
+    output_path: pathlib.Path,
+    *,
+    display_half_span: float,
+    color_mode: str,
+    label_mode: str,
+    cmap_name: str = "viridis",
+    view_elev: float,
+    view_azim: float,
+) -> None:
+    n_rows = len(records)
+    n_cols = 2
+    fig, axes = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(6.35, 7.85),
+        dpi=300,
+        facecolor="white",
+        subplot_kw={"projection": "3d"},
+    )
+    axes_arr = np.asarray(axes, dtype=object)
+    if axes_arr.ndim == 1:
+        axes_arr = axes_arr.reshape(n_rows, n_cols)
+
+    layout = _layout_local_base_paper_axes(fig, axes_arr)
+
+    for row_idx, record in enumerate(records):
+        pure_geometry = record["pure_geometry"]
+        pure_colors = _resolve_local_structure_colors(
+            pure_geometry["points"],
+            color_mode=color_mode,
+            base_color=record["display_color"],
+            cmap_name=cmap_name,
+        )
+        _draw_local_structure_panel(
+            axes_arr[row_idx, 0],
+            pure_geometry["points"],
+            pure_geometry["edges"],
+            point_colors=pure_colors,
+            view_elev=view_elev,
+            view_azim=view_azim,
+            point_size=48.0,
+            point_linewidth=0.26,
+            edge_alpha=0.60,
+            edge_linewidth=0.94,
+            display_half_span=display_half_span,
+        )
+
+        perturbed_geometry = record.get("perturbed_geometry")
+        if perturbed_geometry is None:
+            axes_arr[row_idx, 1].set_axis_off()
+        else:
+            perturbed_colors = _resolve_local_structure_colors(
+                perturbed_geometry["points"],
+                color_mode=color_mode,
+                base_color=record["display_color"],
+                cmap_name=cmap_name,
+            )
+            _draw_local_structure_panel(
+                axes_arr[row_idx, 1],
+                perturbed_geometry["points"],
+                perturbed_geometry["edges"],
+                point_colors=perturbed_colors,
+                view_elev=view_elev,
+                view_azim=view_azim,
+                point_size=48.0,
+                point_linewidth=0.26,
+                edge_alpha=0.60,
+                edge_linewidth=0.94,
+                display_half_span=display_half_span,
+            )
+
+    fig.text(
+        layout["left_header_x"],
+        layout["header_y"],
+        "Pure phase",
+        ha="center",
+        va="top",
+        fontsize=9,
+        fontweight="bold",
+        color="#202020",
+    )
+    fig.text(
+        layout["right_header_x"],
+        layout["header_y"],
+        "Perturbed phase",
+        ha="center",
+        va="top",
+        fontsize=9,
+        fontweight="bold",
+        color="#202020",
+    )
+
+    label_mode_norm = str(label_mode).strip().lower()
+    if label_mode_norm not in {"family", "neutral"}:
+        raise ValueError(
+            "Unsupported label_mode for paper local-base variant. "
+            f"Expected one of ['family', 'neutral'], got {label_mode!r}."
+        )
+    for row_idx, record in enumerate(records):
+        bbox = axes_arr[row_idx, 0].get_position()
+        y_center = 0.5 * (bbox.y0 + bbox.y1)
+        label_color = (
+            _darken_color(record["display_color"], factor=0.68)
+            if label_mode_norm == "family"
+            else "#303030"
+        )
+        fig.text(
+            layout["row_label_x"],
+            y_center,
+            record["family"],
+            ha="right",
+            va="center",
+            fontsize=9,
+            fontweight="bold",
+            color=label_color,
+        )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _render_local_base_paper_gallery(
+    global_cfg: Any,
+    atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    phases: Sequence[str],
+    output_dir: pathlib.Path,
+    rng: np.random.Generator,
+    color_map: Dict[str, Any],
+    *,
+    target_count: int = 80,
+    candidate_limit: int = 256,
+    view_elev: float = 22.0,
+    view_azim: float = 38.0,
+) -> None:
+    if len(atom_positions) == 0:
+        raise ValueError("Cannot render paper local-base figure because atom_positions is empty.")
+
+    reference_point_clouds = _load_reference_point_clouds(output_dir)
+    family_specs = _paper_family_specs(phases, reference_point_clouds)
+    positions_tree = cKDTree(atom_positions)
+
+    phase_to_atoms: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for atom in atoms:
+        phase_to_atoms[str(atom.get("phase_id"))].append(atom)
+
+    xyz_dir = output_dir / "figure_local_base_paper_xyz"
+    records: List[Dict[str, Any]] = []
+    for spec in family_specs:
+        family = spec["family"]
+        pure_phase = spec["pure_phase"]
+        perturbed_phase = spec["perturbed_phase"]
+        display_color = str(spec["display_color"])
+
+        pure_source = str(spec["pure_source"])
+        if pure_source == "reference":
+            pure_points = _prepare_reference_local_points(
+                reference_point_clouds[pure_phase],
+                target_count=target_count,
+            )
+            pure_atoms_for_scale = phase_to_atoms.get(pure_phase, [])
+            if not pure_atoms_for_scale:
+                raise ValueError(
+                    "Paper local-base figure requires unperturbed dataset samples to scale-match "
+                    f"reference phase {pure_phase!r}, but none were found."
+                )
+            pure_scale_rep = _select_local_environment_closest_to_reference(
+                pure_phase,
+                pure_atoms_for_scale,
+                atom_positions,
+                positions_tree,
+                global_cfg,
+                rng,
+                reference_points=pure_points,
+                target_count=target_count,
+                candidate_limit=min(len(pure_atoms_for_scale), max(candidate_limit, 1024)),
+            )
+            pure_points = _match_local_structure_scale(
+                pure_points,
+                np.asarray(pure_scale_rep["local_points"], dtype=np.float32),
+            )
+        elif pure_source == "dataset":
+            pure_atoms = phase_to_atoms.get(pure_phase, [])
+            if not pure_atoms:
+                raise ValueError(
+                    "Paper local-base figure could not find any pure samples for "
+                    f"phase {pure_phase!r}."
+                )
+            pure_rep = _select_representative_local_environment(
+                pure_phase,
+                pure_atoms,
+                atom_positions,
+                positions_tree,
+                global_cfg,
+                rng,
+                target_count=target_count,
+                candidate_limit=candidate_limit,
+            )
+            pure_points = np.asarray(pure_rep["local_points"], dtype=np.float32)
+        else:
+            raise ValueError(
+                f"Unsupported pure_source {pure_source!r} while rendering the paper local-base figure."
+            )
+
+        pure_geometry = _prepare_local_structure_geometry(pure_points)
+        pure_oriented = np.asarray(pure_geometry["points"], dtype=np.float32)
+        if pure_oriented.shape[0] != int(target_count):
+            raise RuntimeError(
+                "Paper local-base figure expected the pure structure to contain "
+                f"{target_count} points, got {pure_oriented.shape[0]} for phase {pure_phase!r}."
+            )
+
+        record: Dict[str, Any] = {
+            "family": family,
+            "pure_phase": pure_phase,
+            "perturbed_phase": perturbed_phase,
+            "display_color": display_color,
+            "pure_geometry": pure_geometry,
+            "perturbed_geometry": None,
+        }
+        if perturbed_phase is None:
+            records.append(record)
+            continue
+
+        perturbed_atoms = phase_to_atoms.get(perturbed_phase, [])
+        if not perturbed_atoms:
+            raise ValueError(
+                "Paper local-base figure could not find any perturbed samples for "
+                f"phase {perturbed_phase!r}."
+            )
+        representative = _select_local_environment_closest_to_reference(
+            perturbed_phase,
+            perturbed_atoms,
+            atom_positions,
+            positions_tree,
+            global_cfg,
+            rng,
+            reference_points=pure_points,
+            target_count=target_count,
+            candidate_limit=len(perturbed_atoms),
+        )
+        perturbed_geometry = _prepare_local_structure_geometry(representative["local_points"])
+        perturbed_oriented = np.asarray(perturbed_geometry["points"], dtype=np.float32)
+        if perturbed_oriented.shape[0] != int(target_count):
+            raise RuntimeError(
+                "Paper local-base figure expected the perturbed structure to contain "
+                f"{target_count} points, got {perturbed_oriented.shape[0]} for phase {perturbed_phase!r}."
+            )
+        record["perturbed_geometry"] = perturbed_geometry
+        records.append(record)
+
+    display_half_span = _compute_paper_display_half_span(records)
+
+    for record in records:
+        pure_geometry = record["pure_geometry"]
+        pure_oriented = np.asarray(pure_geometry["points"], dtype=np.float32)
+        _save_structure_xyz(
+            xyz_dir,
+            _paper_xyz_filename(record["family"], "pure"),
+            pure_oriented,
+            comment=(
+                "Paper local-base figure | pure | "
+                f"family={record['family']} | phase={record['pure_phase']}"
+            ),
+        )
+        perturbed_geometry = record.get("perturbed_geometry")
+        perturbed_phase_name = record.get("perturbed_phase")
+        if perturbed_geometry is not None:
+            perturbed_oriented = np.asarray(perturbed_geometry["points"], dtype=np.float32)
+            _save_structure_xyz(
+                xyz_dir,
+                _paper_xyz_filename(record["family"], "perturbed"),
+                perturbed_oriented,
+                comment=(
+                    "Paper local-base figure | perturbed | "
+                    f"family={record['family']} | phase={perturbed_phase_name}"
+                ),
+            )
+
+    _render_local_base_paper_variant(
+        records,
+        output_dir / "figure_local_base_paper.png",
+        display_half_span=display_half_span,
+        color_mode="family",
+        label_mode="family",
+        view_elev=view_elev,
+        view_azim=view_azim,
+    )
+    _render_local_base_paper_variant(
+        records,
+        output_dir / "figure_local_base_paper_colormap.png",
+        display_half_span=display_half_span,
+        color_mode="colormap",
+        label_mode="neutral",
+        cmap_name="viridis",
+        view_elev=view_elev,
+        view_azim=view_azim,
+    )
+
+
 def _render_local_galleries(
     global_cfg: Any,
     atoms: Sequence[Dict[str, Any]],
@@ -1289,23 +2753,27 @@ def _render_local_galleries(
     metadata: Dict[str, Any],
     output_dir: pathlib.Path,
     rng: np.random.Generator,
+    color_map: Dict[str, Any],
 ) -> None:
     """Render local neighborhood galleries."""
+    if len(atom_positions) == 0:
+        return
     base_phases = sorted({p for p in phases if not str(p).startswith('intermediate_')})
     intermediate_phases = sorted({p for p in phases if str(p).startswith('intermediate_')})
-    
+
     positions_tree = cKDTree(atom_positions)
-    
-    # Render with Delaunay triangulation edges
-    _render_local_gallery(
-        title='Base Phases - Local Environments (Delaunay)',
-        filename=output_dir / 'figure_local_base.png',
-        selected_phases=base_phases,
-        atoms=atoms, atom_positions=atom_positions,
-        positions_tree=positions_tree, global_cfg=global_cfg, rng=rng,
-        edge_type='delaunay',
+
+    _render_local_base_gallery(
+        global_cfg,
+        atoms,
+        atom_positions,
+        phases,
+        output_dir,
+        rng,
+        color_map,
+        positions_tree=positions_tree,
     )
-    
+
     # Render with KNN edges (k=4)
     _render_local_gallery(
         title='Base Phases - Local Environments (KNN k=4)',
@@ -1327,6 +2795,654 @@ def _render_local_galleries(
             edge_type='delaunay',
         )
 
+
+def _darken_color(color: Any, factor: float = 0.62) -> str:
+    rgb = np.asarray(mcolors.to_rgb(color), dtype=np.float32)
+    return mcolors.to_hex(np.clip(rgb * float(factor), 0.0, 1.0))
+
+
+def _format_class_label(phase: str, *, width: int = 16) -> str:
+    phase_text = str(phase).strip()
+    if not phase_text:
+        raise ValueError("phase must be a non-empty string.")
+    return textwrap.fill(
+        phase_text.replace("_", " "),
+        width=max(8, int(width)),
+        break_long_words=False,
+        break_on_hyphens=False,
+    )
+
+
+def _extract_local_neighborhood_points(
+    center_atom: Dict[str, Any],
+    atom_positions: np.ndarray,
+    positions_tree: cKDTree,
+    global_cfg: Any,
+    *,
+    target_count: int,
+    radius: Optional[float] = None,
+) -> np.ndarray:
+    if target_count < 2:
+        raise ValueError(f"target_count must be >= 2, got {target_count}.")
+    if atom_positions.ndim != 2 or atom_positions.shape[1] != 3:
+        raise ValueError(
+            f"atom_positions must have shape (N, 3), got {atom_positions.shape}."
+        )
+
+    center_pos = np.asarray(center_atom.get("position"), dtype=np.float32)
+    if center_pos.shape != (3,):
+        raise ValueError(
+            "center_atom['position'] must resolve to shape (3,), "
+            f"got {center_pos.shape} for atom keys={sorted(center_atom.keys())}."
+        )
+
+    radius_use = float(radius) if radius is not None else 2.0 * float(global_cfg.avg_nn_dist)
+    if radius_use <= 0.0:
+        raise ValueError(f"Neighborhood radius must be positive, got {radius_use}.")
+
+    idxs = positions_tree.query_ball_point(center_pos, r=radius_use)
+    target_k = min(int(target_count), int(len(atom_positions)))
+    if len(idxs) < target_k:
+        _, idxs = positions_tree.query(center_pos, k=target_k)
+        idxs = np.atleast_1d(idxs)
+    idxs_arr = np.asarray(idxs, dtype=int).reshape(-1)
+    if idxs_arr.size == 0:
+        raise RuntimeError(
+            "Failed to resolve any local neighborhood points for center atom "
+            f"final_index={center_atom.get('final_index', '?')} at position={center_pos.tolist()}."
+        )
+
+    coords = np.asarray(atom_positions[idxs_arr], dtype=np.float32) - center_pos[None, :]
+    dists_sq = np.sum(coords * coords, axis=1)
+    order = np.argsort(dists_sq)
+    coords = coords[order[:target_k]]
+    if coords.shape[0] == 0:
+        raise RuntimeError(
+            "No local coordinates remain after distance sorting for center atom "
+            f"final_index={center_atom.get('final_index', '?')}."
+        )
+    return coords.astype(np.float32, copy=False)
+
+
+def _compute_local_environment_descriptor(
+    local_points: np.ndarray,
+    *,
+    descriptor_length: int = 24,
+) -> np.ndarray:
+    pts = np.asarray(local_points, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] < 3:
+        raise ValueError(f"local_points must have shape (N, >=3), got {pts.shape}.")
+    descriptor_length = max(4, int(descriptor_length))
+
+    radial = np.sort(np.linalg.norm(pts[:, :3], axis=1))
+    if radial.size == 0:
+        raise ValueError("local_points must contain at least one point.")
+
+    keep = radial[: min(descriptor_length, radial.size)].astype(np.float32, copy=False)
+    positive = keep[keep > 1e-8]
+    if positive.size == 0:
+        scale = 1.0
+    else:
+        scale = float(np.median(positive[: min(6, positive.size)]))
+    if not np.isfinite(scale) or scale <= 1e-8:
+        raise RuntimeError(
+            "Failed to normalize local environment descriptor because the local radial scale "
+            f"is invalid: scale={scale}, descriptor_length={descriptor_length}."
+        )
+
+    if keep.size < descriptor_length:
+        keep = np.pad(keep, (0, descriptor_length - keep.size), mode="edge")
+    return (keep / scale).astype(np.float32, copy=False)
+
+
+def _select_representative_local_environment(
+    phase: str,
+    phase_atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    positions_tree: cKDTree,
+    global_cfg: Any,
+    rng: np.random.Generator,
+    *,
+    target_count: int = 48,
+    candidate_limit: int = 256,
+    descriptor_length: int = 24,
+) -> Dict[str, Any]:
+    if not phase_atoms:
+        raise ValueError(f"Cannot select a representative for empty phase {phase!r}.")
+    candidate_limit = max(1, int(candidate_limit))
+    target_count = max(4, int(target_count))
+
+    if len(phase_atoms) <= candidate_limit:
+        candidate_offsets = np.arange(len(phase_atoms), dtype=int)
+    else:
+        candidate_offsets = np.sort(
+            rng.choice(len(phase_atoms), size=candidate_limit, replace=False)
+        )
+
+    candidate_records: List[Dict[str, Any]] = []
+    for offset in candidate_offsets.tolist():
+        atom = phase_atoms[int(offset)]
+        local_points = _extract_local_neighborhood_points(
+            atom,
+            atom_positions,
+            positions_tree,
+            global_cfg,
+            target_count=target_count,
+        )
+        descriptor = _compute_local_environment_descriptor(
+            local_points,
+            descriptor_length=descriptor_length,
+        )
+        candidate_records.append(
+            {
+                "atom": atom,
+                "local_points": local_points,
+                "descriptor": descriptor,
+            }
+        )
+
+    if not candidate_records:
+        raise RuntimeError(
+            f"Representative selection produced no candidate local environments for phase {phase!r}."
+        )
+
+    descriptor_matrix = np.stack(
+        [record["descriptor"] for record in candidate_records],
+        axis=0,
+    ).astype(np.float32, copy=False)
+    descriptor_center = np.mean(descriptor_matrix, axis=0, keepdims=True)
+    descriptor_dist = np.linalg.norm(descriptor_matrix - descriptor_center, axis=1)
+    best_idx = int(np.argmin(descriptor_dist))
+    best = dict(candidate_records[best_idx])
+    best["descriptor_distance_to_mean"] = float(descriptor_dist[best_idx])
+    best["phase"] = str(phase)
+    best["candidate_count_evaluated"] = int(len(candidate_records))
+    return best
+
+
+def _select_local_environment_closest_to_reference(
+    phase: str,
+    phase_atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    positions_tree: cKDTree,
+    global_cfg: Any,
+    rng: np.random.Generator,
+    *,
+    reference_points: np.ndarray,
+    target_count: int = 80,
+    candidate_limit: int = 256,
+    descriptor_length: int = 24,
+) -> Dict[str, Any]:
+    if not phase_atoms:
+        raise ValueError(f"Cannot select a reference-matched environment for empty phase {phase!r}.")
+
+    reference_local = np.asarray(reference_points, dtype=np.float32)
+    if reference_local.ndim != 2 or reference_local.shape[1] != 3:
+        raise ValueError(
+            f"reference_points must have shape (N, 3), got {reference_local.shape}."
+        )
+    reference_descriptor = _compute_local_environment_descriptor(
+        reference_local,
+        descriptor_length=descriptor_length,
+    )
+
+    candidate_limit = max(1, int(candidate_limit))
+    if len(phase_atoms) <= candidate_limit:
+        candidate_offsets = np.arange(len(phase_atoms), dtype=int)
+    else:
+        candidate_offsets = np.sort(
+            rng.choice(len(phase_atoms), size=candidate_limit, replace=False)
+        )
+
+    best_record: Optional[Dict[str, Any]] = None
+    best_distance = float("inf")
+    for offset in candidate_offsets.tolist():
+        atom = phase_atoms[int(offset)]
+        local_points = _extract_local_neighborhood_points(
+            atom,
+            atom_positions,
+            positions_tree,
+            global_cfg,
+            target_count=target_count,
+        )
+        descriptor = _compute_local_environment_descriptor(
+            local_points,
+            descriptor_length=descriptor_length,
+        )
+        distance = float(np.linalg.norm(descriptor - reference_descriptor))
+        if distance < best_distance:
+            best_distance = distance
+            best_record = {
+                "atom": atom,
+                "local_points": local_points,
+                "descriptor": descriptor,
+                "reference_descriptor_distance": float(distance),
+            }
+
+    if best_record is None:
+        raise RuntimeError(
+            f"Reference-guided representative selection produced no candidates for phase {phase!r}."
+        )
+    best_record["phase"] = str(phase)
+    best_record["candidate_count_evaluated"] = int(len(candidate_offsets))
+    return best_record
+
+
+def _compute_center_to_edge_colors(
+    points: np.ndarray,
+    base_color: Any,
+    *,
+    center_lighten: float = 0.76,
+    edge_darken: float = 0.34,
+    radius_percentile: float = 88.0,
+    gamma: float = 0.86,
+) -> np.ndarray:
+    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    base_rgb = np.asarray(mcolors.to_rgb(base_color), dtype=np.float32)
+
+    if pts.shape[0] == 1:
+        return base_rgb.reshape(1, 3)
+
+    centroid = np.mean(pts, axis=0, dtype=np.float64)
+    dists = np.linalg.norm(pts - centroid[None, :], axis=1)
+    radius_scale = float(np.percentile(dists, float(radius_percentile)))
+    if radius_scale <= 1e-12:
+        t = np.zeros_like(dists, dtype=np.float32)
+    else:
+        t = np.clip(dists / radius_scale, 0.0, 1.0).astype(np.float32, copy=False)
+    t = np.power(t, float(gamma)).astype(np.float32, copy=False)
+
+    center_rgb = base_rgb + float(center_lighten) * (1.0 - base_rgb)
+    edge_rgb = base_rgb * (1.0 - float(edge_darken))
+    colors = center_rgb[None, :] * (1.0 - t[:, None]) + edge_rgb[None, :] * t[:, None]
+    return np.clip(colors, 0.0, 1.0).astype(np.float32, copy=False)
+
+
+def _resolve_local_coordination_shell(
+    points: np.ndarray,
+    *,
+    min_shell_neighbors: int = 3,
+    max_shell_neighbors: int = 6,
+    shell_gap_ratio: float = 1.18,
+) -> Dict[str, Any]:
+    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    n_points = int(pts.shape[0])
+    if n_points < 2:
+        return {
+            "directed_neighbors": [[] for _ in range(n_points)],
+            "distance_matrix": np.full((n_points, n_points), np.inf, dtype=np.float32),
+            "shell_neighbor_counts": np.zeros((n_points,), dtype=np.int32),
+            "shell_cutoffs": np.zeros((n_points,), dtype=np.float32),
+        }
+
+    min_shell_neighbors = max(1, int(min_shell_neighbors))
+    max_shell_neighbors = min(max(min_shell_neighbors, int(max_shell_neighbors)), n_points - 1)
+    dmat = np.linalg.norm(pts[:, None, :] - pts[None, :, :], axis=-1)
+    np.fill_diagonal(dmat, np.inf)
+    sorted_idx = np.argsort(dmat, axis=1)
+    sorted_dist = np.take_along_axis(dmat, sorted_idx, axis=1)
+
+    candidate_count = min(n_points - 1, max_shell_neighbors + 1)
+    local_shell_counts = np.zeros(n_points, dtype=np.int32)
+    local_cutoffs = np.zeros(n_points, dtype=np.float32)
+    directed_neighbors: List[List[int]] = [[] for _ in range(n_points)]
+
+    for point_idx in range(n_points):
+        candidate_dist = sorted_dist[point_idx, :candidate_count]
+        finite_mask = np.isfinite(candidate_dist)
+        candidate_dist = candidate_dist[finite_mask]
+        candidate_neighbors = sorted_idx[point_idx, :candidate_dist.size]
+
+        lower_bound = min(min_shell_neighbors, candidate_dist.size)
+        upper_bound = min(max_shell_neighbors, candidate_dist.size)
+        shell_count = upper_bound
+        if candidate_dist.size >= 2:
+            gap_start = max(0, lower_bound - 1)
+            gap_stop = min(upper_bound, candidate_dist.size - 1)
+            for gap_idx in range(gap_start, gap_stop):
+                curr = float(candidate_dist[gap_idx])
+                nxt = float(candidate_dist[gap_idx + 1])
+                if curr <= 0.0:
+                    continue
+                if (nxt / curr) >= float(shell_gap_ratio):
+                    shell_count = gap_idx + 1
+                    break
+        local_shell_counts[point_idx] = int(shell_count)
+
+        if candidate_dist.size > shell_count:
+            cutoff = 0.5 * (
+                float(candidate_dist[shell_count - 1]) + float(candidate_dist[shell_count])
+            )
+        else:
+            cutoff = float(candidate_dist[shell_count - 1]) * 1.06
+        local_cutoffs[point_idx] = float(cutoff)
+
+        neighbor_ids = [
+            int(candidate_neighbors[idx])
+            for idx, dist in enumerate(candidate_dist)
+            if idx < int(shell_count) or float(dist) <= float(cutoff)
+        ]
+        if not neighbor_ids:
+            neighbor_ids = [int(candidate_neighbors[0])]
+        directed_neighbors[point_idx] = sorted(
+            set(int(v) for v in neighbor_ids if int(v) != point_idx)
+        )
+
+    return {
+        "directed_neighbors": directed_neighbors,
+        "distance_matrix": dmat.astype(np.float32, copy=False),
+        "shell_neighbor_counts": local_shell_counts,
+        "shell_cutoffs": local_cutoffs,
+    }
+
+
+def _build_local_coordination_edges(
+    points: np.ndarray,
+    *,
+    min_shell_neighbors: int = 3,
+    max_shell_neighbors: int = 6,
+    shell_gap_ratio: float = 1.18,
+    edge_mode: str = "coordination_shell_mutual",
+) -> Tuple[List[Tuple[int, int]], Dict[str, Any]]:
+    shell = _resolve_local_coordination_shell(
+        points,
+        min_shell_neighbors=min_shell_neighbors,
+        max_shell_neighbors=max_shell_neighbors,
+        shell_gap_ratio=shell_gap_ratio,
+    )
+    neighbor_lists = shell["directed_neighbors"]
+    dmat = np.asarray(shell["distance_matrix"], dtype=np.float32)
+    local_shell_counts = np.asarray(shell["shell_neighbor_counts"], dtype=np.int32)
+    local_cutoffs = np.asarray(shell["shell_cutoffs"], dtype=np.float32)
+    n_points = int(dmat.shape[0])
+    if n_points < 2:
+        return [], {
+            "edge_mode": str(edge_mode),
+            "num_edges": 0,
+            "shell_neighbor_count_median": 0.0,
+            "shell_cutoff_median": 0.0,
+        }
+
+    edge_mode_norm = str(edge_mode).strip().lower()
+    alias_map = {
+        "coordination_shell": "coordination_shell",
+        "shell_union": "coordination_shell",
+        "union": "coordination_shell",
+        "coordination_shell_mutual": "coordination_shell_mutual",
+        "shell_mutual": "coordination_shell_mutual",
+        "mutual": "coordination_shell_mutual",
+        "coordination_shell_degree_capped": "coordination_shell_degree_capped",
+        "shell_degree_capped": "coordination_shell_degree_capped",
+        "degree_capped": "coordination_shell_degree_capped",
+    }
+    if edge_mode_norm not in alias_map:
+        raise ValueError(
+            "Unsupported representative edge mode: "
+            f"{edge_mode!r}. Expected one of "
+            "['coordination_shell', 'coordination_shell_mutual', "
+            "'coordination_shell_degree_capped']."
+        )
+    edge_mode_use = alias_map[edge_mode_norm]
+
+    neighbor_sets = [set(neighbors) for neighbors in neighbor_lists]
+    union_edges: set[Tuple[int, int]] = set()
+    mutual_edges: set[Tuple[int, int]] = set()
+    for point_idx, neighbors in enumerate(neighbor_lists):
+        for neighbor_idx in neighbors:
+            edge = (min(point_idx, neighbor_idx), max(point_idx, neighbor_idx))
+            if edge[0] == edge[1]:
+                continue
+            union_edges.add(edge)
+            if point_idx in neighbor_sets[neighbor_idx]:
+                mutual_edges.add(edge)
+
+    if edge_mode_use == "coordination_shell":
+        edges = sorted(union_edges)
+    elif edge_mode_use == "coordination_shell_mutual":
+        edges = sorted(mutual_edges if mutual_edges else union_edges)
+    else:
+        candidate_edges = sorted(
+            mutual_edges if mutual_edges else union_edges,
+            key=lambda edge: float(dmat[edge[0], edge[1]]),
+        )
+        median_degree = int(
+            np.clip(np.rint(np.median(local_shell_counts)), 3, max(3, max_shell_neighbors))
+        )
+        degrees = np.zeros((n_points,), dtype=np.int32)
+        selected: List[Tuple[int, int]] = []
+        for edge in candidate_edges:
+            p0, p1 = edge
+            if degrees[p0] >= median_degree or degrees[p1] >= median_degree:
+                continue
+            selected.append(edge)
+            degrees[p0] += 1
+            degrees[p1] += 1
+        if not selected and candidate_edges:
+            selected = [candidate_edges[0]]
+        edges = selected
+
+    edge_info = {
+        "edge_mode": str(edge_mode_use),
+        "num_edges": int(len(edges)),
+        "shell_neighbor_count_median": float(np.median(local_shell_counts)),
+        "shell_neighbor_count_min": int(np.min(local_shell_counts)),
+        "shell_neighbor_count_max": int(np.max(local_shell_counts)),
+        "shell_cutoff_median": float(np.median(local_cutoffs)),
+        "candidate_union_edges": int(len(union_edges)),
+        "candidate_mutual_edges": int(len(mutual_edges)),
+    }
+    if edge_mode_use == "coordination_shell_degree_capped":
+        edge_info["degree_cap"] = int(
+            np.clip(np.rint(np.median(local_shell_counts)), 3, max(3, max_shell_neighbors))
+        )
+
+    return edges, edge_info
+
+
+def _draw_edges(
+    ax: Any,
+    points: np.ndarray,
+    edges: Sequence[Tuple[int, int]],
+    *,
+    point_colors: Optional[np.ndarray] = None,
+    edge_color: str = "#5f5f5f",
+    edge_alpha: float = 0.60,
+    edge_linewidth: float = 0.94,
+) -> None:
+    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    point_rgb: Optional[np.ndarray] = None
+    if point_colors is not None:
+        point_rgb = np.clip(np.asarray(point_colors, dtype=np.float32)[:, :3], 0.0, 1.0)
+
+    for edge in edges:
+        p1, p2 = pts[int(edge[0])], pts[int(edge[1])]
+        if point_rgb is not None:
+            edge_rgb = 0.5 * (point_rgb[int(edge[0])] + point_rgb[int(edge[1])])
+            edge_rgb = np.clip(edge_rgb * 0.78, 0.0, 1.0)
+            color_use: Any = (float(edge_rgb[0]), float(edge_rgb[1]), float(edge_rgb[2]))
+        else:
+            color_use = edge_color
+        ax.plot(
+            [p1[0], p2[0]],
+            [p1[1], p2[1]],
+            [p1[2], p2[2]],
+            color=color_use,
+            linewidth=float(edge_linewidth),
+            alpha=float(edge_alpha),
+        )
+
+
+def _set_equal_axes_3d(ax: Any, coords: np.ndarray, *, half_span: Optional[float] = None) -> None:
+    mins = np.min(coords, axis=0)
+    maxs = np.max(coords, axis=0)
+    center = 0.5 * (mins + maxs)
+    if half_span is None:
+        span = float(np.max(maxs - mins))
+        if not np.isfinite(span) or span <= 0.0:
+            span = 1.0
+        half = 0.5 * span
+    else:
+        half = float(half_span)
+        if not np.isfinite(half) or half <= 0.0:
+            raise ValueError(f"half_span must be positive and finite, got {half_span}.")
+    ax.set_xlim(center[0] - half, center[0] + half)
+    ax.set_ylim(center[1] - half, center[1] + half)
+    ax.set_zlim(center[2] - half, center[2] + half)
+    if hasattr(ax, "set_box_aspect"):
+        ax.set_box_aspect((1.0, 1.0, 1.0))
+
+
+def _orient_points_for_representative_view(points: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
+    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    if pts.ndim != 2 or pts.shape[1] != 3:
+        raise ValueError(f"points must have shape (N, 3), got {pts.shape}.")
+    if pts.shape[0] == 0:
+        raise ValueError("points must contain at least one coordinate.")
+
+    center_idx = int(np.argmin(np.linalg.norm(pts, axis=1)))
+    centered = pts - pts[center_idx]
+    cov = centered.T @ centered
+    eigvals_raw, eigvecs_raw = np.linalg.eigh(cov)
+    order = np.argsort(eigvals_raw)[::-1]
+    eigvals = np.asarray(eigvals_raw[order], dtype=np.float64)
+    basis = np.asarray(eigvecs_raw[:, order], dtype=np.float64)
+    if basis.shape != (3, 3):
+        raise RuntimeError(
+            f"Internal error: expected PCA basis shape (3, 3), got {basis.shape}."
+        )
+
+    for axis_idx in range(3):
+        proj = centered @ basis[:, axis_idx]
+        anchor_idx = int(np.argmax(np.abs(proj)))
+        if float(proj[anchor_idx]) < 0.0:
+            basis[:, axis_idx] *= -1.0
+
+    det_basis = float(np.linalg.det(basis))
+    if not np.isfinite(det_basis):
+        raise ValueError(f"Invalid PCA basis determinant: det={det_basis}.")
+    if det_basis < 0.0:
+        basis[:, 2] *= -1.0
+        det_basis = float(np.linalg.det(basis))
+    if det_basis <= 0.0:
+        raise ValueError(f"Failed to build a right-handed PCA basis: det={det_basis}.")
+
+    oriented = centered @ basis
+    return oriented.astype(np.float32, copy=False), {
+        "orientation_method": "pca",
+        "center_index": int(center_idx),
+        "pca_eigenvalues": [float(v) for v in eigvals.tolist()],
+        "pca_basis_det": float(det_basis),
+    }
+
+
+def _render_local_representative_gallery(
+    title: str,
+    filename: pathlib.Path,
+    selected_phases: Sequence[str],
+    atoms: Sequence[Dict[str, Any]],
+    atom_positions: np.ndarray,
+    positions_tree: cKDTree,
+    global_cfg: Any,
+    rng: np.random.Generator,
+    color_map: Dict[str, Any],
+    *,
+    target_count: int = 48,
+    candidate_limit: int = 256,
+    view_elev: float = 22.0,
+    view_azim: float = 38.0,
+) -> None:
+    if not selected_phases:
+        return
+
+    phase_to_atoms: Dict[str, List[Dict[str, Any]]] = {str(phase): [] for phase in selected_phases}
+    for atom in atoms:
+        phase = str(atom.get("phase_id"))
+        if phase in phase_to_atoms:
+            phase_to_atoms[phase].append(atom)
+    phase_list = [phase for phase in selected_phases if phase_to_atoms[str(phase)]]
+    if not phase_list:
+        return
+
+    n_panels = len(phase_list)
+    n_cols = min(3, n_panels)
+    n_rows = int(np.ceil(n_panels / max(1, n_cols)))
+    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=220, facecolor="white")
+
+    for pos, phase in enumerate(phase_list):
+        representative = _select_representative_local_environment(
+            str(phase),
+            phase_to_atoms[str(phase)],
+            atom_positions,
+            positions_tree,
+            global_cfg,
+            rng,
+            target_count=target_count,
+            candidate_limit=candidate_limit,
+        )
+        local_oriented, _ = _orient_points_for_representative_view(representative["local_points"])
+        base_color = color_map.get(str(phase), _DEFAULT_GRAY_RGBA)
+        point_colors = _compute_center_to_edge_colors(local_oriented, base_color)
+        edges, _ = _build_local_coordination_edges(
+            local_oriented,
+            min_shell_neighbors=2,
+            max_shell_neighbors=5,
+            shell_gap_ratio=1.22,
+            edge_mode="coordination_shell_mutual",
+        )
+
+        ax = fig.add_subplot(n_rows, n_cols, pos + 1, projection="3d")
+        ax.set_facecolor("white")
+        if hasattr(ax, "set_proj_type"):
+            ax.set_proj_type("ortho")
+        ax.view_init(elev=float(view_elev), azim=float(view_azim))
+
+        _draw_edges(
+            ax,
+            local_oriented,
+            edges,
+            point_colors=point_colors,
+            edge_alpha=0.60,
+            edge_linewidth=0.94,
+        )
+        ax.scatter(
+            local_oriented[:, 0],
+            local_oriented[:, 1],
+            local_oriented[:, 2],
+            c=point_colors,
+            s=58,
+            alpha=0.97,
+            edgecolors="#222222",
+            linewidths=0.36,
+            depthshade=False,
+        )
+        _set_equal_axes_3d(ax, local_oriented)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
+        ax.grid(False)
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        ax.set_zlabel("")
+        for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+            if hasattr(axis, "pane"):
+                axis.pane.fill = False
+                axis.pane.set_edgecolor((1.0, 1.0, 1.0, 1.0))
+            if hasattr(axis, "line"):
+                axis.line.set_color((1.0, 1.0, 1.0, 1.0))
+
+        ax.set_title(
+            _format_class_label(str(phase)),
+            fontsize=10,
+            color=_darken_color(base_color),
+            pad=3,
+            fontweight="bold",
+        )
+
+    fig.suptitle(title, fontsize=12, fontweight='bold', y=0.965)
+    fig.subplots_adjust(left=0.02, right=0.988, bottom=0.035, top=0.91, wspace=0.03, hspace=0.12)
+    filename.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(filename, bbox_inches='tight')
+    plt.close(fig)
 
 
 def _plot_object(
@@ -1516,35 +3632,23 @@ def _plot_local_neighborhood(
         edge_type: 'delaunay' for Delaunay triangulation edges, 'knn' for k-nearest neighbor edges
         knn_k: Number of neighbors for KNN edges (only used if edge_type='knn')
     """
-    # Detect if we are using the simple generator (has objects_per_grain)
-    is_simple_generator = hasattr(global_cfg, 'objects_per_grain')
-    
-    if is_simple_generator:
-        # Heuristic for simple generator to capture entire object
-        # Calculate approximate object size
+    radius: Optional[float] = None
+    if hasattr(global_cfg, 'objects_per_grain'):
         total_objects = global_cfg.grain_count * global_cfg.objects_per_grain
         if total_objects > 0:
             vol_per_object = (global_cfg.L**3 * 0.15) / total_objects
             base_radius = (vol_per_object / (4/3 * np.pi))**(1/3)
-            # Use a large factor to ensure we capture the whole object relative to the center atom
-            # (which might be at the edge of the object)
             radius = base_radius * 5.0
-            
-            # Increase target count to see the shape
             target_count = min(int(global_cfg.points_per_object), 500)
-        else:
-             radius = 2.0 * global_cfg.avg_nn_dist
-    else:
-        radius = 2.0 * global_cfg.avg_nn_dist
 
-    center_pos = np.array(center_atom['position'])
-    
-    idxs = positions_tree.query_ball_point(center_pos, r=radius)
-    if len(idxs) < target_count:
-        _, idxs = positions_tree.query(center_pos, k=min(target_count, len(atom_positions)))
-        idxs = np.atleast_1d(idxs)
-    
-    coords = atom_positions[idxs] - center_pos
+    coords = _extract_local_neighborhood_points(
+        center_atom,
+        atom_positions,
+        positions_tree,
+        global_cfg,
+        target_count=target_count,
+        radius=radius,
+    )
     
     # Rotate to align with crystal orientation if available
     phase = center_atom.get('phase_id', '')
@@ -1553,14 +3657,9 @@ def _plot_local_neighborhood(
         if rotation.shape == (3, 3):
             coords = (rotation.T @ coords.T).T
     
-    # Sort by distance and take nearest target_count
-    dists_sq = np.sum(coords**2, axis=1)
-    sort_idx = np.argsort(dists_sq)
-    coords = coords[sort_idx[:target_count]]
-    
     # Color by distance from center
     distances = np.linalg.norm(coords, axis=1)
-    max_dist = np.max(distances) if len(distances) > 0 else radius
+    max_dist = np.max(distances) if len(distances) > 0 else float(global_cfg.avg_nn_dist)
     colors = plt.cm.viridis(distances / (max_dist + 1e-6))
     
     ax.scatter(coords[:, 0], coords[:, 1], coords[:, 2],

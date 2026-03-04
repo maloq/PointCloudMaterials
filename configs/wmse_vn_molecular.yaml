@@ -1,55 +1,36 @@
 defaults:
 # - data: data_synth_polycrystalline_balanced_geometries_v2
 # - data: data_ae_multi_material
- - data: data_synth_polycrystalline_balanced_geometries
-# - data: data_ae_Al_24
+- data: data_synth_polycrystalline_balanced_geometries
+
 data:
   analysis_data_files: ['175ps.npy']
   analysis_data_file: null
   analysis_single_timestep: false
+
 project_name: pointnet
-experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: WMSE_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
-model_type: vicreg  # Self-supervised VICReg
+model_type: wmse  # Self-supervised W-MSE
 latent_size: 512  # For RI_MAE_Invariant this must equal 2 * trans_dim.
 
-load_supervised_checkpoint: output/2026-02-26/19-53-51/VICREG_l512_N128_M80_RI_MAE_Invariant-epoch=59.ckpt
-
+load_supervised_checkpoint: false
 resume_from_checkpoint: null
 
 # Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
 # VN_REVNET_Backbone, PnE_VN, VN_DGCNN, DGCNN, EGNN_Encoder, PnE_L, PnE_S, MLP).
-# encoder:
-#   name: RI_MAE_Invariant
-#   kwargs:
-#     latent_size: ${latent_size}
-#     num_group: 24
-#     group_size: 12
-#     encoder_dims: 512
-#     trans_dim: 256
-#     depth: 8
-#     predictor_depth: 4
-#     num_heads: 16
-#     mlp_ratio: 4.0
-#     dropout: 0.0
-#     mask_ratio: 0.6
-#     ema_decay: 0.996
-#     deterministic_fps: false
-#     sorting_mode: nearest
-#     center_input: true
-
 encoder:
   name: RI_MAE_Invariant
   kwargs:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
-    encoder_dims: 384
+    encoder_dims: 512
     trans_dim: 256
     depth: 8
-    predictor_depth: 2
-    num_heads: 8
+    predictor_depth: 4
+    num_heads: 16
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6
@@ -59,7 +40,7 @@ encoder:
     center_input: true
 
 
-# Decoder config is required by the model factory but is not used for VICReg
+# Decoder config is required by the model factory but is not used for W-MSE
 decoder:
   name: VN_REVNET_Anchor
   kwargs:
@@ -82,15 +63,15 @@ auto_batch_size_adjust_accumulate: true
 auto_batch_size_target_effective_batch: null
 auto_batch_size_strict: false
 
-enable_swa: False
+enable_swa: false
 swa_epoch_start: 1000
 epochs: 60
 max_samples: 0
 check_val_every_n_epoch: 5
 
-gpu: True
+gpu: true
 devices: [0, 1]
-ddp_find_unused_parameters: True
+ddp_find_unused_parameters: true
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
@@ -106,60 +87,58 @@ enable_embedding_metrics: false
 enable_svm_accuracy: false
 
 # IDEC clustering (disabled by default; enable after pretraining)
-idec_enabled: False
+idec_enabled: false
 idec_num_clusters: 0
 idec_gamma: 0.1
 idec_update_interval: 200
 idec_delta: 0.001
 idec_max_iter: null
-idec_use_global_p: True
-idec_normalize_z: True
-idec_init_kmeans: True
+idec_use_global_p: true
+idec_normalize_z: true
+idec_init_kmeans: true
 
-# Barlow Twins (disabled)
-barlow_enabled: False
+# Barlow Twins / VICReg / PointContrast (disabled)
+barlow_enabled: false
 barlow_weight: 0.0
+vicreg_enabled: false
+vicreg_weight: 0.0
+pointcontrast_enabled: false
+pointcontrast_weight: 0.0
 
-# VICReg (self-supervised)
-vicreg_enabled: True
-vicreg_weight: 1.0
-vicreg_sim_coeff: 25.0
-vicreg_std_coeff: 25.0
-vicreg_cov_coeff: 1.0
-vicreg_embed_dim: 120
-vicreg_start_epoch: 0
-vicreg_jitter_std: 0.01
-vicreg_jitter_mode: physical
-vicreg_drop_ratio: 0.0
-vicreg_neighbor_view: true
-vicreg_neighbor_view_mode: second
-vicreg_neighbor_k: 6
-vicreg_view_points: ${data.model_points}
-vicreg_rotation_mode: none
-vicreg_rotation_deg: 10.0
-vicreg_strain_std: 0.02
-vicreg_strain_volume_preserve: true
-vicreg_occlusion_mode: mixed
-vicreg_occlusion_view: second
-vicreg_occlusion_slab_frac: 0.0
-vicreg_occlusion_cone_deg: 0.0
-vicreg_std_eps: 1e-4
-vicreg_std_target: 1.0
-vicreg_invariant_mode: passthrough
-vicreg_invariant_max_factor: 4.0
-vicreg_invariant_groups: 0
-vicreg_invariant_use_third_order: true
-vicreg_invariant_eps: 1e-6
-vicreg_radial_enabled: false
-vicreg_radial_beta1: 1.0
-vicreg_radial_beta2: 0.1
-vicreg_radial_m: null
-vicreg_radial_eps: 1e-8
+# W-MSE (self-supervised)
+wmse_enabled: true
+wmse_weight: 1.0
+wmse_embed_dim: 120
+wmse_start_epoch: 0
+wmse_jitter_std: 0.01
+wmse_jitter_mode: physical
+wmse_drop_ratio: 0.0
+wmse_neighbor_view: true
+wmse_neighbor_view_mode: second
+wmse_neighbor_k: 6
+wmse_view_points: ${data.model_points}
+wmse_rotation_mode: none
+wmse_rotation_deg: 10.0
+wmse_strain_std: 0.02
+wmse_strain_volume_preserve: true
+wmse_occlusion_mode: mixed
+wmse_occlusion_view: second
+wmse_occlusion_slab_frac: 0.0
+wmse_occlusion_cone_deg: 0.0
+wmse_invariant_mode: passthrough
+wmse_invariant_max_factor: 4.0
+wmse_invariant_groups: 0
+wmse_invariant_use_third_order: true
+wmse_invariant_eps: 1e-6
+wmse_whitening_eps: 1e-4
+wmse_whitening_iters: 1
+wmse_whitening_size: 256
+wmse_normalize_embeddings: true
 
 
 # Pose regression (symmetry-aware)
 pose:
-  enabled: False
+  enabled: false
   weight: 0.4
   start_epoch: 10
   head_hidden: 256

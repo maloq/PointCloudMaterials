@@ -8,6 +8,18 @@ model_points: 80
 overlap_fraction: 0.3
 dr: 0.01
 
+# Optional per-material cutoff auto-estimation.
+# Each data_source (material folder) gets its own radius so local neighborhoods
+# contain a comparable number of atoms before downsampling to num_points.
+auto_cutoff:
+  enabled: true
+  target_points: 128
+  quantile: 0.995
+  estimation_samples_per_file: 4000
+  seed: 42
+  safety_factor: 1.02
+  boundary_margin: 7.2
+
 # Multiple data sources: each entry has a path and list of .npy files
 data_sources:
   - data_path: 'datasets/Al/inherent_configurations_off'

@@ -42,6 +42,7 @@ def save_latent_tsne(
     out_dir: Path,
     max_samples: int | None = None,
     class_names: Dict[int, str] | None = None,
+    random_state: int = 42,
 ) -> None:
     """Save t-SNE plots: one with ground truth phases, one with clustering results."""
     if inv_latents.size == 0 or len(inv_latents) < 2:
@@ -55,13 +56,22 @@ def save_latent_tsne(
     gt_labels = phases if has_phases else None
 
     if max_samples is not None and len(latents) > max_samples:
-        idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
+        idx = np.random.default_rng(int(random_state)).choice(
+            len(latents),
+            size=max_samples,
+            replace=False,
+        )
         latents = latents[idx]
         if gt_labels is not None:
             gt_labels = gt_labels[idx]
 
     perplexity = min(50, max(5, len(latents) // 100))
-    tsne_coords = compute_tsne(latents, perplexity=perplexity, n_iter=1500)
+    tsne_coords = compute_tsne(
+        latents,
+        random_state=int(random_state),
+        perplexity=perplexity,
+        n_iter=1500,
+    )
 
     if gt_labels is not None:
         save_tsne_plot(
@@ -76,8 +86,9 @@ def save_latent_tsne(
     n_clusters = len(np.unique(gt_labels)) if gt_labels is not None else 4
     n_clusters = max(2, min(n_clusters, len(latents) // 2))
 
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-    cluster_labels = kmeans.fit_predict(latents)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=int(random_state), n_init=10)
+    cluster_labels = kmeans.fit_predict(latents).astype(int, copy=False)
+    cluster_labels, _ = _canonicalize_cluster_labels(cluster_labels, latents)
 
     save_tsne_plot(
         tsne_coords,
@@ -153,34 +164,44 @@ def _prepare_clustering_features(
     return x.astype(np.float32, copy=False), info
 
 
-def _fit_labels_single_method(
+def _canonicalize_cluster_labels(
+    labels: np.ndarray,
     features: np.ndarray,
-    n_clusters: int,
-    *,
-    method: str,
-    random_state: int,
 ) -> tuple[np.ndarray, Dict[str, Any]]:
-    method = str(method).lower()
-    if method == "kmeans":
-        model = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=20)
-        labels = model.fit_predict(features)
-        return labels.astype(int), {
-            "method": "kmeans",
-            "model_score_name": "inertia",
-            "model_score": float(model.inertia_),
+    labels_arr = np.asarray(labels, dtype=int).reshape(-1)
+    feats = np.asarray(features, dtype=np.float32)
+    valid_ids = sorted(int(v) for v in np.unique(labels_arr) if int(v) >= 0)
+    if not valid_ids:
+        return labels_arr.copy(), {
+            "cluster_label_canonicalization": "none",
+            "cluster_label_remap": {},
         }
 
-    raise ValueError(f"Unsupported clustering method: {method}")
+    centroids_by_label = {
+        int(cluster_id): tuple(
+            float(v)
+            for v in np.mean(feats[labels_arr == cluster_id], axis=0, dtype=np.float64).tolist()
+        )
+        for cluster_id in valid_ids
+    }
+    ordered_ids = sorted(
+        valid_ids,
+        key=lambda cluster_id: centroids_by_label[int(cluster_id)] + (int(cluster_id),),
+    )
+    remap = {int(old): int(new) for new, old in enumerate(ordered_ids)}
+    if all(int(old) == int(new) for old, new in remap.items()):
+        return labels_arr.copy(), {
+            "cluster_label_canonicalization": "feature_centroid_lexicographic",
+            "cluster_label_remap": remap,
+        }
 
-
-def _resolve_method_candidates(method: str, num_samples: int) -> list[str]:
-    method = str(method).lower()
-    if method == "kmeans":
-        return [method]
-    if method != "auto":
-        return ["kmeans"]
-    _ = num_samples
-    return ["kmeans"]
+    canonical = labels_arr.copy()
+    for old_label, new_label in remap.items():
+        canonical[labels_arr == int(old_label)] = int(new_label)
+    return canonical.astype(int, copy=False), {
+        "cluster_label_canonicalization": "feature_centroid_lexicographic",
+        "cluster_label_remap": remap,
+    }
 
 
 def _cluster_with_method_selection(
@@ -190,33 +211,20 @@ def _cluster_with_method_selection(
     method: str,
     random_state: int,
 ) -> tuple[np.ndarray, Dict[str, Any]]:
-    candidates = _resolve_method_candidates(method, len(features))
-    candidate_errors: list[tuple[str, Exception]] = []
-
-    for candidate in candidates:
-
-        labels, info = _fit_labels_single_method(
-            features,
-            n_clusters,
-            method=candidate,
-            random_state=random_state,
-        )
-
-        selected_info = dict(info)
-        selected_info["requested_method"] = str(method).lower()
-        selected_info["fallback_used"] = False
-
-
-    labels, info = _fit_labels_single_method(
-        features,
-        n_clusters,
-        method="kmeans",
-        random_state=random_state,
-    )
-    selected_info = dict(info)
-    selected_info["requested_method"] = str(method).lower()
-    selected_info["fallback_used"] = True
-    return labels, selected_info
+    requested_method = str(method).lower()
+    resolved_method = "kmeans"
+    model = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=20)
+    labels = model.fit_predict(features).astype(int, copy=False)
+    labels_canonical, canonical_info = _canonicalize_cluster_labels(labels, features)
+    return labels_canonical, {
+        "method": resolved_method,
+        "requested_method": requested_method,
+        "fallback_used": requested_method != resolved_method,
+        "model_score_name": "inertia",
+        "model_score": float(model.inertia_),
+        "random_state": int(random_state),
+        **canonical_info,
+    }
 
 
 def compute_kmeans_labels(
@@ -276,6 +284,7 @@ def compute_kmeans_labels(
         **prep_info,
         **fit_info,
         "n_clusters": int(n_clusters),
+        "random_state": int(random_state),
     }
     if return_info:
         return labels, info
@@ -687,6 +696,7 @@ def save_tsne_plot_with_coords(
     out_name: str,
     title: str,
     legend_title: str = "cluster",
+    cluster_color_map: dict[int, str] | None = None,
 ) -> None:
     if tsne_coords.size == 0 or labels.size != len(tsne_coords):
         return
@@ -698,6 +708,7 @@ def save_tsne_plot_with_coords(
         out_file=str(out_dir / out_name),
         title=title,
         legend_title=legend_title,
+        cluster_color_map=cluster_color_map,
     )
 
 
@@ -883,6 +894,7 @@ def save_md_space_clusters_plot(
     cluster_labels: np.ndarray,
     out_file: Path,
     *,
+    cluster_color_map: dict[int, str] | None = None,
     max_points: int | None = None,
 ) -> None:
     if coords.size == 0 or len(coords) < 2:
@@ -904,15 +916,21 @@ def save_md_space_clusters_plot(
     ax = fig.add_subplot(111, projection="3d")
     for i, label in enumerate(unique_labels):
         mask = labels_plot == label
+        label_int = int(label)
+        color = (
+            str(cluster_color_map[label_int])
+            if cluster_color_map is not None and label_int in cluster_color_map
+            else colors[i]
+        )
         ax.scatter(
             coords_plot[mask, 0],
             coords_plot[mask, 1],
             coords_plot[mask, 2],
-            c=[colors[i]],
+            c=[color],
             s=6,
             alpha=0.6,
             depthshade=True,
-            label=str(int(label)),
+            label=str(label_int),
         )
 
     ax.set_xlabel("x")
@@ -1191,214 +1209,6 @@ def save_latent_statistics(
     return stats
 
 
-def save_clustering_analysis(
-    inv_latents: np.ndarray,
-    phases: np.ndarray,
-    out_dir: Path,
-    max_samples: int | None = None,
-    class_names: Dict[int, str] | None = None,
-    cluster_method: str = "auto",
-    l2_normalize: bool = True,
-    standardize: bool = True,
-    pca_variance: float | None = 0.98,
-    pca_max_components: int = 32,
-    k_values: list[int] | None = None,
-) -> Dict[str, Any]:
-    """Perform clustering analysis on latent space and compute quality metrics."""
-    if inv_latents.size == 0 or len(inv_latents) < 10:
-        return {}
-
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    latents = inv_latents
-    has_phases = phases.size == len(latents)
-    gt_labels = phases if has_phases else None
-
-    if max_samples is not None and len(latents) > max_samples:
-        idx = np.random.default_rng(0).choice(len(latents), size=max_samples, replace=False)
-        latents = latents[idx]
-        if gt_labels is not None:
-            gt_labels = gt_labels[idx]
-
-    features, prep_info = _prepare_clustering_features(
-        latents,
-        random_state=42,
-        l2_normalize=l2_normalize,
-        standardize=standardize,
-        pca_variance=pca_variance,
-        pca_max_components=pca_max_components,
-    )
-
-    metrics: Dict[str, Any] = {
-        "cluster_feature_prep": prep_info,
-        "cluster_method_requested": str(cluster_method).lower(),
-    }
-
-    if k_values is None:
-        requested_k_values = [3, 4, 5, 6]
-    else:
-        requested_k_values = [int(v) for v in k_values]
-
-    k_range: list[int] = []
-    for k in requested_k_values:
-        if int(k) < 2:
-            continue
-        k_eff = int(min(int(k), len(features)))
-        if k_eff >= 2 and k_eff not in k_range:
-            k_range.append(k_eff)
-
-    if not k_range:
-        k_range = [max(2, min(len(features), 3))]
-
-    metrics["k_values_requested"] = [int(v) for v in requested_k_values]
-    metrics["k_values_evaluated"] = [int(v) for v in k_range]
-    if len(k_range) < 1:
-        return metrics
-
-    inertias: list[float] = []
-    selected_methods: dict[int, str] = {}
-    selected_model_scores: dict[int, float] = {}
-
-    for k in k_range:
-        _, info_k = _cluster_with_method_selection(
-            features,
-            k,
-            method=cluster_method,
-            random_state=42,
-        )
-        selected_methods[int(k)] = str(info_k.get("method", "kmeans"))
-        model_score = info_k.get("model_score", np.nan)
-        selected_model_scores[int(k)] = float(model_score) if np.isfinite(model_score) else float("nan")
-
-        # Keep a consistent elbow metric independent of selected method.
-        km = KMeans(n_clusters=k, random_state=42, n_init=10)
-        km.fit(features)
-        inertias.append(float(km.inertia_))
-
-    primary_k = int(k_range[0])
-    primary_method = selected_methods.get(primary_k, "kmeans")
-    metrics["selected_method_by_k"] = {int(k): selected_methods[int(k)] for k in k_range}
-    metrics["selected_model_score_by_k"] = {
-        int(k): float(selected_model_scores[int(k)]) for k in k_range
-    }
-    metrics["inertia_by_k"] = {int(k): float(v) for k, v in zip(k_range, inertias)}
-    metrics["primary_k"] = int(primary_k)
-    metrics["primary_method"] = str(primary_method)
-
-    if gt_labels is not None:
-        from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
-
-        n_true_clusters = len(np.unique(gt_labels))
-        pred_labels, _ = _cluster_with_method_selection(
-            features,
-            n_true_clusters,
-            method=cluster_method,
-            random_state=42,
-        )
-
-        ari = adjusted_rand_score(gt_labels, pred_labels)
-        nmi = normalized_mutual_info_score(gt_labels, pred_labels)
-
-        metrics["ari_with_gt"] = float(ari)
-        metrics["nmi_with_gt"] = float(nmi)
-
-    unique_labels = np.array([], dtype=int)
-    class_centroids: dict[int, np.ndarray] = {}
-    if gt_labels is not None:
-        unique_labels = np.unique(gt_labels)
-        if len(unique_labels) > 1:
-            intra_dists = []
-            inter_dists = []
-
-            for label in unique_labels:
-                mask = gt_labels == label
-                class_points = features[mask]
-                centroid = np.mean(class_points, axis=0)
-                class_centroids[label] = centroid
-
-                dists_to_centroid = np.linalg.norm(class_points - centroid, axis=1)
-                intra_dists.extend(dists_to_centroid.tolist())
-
-            centroids_arr = np.array(list(class_centroids.values()))
-            for i in range(len(centroids_arr)):
-                for j in range(i + 1, len(centroids_arr)):
-                    inter_dists.append(np.linalg.norm(centroids_arr[i] - centroids_arr[j]))
-
-            metrics["mean_intra_class_distance"] = float(np.mean(intra_dists))
-            metrics["mean_inter_class_distance"] = float(np.mean(inter_dists))
-            metrics["class_separation_ratio"] = float(
-                np.mean(inter_dists) / (np.mean(intra_dists) + 1e-8)
-            )
-
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5), dpi=150)
-
-    axes[0].plot(k_range, inertias, "g-o", markersize=6)
-    axes[0].axvline(
-        x=primary_k,
-        color="r",
-        linestyle="--",
-        label=f"Primary k={primary_k} ({primary_method})",
-    )
-    axes[0].set_xlabel("Number of Clusters (k)")
-    axes[0].set_ylabel("Inertia (Within-cluster SS)")
-    axes[0].set_title("Elbow Plot (Configured k)")
-    axes[0].legend()
-    axes[0].grid(True, alpha=0.3)
-
-    method_lines = [
-        f"requested: {str(cluster_method).lower()}",
-        f"k values: {', '.join(str(k) for k in k_range)}",
-        f"primary : {primary_k} ({primary_method})",
-        "method by k:",
-    ]
-    method_lines.extend([f"k={k:<2d} -> {selected_methods[int(k)]}" for k in k_range])
-    axes[1].axis("off")
-    axes[1].text(
-        0.02,
-        0.98,
-        "\n".join(method_lines),
-        transform=axes[1].transAxes,
-        ha="left",
-        va="top",
-        fontsize=9,
-        family="monospace",
-    )
-    axes[1].set_title("Configured Clustering")
-
-    if gt_labels is not None and len(unique_labels) > 1:
-        separation_data = []
-        labels_list = []
-        for label in unique_labels:
-            mask = gt_labels == label
-            class_points = features[mask]
-            centroid = class_centroids[label]
-            dists = np.linalg.norm(class_points - centroid, axis=1)
-            separation_data.append(dists)
-
-            label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
-            labels_list.append(label_text)
-
-        bp = axes[2].boxplot(separation_data, labels=labels_list, patch_artist=True)
-        colors = _tab10_colors(len(unique_labels))
-        for patch, color in zip(bp["boxes"], colors):
-            patch.set_facecolor(color)
-            patch.set_alpha(0.6)
-        axes[2].set_xlabel("Phase")
-        axes[2].set_ylabel("Distance to Class Centroid")
-        axes[2].set_title("Intra-Class Distance Distribution")
-        axes[2].tick_params(axis="x", rotation=45)
-    else:
-        axes[2].text(0.5, 0.5, "No class labels available", ha="center", va="center")
-        axes[2].set_title("Class Separation")
-
-    plt.tight_layout()
-    fig.savefig(out_dir / "clustering_analysis.png")
-    plt.close(fig)
-
-    return metrics
-
-
 def save_equivariance_plot(eq_errors: np.ndarray, out_file: Path) -> None:
     if eq_errors.size == 0:
         return
@@ -1427,6 +1237,5 @@ __all__ = [
     "save_md_space_clusters_plot",
     "save_pca_visualization",
     "save_latent_statistics",
-    "save_clustering_analysis",
     "save_equivariance_plot",
 ]

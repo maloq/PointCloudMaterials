@@ -1,0 +1,53 @@
+defaults:
+  - data: data_synth_polycrystalline_balanced_geometries
+  - _self_
+
+project_name: pointnet
+experiment_name: descriptor_baseline_${descriptor.name}
+
+batch_size: 512
+num_workers: 0
+max_samples: 0
+split_seed: 42
+
+max_supervised_samples: 8192
+max_test_samples: 1000
+cluster_acc_seed: 0
+val_cluster_eval_k: null
+val_cluster_acc_methods: ["kmeans++"]
+val_cluster_acc_runs: 1
+val_cluster_acc_runs_by_method: {}
+test_cluster_acc_methods: ["kmeans++"]
+test_cluster_acc_runs: 1
+test_cluster_acc_runs_by_method: {}
+enable_test_so3_metrics: true
+test_so3_rotation_runs: 5
+test_so3_rotation_seed: 12345
+
+descriptor:
+  name: steinhardt
+  center_atom_tolerance: 1e-6
+  shell_min_neighbors: 8
+  shell_max_neighbors: 24
+
+  steinhardt:
+    l_values: [4, 6, 8, 10, 12]
+    append_shell_size: true
+
+  soap:
+    species: Al
+    point_scale: null
+    r_cut: null
+    r_cut_multiplier: 1.4
+    r_cut_min: 1.01
+    n_max: 12
+    l_max: 8
+    sigma: 0.2
+    pca_components: 96
+    fit_max_pointclouds: 8000
+    n_jobs: 1
+
+  cna:
+    max_signatures: 12
+    append_shell_size: true
+    fit_max_pointclouds: 4000

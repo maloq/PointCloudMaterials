@@ -98,6 +98,7 @@ def save_interactive_md_plot(
     out_file: Path,
     *,
     palette: str | None = "tab10",
+    cluster_color_map: dict[int, str] | None = None,
     max_points: int | None = None,
     marker_size: float = 3.0,
     marker_line_width: float = 0.0,
@@ -140,10 +141,15 @@ def save_interactive_md_plot(
     fig = go.Figure()
     for i, label in enumerate(unique_labels):
         mask = clusters_plot == label
-        color = palette_colors[i % len(palette_colors)]
+        label_int = int(label)
+        color = (
+            str(cluster_color_map[label_int])
+            if cluster_color_map is not None and label_int in cluster_color_map
+            else palette_colors[i % len(palette_colors)]
+        )
         customdata = None
         hovertemplate = (
-            f"{label_prefix} {int(label)}<br>"
+            f"{label_prefix} {label_int}<br>"
             "x=%{x:.3f}<br>y=%{y:.3f}<br>z=%{z:.3f}"
         )
         if hover_values_plot is not None:
@@ -156,7 +162,7 @@ def save_interactive_md_plot(
                 y=coords_plot[mask, 1],
                 z=coords_plot[mask, 2],
                 mode="markers",
-                name=f"{label_prefix} {int(label)}",
+                name=f"{label_prefix} {label_int}",
                 marker=dict(
                     size=marker_size,
                     color=color,
@@ -165,7 +171,7 @@ def save_interactive_md_plot(
                 ),
                 hovertemplate=hovertemplate,
                 customdata=customdata,
-                legendgroup=str(int(label)),
+                legendgroup=str(label_int),
                 showlegend=show_legend,
             )
         )

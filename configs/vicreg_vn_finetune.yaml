@@ -1,43 +1,24 @@
 defaults:
-# - data: data_synth_polycrystalline_balanced_geometries_v2
-# - data: data_ae_multi_material
- - data: data_synth_polycrystalline_balanced_geometries
-# - data: data_ae_Al_24
+  - data: data_ae_Al_80
+  - _self_
+
 data:
-  analysis_data_files: ['175ps.npy']
+  analysis_data_files: ["166ps.npy", "170ps.npy", "174ps.npy", "177ps.npy", "240ps.npy"]
   analysis_data_file: null
   analysis_single_timestep: false
+
 project_name: pointnet
-experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: VICREG_FT_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
-model_type: vicreg  # Self-supervised VICReg
-latent_size: 512  # For RI_MAE_Invariant this must equal 2 * trans_dim.
+model_type: vicreg
+latent_size: 512
 
-load_supervised_checkpoint: output/2026-02-26/19-53-51/VICREG_l512_N128_M80_RI_MAE_Invariant-epoch=59.ckpt
-
+load_supervised_checkpoint: false
+# Fresh finetune: load model weights from the pretrained checkpoint and reset optimizer/epoch state.
 resume_from_checkpoint: null
-
-# Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
-# VN_REVNET_Backbone, PnE_VN, VN_DGCNN, DGCNN, EGNN_Encoder, PnE_L, PnE_S, MLP).
-# encoder:
-#   name: RI_MAE_Invariant
-#   kwargs:
-#     latent_size: ${latent_size}
-#     num_group: 24
-#     group_size: 12
-#     encoder_dims: 512
-#     trans_dim: 256
-#     depth: 8
-#     predictor_depth: 4
-#     num_heads: 16
-#     mlp_ratio: 4.0
-#     dropout: 0.0
-#     mask_ratio: 0.6
-#     ema_decay: 0.996
-#     deterministic_fps: false
-#     sorting_mode: nearest
-#     center_input: true
+init_from_checkpoint: output/2026-02-26/19-53-51/VICREG_l512_N128_M80_RI_MAE_Invariant-epoch=59.ckpt
+init_from_checkpoint_strict: false
 
 encoder:
   name: RI_MAE_Invariant
@@ -45,11 +26,11 @@ encoder:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
-    encoder_dims: 384
+    encoder_dims: 512
     trans_dim: 256
     depth: 8
-    predictor_depth: 2
-    num_heads: 8
+    predictor_depth: 4
+    num_heads: 16
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6
@@ -58,17 +39,15 @@ encoder:
     sorting_mode: nearest
     center_input: true
 
-
-# Decoder config is required by the model factory but is not used for VICReg
 decoder:
   name: VN_REVNET_Anchor
   kwargs:
     num_points: ${data.model_points}
     latent_size: ${latent_size}
 
-# Training parameters
-learning_rate: 0.003
-batch_size: 4096
+# Smaller-data finetuning defaults: lower LR and smaller per-device batch than the pretrain run.
+learning_rate: 0.0003
+batch_size: 128
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1
@@ -82,22 +61,25 @@ auto_batch_size_adjust_accumulate: true
 auto_batch_size_target_effective_batch: null
 auto_batch_size_strict: false
 
-enable_swa: False
+enable_swa: false
 swa_epoch_start: 1000
-epochs: 60
+epochs: 30
+# Override max_samples or data.n_samples at launch time if you want to finetune on a strict subset.
 max_samples: 0
-check_val_every_n_epoch: 5
+check_val_every_n_epoch: 1
+run_post_training_analysis: false
+run_test_after_training: true
 
-gpu: True
+gpu: true
 devices: [0, 1]
-ddp_find_unused_parameters: True
+ddp_find_unused_parameters: true
 log_every_n_steps: 5
 num_workers: 6
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
 warmup_enabled: true
-warmup_epochs: 12
+warmup_epochs: 4
 warmup_start_factor: 0.1
 
 decay_rate: 0.0004
@@ -105,23 +87,20 @@ contrastive_norms_only_latent: true
 enable_embedding_metrics: false
 enable_svm_accuracy: false
 
-# IDEC clustering (disabled by default; enable after pretraining)
-idec_enabled: False
+idec_enabled: false
 idec_num_clusters: 0
 idec_gamma: 0.1
 idec_update_interval: 200
 idec_delta: 0.001
 idec_max_iter: null
-idec_use_global_p: True
-idec_normalize_z: True
-idec_init_kmeans: True
+idec_use_global_p: true
+idec_normalize_z: true
+idec_init_kmeans: true
 
-# Barlow Twins (disabled)
-barlow_enabled: False
+barlow_enabled: false
 barlow_weight: 0.0
 
-# VICReg (self-supervised)
-vicreg_enabled: True
+vicreg_enabled: true
 vicreg_weight: 1.0
 vicreg_sim_coeff: 25.0
 vicreg_std_coeff: 25.0
@@ -141,6 +120,7 @@ vicreg_strain_std: 0.02
 vicreg_strain_volume_preserve: true
 vicreg_occlusion_mode: mixed
 vicreg_occlusion_view: second
+vicreg_occlusion_prob: 0.25
 vicreg_occlusion_slab_frac: 0.0
 vicreg_occlusion_cone_deg: 0.0
 vicreg_std_eps: 1e-4
@@ -156,15 +136,13 @@ vicreg_radial_beta2: 0.1
 vicreg_radial_m: null
 vicreg_radial_eps: 1e-8
 
-
-# Pose regression (symmetry-aware)
 pose:
-  enabled: False
+  enabled: false
   weight: 0.4
   start_epoch: 10
   head_hidden: 256
-  jitter_std: 0.000
-  strain_std: 0.000
+  jitter_std: 0.0
+  strain_std: 0.0
   strain_volume_preserve: true
   seeded_forward: true
   view_rotation_mode: full
@@ -183,7 +161,6 @@ pose:
   ambiguity_use_std: true
   ambiguity_floor: 0.001
 
-# Data augmentation (applied in dataloaders)
 augmentation:
   rotation_scale: 0.0
   noise_scale: 0.0
@@ -214,4 +191,4 @@ analysis_hdbscan_min_cluster_size_candidates: []
 analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
-analysis_data_files: ['175ps.npy']
+analysis_data_files: ["166ps.npy", "170ps.npy", "174ps.npy", "177ps.npy", "240ps.npy"]

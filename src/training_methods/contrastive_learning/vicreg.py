@@ -37,6 +37,7 @@ class VICRegLoss(nn.Module):
         occlusion_view: str,
         occlusion_slab_frac: float,
         occlusion_cone_deg: float,
+        occlusion_prob: float,
         std_eps: float,
         std_target: float,
         input_dim,
@@ -78,6 +79,11 @@ class VICRegLoss(nn.Module):
         self.occlusion_view = str(occlusion_view).lower()
         self.occlusion_slab_frac = float(occlusion_slab_frac)
         self.occlusion_cone_deg = float(occlusion_cone_deg)
+        self.occlusion_prob = float(occlusion_prob)
+        if not (0.0 <= self.occlusion_prob <= 1.0):
+            raise ValueError(
+                f"vicreg_occlusion_prob must be in [0, 1], got {self.occlusion_prob}"
+            )
         self.std_eps = float(std_eps)
         self.std_target = float(std_target)
         self.radial_enabled = bool(radial_enabled)
@@ -169,6 +175,7 @@ class VICRegLoss(nn.Module):
             occlusion_view=str(getattr(cfg, "vicreg_occlusion_view", "second")),
             occlusion_slab_frac=float(getattr(cfg, "vicreg_occlusion_slab_frac", 0.4)),
             occlusion_cone_deg=float(getattr(cfg, "vicreg_occlusion_cone_deg", 20.0)),
+            occlusion_prob=float(getattr(cfg, "vicreg_occlusion_prob", 1.0)),
             std_eps=float(getattr(cfg, "vicreg_std_eps", 1e-4)),
             std_target=float(getattr(cfg, "vicreg_std_target", 1.0)),
             input_dim=input_dim,
@@ -213,8 +220,13 @@ class VICRegLoss(nn.Module):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
         use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
-        y_a = self._augment(pc, use_neighbor=use_neighbor_a)
-        y_b = self._augment(pc, use_neighbor=use_neighbor_b)
+        apply_occlusion_a, apply_occlusion_b = self._resolve_pair_occlusion_flags(
+            use_neighbor_a=use_neighbor_a,
+            use_neighbor_b=use_neighbor_b,
+            device=pc.device,
+        )
+        y_a = self._augment(pc, use_neighbor=use_neighbor_a, apply_occlusion=apply_occlusion_a)
+        y_b = self._augment(pc, use_neighbor=use_neighbor_b, apply_occlusion=apply_occlusion_b)
 
         enc_a = encoder(prepare_input(y_a))
         inv_a, eq_a = split_output(enc_a)
@@ -263,7 +275,7 @@ class VICRegLoss(nn.Module):
             return use_a, use_b
         return True, True
 
-    def _augment(self, pc: torch.Tensor, *, use_neighbor: bool) -> torch.Tensor:
+    def _augment(self, pc: torch.Tensor, *, use_neighbor: bool, apply_occlusion: bool) -> torch.Tensor:
         x = pc
         if use_neighbor:
             x = shift_to_neighbor(
@@ -275,7 +287,7 @@ class VICRegLoss(nn.Module):
             x = crop_to_num_points(x, self.view_points, mode=self.view_crop_mode)
         x = self._apply_rotation(x)
         x = self._apply_strain(x)
-        if self._should_occlude(use_neighbor):
+        if apply_occlusion:
             mode = self._resolve_occlusion_mode(device=x.device)
             if mode == "slab":
                 x = self._occlude_slab(x)
@@ -330,6 +342,26 @@ class VICRegLoss(nn.Module):
         if self.occlusion_view == "first":
             return not use_neighbor
         return use_neighbor
+
+    def _sample_pair_occlusion(self, *, device) -> bool:
+        if self.occlusion_mode == "none":
+            return False
+        if self.occlusion_prob <= 0.0:
+            return False
+        if self.occlusion_prob >= 1.0:
+            return True
+        return bool((torch.rand((), device=device) < self.occlusion_prob).item())
+
+    def _resolve_pair_occlusion_flags(
+        self,
+        *,
+        use_neighbor_a: bool,
+        use_neighbor_b: bool,
+        device,
+    ) -> tuple[bool, bool]:
+        if not self._sample_pair_occlusion(device=device):
+            return False, False
+        return self._should_occlude(use_neighbor_a), self._should_occlude(use_neighbor_b)
 
     def _resolve_occlusion_mode(self, *, device) -> str:
         if self.occlusion_mode != "mixed":

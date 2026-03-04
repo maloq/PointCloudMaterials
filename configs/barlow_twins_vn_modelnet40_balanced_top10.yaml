@@ -115,6 +115,7 @@ barlow_strain_std: 0.04
 barlow_strain_volume_preserve: true
 barlow_occlusion_mode: mixed
 barlow_occlusion_view: both
+barlow_occlusion_prob: 0.25
 barlow_occlusion_slab_frac: 0.2
 barlow_occlusion_cone_deg: 25.0
 barlow_invariant_mode: tensor_product
@@ -165,7 +166,7 @@ analysis_tsne_max_samples: 8000
 analysis_tsne_n_iter: 1000
 analysis_interactive_max_points: 0
 analysis_md_use_all_points: true
-analysis_hdbscan_enabled: true
+analysis_hdbscan_enabled: false
 analysis_hdbscan_fit_fraction: 0.25
 analysis_hdbscan_max_fit_samples: 50000
 analysis_hdbscan_target_k_min: 35

@@ -40,6 +40,7 @@ class PointContrastLoss(nn.Module):
         occlusion_view: str,
         occlusion_slab_frac: float,
         occlusion_cone_deg: float,
+        occlusion_prob: float,
         input_dim,
         invariant_mode: str = "norms",
         invariant_max_factor: float = 4.0,
@@ -97,6 +98,7 @@ class PointContrastLoss(nn.Module):
             occlusion_view=str(occlusion_view),
             occlusion_slab_frac=float(occlusion_slab_frac),
             occlusion_cone_deg=float(occlusion_cone_deg),
+            occlusion_prob=float(occlusion_prob),
             input_dim=input_dim,
             invariant_mode=str(invariant_mode),
             invariant_max_factor=float(invariant_max_factor),
@@ -331,6 +333,14 @@ class PointContrastLoss(nn.Module):
                     "pointcontrast_occlusion_cone_deg",
                     fallback=("barlow_occlusion_cone_deg",),
                     default=20.0,
+                )
+            ),
+            occlusion_prob=float(
+                cls._cfg_value(
+                    cfg,
+                    "pointcontrast_occlusion_prob",
+                    fallback=("barlow_occlusion_prob",),
+                    default=1.0,
                 )
             ),
             input_dim=input_dim,

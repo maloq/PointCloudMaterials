@@ -5,7 +5,7 @@ from typing import Any, Dict, Tuple
 
 import numpy as np
 import torch
-from omegaconf import DictConfig, ListConfig
+from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from src.data_utils.data_load import PointCloudDataset
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
@@ -116,26 +116,34 @@ def _unwrap_subset_indices(dataset: Any) -> Tuple[Any, list[int] | None]:
     return dataset, indices
 
 
+def _try_reuse_full_pointcloud_dataset(dm: Any) -> PointCloudDataset | None:
+    train_dataset = getattr(dm, "train_dataset", None)
+    val_dataset = getattr(dm, "val_dataset", None)
+    if train_dataset is None or val_dataset is None:
+        return None
+
+    train_base, _ = _unwrap_subset_indices(train_dataset)
+    val_base, _ = _unwrap_subset_indices(val_dataset)
+    if train_base is not val_base:
+        return None
+    if not isinstance(train_base, PointCloudDataset):
+        return None
+    return train_base
+
+
 def build_real_coords_dataloader(
     cfg: DictConfig,
     dm: Any,
     use_train_data: bool,
     use_full_dataset: bool = False,
+    prefer_existing_full_dataset: bool = False,
 ) -> torch.utils.data.DataLoader:
     data_cfg = cfg.data
-    data_files = getattr(data_cfg, "data_files", None)
-    if not data_files:
-        raise ValueError("No dataset under data_files files provided")
+    auto_cutoff_cfg = getattr(data_cfg, "auto_cutoff", None)
+    if isinstance(auto_cutoff_cfg, (DictConfig, ListConfig)):
+        auto_cutoff_cfg = OmegaConf.to_container(auto_cutoff_cfg, resolve=True)
 
-    file_list = data_files
-    if isinstance(file_list, ListConfig):
-        file_list = list(file_list)
-    if isinstance(file_list, str):
-        file_list = [file_list]
-
-    full_dataset = PointCloudDataset(
-        root=data_cfg.data_path,
-        data_files=file_list,
+    dataset_kwargs = dict(
         radius=getattr(data_cfg, "radius", 8),
         sample_type=getattr(data_cfg, "sample_type", "regular"),
         overlap_fraction=getattr(data_cfg, "overlap_fraction", 0.0),
@@ -145,7 +153,50 @@ def build_real_coords_dataloader(
         pre_normalize=getattr(data_cfg, "pre_normalize", True),
         normalize=getattr(data_cfg, "normalize", True),
         sampling_method=getattr(data_cfg, "sampling_method", "drop_farthest"),
+        auto_cutoff_config=auto_cutoff_cfg,
     )
+
+    full_dataset: PointCloudDataset | None = None
+    if use_full_dataset and prefer_existing_full_dataset:
+        full_dataset = _try_reuse_full_pointcloud_dataset(dm)
+
+    if full_dataset is None:
+        data_sources = getattr(data_cfg, "data_sources", None)
+        data_files = getattr(data_cfg, "data_files", None)
+        if data_sources:
+            if isinstance(data_sources, (DictConfig, ListConfig)):
+                data_sources = OmegaConf.to_container(data_sources, resolve=True)
+            if not isinstance(data_sources, list) or not data_sources:
+                raise ValueError(
+                    "data_sources must be a non-empty list when provided in cfg.data."
+                )
+            full_dataset = PointCloudDataset(
+                data_sources=data_sources,
+                **dataset_kwargs,
+            )
+        elif data_files:
+            file_list = data_files
+            if isinstance(file_list, ListConfig):
+                file_list = list(file_list)
+            if isinstance(file_list, str):
+                file_list = [file_list]
+            if not file_list:
+                raise ValueError("data_files is empty in cfg.data.")
+            data_path = getattr(data_cfg, "data_path", None)
+            if not data_path:
+                raise ValueError(
+                    "data_path is required when using data_files in build_real_coords_dataloader."
+                )
+            full_dataset = PointCloudDataset(
+                root=data_path,
+                data_files=file_list,
+                **dataset_kwargs,
+            )
+        else:
+            raise ValueError(
+                "No real-data inputs configured. Provide either cfg.data.data_sources "
+                "or cfg.data.data_files + cfg.data.data_path."
+            )
 
     dataset = full_dataset
     if not use_full_dataset:
