@@ -1,9 +1,14 @@
 import os
 import inspect
+from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Dict, Any
 from sklearn.manifold import TSNE
+
+
+def _log_saved_figure(path: Path | str) -> None:
+    print(f"[analysis][savefig] {Path(path).resolve()}")
 
 
 def compute_tsne(
@@ -71,11 +76,13 @@ def save_tsne_plot(
     labels: np.ndarray,
     *,
     out_file: str,
-    title: str,
+    title: str | None,
     show: bool = False,
     legend_title: str = "cluster",
     class_names: Dict[Any, str] | None = None,
     cluster_color_map: Dict[int, str] | None = None,
+    paper_style: bool = False,
+    label_prefix: str | None = None,
 ) -> None:
     """Save a t-SNE scatter plot, colored by labels, to *out_file*.
 
@@ -109,7 +116,10 @@ def save_tsne_plot(
             label_to_color[lbl] = tab10_colors[color_index % len(tab10_colors)]
             color_index += 1
 
-    fig, ax = plt.subplots(figsize=(8, 7), dpi=200)
+    fig_size = (6.8, 5.8) if paper_style else (8, 7)
+    marker_size = 14 if paper_style else 18
+    marker_alpha = 0.88 if paper_style else 0.85
+    fig, ax = plt.subplots(figsize=fig_size, dpi=200)
     for lbl in unique_labels:
         mask = labels == lbl
 
@@ -120,38 +130,56 @@ def save_tsne_plot(
              label_text = class_names[int(lbl)]
         else:
              label_text = str(lbl)
+        if label_prefix is not None and class_names is None and not is_noise_label(lbl):
+            label_text = f"{label_prefix}{label_text}"
 
         ax.scatter(
             tsne_coords[mask, 0],
             tsne_coords[mask, 1],
-            s=18,
-            alpha=0.85,
+            s=marker_size,
+            alpha=marker_alpha,
             c=[label_to_color[lbl]],
             label=label_text,
             linewidths=0,
-            rasterized=True,
+            rasterized=not paper_style,
         )
 
-    ax.set_title(title, fontsize=14, fontweight="bold", pad=10)
+    if title:
+        ax.set_title(title, fontsize=14, fontweight="bold", pad=10)
     ax.set_xticks([])
     ax.set_yticks([])
+    ax.set_aspect("equal", adjustable="datalim")
     for spine in ax.spines.values():
         spine.set_visible(False)
     # Only show legend if number of labels is manageable
     if len(unique_labels) <= 20:
-        legend = ax.legend(
-            title=legend_title,
-            markerscale=3,
-            fontsize=11,
-            title_fontsize=12,
-            loc="best",
-            frameon=True,
-            fancybox=True,
-            framealpha=0.85,
-            edgecolor="0.8",
-        )
+        if paper_style:
+            ax.legend(
+                title=legend_title,
+                markerscale=2.2,
+                fontsize=9,
+                title_fontsize=10,
+                loc="upper left",
+                bbox_to_anchor=(1.01, 1.0),
+                borderaxespad=0.0,
+                frameon=False,
+                ncol=1,
+            )
+        else:
+            ax.legend(
+                title=legend_title,
+                markerscale=3,
+                fontsize=11,
+                title_fontsize=12,
+                loc="best",
+                frameon=True,
+                fancybox=True,
+                framealpha=0.85,
+                edgecolor="0.8",
+            )
     fig.tight_layout()
     fig.savefig(out_file, bbox_inches="tight")
+    _log_saved_figure(out_file)
     if show:
         plt.show()
     else:

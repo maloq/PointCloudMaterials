@@ -32,6 +32,10 @@ _ALL_PROFILE_PROPERTIES: list[tuple[str, str]] = (
 )
 
 
+def _log_saved_figure(path: Path | str) -> None:
+    print(f"[analysis][savefig] {Path(path).resolve()}")
+
+
 def _json_default(value: Any):
     if isinstance(value, (np.integer,)):
         return int(value)
@@ -553,6 +557,7 @@ def _save_cluster_structures_figure(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=170)
     plt.close(fig)
+    _log_saved_figure(output_path)
 
 
 def _save_cluster_properties_figure(
@@ -634,6 +639,7 @@ def _save_cluster_properties_figure(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=170)
     plt.close(fig)
+    _log_saved_figure(output_path)
 
 
 def _save_cluster_comparison_heatmap(
@@ -683,6 +689,7 @@ def _save_cluster_comparison_heatmap(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=170)
     plt.close(fig)
+    _log_saved_figure(output_path)
 
 
 def _save_cluster_distance_comparison(
@@ -720,6 +727,7 @@ def _save_cluster_distance_comparison(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=170)
     plt.close(fig)
+    _log_saved_figure(output_path)
 
 
 def generate_cluster_profile_reports(

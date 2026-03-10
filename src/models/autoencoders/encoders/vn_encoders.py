@@ -1076,6 +1076,7 @@ class VNRevnetBackboneEncoder(Encoder):
             raise ValueError("This encoder currently expects 2-stage SA: sa_channels/npoints/knn must be length 2.")
 
         self.dropout_rate = dropout_rate
+        self.k_embed = int(k_embed)
 
         # VN input embedding using VN-EdgeConv style lifting
         self.embed = VNLinearLeakyReLU(
@@ -1231,7 +1232,8 @@ class VNRevnetBackboneEncoder(Encoder):
 
         # VN-EdgeConv style neighbor lifting on coordinates (kNN in coord space)
         x_coord = x.permute(0, 2, 1)  # (B, 3, N)
-        edge = get_graph_feature(x_vn, k=20, x_coord=x_coord)  # (B, 2, 3, N, k)
+        k0 = min(self.k_embed, N)
+        edge = get_graph_feature(x_vn, k=k0, x_coord=x_coord)  # (B, 2, 3, N, k)
         feat = self.embed(edge).mean(dim=-1)                   # (B, Cembed, 3, N)
 
         # Stage 1 SA
@@ -1658,5 +1660,236 @@ class VNAtomicRevnetBackboneEncoder(Encoder):
         inv_eq = self._inv_from_eq(eq_z)                       # (B, latent + P)
         inv_geom = self.geom_head(x, idx_knn_max=idx_knn_max)  # (B, geom_dim)
         inv_z = self.inv_norm(torch.cat([inv_eq, inv_geom], dim=-1))
+
+        return inv_z, eq_z, center
+
+
+class InvariantEdgeConv(nn.Module):
+    """Scalar edge convolution over rotation-invariant local descriptors."""
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        *,
+        pooling: str = "mean",
+        use_batchnorm: bool = True,
+    ) -> None:
+        super().__init__()
+        pool = str(pooling).lower()
+        if pool not in {"mean", "max"}:
+            raise ValueError(f"Unsupported pooling={pool!r}")
+        self.pooling = pool
+
+        hidden = max(in_channels, out_channels)
+        edge_dim = (2 * in_channels) + 5
+        self.edge_mlp = nn.Sequential(
+            nn.Conv2d(edge_dim, hidden, kernel_size=1, bias=False),
+            nn.BatchNorm2d(hidden) if use_batchnorm else nn.Identity(),
+            nn.SiLU(inplace=True),
+            nn.Conv2d(hidden, out_channels, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_channels) if use_batchnorm else nn.Identity(),
+        )
+        self.shortcut = (
+            nn.Identity()
+            if in_channels == out_channels
+            else nn.Sequential(
+                nn.Linear(in_channels, out_channels, bias=False),
+                nn.LayerNorm(out_channels),
+            )
+        )
+
+    def forward(self, feat: torch.Tensor, xyz_centered: torch.Tensor, idx_knn: torch.Tensor) -> torch.Tensor:
+        if feat.dim() != 3:
+            raise ValueError(f"InvariantEdgeConv expects feat (B,N,C), got {tuple(feat.shape)}")
+        if xyz_centered.dim() != 3 or xyz_centered.shape[-1] != 3:
+            raise ValueError(
+                "InvariantEdgeConv expects xyz_centered with shape (B,N,3), "
+                f"got {tuple(xyz_centered.shape)}"
+            )
+
+        neigh_feat = index_points(feat, idx_knn)                       # (B,N,k,C)
+        center_feat = feat.unsqueeze(2).expand_as(neigh_feat)          # (B,N,k,C)
+
+        center_xyz = xyz_centered.unsqueeze(2)                         # (B,N,1,3)
+        neigh_xyz = index_points(xyz_centered, idx_knn)                # (B,N,k,3)
+        rel_xyz = neigh_xyz - center_xyz                               # (B,N,k,3)
+
+        center_r = torch.linalg.norm(xyz_centered, dim=-1, keepdim=True)
+        center_r = center_r.unsqueeze(2).expand(-1, -1, idx_knn.size(-1), -1)
+        neigh_r = torch.linalg.norm(neigh_xyz, dim=-1, keepdim=True)
+        rel_r = torch.linalg.norm(rel_xyz, dim=-1, keepdim=True)
+        dot = (center_xyz * neigh_xyz).sum(dim=-1, keepdim=True)
+        cos = dot / (center_r * neigh_r + EPS)
+
+        edge = torch.cat(
+            [center_feat, neigh_feat - center_feat, center_r, neigh_r, rel_r, dot, cos],
+            dim=-1,
+        )
+        edge = edge.permute(0, 3, 1, 2).contiguous()                   # (B,Ce,N,k)
+        edge = self.edge_mlp(edge)
+
+        if self.pooling == "max":
+            pooled = edge.max(dim=-1).values
+        else:
+            pooled = edge.mean(dim=-1)
+        pooled = pooled.transpose(1, 2).contiguous()                   # (B,N,Cout)
+        return F.silu(pooled + self.shortcut(feat))
+
+
+@register_encoder("REVNET_InvariantFast")
+class REVNETInvariantFastEncoder(Encoder):
+    """
+    Fast REVNET-inspired encoder for contrastive/supervised use.
+
+    The local backbone is fully invariant and uses only scalar neighborhood
+    descriptors. An optional final head can emit a cheap equivariant latent by
+    applying invariant scalar weights to centered coordinates.
+    """
+
+    def __init__(
+        self,
+        latent_size: int = 256,
+        n_knn: int = 24,
+        feature_dims: tuple[int, int, int] = (64, 128, 256),
+        pooling: str = "mean",
+        dropout_rate: float = 0.1,
+        use_batchnorm: bool = True,
+        use_geom_head: bool = False,
+        geom_dim: int = 32,
+        emit_eq_latent: bool = False,
+        eq_latent_size: int | None = None,
+        eq_softmax_temperature: float = 1.0,
+    ) -> None:
+        super().__init__()
+
+        latent_size = int(latent_size)
+        n_knn = int(n_knn)
+        feature_dims = tuple(int(v) for v in feature_dims)
+        pooling = str(pooling).lower()
+        geom_dim = int(geom_dim)
+        eq_channels = latent_size if eq_latent_size is None else int(eq_latent_size)
+        eq_temperature = float(eq_softmax_temperature)
+
+        if latent_size <= 0:
+            raise ValueError(f"latent_size must be > 0, got {latent_size}")
+        if n_knn <= 0:
+            raise ValueError(f"n_knn must be > 0, got {n_knn}")
+        if len(feature_dims) == 0 or min(feature_dims) <= 0:
+            raise ValueError(f"feature_dims must contain positive channel sizes, got {feature_dims}")
+        if pooling not in {"mean", "max"}:
+            raise ValueError(f"Unsupported pooling={pooling!r}")
+        if eq_temperature <= 0.0:
+            raise ValueError(
+                "eq_softmax_temperature must be > 0 so the cheap equivariant head remains well-defined, "
+                f"got {eq_temperature}"
+            )
+        if eq_channels <= 0:
+            raise ValueError(f"eq_latent_size must be > 0 when emit_eq_latent=True, got {eq_channels}")
+
+        self.n_knn = n_knn
+        self.pooling = pooling
+        self.use_geom_head = bool(use_geom_head)
+        self.emit_eq_latent = bool(emit_eq_latent)
+        self.eq_softmax_temperature = eq_temperature
+
+        first_dim = feature_dims[0]
+        self.input_proj = nn.Sequential(
+            nn.Linear(1, first_dim),
+            nn.LayerNorm(first_dim),
+            nn.SiLU(inplace=True),
+            nn.Linear(first_dim, first_dim),
+            nn.LayerNorm(first_dim),
+            nn.SiLU(inplace=True),
+        )
+
+        dims = (first_dim,) + feature_dims
+        self.layers = nn.ModuleList(
+            [
+                InvariantEdgeConv(
+                    dims[i],
+                    dims[i + 1],
+                    pooling=pooling,
+                    use_batchnorm=use_batchnorm,
+                )
+                for i in range(len(feature_dims))
+            ]
+        )
+
+        point_dim = feature_dims[-1]
+        self.point_fuse = nn.Sequential(
+            nn.Linear(sum(dims), point_dim),
+            nn.LayerNorm(point_dim),
+            nn.SiLU(inplace=True),
+            nn.Linear(point_dim, point_dim),
+            nn.LayerNorm(point_dim),
+            nn.SiLU(inplace=True),
+        )
+
+        if self.use_geom_head:
+            self.geom_head = AtomicGeometricInvariantHead(k_geom=min(n_knn, 16), proj_dim=geom_dim)
+            inv_input_dim = (2 * point_dim) + geom_dim
+        else:
+            self.geom_head = None
+            inv_input_dim = 2 * point_dim
+
+        inv_hidden = max(point_dim, latent_size)
+        self.inv_head = nn.Sequential(
+            nn.Linear(inv_input_dim, inv_hidden),
+            nn.LayerNorm(inv_hidden),
+            nn.SiLU(inplace=True),
+            nn.Dropout(p=float(dropout_rate)),
+            nn.Linear(inv_hidden, latent_size),
+        )
+
+        if self.emit_eq_latent:
+            self.eq_projector = nn.Sequential(
+                nn.Linear(point_dim, point_dim),
+                nn.LayerNorm(point_dim),
+                nn.SiLU(inplace=True),
+                nn.Linear(point_dim, eq_channels),
+            )
+            self.eq_z_scale = nn.Parameter(torch.tensor(1.0))
+        else:
+            self.eq_projector = None
+            self.register_buffer("eq_z_scale", torch.tensor(1.0), persistent=False)
+
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor]:
+        if x.dim() != 3 or x.shape[-1] != 3:
+            raise ValueError(f"Expected input (B, N, 3), got {tuple(x.shape)}")
+
+        B, N, _ = x.shape
+        center = x.mean(dim=1)
+        x_centered = x - center.unsqueeze(1)
+
+        k = min(self.n_knn, N)
+        x_coord = x.permute(0, 2, 1).contiguous()
+        idx_knn = knn(x_coord, k=k)
+
+        radius = torch.linalg.norm(x_centered, dim=-1, keepdim=True)
+        feat = self.input_proj(radius)                                 # (B,N,C0)
+
+        point_feats = [feat]
+        for layer in self.layers:
+            feat = layer(feat, x_centered, idx_knn)
+            point_feats.append(feat)
+
+        point_feat = self.point_fuse(torch.cat(point_feats, dim=-1))   # (B,N,C)
+        pooled_mean = point_feat.mean(dim=1)
+        pooled_max = point_feat.max(dim=1).values
+        inv_input = torch.cat([pooled_mean, pooled_max], dim=-1)
+
+        if self.geom_head is not None:
+            inv_geom = self.geom_head(x, idx_knn_max=idx_knn)
+            inv_input = torch.cat([inv_input, inv_geom.to(inv_input.dtype)], dim=-1)
+
+        inv_z = self.inv_head(inv_input)
+
+        eq_z = None
+        if self.eq_projector is not None:
+            weights = self.eq_projector(point_feat) / self.eq_softmax_temperature
+            weights = torch.softmax(weights, dim=1)
+            eq_z = torch.einsum("bnc,bnd->bcd", weights, x_centered)
+            eq_z = eq_z * self.eq_z_scale.to(eq_z.dtype)
 
         return inv_z, eq_z, center

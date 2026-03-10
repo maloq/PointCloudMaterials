@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def _log_saved_figure(path: Path | str) -> None:
+    print(f"[analysis][savefig] {Path(path).resolve()}")
+
+
 def _normalize_image_rgba(image: np.ndarray, *, path: Path) -> np.ndarray:
     arr = np.asarray(image)
     if arr.ndim == 2:
@@ -91,6 +95,7 @@ def _save_horizontal_image_gallery(
     out_file = Path(out_file)
     out_file.parent.mkdir(parents=True, exist_ok=True)
     plt.imsave(out_file, gallery)
+    _log_saved_figure(out_file)
     return {
         "out_file": str(out_file),
         "num_images": int(len(images)),

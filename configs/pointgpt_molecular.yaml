@@ -28,7 +28,7 @@ gpu: true
 devices: [0, 1]
 ddp_find_unused_parameters: false
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 
 scheduler_name: Cosine
 scheduler_gamma: 0.5

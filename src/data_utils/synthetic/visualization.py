@@ -2407,7 +2407,8 @@ def _compute_paper_display_half_span(records: Sequence[Dict[str, Any]]) -> float
             half_spans.append(_compute_local_structure_half_span(perturbed_geometry["points"]))
     if not half_spans:
         raise ValueError("Cannot compute paper display half-span because no panel geometries were prepared.")
-    return float(max(half_spans) * 0.94)
+    # Tighter framing so local neighborhoods read less dense at fixed point count.
+    return float(max(half_spans) * 0.80)
 
 
 def _layout_local_base_paper_axes(fig: Any, axes_arr: np.ndarray) -> Dict[str, float]:
@@ -3032,10 +3033,10 @@ def _compute_center_to_edge_colors(
     points: np.ndarray,
     base_color: Any,
     *,
-    center_lighten: float = 0.76,
-    edge_darken: float = 0.34,
-    radius_percentile: float = 88.0,
-    gamma: float = 0.86,
+    center_lighten: float = 0.85,
+    edge_darken: float = 0.10,
+    radius_percentile: float = 95.0,
+    gamma: float = 0.85,
 ) -> np.ndarray:
     pts = np.asarray(points, dtype=np.float32)[:, :3]
     base_rgb = np.asarray(mcolors.to_rgb(base_color), dtype=np.float32)
@@ -3292,7 +3293,11 @@ def _set_equal_axes_3d(ax: Any, coords: np.ndarray, *, half_span: Optional[float
         ax.set_box_aspect((1.0, 1.0, 1.0))
 
 
-def _orient_points_for_representative_view(points: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
+def _compute_cluster_style_pca_orientation_basis(
+    points: np.ndarray,
+    *,
+    eps: float = 1e-8,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, int, float]:
     pts = np.asarray(points, dtype=np.float32)[:, :3]
     if pts.ndim != 2 or pts.shape[1] != 3:
         raise ValueError(f"points must have shape (N, 3), got {pts.shape}.")
@@ -3303,13 +3308,12 @@ def _orient_points_for_representative_view(points: np.ndarray) -> Tuple[np.ndarr
     centered = pts - pts[center_idx]
     cov = centered.T @ centered
     eigvals_raw, eigvecs_raw = np.linalg.eigh(cov)
+
     order = np.argsort(eigvals_raw)[::-1]
     eigvals = np.asarray(eigvals_raw[order], dtype=np.float64)
     basis = np.asarray(eigvecs_raw[:, order], dtype=np.float64)
     if basis.shape != (3, 3):
-        raise RuntimeError(
-            f"Internal error: expected PCA basis shape (3, 3), got {basis.shape}."
-        )
+        raise ValueError(f"Expected PCA basis shape (3, 3), got {basis.shape}.")
 
     for axis_idx in range(3):
         proj = centered @ basis[:, axis_idx]
@@ -3319,19 +3323,33 @@ def _orient_points_for_representative_view(points: np.ndarray) -> Tuple[np.ndarr
 
     det_basis = float(np.linalg.det(basis))
     if not np.isfinite(det_basis):
-        raise ValueError(f"Invalid PCA basis determinant: det={det_basis}.")
+        raise ValueError(
+            "Invalid PCA basis determinant while orienting representative points: "
+            f"det={det_basis}."
+        )
     if det_basis < 0.0:
         basis[:, 2] *= -1.0
         det_basis = float(np.linalg.det(basis))
     if det_basis <= 0.0:
-        raise ValueError(f"Failed to build a right-handed PCA basis: det={det_basis}.")
+        raise ValueError(
+            "Failed to build a right-handed PCA basis for representative points: "
+            f"det={det_basis}."
+        )
+    return centered, basis, eigvals, int(center_idx), float(det_basis)
 
+
+def _orient_points_for_representative_view(points: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
+    centered, basis, eigvals, center_idx, det_basis = _compute_cluster_style_pca_orientation_basis(
+        points,
+        eps=1e-8,
+    )
     oriented = centered @ basis
-    return oriented.astype(np.float32, copy=False), {
+    return np.asarray(oriented, dtype=np.float32), {
         "orientation_method": "pca",
         "center_index": int(center_idx),
         "pca_eigenvalues": [float(v) for v in eigvals.tolist()],
         "pca_basis_det": float(det_basis),
+        "orientation_source": "cluster_style_pca",
     }
 
 

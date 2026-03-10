@@ -76,7 +76,7 @@ gpu: True
 devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 5e-6
@@ -151,7 +151,7 @@ vicreg_neighbor_view_mode: first
 vicreg_neighbor_k: 8
 vicreg_neighbor_max_relative_distance: 0.10
 vicreg_view_points: ${data.model_points}
-vicreg_view_crop_mode: random
+vicreg_view_crop_mode: nearest_origin
 vicreg_rotation_mode: full
 vicreg_rotation_deg: 0.0
 vicreg_strain_std: 0.0

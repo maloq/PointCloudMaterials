@@ -325,7 +325,7 @@ class WMSELoss(nn.Module):
                     cfg,
                     "wmse_view_crop_mode",
                     fallback=("barlow_view_crop_mode", "vicreg_view_crop_mode"),
-                    default="random",
+                    default="nearest_origin",
                 )
             ),
             drop_apply_to_both=bool(

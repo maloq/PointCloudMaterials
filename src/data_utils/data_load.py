@@ -212,7 +212,18 @@ def _load_points(filepath: str) -> np.ndarray:
     return points.astype(np.float32, copy=False)
 
 
-def _sample_single_file(filepath, sample_type, radius, n_points, overlap_fraction, n_samples, return_coords, sampling_method):
+def _sample_single_file(
+    filepath,
+    sample_type,
+    radius,
+    n_points,
+    overlap_fraction,
+    n_samples,
+    return_coords,
+    sampling_method,
+    drop_edge_samples=True,
+    edge_drop_layers: int | None = None,
+):
     """Load one file and generate samples. Standalone function for multiprocessing."""
     points = _load_points(filepath)
     if sample_type == 'regular':
@@ -220,6 +231,8 @@ def _sample_single_file(filepath, sample_type, radius, n_points, overlap_fractio
             points, size=radius, n_points=n_points,
             overlap_fraction=overlap_fraction,
             return_coords=return_coords,
+            drop_edge_samples=bool(drop_edge_samples),
+            edge_drop_layers=edge_drop_layers,
             sampling_method=sampling_method,
         )
     elif sample_type == 'random':
@@ -232,7 +245,19 @@ def _sample_single_file(filepath, sample_type, radius, n_points, overlap_fractio
         raise ValueError(f"Invalid sample type: {sample_type!r}")
 
 
-def read_and_sample_files(root, data_files, radius, n_points, overlap_fraction, sample_type, n_samples, return_coords, sampling_method="drop_farthest"):
+def read_and_sample_files(
+    root,
+    data_files,
+    radius,
+    n_points,
+    overlap_fraction,
+    sample_type,
+    n_samples,
+    return_coords,
+    sampling_method="drop_farthest",
+    drop_edge_samples=True,
+    edge_drop_layers: int | None = None,
+):
     """Read point cloud files and sample sub-clouds. Processes files in parallel when possible."""
     from concurrent.futures import ProcessPoolExecutor
     import multiprocessing
@@ -240,7 +265,17 @@ def read_and_sample_files(root, data_files, radius, n_points, overlap_fraction, 
     filepaths = [os.path.join(root, f) for f in data_files]
     n_files = len(filepaths)
     max_workers = min(n_files, max(1, multiprocessing.cpu_count() // 2))
-    args = (sample_type, radius, n_points, overlap_fraction, n_samples, return_coords, sampling_method)
+    args = (
+        sample_type,
+        radius,
+        n_points,
+        overlap_fraction,
+        n_samples,
+        return_coords,
+        sampling_method,
+        drop_edge_samples,
+        edge_drop_layers,
+    )
 
     all_samples: list = []
 
@@ -272,6 +307,8 @@ class PointCloudDataset(Dataset):
                  overlap_fraction=0.0,
                  n_samples=1000,
                  num_points=100,
+                 drop_edge_samples=True,
+                 edge_drop_layers: int | None = None,
                  pre_normalize=True,
                  normalize=True,
                  sampling_method="drop_farthest",
@@ -299,6 +336,8 @@ class PointCloudDataset(Dataset):
         self.sampling_method = sampling_method
         self.radius = float(radius)
         self.num_points = int(num_points)
+        self.drop_edge_samples = bool(drop_edge_samples)
+        self.edge_drop_layers = edge_drop_layers
 
         auto_cfg = self._resolve_auto_cutoff_config(
             auto_cutoff_config,
@@ -329,6 +368,7 @@ class PointCloudDataset(Dataset):
                 src_root, src_files, src_radius, self.num_points,
                 overlap_fraction, sample_type, n_samples,
                 return_coords, sampling_method,
+                self.drop_edge_samples, self.edge_drop_layers,
             )
             all_samples.extend(samples)
             all_sample_radii.extend([src_radius] * len(samples))

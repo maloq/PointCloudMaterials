@@ -260,7 +260,7 @@ class PointContrastLoss(nn.Module):
                     cfg,
                     "pointcontrast_view_crop_mode",
                     fallback=("barlow_view_crop_mode",),
-                    default="random",
+                    default="nearest_origin",
                 )
             ),
             drop_apply_to_both=bool(

@@ -1,5 +1,6 @@
 numpy
 torch
+e3nn
 pytorch-lightning
 omegaconf
 hydra-core

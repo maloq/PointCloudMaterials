@@ -210,21 +210,21 @@ class BarlowTwinsModule(pl.LightningModule):
                 )
         return ref_spec
 
-    def _shared_invariant(self, inv_latent_net, eq_z):
-        # If an equivariant latent is available, always derive invariants from eq_z.
-        # This keeps VN training/evaluation consistent with "eq->invariant" usage
-        # and avoids mixing in encoder-provided invariant branches.
+    def _shared_invariant(self, z_inv_model, eq_z):
+        # If an equivariant latent is available, always derive the contrastive
+        # invariant from eq_z. This keeps training/evaluation consistent with
+        # "eq -> invariant" usage and avoids mixing in the encoder invariant branch.
         if eq_z is not None:
-            inv_latent_net = None
+            z_inv_model = None
         if "barlow" in self._active_invariant_losses:
-            return self.barlow._invariant(inv_latent_net, eq_z)
+            return self.barlow._invariant(z_inv_model, eq_z)
         if "vicreg" in self._active_invariant_losses and self.vicreg is not None:
-            return self.vicreg._invariant(inv_latent_net, eq_z)
+            return self.vicreg._invariant(z_inv_model, eq_z)
         if "wmse" in self._active_invariant_losses and self.wmse is not None:
-            return self.wmse._invariant(inv_latent_net, eq_z)
+            return self.wmse._invariant(z_inv_model, eq_z)
         if "pointcontrast" in self._active_invariant_losses and self.pointcontrast is not None:
-            return self.pointcontrast._invariant(inv_latent_net, eq_z)
-        return self.barlow._invariant(inv_latent_net, eq_z)
+            return self.pointcontrast._invariant(z_inv_model, eq_z)
+        return self.barlow._invariant(z_inv_model, eq_z)
 
     @staticmethod
     def _cfg_get(obj, name: str, default=None):
@@ -272,26 +272,26 @@ class BarlowTwinsModule(pl.LightningModule):
 
     def _maybe_synthesize_eq_latent(
         self,
-        inv_latent_net: torch.Tensor | None,
+        z_inv_model: torch.Tensor | None,
         eq_z: torch.Tensor | None,
         *,
         source: str,
     ) -> torch.Tensor | None:
         if eq_z is not None:
             return eq_z
-        if inv_latent_net is None:
+        if z_inv_model is None:
             return None
-        if not torch.is_tensor(inv_latent_net) or inv_latent_net.dim() != 2:
+        if not torch.is_tensor(z_inv_model) or z_inv_model.dim() != 2:
             raise ValueError(
-                f"{source}: expected inv_latent_net to be a 2D tensor when eq_z is missing, "
-                f"got type={type(inv_latent_net)} with shape={getattr(inv_latent_net, 'shape', None)}."
+                f"{source}: expected z_inv_model to be a 2D tensor when eq_z is missing, "
+                f"got type={type(z_inv_model)} with shape={getattr(z_inv_model, 'shape', None)}."
             )
 
         spec = self._shared_invariant_spec
         if spec is None:
             return None
 
-        inv_dim = int(inv_latent_net.shape[1])
+        inv_dim = int(z_inv_model.shape[1])
         channels = int(spec["channels"])
         output_dim = int(spec["output_dim"])
         mode = str(spec["mode"])
@@ -309,19 +309,19 @@ class BarlowTwinsModule(pl.LightningModule):
                 f"invariant_head.channels={channels}; output_dim={output_dim}, mode='{mode}'."
             )
 
-        basis = self._channel_basis(channels, device=inv_latent_net.device, dtype=inv_latent_net.dtype)
-        synthetic_eq = inv_latent_net.unsqueeze(-1) * basis.unsqueeze(0)
+        basis = self._channel_basis(channels, device=z_inv_model.device, dtype=z_inv_model.dtype)
+        synthetic_eq = z_inv_model.unsqueeze(-1) * basis.unsqueeze(0)
 
-        if synthetic_eq.shape != (inv_latent_net.shape[0], channels, 3):
+        if synthetic_eq.shape != (z_inv_model.shape[0], channels, 3):
             raise RuntimeError(
                 f"{source}: synthesized eq_z has unexpected shape {tuple(synthetic_eq.shape)}; "
-                f"expected {(inv_latent_net.shape[0], channels, 3)}."
+                f"expected {(z_inv_model.shape[0], channels, 3)}."
             )
 
         if not self._warned_synthetic_eq_latent:
             self._status_print(
                 "[contrastive] Encoder did not return eq_z; synthesized pseudo-equivariant latent "
-                f"from inv_latent_net for invariant mode='{mode}' "
+                f"from z_inv_model for invariant mode='{mode}' "
                 f"(inv_dim={inv_dim}, output_dim={output_dim})."
             )
             self._warned_synthetic_eq_latent = True
@@ -331,15 +331,15 @@ class BarlowTwinsModule(pl.LightningModule):
         if isinstance(enc_out, (tuple, list)):
             if not enc_out:
                 raise ValueError("Encoder returned empty output")
-            inv_latent_net = enc_out[0]
+            z_inv_model = enc_out[0]
             eq_z = None
             for candidate in enc_out[1:]:
                 if not (torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3):
                     continue
                 # Accept canonical equivariant outputs (B, C, 3) where C matches
                 # invariant width; reject auxiliary transform matrices (B, 3, 3).
-                if torch.is_tensor(inv_latent_net) and inv_latent_net.dim() == 2:
-                    if candidate.shape[1] == inv_latent_net.shape[1]:
+                if torch.is_tensor(z_inv_model) and z_inv_model.dim() == 2:
+                    if candidate.shape[1] == z_inv_model.shape[1]:
                         eq_z = candidate
                         break
                     if candidate.shape[1] == 3:
@@ -349,18 +349,18 @@ class BarlowTwinsModule(pl.LightningModule):
                     eq_z = candidate
                     break
             eq_z = self._maybe_synthesize_eq_latent(
-                inv_latent_net,
+                z_inv_model,
                 eq_z,
                 source="split_encoder_output(tuple)",
             )
-            return inv_latent_net, eq_z
-        inv_latent_net = enc_out
+            return z_inv_model, eq_z
+        z_inv_model = enc_out
         eq_z = self._maybe_synthesize_eq_latent(
-            inv_latent_net,
+            z_inv_model,
             None,
             source="split_encoder_output(tensor)",
         )
-        return inv_latent_net, eq_z
+        return z_inv_model, eq_z
 
     def _prepare_model_input(self, pc: torch.Tensor) -> torch.Tensor:
         out = pc
@@ -396,40 +396,48 @@ class BarlowTwinsModule(pl.LightningModule):
 
         pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
         pc = self._prepare_model_input(pc_raw)
-        inv_latent_net, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
-        z_inv = self._invariant_latent(inv_latent_net, eq_z)
+        z_inv_model, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
+        z_inv_contrastive = self._contrastive_invariant_latent(z_inv_model, eq_z)
         # Keep supervised diagnostics aligned with contrastive objectives: use
         # the invariant latent consumed by losses (prefer eq_z -> invariant).
-        features = z_inv if z_inv is not None else inv_latent_net
+        features = z_inv_contrastive if z_inv_contrastive is not None else z_inv_model
         if features is None:
             return None, None
         return features.detach().to(torch.float32), class_id
 
-    def _invariant_latent(self, inv_latent_net, eq_z):
-        return self._shared_invariant(inv_latent_net, eq_z)
+    def _contrastive_invariant_latent(self, z_inv_model, eq_z):
+        return self._shared_invariant(z_inv_model, eq_z)
 
-    def _invariant_from_eq_latent(self, eq_z, inv_latent_net=None, *, stage: str | None = None):
+    def _contrastive_invariant_from_eq_latent(
+        self,
+        eq_z,
+        z_inv_model=None,
+        *,
+        stage: str | None = None,
+    ):
         stage_name = stage if stage is not None else "unknown"
         eq_ready = self._maybe_synthesize_eq_latent(
-            inv_latent_net,
+            z_inv_model,
             eq_z,
-            source=f"invariant_from_eq_latent(stage={stage_name})",
+            source=f"contrastive_invariant_from_eq_latent(stage={stage_name})",
         )
         if eq_ready is not None:
             return self._shared_invariant(None, eq_ready)
-        if inv_latent_net is not None and not self._warned_cache_eq_fallback:
+        if z_inv_model is not None and not self._warned_cache_eq_fallback:
             self._status_print(
                 f"[contrastive/cache] eq_z is missing at stage='{stage_name}'. "
-                "Falling back to encoder invariant output (inv_latent_net) for cached z_inv."
+                "Falling back to encoder invariant output (z_inv_model) for cached z_inv_contrastive."
             )
             self._warned_cache_eq_fallback = True
-        return self._shared_invariant(inv_latent_net, None)
+        return self._shared_invariant(z_inv_model, None)
 
     def forward(self, pc: torch.Tensor):
         enc_out = self.encoder(self._prepare_encoder_input(pc))
-        inv_latent_net, eq_z = self._split_encoder_output(enc_out)
-        z_inv = self._invariant_latent(inv_latent_net, eq_z)
-        return z_inv, inv_latent_net, eq_z
+        z_inv_model, eq_z = self._split_encoder_output(enc_out)
+        z_inv_contrastive = self._contrastive_invariant_latent(z_inv_model, eq_z)
+        # Forward returns both invariant branches explicitly:
+        # (z_inv_contrastive, z_inv_model, eq_z).
+        return z_inv_contrastive, z_inv_model, eq_z
 
     def _step(self, batch, batch_idx, stage: str):
         pc_raw, meta = self._unpack_batch(batch)
@@ -570,14 +578,19 @@ class BarlowTwinsModule(pl.LightningModule):
             already_cached = cached_sample_count(cache) if cache is not None else 0
             if limit is None or already_cached < limit:
                 with torch.no_grad():
-                    inv_latent_net, eq_z = self._split_encoder_output(
+                    z_inv_model, eq_z = self._split_encoder_output(
                         self.encoder(self._prepare_encoder_input(pc))
                     )
-                    z_inv = self._invariant_from_eq_latent(
-                        eq_z, inv_latent_net=inv_latent_net, stage=stage
+                    z_inv_contrastive = self._contrastive_invariant_from_eq_latent(
+                        eq_z, z_inv_model=z_inv_model, stage=stage
                     )
-                if z_inv is not None:
-                    self._cache_supervised_batch(stage, z_inv, meta, encoder_features=z_inv)
+                if z_inv_contrastive is not None:
+                    self._cache_supervised_batch(
+                        stage,
+                        z_inv_contrastive,
+                        meta,
+                        encoder_features=z_inv_contrastive,
+                    )
 
         return total_loss
 
@@ -692,11 +705,17 @@ class BarlowTwinsModule(pl.LightningModule):
     def _cache_supervised_batch(
         self,
         stage: str,
-        z_inv: torch.Tensor,
+        z_inv_contrastive: torch.Tensor,
         meta: dict,
         encoder_features: torch.Tensor | None = None,
     ) -> None:
-        cache_supervised_batch(self, stage, z_inv, meta, encoder_features=encoder_features)
+        cache_supervised_batch(
+            self,
+            stage,
+            z_inv_contrastive,
+            meta,
+            encoder_features=encoder_features,
+        )
 
     def _log_supervised_metrics(self, stage: str) -> None:
         log_supervised_metrics(self, stage)

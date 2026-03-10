@@ -5,7 +5,6 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 
 predict_script="${repo_root}/src/training_methods/contrastive_learning/predict_and_visualize.py"
-blender_exec="/home/infres/vmorozov/.local/bin/blender"
 
 checkpoints=(
   "output/2026-03-02/17-22-18/VICREG_FT_l512_N128_M80_RI_MAE_Invariant-epoch=11.ckpt"
@@ -21,11 +20,6 @@ analysis_dirs=(
 
 if [[ ! -f "${predict_script}" ]]; then
   echo "Missing analysis script: ${predict_script}" >&2
-  exit 1
-fi
-
-if [[ ! -x "${blender_exec}" ]]; then
-  echo "Blender executable is missing or not executable: ${blender_exec}" >&2
   exit 1
 fi
 
@@ -54,6 +48,5 @@ for idx in "${!checkpoints[@]}"; do
     "${ckpt_path}" \
     --output_dir "${out_dir}" \
     --raytrace_render_enabled \
-    --raytrace_blender_executable "${blender_exec}" \
     "$@"
 done

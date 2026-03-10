@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any, Dict, Tuple
 import numpy as np
 import torch
-from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf, open_dict
 
 sys.path.append(os.getcwd())
@@ -20,6 +19,9 @@ from src.training_methods.contrastive_learning.cluster_figure_utils import (
     _build_cluster_color_map,
     _save_horizontal_image_gallery,
     _save_fixed_k_cluster_figure_set,
+)
+from src.training_methods.contrastive_learning.real_md_qualitative_analysis import (
+    run_real_md_qualitative_analysis,
 )
 from src.training_methods.contrastive_learning.analysis_utils import (
     _sample_indices,
@@ -676,6 +678,8 @@ def _build_inference_cache_spec(
         "data_overlap_fraction": float(getattr(cfg.data, "overlap_fraction", 0.0)),
         "data_n_samples": int(getattr(cfg.data, "n_samples", 0)),
         "data_num_points": int(getattr(cfg.data, "num_points", 0)),
+        "data_drop_edge_samples": bool(getattr(cfg.data, "drop_edge_samples", True)),
+        "data_edge_drop_layers": getattr(cfg.data, "edge_drop_layers", None),
         "batch_size": int(getattr(cfg, "batch_size", 0)),
         "max_batches_latent": None if max_batches_latent is None else int(max_batches_latent),
         "max_samples_total": None if max_samples_total is None else int(max_samples_total),
@@ -700,6 +704,40 @@ def _validate_inference_cache_arrays(cache: dict[str, np.ndarray]) -> None:
     missing = [key for key in required if key not in cache]
     if missing:
         raise ValueError(f"Inference cache missing arrays: {missing}")
+    inv_latents = np.asarray(cache["inv_latents"])
+    if inv_latents.ndim < 2:
+        raise ValueError(
+            "Inference cache 'inv_latents' must have shape [num_samples, latent_dim], "
+            f"got shape={tuple(inv_latents.shape)}."
+        )
+    num_samples = int(inv_latents.shape[0])
+
+    coords = np.asarray(cache["coords"])
+    if coords.ndim != 2 or coords.shape[1] != 3:
+        raise ValueError(
+            "Inference cache 'coords' must have shape [num_samples, 3], "
+            f"got shape={tuple(coords.shape)}."
+        )
+    if coords.shape[0] != num_samples:
+        raise ValueError(
+            "Inference cache sample mismatch between 'inv_latents' and 'coords': "
+            f"{num_samples} vs {coords.shape[0]}. "
+            f"All cache shapes: {{'inv_latents': {tuple(inv_latents.shape)}, "
+            f"'coords': {tuple(coords.shape)}, "
+            f"'eq_latents': {tuple(np.asarray(cache['eq_latents']).shape)}, "
+            f"'phases': {tuple(np.asarray(cache['phases']).shape)}, "
+            f"'instance_ids': {tuple(np.asarray(cache['instance_ids']).shape)}}}."
+        )
+
+    for key in ("eq_latents", "phases", "instance_ids"):
+        arr = np.asarray(cache[key])
+        if arr.size == 0:
+            continue
+        if arr.shape[0] != num_samples:
+            raise ValueError(
+                "Inference cache sample mismatch: "
+                f"'inv_latents' has {num_samples} rows but '{key}' has shape={tuple(arr.shape)}."
+            )
 
 
 def _load_inference_cache(
@@ -729,7 +767,10 @@ def _load_inference_cache(
 
     with np.load(npz_path) as data:
         cache = {key: np.asarray(data[key]) for key in data.files}
-    _validate_inference_cache_arrays(cache)
+    try:
+        _validate_inference_cache_arrays(cache)
+    except ValueError as exc:
+        return None, f"cache validation failed for {npz_path}: {exc}"
     return cache, f"loaded cache from {npz_path}"
 
 
@@ -761,20 +802,126 @@ def _save_inference_cache(
         json.dump(meta, handle, indent=2)
 
 
+def _load_analysis_defaults_config(
+    *,
+    project_root: Path,
+) -> DictConfig:
+    defaults_paths = [
+        project_root / "configs" / "analysis" / "cluster_figure_raytrace.yaml",
+        project_root / "configs" / "analysis" / "real_md_qualitative.yaml",
+    ]
+    merged_cfg: DictConfig | None = None
+    for defaults_path in defaults_paths:
+        if not defaults_path.exists():
+            raise FileNotFoundError(
+                "Missing analysis defaults config file: "
+                f"{defaults_path}."
+            )
+        defaults_cfg = OmegaConf.load(defaults_path)
+        if not isinstance(defaults_cfg, DictConfig):
+            raise TypeError(
+                "Analysis defaults config must be a DictConfig, "
+                f"got {type(defaults_cfg)!r} from {defaults_path}."
+            )
+        merged_cfg = defaults_cfg if merged_cfg is None else OmegaConf.merge(merged_cfg, defaults_cfg)
+    if merged_cfg is None:
+        raise RuntimeError("Failed to load analysis defaults configs.")
+    return merged_cfg
+
+
 def load_analysis_config(
     checkpoint_path: str,
     cfg: DictConfig | None = None,
 ) -> DictConfig:
     """Resolve the Hydra config associated with a checkpoint."""
-    if cfg is not None:
-        return cfg
+    project_root = Path(__file__).resolve().parents[3]
+    analysis_defaults_cfg = _load_analysis_defaults_config(project_root=project_root)
     config_dir, config_name = resolve_config_path(checkpoint_path)
-    current_dir = Path(__file__).resolve().parent
-    project_root = current_dir.parents[2]
-    absolute_config_dir = project_root / config_dir
-    relative_config_dir = os.path.relpath(absolute_config_dir, current_dir)
-    with initialize(version_base=None, config_path=relative_config_dir):
-        return compose(config_name=config_name)
+    config_path = Path(config_dir) / f"{config_name}.yaml"
+    if not config_path.exists():
+        raise FileNotFoundError(
+            "Resolved checkpoint config file does not exist: "
+            f"{config_path} for checkpoint {checkpoint_path}."
+        )
+    checkpoint_cfg = OmegaConf.load(config_path)
+    if not isinstance(checkpoint_cfg, DictConfig):
+        raise TypeError(
+            "Checkpoint config must load to a DictConfig, "
+            f"got {type(checkpoint_cfg)!r} from {config_path}."
+        )
+    if cfg is not None and not isinstance(cfg, DictConfig):
+        raise TypeError(
+            "Provided cfg must be a DictConfig, "
+            f"got {type(cfg)!r}."
+        )
+
+    merged_cfg = (
+        OmegaConf.merge(analysis_defaults_cfg, checkpoint_cfg, cfg)
+        if cfg is not None
+        else OmegaConf.merge(analysis_defaults_cfg, checkpoint_cfg)
+    )
+    if not isinstance(merged_cfg, DictConfig):
+        raise TypeError(
+            "Merged analysis config must be a DictConfig, "
+            f"got {type(merged_cfg)!r}."
+        )
+    return merged_cfg
+
+
+def _load_override_config_file(
+    path: str,
+    *,
+    field_name: str,
+) -> DictConfig:
+    resolved = _resolve_input_path(path)
+    if not resolved.exists():
+        raise FileNotFoundError(f"{field_name} does not exist: {resolved}")
+    loaded_cfg = OmegaConf.load(resolved)
+    if not isinstance(loaded_cfg, DictConfig):
+        raise TypeError(
+            f"{field_name} must load to a DictConfig, got {type(loaded_cfg)!r} from {resolved}."
+        )
+    return loaded_cfg
+
+
+def _build_runtime_override_cfg(
+    *,
+    data_config_path: str | None,
+    analysis_config_override_paths: list[str] | None,
+) -> DictConfig | None:
+    merged_cfg: DictConfig | None = None
+    if data_config_path is not None:
+        data_cfg = _load_override_config_file(
+            data_config_path,
+            field_name="--data_config",
+        )
+        if "data" in data_cfg:
+            merged_piece = data_cfg
+        else:
+            merged_piece = OmegaConf.create({"data": data_cfg})
+        explicit_analysis_files = _as_list_of_str(
+            OmegaConf.select(merged_piece, "data.analysis_data_files", default=None)
+        )
+        data_files = _as_list_of_str(OmegaConf.select(merged_piece, "data.data_files", default=None))
+        if explicit_analysis_files is None and data_files:
+            merged_piece = OmegaConf.merge(
+                merged_piece,
+                OmegaConf.create(
+                    {
+                        "data": {
+                            "analysis_data_files": list(data_files),
+                        },
+                    }
+                ),
+            )
+        merged_cfg = merged_piece if merged_cfg is None else OmegaConf.merge(merged_cfg, merged_piece)
+    for override_path in analysis_config_override_paths or []:
+        override_cfg = _load_override_config_file(
+            override_path,
+            field_name="--analysis_config_override",
+        )
+        merged_cfg = override_cfg if merged_cfg is None else OmegaConf.merge(merged_cfg, override_cfg)
+    return merged_cfg
 
 
 def _parse_color_value(value: Any) -> int | str:
@@ -867,7 +1014,13 @@ def load_barlow_model(
     checkpoint_path: str, cuda_device: int = 0, cfg: DictConfig | None = None
 ) -> Tuple[BarlowTwinsModule, DictConfig, str]:
     """Restore the contrastive module together with its Hydra cfg and device string."""
-    cfg = load_analysis_config(checkpoint_path, cfg=cfg)
+    if cfg is None:
+        cfg = load_analysis_config(checkpoint_path, cfg=None)
+    if not isinstance(cfg, DictConfig):
+        raise TypeError(
+            "load_barlow_model expects cfg to be a DictConfig when provided, "
+            f"got {type(cfg)!r}."
+        )
     device = f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu"
     model: BarlowTwinsModule = load_model_from_checkpoint(
         checkpoint_path, cfg, device=device, module=BarlowTwinsModule
@@ -956,15 +1109,6 @@ def run_post_training_analysis(
     cluster_figure_only: bool = False,
     md_render_saturation_boost: float | None = None,
     raytrace_render_enabled: bool | None = None,
-    raytrace_blender_executable: str | None = None,
-    raytrace_render_resolution: int | None = None,
-    raytrace_render_max_points: int | None = None,
-    raytrace_render_samples: int | None = None,
-    raytrace_render_projection: str | None = None,
-    raytrace_render_fov_deg: float | None = None,
-    raytrace_render_camera_distance_factor: float | None = None,
-    raytrace_render_sphere_radius_fraction: float | None = None,
-    raytrace_render_timeout_sec: int | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for contrastive checkpoints."""
     out_dir = Path(output_dir)
@@ -988,33 +1132,11 @@ def run_post_training_analysis(
         if data_files_override:
             return data_files_override
 
-        nested_files = _as_list_of_str(OmegaConf.select(cfg, "data.analysis_data_files", default=None))
-        top_level_files = _as_list_of_str(OmegaConf.select(cfg, "analysis_data_files", default=None))
-        if nested_files and top_level_files and nested_files != top_level_files:
-            raise ValueError(
-                "Ambiguous analysis file configuration: data.analysis_data_files and "
-                "analysis_data_files are both set but differ. "
-                f"data.analysis_data_files={nested_files}, analysis_data_files={top_level_files}."
-            )
-        files = nested_files or top_level_files
-        if files:
-            return files
-
-        nested_single = OmegaConf.select(cfg, "data.analysis_data_file", default=None)
-        top_level_single = OmegaConf.select(cfg, "analysis_data_file", default=None)
-        if (
-            nested_single is not None
-            and top_level_single is not None
-            and str(nested_single) != str(top_level_single)
-        ):
-            raise ValueError(
-                "Ambiguous analysis file configuration: data.analysis_data_file and "
-                "analysis_data_file are both set but differ. "
-                f"data.analysis_data_file={nested_single}, analysis_data_file={top_level_single}."
-            )
-        single = nested_single if nested_single is not None else top_level_single
-        if single:
-            return [str(single)]
+        canonical_files = _as_list_of_str(
+            OmegaConf.select(cfg, "data.analysis_data_files", default=None)
+        )
+        if canonical_files:
+            return canonical_files
 
         data_files = _as_list_of_str(OmegaConf.select(cfg, "data.data_files", default=None))
         if not data_files:
@@ -1022,14 +1144,7 @@ def run_post_training_analysis(
                 "Cannot resolve analysis data files: data.data_files is missing or empty, "
                 "and no analysis-specific file override was provided."
             )
-        analysis_single_raw = OmegaConf.select(cfg, "data.analysis_single_timestep", default=None)
-        if analysis_single_raw is None:
-            analysis_single_raw = OmegaConf.select(cfg, "analysis_single_timestep", default=False)
-        analysis_single = bool(analysis_single_raw)
-        if not analysis_single:
-            return data_files
-        mid_idx = len(data_files) // 2
-        return [data_files[mid_idx]]
+        return data_files
 
     analysis_source_names: list[str] | None = None
     analysis_files = _resolve_analysis_files()
@@ -1140,42 +1255,49 @@ def run_post_training_analysis(
     cluster_figure_md_view_azim = float(
         getattr(cfg, "analysis_cluster_figure_md_view_azim", 35.0)
     )
-    def _cfg_or_override(cfg_attr, default, override, *, cast=float):
-        cfg_val = cast(getattr(cfg, cfg_attr, default))
-        return cfg_val if override is None else cast(override)
-
-    raytrace_render_enabled_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_enabled", False, raytrace_render_enabled, cast=bool,
+    raytrace_render_enabled_use = bool(
+        getattr(cfg, "analysis_cluster_figure_raytrace_enabled", False)
+        if raytrace_render_enabled is None
+        else raytrace_render_enabled
     )
-    raytrace_blender_executable_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_blender_executable", "blender",
-        raytrace_blender_executable, cast=lambda x: str(x).strip(),
-    )
-    raytrace_render_resolution_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_resolution", 1600, raytrace_render_resolution, cast=int,
-    )
-    raytrace_render_max_points_use = None
-    raytrace_render_samples_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_samples", 64, raytrace_render_samples, cast=int,
-    )
-    raytrace_render_projection_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_projection", "perspective",
-        raytrace_render_projection, cast=lambda x: str(x).strip().lower(),
-    )
-    raytrace_render_fov_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_fov_deg", 34.0, raytrace_render_fov_deg,
-    )
-    raytrace_render_camera_distance_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_camera_distance_factor", 2.8,
-        raytrace_render_camera_distance_factor,
-    )
-    raytrace_render_sphere_radius_fraction_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_sphere_radius_fraction", 0.0105,
-        raytrace_render_sphere_radius_fraction,
-    )
-    raytrace_render_timeout_sec_use = _cfg_or_override(
-        "analysis_cluster_figure_raytrace_timeout_sec", 1200, raytrace_render_timeout_sec, cast=int,
-    )
+    raytrace_render_kwargs = {
+        "raytrace_blender_executable": str(
+            getattr(cfg, "analysis_cluster_figure_raytrace_blender_executable")
+        ).strip(),
+        "raytrace_render_resolution": int(
+            getattr(cfg, "analysis_cluster_figure_raytrace_resolution")
+        ),
+        "raytrace_render_max_points": _positive_int_or_none(
+            getattr(cfg, "analysis_cluster_figure_raytrace_max_points", None)
+        ),
+        "raytrace_render_samples": int(
+            getattr(cfg, "analysis_cluster_figure_raytrace_samples")
+        ),
+        "raytrace_render_projection": str(
+            getattr(cfg, "analysis_cluster_figure_raytrace_projection")
+        ).strip().lower(),
+        "raytrace_render_fov_deg": float(
+            getattr(cfg, "analysis_cluster_figure_raytrace_fov_deg")
+        ),
+        "raytrace_render_camera_distance_factor": float(
+            getattr(cfg, "analysis_cluster_figure_raytrace_camera_distance_factor")
+        ),
+        "raytrace_render_sphere_radius_fraction": float(
+            getattr(cfg, "analysis_cluster_figure_raytrace_sphere_radius_fraction")
+        ),
+        "raytrace_render_timeout_sec": int(
+            getattr(cfg, "analysis_cluster_figure_raytrace_timeout_sec")
+        ),
+        "raytrace_render_use_gpu": bool(
+            getattr(cfg, "analysis_cluster_figure_raytrace_use_gpu", False)
+        ),
+        "raytrace_parallel_views": bool(
+            getattr(cfg, "analysis_cluster_figure_raytrace_parallel_views", False)
+        ),
+        "raytrace_parallel_max_workers": _positive_int_or_none(
+            getattr(cfg, "analysis_cluster_figure_raytrace_parallel_max_workers", None)
+        ),
+    }
     _cfg_visible_sets_raw = getattr(cfg, "analysis_cluster_figure_visible_sets", None)
     if _cfg_visible_sets_raw is not None and visible_cluster_sets is None:
         visible_cluster_sets = [
@@ -1299,10 +1421,14 @@ def run_post_training_analysis(
         f"visible_sets={visible_cluster_sets or []}, "
         f"md_saturation={cluster_figure_md_saturation_use:.2f}, "
         f"raytrace_enabled={raytrace_render_enabled_use}, "
-        f"raytrace_projection={raytrace_render_projection_use}, "
-        f"raytrace_samples={raytrace_render_samples_use}, "
-        f"raytrace_res={raytrace_render_resolution_use}, "
-        f"raytrace_max_points={raytrace_render_max_points_use}, "
+        f"raytrace_projection={raytrace_render_kwargs['raytrace_render_projection']}, "
+        f"raytrace_samples={raytrace_render_kwargs['raytrace_render_samples']}, "
+        f"raytrace_res={raytrace_render_kwargs['raytrace_render_resolution']}, "
+        f"raytrace_max_points={raytrace_render_kwargs['raytrace_render_max_points']}, "
+        f"raytrace_gpu={raytrace_render_kwargs['raytrace_render_use_gpu']}, "
+        f"raytrace_parallel_views={raytrace_render_kwargs['raytrace_parallel_views']}, "
+        "raytrace_parallel_max_workers="
+        f"{raytrace_render_kwargs['raytrace_parallel_max_workers']}, "
         f"icl_enabled={cluster_figure_icl_enabled}, "
         f"profile_point_scale_enabled={cluster_profile_point_scale_enabled}, "
         f"rep_orientation={cluster_figure_representative_orientation}, "
@@ -1434,6 +1560,7 @@ def run_post_training_analysis(
             progress_every_batches=progress_every_batches,
             verbose=True,
         )
+        _validate_inference_cache_arrays(cache)
         if inference_cache_enabled:
             _save_inference_cache(
                 out_dir=out_dir,
@@ -1444,6 +1571,7 @@ def run_post_training_analysis(
             cache_npz, _ = _inference_cache_paths(out_dir, inference_cache_file)
             print(f"[analysis][cache] Saved inference cache: {cache_npz}")
 
+    _validate_inference_cache_arrays(cache)
     n_samples = len(cache["inv_latents"])
     print(f"Collected {n_samples} samples for analysis")
     all_metrics["inference_cache"] = {
@@ -1524,15 +1652,7 @@ def run_post_training_analysis(
         cluster_color_assignment=cluster_color_assignment_use,
         random_state=clustering_random_state,
         raytrace_render_enabled=raytrace_render_enabled_use,
-        raytrace_blender_executable=raytrace_blender_executable_use,
-        raytrace_render_resolution=raytrace_render_resolution_use,
-        raytrace_render_max_points=raytrace_render_max_points_use,
-        raytrace_render_samples=raytrace_render_samples_use,
-        raytrace_render_projection=raytrace_render_projection_use,
-        raytrace_render_fov_deg=raytrace_render_fov_use,
-        raytrace_render_camera_distance_factor=raytrace_render_camera_distance_use,
-        raytrace_render_sphere_radius_fraction=raytrace_render_sphere_radius_fraction_use,
-        raytrace_render_timeout_sec=raytrace_render_timeout_sec_use,
+        **raytrace_render_kwargs,
     )
 
     def _run_figure_set(
@@ -1772,6 +1892,16 @@ def run_post_training_analysis(
     all_metrics["clustering"] = clustering_metrics
 
     primary_k = int(configured_k_values[0])
+    if not is_synthetic:
+        requested_primary_k_raw = getattr(cfg, "analysis_real_md_k", None)
+        if requested_primary_k_raw is not None:
+            requested_primary_k = int(requested_primary_k_raw)
+            if requested_primary_k not in configured_k_values:
+                raise KeyError(
+                    "Requested analysis_real_md_k is not available in configured clustering results. "
+                    f"Requested k={requested_primary_k}, available={configured_k_values}."
+                )
+            primary_k = int(requested_primary_k)
     cluster_labels = cluster_labels_by_k[primary_k]
 
     if cluster_figure_set_enabled:
@@ -1821,6 +1951,17 @@ def run_post_training_analysis(
             out_name=out_name,
             title=f"Latent space t-SNE ({method_k}, k={k_val})",
             cluster_color_map=shared_cluster_color_maps_by_k.get(int(k_val)),
+            paper_out_name=(
+                f"latent_tsne_clusters_paper_k{k_val}.svg"
+                if (
+                    not is_synthetic
+                    and bool(getattr(cfg, "analysis_tsne_paper_enabled", True))
+                    and int(k_val) == int(primary_k)
+                )
+                else None
+            ),
+            paper_title=None,
+            paper_label_prefix="C",
         )
 
         if idx_k == 0:
@@ -2119,6 +2260,34 @@ def run_post_training_analysis(
                 elif hdbscan_info is not None:
                     all_metrics[md_metrics_key]["hdbscan"] = hdbscan_info
 
+    if not is_synthetic and bool(getattr(cfg, "analysis_real_md_enabled", True)):
+        _step("Running real-MD qualitative analysis")
+        selected_real_md_k_raw = getattr(cfg, "analysis_real_md_k", None)
+        selected_real_md_k = (
+            int(primary_k)
+            if selected_real_md_k_raw is None
+            else int(selected_real_md_k_raw)
+        )
+        shared_real_md_color_map = shared_cluster_color_maps_by_k.get(
+            int(selected_real_md_k),
+            shared_cluster_color_map,
+        )
+        all_metrics["real_md_qualitative"] = run_real_md_qualitative_analysis(
+            out_dir=out_dir,
+            cfg=cfg,
+            dataset=dataset_obj,
+            latents=cache["inv_latents"],
+            coords=coords,
+            cluster_labels_by_k=cluster_labels_by_k,
+            cluster_methods_by_k=cluster_methods_by_k,
+            cluster_color_map=shared_real_md_color_map,
+            frame_groups=snapshot_source_groups,
+            frame_output_names=snapshot_output_names,
+            requested_frame_order=analysis_source_names,
+            point_scale=float(point_scale),
+            random_state=int(clustering_random_state),
+        )
+
     _step("Evaluating equivariance")
     eq_metrics, eq_err = evaluate_latent_equivariance(model, dl, device, max_batches=2)
     save_equivariance_plot(eq_err, out_dir / "equivariance.png")
@@ -2143,6 +2312,12 @@ def run_post_training_analysis(
         eq = all_metrics["equivariance"]
         print(f"Equivariance: mean={_fmt_metric(eq.get('eq_latent_rel_error_mean', 'N/A'))}, "
               f"median={_fmt_metric(eq.get('eq_latent_rel_error_median', 'N/A'))}")
+    if "real_md_qualitative" in all_metrics:
+        real_md_summary = all_metrics["real_md_qualitative"]
+        print(
+            "Real-MD qualitative analysis: "
+            f"{real_md_summary.get('summary_markdown', real_md_summary.get('root_dir', 'N/A'))}"
+        )
     _print_figure_set_summary(all_metrics, n_samples, out_dir, elapsed)
 
     return all_metrics
@@ -2186,6 +2361,24 @@ def _parse_args() -> argparse.Namespace:
         action="append",
         default=None,
         help="Override real data files (repeat for multiple). Example: --data_file 175ps.npy",
+    )
+    parser.add_argument(
+        "--data_config",
+        type=str,
+        default=None,
+        help=(
+            "Path to a data YAML override. Plain data configs like "
+            "configs/data/data_ae_Al_80.yaml are wrapped under cfg.data automatically."
+        ),
+    )
+    parser.add_argument(
+        "--analysis_config_override",
+        action="append",
+        default=None,
+        help=(
+            "Additional YAML config override(s) merged on top of the checkpoint config. "
+            "Repeat the flag to apply multiple override files."
+        ),
     )
     parser.add_argument(
         "--visible_cluster_sets",
@@ -2242,90 +2435,9 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help=(
             "Generate additional Blender Cycles raytraced renders "
-            "(*_raytrace.png) alongside existing outputs."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_blender_executable",
-        type=str,
-        default=None,
-        help=(
-            "Blender executable path/name for raytrace rendering. If omitted, uses "
-            "analysis_cluster_figure_raytrace_blender_executable."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_resolution",
-        type=int,
-        default=None,
-        help=(
-            "Image width/height for raytraced renders. If omitted, uses "
-            "analysis_cluster_figure_raytrace_resolution."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_max_points",
-        type=int,
-        default=None,
-        help=(
-            "Deprecated. Raytraced rendering now always uses all points. "
-            "Set <=0 or omit this argument."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_samples",
-        type=int,
-        default=None,
-        help=(
-            "Cycles samples for raytraced render. If omitted, uses "
-            "analysis_cluster_figure_raytrace_samples."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_projection",
-        type=str,
-        default=None,
-        choices=["orthographic", "ortho", "perspective", "persp"],
-        help=(
-            "Projection mode for raytraced render. If omitted, uses "
-            "analysis_cluster_figure_raytrace_projection."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_fov_deg",
-        type=float,
-        default=None,
-        help=(
-            "Perspective FOV for raytraced render. If omitted, uses "
-            "analysis_cluster_figure_raytrace_fov_deg."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_camera_distance_factor",
-        type=float,
-        default=None,
-        help=(
-            "Camera distance factor for raytraced render. If omitted, uses "
-            "analysis_cluster_figure_raytrace_camera_distance_factor."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_sphere_radius_fraction",
-        type=float,
-        default=None,
-        help=(
-            "Raytrace sphere size scale (default config value 0.0105 corresponds to 1.0x "
-            "auto-estimated physical size). If omitted, uses "
-            "analysis_cluster_figure_raytrace_sphere_radius_fraction."
-        ),
-    )
-    parser.add_argument(
-        "--raytrace_render_timeout_sec",
-        type=int,
-        default=None,
-        help=(
-            "Timeout in seconds for each Blender raytrace render. If omitted, uses "
-            "analysis_cluster_figure_raytrace_timeout_sec."
+            "(*_raytrace.png) alongside existing outputs. All raytrace quality/"
+            "camera parameters are read from configs/analysis/"
+            "cluster_figure_raytrace.yaml (overridable in the experiment config)."
         ),
     )
     return parser.parse_args()
@@ -2358,12 +2470,16 @@ def main() -> None:
         args.cluster_color_assignment,
         field_name="--cluster_color_assignment",
     )
+    runtime_override_cfg = _build_runtime_override_cfg(
+        data_config_path=args.data_config,
+        analysis_config_override_paths=args.analysis_config_override,
+    )
 
     run_post_training_analysis(
         checkpoint_path=checkpoint_path,
         output_dir=output_dir,
         cuda_device=int(args.cuda_device),
-        cfg=None,
+        cfg=runtime_override_cfg,
         max_batches_latent=args.max_batches_latent,
         max_samples_visualization=args.max_samples_visualization,
         data_files_override=args.data_file,
@@ -2373,15 +2489,6 @@ def main() -> None:
         cluster_figure_only=bool(args.cluster_figure_only),
         md_render_saturation_boost=args.cluster_figure_md_saturation_boost,
         raytrace_render_enabled=args.raytrace_render_enabled,
-        raytrace_blender_executable=args.raytrace_blender_executable,
-        raytrace_render_resolution=args.raytrace_render_resolution,
-        raytrace_render_max_points=args.raytrace_render_max_points,
-        raytrace_render_samples=args.raytrace_render_samples,
-        raytrace_render_projection=args.raytrace_render_projection,
-        raytrace_render_fov_deg=args.raytrace_render_fov_deg,
-        raytrace_render_camera_distance_factor=args.raytrace_render_camera_distance_factor,
-        raytrace_render_sphere_radius_fraction=args.raytrace_render_sphere_radius_fraction,
-        raytrace_render_timeout_sec=args.raytrace_render_timeout_sec,
     )
 
 

@@ -100,7 +100,7 @@ gpu: True
 devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6

@@ -1,75 +1,74 @@
 defaults:
-# - data: data_synth_polycrystalline_balanced_geometries_v2
-# - data: data_ae_multi_material
-- data: data_synth_polycrystalline_balanced_geometries
+ - data: data_synth_polycrystalline_balanced_geometries
+ - _self_
 
 data:
   analysis_data_files: ['175ps.npy']
 
 project_name: pointnet
-experiment_name: WMSE_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: VICREG_NEQUIP_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
-model_type: wmse  # Self-supervised W-MSE
-latent_size: 512  # For RI_MAE_Invariant this must equal 2 * trans_dim.
+model_type: vicreg
+latent_size: 512
 
-load_supervised_checkpoint: false
+load_supervised_checkpoint: null
 resume_from_checkpoint: null
 
-# Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
-# VN_REVNET_Backbone, PnE_VN, VN_DGCNN, DGCNN, EGNN_Encoder, PnE_L, PnE_S, MLP).
+# Faithful NequIP-style encoder core adapted to the repo's graph-level latent API.
 encoder:
-  name: RI_MAE_Invariant
+  name: NequIP_Backbone
   kwargs:
     latent_size: ${latent_size}
-    num_group: 24
-    group_size: 12
-    encoder_dims: 512
-    trans_dim: 256
-    depth: 8
-    predictor_depth: 4
-    num_heads: 16
-    mlp_ratio: 4.0
-    dropout: 0.0
-    mask_ratio: 0.6
-    ema_decay: 0.996
-    deterministic_fps: false
-    sorting_mode: nearest
-    center_input: true
+    num_layers: 4
+    r_max: 1.0
+    l_max: 2
+    parity: true
+    num_features: 32
+    type_embed_num_features: 32
+    radial_mlp_depth: 1
+    radial_mlp_width: 128
+    num_bessels: 8
+    bessel_trainable: false
+    polynomial_cutoff_p: 6
+    avg_num_neighbors: 16.0
+    max_neighbors: 16
+    pool: mean
+    num_types: 1
+    resnet: false
+    convnet_sc: true
 
-
-# Decoder config is required by the model factory but is not used for W-MSE
+# Decoder config is required by the model factory but is not used for VICReg.
 decoder:
   name: VN_REVNET_Anchor
   kwargs:
     num_points: ${data.model_points}
     latent_size: ${latent_size}
 
-# Training parameters
-learning_rate: 0.003
-batch_size: 4096
-precision: bf16-true
+learning_rate: 0.001
+batch_size: 128
+precision: 32-true
 gradient_clip_val: 1.0
-accumulate_grad_batches: 1
-auto_batch_size_search: false
+accumulate_grad_batches: 8
+auto_batch_size_search: true
 auto_batch_size_mode: power
-auto_batch_size_init_val: null
-auto_batch_size_max_trials: 12
+auto_batch_size_init_val: 64
+auto_batch_size_max_trials: 8
 auto_batch_size_steps_per_trial: 3
 auto_batch_size_use_single_device: true
 auto_batch_size_adjust_accumulate: true
-auto_batch_size_target_effective_batch: null
+auto_batch_size_target_effective_batch: 1024
 auto_batch_size_strict: false
 
-enable_swa: false
+enable_swa: False
 swa_epoch_start: 1000
 epochs: 60
 max_samples: 0
 check_val_every_n_epoch: 5
 
-gpu: true
+gpu: True
 devices: [0, 1]
-ddp_find_unused_parameters: true
+ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 4
 scheduler_gamma: 0.5
@@ -80,63 +79,67 @@ warmup_epochs: 12
 warmup_start_factor: 0.1
 
 decay_rate: 0.0004
+# VICReg in this repo derives the invariant branch from eq_z when eq_z is present.
 contrastive_norms_only_latent: true
 enable_embedding_metrics: false
 enable_svm_accuracy: false
 
 # IDEC clustering (disabled by default; enable after pretraining)
-idec_enabled: false
+idec_enabled: False
 idec_num_clusters: 0
 idec_gamma: 0.1
 idec_update_interval: 200
 idec_delta: 0.001
 idec_max_iter: null
-idec_use_global_p: true
-idec_normalize_z: true
-idec_init_kmeans: true
+idec_use_global_p: True
+idec_normalize_z: True
+idec_init_kmeans: True
 
-# Barlow Twins / VICReg / PointContrast (disabled)
-barlow_enabled: false
+# Barlow Twins (disabled)
+barlow_enabled: False
 barlow_weight: 0.0
-vicreg_enabled: false
-vicreg_weight: 0.0
-pointcontrast_enabled: false
-pointcontrast_weight: 0.0
 
-# W-MSE (self-supervised)
-wmse_enabled: true
-wmse_weight: 1.0
-wmse_embed_dim: 120
-wmse_start_epoch: 0
-wmse_jitter_std: 0.01
-wmse_jitter_mode: physical
-wmse_drop_ratio: 0.0
-wmse_neighbor_view: true
-wmse_neighbor_view_mode: second
-wmse_neighbor_k: 6
-wmse_view_points: ${data.model_points}
-wmse_rotation_mode: none
-wmse_rotation_deg: 10.0
-wmse_strain_std: 0.02
-wmse_strain_volume_preserve: true
-wmse_occlusion_mode: mixed
-wmse_occlusion_view: second
-wmse_occlusion_slab_frac: 0.0
-wmse_occlusion_cone_deg: 0.0
-wmse_invariant_mode: passthrough
-wmse_invariant_max_factor: 4.0
-wmse_invariant_groups: 0
-wmse_invariant_use_third_order: true
-wmse_invariant_eps: 1e-6
-wmse_whitening_eps: 1e-4
-wmse_whitening_iters: 1
-wmse_whitening_size: 256
-wmse_normalize_embeddings: true
+# VICReg (self-supervised)
+vicreg_enabled: True
+vicreg_weight: 1.0
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+vicreg_embed_dim: 120
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.01
+vicreg_jitter_mode: physical
+vicreg_drop_ratio: 0.0
+vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: second
+vicreg_neighbor_k: 6
+vicreg_neighbor_max_relative_distance: 0.0
+vicreg_view_points: ${data.model_points}
+vicreg_rotation_mode: none
+vicreg_rotation_deg: 10.0
+vicreg_strain_std: 0.02
+vicreg_strain_volume_preserve: true
+vicreg_occlusion_mode: mixed
+vicreg_occlusion_view: second
+vicreg_occlusion_slab_frac: 0.0
+vicreg_occlusion_cone_deg: 0.0
+vicreg_std_eps: 1e-4
+vicreg_std_target: 1.0
+vicreg_invariant_mode: norms
+vicreg_invariant_max_factor: 4.0
+vicreg_invariant_groups: 0
+vicreg_invariant_use_third_order: true
+vicreg_invariant_eps: 1e-6
+vicreg_radial_enabled: false
+vicreg_radial_beta1: 1.0
+vicreg_radial_beta2: 0.1
+vicreg_radial_m: null
+vicreg_radial_eps: 1e-8
 
 
 # Pose regression (symmetry-aware)
 pose:
-  enabled: false
+  enabled: False
   weight: 0.4
   start_epoch: 10
   head_hidden: 256

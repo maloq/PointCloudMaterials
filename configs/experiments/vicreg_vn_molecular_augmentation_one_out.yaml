@@ -1,0 +1,95 @@
+# Leave-one-out augmentation ablation for the current VICReg molecular setup,
+# plus a small sweep over alternative neighbor-view shift settings.
+#
+# Baseline is taken directly from `configs/vicreg_vn_molecular.yaml`.
+# Only augmentations that are actually active in that config are ablated here:
+#   - neighbor-view shift
+#   - jitter
+#   - strain
+#
+# Additional neighbor-view variants:
+#   - shift first view only
+#   - shift both views
+#   - shift second view with a wider candidate pool / distance cap
+#
+# Occlusion is intentionally excluded from this one-out sweep because the base
+# config currently sets:
+#   - vicreg_occlusion_slab_frac = 0.0
+#   - vicreg_occlusion_cone_deg = 0.0
+# which makes occlusion a no-op even though vicreg_occlusion_mode="mixed".
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_augmentation_one_out.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_augmentation_one_out.yaml --local --parallel 1
+
+name: vicreg_vn_molecular_augmentation_one_out
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_vn_molecular.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 80G
+  time: "24:00:00"
+
+base_overrides:
+  - "epochs=120"
+  - "batch_size=4096"
+  - "accumulate_grad_batches=1"
+  - "++run_post_training_analysis=false"
+  - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
+  - "++checkpoint_mode=max"
+
+experiments:
+  - name: baseline_all_active
+    overrides: []
+
+  - name: neighbor_first_view
+    overrides:
+      - "vicreg_neighbor_view=true"
+      - "vicreg_neighbor_view_mode=first"
+
+  - name: neighbor_both_views
+    overrides:
+      - "vicreg_neighbor_view=true"
+      - "vicreg_neighbor_view_mode=both"
+
+  - name: neighbor_second_k8_r0p10
+    overrides:
+      - "vicreg_neighbor_view=true"
+      - "vicreg_neighbor_view_mode=second"
+      - "vicreg_neighbor_k=8"
+      - "vicreg_neighbor_max_relative_distance=0.10"
+
+  - name: no_neighbor_view
+    overrides:
+      - "vicreg_neighbor_view=false"
+      - "vicreg_neighbor_view_mode=none"
+
+  - name: no_jitter
+    overrides:
+      - "vicreg_jitter_std=0.0"
+
+  - name: no_strain
+    overrides:
+      - "vicreg_strain_std=0.0"
+
+metrics:
+  final:
+    - test/loss
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: val/loss
+      mode: min
+
+output_root: output/experiments

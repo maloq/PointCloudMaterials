@@ -1,0 +1,74 @@
+analysis_real_md_enabled: true
+analysis_real_md_k: 6
+analysis_real_md_time_series_paper_enabled: true
+analysis_tsne_paper_enabled: true
+
+analysis_cluster_profile_enabled: true
+analysis_cluster_profile_samples_per_cluster: 6
+analysis_cluster_profile_target_points: 64
+analysis_cluster_profile_knn_k: 4
+analysis_cluster_profile_max_cluster_property_samples: 256
+
+analysis_real_md_cluster_group_order: []
+analysis_real_md_cluster_groups: {}
+
+analysis_real_md_spatial_enabled: true
+analysis_real_md_spatial_max_points: 25000
+analysis_real_md_spatial_point_size: 5.6
+analysis_real_md_spatial_alpha: 0.62
+analysis_real_md_spatial_saturation_boost: 1.18
+analysis_real_md_spatial_view_elev: 24.0
+analysis_real_md_spatial_view_azim: 35.0
+analysis_real_md_spatial_auto_top_clusters: 2
+analysis_real_md_spatial_auto_zoom_enabled: true
+analysis_real_md_spatial_auto_zoom_count: 2
+analysis_real_md_spatial_auto_zoom_half_extent: 18.0
+analysis_real_md_spatial_auto_zoom_search_radius: 14.0
+analysis_real_md_spatial_zoom_specs: []
+
+analysis_real_md_projection_method: umap
+analysis_real_md_projection_max_samples: 15000
+analysis_real_md_projection_umap_neighbors: 30
+analysis_real_md_projection_umap_min_dist: 0.15
+analysis_real_md_projection_umap_metric: euclidean
+
+analysis_real_md_descriptor_enabled: true
+analysis_real_md_descriptor_max_samples: 6000
+analysis_real_md_descriptor_physical_scalar: coord_mean
+analysis_real_md_descriptor_scalar_columns: []
+analysis_real_md_descriptors:
+  steinhardt:
+    enabled: false
+    l_values: [4, 6]
+    append_shell_size: true
+    center_atom_tolerance: 1.0e-6
+    shell_min_neighbors: 8
+    shell_max_neighbors: 24
+  cna:
+    enabled: false
+    max_signatures: 12
+    append_shell_size: true
+    fit_max_pointclouds: 4000
+    center_atom_tolerance: 1.0e-6
+    shell_min_neighbors: 8
+    shell_max_neighbors: 24
+  soap:
+    enabled: false
+    species: Al
+    point_scale: null
+    r_cut: null
+    r_cut_multiplier: 1.25
+    r_cut_min: 0.35
+    n_max: 8
+    l_max: 6
+    sigma: 0.3
+    pca_components: 16
+    fit_max_pointclouds: 4000
+    n_jobs: 1
+    center_atom_tolerance: 1.0e-6
+    shell_min_neighbors: 8
+    shell_max_neighbors: 24
+
+analysis_real_md_transition_enabled: true
+analysis_real_md_transition_require_mutual: true
+analysis_real_md_transition_max_distance: null

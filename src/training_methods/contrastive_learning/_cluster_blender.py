@@ -17,6 +17,10 @@ from src.training_methods.contrastive_learning._cluster_colors import _boost_sat
 from src.training_methods.contrastive_learning._cluster_geometry import _estimate_ball_radius_world
 
 
+def _log_saved_figure(path: Path | str) -> None:
+    print(f"[analysis][savefig] {Path(path).resolve()}")
+
+
 def _run_blender_render(
     blender_exec: str,
     blender_script: str,
@@ -346,17 +350,37 @@ def _save_md_cluster_snapshot_raytrace_blender(
                 if addon is None:
                     raise RuntimeError("Cycles addon is unavailable; cannot enable GPU raytracing.")
                 cprefs = addon.preferences
-                cprefs.get_devices()
+
+                gpu_backend = None
+                backend_candidates = ["OPTIX", "CUDA", "HIP", "ONEAPI", "METAL", "OPENCL"]
+                for backend in backend_candidates:
+                    try:
+                        cprefs.compute_device_type = backend
+                    except Exception:
+                        continue
+                    cprefs.get_devices()
+                    if any(getattr(dev, "type", "CPU") != "CPU" for dev in cprefs.devices):
+                        gpu_backend = backend
+                        break
+                if gpu_backend is None:
+                    cprefs.get_devices()
+
                 gpu_count = 0
                 for dev in cprefs.devices:
-                    dev.use = True
-                    if dev.type != "CPU":
+                    dev_type = str(getattr(dev, "type", "CPU"))
+                    is_gpu = dev_type != "CPU"
+                    dev.use = bool(is_gpu)
+                    if is_gpu:
                         gpu_count += 1
                 if gpu_count <= 0:
                     raise RuntimeError(
                         "use_gpu=True was requested but no GPU Cycles device is available."
                     )
                 scene.cycles.device = "GPU"
+                print(
+                    "INFO: Cycles GPU mode enabled "
+                    f"(backend={gpu_backend}, devices={gpu_count})."
+                )
             else:
                 scene.cycles.device = "CPU"
 
@@ -549,6 +573,7 @@ def _save_md_cluster_snapshot_raytrace_blender(
         timeout_seconds=int(timeout_seconds),
         tmp_prefix="md_raytrace_blender_",
     )
+    _log_saved_figure(out_file)
 
     return {
         "out_file": str(out_file),
@@ -561,6 +586,7 @@ def _save_md_cluster_snapshot_raytrace_blender(
         "projection": str(projection_norm),
         "image_size": (int(image_width), int(image_height)),
         "cycles_samples": int(cycles_samples),
+        "use_gpu": bool(use_gpu),
         "sphere_radius_reference_points": int(radius_ref_points.shape[0]),
         "sphere_radius_world_auto": float(auto_radius_world),
         "sphere_radius_user_scale": float(user_radius_scale),

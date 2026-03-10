@@ -1,0 +1,94 @@
+# Leave-one-out augmentation ablation for VICReg on the molecular setup,
+# using VN_REVNET_Backbone instead of RI_MAE_Invariant.
+#
+# This plan keeps the same augmentation sweep as the RI-MAE version, but uses
+# single-GPU SLURM jobs and a conservative batch setup with auto batch-size
+# search targeting an effective batch size of 1024.
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_augmentation_one_out_vn_revnet.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_augmentation_one_out_vn_revnet.yaml --dry-run
+
+name: vicreg_vn_molecular_augmentation_one_out_vn_revnet
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_vn_molecular.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 80G
+  time: "24:00:00"
+
+base_overrides:
+  - "epochs=120"
+  - "encoder.name=VN_REVNET_Backbone"
+  - "latent_size=80"
+  - "encoder.kwargs.latent_size=80"
+  - "encoder.kwargs.sa_npoints=[80,40]"
+  - "encoder.kwargs.sa_channels=[128,256]"
+  - "encoder.kwargs.attn_hidden=256"
+  - "devices=[0]"
+  - "load_supervised_checkpoint=false"
+  - "batch_size=128"
+  - "accumulate_grad_batches=8"
+  - "auto_batch_size_search=true"
+  - "auto_batch_size_adjust_accumulate=true"
+  - "auto_batch_size_target_effective_batch=1024"
+  - "auto_batch_size_init_val=128"
+  - "++run_post_training_analysis=false"
+  - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
+  - "++checkpoint_mode=max"
+
+experiments:
+  - name: baseline_all_active
+    overrides: []
+
+  - name: neighbor_first_view
+    overrides:
+      - "vicreg_neighbor_view=true"
+      - "vicreg_neighbor_view_mode=first"
+
+  - name: neighbor_both_views
+    overrides:
+      - "vicreg_neighbor_view=true"
+      - "vicreg_neighbor_view_mode=both"
+
+  - name: neighbor_second_k8_r0p10
+    overrides:
+      - "vicreg_neighbor_view=true"
+      - "vicreg_neighbor_view_mode=second"
+      - "vicreg_neighbor_k=8"
+      - "vicreg_neighbor_max_relative_distance=0.10"
+
+  - name: no_neighbor_view
+    overrides:
+      - "vicreg_neighbor_view=false"
+      - "vicreg_neighbor_view_mode=none"
+
+  - name: no_jitter
+    overrides:
+      - "vicreg_jitter_std=0.0"
+
+  - name: no_strain
+    overrides:
+      - "vicreg_strain_std=0.0"
+
+metrics:
+  final:
+    - test/loss
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: val/loss
+      mode: min
+
+output_root: output/experiments

@@ -5,7 +5,6 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 
 predict_script="${repo_root}/src/training_methods/contrastive_learning/predict_and_visualize.py"
-blender_exec="/home/infres/vmorozov/.local/bin/blender"
 
 checkpoints=(
   "output/2026-03-02/17-22-18/VICREG_FT_l512_N128_M80_RI_MAE_Invariant-epoch=11.ckpt"
@@ -105,6 +104,9 @@ Use passthrough args after `--` for global options that should apply to every
 checkpoint, for example:
   ./scripts/run_selected_checkpoint_analyses_with_clusters.sh \
     -- --visible_cluster_sets '3,4,5'
+
+Raytrace quality/camera/Blender parameters come from
+configs/analysis/cluster_figure_raytrace.yaml (or checkpoint config overrides).
 EOF
 }
 
@@ -129,10 +131,6 @@ done
 
 if [[ ! -f "${predict_script}" ]]; then
   die "Missing analysis script: ${predict_script}"
-fi
-
-if [[ ! -x "${blender_exec}" ]]; then
-  die "Blender executable is missing or not executable: ${blender_exec}"
 fi
 
 if [[ "${#checkpoints[@]}" -ne "${#analysis_dirs[@]}" ]]; then
@@ -188,7 +186,6 @@ for idx in "${!checkpoints[@]}"; do
     "${ckpt_path}" \
     --output_dir "${out_dir}" \
     --raytrace_render_enabled \
-    --raytrace_blender_executable "${blender_exec}" \
     "${visible_args[@]}" \
     "${extra_args[@]}"
 done

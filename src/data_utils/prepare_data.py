@@ -211,6 +211,18 @@ def _resolve_drop_func(sampling_method: str):
     raise ValueError(f"Unknown sampling method: {sampling_method!r}")
 
 
+def _resolve_edge_drop_layers(
+    drop_edge_samples: bool,
+    edge_drop_layers: int | None,
+) -> int:
+    if edge_drop_layers is None:
+        return 1 if bool(drop_edge_samples) else 0
+    layers = int(edge_drop_layers)
+    if layers < 0:
+        raise ValueError(f"edge_drop_layers must be >= 0, got {layers}.")
+    return layers
+
+
 def generate_samples(
     points: np.ndarray,
     tree: KDTree,
@@ -222,12 +234,19 @@ def generate_samples(
     return_coords: bool,
     max_samples: int,
     drop_edge_samples: bool = True,
+    edge_drop_layers: int | None = None,
     sampling_method: str = "drop_farthest"
 ) -> Tuple[List, int, int]:
     drop_func = _resolve_drop_func(sampling_method)
+    resolved_edge_drop_layers = _resolve_edge_drop_layers(drop_edge_samples, edge_drop_layers)
 
-    if drop_edge_samples:
-        ranges = [(1, int(d) - 1) if d >= 3 else (0, 0) for d in dims]
+    if resolved_edge_drop_layers > 0:
+        ranges = [
+            (resolved_edge_drop_layers, int(d) - resolved_edge_drop_layers)
+            if int(d) >= (2 * resolved_edge_drop_layers + 1)
+            else (0, 0)
+            for d in dims
+        ]
     else:
         ranges = [(0, int(d)) for d in dims]
 
@@ -292,6 +311,7 @@ def get_regular_samples(
     n_points: int = 100,
     max_samples: int = 2e32,
     drop_edge_samples: bool = True,
+    edge_drop_layers: int | None = None,
     sampling_method: str = "drop_farthest"
 ) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
     """
@@ -324,8 +344,11 @@ def get_regular_samples(
         The maximum number of samples to generate. The function stops sampling once this number is reached,
         even if additional samples could be produced.
     drop_edge_samples : bool, optional
-        If True, samples from the outermost layer of the grid will be dropped. This results in samples
-        that are further away from the boundaries of the sampling region. Defaults to False.
+        Backward-compatible boolean control for dropping one outer grid layer. Ignored when
+        ``edge_drop_layers`` is provided.
+    edge_drop_layers : int | None, optional
+        Number of regular-grid layers to drop from each face after boundary padding. ``None`` preserves
+        the historical behavior: one extra layer when ``drop_edge_samples=True`` and zero otherwise.
 
     Returns:
     --------
@@ -338,6 +361,7 @@ def get_regular_samples(
     tree = KDTree(points)
     min_coords, max_coords = get_min_max_coords(points)
     stride = calculate_stride(size, overlap_fraction)
+    resolved_edge_drop_layers = _resolve_edge_drop_layers(drop_edge_samples, edge_drop_layers)
     
     padding = size
     min_center = min_coords + padding
@@ -373,7 +397,7 @@ def get_regular_samples(
 
     samples, added_points, dropped_points = generate_samples(
         points, tree, min_center, stride, size, dims, 
-        n_points, return_coords, max_samples, drop_edge_samples, sampling_method
+        n_points, return_coords, max_samples, drop_edge_samples, resolved_edge_drop_layers, sampling_method
     )
 
     if len(samples) > 0:
@@ -381,17 +405,17 @@ def get_regular_samples(
         avg_dropped = round(dropped_points / len(samples), 2)
         logger.print(f"Generated {len(samples)} samples.")
         logger.print(f"Avg added {avg_added} points, avg dropped {avg_dropped} points per sample.")
-        if drop_edge_samples and total_padded > 0:
-            # interior dims after dropping the outer layer on each side when dims >= 3
-            keep_i = dims[0] - 2 if dims[0] >= 3 else 0
-            keep_j = dims[1] - 2 if dims[1] >= 3 else 0
-            keep_k = dims[2] - 2 if dims[2] >= 3 else 0
+        if resolved_edge_drop_layers > 0 and total_padded > 0:
+            keep_i = dims[0] - 2 * resolved_edge_drop_layers if dims[0] >= (2 * resolved_edge_drop_layers + 1) else 0
+            keep_j = dims[1] - 2 * resolved_edge_drop_layers if dims[1] >= (2 * resolved_edge_drop_layers + 1) else 0
+            keep_k = dims[2] - 2 * resolved_edge_drop_layers if dims[2] >= (2 * resolved_edge_drop_layers + 1) else 0
             kept_interior = int(max(keep_i, 0) * max(keep_j, 0) * max(keep_k, 0))
             dropped_edges = max(total_padded - kept_interior, 0)
             pct_edges = 100.0 * dropped_edges / total_padded
             logger.print(
-                f"Additional edge-layer drop (drop_edge_samples=True): dropped {dropped_edges}/{total_padded} centers "
-                f"({pct_edges:.2f}%), kept interior {kept_interior}"
+                f"Additional edge-layer drop (edge_drop_layers={resolved_edge_drop_layers}): "
+                f"dropped {dropped_edges}/{total_padded} centers ({pct_edges:.2f}%), "
+                f"kept interior {kept_interior}"
             )
     else:
         logger.print("No samples were generated with the given parameters.")

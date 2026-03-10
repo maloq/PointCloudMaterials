@@ -14,6 +14,10 @@ from sklearn.preprocessing import StandardScaler
 from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
 
 
+def _log_saved_figure(path: Path | str) -> None:
+    print(f"[analysis][savefig] {Path(path).resolve()}")
+
+
 def _tab10_colors(n_colors: int) -> np.ndarray:
     if int(n_colors) <= 0:
         return np.empty((0, 4), dtype=np.float32)
@@ -694,9 +698,12 @@ def save_tsne_plot_with_coords(
     out_dir: Path,
     *,
     out_name: str,
-    title: str,
+    title: str | None,
     legend_title: str = "cluster",
     cluster_color_map: dict[int, str] | None = None,
+    paper_out_name: str | None = None,
+    paper_title: str | None = None,
+    paper_label_prefix: str | None = None,
 ) -> None:
     if tsne_coords.size == 0 or labels.size != len(tsne_coords):
         return
@@ -710,6 +717,17 @@ def save_tsne_plot_with_coords(
         legend_title=legend_title,
         cluster_color_map=cluster_color_map,
     )
+    if paper_out_name:
+        save_tsne_plot(
+            tsne_coords,
+            labels,
+            out_file=str(out_dir / paper_out_name),
+            title=paper_title,
+            legend_title=legend_title,
+            cluster_color_map=cluster_color_map,
+            paper_style=True,
+            label_prefix=paper_label_prefix,
+        )
 
 
 def save_tsne_continuous_plot(
@@ -803,8 +821,10 @@ def save_cluster_orientation_histograms(
         ax.axis("off")
 
     plt.tight_layout()
-    fig.savefig(out_dir / "cluster_orientation_histograms.png")
+    orientation_out = out_dir / "cluster_orientation_histograms.png"
+    fig.savefig(orientation_out)
     plt.close(fig)
+    _log_saved_figure(orientation_out)
 
 
 def save_cluster_symmetry_boxplots(
@@ -856,8 +876,10 @@ def save_cluster_symmetry_boxplots(
     axes[1].set_ylabel("n_modes")
 
     plt.tight_layout()
-    fig.savefig(out_dir / "cluster_symmetry_boxplots.png")
+    symmetry_out = out_dir / "cluster_symmetry_boxplots.png"
+    fig.savefig(symmetry_out)
     plt.close(fig)
+    _log_saved_figure(symmetry_out)
 
 
 def save_local_structure_assignments(
@@ -946,6 +968,7 @@ def save_md_space_clusters_plot(
     plt.tight_layout()
     fig.savefig(out_file)
     plt.close(fig)
+    _log_saved_figure(out_file)
 
 
 def save_pca_visualization(
@@ -1020,8 +1043,10 @@ def save_pca_visualization(
     axes[1].set_xlim(0.5, min(20, n_components) + 0.5)
 
     plt.tight_layout()
-    fig.savefig(out_dir / "latent_pca_analysis.png")
+    pca_out = out_dir / "latent_pca_analysis.png"
+    fig.savefig(pca_out)
     plt.close(fig)
+    _log_saved_figure(pca_out)
 
     if pca_coords.shape[1] >= 3:
         fig = plt.figure(figsize=(10, 8), dpi=150)
@@ -1058,8 +1083,10 @@ def save_pca_visualization(
         ax.set_title("3D PCA Projection")
 
         plt.tight_layout()
-        fig.savefig(out_dir / "latent_pca_3d.png")
+        pca_3d_out = out_dir / "latent_pca_3d.png"
+        fig.savefig(pca_3d_out)
         plt.close(fig)
+        _log_saved_figure(pca_3d_out)
 
     return pca_stats
 
@@ -1203,8 +1230,10 @@ def save_latent_statistics(
         axes[1, 2].set_title("Inv. vs Eq. Comparison")
 
     plt.tight_layout()
-    fig.savefig(out_dir / "latent_statistics.png")
+    latent_stats_out = out_dir / "latent_statistics.png"
+    fig.savefig(latent_stats_out)
     plt.close(fig)
+    _log_saved_figure(latent_stats_out)
 
     return stats
 
@@ -1225,6 +1254,7 @@ def save_equivariance_plot(eq_errors: np.ndarray, out_file: Path) -> None:
     plt.tight_layout()
     fig.savefig(out_file)
     plt.close(fig)
+    _log_saved_figure(out_file)
 
 
 __all__ = [

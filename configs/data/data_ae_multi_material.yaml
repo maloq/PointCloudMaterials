@@ -3,9 +3,11 @@ kind: real
 radius: 7.2
 sample_type: 'regular'
 n_samples: 8000000
-num_points: 128
+num_points: 160
 model_points: 80
 overlap_fraction: 0.3
+drop_edge_samples: true
+edge_drop_layers: 2
 dr: 0.01
 
 # Optional per-material cutoff auto-estimation.
@@ -13,7 +15,7 @@ dr: 0.01
 # contain a comparable number of atoms before downsampling to num_points.
 auto_cutoff:
   enabled: true
-  target_points: 128
+  target_points: 160
   quantile: 0.995
   estimation_samples_per_file: 4000
   seed: 42

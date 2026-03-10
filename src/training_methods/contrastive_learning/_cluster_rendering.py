@@ -27,6 +27,10 @@ from src.training_methods.contrastive_learning._cluster_geometry import (
 )
 
 
+def _log_saved_figure(path: Path | str) -> None:
+    print(f"[analysis][savefig] {Path(path).resolve()}")
+
+
 def _ensure_connected_edges(
     points: np.ndarray,
     edges: list[tuple[int, int]],
@@ -104,6 +108,30 @@ def _compute_structure_half_span(points: np.ndarray) -> float:
     if not np.isfinite(span) or span <= 0.0:
         raise ValueError(f"Computed invalid structure span {span} for points shape {pts.shape}.")
     return 0.5 * span
+
+
+def _set_equal_axes_3d_with_half_span(
+    ax: Any,
+    coords: np.ndarray,
+    *,
+    half_span: float,
+) -> None:
+    pts = np.asarray(coords, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] < 3:
+        raise ValueError(f"coords must have shape (N, >=3), got {pts.shape}.")
+    pts = pts[:, :3]
+    half = float(half_span)
+    if not np.isfinite(half) or half <= 0.0:
+        raise ValueError(f"half_span must be positive and finite, got {half_span}.")
+
+    mins = np.min(pts, axis=0)
+    maxs = np.max(pts, axis=0)
+    center = 0.5 * (mins + maxs)
+    ax.set_xlim(center[0] - half, center[0] + half)
+    ax.set_ylim(center[1] - half, center[1] + half)
+    ax.set_zlim(center[2] - half, center[2] + half)
+    if hasattr(ax, "set_box_aspect"):
+        ax.set_box_aspect((1.0, 1.0, 1.0))
 
 
 def _save_md_cluster_snapshot(
@@ -211,6 +239,7 @@ def _save_md_cluster_snapshot(
     out_file.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_file, bbox_inches="tight")
     plt.close(fig)
+    _log_saved_figure(out_file)
 
     return {
         "out_file": str(out_file),
@@ -433,15 +462,9 @@ def _render_cluster_representatives_variant(
             method=str(orientation_method),
         )
         base_color = str(prepared["base_color"])
-        point_colors = _compute_center_to_edge_colors(
-            local_oriented,
-            base_color,
-            center_lighten=0.76,
-            edge_darken=0.34,
-            radius_percentile=88.0,
-            gamma=0.86,
-        )
-        point_colors = _boost_saturation(point_colors, 1.16)
+        # Keep representative coloring consistent with the paper single-column
+        # variant (08_cluster_representatives_spatial_neighbors_paper_k*).
+        point_colors = _compute_center_to_edge_colors(local_oriented, base_color)
         edges, edge_info = _build_local_coordination_edges(
             local_oriented,
             min_shell_neighbors=max(2, int(knn_k) - 1),
@@ -508,6 +531,7 @@ def _render_cluster_representatives_variant(
     out_file.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_file, bbox_inches="tight")
     plt.close(fig)
+    _log_saved_figure(out_file)
     return {
         "variant_name": str(variant_name),
         "out_file": str(out_file),
@@ -607,7 +631,16 @@ def _render_two_shell_cluster_representatives_variant(
     n_clusters = len(prepared_records)
     n_cols = min(3, n_clusters)
     n_rows = int(np.ceil(n_clusters / max(1, n_cols)))
-    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=220, facecolor="white")
+    # Match paper representative styling so perceived colors are consistent with
+    # 08_cluster_representatives_spatial_neighbors_paper_k*.
+    point_size = 48.0
+    point_linewidth = 0.26
+    # Spatial-neighbor graphs are denser than the paper variant edges and can
+    # make colors look desaturated/darker by overpainting. Keep points identical
+    # to paper colors but lower edge prominence for perceptual color parity.
+    edge_alpha = 0.42
+    edge_linewidth = 0.86
+    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=300, facecolor="white")
     summary_records: list[dict[str, Any]] = []
 
     for pos, prepared in enumerate(prepared_records):
@@ -622,15 +655,9 @@ def _render_two_shell_cluster_representatives_variant(
             prepared["local_points"],
             method="pca",
         )
-        point_colors = _compute_center_to_edge_colors(
-            oriented_points,
-            base_color,
-            center_lighten=0.76,
-            edge_darken=0.34,
-            radius_percentile=88.0,
-            gamma=0.86,
-        )
-        point_colors = _boost_saturation(point_colors, 1.16)
+        # Keep representative coloring consistent with the paper single-column
+        # variant (08_cluster_representatives_spatial_neighbors_paper_k*).
+        point_colors = _compute_center_to_edge_colors(oriented_points, base_color)
         spatial_n_neighs = max(1, int(knn_k))
         edges, spatial_neighbor_info = _build_squidpy_generic_spatial_neighbor_edges(
             oriented_points,
@@ -648,18 +675,18 @@ def _render_two_shell_cluster_representatives_variant(
             oriented_points,
             edges,
             point_colors=point_colors,
-            edge_alpha=0.64,
-            edge_linewidth=1.02,
+            edge_alpha=float(edge_alpha),
+            edge_linewidth=float(edge_linewidth),
         )
         ax.scatter(
             oriented_points[:, 0],
             oriented_points[:, 1],
             oriented_points[:, 2],
             c=point_colors,
-            s=58,
+            s=float(point_size),
             alpha=0.97,
             edgecolors="#222222",
-            linewidths=0.36,
+            linewidths=float(point_linewidth),
             depthshade=False,
         )
         _set_equal_axes_3d(ax, oriented_points)
@@ -702,6 +729,7 @@ def _render_two_shell_cluster_representatives_variant(
     out_file.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_file, bbox_inches="tight")
     plt.close(fig)
+    _log_saved_figure(out_file)
     return {
         "variant_name": str(variant_name),
         "out_file": str(out_file),
@@ -822,7 +850,11 @@ def _render_spatial_neighbors_paper_figure(
         )
 
         # Shared display bounds
-        _set_equal_axes_3d(ax, oriented_points, half_span=float(display_half_span))
+        _set_equal_axes_3d_with_half_span(
+            ax,
+            oriented_points,
+            half_span=float(display_half_span),
+        )
 
         # Clean axis chrome
         ax.set_xticks([])
@@ -869,6 +901,7 @@ def _render_spatial_neighbors_paper_figure(
     out_file.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_file, bbox_inches="tight")
     plt.close(fig)
+    _log_saved_figure(out_file)
     return {
         "variant_name": "spatial_neighbors_paper",
         "out_file": str(out_file),

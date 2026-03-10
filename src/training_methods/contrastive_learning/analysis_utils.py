@@ -149,6 +149,8 @@ def build_real_coords_dataloader(
         overlap_fraction=getattr(data_cfg, "overlap_fraction", 0.0),
         n_samples=getattr(data_cfg, "n_samples", 1000),
         num_points=getattr(data_cfg, "num_points", 100),
+        drop_edge_samples=bool(getattr(data_cfg, "drop_edge_samples", True)),
+        edge_drop_layers=getattr(data_cfg, "edge_drop_layers", None),
         return_coords=True,
         pre_normalize=getattr(data_cfg, "pre_normalize", True),
         normalize=getattr(data_cfg, "normalize", True),
@@ -159,6 +161,8 @@ def build_real_coords_dataloader(
     full_dataset: PointCloudDataset | None = None
     if use_full_dataset and prefer_existing_full_dataset:
         full_dataset = _try_reuse_full_pointcloud_dataset(dm)
+        if full_dataset is not None and not bool(getattr(full_dataset, "return_coords", False)):
+            full_dataset = None
 
     if full_dataset is None:
         data_sources = getattr(data_cfg, "data_sources", None)
@@ -243,13 +247,13 @@ def gather_inference_batches(
                 pc = model._prepare_model_input(pc)
 
             if seed_base is None:
-                z, _, eq_z = model(pc)
+                z_inv_contrastive, _, eq_z = model(pc)
             else:
-                z, _, eq_z = _seeded_forward(model, pc, seed_base + batch_idx)
-            if z is None:
+                z_inv_contrastive, _, eq_z = _seeded_forward(model, pc, seed_base + batch_idx)
+            if z_inv_contrastive is None:
                 continue
 
-            z_cpu = z.detach().cpu()
+            z_cpu = z_inv_contrastive.detach().cpu()
             take = z_cpu.shape[0]
             if max_samples is not None:
                 remaining = max_samples - collected
@@ -261,12 +265,22 @@ def gather_inference_batches(
                 break
 
             inv_latents.append(z_cpu[:take])
-            if collect_coords and coords is not None:
+            if collect_coords:
+                if coords is None:
+                    raise RuntimeError(
+                        "gather_inference_batches(..., collect_coords=True) received a batch "
+                        f"without coordinates at batch_idx={batch_idx}. "
+                        f"Batch type: {type(batch)!r}."
+                    )
                 coords_t = coords.detach().cpu()
                 if coords_t.ndim == 1:
                     coords_t = coords_t.unsqueeze(0)
-                elif coords_t.ndim > 2:
-                    coords_t = coords_t.view(coords_t.shape[0], -1)
+                if coords_t.ndim != 2 or coords_t.shape[1] != 3:
+                    raise ValueError(
+                        "Expected center coordinates with shape [batch, 3] when "
+                        f"collect_coords=True, got shape={tuple(coords_t.shape)} "
+                        f"at batch_idx={batch_idx}."
+                    )
                 coords_list.append(coords_t[:take])
             if eq_z is not None:
                 eq_latents.append(eq_z.detach().cpu()[:take])

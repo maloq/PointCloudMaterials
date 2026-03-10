@@ -54,7 +54,7 @@ epochs: 24
 gpu: True
 devices: 0
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 

@@ -51,17 +51,10 @@ Results are written to `<checkpoint_dir>/analysis/` by default.
 | `--max_batches_latent N` | all | Limit batches used for latent collection |
 | `--max_samples_visualization N` | config value | Cap samples for t-SNE |
 | `--data_file FILE` | config value | Override input data files (repeat for multiple) |
+| `--data_config FILE` | none | Load a plain data YAML override such as `configs/data/data_ae_Al_80.yaml` |
+| `--analysis_config_override FILE` | none | Merge one or more YAML overrides on top of the checkpoint config |
 | `--visible_cluster_sets IDS [...]` | none | Cluster ID subsets for separate views (comma-separated per set) |
 | `--raytrace_render_enabled` | `false` | Also generate Blender Cycles `*_raytrace.png` renders |
-| `--raytrace_blender_executable PATH` | config/default | Blender executable path/name |
-| `--raytrace_render_resolution N` | config/default | Raytrace image width/height |
-| `--raytrace_render_max_points N` | deprecated | Raytrace always uses all points (set `0` or omit) |
-| `--raytrace_render_samples N` | config/default | Cycles sample count |
-| `--raytrace_render_projection MODE` | config/default | `perspective` or `orthographic` |
-| `--raytrace_render_fov_deg N` | config/default | Perspective FOV for raytrace |
-| `--raytrace_render_camera_distance_factor N` | config/default | Camera distance scaling for raytrace |
-| `--raytrace_render_sphere_radius_fraction N` | config/default | Size scale for auto-estimated raytrace ball radius (`0.0105` = 1.0x) |
-| `--raytrace_render_timeout_sec N` | config/default | Timeout per Blender render |
 
 ### Output files
 
@@ -79,7 +72,7 @@ The script writes the following into the output directory:
 | `md_space_clusters.png` | 3D MD-space cluster scatter |
 | `md_space_clusters.html` | Interactive 3D Plotly version |
 | `cluster_figure_set_k<K>/` | Fixed-k figure set (see below) |
-| `cluster_profiles_by_k/` | Per-cluster structure & property profiles |
+| `real_md_qualitative/` | Real-data qualitative analysis bundle: representatives, time series, spatial views, descriptors, transitions, report |
 
 #### Cluster figure set (`cluster_figure_set_k<K>/`)
 
@@ -117,14 +110,13 @@ The same sets can be specified in the Hydra config:
 analysis_cluster_figure_visible_sets: ["0,1,2", "3,4,5"]
 ```
 
-Raytrace settings can be tuned with:
+Raytrace settings are configured from Hydra, for example:
 
-```bash
---raytrace_render_enabled                          # add Blender Cycles renders
---raytrace_render_samples 64                       # Cycles sample count
---raytrace_render_resolution 1600                  # raytrace output size
---raytrace_render_max_points 0                     # deprecated; raytrace uses all points
---raytrace_blender_executable blender              # executable name/path
+```yaml
+analysis_cluster_figure_raytrace_enabled: true
+analysis_cluster_figure_raytrace_blender_executable: blender
+analysis_cluster_figure_raytrace_resolution: 1600
+analysis_cluster_figure_raytrace_samples: 64
 ```
 
 The raytraced renderer estimates physically consistent ball size from the full
@@ -160,3 +152,54 @@ checkpoint. Key settings include:
 | `analysis_hdbscan_enabled` | `false` | Run HDBSCAN in addition to KMeans |
 | `analysis_cluster_profile_enabled` | `true` | Generate per-cluster structure profiles |
 | `analysis_md_use_all_points` | `true` | Use full dataset for MD plots |
+| `data.analysis_data_files` | `null` | Canonical analysis-frame list for real datasets (`null` = use `data.data_files`) |
+| `analysis_real_md_enabled` | `true` | Run the real-MD qualitative pipeline on real datasets |
+| `analysis_real_md_k` | `6` | Which `k` to use for qualitative analysis and static real-MD plots |
+| `analysis_real_md_cluster_groups` | `{}` | Named cluster subsets for filtered spatial views |
+| `analysis_real_md_spatial_zoom_specs` | `[]` | Manual zoom boxes for full/filtered spatial views |
+| `analysis_real_md_projection_method` | `umap` | 2D latent projection method (`umap`, `tsne`, `pca`) |
+| `analysis_real_md_descriptor_enabled` | `true` | Compute post-hoc physical descriptor summaries |
+| `analysis_real_md_descriptors` | see config | Optional Steinhardt/CNA/SOAP descriptor blocks |
+| `analysis_real_md_transition_enabled` | `true` | Compute frame-to-frame cluster transition summaries |
+
+### Real MD qualitative workflow
+
+For the real crystallization trajectory, a practical entry point is:
+
+```bash
+python src/training_methods/contrastive_learning/predict_and_visualize.py \
+    output/2026-03-02/17-22-18/VICREG_FT_l512_N128_M80_RI_MAE_Invariant-epoch=11.ckpt \
+    --output_dir outputs/real_md_qualitative_example \
+    --data_config configs/data/data_ae_Al_80.yaml
+```
+
+To add paper-specific cluster groups / zoom windows without editing the
+checkpoint config, create a small override YAML and pass it with
+`--analysis_config_override`. Example:
+
+```yaml
+analysis_real_md_cluster_groups:
+  ordered: [0, 1]
+  intermediate: [2, 3]
+  liquid_like: [4, 5]
+
+analysis_real_md_spatial_zoom_specs:
+  - name: nucleus
+    frame: 240ps.npy
+    cluster_ids: [0, 1]
+    half_extent: [18.0, 18.0, 18.0]
+```
+
+The qualitative bundle is written to `real_md_qualitative/` inside the analysis
+directory and includes:
+
+- representative-neighbourhood galleries by cluster
+- frame-wise cluster proportion tables and stacked plots
+- full-box, filtered, and zoomed spatial renders
+- 2D latent projections coloured by cluster, frame, and optional physical scalar
+- per-cluster descriptor summaries
+- transition heatmaps between consecutive frames
+- `summary.json` and `README.md` for paper reuse
+
+Use `data.analysis_data_files` as the single canonical way to choose which real
+MD frames are analysed.

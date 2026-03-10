@@ -58,7 +58,7 @@ gpu: True
 devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
@@ -100,7 +100,7 @@ barlow_neighbor_view_mode: both
 barlow_neighbor_k: 8
 barlow_neighbor_max_relative_distance: 0.10
 barlow_view_points: ${data.model_points}
-barlow_view_crop_mode: random
+barlow_view_crop_mode: nearest_origin
 barlow_rotation_mode: full
 barlow_rotation_deg: 0.0
 barlow_strain_std: 0.04

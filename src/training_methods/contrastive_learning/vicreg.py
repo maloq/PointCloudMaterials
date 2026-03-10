@@ -165,7 +165,7 @@ class VICRegLoss(nn.Module):
             neighbor_max_relative_distance=float(
                 getattr(cfg, "vicreg_neighbor_max_relative_distance", 0.0)
             ),
-            view_crop_mode=str(getattr(cfg, "vicreg_view_crop_mode", "random")),
+            view_crop_mode=str(getattr(cfg, "vicreg_view_crop_mode", "nearest_origin")),
             drop_apply_to_both=bool(getattr(cfg, "vicreg_drop_apply_to_both", True)),
             rotation_mode=str(getattr(cfg, "vicreg_rotation_mode", "none")),
             rotation_deg=float(getattr(cfg, "vicreg_rotation_deg", 0.0)),

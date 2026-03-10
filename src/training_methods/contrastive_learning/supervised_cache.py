@@ -512,12 +512,13 @@ def _extract_rotated_supervised_features_from_batch(
     out = module(pc_rot)
     if not isinstance(out, (tuple, list)) or len(out) < 2:
         raise RuntimeError(
-            "Expected module forward(pc) to return at least (z_inv, inv_latent_net, ...), "
+            "Expected module forward(pc) to return at least "
+            "(z_inv_contrastive, z_inv_model, ...), "
             f"got type={type(out)}."
         )
-    z_inv = out[0]
-    inv_latent_net = out[1]
-    features = z_inv if z_inv is not None else inv_latent_net
+    z_inv_contrastive = out[0]
+    z_inv_model = out[1]
+    features = z_inv_contrastive if z_inv_contrastive is not None else z_inv_model
     if features is None:
         raise RuntimeError(
             "Model forward returned neither invariant latent nor fallback latent; "
@@ -960,7 +961,7 @@ def cache_limit_for_stage(module, stage: str):
 def cache_supervised_batch(
     module,
     stage: str,
-    z_inv: torch.Tensor,
+    z_inv_contrastive: torch.Tensor,
     meta: dict,
     encoder_features: torch.Tensor | None = None,
 ) -> None:
@@ -979,10 +980,10 @@ def cache_supervised_batch(
         if remaining <= 0:
             return
 
-    if z_inv is None:
+    if z_inv_contrastive is None:
         return
 
-    batch_size = int(z_inv.shape[0])
+    batch_size = int(z_inv_contrastive.shape[0])
     effective_batch = batch_size if remaining is None else min(batch_size, remaining)
     if effective_batch <= 0:
         return
@@ -1008,11 +1009,11 @@ def cache_supervised_batch(
     if effective_batch <= 0:
         return
 
-    lat_chunk = z_inv[:effective_batch].detach().to(torch.float32)
+    lat_chunk = z_inv_contrastive[:effective_batch].detach().to(torch.float32)
     if not bool(torch.isfinite(lat_chunk).all()):
         nonfinite = int((~torch.isfinite(lat_chunk)).sum().item())
         raise RuntimeError(
-            "Non-finite invariant latents detected while caching supervised metrics: "
+            "Non-finite z_inv_contrastive latents detected while caching supervised metrics: "
             f"stage='{stage}', batch_rows={effective_batch}, latent_shape={tuple(lat_chunk.shape)}, "
             f"nonfinite_values={nonfinite}/{lat_chunk.numel()}."
         )

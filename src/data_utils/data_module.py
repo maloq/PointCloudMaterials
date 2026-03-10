@@ -106,6 +106,8 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             overlap_fraction=getattr(data_cfg, "overlap_fraction", 0.0),
             n_samples=getattr(data_cfg, "n_samples", 1000),
             num_points=getattr(data_cfg, "num_points", 100),
+            drop_edge_samples=bool(getattr(data_cfg, "drop_edge_samples", True)),
+            edge_drop_layers=getattr(data_cfg, "edge_drop_layers", None),
             pre_normalize=bool(getattr(data_cfg, "pre_normalize", True)),
             normalize=bool(getattr(data_cfg, "normalize", True)),
             sampling_method=getattr(data_cfg, "sampling_method", "drop_farthest"),

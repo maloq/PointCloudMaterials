@@ -52,7 +52,7 @@ gpu: true
 devices: [0, 1]
 ddp_find_unused_parameters: true
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 5e-6
@@ -93,7 +93,7 @@ pointcontrast_neighbor_view_mode: first
 pointcontrast_neighbor_k: 8
 pointcontrast_neighbor_max_relative_distance: 0.10
 pointcontrast_view_points: ${data.model_points}
-pointcontrast_view_crop_mode: random
+pointcontrast_view_crop_mode: nearest_origin
 pointcontrast_rotation_mode: full
 pointcontrast_rotation_deg: 0.0
 pointcontrast_strain_std: 0.0

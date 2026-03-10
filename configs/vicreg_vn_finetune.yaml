@@ -3,9 +3,7 @@ defaults:
   - _self_
 
 data:
-  analysis_data_files: ["166ps.npy", "170ps.npy", "174ps.npy", "177ps.npy", "240ps.npy"]
-  analysis_data_file: null
-  analysis_single_timestep: false
+  analysis_data_files: ["166ps.npy", "170ps.npy", "174ps.npy", "175ps.npy", "177ps.npy", "240ps.npy"]
 
 project_name: pointnet
 experiment_name: VICREG_FT_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
@@ -17,7 +15,7 @@ latent_size: 512
 load_supervised_checkpoint: false
 # Fresh finetune: load model weights from the pretrained checkpoint and reset optimizer/epoch state.
 resume_from_checkpoint: null
-init_from_checkpoint: output/2026-02-26/19-53-51/VICREG_l512_N128_M80_RI_MAE_Invariant-epoch=59.ckpt
+init_from_checkpoint: output/2026-03-10/13-36-40/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=09.ckpt
 init_from_checkpoint_strict: false
 
 encoder:
@@ -47,7 +45,7 @@ decoder:
 
 # Smaller-data finetuning defaults: lower LR and smaller per-device batch than the pretrain run.
 learning_rate: 0.0003
-batch_size: 128
+batch_size: 4096
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1
@@ -74,7 +72,7 @@ gpu: true
 devices: [0, 1]
 ddp_find_unused_parameters: true
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
@@ -191,4 +189,3 @@ analysis_hdbscan_min_cluster_size_candidates: []
 analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
-analysis_data_files: ["166ps.npy", "170ps.npy", "174ps.npy", "177ps.npy", "240ps.npy"]

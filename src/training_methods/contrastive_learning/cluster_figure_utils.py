@@ -6,6 +6,8 @@ the top-level orchestrator ``_save_fixed_k_cluster_figure_set``.
 
 from __future__ import annotations
 
+import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from pathlib import Path
 from typing import Any
@@ -83,6 +85,9 @@ def _save_fixed_k_cluster_figure_set(
     raytrace_render_camera_distance_factor: float = 2.8,
     raytrace_render_sphere_radius_fraction: float = 0.0105,
     raytrace_render_timeout_sec: int = 1200,
+    raytrace_render_use_gpu: bool = False,
+    raytrace_parallel_views: bool = False,
+    raytrace_parallel_max_workers: int | None = None,
 ) -> dict[str, Any]:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -163,6 +168,7 @@ def _save_fixed_k_cluster_figure_set(
         "sphere_radius_fraction": raytrace_render_sphere_radius_fraction,
         "blender_executable": str(raytrace_blender_executable),
         "cycles_samples": raytrace_render_samples,
+        "use_gpu": bool(raytrace_render_use_gpu),
         "timeout_seconds": raytrace_render_timeout_sec,
         "wireframe_enabled": True,
     }
@@ -183,6 +189,9 @@ def _save_fixed_k_cluster_figure_set(
         view_azim=float(representative_view_azim),
         projection=str(representative_projection),
     )
+
+    raytrace_pending_jobs: list[dict[str, Any]] = []
+    raytrace_parallel_workers_used = 0
 
     def _render_cluster_view(
         *,
@@ -205,21 +214,81 @@ def _save_fixed_k_cluster_figure_set(
             **md_snapshot_kwargs,
         )
         if bool(raytrace_render_enabled):
-            raytrace_path = snapshot_path.with_stem(snapshot_path.stem + "_raytrace")
-            raytrace_info = _save_md_cluster_snapshot_raytrace_blender(
-                coords_arr,
-                labels,
-                color_map,
-                raytrace_path,
-                title=snapshot_title,
-                visible_cluster_ids=visible_cluster_ids,
-                view_elev=float(elev),
-                view_azim=float(azim),
-                **raytrace_render_kwargs,
-            )
-            panel_view["raytrace_render"] = raytrace_info
+            if bool(raytrace_parallel_views):
+                raytrace_pending_jobs.append(
+                    {
+                        "snapshot_path": Path(snapshot_path),
+                        "snapshot_title": str(snapshot_title),
+                        "visible_cluster_ids": (
+                            None
+                            if visible_cluster_ids is None
+                            else [int(v) for v in visible_cluster_ids]
+                        ),
+                        "elev": float(elev),
+                        "azim": float(azim),
+                        "panel_view": panel_view,
+                    }
+                )
+            else:
+                raytrace_path = snapshot_path.with_stem(snapshot_path.stem + "_raytrace")
+                raytrace_info = _save_md_cluster_snapshot_raytrace_blender(
+                    coords_arr,
+                    labels,
+                    color_map,
+                    raytrace_path,
+                    title=snapshot_title,
+                    visible_cluster_ids=visible_cluster_ids,
+                    view_elev=float(elev),
+                    view_azim=float(azim),
+                    **raytrace_render_kwargs,
+                )
+                panel_view["raytrace_render"] = raytrace_info
         panel_view["view_name"] = str(view_name)
         return panel_view
+
+    def _run_pending_parallel_raytrace_jobs() -> None:
+        nonlocal raytrace_parallel_workers_used
+        if not raytrace_pending_jobs:
+            return
+        if not bool(raytrace_render_enabled):
+            raise RuntimeError(
+                "Internal error: pending raytrace jobs exist while raytrace rendering is disabled."
+            )
+        requested_workers = raytrace_parallel_max_workers
+        if requested_workers is None:
+            max_workers = min(len(raytrace_pending_jobs), max(1, int(os.cpu_count() or 1)))
+        else:
+            max_workers = int(requested_workers)
+            if max_workers <= 0:
+                raise ValueError(
+                    "raytrace_parallel_max_workers must be a positive integer when provided, "
+                    f"got {requested_workers!r}."
+                )
+            max_workers = min(max_workers, len(raytrace_pending_jobs))
+        raytrace_parallel_workers_used = int(max_workers)
+        with ThreadPoolExecutor(max_workers=int(max_workers)) as executor:
+            future_to_job_idx = {}
+            for job_idx, job in enumerate(raytrace_pending_jobs):
+                raytrace_path = Path(job["snapshot_path"]).with_stem(
+                    Path(job["snapshot_path"]).stem + "_raytrace"
+                )
+                future = executor.submit(
+                    _save_md_cluster_snapshot_raytrace_blender,
+                    coords_arr,
+                    labels,
+                    color_map,
+                    raytrace_path,
+                    title=str(job["snapshot_title"]),
+                    visible_cluster_ids=job["visible_cluster_ids"],
+                    view_elev=float(job["elev"]),
+                    view_azim=float(job["azim"]),
+                    **raytrace_render_kwargs,
+                )
+                future_to_job_idx[future] = int(job_idx)
+            for future in as_completed(future_to_job_idx):
+                job_idx = future_to_job_idx[future]
+                raytrace_info = future.result()
+                raytrace_pending_jobs[job_idx]["panel_view"]["raytrace_render"] = raytrace_info
 
     # -- 01  All-clusters views (4 rotations) with optional raytrace ----------
     all_view_specs = _build_rotation_view_specs(
@@ -281,6 +350,15 @@ def _save_fixed_k_cluster_figure_set(
             panel_set["views"] = panel_set_views
             panel_set["cluster_ids_shown"] = ids
             panel_selected_sets.append(panel_set)
+
+    if bool(raytrace_render_enabled) and bool(raytrace_parallel_views):
+        _run_pending_parallel_raytrace_jobs()
+        for panel_set in panel_selected_sets:
+            views = panel_set.get("views")
+            if isinstance(views, list) and views:
+                first_view = views[0]
+                if isinstance(first_view, dict) and "raytrace_render" in first_view:
+                    panel_set["raytrace_render"] = first_view["raytrace_render"]
 
     # -- 03  ICL curve --------------------------------------------------------
 
@@ -377,6 +455,14 @@ def _save_fixed_k_cluster_figure_set(
             "camera_distance_factor": float(raytrace_render_camera_distance_factor),
             "sphere_radius_fraction": float(raytrace_render_sphere_radius_fraction),
             "timeout_sec": int(raytrace_render_timeout_sec),
+            "use_gpu": bool(raytrace_render_use_gpu),
+            "parallel_views": bool(raytrace_parallel_views),
+            "parallel_max_workers": (
+                None
+                if raytrace_parallel_max_workers is None
+                else int(raytrace_parallel_max_workers)
+            ),
+            "parallel_workers_used": int(raytrace_parallel_workers_used),
         },
         "visible_cluster_sets": [
             sorted(int(v) for v in s) for s in (visible_cluster_sets or [])

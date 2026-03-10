@@ -1678,8 +1678,8 @@ class SyntheticAtomisticDatasetGenerator:
         return points.astype(np.float32)
     
     def _tile_motif(self, motif: np.ndarray, cell: np.ndarray, n_points: int) -> np.ndarray:
-        points = []
         for expand in range(1, 10):
+            points = []
             for i in range(-expand, expand + 1):
                 for j in range(-expand, expand + 1):
                     for k in range(-expand, expand + 1):
@@ -1687,7 +1687,7 @@ class SyntheticAtomisticDatasetGenerator:
                         points.extend(motif + offset)
             if len(points) >= n_points:
                 break
-        points = np.array(points)
+        points = np.asarray(points, dtype=np.float32)
         center = np.mean(points, axis=0)
         dists = np.linalg.norm(points - center, axis=1)
         return points[np.argsort(dists)[:n_points]]

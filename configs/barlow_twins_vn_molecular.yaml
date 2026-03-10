@@ -5,8 +5,6 @@ defaults:
 
 data:
   analysis_data_files: ['175ps.npy']
-  analysis_data_file: null
-  analysis_single_timestep: false
 project_name: pointnet
 experiment_name: BT_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
@@ -96,7 +94,7 @@ gpu: True
 devices: [0, 1]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
-num_workers: 6
+num_workers: 4
 scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
@@ -209,7 +207,6 @@ analysis_hdbscan_min_cluster_size_candidates: []
 analysis_hdbscan_min_samples: null
 analysis_hdbscan_cluster_selection_epsilon: 0.0
 analysis_hdbscan_cluster_selection_method: leaf
-analysis_data_files: ['175ps.npy']
 analysis_cluster_figure_pretty_projection: perspective
 analysis_cluster_figure_pretty_fov_deg: 34.0
 analysis_cluster_figure_pretty_distance_factor: 1.4
