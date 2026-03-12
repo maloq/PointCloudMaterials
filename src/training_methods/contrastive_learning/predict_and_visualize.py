@@ -1078,6 +1078,16 @@ def _print_figure_set_summary(
             "  - cluster_figure_set_k"
             f"{k_fig}/08_cluster_representatives_spatial_neighbors_paper_k{k_fig}.png"
         )
+        rep_analysis = fs.get("panel_representatives_structure_analysis")
+        if isinstance(rep_analysis, dict):
+            print(
+                "  - cluster_figure_set_k"
+                f"{k_fig}/10_cluster_representatives_structure_analysis_k{k_fig}.json"
+            )
+            print(
+                "  - cluster_figure_set_k"
+                f"{k_fig}/10_cluster_representatives_structure_analysis_k{k_fig}.csv"
+            )
     if has_snapshot_sets:
         print("  - cluster_figure_sets_by_snapshot/<snapshot>/cluster_figure_set_k*/...")
         snapshot_gallery_sets = snapshot_sets.get("raytrace_galleries_by_view", {})
@@ -1388,6 +1398,52 @@ def run_post_training_analysis(
     cluster_figure_representative_projection = str(
         getattr(cfg, "analysis_cluster_figure_representative_projection", "ortho")
     ).strip().lower()
+    representative_ptm_enabled = bool(
+        getattr(cfg, "analysis_cluster_figure_representative_ptm_enabled", False)
+    )
+    representative_cna_enabled = bool(
+        getattr(cfg, "analysis_cluster_figure_representative_cna_enabled", False)
+    )
+    representative_cna_max_signatures = int(
+        getattr(cfg, "analysis_cluster_figure_representative_cna_max_signatures", 5)
+    )
+    representative_center_atom_tolerance = float(
+        getattr(
+            cfg,
+            "analysis_cluster_figure_representative_center_atom_tolerance",
+            1e-6,
+        )
+    )
+    representative_shell_min_neighbors = int(
+        getattr(
+            cfg,
+            "analysis_cluster_figure_representative_shell_min_neighbors",
+            8,
+        )
+    )
+    representative_shell_max_neighbors = int(
+        getattr(
+            cfg,
+            "analysis_cluster_figure_representative_shell_max_neighbors",
+            24,
+        )
+    )
+    if representative_cna_max_signatures <= 0:
+        raise ValueError(
+            "analysis_cluster_figure_representative_cna_max_signatures must be > 0, "
+            f"got {representative_cna_max_signatures}."
+        )
+    if representative_shell_min_neighbors < 2:
+        raise ValueError(
+            "analysis_cluster_figure_representative_shell_min_neighbors must be >= 2, "
+            f"got {representative_shell_min_neighbors}."
+        )
+    if representative_shell_max_neighbors <= representative_shell_min_neighbors:
+        raise ValueError(
+            "analysis_cluster_figure_representative_shell_max_neighbors must exceed "
+            "analysis_cluster_figure_representative_shell_min_neighbors, got "
+            f"{representative_shell_max_neighbors} <= {representative_shell_min_neighbors}."
+        )
     inference_cache_enabled = bool(
         getattr(cfg, "analysis_inference_cache_enabled", True)
     )
@@ -1437,6 +1493,12 @@ def run_post_training_analysis(
         f"{cluster_figure_representative_view_azim:.1f}"
         "), "
         f"rep_projection={cluster_figure_representative_projection}, "
+        f"rep_ptm={representative_ptm_enabled}, "
+        f"rep_cna={representative_cna_enabled}, "
+        "rep_cna_shell=("
+        f"{representative_shell_min_neighbors},"
+        f"{representative_shell_max_neighbors}"
+        "), "
         "cluster_color_overrides="
         f"{sorted(cluster_color_assignment_use) if cluster_color_assignment_use else []}"
     )
@@ -1648,6 +1710,12 @@ def run_post_training_analysis(
         representative_view_elev=cluster_figure_representative_view_elev,
         representative_view_azim=cluster_figure_representative_view_azim,
         representative_projection=cluster_figure_representative_projection,
+        representative_ptm_enabled=representative_ptm_enabled,
+        representative_cna_enabled=representative_cna_enabled,
+        representative_cna_max_signatures=representative_cna_max_signatures,
+        representative_center_atom_tolerance=representative_center_atom_tolerance,
+        representative_shell_min_neighbors=representative_shell_min_neighbors,
+        representative_shell_max_neighbors=representative_shell_max_neighbors,
         visible_cluster_sets=visible_cluster_sets,
         cluster_color_assignment=cluster_color_assignment_use,
         random_state=clustering_random_state,

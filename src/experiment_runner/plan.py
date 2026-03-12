@@ -48,12 +48,28 @@ class MetricsConfig:
 
 
 @dataclass
+class PlotConfig:
+    enabled: bool = False
+    x_label: Optional[str] = None
+    x_pattern: Optional[str] = None
+    metric_scope: str = "test/class"
+    metrics: List[str] = field(default_factory=list)
+    formats: List[str] = field(default_factory=lambda: ["png", "pdf", "svg"])
+    dpi: int = 300
+    individual_panels: bool = True
+
+
+@dataclass
 class Experiment:
     """A single concrete experiment (one training run)."""
 
     name: str
     overrides: List[str] = field(default_factory=list)
     stage: str = "default"
+    config_name: Optional[str] = None
+    train_script: Optional[str] = None
+    repeat_group: Optional[str] = None
+    repeat_index: Optional[int] = None
 
 
 @dataclass
@@ -81,7 +97,11 @@ class ExperimentPlan:
     base_overrides: List[str] = field(default_factory=list)
     stages: List[StageSpec] = field(default_factory=list)
     metrics: MetricsConfig = field(default_factory=MetricsConfig)
+    plot: PlotConfig = field(default_factory=PlotConfig)
     output_root: str = "output/experiments"
+    repeat_each: int = 1
+    repeat_seed_base: int = 0
+    repeat_seed_key: Optional[str] = "seed_everything"
 
     # Populated after expansion.
     all_experiments: List[Experiment] = field(default_factory=list)
@@ -118,6 +138,41 @@ def _parse_metrics(raw: Dict[str, Any]) -> MetricsConfig:
     return MetricsConfig(final=final, best=best)
 
 
+def _parse_plot(raw: Dict[str, Any] | None) -> PlotConfig:
+    if raw is None:
+        return PlotConfig()
+    if not isinstance(raw, dict):
+        raise ValueError(
+            f"plot section must be a mapping when provided, got {type(raw).__name__}."
+        )
+    metrics_raw = raw.get("metrics", [])
+    if not isinstance(metrics_raw, list):
+        raise ValueError(f"plot.metrics must be a list, got {metrics_raw!r}.")
+    formats_raw = raw.get("formats", ["png", "pdf", "svg"])
+    if not isinstance(formats_raw, list) or not formats_raw:
+        raise ValueError(f"plot.formats must be a non-empty list, got {formats_raw!r}.")
+    dpi = int(raw.get("dpi", 300))
+    if dpi <= 0:
+        raise ValueError(f"plot.dpi must be > 0, got {dpi}.")
+    metric_scope = str(raw.get("metric_scope", "test/class"))
+    x_label = raw.get("x_label")
+    if x_label is not None:
+        x_label = str(x_label)
+    x_pattern = raw.get("x_pattern")
+    if x_pattern is not None:
+        x_pattern = str(x_pattern)
+    return PlotConfig(
+        enabled=bool(raw.get("enabled", False)),
+        x_label=x_label,
+        x_pattern=x_pattern,
+        metric_scope=metric_scope,
+        metrics=[str(metric_name) for metric_name in metrics_raw],
+        formats=[str(fmt) for fmt in formats_raw],
+        dpi=dpi,
+        individual_panels=bool(raw.get("individual_panels", True)),
+    )
+
+
 def _parse_experiments(raw_list: Sequence[Dict[str, Any]], stage_name: str) -> List[Experiment]:
     experiments = []
     for entry in raw_list:
@@ -129,6 +184,8 @@ def _parse_experiments(raw_list: Sequence[Dict[str, Any]], stage_name: str) -> L
             name=entry["name"],
             overrides=list(entry.get("overrides", [])),
             stage=stage_name,
+            config_name=entry.get("config_name"),
+            train_script=entry.get("train_script"),
         ))
     return experiments
 
@@ -156,6 +213,32 @@ def _expand_matrix(matrix: Dict[str, List[Any]], stage_name: str) -> List[Experi
         name = "__".join(parts)
         experiments.append(Experiment(name=name, overrides=overrides, stage=stage_name))
     return experiments
+
+
+def resolve_experiment_train_script(
+    experiment: Experiment,
+    stage: StageSpec,
+    plan: ExperimentPlan,
+) -> str:
+    train_script = experiment.train_script or stage.train_script or plan.train_script
+    if not train_script:
+        raise ValueError(
+            f"No train_script for experiment {experiment.name!r} in stage {stage.name!r}."
+        )
+    return train_script
+
+
+def resolve_experiment_config_name(
+    experiment: Experiment,
+    stage: StageSpec,
+    plan: ExperimentPlan,
+) -> str:
+    config_name = experiment.config_name or stage.config_name or plan.config_name
+    if not config_name:
+        raise ValueError(
+            f"No config_name for experiment {experiment.name!r} in stage {stage.name!r}."
+        )
+    return config_name
 
 
 def _format_override_value(val: Any) -> str:
@@ -205,6 +288,15 @@ def load_plan(path: Path) -> ExperimentPlan:
     slurm_cfg = _parse_slurm(raw.get("slurm", {}))
     base_overrides = list(raw.get("base_overrides", []))
     output_root = raw.get("output_root", "output/experiments")
+    repeat_each = int(raw.get("repeat_each", 1))
+    if repeat_each < 1:
+        raise ValueError(f"repeat_each must be >= 1, got {repeat_each}.")
+    repeat_seed_base = int(raw.get("repeat_seed_base", 0))
+    repeat_seed_key = raw.get("repeat_seed_key", "seed_everything")
+    if repeat_seed_key is not None and not isinstance(repeat_seed_key, str):
+        raise ValueError(
+            f"repeat_seed_key must be a string or null, got {repeat_seed_key!r}."
+        )
 
     metrics_raw = raw.get("metrics", {})
     if not metrics_raw:
@@ -212,6 +304,7 @@ def load_plan(path: Path) -> ExperimentPlan:
     metrics = _parse_metrics(metrics_raw)
     if not metrics.final:
         raise ValueError("metrics.final must list at least one metric name.")
+    plot = _parse_plot(raw.get("plot"))
 
     plan = ExperimentPlan(
         name=name,
@@ -220,7 +313,11 @@ def load_plan(path: Path) -> ExperimentPlan:
         slurm=slurm_cfg,
         base_overrides=base_overrides,
         metrics=metrics,
+        plot=plot,
         output_root=output_root,
+        repeat_each=repeat_each,
+        repeat_seed_base=repeat_seed_base,
+        repeat_seed_key=repeat_seed_key,
     )
 
     # ---- Parse stages vs flat experiments/matrix ----
@@ -232,10 +329,6 @@ def load_plan(path: Path) -> ExperimentPlan:
         plan.stages = _parse_stages(raw_stages, plan)
     else:
         # Single implicit stage built from top-level experiments/matrix.
-        if config_name is None:
-            raise ValueError(
-                "Plan must set 'config_name' at the top level when not using 'stages'."
-            )
         stage = StageSpec(name="default", config_name=config_name, base_overrides=base_overrides)
         explicit = _parse_experiments(raw_experiments or [], "default")
         from_matrix = _expand_matrix(raw_matrix or {}, "default")
@@ -244,15 +337,80 @@ def load_plan(path: Path) -> ExperimentPlan:
             raise ValueError(
                 "Plan must define at least one experiment via 'experiments' or 'matrix'."
             )
+        for experiment in stage.experiments:
+            resolve_experiment_train_script(experiment, stage, plan)
+            resolve_experiment_config_name(experiment, stage, plan)
         plan.stages = [stage]
 
     _validate_stage_graph(plan.stages)
 
+    _refresh_all_experiments(plan)
+    return plan
+
+
+def apply_plan_repeats(
+    plan: ExperimentPlan,
+    *,
+    repeat_each: Optional[int] = None,
+) -> ExperimentPlan:
+    """Expand every experiment into N repeated runs with unique names."""
+    effective_repeat_each = plan.repeat_each if repeat_each is None else int(repeat_each)
+    if effective_repeat_each < 1:
+        raise ValueError(f"repeat_each must be >= 1, got {effective_repeat_each}.")
+
+    already_expanded = any(
+        exp.repeat_index is not None
+        for stage in plan.stages
+        for exp in stage.experiments
+    )
+    if already_expanded:
+        raise RuntimeError(
+            "Plan repeats were already expanded. "
+            "apply_plan_repeats() must be called at most once per loaded plan."
+        )
+
+    plan.repeat_each = effective_repeat_each
+    if effective_repeat_each == 1:
+        _refresh_all_experiments(plan)
+        return plan
+
+    width = max(2, len(str(effective_repeat_each)))
+    for stage in plan.stages:
+        original_experiments = list(stage.experiments)
+        repeated_experiments: List[Experiment] = []
+        for exp in original_experiments:
+            base_name = exp.name
+            for repeat_index in range(effective_repeat_each):
+                overrides = list(exp.overrides)
+                if plan.repeat_seed_key:
+                    overrides.append(
+                        f"++{plan.repeat_seed_key}="
+                        f"{plan.repeat_seed_base + repeat_index}"
+                    )
+                repeated_experiments.append(
+                    Experiment(
+                        name=f"{base_name}__rep{repeat_index + 1:0{width}d}",
+                        overrides=overrides,
+                        stage=exp.stage,
+                        config_name=exp.config_name,
+                        train_script=exp.train_script,
+                        repeat_group=base_name,
+                        repeat_index=repeat_index,
+                    )
+                )
+        stage.experiments = repeated_experiments
+
+    _refresh_all_experiments(plan)
+    return plan
+
+
+def _refresh_all_experiments(plan: ExperimentPlan) -> None:
     plan.all_experiments = []
     for stage in plan.stages:
-        plan.all_experiments.extend(stage.experiments)
-
-    return plan
+        for experiment in stage.experiments:
+            if experiment.repeat_group is None:
+                experiment.repeat_group = experiment.name
+            plan.all_experiments.append(experiment)
 
 
 def _parse_stages(
@@ -277,17 +435,15 @@ def _parse_stages(
             slurm=stage_slurm,
         )
 
-        if stage.config_name is None:
-            raise ValueError(
-                f"Stage {stage_name!r} has no config_name and none is set at the top level."
-            )
-
         explicit = _parse_experiments(raw_stage.get("experiments", []), stage_name)
         from_matrix = _expand_matrix(raw_stage.get("matrix", {}), stage_name)
         stage.experiments = _merge_experiments(explicit, from_matrix)
 
         if not stage.experiments:
             raise ValueError(f"Stage {stage_name!r} has no experiments after expansion.")
+        for experiment in stage.experiments:
+            resolve_experiment_train_script(experiment, stage, plan)
+            resolve_experiment_config_name(experiment, stage, plan)
         stages.append(stage)
 
     return stages
@@ -316,6 +472,8 @@ def _merge_experiments(
                 name=f"{exp.name}__{mat.name}",
                 overrides=exp.overrides + mat.overrides,
                 stage=exp.stage,
+                config_name=exp.config_name or mat.config_name,
+                train_script=exp.train_script or mat.train_script,
             ))
     return merged
 

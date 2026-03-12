@@ -82,13 +82,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "(must be between 0 and 1, default: 0.7)."
         ),
     )
+    parser.add_argument(
+        "--repeat-each", type=int, default=None,
+        help=(
+            "Run each experiment this many times. If omitted, uses plan.repeat_each "
+            "(default: 1)."
+        ),
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
 
-    from src.experiment_runner.plan import load_plan
+    from src.experiment_runner.plan import apply_plan_repeats, load_plan
     from src.experiment_runner.runner import collect_only, run_plan
     from src.experiment_runner.state import RunState
 
@@ -107,10 +114,20 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 1
+    if args.repeat_each is not None and args.repeat_each < 1:
+        print(
+            "Error: --repeat-each must be >= 1.",
+            file=sys.stderr,
+        )
+        return 1
+
+    effective_repeat_each = plan.repeat_each if args.repeat_each is None else args.repeat_each
+    apply_plan_repeats(plan, repeat_each=effective_repeat_each)
 
     print(f"Plan: {plan.name}")
     print(f"Train script: {plan.train_script}")
     print(f"Stages: {len(plan.stages)}")
+    print(f"Repeat each experiment: {plan.repeat_each}")
     total_experiments = sum(len(s.experiments) for s in plan.stages)
     print(f"Total experiments: {total_experiments}")
 

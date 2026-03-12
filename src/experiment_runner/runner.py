@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence
 
-from .plan import ExperimentPlan, StageSpec
+from .plan import ExperimentPlan, StageSpec, resolve_experiment_config_name
 from .restart import (
     build_scaled_lr_override,
     detect_nan_loss_in_logs,
@@ -14,10 +15,14 @@ from .restart import (
     validate_nan_restart_settings,
 )
 from .results import (
+    aggregate_repeated_results,
     collect_all_results,
     find_best_checkpoint,
+    has_repeated_experiments,
+    print_grouped_summary_table,
     print_summary_table,
     write_csv_tables,
+    write_grouped_csv_tables,
     write_summary_json,
 )
 from .state import RunState
@@ -94,67 +99,86 @@ def run_plan(
     state = resume_state or RunState(output_dir=output_dir, plan_name=plan.name)
     state.save()
 
-    for stage in plan.stages:
-        if state.is_stage_complete(stage.name):
-            print(f"\nStage '{stage.name}': already complete (from resumed state), skipping.")
-            continue
+    run_error: Optional[BaseException] = None
+    collect_error: Optional[BaseException] = None
 
-        print(f"\n{'='*60}")
-        print(f"  Stage: {stage.name}  ({len(stage.experiments)} experiments)")
-        print(f"{'='*60}")
+    try:
+        for stage in plan.stages:
+            if state.is_stage_complete(stage.name):
+                print(f"\nStage '{stage.name}': already complete (from resumed state), skipping.")
+                continue
 
-        stage_state = state.get_or_create_stage(stage.name)
-        stage_state.status = "running"
-        stage_state.started_at = datetime.now().isoformat()
-        state.save()
+            print(f"\n{'='*60}")
+            print(f"  Stage: {stage.name}  ({len(stage.experiments)} experiments)")
+            print(f"{'='*60}")
 
-        # Resolve checkpoint overrides from dependency stage (skip during dry-run
-        # since no actual checkpoints exist yet).
-        if dry_run and stage.inherit_checkpoint:
-            extra_overrides: Dict[str, List[str]] = {
-                exp.name: ["++init_from_checkpoint=<CHECKPOINT_FROM_STAGE:"
-                           f"{stage.depends_on}/{exp.name}>"]
-                for exp in stage.experiments
-            }
-        else:
-            extra_overrides = resolve_checkpoints(stage, output_dir, state)
+            stage_state = state.get_or_create_stage(stage.name)
+            stage_state.status = "running"
+            stage_state.started_at = datetime.now().isoformat()
+            state.save()
 
-        if local:
-            _run_stage_local(
-                stage=stage, plan=plan, output_dir=output_dir,
-                repo_root=repo_root, stage_state=stage_state,
-                extra_overrides=extra_overrides,
-                parallel=parallel, dry_run=dry_run,
-                continue_on_error=continue_on_error,
-                nan_restart_max_retries=nan_restart_max_retries,
-                nan_restart_lr_factor=nan_restart_lr_factor,
-            )
-        else:
-            _run_stage_slurm(
-                stage=stage, plan=plan, output_dir=output_dir,
-                repo_root=repo_root, stage_state=stage_state,
-                extra_overrides=extra_overrides,
-                dry_run=dry_run, continue_on_error=continue_on_error,
-                nan_restart_max_retries=nan_restart_max_retries,
-                nan_restart_lr_factor=nan_restart_lr_factor,
-            )
+            stage_error: Optional[BaseException] = None
+            try:
+                # Resolve checkpoint overrides from dependency stage (skip during dry-run
+                # since no actual checkpoints exist yet).
+                if dry_run and stage.inherit_checkpoint:
+                    extra_overrides: Dict[str, List[str]] = {
+                        exp.name: ["++init_from_checkpoint=<CHECKPOINT_FROM_STAGE:"
+                                   f"{stage.depends_on}/{exp.name}>"]
+                        for exp in stage.experiments
+                    }
+                else:
+                    extra_overrides = resolve_checkpoints(stage, output_dir, state)
 
-        stage_state.finished_at = datetime.now().isoformat()
-        failed_count = sum(
-            1 for j in stage_state.jobs.values()
-            if j.status not in {"completed", "dry_run", "COMPLETED"}
-        )
-        if failed_count > 0:
-            stage_state.status = "completed_with_errors"
-            print(f"\n  Stage '{stage.name}' finished with {failed_count} failed experiment(s).")
-        else:
-            stage_state.status = "completed"
-            print(f"\n  Stage '{stage.name}' completed successfully.")
-        state.save()
+                if local:
+                    _run_stage_local(
+                        stage=stage, plan=plan, output_dir=output_dir,
+                        repo_root=repo_root, stage_state=stage_state,
+                        extra_overrides=extra_overrides,
+                        parallel=parallel, dry_run=dry_run,
+                        continue_on_error=continue_on_error,
+                        nan_restart_max_retries=nan_restart_max_retries,
+                        nan_restart_lr_factor=nan_restart_lr_factor,
+                    )
+                else:
+                    _run_stage_slurm(
+                        stage=stage, plan=plan, output_dir=output_dir,
+                        repo_root=repo_root, stage_state=stage_state,
+                        extra_overrides=extra_overrides,
+                        dry_run=dry_run, continue_on_error=continue_on_error,
+                        nan_restart_max_retries=nan_restart_max_retries,
+                        nan_restart_lr_factor=nan_restart_lr_factor,
+                    )
+            except BaseException as exc:
+                stage_error = exc
+            finally:
+                _finalize_stage_state(
+                    stage=stage,
+                    state=state,
+                    stage_state=stage_state,
+                    stage_error=stage_error,
+                )
 
-    # --- Collect and report results ---
-    if not dry_run:
-        _collect_and_report(plan, output_dir)
+            if stage_error is not None:
+                raise stage_error
+    except BaseException as exc:
+        run_error = exc
+    finally:
+        if not dry_run:
+            try:
+                _collect_and_report(plan, output_dir)
+            except BaseException as exc:
+                collect_error = exc
+
+    if run_error is not None:
+        if collect_error is not None:
+            raise RuntimeError(
+                "Experiment plan execution failed and result collection also failed. "
+                f"Run error: {run_error}. Collection error: {collect_error}."
+            ) from run_error
+        raise run_error
+    if collect_error is not None:
+        raise collect_error
 
 
 def _run_stage_slurm(
@@ -370,7 +394,11 @@ def _run_stage_local(
             )
             current_lr = resolve_learning_rate(
                 repo_root=repo_root,
-                config_name=partial_stage.config_name or plan.config_name,
+                config_name=resolve_experiment_config_name(
+                    exp_by_name[exp_name],
+                    partial_stage,
+                    plan,
+                ),
                 overrides=(
                     list(stage.base_overrides)
                     + list(exp_by_name[exp_name].overrides)
@@ -465,7 +493,11 @@ def _collect_nan_retry_experiments_slurm(
         )
         current_lr = resolve_learning_rate(
             repo_root=repo_root,
-            config_name=stage.config_name or plan.config_name,
+            config_name=resolve_experiment_config_name(
+                exp_by_name[exp_name],
+                stage,
+                plan,
+            ),
             overrides=(
                 list(stage.base_overrides)
                 + list(exp_by_name[exp_name].overrides)
@@ -559,23 +591,163 @@ def _is_success_status(status: str) -> bool:
     return status in {"completed", "dry_run", "COMPLETED"}
 
 
+def _finalize_stage_state(
+    *,
+    stage: StageSpec,
+    state: RunState,
+    stage_state,
+    stage_error: Optional[BaseException],
+) -> None:
+    stage_state.finished_at = datetime.now().isoformat()
+    failed_count = sum(
+        1 for j in stage_state.jobs.values()
+        if j.status not in {"completed", "dry_run", "COMPLETED"}
+    )
+
+    if failed_count > 0:
+        stage_state.status = "completed_with_errors"
+        if stage_error is None:
+            print(f"\n  Stage '{stage.name}' finished with {failed_count} failed experiment(s).")
+        else:
+            print(
+                f"\n  Stage '{stage.name}' stopped with {failed_count} failed "
+                "experiment(s) recorded."
+            )
+    elif stage_error is not None:
+        stage_state.status = "failed"
+        print(
+            f"\n  Stage '{stage.name}' failed before any experiment statuses "
+            "could be finalized."
+        )
+    else:
+        stage_state.status = "completed"
+        print(f"\n  Stage '{stage.name}' completed successfully.")
+    state.save()
+
+
 def _collect_and_report(plan: ExperimentPlan, output_dir: Path) -> None:
     print(f"\n{'='*60}")
     print("  Collecting results...")
     print(f"{'='*60}")
 
     results = collect_all_results(output_dir, plan)
+    aggregated_results = (
+        aggregate_repeated_results(results, plan)
+        if has_repeated_experiments(results)
+        else []
+    )
     csv_paths = write_csv_tables(results, output_dir, plan.metrics)
-    json_path = write_summary_json(results, output_dir, plan)
+    csv_paths.extend(write_grouped_csv_tables(aggregated_results, output_dir, plan.metrics))
+    json_path = write_summary_json(
+        results,
+        output_dir,
+        plan,
+        aggregated_results=aggregated_results,
+    )
 
     print_summary_table(results, plan.metrics)
+    if aggregated_results:
+        print_grouped_summary_table(aggregated_results, plan.metrics)
 
     print("Output files:")
     for p in csv_paths:
         print(f"  {p}")
     print(f"  {json_path}")
 
+    plot_paths = _render_summary_plots(plan, json_path)
+    if plot_paths:
+        print("Plot files:")
+        for plot_path in plot_paths:
+            print(f"  {plot_path}")
+
+
+def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path]:
+    if not plan.plot.enabled:
+        return []
+
+    try:
+        plot_module = import_module("scripts.plot_experiment_summary")
+    except Exception as exc:
+        raise RuntimeError(
+            "Automatic plot generation was enabled in the plan, but the plotting "
+            f"module could not be imported: {exc}"
+        ) from exc
+
+    if not hasattr(plot_module, "render_summary_plots"):
+        raise RuntimeError(
+            "Automatic plot generation was enabled in the plan, but "
+            "scripts.plot_experiment_summary.render_summary_plots is missing."
+        )
+
+    render_summary_plots = plot_module.render_summary_plots
+    plot_metrics = plan.plot.metrics if plan.plot.metrics else None
+    output_root = summary_path.parent / "summary_plots"
+    plot_variants = [
+        ("no_error_bars", "none", "metrics_no_error_bars"),
+        ("with_error_bars", "std", "metrics_with_error_bars"),
+    ]
+
+    written_paths: List[Path] = []
+    for subdir_name, error_mode, prefix in plot_variants:
+        variant_output_dir = output_root / subdir_name
+        try:
+            variant_paths = render_summary_plots(
+                summary_path,
+                metrics=plot_metrics,
+                metric_scope=plan.plot.metric_scope,
+                x_pattern=plan.plot.x_pattern,
+                x_label=plan.plot.x_label,
+                output_dir=variant_output_dir,
+                prefix=prefix,
+                formats=plan.plot.formats,
+                dpi=plan.plot.dpi,
+                title="",
+                series_source="auto",
+                error_bars=error_mode,
+                show_panel_titles=False,
+                individual_panels=plan.plot.individual_panels,
+            )
+        except Exception as exc:
+            raise RuntimeError(
+                "Automatic plot generation failed for "
+                f"plan={plan.name!r}, variant={subdir_name!r}: {exc}"
+            ) from exc
+        written_paths.extend(variant_paths)
+    return written_paths
+
+
+def _validate_collect_plan_matches_output_dir(plan: ExperimentPlan, output_dir: Path) -> None:
+    """Fail loudly when collect-only uses a plan that does not match the saved run layout."""
+    mismatches: List[str] = []
+    for stage in plan.stages:
+        stage_dir = output_dir / stage.name
+        if not stage_dir.is_dir():
+            continue
+        for exp in stage.experiments:
+            run_dir = stage_dir / exp.name
+            if run_dir.exists():
+                continue
+            repeated_dirs = sorted(stage_dir.glob(f"{exp.name}__rep*"))
+            if not repeated_dirs:
+                continue
+            mismatches.append(
+                f"stage={stage.name!r}, experiment={exp.name!r}, repeated_runs={len(repeated_dirs)}"
+            )
+
+    if not mismatches:
+        return
+
+    details = "; ".join(mismatches)
+    raise RuntimeError(
+        "Collect-only plan/output mismatch: the plan expects non-repeated run directories, "
+        "but the output directory contains repeated runs instead. "
+        f"Mismatches: {details}. "
+        "Re-run collection with the same repeat count used for submission, for example "
+        f"'python scripts/run_experiments.py --plan <PLAN> --collect {output_dir} --repeat-each <N>'."
+    )
+
 
 def collect_only(plan: ExperimentPlan, output_dir: Path) -> None:
     """Re-run only the result collection step on an existing output directory."""
+    _validate_collect_plan_matches_output_dir(plan, output_dir)
     _collect_and_report(plan, output_dir)

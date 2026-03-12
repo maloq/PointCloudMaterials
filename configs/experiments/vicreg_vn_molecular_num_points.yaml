@@ -24,6 +24,7 @@ slurm:
 base_overrides:
   - "devices=[0]"
   - "load_supervised_checkpoint=false"
+  - "init_from_checkpoint=null"
   - "++run_post_training_analysis=false"
   - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
   - "++checkpoint_mode=max"

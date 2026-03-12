@@ -1,0 +1,106 @@
+defaults:
+  - data: data_synth_polycrystalline_balanced_geometries
+  - _self_
+
+project_name: pointnet
+experiment_name: POINTGPT_POLYCRYSTALLINE_G${pointgpt.num_group}_S${pointgpt.group_size}_D${pointgpt.encoder_dims}_N${data.num_points}_M${data.model_points}
+wandb_mode: online
+
+model_type: pointgpt
+
+load_supervised_checkpoint: false
+resume_from_checkpoint: null
+init_from_checkpoint: null
+init_from_checkpoint_strict: false
+
+learning_rate: 0.001
+decay_rate: 0.02
+
+batch_size: 256
+precision: bf16-true
+gradient_clip_val: 1.0
+accumulate_grad_batches: 2
+
+epochs: 120
+max_samples: 0
+
+gpu: true
+devices: [0]
+ddp_find_unused_parameters: false
+log_every_n_steps: 5
+num_workers: 4
+
+scheduler_name: Cosine
+scheduler_gamma: 0.5
+scheduler_min_lr: 1e-6
+
+enable_swa: false
+swa_epoch_start: 1000
+
+warmup_enabled: true
+warmup_epochs: 10
+warmup_start_factor: 0.1
+
+max_supervised_samples: 12000
+max_test_samples: 12000
+cache_train_supervised_metrics: false
+
+val_cluster_acc_methods: [kmeans++]
+val_cluster_acc_runs: 1
+test_cluster_acc_methods: [kmeans++]
+test_cluster_acc_runs: 1
+
+checkpoint_monitor: val/class/acc_kmeans_plusplus_hungarian
+checkpoint_mode: max
+checkpoint_save_top_k: 3
+test_single_device: true
+run_post_training_analysis: false
+
+pointgpt:
+  num_group: 24
+  group_size: 12
+  mask_ratio: 0.6
+  keep_attend: 4
+  encoder_dims: 384
+  trans_dim: 384
+  depth: 8
+  decoder_depth: 3
+  num_heads: 6
+  deterministic_fps: false
+  sorting_mode: nearest
+  crop_mode_train: random
+  crop_mode_eval: center
+  center_input: true
+  chamfer_l1_weight: 1.0
+  chamfer_l2_weight: 1.0
+
+data:
+  num_points: 128
+  model_points: 80
+  split_seed: 42
+  pre_normalize: true
+  normalize: true
+
+analysis_cluster_method: auto
+analysis_cluster_l2_normalize: true
+analysis_cluster_standardize: true
+analysis_cluster_pca_var: 0.98
+analysis_cluster_pca_max_components: 32
+analysis_cluster_k_values: [3, 4, 5, 6]
+analysis_progress_every_batches: 20
+analysis_test_rotation_runs: 5
+analysis_test_max_samples: null
+analysis_max_samples_total: 0
+analysis_tsne_max_samples: 8000
+analysis_tsne_n_iter: 1000
+analysis_interactive_max_points: 0
+analysis_md_use_all_points: true
+analysis_hdbscan_enabled: false
+analysis_hdbscan_fit_fraction: 0.25
+analysis_hdbscan_max_fit_samples: 50000
+analysis_hdbscan_target_k_min: 5
+analysis_hdbscan_target_k_max: 6
+analysis_hdbscan_min_cluster_size_candidates: []
+analysis_hdbscan_min_samples: null
+analysis_hdbscan_cluster_selection_epsilon: 0.0
+analysis_hdbscan_cluster_selection_method: leaf

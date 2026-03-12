@@ -1186,6 +1186,7 @@ class PointM2AEModule(pl.LightningModule):
             raise ValueError("point_m2ae crop_mode_train must be a non-empty string.")
         if not self.crop_mode_eval:
             raise ValueError("point_m2ae crop_mode_eval must be a non-empty string.")
+        self.center_input = bool(_pm_get("center_input", True))
 
         data_cfg = getattr(cfg, "data", None)
         model_points = getattr(data_cfg, "model_points", None) if data_cfg is not None else None
@@ -1232,7 +1233,8 @@ class PointM2AEModule(pl.LightningModule):
                 self.model_points,
                 mode=self._resolve_crop_mode(stage),
             )
-        points = points - points.mean(dim=1, keepdim=True)
+        if self.center_input:
+            points = points - points.mean(dim=1, keepdim=True)
         return points
 
     @torch.no_grad()

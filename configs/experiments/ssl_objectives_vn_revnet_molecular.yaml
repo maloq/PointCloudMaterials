@@ -1,0 +1,139 @@
+# Compare VICReg, Barlow Twins, and W-MSE on the molecular setup with
+# VN_REVNET_Backbone, while keeping the VICReg molecular config as the base.
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/ssl_objectives_vn_revnet_molecular.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/ssl_objectives_vn_revnet_molecular.yaml --dry-run
+
+name: ssl_objectives_vn_revnet_molecular
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_vn_molecular.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 80G
+  time: "24:00:00"
+
+base_overrides:
+  - "encoder.name=VN_REVNET_Backbone"
+  - "latent_size=80"
+  - "encoder.kwargs=null"
+  - "+encoder.kwargs={latent_size:80,sa_npoints:[80,40],sa_channels:[128,256],attn_hidden:256}"
+  - "load_supervised_checkpoint=false"
+  - "init_from_checkpoint=null"
+  - "resume_from_checkpoint=null"
+  - "devices=[0]"
+  - "batch_size=128"
+  - "accumulate_grad_batches=8"
+  - "auto_batch_size_search=true"
+  - "auto_batch_size_adjust_accumulate=true"
+  - "auto_batch_size_target_effective_batch=1024"
+  - "auto_batch_size_init_val=128"
+  - "barlow_enabled=false"
+  - "barlow_weight=0.0"
+  - "vicreg_enabled=false"
+  - "vicreg_weight=0.0"
+  - "++wmse_enabled=false"
+  - "++wmse_weight=0.0"
+  - "++pointcontrast_enabled=false"
+  - "++pointcontrast_weight=0.0"
+  - "++barlow_lambda=0.005"
+  - "++barlow_embed_dim=120"
+  - "++barlow_start_epoch=0"
+  - "++barlow_jitter_std=0.01"
+  - "++barlow_jitter_mode=physical"
+  - "++barlow_drop_ratio=0.0"
+  - "++barlow_neighbor_view=true"
+  - "++barlow_neighbor_view_mode=second"
+  - "++barlow_neighbor_k=8"
+  - "++barlow_neighbor_max_relative_distance=0.0"
+  - "++barlow_view_points=80"
+  - "++barlow_view_crop_mode=nearest_origin"
+  - "++barlow_drop_apply_to_both=true"
+  - "++barlow_rotation_mode=none"
+  - "++barlow_rotation_deg=10.0"
+  - "++barlow_strain_std=0.02"
+  - "++barlow_strain_volume_preserve=true"
+  - "++barlow_occlusion_mode=mixed"
+  - "++barlow_occlusion_view=second"
+  - "++barlow_occlusion_slab_frac=0.0"
+  - "++barlow_occlusion_cone_deg=0.0"
+  - "++barlow_occlusion_prob=1.0"
+  - "++barlow_invariant_mode=passthrough"
+  - "++barlow_invariant_max_factor=4.0"
+  - "++barlow_invariant_groups=0"
+  - "++barlow_invariant_use_third_order=true"
+  - "++barlow_invariant_eps=1e-6"
+  - "++wmse_embed_dim=120"
+  - "++wmse_start_epoch=0"
+  - "++wmse_jitter_std=0.01"
+  - "++wmse_jitter_mode=physical"
+  - "++wmse_drop_ratio=0.0"
+  - "++wmse_neighbor_view=true"
+  - "++wmse_neighbor_view_mode=second"
+  - "++wmse_neighbor_k=8"
+  - "++wmse_neighbor_max_relative_distance=0.0"
+  - "++wmse_view_points=80"
+  - "++wmse_view_crop_mode=nearest_origin"
+  - "++wmse_drop_apply_to_both=true"
+  - "++wmse_rotation_mode=none"
+  - "++wmse_rotation_deg=10.0"
+  - "++wmse_strain_std=0.02"
+  - "++wmse_strain_volume_preserve=true"
+  - "++wmse_occlusion_mode=mixed"
+  - "++wmse_occlusion_view=second"
+  - "++wmse_occlusion_slab_frac=0.0"
+  - "++wmse_occlusion_cone_deg=0.0"
+  - "++wmse_occlusion_prob=1.0"
+  - "++wmse_invariant_mode=passthrough"
+  - "++wmse_invariant_max_factor=4.0"
+  - "++wmse_invariant_groups=0"
+  - "++wmse_invariant_use_third_order=true"
+  - "++wmse_invariant_eps=1e-6"
+  - "++wmse_whitening_eps=1e-4"
+  - "++wmse_whitening_iters=1"
+  - "++wmse_whitening_size=256"
+  - "++wmse_normalize_embeddings=true"
+  - "++run_post_training_analysis=false"
+  - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
+  - "++checkpoint_mode=max"
+
+experiments:
+  - name: vicreg
+    overrides:
+      - "model_type=vicreg"
+      - "vicreg_enabled=true"
+      - "vicreg_weight=1.0"
+
+  - name: barlow_twins
+    overrides:
+      - "model_type=barlow_twins"
+      - "barlow_enabled=true"
+      - "barlow_weight=1.0"
+
+  - name: wmse
+    overrides:
+      - "model_type=wmse"
+      - "wmse_enabled=true"
+      - "wmse_weight=1.0"
+
+metrics:
+  final:
+    - test/loss
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: val/loss
+      mode: min
+
+output_root: output/experiments

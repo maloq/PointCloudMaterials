@@ -244,6 +244,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         track_augmentation = getattr(aug_cfg, "track_augmentation", False) if aug_cfg else False
 
         dataset_type = self._get_param("dataset_type", data_cfg, synth_dict, default="synthetic_env")
+        auto_cutoff_cfg = _to_container(self._get_param("auto_cutoff", data_cfg, synth_dict, default=None))
         model_type = str(getattr(self.cfg, "model_type", "")).lower()
         disable_dataset_aug_for_ssl = bool(getattr(self.cfg, "disable_dataset_augmentation_for_ssl", True))
         uses_ssl_views = (
@@ -488,6 +489,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             scaling_range=scaling_range,
             track_augmentation=track_augmentation,
             allowed_classes=classes,
+            auto_cutoff_config=auto_cutoff_cfg,
         )
 
         train_ratio = float(self._get_param("train_ratio", data_cfg, synth_dict, default=0.8))

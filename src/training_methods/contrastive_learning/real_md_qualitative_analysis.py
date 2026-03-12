@@ -17,7 +17,6 @@ from src.training_methods.contrastive_learning.cluster_profile_analysis import (
     _compute_sample_properties,
     _json_default,
     _load_point_cloud_from_dataset,
-    generate_cluster_profile_reports,
 )
 from src.training_methods.contrastive_learning._cluster_rendering import (
     _save_cluster_representatives_figure,
@@ -25,13 +24,14 @@ from src.training_methods.contrastive_learning._cluster_rendering import (
 from src.training_methods.contrastive_learning.cluster_figure_utils import _build_cluster_color_map
 from src.vis_tools.latent_analysis_vis import _prepare_clustering_features
 from src.vis_tools.real_md_analysis_vis import (
-    save_cluster_feature_heatmap,
+    save_cna_cluster_signature_stacked_bar,
+    save_cna_signature_time_series,
     save_cluster_proportion_plots,
     save_descriptor_violin_grid,
     save_embedding_continuous_plot,
     save_embedding_discrete_plot,
     save_spatial_cluster_view,
-    save_transition_heatmap,
+    save_transition_flow_plot,
 )
 from src.vis_tools.tsne_vis import compute_tsne
 
@@ -475,19 +475,70 @@ def _compute_projection(
     )
 
 
-def _aggregate_cluster_means(
-    descriptor_table: pd.DataFrame,
+def _compute_scalar_values_for_indices(
     *,
-    cluster_column: str,
-    feature_columns: list[str],
-) -> pd.DataFrame:
-    subset = descriptor_table[[cluster_column] + feature_columns].copy()
-    subset = subset.dropna(how="all", subset=feature_columns)
-    if subset.empty:
-        return pd.DataFrame(columns=feature_columns)
-    grouped = subset.groupby(cluster_column, sort=True)[feature_columns].mean(numeric_only=True)
-    grouped.index = [f"C{int(v)}" for v in grouped.index]
-    return grouped
+    scalar_name: str,
+    dataset: Any,
+    sample_indices: np.ndarray,
+    labels: np.ndarray,
+    coords: np.ndarray,
+    frame_index_lookup: np.ndarray,
+    frame_name_lookup: list[str],
+    frame_time_lookup: np.ndarray,
+    point_scale: float,
+    descriptor_table: pd.DataFrame,
+    cfg: Any,
+) -> np.ndarray | None:
+    requested_scalar = str(scalar_name)
+    sample_indices_arr = np.asarray(sample_indices, dtype=int)
+
+    if requested_scalar in _BUILTIN_SCALAR_COLUMNS:
+        projection_points = _load_point_cloud_batch(
+            dataset,
+            sample_indices_arr,
+            point_scale=float(point_scale),
+        )
+        projection_descriptor_table = _build_builtin_descriptor_table(
+            point_clouds=projection_points,
+            sample_indices=sample_indices_arr,
+            labels=labels,
+            coords=np.asarray(coords, dtype=np.float32),
+            frame_index_lookup=frame_index_lookup,
+            frame_name_lookup=frame_name_lookup,
+            frame_time_lookup=frame_time_lookup,
+        )
+        return projection_descriptor_table[requested_scalar].to_numpy(dtype=np.float32)
+
+    if not descriptor_table.empty and requested_scalar in descriptor_table.columns:
+        scalar_lookup = descriptor_table.set_index("sample_index")[requested_scalar]
+        aligned = scalar_lookup.reindex(sample_indices_arr)
+        if aligned.notna().all():
+            return aligned.to_numpy(dtype=np.float32)
+
+    optional_descriptors_cfg = _to_plain(getattr(cfg, "analysis_real_md_descriptors", None))
+    if not isinstance(optional_descriptors_cfg, dict):
+        return None
+
+    projection_points: np.ndarray | None = None
+    for descriptor_name, descriptor_cfg_raw in optional_descriptors_cfg.items():
+        descriptor_cfg = descriptor_cfg_raw if isinstance(descriptor_cfg_raw, dict) else {}
+        if not bool(descriptor_cfg.get("enabled", False)):
+            continue
+        if projection_points is None:
+            projection_points = _load_point_cloud_batch(
+                dataset,
+                sample_indices_arr,
+                point_scale=float(point_scale),
+            )
+        descriptor_df, _ = _evaluate_optional_descriptor(
+            str(descriptor_name),
+            point_clouds=projection_points,
+            point_scale=float(point_scale),
+            descriptor_cfg=descriptor_cfg,
+        )
+        if requested_scalar in descriptor_df.columns:
+            return descriptor_df[requested_scalar].to_numpy(dtype=np.float32)
+    return None
 
 
 def _build_cluster_groups(
@@ -677,6 +728,38 @@ def _cluster_counts_by_frame(
     return pd.DataFrame.from_records(rows), cluster_ids, counts_matrix
 
 
+def _build_cna_signature_summary_tables(
+    descriptor_table: pd.DataFrame,
+    *,
+    cluster_ids: list[int],
+    frames: list[FrameSlice],
+) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
+    cna_columns = [
+        str(column)
+        for column in descriptor_table.columns
+        if str(column).startswith("cna_") and str(column) != "cna_shell_size"
+    ]
+    if not cna_columns:
+        raise ValueError("descriptor_table does not contain any CNA signature columns.")
+
+    cluster_summary = (
+        descriptor_table.groupby("cluster_id", sort=True)[cna_columns]
+        .mean(numeric_only=True)
+        .reindex(cluster_ids)
+        .reset_index()
+    )
+    if "frame_index" not in descriptor_table.columns:
+        raise KeyError("descriptor_table must contain 'frame_index' for CNA time-series plots.")
+    frame_summary = (
+        descriptor_table.groupby("frame_index", sort=True)[cna_columns]
+        .mean(numeric_only=True)
+        .reindex([int(frame.order_index) for frame in frames])
+        .reset_index()
+    )
+    frame_summary["frame_label"] = [str(frame.label) for frame in frames]
+    return cluster_summary, frame_summary, cna_columns
+
+
 def _compute_transitions(
     frames: list[FrameSlice],
     *,
@@ -734,16 +817,9 @@ def _compute_transitions(
             }
         )
 
-    aggregate_row_norm = np.divide(
-        aggregate_counts,
-        aggregate_counts.sum(axis=1, keepdims=True),
-        out=np.zeros_like(aggregate_counts, dtype=np.float64),
-        where=aggregate_counts.sum(axis=1, keepdims=True) > 0,
-    )
     return {
         "cluster_ids": [int(v) for v in cluster_ids],
         "aggregate_counts": aggregate_counts,
-        "aggregate_row_norm": aggregate_row_norm,
         "pairs": pair_summaries,
         "max_distance": float(max_distance),
         "require_mutual": bool(require_mutual),
@@ -794,15 +870,23 @@ def _write_summary_markdown(
                 "## Representatives",
                 f"- Root: `{Path(summary['representatives']['root_dir']).name}`",
                 f"- Shared-style figure: `{Path(summary['representatives']['primary_figure']).name}`",
-                "- Additional profile reports were generated from nearest-to-centroid samples plus nearby latent neighbours.",
+                f"- Edge-connected figure: `{Path(summary['representatives']['edge_connected_figure']).name}`",
             ]
         )
+        structure_analysis = summary["representatives"]["shared_style"].get("structure_analysis")
+        if isinstance(structure_analysis, dict):
+            lines.append(
+                f"- Structure analysis JSON: `{Path(structure_analysis['json_file']).name}`"
+            )
+            lines.append(
+                f"- Structure analysis CSV: `{Path(structure_analysis['csv_file']).name}`"
+            )
     if "spatial" in summary:
         lines.extend(
             [
                 "",
                 "## Spatial views",
-                f"- Full-box frames: `{len(summary['spatial'].get('frames', []))}`",
+                f"- Filtered cluster views: `{sum(len(frame.get('filtered_views', [])) for frame in summary['spatial'].get('frames', []))}`",
                 f"- Zoom views: `{len(summary['spatial'].get('zooms', []))}`",
             ]
         )
@@ -824,13 +908,21 @@ def _write_summary_markdown(
                 f"- Scalar violin plot: `{Path(summary['descriptor_analysis']['scalar_violin_plot']).name}`",
             ]
         )
+        cna_vis = summary["descriptor_analysis"].get("cna_visualization")
+        if isinstance(cna_vis, dict):
+            lines.append(
+                f"- CNA cluster composition: `{Path(cna_vis['cluster_plot']).name}`"
+            )
+            lines.append(
+                f"- CNA time series: `{Path(cna_vis['time_series_plot']).name}`"
+            )
     if "transitions" in summary:
         lines.extend(
             [
                 "",
                 "## Transitions",
                 f"- Match tolerance: `{summary['transitions']['match_tolerance']:.4f}`",
-                f"- Aggregate heatmap: `{Path(summary['transitions']['aggregate_row_norm_heatmap']).name}`",
+                f"- Aggregate flow diagram: `{Path(summary['transitions']['aggregate_flow']).name}`",
             ]
         )
     out_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -927,6 +1019,11 @@ def run_real_md_qualitative_analysis(
 
     proportions_dir = out_root / "time_series"
     proportions_table, cluster_ids, counts_matrix = _cluster_counts_by_frame(frames, labels)
+    cluster_display_map = {
+        int(cluster_id): f"C{pos + 1}"
+        for pos, cluster_id in enumerate(cluster_ids)
+    }
+    cluster_display_labels = [cluster_display_map[int(cluster_id)] for cluster_id in cluster_ids]
     proportions_csv = proportions_dir / "frame_cluster_proportions.csv"
     proportions_dir.mkdir(parents=True, exist_ok=True)
     proportions_table.to_csv(proportions_csv, index=False)
@@ -938,7 +1035,11 @@ def run_real_md_qualitative_analysis(
             cluster_ids,
             proportions_dir,
             cluster_color_map=labels_color_map,
+            cluster_display_labels=cluster_display_labels,
             save_paper_svg=_cfg_bool(cfg, "analysis_real_md_time_series_paper_enabled", True),
+            stack_alpha=_cfg_float(cfg, "analysis_real_md_time_series_alpha", 0.78),
+            bar_alpha=_cfg_float(cfg, "analysis_real_md_time_series_bar_alpha", 0.82),
+            paper_alpha=_cfg_float(cfg, "analysis_real_md_time_series_paper_alpha", 0.72),
         ),
     }
 
@@ -965,20 +1066,36 @@ def run_real_md_qualitative_analysis(
             view_elev=float(getattr(cfg, "analysis_cluster_figure_representative_view_elev", 22.0)),
             view_azim=float(getattr(cfg, "analysis_cluster_figure_representative_view_azim", 38.0)),
             projection=str(getattr(cfg, "analysis_cluster_figure_representative_projection", "ortho")),
-        )
-        profile_reports = generate_cluster_profile_reports(
-            out_root=representatives_dir / "profile_reports",
-            dataset=dataset,
-            latents=np.asarray(latents, dtype=np.float32),
-            coords=np.asarray(coords, dtype=np.float32),
-            cluster_labels_by_k={int(selected_k): labels},
-            cluster_methods_by_k={int(selected_k): str(cluster_methods_by_k.get(int(selected_k), "unknown"))},
-            samples_per_cluster=_cfg_int(cfg, "analysis_cluster_profile_samples_per_cluster", 6),
-            target_points=_cfg_int(cfg, "analysis_cluster_profile_target_points", max(32, int(getattr(cfg.data, "model_points", getattr(cfg.data, "num_points", 64))))),
-            knn_k=_cfg_int(cfg, "analysis_cluster_profile_knn_k", 4),
-            max_cluster_property_samples=_cfg_int(cfg, "analysis_cluster_profile_max_cluster_property_samples", 256),
-            point_scale=float(point_scale),
-            random_seed=int(random_state),
+            representative_ptm_enabled=bool(
+                getattr(cfg, "analysis_cluster_figure_representative_ptm_enabled", False)
+            ),
+            representative_cna_enabled=bool(
+                getattr(cfg, "analysis_cluster_figure_representative_cna_enabled", False)
+            ),
+            representative_cna_max_signatures=int(
+                getattr(cfg, "analysis_cluster_figure_representative_cna_max_signatures", 5)
+            ),
+            representative_center_atom_tolerance=float(
+                getattr(
+                    cfg,
+                    "analysis_cluster_figure_representative_center_atom_tolerance",
+                    1e-6,
+                )
+            ),
+            representative_shell_min_neighbors=int(
+                getattr(
+                    cfg,
+                    "analysis_cluster_figure_representative_shell_min_neighbors",
+                    8,
+                )
+            ),
+            representative_shell_max_neighbors=int(
+                getattr(
+                    cfg,
+                    "analysis_cluster_figure_representative_shell_max_neighbors",
+                    24,
+                )
+            ),
         )
         summary["representatives"] = {
             "root_dir": str(representatives_dir),
@@ -986,7 +1103,9 @@ def run_real_md_qualitative_analysis(
             "primary_figure": str(
                 shared_style_summary["pca_two_shell_figures"]["spatial_neighbors"]["out_file"]
             ),
-            "profile_reports": profile_reports,
+            "edge_connected_figure": str(
+                shared_style_summary["pca_two_shell_figures"]["knn_edges"]["out_file"]
+            ),
         }
 
     if _cfg_bool(cfg, "analysis_real_md_descriptor_enabled", True):
@@ -1052,21 +1171,9 @@ def run_real_md_qualitative_analysis(
         sample_table_csv = descriptor_dir / "descriptor_samples.csv"
         descriptor_table.to_csv(sample_table_csv, index=False)
 
-        cluster_summary_columns = [
-            column
-            for column in descriptor_table.columns
-            if column not in {"sample_index", "cluster_id", "frame_name", "time_unit"}
-        ]
-        cluster_summary = descriptor_table.groupby("cluster_id", sort=True)[cluster_summary_columns].mean(numeric_only=True)
-        cluster_summary.index = [f"C{int(v)}" for v in cluster_summary.index]
-        cluster_summary_csv = descriptor_dir / "cluster_descriptor_means.csv"
-        cluster_summary.to_csv(cluster_summary_csv)
-
         scalar_violin_path = descriptor_dir / "descriptor_violin_grid.png"
-        scalar_heatmap_path = descriptor_dir / "descriptor_cluster_mean_heatmap.png"
         summary["descriptor_analysis"] = {
             "sample_table_csv": str(sample_table_csv),
-            "cluster_summary_csv": str(cluster_summary_csv),
             "scalar_violin_plot": str(scalar_violin_path),
             "scalar_columns": scalar_columns,
             "optional_descriptors": optional_descriptor_summaries,
@@ -1078,19 +1185,52 @@ def run_real_md_qualitative_analysis(
             scalar_columns=scalar_columns,
             out_file=scalar_violin_path,
             cluster_color_map=labels_color_map,
+            cluster_label_map=cluster_display_map,
         )
-        scalar_cluster_means = _aggregate_cluster_means(
-            descriptor_table,
-            cluster_column="cluster_id",
-            feature_columns=scalar_columns,
+
+        cna_descriptor_enabled = any(
+            str(info.get("name", "")).strip().lower() == "cna"
+            for info in optional_descriptor_summaries
         )
-        save_cluster_feature_heatmap(
-            scalar_cluster_means.rename(columns=_BUILTIN_SCALAR_LABELS),
-            scalar_heatmap_path,
-            title="Per-cluster descriptor means",
-            center=None,
-        )
-        summary["descriptor_analysis"]["scalar_heatmap"] = str(scalar_heatmap_path)
+        if cna_descriptor_enabled:
+            cna_cluster_summary, cna_frame_summary, cna_signature_columns = _build_cna_signature_summary_tables(
+                descriptor_table,
+                cluster_ids=cluster_ids,
+                frames=frames,
+            )
+            cna_cluster_csv = descriptor_dir / "cna_signature_by_cluster.csv"
+            cna_frame_csv = descriptor_dir / "cna_signature_by_frame.csv"
+            cna_cluster_summary.to_csv(cna_cluster_csv, index=False)
+            cna_frame_summary.to_csv(cna_frame_csv, index=False)
+
+            cna_cluster_plot = descriptor_dir / "cna_signature_cluster_stacked_bar.png"
+            cna_time_plot = descriptor_dir / "cna_signature_time_stacked_area.png"
+            cluster_plot_summary = save_cna_cluster_signature_stacked_bar(
+                cna_cluster_summary,
+                out_file=cna_cluster_plot,
+                cluster_color_map=labels_color_map,
+                cluster_label_map=cluster_display_map,
+                save_svg=True,
+            )
+            time_plot_summary = save_cna_signature_time_series(
+                [str(frame.label) for frame in frames],
+                cna_frame_summary[cna_signature_columns].to_numpy(dtype=np.float64),
+                signature_labels=[
+                    "other" if column == "cna_other" else column.replace("cna_", "")
+                    for column in cna_signature_columns
+                ],
+                out_file=cna_time_plot,
+                save_svg=True,
+            )
+            summary["descriptor_analysis"]["cna_visualization"] = {
+                "cluster_csv": str(cna_cluster_csv),
+                "frame_csv": str(cna_frame_csv),
+                "cluster_plot": str(cluster_plot_summary["out_file"]),
+                "cluster_plot_svg": cluster_plot_summary.get("svg"),
+                "time_series_plot": str(time_plot_summary["out_file"]),
+                "time_series_plot_svg": time_plot_summary.get("svg"),
+                "signature_columns": list(cna_signature_columns),
+            }
     else:
         descriptor_table = pd.DataFrame()
 
@@ -1154,7 +1294,7 @@ def run_real_md_qualitative_analysis(
         cluster_plot,
         title=f"Latent projection ({projection_info['method']}) colored by cluster",
         cluster_color_map=labels_color_map,
-        label_prefix="C",
+        display_label_map=cluster_display_map,
     )
     save_embedding_discrete_plot(
         projection_embedding,
@@ -1165,19 +1305,37 @@ def run_real_md_qualitative_analysis(
     )
 
     scalar_name = str(getattr(cfg, "analysis_real_md_descriptor_physical_scalar", "coord_mean"))
-    if not descriptor_table.empty and scalar_name in descriptor_table.columns:
-        scalar_lookup = descriptor_table.set_index("sample_index")[scalar_name]
-        projection_scalar = scalar_lookup.reindex(projection_indices).to_numpy(dtype=np.float32)
+    scalar_label = _BUILTIN_SCALAR_LABELS.get(scalar_name, scalar_name)
+    projection_scalar = _compute_scalar_values_for_indices(
+        scalar_name=scalar_name,
+        dataset=dataset,
+        sample_indices=projection_indices,
+        labels=labels,
+        coords=np.asarray(coords, dtype=np.float32),
+        frame_index_lookup=frame_index_lookup,
+        frame_name_lookup=frame_name_lookup,
+        frame_time_lookup=frame_time_lookup,
+        point_scale=float(point_scale),
+        descriptor_table=descriptor_table,
+        cfg=cfg,
+    )
+    if projection_scalar is not None:
         scalar_plot = projection_dir / f"latent_projection_{projection_method}_{scalar_name}.png"
-        save_embedding_continuous_plot(
+        scalar_plot_summary = save_embedding_continuous_plot(
             projection_embedding,
             projection_scalar,
             scalar_plot,
-            title=f"Latent projection ({projection_info['method']}) colored by {scalar_name}",
-            colorbar_label=_BUILTIN_SCALAR_LABELS.get(scalar_name, scalar_name),
+            title=f"Latent projection ({projection_info['method']}) colored by {scalar_label}",
+            colorbar_label=scalar_label,
+            alpha=_cfg_float(cfg, "analysis_real_md_projection_scalar_alpha", 0.86),
+            background_alpha=_cfg_float(cfg, "analysis_real_md_projection_scalar_background_alpha", 0.06),
         )
         summary["latent_projection"]["plots"]["physical_scalar"] = str(scalar_plot)
-        summary["latent_projection"]["physical_scalar"] = str(scalar_name)
+        summary["latent_projection"]["physical_scalar"] = {
+            "name": str(scalar_name),
+            "label": str(scalar_label),
+            "finite_fraction": float(scalar_plot_summary["finite_fraction"]),
+        }
 
     if _cfg_bool(cfg, "analysis_real_md_spatial_enabled", True):
         spatial_dir = out_root / "spatial"
@@ -1196,23 +1354,9 @@ def run_real_md_qualitative_analysis(
         spatial_azim = _cfg_float(cfg, "analysis_real_md_spatial_view_azim", _cfg_float(cfg, "analysis_cluster_figure_md_view_azim", 35.0))
         for frame in frames:
             frame_dir = spatial_dir / frame.output_name
-            full_view = save_spatial_cluster_view(
-                np.asarray(coords[frame.indices], dtype=np.float32),
-                labels[frame.indices],
-                frame_dir / "full_box_all_clusters.png",
-                title=f"MD clusters ({frame.label}, all clusters)",
-                cluster_color_map=labels_color_map,
-                max_points=None if spatial_max_points is None else int(spatial_max_points),
-                point_size=float(spatial_point_size),
-                alpha=float(spatial_alpha),
-                saturation_boost=float(spatial_saturation),
-                view_elev=float(spatial_elev),
-                view_azim=float(spatial_azim),
-            )
             frame_record: dict[str, Any] = {
                 "frame_name": str(frame.source_name),
                 "frame_label": str(frame.label),
-                "full_box": full_view,
                 "filtered_views": [],
             }
             for group in cluster_groups:
@@ -1285,28 +1429,28 @@ def run_real_md_qualitative_analysis(
         )
         pair_records: list[dict[str, Any]] = []
         for pair_idx, pair_summary in enumerate(transition_data["pairs"], start=1):
-            counts_path = transition_dir / f"transition_pair_{pair_idx:02d}_counts.png"
-            row_norm_path = transition_dir / f"transition_pair_{pair_idx:02d}_row_norm.png"
+            flow_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.png"
+            flow_svg_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.svg"
             counts = np.asarray(pair_summary["counts"], dtype=np.float64)
-            row_norm = np.divide(
+            save_transition_flow_plot(
                 counts,
-                counts.sum(axis=1, keepdims=True),
-                out=np.zeros_like(counts, dtype=np.float64),
-                where=counts.sum(axis=1, keepdims=True) > 0,
+                flow_path,
+                title=None,
+                row_labels=cluster_display_labels,
+                cluster_color_map=labels_color_map,
+                cluster_ids_for_palette=cluster_ids,
+                mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
+                min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
             )
-            save_transition_heatmap(
+            save_transition_flow_plot(
                 counts,
-                counts_path,
-                title=f"Transitions: {pair_summary['frame_from']} -> {pair_summary['frame_to']} (counts)",
-                row_labels=[f"C{cluster_id}" for cluster_id in cluster_ids],
-                fmt=".0f",
-            )
-            save_transition_heatmap(
-                row_norm,
-                row_norm_path,
-                title=f"Transitions: {pair_summary['frame_from']} -> {pair_summary['frame_to']} (row-normalized)",
-                row_labels=[f"C{cluster_id}" for cluster_id in cluster_ids],
-                fmt=".2f",
+                flow_svg_path,
+                title=None,
+                row_labels=cluster_display_labels,
+                cluster_color_map=labels_color_map,
+                cluster_ids_for_palette=cluster_ids,
+                mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
+                min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
             )
             pair_records.append(
                 {
@@ -1314,34 +1458,41 @@ def run_real_md_qualitative_analysis(
                     "frame_to": str(pair_summary["frame_to"]),
                     "matched_samples": int(pair_summary["matched_samples"]),
                     "coverage_fraction": float(pair_summary["coverage_fraction"]),
-                    "counts_heatmap": str(counts_path),
-                    "row_norm_heatmap": str(row_norm_path),
+                    "flow_plot": str(flow_path),
+                    "flow_svg": str(flow_svg_path),
                 }
             )
 
-        aggregate_counts_path = transition_dir / "transition_aggregate_counts.png"
-        aggregate_row_norm_path = transition_dir / "transition_aggregate_row_norm.png"
-        save_transition_heatmap(
+        aggregate_flow_path = transition_dir / "transition_aggregate_flow.png"
+        aggregate_flow_svg_path = transition_dir / "transition_aggregate_flow.svg"
+        save_transition_flow_plot(
             transition_data["aggregate_counts"],
-            aggregate_counts_path,
-            title="Aggregate transitions (counts)",
-            row_labels=[f"C{cluster_id}" for cluster_id in cluster_ids],
-            fmt=".0f",
+            aggregate_flow_path,
+            title=None,
+            row_labels=cluster_display_labels,
+            cluster_color_map=labels_color_map,
+            cluster_ids_for_palette=cluster_ids,
+            mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
+            min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
         )
-        save_transition_heatmap(
-            transition_data["aggregate_row_norm"],
-            aggregate_row_norm_path,
-            title="Aggregate transitions (row-normalized)",
-            row_labels=[f"C{cluster_id}" for cluster_id in cluster_ids],
-            fmt=".2f",
+        save_transition_flow_plot(
+            transition_data["aggregate_counts"],
+            aggregate_flow_svg_path,
+            title=None,
+            row_labels=cluster_display_labels,
+            cluster_color_map=labels_color_map,
+            cluster_ids_for_palette=cluster_ids,
+            mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
+            min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
         )
         summary["transitions"] = {
             "cluster_ids": [int(v) for v in cluster_ids],
+            "cluster_display_labels": cluster_display_labels,
             "match_tolerance": float(transition_data["max_distance"]),
             "require_mutual": bool(transition_data["require_mutual"]),
             "pairs": pair_records,
-            "aggregate_counts_heatmap": str(aggregate_counts_path),
-            "aggregate_row_norm_heatmap": str(aggregate_row_norm_path),
+            "aggregate_flow": str(aggregate_flow_path),
+            "aggregate_flow_svg": str(aggregate_flow_svg_path),
         }
 
     summary_json = out_root / "summary.json"

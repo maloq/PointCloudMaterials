@@ -9,6 +9,7 @@ from typing import Any
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.spatial import cKDTree
 
 from src.training_methods.contrastive_learning._cluster_colors import (
     _boost_saturation,
@@ -24,6 +25,9 @@ from src.training_methods.contrastive_learning._cluster_geometry import (
     _sample_indices_stratified,
     _set_equal_axes_3d,
     _draw_cube_wireframe,
+)
+from src.training_methods.contrastive_learning._representative_structure_analysis import (
+    analyze_cluster_representatives,
 )
 
 
@@ -396,6 +400,19 @@ def _prepare_cluster_representative_structures(
     return prepared
 
 
+def _attach_structure_analysis_to_summary(
+    summary: dict[str, Any],
+    analysis_by_cluster_id: dict[int, dict[str, Any]],
+) -> None:
+    representatives = summary.get("representatives")
+    if not isinstance(representatives, list):
+        return
+    for record in representatives:
+        cluster_id = int(record["cluster_id"])
+        if cluster_id in analysis_by_cluster_id:
+            record["structure_analysis"] = dict(analysis_by_cluster_id[cluster_id])
+
+
 def _build_cluster_representative_variant_specs(
     preferred_orientation: str,
 ) -> list[dict[str, Any]]:
@@ -606,6 +623,62 @@ def _build_squidpy_generic_spatial_neighbor_edges(
         "degree_max": int(np.max(degree_counts)),
         "edge_distance_mean": float(edge_distance_mean),
         "edge_distance_median": float(edge_distance_median),
+    }
+
+
+def _build_knn_representative_edges(
+    points: np.ndarray,
+    *,
+    knn_k: int,
+) -> tuple[list[tuple[int, int]], dict[str, Any]]:
+    pts = np.asarray(points, dtype=np.float32)
+    if pts.ndim != 2 or pts.shape[1] < 3:
+        raise ValueError(f"points must have shape (N, >=3), got {pts.shape}.")
+    pts = pts[:, :3]
+    n_points = int(pts.shape[0])
+    if n_points < 2:
+        return [], {
+            "graph_method": "representative_knn",
+            "knn_k": 0,
+            "num_edges": 0,
+            "edge_distance_mean": 0.0,
+            "edge_distance_median": 0.0,
+        }
+
+    k_eff = min(max(1, int(knn_k)), n_points - 1)
+    tree = cKDTree(pts)
+    _, indices = tree.query(pts, k=k_eff + 1)
+    if np.ndim(indices) == 1:
+        indices = np.asarray(indices, dtype=np.int64)[:, None]
+    else:
+        indices = np.asarray(indices, dtype=np.int64)
+
+    edges: set[tuple[int, int]] = set()
+    edge_distances: list[float] = []
+    for point_idx in range(n_points):
+        for neighbor_idx in indices[point_idx, 1:]:
+            neighbor_idx_int = int(neighbor_idx)
+            edge = (min(point_idx, neighbor_idx_int), max(point_idx, neighbor_idx_int))
+            if edge[0] == edge[1] or edge in edges:
+                continue
+            edges.add(edge)
+            edge_distances.append(float(np.linalg.norm(pts[edge[0]] - pts[edge[1]])))
+
+    connected_edges = _ensure_connected_edges(pts, sorted(edges))
+    if connected_edges:
+        connected_distances = [
+            float(np.linalg.norm(pts[src_idx] - pts[dst_idx]))
+            for src_idx, dst_idx in connected_edges
+        ]
+    else:
+        connected_distances = []
+
+    return connected_edges, {
+        "graph_method": "representative_knn",
+        "knn_k": int(k_eff),
+        "num_edges": int(len(connected_edges)),
+        "edge_distance_mean": float(np.mean(connected_distances)) if connected_distances else 0.0,
+        "edge_distance_median": float(np.median(connected_distances)) if connected_distances else 0.0,
     }
 
 
@@ -915,6 +988,111 @@ def _render_spatial_neighbors_paper_figure(
     }
 
 
+def _render_knn_edge_representatives_figure(
+    prepared_records: list[dict[str, Any]],
+    out_file: Path,
+    *,
+    knn_k: int,
+    view_elev: float = 22.0,
+    view_azim: float = 38.0,
+    projection: str = "ortho",
+) -> dict[str, Any]:
+    proj_norm = str(projection).strip().lower()
+    n_clusters = len(prepared_records)
+    n_cols = min(3, n_clusters)
+    n_rows = int(np.ceil(n_clusters / max(1, n_cols)))
+    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=300, facecolor="white")
+    summary_records: list[dict[str, Any]] = []
+
+    for pos, prepared in enumerate(prepared_records):
+        ax = fig.add_subplot(n_rows, n_cols, pos + 1, projection="3d")
+        ax.set_facecolor("white")
+        if hasattr(ax, "set_proj_type"):
+            ax.set_proj_type(proj_norm)
+        ax.view_init(elev=float(view_elev), azim=float(view_azim))
+
+        base_color = str(prepared["base_color"])
+        oriented_points, orientation_info = _orient_points_for_crystal_view(
+            prepared["local_points"],
+            method="pca",
+        )
+        point_colors = _compute_center_to_edge_colors(oriented_points, base_color)
+        edges, edge_info = _build_knn_representative_edges(
+            oriented_points,
+            knn_k=max(2, int(knn_k)),
+        )
+        _draw_edges(
+            ax,
+            oriented_points,
+            edges,
+            point_colors=point_colors,
+            edge_alpha=0.54,
+            edge_linewidth=0.82,
+        )
+        ax.scatter(
+            oriented_points[:, 0],
+            oriented_points[:, 1],
+            oriented_points[:, 2],
+            c=point_colors,
+            s=58,
+            alpha=0.97,
+            edgecolors="#222222",
+            linewidths=0.36,
+            depthshade=False,
+        )
+        _set_equal_axes_3d(ax, oriented_points)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
+        ax.grid(False)
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        ax.set_zlabel("")
+        for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+            if hasattr(axis, "pane"):
+                axis.pane.fill = False
+                axis.pane.set_edgecolor((1.0, 1.0, 1.0, 1.0))
+            if hasattr(axis, "line"):
+                axis.line.set_color((1.0, 1.0, 1.0, 1.0))
+        panel_label = f"C{pos + 1}"
+        title_color = _cluster_label_color(base_color, darken_factor=0.58)
+        ax.set_title(
+            panel_label,
+            fontsize=12,
+            color=title_color,
+            pad=2,
+            fontweight="bold",
+        )
+        summary_records.append(
+            {
+                "panel_label": panel_label,
+                "cluster_id": int(prepared["cluster_id"]),
+                "sample_index": int(prepared["sample_index"]),
+                "num_points_plotted": int(oriented_points.shape[0]),
+                "orientation": orientation_info,
+                "edge_info": edge_info,
+            }
+        )
+
+    fig.suptitle("Cluster representatives", fontsize=12, fontweight="bold", y=0.965)
+    fig.subplots_adjust(left=0.02, right=0.988, bottom=0.035, top=0.91, wspace=0.03, hspace=0.06)
+    out_file = Path(out_file)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_file, bbox_inches="tight")
+    plt.close(fig)
+    _log_saved_figure(out_file)
+    return {
+        "variant_name": "knn_edges",
+        "out_file": str(out_file),
+        "orientation_method": "pca",
+        "connection_mode": "knn_connected",
+        "view_elev": float(view_elev),
+        "view_azim": float(view_azim),
+        "projection": str(proj_norm),
+        "representatives": summary_records,
+    }
+
+
 def _save_cluster_representatives_figure(
     dataset: Any,
     latents: np.ndarray,
@@ -929,6 +1107,12 @@ def _save_cluster_representatives_figure(
     view_elev: float = 22.0,
     view_azim: float = 38.0,
     projection: str = "ortho",
+    representative_ptm_enabled: bool = False,
+    representative_cna_enabled: bool = False,
+    representative_cna_max_signatures: int = 5,
+    representative_center_atom_tolerance: float = 1e-6,
+    representative_shell_min_neighbors: int = 8,
+    representative_shell_max_neighbors: int = 24,
 ) -> dict[str, Any]:
     proj_norm = str(projection).strip().lower()
     method_norm = str(orientation_method).strip().lower()
@@ -943,6 +1127,30 @@ def _save_cluster_representatives_figure(
     out_file = Path(out_file)
     variant_specs = _build_cluster_representative_variant_specs(method_norm)
     variant_summaries: list[dict[str, Any]] = []
+    stem_parts = out_file.stem.rsplit("_k", 1)
+    if len(stem_parts) != 2 or not stem_parts[1].strip():
+        raise ValueError(
+            "Representative output filename must contain a '_k<value>' suffix, "
+            f"got {out_file.name!r}."
+        )
+    k_token = stem_parts[1].strip()
+    structure_analysis_summary = analyze_cluster_representatives(
+        prepared_records,
+        out_file.parent,
+        k_token=str(k_token),
+        ptm_enabled=bool(representative_ptm_enabled),
+        cna_enabled=bool(representative_cna_enabled),
+        cna_max_signatures=int(representative_cna_max_signatures),
+        center_atom_tolerance=float(representative_center_atom_tolerance),
+        shell_min_neighbors=int(representative_shell_min_neighbors),
+        shell_max_neighbors=int(representative_shell_max_neighbors),
+    )
+    analysis_by_cluster_id: dict[int, dict[str, Any]] = {}
+    if structure_analysis_summary is not None:
+        analysis_by_cluster_id = {
+            int(record["cluster_id"]): dict(record)
+            for record in structure_analysis_summary["representatives"]
+        }
     for spec in variant_specs:
         file_suffix = str(spec["file_suffix"]).strip()
         if file_suffix == "":
@@ -962,11 +1170,8 @@ def _save_cluster_representatives_figure(
             projection=str(proj_norm),
             variant_name=str(spec["variant_name"]),
         )
+        _attach_structure_analysis_to_summary(variant_summary, analysis_by_cluster_id)
         variant_summaries.append(variant_summary)
-
-    stem_parts = out_file.stem.rsplit("_k", 1)
-
-    k_token = stem_parts[1].strip()
     two_shell_spatial_neighbors_summary = _render_two_shell_cluster_representatives_variant(
         prepared_records,
         out_file.with_name(
@@ -979,6 +1184,7 @@ def _save_cluster_representatives_figure(
         variant_name="pca_two_shells_spatial_neighbors",
         connection_mode="spatial_neighbors_generic",
     )
+    _attach_structure_analysis_to_summary(two_shell_spatial_neighbors_summary, analysis_by_cluster_id)
     spatial_neighbors_paper_summary = _render_spatial_neighbors_paper_figure(
         prepared_records,
         out_file.with_name(
@@ -989,12 +1195,26 @@ def _save_cluster_representatives_figure(
         view_azim=float(view_azim),
         projection=str(proj_norm),
     )
+    _attach_structure_analysis_to_summary(spatial_neighbors_paper_summary, analysis_by_cluster_id)
+    knn_edges_summary = _render_knn_edge_representatives_figure(
+        prepared_records,
+        out_file.with_name(
+            f"09_cluster_representatives_knn_edges_k{k_token}.png"
+        ),
+        knn_k=int(knn_k),
+        view_elev=float(view_elev),
+        view_azim=float(view_azim),
+        projection=str(proj_norm),
+    )
+    _attach_structure_analysis_to_summary(knn_edges_summary, analysis_by_cluster_id)
     primary_summary = dict(variant_summaries[0])
     primary_summary["variants"] = variant_summaries
     primary_summary["primary_variant_name"] = str(variant_summaries[0]["variant_name"])
     primary_summary["projection"] = str(proj_norm)
+    primary_summary["structure_analysis"] = structure_analysis_summary
     primary_summary["pca_two_shell_figures"] = {
         "spatial_neighbors": two_shell_spatial_neighbors_summary,
         "spatial_neighbors_paper": spatial_neighbors_paper_summary,
+        "knn_edges": knn_edges_summary,
     }
     return primary_summary

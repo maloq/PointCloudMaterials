@@ -1,0 +1,77 @@
+# SOTA-style self-supervised polycrystalline benchmark on balanced geometries.
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/sota_polycrystalline_faithful.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/sota_polycrystalline_faithful.yaml --collect <output_dir>
+
+name: sota_polycrystalline_faithful
+train_script: src/training_methods/pointgpt/train_pointgpt.py
+config_name: pointgpt_polycrystalline.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 120G
+  time: "24:00:00"
+
+base_overrides:
+  - load_supervised_checkpoint=false
+  - init_from_checkpoint=null
+  - resume_from_checkpoint=null
+  - wandb_mode=disabled
+  - ++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian
+  - ++checkpoint_mode=max
+  - ++run_post_training_analysis=false
+  - "devices=[0]"
+  - "analysis_test_rotation_runs=5"
+  - "analysis_hdbscan_enabled=false"
+
+experiments:
+  - name: pointgpt
+    train_script: src/training_methods/pointgpt/train_pointgpt.py
+    config_name: pointgpt_polycrystalline.yaml
+    overrides:
+      - epochs=60
+      - ++check_val_every_n_epoch=5
+  - name: point_m2ae
+    train_script: src/training_methods/point_m2ae/train_point_m2ae.py
+    config_name: point_m2ae_polycrystalline.yaml
+    overrides:
+      - epochs=60
+      - ++check_val_every_n_epoch=5
+  - name: pointcontrast
+    train_script: src/training_methods/contrastive_learning/train_pointcontrast.py
+    config_name: pointcontrast_polycrystalline.yaml
+    overrides:
+      - epochs=60
+      - ++check_val_every_n_epoch=5
+  - name: ri_mae
+    train_script: src/training_methods/ri_mae_faithful/train_ri_mae_faithful.py
+    config_name: ri_mae_polycrystalline_faithful.yaml
+    overrides:
+      - epochs=60
+      - ++check_val_every_n_epoch=5
+
+metrics:
+  final:
+    - test/loss
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian_rotated
+    - test/class/nmi_rotated
+    - test/class/ari_rotated
+    - test/class/ari_rotated_std
+    - test/class/nmi_rotated_std
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/loss
+      mode: min
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+
+output_root: output/experiments

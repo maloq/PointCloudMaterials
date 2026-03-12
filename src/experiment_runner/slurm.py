@@ -9,11 +9,20 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence
 
-from .plan import Experiment, ExperimentPlan, SlurmConfig, StageSpec
+from .plan import (
+    Experiment,
+    ExperimentPlan,
+    SlurmConfig,
+    StageSpec,
+    resolve_experiment_config_name,
+    resolve_experiment_train_script,
+)
 
 POLL_INITIAL_INTERVAL_SEC = 15
 POLL_MAX_INTERVAL_SEC = 120
 POLL_BACKOFF_FACTOR = 1.5
+JOB_STATUS_FILENAME = "slurm_job_status.txt"
+MISSING_STATUS_POLLS_BEFORE_UNKNOWN = 2
 
 
 @dataclass
@@ -39,23 +48,24 @@ def generate_sbatch_script(
     """Generate a self-contained sbatch script for one experiment."""
     slurm = stage.slurm or plan.slurm
 
-    train_script = stage.train_script or plan.train_script
-    config_name = stage.config_name or plan.config_name
-    if config_name is None:
-        raise ValueError(
-            f"No config_name for experiment {experiment.name!r} in stage {stage.name!r}."
-        )
+    train_script = resolve_experiment_train_script(experiment, stage, plan)
+    config_name = resolve_experiment_config_name(experiment, stage, plan)
 
     job_name = f"{plan.name}_{stage.name}_{experiment.name}"
     # SLURM doesn't like very long job names; truncate.
     if len(job_name) > 80:
         job_name = job_name[:77] + "..."
+    status_file = run_dir / JOB_STATUS_FILENAME
 
     all_overrides: List[str] = []
     all_overrides.extend(stage.base_overrides)
     all_overrides.extend(experiment.overrides)
-    all_overrides.append(f"hydra.run.dir={run_dir}")
-    all_overrides.append(f"experiment_name={_safe_experiment_name(plan.name, stage.name, experiment.name)}")
+    all_overrides.append(f'hydra.run.dir="{run_dir}"')
+    all_overrides.append(
+        'experiment_name="'
+        f'{_safe_experiment_name(plan.name, stage.name, experiment.name)}'
+        '"'
+    )
     if extra_overrides:
         all_overrides.extend(extra_overrides)
 
@@ -81,6 +91,43 @@ def generate_sbatch_script(
 {sbatch_block}
 
 set -eo pipefail
+
+STATUS_FILE="{status_file}"
+JOB_FINAL_STATE=""
+
+write_job_status() {{
+    local state="$1"
+    local exit_code="$2"
+    local tmp_file="${{STATUS_FILE}}.tmp"
+    {{
+        printf 'state=%s\n' "$state"
+        printf 'exit_code=%s\n' "$exit_code"
+        printf 'finished_at=%s\n' "$(date --iso-8601=seconds)"
+    }} > "$tmp_file"
+    mv "$tmp_file" "$STATUS_FILE"
+}}
+
+on_job_signal() {{
+    JOB_FINAL_STATE="CANCELLED"
+    exit 143
+}}
+
+on_job_exit() {{
+    local exit_code="$?"
+    local state="$JOB_FINAL_STATE"
+    if [ -z "$state" ]; then
+        if [ "$exit_code" -eq 0 ]; then
+            state="COMPLETED"
+        else
+            state="FAILED"
+        fi
+    fi
+    write_job_status "$state" "$exit_code"
+}}
+
+rm -f "$STATUS_FILE" "${{STATUS_FILE}}.tmp"
+trap on_job_signal TERM INT
+trap on_job_exit EXIT
 
 echo "Experiment: {experiment.name}"
 echo "Stage: {stage.name}"
@@ -149,7 +196,7 @@ def query_job_statuses(job_ids: Sequence[str]) -> Dict[str, str]:
 
     id_str = ",".join(job_ids)
     result = subprocess.run(
-        ["sacct", "-j", id_str, "--format=JobID,State", "--noheader", "--parsable2"],
+        ["sacct", "-j", id_str, "--format=JobIDRaw,State,ExitCode", "--noheader", "--parsable2"],
         capture_output=True,
         text=True,
         check=False,
@@ -162,15 +209,18 @@ def query_job_statuses(job_ids: Sequence[str]) -> Dict[str, str]:
     statuses: Dict[str, str] = {}
     for line in result.stdout.strip().splitlines():
         parts = line.split("|")
-        if len(parts) < 2:
+        if len(parts) < 3:
             continue
         raw_id = parts[0].strip()
-        state = parts[1].strip().split()[0]  # e.g. "COMPLETED by 0" -> "COMPLETED"
-        # sacct may include sub-job entries like "12345.batch"; keep only the main entry.
-        if "." in raw_id:
+        state = parts[1].strip().split()[0]
+        exit_code = parts[2].strip()
+        if not raw_id:
             continue
-        if raw_id in {str(j) for j in job_ids}:
-            statuses[raw_id] = state
+        root_id = raw_id.split(".", 1)[0]
+        if root_id not in {str(j) for j in job_ids}:
+            continue
+        normalized = _normalize_sacct_state(state, exit_code)
+        statuses[root_id] = _merge_job_states(statuses.get(root_id), normalized)
 
     return statuses
 
@@ -189,18 +239,13 @@ def _query_via_squeue(job_ids: Sequence[str]) -> Dict[str, str]:
             parts = line.split()
             if len(parts) >= 2:
                 statuses[parts[0].strip()] = parts[1].strip()
-
-    # Jobs not found in squeue have completed (or been removed).
-    for jid in job_ids:
-        if jid not in statuses:
-            statuses[jid] = "COMPLETED"
     return statuses
 
 
 def is_terminal_state(state: str) -> bool:
     return state.upper() in {
         "COMPLETED", "FAILED", "CANCELLED", "TIMEOUT",
-        "OUT_OF_MEMORY", "NODE_FAIL", "PREEMPTED",
+        "OUT_OF_MEMORY", "NODE_FAIL", "PREEMPTED", "UNKNOWN",
     }
 
 
@@ -219,6 +264,7 @@ def wait_for_jobs(
         return
 
     interval = POLL_INITIAL_INTERVAL_SEC
+    missing_status_polls = {jid: 0 for jid in active_ids}
     while True:
         remaining = {jid: j for jid, j in active_ids.items() if not is_terminal_state(j.status)}
         if not remaining:
@@ -228,10 +274,20 @@ def wait_for_jobs(
         interval = min(interval * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL_SEC)
 
         statuses = query_job_statuses(list(remaining.keys()))
-        for jid, state in statuses.items():
-            job = remaining.get(jid)
-            if job is None:
-                continue
+        for jid, job in remaining.items():
+            state = statuses.get(jid)
+            if state is None:
+                state = _read_terminal_status_from_run_dir(job.run_dir)
+                if state is None:
+                    missing_status_polls[jid] += 1
+                    if missing_status_polls[jid] < MISSING_STATUS_POLLS_BEFORE_UNKNOWN:
+                        continue
+                    state = "UNKNOWN"
+                else:
+                    missing_status_polls[jid] = 0
+            else:
+                missing_status_polls[jid] = 0
+
             job.status = state
             if is_terminal_state(state):
                 symbol = "OK" if is_success(state) else "FAIL"
@@ -244,6 +300,74 @@ def wait_for_jobs(
             f"The following SLURM jobs did not complete successfully: {names}. "
             "Use --continue-on-error to proceed despite failures."
         )
+
+
+def read_job_status_file(run_dir: Path) -> Optional[Dict[str, str]]:
+    path = run_dir / JOB_STATUS_FILENAME
+    if not path.exists():
+        return None
+
+    parsed: Dict[str, str] = {}
+    for line_no, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        line = raw_line.strip()
+        if line == "":
+            continue
+        if "=" not in line:
+            raise RuntimeError(
+                f"Malformed SLURM job status file {path}: line {line_no} does not contain '='."
+            )
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if key == "" or value == "":
+            raise RuntimeError(
+                f"Malformed SLURM job status file {path}: line {line_no} has empty key or value."
+            )
+        parsed[key] = value
+
+    if "state" not in parsed:
+        raise RuntimeError(
+            f"Malformed SLURM job status file {path}: missing required 'state' entry."
+        )
+    return parsed
+
+
+def _read_terminal_status_from_run_dir(run_dir: Optional[str]) -> Optional[str]:
+    if run_dir is None:
+        return None
+    payload = read_job_status_file(Path(run_dir))
+    if payload is None:
+        return None
+    return payload["state"].upper()
+
+
+def _normalize_sacct_state(state: str, exit_code: str) -> str:
+    normalized_state = state.strip().upper()
+    normalized_exit = exit_code.strip()
+    if normalized_state == "COMPLETED" and normalized_exit not in {"", "0:0"}:
+        return "FAILED"
+    return normalized_state
+
+
+def _merge_job_states(existing: Optional[str], candidate: str) -> str:
+    if existing is None:
+        return candidate
+
+    precedence = {
+        "FAILED": 100,
+        "CANCELLED": 95,
+        "TIMEOUT": 90,
+        "OUT_OF_MEMORY": 85,
+        "NODE_FAIL": 80,
+        "PREEMPTED": 75,
+        "UNKNOWN": 70,
+        "RUNNING": 40,
+        "CONFIGURING": 35,
+        "COMPLETING": 30,
+        "PENDING": 20,
+        "COMPLETED": 10,
+    }
+    return candidate if precedence.get(candidate, 50) >= precedence.get(existing, 50) else existing
 
 
 def submit_stage(

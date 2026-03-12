@@ -1,6 +1,9 @@
 analysis_real_md_enabled: true
 analysis_real_md_k: 6
 analysis_real_md_time_series_paper_enabled: true
+analysis_real_md_time_series_alpha: 0.78
+analysis_real_md_time_series_bar_alpha: 0.82
+analysis_real_md_time_series_paper_alpha: 0.72
 analysis_tsne_paper_enabled: true
 
 analysis_cluster_profile_enabled: true
@@ -8,6 +11,12 @@ analysis_cluster_profile_samples_per_cluster: 6
 analysis_cluster_profile_target_points: 64
 analysis_cluster_profile_knn_k: 4
 analysis_cluster_profile_max_cluster_property_samples: 256
+analysis_cluster_figure_representative_ptm_enabled: false
+analysis_cluster_figure_representative_cna_enabled: false
+analysis_cluster_figure_representative_cna_max_signatures: 5
+analysis_cluster_figure_representative_center_atom_tolerance: 1.0e-6
+analysis_cluster_figure_representative_shell_min_neighbors: 8
+analysis_cluster_figure_representative_shell_max_neighbors: 24
 
 analysis_real_md_cluster_group_order: []
 analysis_real_md_cluster_groups: {}
@@ -31,6 +40,8 @@ analysis_real_md_projection_max_samples: 15000
 analysis_real_md_projection_umap_neighbors: 30
 analysis_real_md_projection_umap_min_dist: 0.15
 analysis_real_md_projection_umap_metric: euclidean
+analysis_real_md_projection_scalar_alpha: 0.86
+analysis_real_md_projection_scalar_background_alpha: 0.06
 
 analysis_real_md_descriptor_enabled: true
 analysis_real_md_descriptor_max_samples: 6000
@@ -72,3 +83,5 @@ analysis_real_md_descriptors:
 analysis_real_md_transition_enabled: true
 analysis_real_md_transition_require_mutual: true
 analysis_real_md_transition_max_distance: null
+analysis_real_md_transition_flow_mute_diagonal: true
+analysis_real_md_transition_flow_min_fraction: 0.001

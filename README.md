@@ -195,10 +195,10 @@ directory and includes:
 
 - representative-neighbourhood galleries by cluster
 - frame-wise cluster proportion tables and stacked plots
-- full-box, filtered, and zoomed spatial renders
+- filtered and zoomed spatial renders
 - 2D latent projections coloured by cluster, frame, and optional physical scalar
 - per-cluster descriptor summaries
-- transition heatmaps between consecutive frames
+- transition flow diagrams between consecutive frames
 - `summary.json` and `README.md` for paper reuse
 
 Use `data.analysis_data_files` as the single canonical way to choose which real

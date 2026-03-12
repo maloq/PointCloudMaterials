@@ -613,11 +613,12 @@ class SyntheticPointCloudDataset(Dataset):
         normalization_scale: float = 1.0,
         track_augmentation: bool = False,
         allowed_classes: Optional[Sequence[str]] = None,
+        auto_cutoff_config: dict[str, Any] | None = None,
     ) -> None:
         super().__init__()
         if not env_dirs:
             raise ValueError("env_dirs must contain at least one synthetic dataset directory")
-        self.radius = radius
+        self.radius = float(radius)
         self.sample_type = sample_type
         self.overlap_fraction = overlap_fraction
         self.n_samples = int(n_samples) if n_samples else 0
@@ -636,13 +637,21 @@ class SyntheticPointCloudDataset(Dataset):
         self.track_augmentation = bool(track_augmentation)
         self.allowed_classes = set(allowed_classes) if allowed_classes else None
         self._augmentation_metadata: Optional[List[Dict[str, Any]]] = None
+        self.auto_cutoff_config = PointCloudDataset._resolve_auto_cutoff_config(
+            auto_cutoff_config,
+            default_target_points=int(self.num_points),
+            default_radius=float(self.radius),
+        )
 
         # Store as tensors to avoid conversion overhead
         self.samples: List[torch.Tensor] = []
+        self.sample_radii: List[float] = []
+        self.sample_source_names: List[str] = []
         self._class_ids: List[int] = []
         self._instance_ids: List[int] = []
         self._rotations: List[torch.Tensor] = []
         self._coords: List[torch.Tensor] = []
+        self.source_radii: Dict[str, float] = {}
 
         # Class mapping (class_name -> class_id)
         self._class_to_idx: Dict[str, int] = {}
@@ -665,6 +674,13 @@ class SyntheticPointCloudDataset(Dataset):
         if self.track_augmentation:
             self._augmentation_metadata = [None] * len(self.samples)
 
+        if self.source_radii and (len(self.source_radii) > 1 or self.auto_cutoff_config is not None):
+            formatted = ", ".join(
+                f"{name}: {radius_val:.4f}"
+                for name, radius_val in sorted(self.source_radii.items(), key=lambda kv: kv[0])
+            )
+            logger.print(f"Synthetic per-environment cutoff radii: {formatted}")
+
     def _ingest_environment(self, env_dir: Union[str, Path], env_index: int) -> None:
         env_path = Path(env_dir)
         if not env_path.exists():
@@ -686,6 +702,12 @@ class SyntheticPointCloudDataset(Dataset):
             metadata = json.load(handle)
 
         env_label = env_path.name or f"env_{env_index}"
+        env_radius = self._resolve_environment_cutoff_radius(
+            env_path=env_path,
+            env_label=env_label,
+            env_index=env_index,
+        )
+        self.source_radii[env_label] = env_radius
 
         # Build efficient metadata lookup instead of storing for all atoms
         atom_to_meta_idx = self._build_efficient_atom_metadata(metadata, env_label, points.shape[0])
@@ -696,7 +718,7 @@ class SyntheticPointCloudDataset(Dataset):
         if self.discard_mixed_phase:
             atom_phases = self._build_atom_phase_map(metadata, points.shape[0])
 
-        samples = self._sample_points(points)
+        samples = self._sample_points(points, env_radius)
         if not samples:
             logger.print(f"No samples generated for {env_label}")
             return
@@ -712,7 +734,7 @@ class SyntheticPointCloudDataset(Dataset):
             # Check for phase purity if enabled
             if self.discard_mixed_phase:
                 # Query all atoms within the sampling radius
-                atom_indices = position_tree.query_ball_point(center, self.radius)
+                atom_indices = position_tree.query_ball_point(center, env_radius)
                 if len(atom_indices) > 0:
                     sample_phases = atom_phases[atom_indices]
                     unique_phases = np.unique(sample_phases)
@@ -729,12 +751,14 @@ class SyntheticPointCloudDataset(Dataset):
                 if meta["phase_id"] not in self.allowed_classes:
                     continue
 
-            processed = self._prepare_sample(sample_points)
+            processed = self._prepare_sample(sample_points, env_radius)
             class_idx = self._encode_class(meta["phase_id"])
             instance_idx = self._encode_instance(meta["grain_key"])
 
             # Store as tensors to avoid conversion overhead in __getitem__
             self.samples.append(torch.tensor(processed, dtype=torch.float32))
+            self.sample_radii.append(float(env_radius))
+            self.sample_source_names.append(env_label)
             self._class_ids.append(class_idx)
             self._instance_ids.append(instance_idx)
             self._rotations.append(torch.tensor(meta["orientation"], dtype=torch.float32))
@@ -756,12 +780,50 @@ class SyntheticPointCloudDataset(Dataset):
                 f"dataset total now {len(self.samples)}"
             )
 
-    def _sample_points(self, points: np.ndarray) -> List[Tuple[np.ndarray, np.ndarray]]:
+    def _resolve_environment_cutoff_radius(
+        self,
+        *,
+        env_path: Path,
+        env_label: str,
+        env_index: int,
+    ) -> float:
+        if self.auto_cutoff_config is None:
+            return float(self.radius)
+
+        target_points = max(
+            int(self.auto_cutoff_config["target_points"]),
+            int(self.num_points),
+        )
+        seed = int(self.auto_cutoff_config["seed"]) + int(env_index)
+        estimated_radius, coverage = PointCloudDataset._estimate_source_cutoff_radius(
+            source_root=str(env_path),
+            source_files=["atoms.npy"],
+            target_points=target_points,
+            quantile=float(self.auto_cutoff_config["quantile"]),
+            estimation_samples_per_file=int(self.auto_cutoff_config["estimation_samples_per_file"]),
+            seed=seed,
+            safety_factor=float(self.auto_cutoff_config["safety_factor"]),
+            boundary_margin=self.auto_cutoff_config["boundary_margin"],
+        )
+        logger.print(
+            "[auto_cutoff] "
+            f"synthetic_env={env_label!r}, target_points={target_points}, "
+            f"quantile={float(self.auto_cutoff_config['quantile']):.4f}, "
+            f"coverage~{coverage * 100.0:.2f}%, "
+            f"radius={estimated_radius:.4f} (default={float(self.radius):.4f})."
+        )
+        return estimated_radius
+
+    def _sample_points(
+        self,
+        points: np.ndarray,
+        sample_radius: float,
+    ) -> List[Tuple[np.ndarray, np.ndarray]]:
         if self.sample_type == "regular":
             max_samples = self.n_samples if self.n_samples > 0 else int(2e9)
             raw = get_regular_samples(
                 points,
-                size=self.radius,
+                size=float(sample_radius),
                 overlap_fraction=self.overlap_fraction,
                 return_coords=True,
                 n_points=self.num_points,
@@ -775,7 +837,7 @@ class SyntheticPointCloudDataset(Dataset):
             raw = get_random_samples(
                 points,
                 n_samples=self.n_samples,
-                size=self.radius,
+                size=float(sample_radius),
                 n_points=self.num_points,
                 return_coords=True,
                 sampling_method=self.sampling_method,
@@ -784,9 +846,9 @@ class SyntheticPointCloudDataset(Dataset):
             raise ValueError(f"Invalid sample type: {self.sample_type!r}")
         return [(np.asarray(s, dtype=np.float32), np.asarray(c, dtype=np.float32)) for s, c in raw]
 
-    def _prepare_sample(self, sample_points: np.ndarray) -> np.ndarray:
+    def _prepare_sample(self, sample_points: np.ndarray, sample_radius: float) -> np.ndarray:
         if self.pre_normalize and self.normalize:
-            norm = pc_normalize(sample_points, self.radius).astype(np.float32)
+            norm = pc_normalize(sample_points, float(sample_radius)).astype(np.float32)
             return norm * self.normalization_scale
         if self.normalize:
             return sample_points.astype(np.float32) * self.normalization_scale
@@ -1069,7 +1131,7 @@ class SyntheticPointCloudDataset(Dataset):
         pc_tensor = self.samples[index].clone()
         if not self.pre_normalize and self.normalize:
             point_set = pc_tensor.numpy()
-            point_set = pc_normalize(point_set, self.radius).astype(np.float32)
+            point_set = pc_normalize(point_set, float(self.sample_radii[index])).astype(np.float32)
             pc_tensor = torch.tensor(point_set, dtype=torch.float32)
 
         rotation = self._rotations[index].to(dtype=pc_tensor.dtype)

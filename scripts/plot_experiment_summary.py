@@ -8,7 +8,7 @@ import json
 import math
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -33,6 +33,8 @@ class SweepRun:
     name: str
     x_value: float
     metrics: dict[str, float]
+    metric_std: dict[str, float] = field(default_factory=dict)
+    metric_ci95_half_width: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -88,9 +90,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--x-pattern",
-        default=r"(\d+)(?!.*\d)",
+        default=None,
         help=(
             "Regex used to extract the numeric sweep value from each result name. "
+            "If omitted, a plan-specific default is inferred when possible. "
             "If the regex has a capture group, the first group is used."
         ),
     )
@@ -124,8 +127,28 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--title",
-        default=None,
+        default='',
         help="Optional figure title for the combined plot.",
+    )
+    parser.add_argument(
+        "--series-source",
+        choices=["auto", "raw", "grouped"],
+        default="auto",
+        help=(
+            "Which summary series to plot. 'auto' uses grouped_results when present, "
+            "otherwise raw per-run results."
+        ),
+    )
+    parser.add_argument(
+        "--error-bars",
+        choices=["none", "std", "ci95"],
+        default="none",
+        help="Error-bar mode. For grouped repeat summaries, choose std or ci95.",
+    )
+    parser.add_argument(
+        "--panel-titles",
+        action="store_true",
+        help="Show per-panel metric titles. Disabled by default.",
     )
     parser.add_argument(
         "--no-individual-panels",
@@ -187,11 +210,24 @@ def _load_summary(path: Path) -> dict[str, Any]:
 
 def _infer_x_label(summary: dict[str, Any]) -> str:
     plan_name = str(summary.get("plan_name", "")).lower()
+    if "dataset_fraction" in plan_name:
+        return "Dataset fraction (%)"
+    if "model_points" in plan_name:
+        return "Model points"
     if "num_points" in plan_name or plan_name.endswith("_points"):
         return "Number of points"
     if "batch_size" in plan_name:
         return "Batch size"
     return "Sweep value"
+
+
+def _infer_x_pattern(summary: dict[str, Any]) -> str:
+    plan_name = str(summary.get("plan_name", "")).lower()
+    if "dataset_fraction" in plan_name:
+        return r"(\d+)(?=pct)"
+    if "model_points" in plan_name:
+        return r"mp_(\d+)"
+    return r"(\d+)(?!.*\d)"
 
 
 def _slugify(text: str) -> str:
@@ -287,6 +323,98 @@ def _validate_metric_value(
     return numeric
 
 
+def _validate_error_value(
+    value: Any,
+    *,
+    metric_key: str,
+    result_name: str,
+    field_name: str,
+) -> float:
+    if value is None:
+        return 0.0
+    if isinstance(value, bool):
+        raise TypeError(
+            f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
+            f"{result_name!r} must be numeric, got bool."
+        )
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError) as exc:
+        raise TypeError(
+            f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
+            f"{result_name!r} must be numeric, got {value!r}."
+        ) from exc
+    if not math.isfinite(numeric):
+        raise ValueError(
+            f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
+            f"{result_name!r} is not finite: {numeric!r}."
+        )
+    if numeric < 0.0:
+        raise ValueError(
+            f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
+            f"{result_name!r} must be >= 0, got {numeric!r}."
+        )
+    return numeric
+
+
+def _select_result_entries(
+    summary: dict[str, Any],
+    *,
+    series_source: str,
+) -> tuple[list[dict[str, Any]], bool]:
+    raw_results = summary.get("results")
+    if not isinstance(raw_results, list) or not raw_results:
+        raise ValueError(
+            f"Expected non-empty 'results' list in summary, got {type(raw_results).__name__}."
+        )
+    grouped_results = summary.get("grouped_results")
+    has_grouped = isinstance(grouped_results, list) and len(grouped_results) > 0
+
+    if series_source == "raw":
+        return raw_results, False
+    if series_source == "grouped":
+        if not has_grouped:
+            raise ValueError(
+                "Requested --series-source grouped, but summary.json has no grouped_results."
+            )
+        return grouped_results, True
+
+    if has_grouped:
+        return grouped_results, True
+    return raw_results, False
+
+
+def _extract_grouped_metric_value(
+    metric_payload: Any,
+    *,
+    metric_key: str,
+    result_name: str,
+) -> tuple[float, float, float]:
+    if not isinstance(metric_payload, dict):
+        raise TypeError(
+            f"Grouped metric {metric_key!r} for result {result_name!r} must be an object, "
+            f"got {type(metric_payload).__name__}."
+        )
+    mean_value = _validate_metric_value(
+        metric_payload.get("mean"),
+        metric_key=metric_key,
+        result_name=result_name,
+    )
+    std_value = _validate_error_value(
+        metric_payload.get("std"),
+        metric_key=metric_key,
+        result_name=result_name,
+        field_name="std",
+    )
+    ci95_value = _validate_error_value(
+        metric_payload.get("ci95_half_width"),
+        metric_key=metric_key,
+        result_name=result_name,
+        field_name="ci95_half_width",
+    )
+    return mean_value, std_value, ci95_value
+
+
 def _collect_runs(
     summary: dict[str, Any],
     *,
@@ -294,7 +422,28 @@ def _collect_runs(
     metric_scope: str,
     x_pattern: str,
 ) -> tuple[list[SweepRun], list[str]]:
-    results = summary["results"]
+    return collect_runs(
+        summary,
+        metric_names=metric_names,
+        metric_scope=metric_scope,
+        x_pattern=x_pattern,
+        series_source="auto",
+    )
+
+
+def collect_runs(
+    summary: dict[str, Any],
+    *,
+    metric_names: Sequence[str],
+    metric_scope: str,
+    x_pattern: str,
+    series_source: str,
+) -> tuple[list[SweepRun], list[str]]:
+    if series_source not in {"auto", "raw", "grouped"}:
+        raise ValueError(
+            f"series_source must be one of ['auto', 'raw', 'grouped'], got {series_source!r}."
+        )
+    results, use_grouped = _select_result_entries(summary, series_source=series_source)
     incomplete = [
         str(entry.get("name", "<unnamed>"))
         for entry in results
@@ -338,15 +487,37 @@ def _collect_runs(
                 "Resolved metric keys changed across results. "
                 f"Expected {metric_key_order}, got {resolved_keys} for result {result_name!r}."
             )
-        metric_values = {
-            metric_key: _validate_metric_value(
-                final_metrics.get(metric_key),
-                metric_key=metric_key,
-                result_name=result_name,
+        metric_values: dict[str, float] = {}
+        metric_std: dict[str, float] = {}
+        metric_ci95: dict[str, float] = {}
+        for metric_key in resolved_keys:
+            metric_payload = final_metrics.get(metric_key)
+            if use_grouped:
+                mean_value, std_value, ci95_value = _extract_grouped_metric_value(
+                    metric_payload,
+                    metric_key=metric_key,
+                    result_name=result_name,
+                )
+                metric_values[metric_key] = mean_value
+                metric_std[metric_key] = std_value
+                metric_ci95[metric_key] = ci95_value
+            else:
+                metric_values[metric_key] = _validate_metric_value(
+                    metric_payload,
+                    metric_key=metric_key,
+                    result_name=result_name,
+                )
+                metric_std[metric_key] = 0.0
+                metric_ci95[metric_key] = 0.0
+        runs.append(
+            SweepRun(
+                name=result_name,
+                x_value=x_value,
+                metrics=metric_values,
+                metric_std=metric_std,
+                metric_ci95_half_width=metric_ci95,
             )
-            for metric_key in resolved_keys
-        }
-        runs.append(SweepRun(name=result_name, x_value=x_value, metrics=metric_values))
+        )
         x_seen[x_value] = result_name
 
     runs.sort(key=lambda run: run.x_value)
@@ -375,12 +546,39 @@ def _metric_style(metric_key: str) -> MetricStyle:
     )
 
 
+def _resolve_metric_error(
+    run: SweepRun,
+    metric_key: str,
+    *,
+    error_bars: str,
+) -> float:
+    if error_bars == "none":
+        return 0.0
+    if error_bars == "std":
+        return float(run.metric_std.get(metric_key, 0.0))
+    if error_bars == "ci95":
+        return float(run.metric_ci95_half_width.get(metric_key, 0.0))
+    raise ValueError(
+        f"error_bars must be one of ['none', 'std', 'ci95'], got {error_bars!r}."
+    )
+
+
 def _compute_shared_y_limits(
     runs: Sequence[SweepRun],
     metric_keys: Sequence[str],
+    *,
+    error_bars: str,
 ) -> tuple[float, float]:
     values = np.asarray(
-        [run.metrics[key] for run in runs for key in metric_keys],
+        [
+            bound
+            for run in runs
+            for key in metric_keys
+            for bound in (
+                run.metrics[key] - _resolve_metric_error(run, key, error_bars=error_bars),
+                run.metrics[key] + _resolve_metric_error(run, key, error_bars=error_bars),
+            )
+        ],
         dtype=np.float64,
     )
     if values.size == 0:
@@ -448,9 +646,24 @@ def _plot_metric_series(
     *,
     x_values: np.ndarray,
     y_values: np.ndarray,
+    y_errors: np.ndarray | None,
     style: MetricStyle,
     panel_label: str | None,
+    show_panel_title: bool,
 ) -> None:
+    if y_errors is not None and np.any(y_errors > 0.0):
+        ax.errorbar(
+            x_values,
+            y_values,
+            yerr=y_errors,
+            fmt="none",
+            ecolor=style.color,
+            elinewidth=1.3,
+            capsize=3.5,
+            capthick=1.3,
+            alpha=0.75,
+            zorder=2,
+        )
     ax.plot(
         x_values,
         y_values,
@@ -475,7 +688,8 @@ def _plot_metric_series(
             fontweight="bold",
             color="#111111",
         )
-    ax.set_title(style.label, pad=8)
+    if show_panel_title:
+        ax.set_title(style.label, pad=8)
 
 
 def _save_figure(fig: plt.Figure, path_without_suffix: Path, formats: Sequence[str], dpi: int) -> list[Path]:
@@ -501,12 +715,14 @@ def _plot_combined_figure(
     *,
     x_label: str,
     title: str | None,
+    error_bars: str,
+    show_panel_titles: bool,
     formats: Sequence[str],
     dpi: int,
     output_prefix: Path,
 ) -> list[Path]:
     x_values = np.asarray([run.x_value for run in runs], dtype=np.float64)
-    y_limits = _compute_shared_y_limits(runs, metric_keys)
+    y_limits = _compute_shared_y_limits(runs, metric_keys, error_bars=error_bars)
     y_ticks = _compute_y_ticks(*y_limits)
 
     fig, axes = plt.subplots(
@@ -522,13 +738,19 @@ def _plot_combined_figure(
 
     for idx, (ax, metric_key) in enumerate(zip(axes, metric_keys, strict=True)):
         y_values = np.asarray([run.metrics[metric_key] for run in runs], dtype=np.float64)
+        y_errors = np.asarray(
+            [_resolve_metric_error(run, metric_key, error_bars=error_bars) for run in runs],
+            dtype=np.float64,
+        )
         style = _metric_style(metric_key)
         _plot_metric_series(
             ax,
             x_values=x_values,
             y_values=y_values,
+            y_errors=y_errors,
             style=style,
             panel_label=f"({chr(ord('a') + idx)})",
+            show_panel_title=show_panel_titles,
         )
         _apply_axis_formatting(
             ax,
@@ -551,6 +773,8 @@ def _plot_individual_figures(
     metric_keys: Sequence[str],
     *,
     x_label: str,
+    error_bars: str,
+    show_panel_titles: bool,
     formats: Sequence[str],
     dpi: int,
     output_dir: Path,
@@ -559,9 +783,25 @@ def _plot_individual_figures(
     all_written: list[Path] = []
     for metric_key in metric_keys:
         y_values = np.asarray([run.metrics[metric_key] for run in runs], dtype=np.float64)
+        y_errors = np.asarray(
+            [_resolve_metric_error(run, metric_key, error_bars=error_bars) for run in runs],
+            dtype=np.float64,
+        )
         y_limits = _compute_shared_y_limits(
-            runs=[SweepRun(name=run.name, x_value=run.x_value, metrics={metric_key: run.metrics[metric_key]}) for run in runs],
+            runs=[
+                SweepRun(
+                    name=run.name,
+                    x_value=run.x_value,
+                    metrics={metric_key: run.metrics[metric_key]},
+                    metric_std={metric_key: run.metric_std.get(metric_key, 0.0)},
+                    metric_ci95_half_width={
+                        metric_key: run.metric_ci95_half_width.get(metric_key, 0.0)
+                    },
+                )
+                for run in runs
+            ],
             metric_keys=[metric_key],
+            error_bars=error_bars,
         )
         y_ticks = _compute_y_ticks(*y_limits)
         style = _metric_style(metric_key)
@@ -571,8 +811,10 @@ def _plot_individual_figures(
             ax,
             x_values=x_values,
             y_values=y_values,
+            y_errors=y_errors,
             style=style,
             panel_label=None,
+            show_panel_title=show_panel_titles,
         )
         _apply_axis_formatting(
             ax,
@@ -588,50 +830,93 @@ def _plot_individual_figures(
     return all_written
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    args = parse_args(argv)
-    summary_path = args.summary_path.resolve()
-    output_dir = (
-        args.output_dir.resolve()
-        if args.output_dir is not None
+def render_summary_plots(
+    summary_path: Path,
+    *,
+    metrics: Sequence[str] | None = None,
+    metric_scope: str = "test/class",
+    x_pattern: str | None = None,
+    x_label: str | None = None,
+    output_dir: Path | None = None,
+    prefix: str | None = None,
+    formats: Sequence[str] = ("png", "pdf", "svg"),
+    dpi: int = 300,
+    title: str = "",
+    series_source: str = "auto",
+    error_bars: str = "none",
+    show_panel_titles: bool = False,
+    individual_panels: bool = True,
+) -> list[Path]:
+    summary_path = summary_path.resolve()
+    resolved_output_dir = (
+        output_dir.resolve()
+        if output_dir is not None
         else summary_path.parent / "summary_plots"
     )
-    output_dir.mkdir(parents=True, exist_ok=True)
+    resolved_output_dir.mkdir(parents=True, exist_ok=True)
 
     summary = _load_summary(summary_path)
-    x_label = args.x_label or _infer_x_label(summary)
-    runs, metric_keys = _collect_runs(
+    resolved_x_label = x_label or _infer_x_label(summary)
+    resolved_x_pattern = x_pattern or _infer_x_pattern(summary)
+    metric_names = list(metrics) if metrics is not None else list(DEFAULT_METRICS)
+    runs, metric_keys = collect_runs(
         summary,
-        metric_names=args.metrics,
-        metric_scope=args.metric_scope.strip(),
-        x_pattern=args.x_pattern,
+        metric_names=metric_names,
+        metric_scope=metric_scope.strip(),
+        x_pattern=resolved_x_pattern,
+        series_source=series_source,
     )
 
-    inferred_prefix = f"metrics_vs_{_slugify(x_label)}"
-    combined_prefix = output_dir / (args.prefix or inferred_prefix)
+    inferred_prefix = f"metrics_vs_{_slugify(resolved_x_label)}"
+    combined_prefix = resolved_output_dir / (prefix or inferred_prefix)
 
     with plt.rc_context(_paper_rcparams()):
         written_paths = _plot_combined_figure(
             runs,
             metric_keys,
-            x_label=x_label,
-            title=args.title,
-            formats=args.formats,
-            dpi=args.dpi,
+            x_label=resolved_x_label,
+            title=title,
+            error_bars=error_bars,
+            show_panel_titles=show_panel_titles,
+            formats=formats,
+            dpi=dpi,
             output_prefix=combined_prefix,
         )
         plt.close("all")
-        if not args.no_individual_panels:
+        if individual_panels:
             written_paths.extend(
                 _plot_individual_figures(
                     runs,
                     metric_keys,
-                    x_label=x_label,
-                    formats=args.formats,
-                    dpi=args.dpi,
-                    output_dir=output_dir,
+                    x_label=resolved_x_label,
+                    error_bars=error_bars,
+                    show_panel_titles=show_panel_titles,
+                    formats=formats,
+                    dpi=dpi,
+                    output_dir=resolved_output_dir,
                 )
             )
+    return written_paths
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = parse_args(argv)
+    written_paths = render_summary_plots(
+        args.summary_path,
+        metrics=args.metrics,
+        metric_scope=args.metric_scope,
+        x_pattern=args.x_pattern,
+        x_label=args.x_label,
+        output_dir=args.output_dir,
+        prefix=args.prefix,
+        formats=args.formats,
+        dpi=args.dpi,
+        title=args.title,
+        series_source=args.series_source,
+        error_bars=args.error_bars,
+        show_panel_titles=args.panel_titles,
+        individual_panels=not args.no_individual_panels,
+    )
 
     for path in written_paths:
         print(path)

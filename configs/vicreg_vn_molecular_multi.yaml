@@ -1,9 +1,9 @@
 defaults:
 # - data: data_synth_polycrystalline_balanced_geometries_v2
-# - data: data_ae_multi_material
-  - data: data_synth_polycrystalline_balanced_geometries
+ - data: data_ae_multi_material
+#  - data: data_synth_polycrystalline_balanced_geometries
 # - data: data_ae_Al_80
-  - _self_
+ - _self_
 data:
   analysis_data_files: ['175ps.npy']
 project_name: pointnet
@@ -26,11 +26,11 @@ encoder:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
-    encoder_dims: 256
+    encoder_dims: 512
     trans_dim: 256
     depth: 8
     predictor_depth: 4
-    num_heads: 8
+    num_heads: 16
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6

@@ -2,8 +2,9 @@
 # Analog of vicreg_encoders.yaml but for the synthetic polycrystalline dataset.
 #
 # Usage:
-#   python scripts/run_experiments.py --plan experiments/vicreg_encoders_polycrystalline.yaml
-#   python scripts/run_experiments.py --plan experiments/vicreg_encoders_polycrystalline.yaml --dry-run
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --repeat-each 5
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --dry-run
 
 name: vicreg_encoders_polycrystalline
 train_script: src/training_methods/contrastive_learning/train_contrastive.py
@@ -17,12 +18,19 @@ slurm:
   time: "24:00:00"
 
 base_overrides:
-  - latent_size=96
+  - latent_size=240
+  - init_from_checkpoint=null
+  - load_supervised_checkpoint=false
   - auto_batch_size_search=true
-  - auto_batch_size_adjust_accumulate=false
+  - auto_batch_size_adjust_accumulate=true
   - batch_size=64
   - accumulate_grad_batches=8
   - analysis_hdbscan_enabled=false
+  - auto_batch_size_target_effective_batch=2048
+  - epochs=120
+  - ++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian
+  - ++checkpoint_mode=max
+  - ++run_post_training_analysis=false
   - "devices=[0]"
   - "analysis_test_rotation_runs=5"
 
@@ -36,13 +44,32 @@ experiments:
   - name: vn_dgcnn
     overrides: ["encoder.name=VN_DGCNN"]
   - name: vn_revnet
-    overrides: ["encoder.name=VN_REVNET_Backbone"]
+    overrides:
+      - "encoder.name=VN_REVNET_Backbone"
+      - "encoder.kwargs=null"
+      - "+encoder.kwargs={latent_size:240,sa_npoints:[80,40],sa_channels:[128,256],attn_hidden:256}"
   - name: egnn
     overrides: ["encoder.name=EGNN_Encoder"]
+  - name: ri_mae
+    overrides:
+      - "encoder.name=RI_MAE_Invariant"
+      - "latent_size=512"
+  - name: nequip
+    config_name: vicreg_nequip_molecular.yaml
+    overrides:
+      - "precision=32-true"
+      - "learning_rate=0.001"
+      - "batch_size=128"
+      - "accumulate_grad_batches=8"
+      - "auto_batch_size_target_effective_batch=1024"
+      - "auto_batch_size_init_val=64"
+      - "auto_batch_size_max_trials=8"
+      - "warmup_epochs=12"
+      - "warmup_start_factor=0.1"
+
 metrics:
   final:
     - test/loss
-    - test/class/encoder_linear_svm_accuracy
     - test/class/acc_kmeans_plusplus_hungarian
     - test/class/nmi
     - test/class/ari
@@ -51,11 +78,8 @@ metrics:
     - test/class/ari_rotated
     - test/class/ari_rotated_std
     - test/class/nmi_rotated_std
-
-
-
   best:
-    - name: val/class/encoder_linear_svm_accuracy
+    - name: val/class/acc_kmeans_plusplus_hungarian
       mode: max
     - name: val/loss
       mode: min

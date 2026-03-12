@@ -1,5 +1,4 @@
-# Leave-one-out augmentation ablation for the current VICReg molecular setup,
-# plus a small sweep over alternative neighbor-view shift settings.
+# Leave-one-out augmentation ablation for the current VICReg molecular setup.
 #
 # Baseline is taken directly from `configs/vicreg_vn_molecular.yaml`.
 # Only augmentations that are actually active in that config are ablated here:
@@ -7,10 +6,12 @@
 #   - jitter
 #   - strain
 #
-# Additional neighbor-view variants:
-#   - shift first view only
-#   - shift both views
-#   - shift second view with a wider candidate pool / distance cap
+# Retained experiments:
+#   - baseline
+#   - neighbor shift on both views
+#   - no neighbor shift
+#   - no jitter
+#   - no strain
 #
 # Occlusion is intentionally excluded from this one-out sweep because the base
 # config currently sets:
@@ -25,6 +26,7 @@
 name: vicreg_vn_molecular_augmentation_one_out
 train_script: src/training_methods/contrastive_learning/train_contrastive.py
 config_name: vicreg_vn_molecular.yaml
+repeat_each: 5
 
 slurm:
   partition: L40S
@@ -35,8 +37,16 @@ slurm:
 
 base_overrides:
   - "epochs=120"
-  - "batch_size=4096"
+  - "devices=[0]"
+  - "load_supervised_checkpoint=false"
+  - "batch_size=64"
   - "accumulate_grad_batches=1"
+  - "auto_batch_size_search=true"
+  - "auto_batch_size_adjust_accumulate=true"
+  - "auto_batch_size_target_effective_batch=2048"
+  - "auto_batch_size_init_val=64"
+  - "auto_batch_size_max_trials=8"
+  - "init_from_checkpoint=null"
   - "++run_post_training_analysis=false"
   - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
   - "++checkpoint_mode=max"
@@ -45,22 +55,10 @@ experiments:
   - name: baseline_all_active
     overrides: []
 
-  - name: neighbor_first_view
-    overrides:
-      - "vicreg_neighbor_view=true"
-      - "vicreg_neighbor_view_mode=first"
-
   - name: neighbor_both_views
     overrides:
       - "vicreg_neighbor_view=true"
       - "vicreg_neighbor_view_mode=both"
-
-  - name: neighbor_second_k8_r0p10
-    overrides:
-      - "vicreg_neighbor_view=true"
-      - "vicreg_neighbor_view_mode=second"
-      - "vicreg_neighbor_k=8"
-      - "vicreg_neighbor_max_relative_distance=0.10"
 
   - name: no_neighbor_view
     overrides:

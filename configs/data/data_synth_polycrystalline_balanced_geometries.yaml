@@ -17,10 +17,24 @@ radius: 7.4
 sample_type: regular
 overlap_fraction: 0.1
 n_samples: 0
+dataset_max_samples: null
 train_ratio: 0.8
 drop_edge_samples: true
 pre_normalize: true
 normalize: true
+
+# Optional per-environment cutoff auto-estimation.
+# When enabled, the sampling radius is estimated from each synthetic environment's
+# `atoms.npy` so neighborhoods contain roughly `target_points` atoms before
+# downsampling to `num_points`.
+auto_cutoff:
+  enabled: false
+  target_points: 128
+  quantile: 0.995
+  estimation_samples_per_file: 4096
+  seed: 42
+  safety_factor: 1.02
+  boundary_margin: 7.4
 
 global:
   L: 200.0

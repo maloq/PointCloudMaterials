@@ -31,6 +31,16 @@ torch.set_float32_matmul_precision('high')
 logger = setup_logging()
 
 
+def _seed_training_run(cfg: DictConfig) -> None:
+    """Optionally seed Lightning/PyTorch for reproducible repeated experiments."""
+    seed_value = getattr(cfg, "seed_everything", None)
+    if seed_value is None:
+        return
+    seed_int = int(seed_value)
+    pl.seed_everything(seed_int, workers=True)
+    logger.print(f"Global random seed set to {seed_int}.")
+
+
 def _resolve_checkpoint_path(cfg: DictConfig, field_names: tuple[str, ...]) -> str | None:
     """Resolve an optional checkpoint path from one of *field_names*."""
     checkpoint_path = None
@@ -382,6 +392,99 @@ def init_wandb(cfg: DictConfig, run_dir):
                        log_model=False)
 
 
+def _validate_train_batches_available(
+    *,
+    dm,
+    batch_size: int,
+    devices,
+    cfg: DictConfig,
+    capacity: tuple[int, int, int] | None = None,
+) -> None:
+    """Fail loudly when DDP + drop_last would produce zero train batches."""
+    if capacity is None:
+        capacity = _get_train_batch_capacity(dm=dm, devices=devices, cfg=cfg)
+    total_train_samples, world_size, per_rank_samples = capacity
+
+    if per_rank_samples < int(batch_size):
+        raise RuntimeError(
+            "Configured training batch size yields zero train batches with drop_last=True. "
+            f"experiment={cfg.experiment_name!r}, train_samples_total={total_train_samples}, "
+            f"devices={list(devices)}, world_size={world_size}, "
+            f"estimated_samples_per_rank={per_rank_samples}, batch_size={int(batch_size)}. "
+            "Lower batch_size, reduce the number of devices, or change the dataloader drop_last behavior."
+        )
+
+
+def _get_train_batch_capacity(
+    *,
+    dm,
+    devices,
+    cfg: DictConfig,
+) -> tuple[int, int, int]:
+    """Return (train_samples_total, world_size, estimated_samples_per_rank)."""
+    dm.setup("fit")
+
+    train_dataset = getattr(dm, "train_dataset", None)
+    if train_dataset is None and hasattr(dm, "impl"):
+        train_dataset = getattr(dm.impl, "train_dataset", None)
+    if train_dataset is None:
+        raise RuntimeError(
+            "Training datamodule did not expose train_dataset after setup('fit'). "
+            "Cannot validate train batch availability."
+        )
+
+    total_train_samples = int(len(train_dataset))
+    if total_train_samples <= 0:
+        raise RuntimeError(
+            f"Training split is empty for experiment {cfg.experiment_name!r}."
+        )
+
+    world_size = len(devices) if bool(getattr(cfg, "gpu", False)) else 1
+    world_size = max(1, int(world_size))
+    per_rank_samples = int(math.ceil(total_train_samples / world_size))
+    return total_train_samples, world_size, per_rank_samples
+
+
+def _cap_batch_size_to_train_split(
+    *,
+    cfg: DictConfig,
+    model: pl.LightningModule,
+    dm,
+    requested_batch_size: int,
+    total_train_samples: int,
+    world_size: int,
+    per_rank_samples: int,
+) -> int:
+    """Cap batch size so each rank keeps at least one batch when drop_last=True."""
+    batch_size = int(requested_batch_size)
+    if batch_size < 1:
+        raise ValueError(f"batch_size must be >= 1, got {batch_size}")
+    if per_rank_samples < 1:
+        raise RuntimeError(
+            "Estimated per-rank train samples must be >= 1, "
+            f"got {per_rank_samples} for experiment {cfg.experiment_name!r}."
+        )
+    if batch_size <= per_rank_samples:
+        return batch_size
+
+    capped_batch_size = int(per_rank_samples)
+    _set_cfg_value(cfg, "batch_size", capped_batch_size)
+    dm.batch_size = capped_batch_size
+    _set_model_hparam(model, "batch_size", capped_batch_size)
+
+    auto_batch_size_init_val = getattr(cfg, "auto_batch_size_init_val", None)
+    if auto_batch_size_init_val is not None and int(auto_batch_size_init_val) > capped_batch_size:
+        _set_cfg_value(cfg, "auto_batch_size_init_val", capped_batch_size)
+
+    logger.print(
+        "Capping batch_size to fit the available training split: "
+        f"requested={batch_size}, using={capped_batch_size}, "
+        f"train_samples_total={total_train_samples}, world_size={world_size}, "
+        f"estimated_samples_per_rank={per_rank_samples}."
+    )
+    return capped_batch_size
+
+
 def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks=None,
                 devices=None, run_test=True):
     """
@@ -412,6 +515,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
                 exc,
             )
 
+    _seed_training_run(cfg)
     wandb_logger = init_wandb(cfg, run_dir)
 
     if cfg.data.kind == "synthetic":
@@ -481,6 +585,22 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             f"Got {target_effective_batch!r}."
         )
 
+    train_batch_capacity = _get_train_batch_capacity(
+        dm=dm,
+        devices=devices,
+        cfg=cfg,
+    )
+    total_train_samples, world_size, per_rank_samples = train_batch_capacity
+    configured_batch_size = _cap_batch_size_to_train_split(
+        cfg=cfg,
+        model=model,
+        dm=dm,
+        requested_batch_size=configured_batch_size,
+        total_train_samples=total_train_samples,
+        world_size=world_size,
+        per_rank_samples=per_rank_samples,
+    )
+
     tuned_batch_size = _run_auto_batch_size_search(
         cfg=cfg,
         model=model,
@@ -515,6 +635,24 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
                 f"(target_effective_batch_per_device={target_effective_batch}, "
                 f"actual={tuned_batch_size * accumulate_grad_batches})."
             )
+
+    effective_batch_size = int(getattr(dm, "batch_size", getattr(cfg, "batch_size", configured_batch_size)))
+    effective_batch_size = _cap_batch_size_to_train_split(
+        cfg=cfg,
+        model=model,
+        dm=dm,
+        requested_batch_size=effective_batch_size,
+        total_train_samples=total_train_samples,
+        world_size=world_size,
+        per_rank_samples=per_rank_samples,
+    )
+    _validate_train_batches_available(
+        dm=dm,
+        batch_size=effective_batch_size,
+        devices=devices,
+        cfg=cfg,
+        capacity=train_batch_capacity,
+    )
 
     trainer_kwargs = dict(
         default_root_dir=run_dir,

@@ -1,0 +1,118 @@
+# Hyperparameter sweep for classical descriptor baselines on the balanced
+# polycrystalline synthetic dataset.
+#
+# The intent is:
+# - tune each descriptor family on validation clustering metrics first
+# - keep the existing single-run baseline plan unchanged
+# - use the collected tables/summary from scripts/run_experiments.py to pick the
+#   best configuration per method before launching repeated final runs
+#
+# Usage:
+#   CONDA_NO_PLUGINS=true conda run -n pointnet \
+#     python scripts/run_experiments.py \
+#     --plan configs/experiments/descriptor_baselines_polycrystalline_tuning.yaml \
+#     --local --parallel 3
+
+name: descriptor_baselines_polycrystalline_tuning
+train_script: src/baselines/run_descriptor_baselines.py
+config_name: descriptor_baselines.yaml
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 64G
+  time: "12:00:00"
+
+base_overrides:
+  - "max_test_samples=3516"
+  - "val_cluster_acc_runs=10"
+  - "test_cluster_acc_runs=10"
+
+stages:
+  - name: steinhardt
+    experiments:
+      - name: q46
+        overrides:
+          - "descriptor.name=steinhardt"
+          - "descriptor.steinhardt.l_values=[4,6]"
+      - name: q46810
+        overrides:
+          - "descriptor.name=steinhardt"
+          - "descriptor.steinhardt.l_values=[4,6,8,10]"
+      - name: q4681012
+        overrides:
+          - "descriptor.name=steinhardt"
+          - "descriptor.steinhardt.l_values=[4,6,8,10,12]"
+    matrix:
+      descriptor.shell_min_neighbors: [8, 10, 12]
+      descriptor.shell_max_neighbors: [18, 24]
+      descriptor.steinhardt.append_shell_size: [true, false]
+
+  - name: cna
+    experiments:
+      - name: sig8
+        overrides:
+          - "descriptor.name=cna"
+          - "descriptor.cna.max_signatures=8"
+      - name: sig12
+        overrides:
+          - "descriptor.name=cna"
+          - "descriptor.cna.max_signatures=12"
+      - name: sig16
+        overrides:
+          - "descriptor.name=cna"
+          - "descriptor.cna.max_signatures=16"
+    matrix:
+      descriptor.shell_min_neighbors: [8, 10, 12]
+      descriptor.shell_max_neighbors: [18, 24]
+      descriptor.cna.append_shell_size: [true, false]
+
+  - name: soap
+    experiments:
+      - name: basis_s
+        overrides:
+          - "descriptor.name=soap"
+          - "descriptor.soap.n_max=8"
+          - "descriptor.soap.l_max=6"
+          - "descriptor.soap.pca_components=32"
+      - name: basis_m
+        overrides:
+          - "descriptor.name=soap"
+          - "descriptor.soap.n_max=10"
+          - "descriptor.soap.l_max=8"
+          - "descriptor.soap.pca_components=64"
+      - name: basis_l
+        overrides:
+          - "descriptor.name=soap"
+          - "descriptor.soap.n_max=12"
+          - "descriptor.soap.l_max=8"
+          - "descriptor.soap.pca_components=96"
+    matrix:
+      descriptor.soap.r_cut_multiplier: [1.2, 1.4, 1.6]
+      descriptor.soap.sigma: [0.15, 0.2, 0.25]
+
+metrics:
+  final:
+    - val/class/acc_kmeans_plusplus_hungarian
+    - val/class/nmi
+    - val/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian_rotated
+    - test/class/nmi_rotated
+    - test/class/ari_rotated
+    - test/class/ari_rotated_std
+    - test/class/nmi_rotated_std
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: test/class/acc_kmeans_plusplus_hungarian
+      mode: max
+
+output_root: output/experiments

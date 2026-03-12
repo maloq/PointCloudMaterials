@@ -540,7 +540,14 @@ class PointGPTModule(pl.LightningModule):
             sorting_mode=str(_pg_get("sorting_mode", "nearest")),
         )
 
-        self.crop_mode = str(_pg_get("crop_mode", "random"))
+        legacy_crop_mode = str(_pg_get("crop_mode", "random")).strip()
+        self.crop_mode_train = str(_pg_get("crop_mode_train", legacy_crop_mode)).strip()
+        self.crop_mode_eval = str(_pg_get("crop_mode_eval", legacy_crop_mode)).strip()
+        if not self.crop_mode_train:
+            raise ValueError("pointgpt crop_mode_train must be a non-empty string.")
+        if not self.crop_mode_eval:
+            raise ValueError("pointgpt crop_mode_eval must be a non-empty string.")
+        self.center_input = bool(_pg_get("center_input", True))
         self.chamfer_l1_weight = float(_pg_get("chamfer_l1_weight", 1.0))
         self.chamfer_l2_weight = float(_pg_get("chamfer_l2_weight", 1.0))
 
@@ -572,14 +579,32 @@ class PointGPTModule(pl.LightningModule):
             return batch[0], {}
         return batch, {}
 
-    def _prepare_points(self, batch_points: torch.Tensor) -> torch.Tensor:
+    def _resolve_crop_mode(self, stage: str | None = None) -> str:
+        if stage is None:
+            return self.crop_mode_train if self.training else self.crop_mode_eval
+        stage_name = str(stage).strip().lower()
+        if stage_name == "train":
+            return self.crop_mode_train
+        if stage_name in {"val", "test", "predict"}:
+            return self.crop_mode_eval
+        raise ValueError(
+            f"Unsupported stage {stage!r} for crop-mode resolution. "
+            "Expected one of {'train', 'val', 'test', 'predict'} or None."
+        )
+
+    def _prepare_points(self, batch_points: torch.Tensor, *, stage: str | None = None) -> torch.Tensor:
         points = _to_bn3(batch_points)
         points = points.to(device=self.device, dtype=self.dtype, non_blocking=True)
 
         if self.model_points is not None:
-            points = crop_to_num_points(points, self.model_points, mode=self.crop_mode)
+            points = crop_to_num_points(
+                points,
+                self.model_points,
+                mode=self._resolve_crop_mode(stage),
+            )
 
-        points = points - points.mean(dim=1, keepdim=True)
+        if self.center_input:
+            points = points - points.mean(dim=1, keepdim=True)
         return points
 
     def forward(self, points: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -587,7 +612,7 @@ class PointGPTModule(pl.LightningModule):
 
     def _step(self, batch, stage: str) -> torch.Tensor:
         points_raw, meta = self._unpack_batch(batch)
-        points = self._prepare_points(points_raw)
+        points = self._prepare_points(points_raw, stage=stage)
         pred, target, latent = self(points)
 
         should_cache_stage = stage in self._supervised_cache and (

@@ -72,6 +72,12 @@ def _save_fixed_k_cluster_figure_set(
     representative_view_elev: float,
     representative_view_azim: float,
     representative_projection: str,
+    representative_ptm_enabled: bool,
+    representative_cna_enabled: bool,
+    representative_cna_max_signatures: int,
+    representative_center_atom_tolerance: float,
+    representative_shell_min_neighbors: int,
+    representative_shell_max_neighbors: int,
     visible_cluster_sets: list[list[int]] | None = None,
     cluster_color_assignment: dict[int, Any] | None = None,
     random_state: int = 42,
@@ -106,6 +112,9 @@ def _save_fixed_k_cluster_figure_set(
         "07_cluster_representatives_two_shells_pca_intrashell_k*.png",
         "07_cluster_representatives_two_shells_pca_spatial_neighbors_k*.png",
         "08_cluster_representatives_spatial_neighbors_paper_k*.png",
+        "09_cluster_representatives_knn_edges_k*.png",
+        "10_cluster_representatives_structure_analysis_k*.json",
+        "10_cluster_representatives_structure_analysis_k*.csv",
         "cluster_color_assignment_k*.json",
     )
     stale_paths: set[Path] = set()
@@ -188,6 +197,12 @@ def _save_fixed_k_cluster_figure_set(
         view_elev=float(representative_view_elev),
         view_azim=float(representative_view_azim),
         projection=str(representative_projection),
+        representative_ptm_enabled=bool(representative_ptm_enabled),
+        representative_cna_enabled=bool(representative_cna_enabled),
+        representative_cna_max_signatures=int(representative_cna_max_signatures),
+        representative_center_atom_tolerance=float(representative_center_atom_tolerance),
+        representative_shell_min_neighbors=int(representative_shell_min_neighbors),
+        representative_shell_max_neighbors=int(representative_shell_max_neighbors),
     )
 
     raytrace_pending_jobs: list[dict[str, Any]] = []
@@ -432,6 +447,7 @@ def _save_fixed_k_cluster_figure_set(
         "panel_icl": panel_icl,
         "panel_representatives": panel_reps,
         "panel_representatives_two_shells_pca": panel_reps["pca_two_shell_figures"],
+        "panel_representatives_structure_analysis": panel_reps.get("structure_analysis"),
         "md_render_settings": {
             "max_points": None if md_max_points is None else int(md_max_points),
             "point_size": float(md_point_size),

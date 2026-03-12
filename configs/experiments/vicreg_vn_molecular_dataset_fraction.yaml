@@ -1,0 +1,89 @@
+# Dataset-fraction sweep for VICReg using the current `vicreg_vn_molecular.yaml`
+# base config.
+#
+# Important: `vicreg_vn_molecular.yaml` currently resolves to the synthetic
+# `data_synth_polycrystalline_balanced_geometries` dataset. This plan uses
+# `data.dataset_max_samples` to cap the total dataset before the train/val split.
+# The absolute counts below are based on the current resolved dataset size:
+#   total_samples = 17576
+# If the base dataset config changes, these counts should be recomputed.
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_dataset_fraction.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_dataset_fraction.yaml --local
+
+name: vicreg_vn_molecular_dataset_fraction
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_vn_molecular.yaml
+repeat_each: 5
+
+slurm:
+  partition: L40S
+  gpus: 2
+  cpus: 8
+  mem: 120G
+  time: "24:00:00"
+
+base_overrides:
+  - "devices=[0,1]"
+  - "load_supervised_checkpoint=false"
+  - "init_from_checkpoint=null"
+  - "batch_size=4096"
+  - "accumulate_grad_batches=1"
+  - "num_workers=2"
+  - "++run_post_training_analysis=false"
+  - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
+  - "++checkpoint_mode=max"
+
+experiments:
+  - name: data_10pct
+    overrides:
+      - "data.dataset_max_samples=1758"
+
+  - name: data_20pct
+    overrides:
+      - "data.dataset_max_samples=3515"
+
+  - name: data_50pct
+    overrides:
+      - "data.dataset_max_samples=8788"
+
+  - name: data_80pct
+    overrides:
+      - "data.dataset_max_samples=14061"
+
+  - name: data_100pct
+    overrides:
+      - "data.dataset_max_samples=17576"
+
+metrics:
+  final:
+    - test/loss
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: val/loss
+      mode: min
+
+plot:
+  enabled: true
+  x_label: "Dataset fraction (%)"
+  x_pattern: "(\\d+)(?=pct)"
+  metric_scope: "test/class"
+  metrics:
+    - acc_kmeans_plusplus_hungarian
+    - nmi
+    - ari
+  formats: ["png", "pdf", "svg"]
+  dpi: 300
+  individual_panels: true
+
+output_root: output/experiments

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -9,7 +10,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from .plan import Experiment, ExperimentPlan, StageSpec
+from .plan import (
+    Experiment,
+    ExperimentPlan,
+    StageSpec,
+    resolve_experiment_config_name,
+    resolve_experiment_train_script,
+)
 
 
 @dataclass
@@ -32,14 +39,10 @@ def build_command(
     extra_overrides: Optional[List[str]] = None,
 ) -> List[str]:
     """Build the full python command for one experiment."""
-    train_script = stage.train_script or plan.train_script
-    config_name = stage.config_name or plan.config_name
-    if config_name is None:
-        raise ValueError(
-            f"No config_name for experiment {experiment.name!r} in stage {stage.name!r}."
-        )
+    train_script = resolve_experiment_train_script(experiment, stage, plan)
+    config_name = resolve_experiment_config_name(experiment, stage, plan)
 
-    exp_name = f"{plan.name}_{stage.name}_{experiment.name}"
+    exp_name = _safe_experiment_name(plan.name, stage.name, experiment.name)
 
     cmd = [
         "python",
@@ -50,12 +53,17 @@ def build_command(
         cmd.append(ov)
     for ov in experiment.overrides:
         cmd.append(ov)
-    cmd.append(f"hydra.run.dir={run_dir}")
-    cmd.append(f"experiment_name={exp_name}")
+    cmd.append(f'hydra.run.dir="{run_dir}"')
+    cmd.append(f'experiment_name="{exp_name}"')
     if extra_overrides:
         cmd.extend(extra_overrides)
 
     return cmd
+
+
+def _safe_experiment_name(plan_name: str, stage_name: str, exp_name: str) -> str:
+    raw = f"{plan_name}_{stage_name}_{exp_name}"
+    return re.sub(r"[^A-Za-z0-9_.-]", "_", raw)[:120]
 
 
 def _run_one(

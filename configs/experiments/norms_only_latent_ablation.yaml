@@ -21,6 +21,7 @@ slurm:
 
 base_overrides:
   - "encoder.name=VN_REVNET_Backbone"
+  - "init_from_checkpoint=null"
   - auto_batch_size_search=true
   - auto_batch_size_adjust_accumulate=false
   - batch_size=32

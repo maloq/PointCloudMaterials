@@ -1350,13 +1350,17 @@ def run_descriptor_baseline(cfg, *, output_dir: Path) -> tuple[dict[str, float],
         val_dataset,
         max_samples=settings.max_supervised_samples,
     )
-    test_points, test_labels = collect_split_point_clouds_and_labels(
-        test_dataset,
-        max_samples=settings.max_test_samples,
-    )
+    reuse_val_as_test = test_dataset is val_dataset
+    if reuse_val_as_test:
+        test_points, test_labels = val_points, val_labels
+    else:
+        test_points, test_labels = collect_split_point_clouds_and_labels(
+            test_dataset,
+            max_samples=settings.max_test_samples,
+        )
 
     val_features = descriptor.transform(val_points)
-    test_features = descriptor.transform(test_points)
+    test_features = val_features if reuse_val_as_test else descriptor.transform(test_points)
     val_dataset_k = dataset_class_count(val_dataset)
     test_dataset_k = dataset_class_count(test_dataset)
 
