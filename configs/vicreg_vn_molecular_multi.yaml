@@ -11,10 +11,10 @@ experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points
 wandb_mode: online
 
 model_type: vicreg  # Self-supervised VICReg
-latent_size: 512  # Invariant embedding size consumed by VICReg.
+latent_size: 128  # Invariant embedding size consumed by VICReg.
 
 load_supervised_checkpoint: null
-init_from_checkpoint: null
+init_from_checkpoint: null  # Old l512 checkpoint does not match the latent-128 RI-MAE encoder.
 
 resume_from_checkpoint: null
 # Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
@@ -27,10 +27,10 @@ encoder:
     num_group: 24
     group_size: 12
     encoder_dims: 512
-    trans_dim: 256
+    trans_dim: 64
     depth: 8
     predictor_depth: 4
-    num_heads: 16
+    num_heads: 4
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6
@@ -77,7 +77,7 @@ auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 60
+epochs: 120
 max_samples: 0
 check_val_every_n_epoch: 5
 
@@ -131,7 +131,7 @@ vicreg_neighbor_max_relative_distance: 0.0
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
 vicreg_rotation_deg: 10.0
-vicreg_strain_std: 0.02
+vicreg_strain_std: 0.00
 vicreg_strain_volume_preserve: true
 vicreg_occlusion_mode: mixed
 vicreg_occlusion_view: second

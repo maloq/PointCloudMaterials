@@ -330,11 +330,9 @@ def _write_structure_analysis_csv(
             writer.writerow(row)
 
 
-def analyze_cluster_representatives(
+def _build_cluster_representative_analysis_summary(
     prepared_records: list[dict[str, Any]],
-    out_dir: Path,
     *,
-    k_token: str,
     ptm_enabled: bool,
     cna_enabled: bool,
     cna_max_signatures: int,
@@ -470,28 +468,6 @@ def analyze_cluster_representatives(
 
         representative_records.append(record)
 
-    json_path = Path(out_dir) / f"10_cluster_representatives_structure_analysis_k{k_token}.json"
-    csv_path = Path(out_dir) / f"10_cluster_representatives_structure_analysis_k{k_token}.csv"
-    json_path.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "ptm_enabled": bool(ptm_enabled),
-        "cna_enabled": bool(cna_enabled),
-        "analysis_points_source": "local_points",
-        "center_atom_tolerance": float(center_atom_tolerance),
-        "shell_min_neighbors": int(shell_min_neighbors),
-        "shell_max_neighbors": int(shell_max_neighbors),
-        "cna_max_signatures": int(cna_max_signatures),
-        "ovito_available": bool(ovito_available),
-        "ovito_import_error": None if ovito_import_error is None else str(ovito_import_error),
-        "cna_signature_vocab": list(cna_signature_vocab),
-        "representatives": representative_records,
-    }
-    json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    _write_structure_analysis_csv(
-        csv_path,
-        representative_records=representative_records,
-        cna_signature_vocab=cna_signature_vocab,
-    )
     return {
         "ptm_enabled": bool(ptm_enabled),
         "cna_enabled": bool(cna_enabled),
@@ -503,7 +479,104 @@ def analyze_cluster_representatives(
         "ovito_available": bool(ovito_available),
         "ovito_import_error": None if ovito_import_error is None else str(ovito_import_error),
         "cna_signature_vocab": list(cna_signature_vocab),
-        "json_file": str(json_path),
-        "csv_file": str(csv_path),
         "representatives": representative_records,
     }
+
+
+def materialize_cluster_representative_analysis_summary(
+    structure_analysis_summary: dict[str, Any],
+    out_dir: Path,
+    *,
+    k_token: str,
+) -> dict[str, Any]:
+    if not isinstance(structure_analysis_summary, dict):
+        raise TypeError(
+            "structure_analysis_summary must be a dict, "
+            f"got {type(structure_analysis_summary)!r}."
+        )
+    representatives = structure_analysis_summary.get("representatives")
+    if not isinstance(representatives, list) or not representatives:
+        raise ValueError(
+            "structure_analysis_summary must contain a non-empty 'representatives' list."
+        )
+    cna_signature_vocab = structure_analysis_summary.get("cna_signature_vocab", [])
+    if not isinstance(cna_signature_vocab, list):
+        raise ValueError(
+            "structure_analysis_summary['cna_signature_vocab'] must be a list, "
+            f"got {type(cna_signature_vocab)!r}."
+        )
+
+    json_path = Path(out_dir) / f"10_cluster_representatives_structure_analysis_k{k_token}.json"
+    csv_path = Path(out_dir) / f"10_cluster_representatives_structure_analysis_k{k_token}.csv"
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+
+    payload = {
+        "ptm_enabled": bool(structure_analysis_summary.get("ptm_enabled", False)),
+        "cna_enabled": bool(structure_analysis_summary.get("cna_enabled", False)),
+        "analysis_points_source": str(
+            structure_analysis_summary.get("analysis_points_source", "local_points")
+        ),
+        "center_atom_tolerance": float(
+            structure_analysis_summary.get("center_atom_tolerance", 1.0e-6)
+        ),
+        "shell_min_neighbors": int(
+            structure_analysis_summary.get("shell_min_neighbors", 8)
+        ),
+        "shell_max_neighbors": int(
+            structure_analysis_summary.get("shell_max_neighbors", 24)
+        ),
+        "cna_max_signatures": int(
+            structure_analysis_summary.get("cna_max_signatures", 5)
+        ),
+        "ovito_available": bool(structure_analysis_summary.get("ovito_available", False)),
+        "ovito_import_error": (
+            None
+            if structure_analysis_summary.get("ovito_import_error", None) is None
+            else str(structure_analysis_summary.get("ovito_import_error"))
+        ),
+        "cna_signature_vocab": [str(v) for v in cna_signature_vocab],
+        "representatives": [dict(record) for record in representatives],
+    }
+    json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    _write_structure_analysis_csv(
+        csv_path,
+        representative_records=payload["representatives"],
+        cna_signature_vocab=[str(v) for v in cna_signature_vocab],
+    )
+
+    cloned_summary = dict(structure_analysis_summary)
+    cloned_summary["json_file"] = str(json_path)
+    cloned_summary["csv_file"] = str(csv_path)
+    cloned_summary["representatives"] = payload["representatives"]
+    cloned_summary["cna_signature_vocab"] = [str(v) for v in cna_signature_vocab]
+    return cloned_summary
+
+
+def analyze_cluster_representatives(
+    prepared_records: list[dict[str, Any]],
+    out_dir: Path,
+    *,
+    k_token: str,
+    ptm_enabled: bool,
+    cna_enabled: bool,
+    cna_max_signatures: int,
+    center_atom_tolerance: float,
+    shell_min_neighbors: int,
+    shell_max_neighbors: int,
+) -> dict[str, Any] | None:
+    summary = _build_cluster_representative_analysis_summary(
+        prepared_records,
+        ptm_enabled=bool(ptm_enabled),
+        cna_enabled=bool(cna_enabled),
+        cna_max_signatures=int(cna_max_signatures),
+        center_atom_tolerance=float(center_atom_tolerance),
+        shell_min_neighbors=int(shell_min_neighbors),
+        shell_max_neighbors=int(shell_max_neighbors),
+    )
+    if summary is None:
+        return None
+    return materialize_cluster_representative_analysis_summary(
+        summary,
+        out_dir,
+        k_token=str(k_token),
+    )

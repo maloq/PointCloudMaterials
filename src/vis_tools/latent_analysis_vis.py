@@ -168,6 +168,57 @@ def _prepare_clustering_features(
     return x.astype(np.float32, copy=False), info
 
 
+def _resolve_clustering_features(
+    latents: np.ndarray,
+    *,
+    prepared_features: np.ndarray | None,
+    prep_info: Dict[str, Any] | None,
+    random_state: int,
+    l2_normalize: bool,
+    standardize: bool,
+    pca_variance: float | None,
+    pca_max_components: int,
+) -> tuple[np.ndarray, Dict[str, Any]]:
+    if prepared_features is None:
+        return _prepare_clustering_features(
+            latents,
+            random_state=random_state,
+            l2_normalize=l2_normalize,
+            standardize=standardize,
+            pca_variance=pca_variance,
+            pca_max_components=pca_max_components,
+        )
+
+    latents_arr = np.asarray(latents, dtype=np.float32)
+    if latents_arr.ndim != 2:
+        latents_arr = np.reshape(latents_arr, (latents_arr.shape[0], -1))
+    features = np.asarray(prepared_features, dtype=np.float32)
+    if features.ndim != 2:
+        raise ValueError(
+            "prepared_features must be a 2D array of shape (N, D), "
+            f"got {features.shape}."
+        )
+    if features.shape[0] != latents_arr.shape[0]:
+        raise ValueError(
+            "prepared_features row count must match the number of latent samples, "
+            f"got features.shape[0]={features.shape[0]}, latents.shape[0]={latents_arr.shape[0]}."
+        )
+
+    resolved_info = (
+        dict(prep_info)
+        if prep_info is not None
+        else {
+            "input_dim": int(latents_arr.shape[1]),
+            "output_dim": int(features.shape[1]),
+            "l2_normalize": bool(l2_normalize),
+            "standardize": bool(standardize),
+            "pca_components": int(features.shape[1]),
+            "pca_explained_variance": 1.0,
+        }
+    )
+    return features.astype(np.float32, copy=False), resolved_info
+
+
 def _canonicalize_cluster_labels(
     labels: np.ndarray,
     features: np.ndarray,
@@ -242,6 +293,8 @@ def compute_kmeans_labels(
     standardize: bool = True,
     pca_variance: float | None = 0.98,
     pca_max_components: int = 32,
+    prepared_features: np.ndarray | None = None,
+    prep_info: Dict[str, Any] | None = None,
     return_info: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
     if latents.size == 0 or len(latents) < 2:
@@ -250,8 +303,10 @@ def compute_kmeans_labels(
             return empty, {"method": "none"}
         return empty
     n_clusters = max(2, min(int(n_clusters), len(latents)))
-    features, prep_info = _prepare_clustering_features(
+    features, prep_info_resolved = _resolve_clustering_features(
         latents,
+        prepared_features=prepared_features,
+        prep_info=prep_info,
         random_state=random_state,
         l2_normalize=l2_normalize,
         standardize=standardize,
@@ -285,7 +340,7 @@ def compute_kmeans_labels(
         )
 
     info = {
-        **prep_info,
+        **prep_info_resolved,
         **fit_info,
         "n_clusters": int(n_clusters),
         "random_state": int(random_state),
@@ -313,6 +368,8 @@ def compute_hdbscan_labels(
     cluster_selection_epsilon: float = 0.0,
     cluster_selection_method: str = "leaf",
     refit_full_data: bool = True,
+    prepared_features: np.ndarray | None = None,
+    prep_info: Dict[str, Any] | None = None,
     return_info: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
     if latents.size == 0 or len(latents) < 2:
@@ -352,8 +409,10 @@ def compute_hdbscan_labels(
             "HDBSCAN clustering requested but 'hdbscan' is not installed."
         ) from exc
 
-    features, prep_info = _prepare_clustering_features(
+    features, prep_info_resolved = _resolve_clustering_features(
         latents,
+        prepared_features=prepared_features,
+        prep_info=prep_info,
         random_state=random_state,
         l2_normalize=l2_normalize,
         standardize=standardize,
@@ -535,7 +594,7 @@ def compute_hdbscan_labels(
     ):
         fallback = np.full((n_total,), -1, dtype=int)
         info = {
-            **prep_info,
+            **prep_info_resolved,
             "method": "hdbscan",
             "status": "failed",
             "fit_samples": int(fit_size),
@@ -616,7 +675,7 @@ def compute_hdbscan_labels(
 
     valid_full = labels_full[labels_full >= 0]
     info = {
-        **prep_info,
+        **prep_info_resolved,
         **best,
         "method": "hdbscan",
         "status": "ok",
@@ -918,6 +977,7 @@ def save_md_space_clusters_plot(
     *,
     cluster_color_map: dict[int, str] | None = None,
     max_points: int | None = None,
+    title: str | None = None,
 ) -> None:
     if coords.size == 0 or len(coords) < 2:
         return
@@ -959,7 +1019,8 @@ def save_md_space_clusters_plot(
     ax.set_ylabel("y")
     ax.set_zlabel("z")
     ax.set_title(
-        f"MD local-structure clusters (n={len(coords_plot)}, k={len(unique_labels)})"
+        title
+        or f"MD local-structure clusters (n={len(coords_plot)}, k={len(unique_labels)})"
     )
     _set_equal_axes_3d(ax, coords_plot)
     if len(unique_labels) <= 15:

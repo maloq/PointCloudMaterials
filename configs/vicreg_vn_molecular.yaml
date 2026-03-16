@@ -1,8 +1,8 @@
 defaults:
 # - data: data_synth_polycrystalline_balanced_geometries_v2
 # - data: data_ae_multi_material
-  - data: data_synth_polycrystalline_balanced_geometries
-# - data: data_ae_Al_80
+# - data: data_synth_polycrystalline_balanced_geometries
+  - data: data_ae_Al_80
   - _self_
 data:
   analysis_data_files: ['175ps.npy']
@@ -14,7 +14,7 @@ model_type: vicreg  # Self-supervised VICReg
 latent_size: 512  # Invariant embedding size consumed by VICReg.
 
 load_supervised_checkpoint: null
-init_from_checkpoint: null
+init_from_checkpoint: output/2026-03-13/00-58-07/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
 
 resume_from_checkpoint: null
 # Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
@@ -26,11 +26,11 @@ encoder:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
-    encoder_dims: 256
+    encoder_dims: 512
     trans_dim: 256
     depth: 8
     predictor_depth: 4
-    num_heads: 8
+    num_heads: 16
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6
@@ -131,7 +131,7 @@ vicreg_neighbor_max_relative_distance: 0.0
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
 vicreg_rotation_deg: 10.0
-vicreg_strain_std: 0.02
+vicreg_strain_std: 0.00
 vicreg_strain_volume_preserve: true
 vicreg_occlusion_mode: mixed
 vicreg_occlusion_view: second

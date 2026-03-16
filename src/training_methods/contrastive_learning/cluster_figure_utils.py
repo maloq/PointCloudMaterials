@@ -94,6 +94,7 @@ def _save_fixed_k_cluster_figure_set(
     raytrace_render_use_gpu: bool = False,
     raytrace_parallel_views: bool = False,
     raytrace_parallel_max_workers: int | None = None,
+    representative_render_cache: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -203,6 +204,7 @@ def _save_fixed_k_cluster_figure_set(
         representative_center_atom_tolerance=float(representative_center_atom_tolerance),
         representative_shell_min_neighbors=int(representative_shell_min_neighbors),
         representative_shell_max_neighbors=int(representative_shell_max_neighbors),
+        representative_render_cache=representative_render_cache,
     )
 
     raytrace_pending_jobs: list[dict[str, Any]] = []

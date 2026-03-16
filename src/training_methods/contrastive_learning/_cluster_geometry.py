@@ -345,10 +345,9 @@ def _build_local_coordination_edges(
         shell_gap_ratio=shell_gap_ratio,
     )
     neighbor_lists = shell["directed_neighbors"]
-    dmat = np.asarray(shell["distance_matrix"], dtype=np.float32)
     local_shell_counts = np.asarray(shell["shell_neighbor_counts"], dtype=np.int32)
     local_cutoffs = np.asarray(shell["shell_cutoffs"], dtype=np.float32)
-    n_points = int(dmat.shape[0])
+    n_points = int(local_shell_counts.shape[0])
     if n_points < 2:
         return [], {
             "edge_mode": str(edge_mode),
@@ -365,16 +364,12 @@ def _build_local_coordination_edges(
         "coordination_shell_mutual": "coordination_shell_mutual",
         "shell_mutual": "coordination_shell_mutual",
         "mutual": "coordination_shell_mutual",
-        "coordination_shell_degree_capped": "coordination_shell_degree_capped",
-        "shell_degree_capped": "coordination_shell_degree_capped",
-        "degree_capped": "coordination_shell_degree_capped",
     }
     if edge_mode_norm not in alias_map:
         raise ValueError(
             "Unsupported representative edge mode: "
             f"{edge_mode!r}. Expected one of "
-            "['coordination_shell', 'coordination_shell_mutual', "
-            "'coordination_shell_degree_capped']."
+            "['coordination_shell', 'coordination_shell_mutual']."
         )
     edge_mode_use = alias_map[edge_mode_norm]
 
@@ -392,26 +387,8 @@ def _build_local_coordination_edges(
 
     if edge_mode_use == "coordination_shell":
         edges = sorted(union_edges)
-    elif edge_mode_use == "coordination_shell_mutual":
-        edges = sorted(mutual_edges if mutual_edges else union_edges)
     else:
-        candidate_edges = sorted(
-            mutual_edges if mutual_edges else union_edges,
-            key=lambda edge: float(dmat[edge[0], edge[1]]),
-        )
-        median_degree = int(np.clip(np.rint(np.median(local_shell_counts)), 3, max(3, max_shell_neighbors)))
-        degrees = np.zeros((n_points,), dtype=np.int32)
-        selected: list[tuple[int, int]] = []
-        for edge in candidate_edges:
-            p0, p1 = edge
-            if degrees[p0] >= median_degree or degrees[p1] >= median_degree:
-                continue
-            selected.append(edge)
-            degrees[p0] += 1
-            degrees[p1] += 1
-        if not selected and candidate_edges:
-            selected = [candidate_edges[0]]
-        edges = selected
+        edges = sorted(mutual_edges if mutual_edges else union_edges)
 
     edge_info = {
         "edge_mode": str(edge_mode_use),
@@ -423,10 +400,6 @@ def _build_local_coordination_edges(
         "candidate_union_edges": int(len(union_edges)),
         "candidate_mutual_edges": int(len(mutual_edges)),
     }
-    if edge_mode_use == "coordination_shell_degree_capped":
-        edge_info["degree_cap"] = int(
-            np.clip(np.rint(np.median(local_shell_counts)), 3, max(3, max_shell_neighbors))
-        )
 
     return edges, edge_info
 

@@ -1,0 +1,101 @@
+# Latent-size sweep for VICReg on the molecular/polycrystalline config using
+# the RI-MAE invariant encoder.
+#
+# Scaling rule per experiment:
+#   latent_size = 2 * trans_dim
+#   encoder_dims = trans_dim
+#   num_heads = trans_dim / 32
+#
+# This keeps the RI-MAE encoder width consistent with the requested latent size
+# while preserving the base `vicreg_vn_molecular.yaml` training setup.
+#
+# Usage:
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_latent_sizes_ri_mae.yaml
+#   python scripts/run_experiments.py --plan configs/experiments/vicreg_vn_molecular_latent_sizes_ri_mae.yaml --local
+
+name: vicreg_vn_molecular_latent_sizes_ri_mae
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_vn_molecular.yaml
+repeat_each: 5
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 120G
+  time: "24:00:00"
+
+base_overrides:
+  - "encoder.name=RI_MAE_Invariant"
+  - "devices=[0]"
+  - "load_supervised_checkpoint=false"
+  - "init_from_checkpoint=null"
+  - "auto_batch_size_search=true"
+  - "auto_batch_size_adjust_accumulate=true"
+  - "auto_batch_size_target_effective_batch=4096"
+  - "auto_batch_size_init_val=1024"
+  - "auto_batch_size_max_trials=8"
+  - "++run_post_training_analysis=false"
+  - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
+  - "++checkpoint_mode=max"
+
+experiments:
+  - name: latent_64
+    overrides:
+      - "latent_size=64"
+      - "encoder.kwargs.encoder_dims=32"
+      - "encoder.kwargs.trans_dim=32"
+      - "encoder.kwargs.num_heads=1"
+
+  - name: latent_128
+    overrides:
+      - "latent_size=128"
+      - "encoder.kwargs.encoder_dims=64"
+      - "encoder.kwargs.trans_dim=64"
+      - "encoder.kwargs.num_heads=2"
+
+  - name: latent_256
+    overrides:
+      - "latent_size=256"
+      - "encoder.kwargs.encoder_dims=128"
+      - "encoder.kwargs.trans_dim=128"
+      - "encoder.kwargs.num_heads=4"
+
+  - name: latent_512
+    overrides:
+      - "latent_size=512"
+      - "encoder.kwargs.encoder_dims=256"
+      - "encoder.kwargs.trans_dim=256"
+      - "encoder.kwargs.num_heads=8"
+
+metrics:
+  final:
+    - test/loss
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: val/loss
+      mode: min
+
+plot:
+  enabled: true
+  x_label: "Latent size"
+  x_pattern: "(\\d+)$"
+  metric_scope: "test/class"
+  metrics:
+    - acc_kmeans_plusplus_hungarian
+    - nmi
+    - ari
+  formats: ["png", "pdf", "svg"]
+  dpi: 300
+  individual_panels: true
+
+output_root: output/experiments

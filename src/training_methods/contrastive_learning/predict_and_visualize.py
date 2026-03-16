@@ -1,13 +1,15 @@
 import argparse
+from dataclasses import dataclass
 import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any, Callable, Dict, Tuple
 import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf, open_dict
@@ -19,6 +21,9 @@ from src.training_methods.contrastive_learning.cluster_figure_utils import (
     _build_cluster_color_map,
     _save_horizontal_image_gallery,
     _save_fixed_k_cluster_figure_set,
+)
+from src.training_methods.contrastive_learning._cluster_rendering import (
+    _build_cluster_representative_render_cache,
 )
 from src.training_methods.contrastive_learning.real_md_qualitative_analysis import (
     run_real_md_qualitative_analysis,
@@ -35,17 +40,156 @@ from src.vis_tools.md_cluster_plot import (
     save_interactive_md_plot,
 )
 from src.vis_tools.latent_analysis_vis import (
+    _prepare_clustering_features,
     compute_hdbscan_labels,
     compute_kmeans_labels,
     save_equivariance_plot,
     save_latent_statistics,
-    save_latent_tsne,
     save_local_structure_assignments,
     save_md_space_clusters_plot,
     save_pca_visualization,
     save_tsne_plot_with_coords,
 )
-from src.vis_tools.tsne_vis import compute_tsne
+from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
+
+
+@dataclass(frozen=True)
+class HDBSCANSettings:
+    enabled: bool
+    fit_fraction: float
+    max_fit_samples: int
+    target_k_min: int
+    target_k_max: int
+    min_samples: int | None
+    min_samples_candidates: list[int] | None
+    cluster_selection_epsilon: float
+    cluster_selection_method: str
+    min_cluster_size_candidates: list[int] | None
+    refit_full_data: bool
+
+
+@dataclass(frozen=True)
+class AnalysisSettings:
+    tsne_max_samples: int
+    cluster_method: str
+    cluster_l2_normalize: bool
+    cluster_standardize: bool
+    cluster_pca_var: float
+    cluster_pca_max_components: int
+    cluster_k_values: list[int]
+    data_overlap_fraction: float
+    md_overlap_fraction: float
+    md_use_all_points: bool
+    progress_every_batches: int
+    inference_cache_enabled: bool
+    inference_cache_force_recompute: bool
+    inference_cache_file: str
+    seed_base: int
+    hdbscan: HDBSCANSettings
+
+
+@dataclass(frozen=True)
+class FigureSetSettings:
+    enabled: bool
+    figure_only: bool
+    k: int
+    md_max_points: int | None
+    md_point_size: float
+    md_alpha: float
+    md_halo_scale: float
+    md_halo_alpha: float
+    md_saturation_boost: float
+    md_view_elev: float
+    md_view_azim: float
+    visible_cluster_sets: list[list[int]] | None
+    cluster_color_assignment: dict[int, int | str] | None
+    profile_point_scale_enabled: bool
+    icl_enabled: bool
+    icl_k_min: int
+    icl_k_max: int
+    icl_max_samples: int | None
+    icl_covariance: str
+    representative_points: int
+    representative_orientation: str
+    representative_view_elev: float
+    representative_view_azim: float
+    representative_projection: str
+    representative_ptm_enabled: bool
+    representative_cna_enabled: bool
+    representative_cna_max_signatures: int
+    representative_center_atom_tolerance: float
+    representative_shell_min_neighbors: int
+    representative_shell_max_neighbors: int
+    real_md_profile_target_points: int
+    raytrace_enabled: bool
+    raytrace_kwargs: dict[str, Any]
+
+    def build_run_kwargs(
+        self,
+        *,
+        dataset: Any,
+        latents: np.ndarray,
+        coords: np.ndarray,
+        point_scale: float,
+        random_state: int,
+        l2_normalize: bool,
+        standardize: bool,
+        pca_variance: float | None,
+        pca_max_components: int,
+    ) -> dict[str, Any]:
+        return {
+            "dataset": dataset,
+            "latents": latents,
+            "coords": coords,
+            "k_value": int(self.k),
+            "point_scale": float(point_scale),
+            "l2_normalize": bool(l2_normalize),
+            "standardize": bool(standardize),
+            "pca_variance": pca_variance,
+            "pca_max_components": int(pca_max_components),
+            "md_max_points": self.md_max_points,
+            "icl_enabled": bool(self.icl_enabled),
+            "icl_k_min": int(self.icl_k_min),
+            "icl_k_max": int(self.icl_k_max),
+            "icl_max_samples": self.icl_max_samples,
+            "icl_covariance_type": str(self.icl_covariance),
+            "representative_points": int(self.representative_points),
+            "md_point_size": float(self.md_point_size),
+            "md_point_alpha": float(self.md_alpha),
+            "md_halo_scale": float(self.md_halo_scale),
+            "md_halo_alpha": float(self.md_halo_alpha),
+            "md_saturation_boost": float(self.md_saturation_boost),
+            "md_view_elev": float(self.md_view_elev),
+            "md_view_azim": float(self.md_view_azim),
+            "representative_orientation_method": str(self.representative_orientation),
+            "representative_view_elev": float(self.representative_view_elev),
+            "representative_view_azim": float(self.representative_view_azim),
+            "representative_projection": str(self.representative_projection),
+            "representative_ptm_enabled": bool(self.representative_ptm_enabled),
+            "representative_cna_enabled": bool(self.representative_cna_enabled),
+            "representative_cna_max_signatures": int(self.representative_cna_max_signatures),
+            "representative_center_atom_tolerance": float(
+                self.representative_center_atom_tolerance
+            ),
+            "representative_shell_min_neighbors": int(
+                self.representative_shell_min_neighbors
+            ),
+            "representative_shell_max_neighbors": int(
+                self.representative_shell_max_neighbors
+            ),
+            "visible_cluster_sets": self.visible_cluster_sets,
+            "cluster_color_assignment": self.cluster_color_assignment,
+            "random_state": int(random_state),
+            "raytrace_render_enabled": bool(self.raytrace_enabled),
+            **self.raytrace_kwargs,
+        }
+
+
+@dataclass(frozen=True)
+class HDBSCANResult:
+    labels: np.ndarray | None
+    info: dict[str, Any] | None
+    color_map: dict[int, str] | None
 
 
 def _as_list_of_str(value: Any) -> list[str] | None:
@@ -133,6 +277,551 @@ def _resolve_cluster_k_values(k_values: list[int], *, n_samples: int) -> list[in
     return [max(2, min(int(n_samples), 3))]
 
 
+def _resolve_optional_cluster_k(value: Any, *, field_name: str) -> int | None:
+    if value is None:
+        return None
+    resolved = int(value)
+    if resolved < 2:
+        raise ValueError(f"{field_name} must be >= 2, got {resolved}.")
+    return resolved
+
+
+def _apply_unified_cluster_k_override(
+    cfg: DictConfig,
+    *,
+    cluster_k_override: int | None,
+) -> int | None:
+    resolved_k = _resolve_optional_cluster_k(
+        cluster_k_override,
+        field_name="cluster_k",
+    )
+    if resolved_k is None:
+        resolved_k = _resolve_optional_cluster_k(
+            getattr(cfg, "analysis_cluster_k", None),
+            field_name="analysis_cluster_k",
+        )
+    if resolved_k is None:
+        return None
+
+    existing_k_values = _as_list_of_int(
+        getattr(cfg, "analysis_cluster_k_values", None),
+        field_name="analysis_cluster_k_values",
+    )
+    ordered_k_values = (
+        [int(resolved_k)]
+        if existing_k_values is None
+        else [int(resolved_k)] + [int(k) for k in existing_k_values if int(k) != int(resolved_k)]
+    )
+    with open_dict(cfg):
+        cfg.analysis_cluster_k = int(resolved_k)
+        cfg.analysis_cluster_k_values = ordered_k_values
+        cfg.analysis_cluster_figure_set_k = int(resolved_k)
+        cfg.analysis_real_md_k = int(resolved_k)
+    return int(resolved_k)
+
+
+def _resolve_analysis_files(
+    cfg: DictConfig,
+    *,
+    data_files_override: list[str] | None,
+) -> list[str] | None:
+    if cfg.data.kind != "real":
+        return None
+    if data_files_override:
+        return data_files_override
+
+    canonical_files = _as_list_of_str(
+        OmegaConf.select(cfg, "data.analysis_data_files", default=None)
+    )
+    if canonical_files:
+        return canonical_files
+
+    data_files = _as_list_of_str(OmegaConf.select(cfg, "data.data_files", default=None))
+    if not data_files:
+        raise ValueError(
+            "Cannot resolve analysis data files: data.data_files is missing or empty, "
+            "and no analysis-specific file override was provided."
+        )
+    return data_files
+
+
+def _resolve_analysis_settings(
+    cfg: DictConfig,
+    *,
+    max_samples_visualization: int | None,
+) -> AnalysisSettings:
+    tsne_max_samples = int(getattr(cfg, "analysis_tsne_max_samples", 8000))
+    if max_samples_visualization is not None:
+        tsne_max_samples = min(tsne_max_samples, max_samples_visualization)
+
+    cluster_k_values_cfg = _as_list_of_int(
+        getattr(cfg, "analysis_cluster_k_values", None),
+        field_name="analysis_cluster_k_values",
+    )
+    cluster_k_values = cluster_k_values_cfg or [3, 4, 5, 6]
+    cluster_k_values = [int(k) for k in cluster_k_values if int(k) >= 2]
+    cluster_k_values = list(dict.fromkeys(cluster_k_values))
+    if not cluster_k_values:
+        cluster_k_values = [3, 4, 5, 6]
+
+    data_overlap_fraction = _validate_overlap_fraction(
+        getattr(cfg.data, "overlap_fraction", 0.0)
+    )
+    analysis_md_overlap_boost = float(getattr(cfg, "analysis_md_overlap_boost", 0.25))
+    analysis_md_overlap_fraction_raw = getattr(cfg, "analysis_md_overlap_fraction", None)
+    if analysis_md_overlap_fraction_raw is None:
+        md_overlap_fraction = min(0.95, data_overlap_fraction + analysis_md_overlap_boost)
+    else:
+        md_overlap_fraction = _validate_overlap_fraction(analysis_md_overlap_fraction_raw)
+    cfg.data.overlap_fraction = float(md_overlap_fraction)
+
+    hdbscan_min_samples = getattr(cfg, "analysis_hdbscan_min_samples", None)
+    if hdbscan_min_samples is not None:
+        hdbscan_min_samples = int(hdbscan_min_samples)
+    hdbscan_min_samples_candidates_raw = getattr(
+        cfg,
+        "analysis_hdbscan_min_samples_candidates",
+        None,
+    )
+    hdbscan_min_samples_candidates = (
+        [int(v) for v in hdbscan_min_samples_candidates_raw]
+        if hdbscan_min_samples_candidates_raw is not None
+        else None
+    )
+    if hdbscan_min_samples_candidates is not None and len(hdbscan_min_samples_candidates) == 0:
+        hdbscan_min_samples_candidates = None
+    hdbscan_min_cluster_size_candidates_raw = getattr(
+        cfg,
+        "analysis_hdbscan_min_cluster_size_candidates",
+        None,
+    )
+    hdbscan_min_cluster_size_candidates = (
+        [int(v) for v in hdbscan_min_cluster_size_candidates_raw]
+        if hdbscan_min_cluster_size_candidates_raw is not None
+        else None
+    )
+    hdbscan = HDBSCANSettings(
+        enabled=bool(getattr(cfg, "analysis_hdbscan_enabled", True)),
+        fit_fraction=float(getattr(cfg, "analysis_hdbscan_fit_fraction", 0.75)),
+        max_fit_samples=int(getattr(cfg, "analysis_hdbscan_max_fit_samples", 50000)),
+        target_k_min=int(getattr(cfg, "analysis_hdbscan_target_k_min", 5)),
+        target_k_max=int(getattr(cfg, "analysis_hdbscan_target_k_max", 6)),
+        min_samples=hdbscan_min_samples,
+        min_samples_candidates=hdbscan_min_samples_candidates,
+        cluster_selection_epsilon=float(
+            getattr(cfg, "analysis_hdbscan_cluster_selection_epsilon", 0.0)
+        ),
+        cluster_selection_method=str(
+            getattr(cfg, "analysis_hdbscan_cluster_selection_method", "auto")
+        ).lower(),
+        min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
+        refit_full_data=bool(getattr(cfg, "analysis_hdbscan_refit_full_data", True)),
+    )
+
+    inference_cache_file = str(
+        getattr(cfg, "analysis_inference_cache_file", "analysis_inference_cache.npz")
+    ).strip()
+    if inference_cache_file == "":
+        raise ValueError("analysis_inference_cache_file must be a non-empty file name.")
+
+    return AnalysisSettings(
+        tsne_max_samples=tsne_max_samples,
+        cluster_method=str(getattr(cfg, "analysis_cluster_method", "auto")).lower(),
+        cluster_l2_normalize=bool(getattr(cfg, "analysis_cluster_l2_normalize", True)),
+        cluster_standardize=bool(getattr(cfg, "analysis_cluster_standardize", True)),
+        cluster_pca_var=float(getattr(cfg, "analysis_cluster_pca_var", 0.98)),
+        cluster_pca_max_components=int(
+            getattr(cfg, "analysis_cluster_pca_max_components", 32)
+        ),
+        cluster_k_values=cluster_k_values,
+        data_overlap_fraction=data_overlap_fraction,
+        md_overlap_fraction=float(md_overlap_fraction),
+        md_use_all_points=bool(getattr(cfg, "analysis_md_use_all_points", True)),
+        progress_every_batches=int(getattr(cfg, "analysis_progress_every_batches", 25)),
+        inference_cache_enabled=bool(
+            getattr(cfg, "analysis_inference_cache_enabled", True)
+        ),
+        inference_cache_force_recompute=bool(
+            getattr(cfg, "analysis_inference_cache_force_recompute", False)
+        ),
+        inference_cache_file=inference_cache_file,
+        seed_base=int(getattr(cfg, "analysis_seed_base", 123)),
+        hdbscan=hdbscan,
+    )
+
+
+def _resolve_figure_set_settings(
+    cfg: DictConfig,
+    *,
+    out_dir: Path,
+    visible_cluster_sets: list[list[int]] | None,
+    cluster_color_assignment: dict[int, int | str] | None,
+    cluster_color_assignment_file: str | None,
+    cluster_figure_only: bool,
+    md_render_saturation_boost: float | None,
+    raytrace_render_enabled: bool | None,
+) -> FigureSetSettings:
+    figure_only = bool(
+        cluster_figure_only or getattr(cfg, "analysis_cluster_figure_only", False)
+    )
+    enabled = bool(getattr(cfg, "analysis_cluster_figure_set_enabled", True)) or figure_only
+    cluster_k = max(2, int(getattr(cfg, "analysis_cluster_figure_set_k", 6)))
+    md_saturation_cfg = float(
+        getattr(cfg, "analysis_cluster_figure_md_saturation_boost", 1.18)
+    )
+    md_saturation_boost = float(
+        md_saturation_cfg
+        if md_render_saturation_boost is None
+        else md_render_saturation_boost
+    )
+    raytrace_enabled_use = bool(
+        getattr(cfg, "analysis_cluster_figure_raytrace_enabled", False)
+        if raytrace_render_enabled is None
+        else raytrace_render_enabled
+    )
+    raytrace_kwargs = {
+        "raytrace_blender_executable": str(
+            getattr(cfg, "analysis_cluster_figure_raytrace_blender_executable")
+        ).strip(),
+        "raytrace_render_resolution": int(
+            getattr(cfg, "analysis_cluster_figure_raytrace_resolution")
+        ),
+        "raytrace_render_max_points": _positive_int_or_none(
+            getattr(cfg, "analysis_cluster_figure_raytrace_max_points", None)
+        ),
+        "raytrace_render_samples": int(
+            getattr(cfg, "analysis_cluster_figure_raytrace_samples")
+        ),
+        "raytrace_render_projection": str(
+            getattr(cfg, "analysis_cluster_figure_raytrace_projection")
+        ).strip().lower(),
+        "raytrace_render_fov_deg": float(
+            getattr(cfg, "analysis_cluster_figure_raytrace_fov_deg")
+        ),
+        "raytrace_render_camera_distance_factor": float(
+            getattr(cfg, "analysis_cluster_figure_raytrace_camera_distance_factor")
+        ),
+        "raytrace_render_sphere_radius_fraction": float(
+            getattr(cfg, "analysis_cluster_figure_raytrace_sphere_radius_fraction")
+        ),
+        "raytrace_render_timeout_sec": int(
+            getattr(cfg, "analysis_cluster_figure_raytrace_timeout_sec")
+        ),
+        "raytrace_render_use_gpu": bool(
+            getattr(cfg, "analysis_cluster_figure_raytrace_use_gpu", False)
+        ),
+        "raytrace_parallel_views": bool(
+            getattr(cfg, "analysis_cluster_figure_raytrace_parallel_views", False)
+        ),
+        "raytrace_parallel_max_workers": _positive_int_or_none(
+            getattr(cfg, "analysis_cluster_figure_raytrace_parallel_max_workers", None)
+        ),
+    }
+
+    visible_cluster_sets_use = visible_cluster_sets
+    cfg_visible_sets_raw = getattr(cfg, "analysis_cluster_figure_visible_sets", None)
+    if cfg_visible_sets_raw is not None and visible_cluster_sets_use is None:
+        visible_cluster_sets_use = [
+            [int(v) for v in str(cluster_set).split(",")]
+            for cluster_set in cfg_visible_sets_raw
+        ]
+
+    cluster_color_assignment_cfg = _normalize_cluster_color_assignment(
+        OmegaConf.select(cfg, "analysis_cluster_figure_color_assignment", default=None),
+        field_name="analysis_cluster_figure_color_assignment",
+    )
+    cluster_color_assignment_file_cfg = OmegaConf.select(
+        cfg,
+        "analysis_cluster_figure_color_assignment_file",
+        default=None,
+    )
+    cluster_color_assignment_cfg_file = (
+        _load_cluster_color_assignment_file(
+            str(cluster_color_assignment_file_cfg),
+            base_dir=out_dir,
+        )
+        if cluster_color_assignment_file_cfg is not None
+        else None
+    )
+    cluster_color_assignment_cli = _normalize_cluster_color_assignment(
+        cluster_color_assignment,
+        field_name="cluster_color_assignment",
+    )
+    cluster_color_assignment_cli_file = (
+        _load_cluster_color_assignment_file(
+            str(cluster_color_assignment_file),
+            base_dir=out_dir,
+        )
+        if cluster_color_assignment_file is not None
+        else None
+    )
+    cluster_color_assignment_use = _merge_cluster_color_assignments(
+        cluster_color_assignment_cfg_file,
+        cluster_color_assignment_cfg,
+        cluster_color_assignment_cli_file,
+        cluster_color_assignment_cli,
+    )
+
+    representative_points_default = int(
+        getattr(
+            cfg.data,
+            "model_points",
+            getattr(cfg.data, "num_points", 48),
+        )
+    )
+    representative_points = max(
+        16,
+        int(
+            getattr(
+                cfg,
+                "analysis_cluster_figure_representative_points",
+                representative_points_default,
+            )
+        ),
+    )
+    representative_orientation = str(
+        getattr(cfg, "analysis_cluster_figure_representative_orientation", "pca")
+    ).strip().lower()
+    if representative_orientation not in {"pca", "none"}:
+        raise ValueError(
+            "analysis_cluster_figure_representative_orientation must be one of "
+            "['pca', 'none'], got "
+            f"{representative_orientation!r}."
+        )
+    representative_cna_max_signatures = int(
+        getattr(cfg, "analysis_cluster_figure_representative_cna_max_signatures", 5)
+    )
+    representative_shell_min_neighbors = int(
+        getattr(
+            cfg,
+            "analysis_cluster_figure_representative_shell_min_neighbors",
+            8,
+        )
+    )
+    representative_shell_max_neighbors = int(
+        getattr(
+            cfg,
+            "analysis_cluster_figure_representative_shell_max_neighbors",
+            24,
+        )
+    )
+    if representative_cna_max_signatures <= 0:
+        raise ValueError(
+            "analysis_cluster_figure_representative_cna_max_signatures must be > 0, "
+            f"got {representative_cna_max_signatures}."
+        )
+    if representative_shell_min_neighbors < 2:
+        raise ValueError(
+            "analysis_cluster_figure_representative_shell_min_neighbors must be >= 2, "
+            f"got {representative_shell_min_neighbors}."
+        )
+    if representative_shell_max_neighbors <= representative_shell_min_neighbors:
+        raise ValueError(
+            "analysis_cluster_figure_representative_shell_max_neighbors must exceed "
+            "analysis_cluster_figure_representative_shell_min_neighbors, got "
+            f"{representative_shell_max_neighbors} <= {representative_shell_min_neighbors}."
+        )
+
+    return FigureSetSettings(
+        enabled=enabled,
+        figure_only=figure_only,
+        k=cluster_k,
+        md_max_points=_positive_int_or_none(
+            getattr(cfg, "analysis_cluster_figure_md_max_points", None)
+        ),
+        md_point_size=float(
+            getattr(cfg, "analysis_cluster_figure_md_point_size", 5.6)
+        ),
+        md_alpha=float(getattr(cfg, "analysis_cluster_figure_md_alpha", 0.62)),
+        md_halo_scale=float(
+            getattr(cfg, "analysis_cluster_figure_md_halo_scale", 1.0)
+        ),
+        md_halo_alpha=float(
+            getattr(cfg, "analysis_cluster_figure_md_halo_alpha", 0.0)
+        ),
+        md_saturation_boost=md_saturation_boost,
+        md_view_elev=float(getattr(cfg, "analysis_cluster_figure_md_view_elev", 24.0)),
+        md_view_azim=float(getattr(cfg, "analysis_cluster_figure_md_view_azim", 35.0)),
+        visible_cluster_sets=visible_cluster_sets_use,
+        cluster_color_assignment=cluster_color_assignment_use,
+        profile_point_scale_enabled=bool(
+            getattr(cfg, "analysis_cluster_profile_point_scale_enabled", False)
+        ),
+        icl_enabled=bool(getattr(cfg, "analysis_cluster_figure_icl_enabled", False)),
+        icl_k_min=int(getattr(cfg, "analysis_cluster_figure_icl_k_min", 2)),
+        icl_k_max=int(getattr(cfg, "analysis_cluster_figure_icl_k_max", 20)),
+        icl_max_samples=_positive_int_or_none(
+            getattr(cfg, "analysis_cluster_figure_icl_max_samples", 20000)
+        ),
+        icl_covariance=str(
+            getattr(cfg, "analysis_cluster_figure_icl_covariance", "diag")
+        ).lower(),
+        representative_points=representative_points,
+        representative_orientation=representative_orientation,
+        representative_view_elev=float(
+            getattr(cfg, "analysis_cluster_figure_representative_view_elev", 22.0)
+        ),
+        representative_view_azim=float(
+            getattr(cfg, "analysis_cluster_figure_representative_view_azim", 38.0)
+        ),
+        representative_projection=str(
+            getattr(cfg, "analysis_cluster_figure_representative_projection", "ortho")
+        ).strip().lower(),
+        representative_ptm_enabled=bool(
+            getattr(cfg, "analysis_cluster_figure_representative_ptm_enabled", False)
+        ),
+        representative_cna_enabled=bool(
+            getattr(cfg, "analysis_cluster_figure_representative_cna_enabled", False)
+        ),
+        representative_cna_max_signatures=representative_cna_max_signatures,
+        representative_center_atom_tolerance=float(
+            getattr(
+                cfg,
+                "analysis_cluster_figure_representative_center_atom_tolerance",
+                1e-6,
+            )
+        ),
+        representative_shell_min_neighbors=representative_shell_min_neighbors,
+        representative_shell_max_neighbors=representative_shell_max_neighbors,
+        real_md_profile_target_points=int(
+            getattr(
+                cfg,
+                "analysis_cluster_profile_target_points",
+                max(
+                    32,
+                    int(
+                        getattr(
+                            cfg.data,
+                            "model_points",
+                            getattr(cfg.data, "num_points", 64),
+                        )
+                    ),
+                ),
+            )
+        ),
+        raytrace_enabled=raytrace_enabled_use,
+        raytrace_kwargs=raytrace_kwargs,
+    )
+
+
+def _print_resolved_analysis_settings(
+    *,
+    unified_cluster_k: int | None,
+    analysis_settings: AnalysisSettings,
+    figure_settings: FigureSetSettings,
+) -> None:
+    if unified_cluster_k is not None:
+        print(
+            "Unified analysis cluster count: "
+            f"k={unified_cluster_k} "
+            "(applied to analysis_cluster_k_values, "
+            "analysis_cluster_figure_set_k, analysis_real_md_k)"
+        )
+    print(f"t-SNE sample cap: {analysis_settings.tsne_max_samples}")
+    print(f"Clustering k values (configured): {analysis_settings.cluster_k_values}")
+    print(
+        "MD overlap fraction (analysis): "
+        f"{analysis_settings.data_overlap_fraction:.3f} -> "
+        f"{analysis_settings.md_overlap_fraction:.3f}"
+    )
+    print(
+        "HDBSCAN settings: "
+        f"fit_fraction={analysis_settings.hdbscan.fit_fraction:.3f}, "
+        f"max_fit_samples={analysis_settings.hdbscan.max_fit_samples}, "
+        f"target_k=[{analysis_settings.hdbscan.target_k_min}, "
+        f"{analysis_settings.hdbscan.target_k_max}], "
+        f"selection_method={analysis_settings.hdbscan.cluster_selection_method}, "
+        f"refit_full_data={analysis_settings.hdbscan.refit_full_data}"
+    )
+    print(
+        "Fixed-k figure set: "
+        f"enabled={figure_settings.enabled}, "
+        f"figure_only={figure_settings.figure_only}, "
+        f"k={figure_settings.k}, "
+        f"visible_sets={figure_settings.visible_cluster_sets or []}, "
+        f"md_saturation={figure_settings.md_saturation_boost:.2f}, "
+        f"raytrace_enabled={figure_settings.raytrace_enabled}, "
+        "raytrace_projection="
+        f"{figure_settings.raytrace_kwargs['raytrace_render_projection']}, "
+        f"raytrace_samples={figure_settings.raytrace_kwargs['raytrace_render_samples']}, "
+        f"raytrace_res={figure_settings.raytrace_kwargs['raytrace_render_resolution']}, "
+        "raytrace_max_points="
+        f"{figure_settings.raytrace_kwargs['raytrace_render_max_points']}, "
+        f"raytrace_gpu={figure_settings.raytrace_kwargs['raytrace_render_use_gpu']}, "
+        "raytrace_parallel_views="
+        f"{figure_settings.raytrace_kwargs['raytrace_parallel_views']}, "
+        "raytrace_parallel_max_workers="
+        f"{figure_settings.raytrace_kwargs['raytrace_parallel_max_workers']}, "
+        f"icl_enabled={figure_settings.icl_enabled}, "
+        "profile_point_scale_enabled="
+        f"{figure_settings.profile_point_scale_enabled}, "
+        f"rep_orientation={figure_settings.representative_orientation}, "
+        "rep_view=("
+        f"{figure_settings.representative_view_elev:.1f},"
+        f"{figure_settings.representative_view_azim:.1f}"
+        "), "
+        f"rep_projection={figure_settings.representative_projection}, "
+        f"rep_ptm={figure_settings.representative_ptm_enabled}, "
+        f"rep_cna={figure_settings.representative_cna_enabled}, "
+        "rep_cna_shell=("
+        f"{figure_settings.representative_shell_min_neighbors},"
+        f"{figure_settings.representative_shell_max_neighbors}"
+        "), "
+        "cluster_color_overrides="
+        f"{sorted(figure_settings.cluster_color_assignment) if figure_settings.cluster_color_assignment else []}"
+    )
+
+
+def _build_analysis_dataloader(
+    cfg: DictConfig,
+    dm: Any,
+    *,
+    is_synthetic: bool,
+) -> torch.utils.data.DataLoader:
+    print("Using ALL dataset splits (train + test) for latent analysis")
+    if is_synthetic:
+        train_dataset = getattr(dm, "train_dataset", None)
+        test_dataset = getattr(dm, "test_dataset", None)
+        if train_dataset is None or test_dataset is None:
+            raise ValueError("Synthetic datamodule is missing train/test datasets.")
+        combined_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
+        return torch.utils.data.DataLoader(
+            combined_dataset,
+            batch_size=cfg.batch_size,
+            num_workers=4,
+            shuffle=False,
+            drop_last=False,
+            pin_memory=True,
+            persistent_workers=True,
+        )
+
+    dl = build_real_coords_dataloader(
+        cfg,
+        dm,
+        use_train_data=True,
+        use_full_dataset=True,
+        prefer_existing_full_dataset=True,
+    )
+    print(
+        "Real data detected: using full dataset for local-structure clustering visualization"
+    )
+    return dl
+
+
+def _resolve_analysis_max_samples_total(
+    cfg: DictConfig,
+    *,
+    is_synthetic: bool,
+    md_use_all_points: bool,
+) -> int | None:
+    max_samples_total = getattr(cfg, "analysis_max_samples_total", None)
+    if max_samples_total is None and not is_synthetic:
+        max_samples_total = 20000
+    if not is_synthetic and md_use_all_points:
+        max_samples_total = None
+    return _positive_int_or_none(max_samples_total)
+
+
 def _build_clustering_state(
     latents: np.ndarray,
     phases: np.ndarray,
@@ -144,11 +833,17 @@ def _build_clustering_state(
     standardize: bool,
     pca_variance: float | None,
     pca_max_components: int,
+    prepared_features: np.ndarray | None = None,
+    prep_info: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], list[int], Dict[int, np.ndarray], Dict[int, str]]:
     configured_k_values = _resolve_cluster_k_values(requested_k_values, n_samples=len(latents))
     cluster_labels_by_k: Dict[int, np.ndarray] = {}
     cluster_methods_by_k: Dict[int, str] = {}
-    feature_prep: dict[str, Any] | None = None
+    feature_prep: dict[str, Any] | None = (
+        dict(prep_info)
+        if prep_info is not None
+        else None
+    )
 
     for k_value in configured_k_values:
         labels_k, info_k = compute_kmeans_labels(
@@ -160,6 +855,8 @@ def _build_clustering_state(
             standardize=standardize,
             pca_variance=pca_variance,
             pca_max_components=pca_max_components,
+            prepared_features=prepared_features,
+            prep_info=feature_prep,
             return_info=True,
         )
         cluster_labels_by_k[int(k_value)] = labels_k
@@ -211,6 +908,8 @@ def _build_clustering_state(
                     standardize=standardize,
                     pca_variance=pca_variance,
                     pca_max_components=pca_max_components,
+                    prepared_features=prepared_features,
+                    prep_info=feature_prep,
                 )
             metrics["ari_with_gt"] = float(adjusted_rand_score(phases, gt_labels))
             metrics["nmi_with_gt"] = float(normalized_mutual_info_score(phases, gt_labels))
@@ -639,6 +1338,473 @@ def _save_snapshot_raytrace_galleries_by_view(
     return summary
 
 
+def _ordered_md_k_values(
+    k_values_order: list[int],
+    *,
+    primary_k: int,
+) -> list[int]:
+    ordered = [int(primary_k)] + [int(k) for k in k_values_order if int(k) != int(primary_k)]
+    return list(dict.fromkeys(ordered))
+
+
+def _build_md_plot_title(
+    labels_for_k: np.ndarray,
+    *,
+    k_value: int,
+    sample_count: int,
+    source_name: str | None = None,
+) -> str:
+    labels_arr = np.asarray(labels_for_k, dtype=int).reshape(-1)
+    visible_clusters = int(len(np.unique(labels_arr)))
+    parts = [f"k={int(k_value)}", f"n={int(sample_count)}"]
+    if visible_clusters != int(k_value):
+        parts.append(f"visible={visible_clusters}")
+    if source_name is not None:
+        parts.append(f"snapshot={source_name}")
+    return f"MD local-structure clusters ({', '.join(parts)})"
+
+
+def _save_md_cluster_outputs(
+    coords: np.ndarray,
+    labels_by_k: dict[int, np.ndarray],
+    out_dir: Path,
+    *,
+    k_values_order: list[int],
+    primary_k: int,
+    shared_cluster_color_maps_by_k: dict[int, dict[int, str]],
+    max_points: int | None,
+    source_name: str | None = None,
+) -> dict[str, Any]:
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    ordered_k_values = _ordered_md_k_values(k_values_order, primary_k=int(primary_k))
+    if not ordered_k_values:
+        raise ValueError("Cannot save MD cluster outputs: no k values were provided.")
+
+    coords_arr = np.asarray(coords, dtype=np.float32)
+    if coords_arr.ndim != 2 or coords_arr.shape[0] < 2 or coords_arr.shape[1] < 3:
+        raise ValueError(
+            "Cannot save MD cluster outputs: expected coords with shape (n, d), "
+            f"n >= 2, d >= 3, got shape={coords_arr.shape}."
+        )
+
+    stale_patterns = (
+        "md_space_clusters.png",
+        "md_space_clusters.html",
+        "md_space_clusters_k*.png",
+        "md_space_clusters_k*.html",
+    )
+    stale_paths: set[Path] = set()
+    for pattern in stale_patterns:
+        stale_paths.update(out_dir.glob(pattern))
+    for stale_path in stale_paths:
+        stale_path.unlink()
+
+    static_pngs: dict[int, str] = {}
+    interactive_htmls: dict[int, str] = {}
+    for k_value in ordered_k_values:
+        if int(k_value) not in labels_by_k:
+            raise KeyError(
+                "Cannot save MD cluster outputs because labels are missing for "
+                f"k={int(k_value)}. Available k values: {sorted(int(k) for k in labels_by_k)}."
+            )
+        if int(k_value) not in shared_cluster_color_maps_by_k:
+            raise KeyError(
+                "Cannot save MD cluster outputs because the shared color map is missing for "
+                f"k={int(k_value)}. Available k values: "
+                f"{sorted(int(k) for k in shared_cluster_color_maps_by_k)}."
+            )
+        labels_arr = np.asarray(labels_by_k[int(k_value)], dtype=int).reshape(-1)
+        if labels_arr.shape[0] != coords_arr.shape[0]:
+            raise ValueError(
+                "Cannot save MD cluster outputs because coords/labels lengths do not match. "
+                f"k={int(k_value)}, coords_shape={coords_arr.shape}, labels_shape={labels_arr.shape}."
+            )
+        title = _build_md_plot_title(
+            labels_arr,
+            k_value=int(k_value),
+            sample_count=int(coords_arr.shape[0]),
+            source_name=source_name,
+        )
+        static_path = out_dir / f"md_space_clusters_k{int(k_value)}.png"
+        save_md_space_clusters_plot(
+            coords_arr,
+            labels_arr,
+            static_path,
+            cluster_color_map=shared_cluster_color_maps_by_k[int(k_value)],
+            max_points=max_points,
+            title=title,
+        )
+        static_pngs[int(k_value)] = str(static_path)
+
+    primary_static_path = out_dir / f"md_space_clusters_k{int(primary_k)}.png"
+    primary_static_alias = out_dir / "md_space_clusters.png"
+    shutil.copyfile(primary_static_path, primary_static_alias)
+
+    results: dict[str, Any] = {
+        "static_png": str(primary_static_alias),
+        "static_pngs": static_pngs,
+    }
+
+    try:
+        for k_value in ordered_k_values:
+            labels_arr = np.asarray(labels_by_k[int(k_value)], dtype=int).reshape(-1)
+            title = _build_md_plot_title(
+                labels_arr,
+                k_value=int(k_value),
+                sample_count=int(coords_arr.shape[0]),
+                source_name=source_name,
+            )
+            interactive_path = out_dir / f"md_space_clusters_k{int(k_value)}.html"
+            save_interactive_md_plot(
+                coords_arr,
+                labels_arr,
+                interactive_path,
+                palette="tab10",
+                cluster_color_map=shared_cluster_color_maps_by_k[int(k_value)],
+                max_points=max_points,
+                marker_size=3.0,
+                marker_line_width=0.0,
+                title=title,
+                aspect_mode="cube",
+            )
+            interactive_htmls[int(k_value)] = str(interactive_path)
+        primary_interactive_path = out_dir / f"md_space_clusters_k{int(primary_k)}.html"
+        primary_interactive_alias = out_dir / "md_space_clusters.html"
+        shutil.copyfile(primary_interactive_path, primary_interactive_alias)
+        results["interactive_html"] = str(primary_interactive_alias)
+        results["interactive_htmls"] = interactive_htmls
+    except ImportError:
+        context = "full dataset" if source_name is None else f"snapshot {source_name}"
+        print(f"Plotly not installed; skipping interactive MD plot for {context}.")
+
+    return results
+
+
+def _run_optional_hdbscan_analysis(
+    latents: np.ndarray,
+    *,
+    coords_count: int,
+    settings: HDBSCANSettings,
+    random_state: int,
+    l2_normalize: bool,
+    standardize: bool,
+    pca_variance: float | None,
+    pca_max_components: int,
+    prepared_features: np.ndarray | None,
+    prep_info: dict[str, Any] | None,
+    cluster_color_assignment: dict[int, int | str] | None,
+    step: Callable[[str], None],
+) -> HDBSCANResult:
+    if not settings.enabled:
+        return HDBSCANResult(labels=None, info=None, color_map=None)
+
+    step("Running HDBSCAN clustering (sampled fit)")
+    try:
+        hdbscan_labels, hdbscan_info = compute_hdbscan_labels(
+            latents,
+            sample_fraction=settings.fit_fraction,
+            max_fit_samples=settings.max_fit_samples,
+            random_state=random_state,
+            l2_normalize=l2_normalize,
+            standardize=standardize,
+            pca_variance=pca_variance,
+            pca_max_components=pca_max_components,
+            target_clusters_min=settings.target_k_min,
+            target_clusters_max=settings.target_k_max,
+            min_cluster_size_candidates=settings.min_cluster_size_candidates,
+            min_samples=settings.min_samples,
+            min_samples_candidates=settings.min_samples_candidates,
+            cluster_selection_epsilon=settings.cluster_selection_epsilon,
+            cluster_selection_method=settings.cluster_selection_method,
+            refit_full_data=settings.refit_full_data,
+            prepared_features=prepared_features,
+            prep_info=prep_info,
+            return_info=True,
+        )
+        n_hdb_clusters_full = int(hdbscan_info.get("n_clusters_full", -1))
+        if (
+            settings.cluster_selection_method != "auto"
+            and n_hdb_clusters_full >= 0
+            and n_hdb_clusters_full < settings.target_k_min
+        ):
+            print(
+                "[analysis][hdbscan] cluster count below target "
+                f"({n_hdb_clusters_full} < {settings.target_k_min}); "
+                "retrying with cluster_selection_method='auto'."
+            )
+            hdbscan_labels_retry, hdbscan_info_retry = compute_hdbscan_labels(
+                latents,
+                sample_fraction=settings.fit_fraction,
+                max_fit_samples=settings.max_fit_samples,
+                random_state=random_state,
+                l2_normalize=l2_normalize,
+                standardize=standardize,
+                pca_variance=pca_variance,
+                pca_max_components=pca_max_components,
+                target_clusters_min=settings.target_k_min,
+                target_clusters_max=settings.target_k_max,
+                min_cluster_size_candidates=settings.min_cluster_size_candidates,
+                min_samples=settings.min_samples,
+                min_samples_candidates=settings.min_samples_candidates,
+                cluster_selection_epsilon=settings.cluster_selection_epsilon,
+                cluster_selection_method="auto",
+                refit_full_data=settings.refit_full_data,
+                prepared_features=prepared_features,
+                prep_info=prep_info,
+                return_info=True,
+            )
+            retry_clusters = int(hdbscan_info_retry.get("n_clusters_full", -1))
+            retry_noise = float(hdbscan_info_retry.get("noise_fraction_full", 1.0))
+            base_noise = float(hdbscan_info.get("noise_fraction_full", 1.0))
+            if (
+                retry_clusters > n_hdb_clusters_full
+                or (retry_clusters == n_hdb_clusters_full and retry_noise < base_noise)
+            ):
+                hdbscan_labels = hdbscan_labels_retry
+                hdbscan_info = hdbscan_info_retry
+                print(
+                    "[analysis][hdbscan] using retry result: "
+                    f"clusters={retry_clusters}, noise={retry_noise:.4f}."
+                )
+        if hdbscan_labels.size != int(coords_count):
+            print(
+                "Warning: HDBSCAN labels do not match coordinate count; "
+                "skipping HDBSCAN MD outputs."
+            )
+            return HDBSCANResult(labels=None, info=hdbscan_info, color_map=None)
+
+        valid_hdbscan = hdbscan_labels[hdbscan_labels >= 0]
+        if valid_hdbscan.size > 0:
+            hdbscan_color_map = {
+                int(cluster_id): str(color)
+                for cluster_id, color in _build_cluster_color_map(
+                    hdbscan_labels,
+                    cluster_color_assignment=cluster_color_assignment,
+                ).items()
+            }
+        else:
+            hdbscan_color_map = {}
+        if np.any(hdbscan_labels < 0):
+            hdbscan_color_map[-1] = "lightgray"
+        return HDBSCANResult(
+            labels=np.asarray(hdbscan_labels, dtype=int),
+            info=hdbscan_info,
+            color_map=hdbscan_color_map,
+        )
+    except ImportError:
+        print("HDBSCAN package not installed; skipping HDBSCAN analysis.")
+        return HDBSCANResult(labels=None, info=None, color_map=None)
+
+
+def _save_hdbscan_md_outputs(
+    coords: np.ndarray,
+    hdbscan_labels: np.ndarray | None,
+    out_dir: Path,
+    *,
+    hdbscan_color_map: dict[int, str] | None,
+    max_points: int | None,
+    title: str,
+    context_label: str,
+) -> dict[str, Any]:
+    if hdbscan_labels is None:
+        return {}
+
+    outputs: dict[str, Any] = {}
+    hdbscan_coord_files = save_local_structure_assignments(
+        coords,
+        hdbscan_labels,
+        out_dir,
+        prefix="local_structure_hdbscan",
+    )
+    if hdbscan_coord_files:
+        outputs["hdbscan_coords_files"] = hdbscan_coord_files
+    try:
+        hdbscan_path = Path(out_dir) / "md_space_clusters_hdbscan.html"
+        n_hdb_clusters = int(len(np.unique(hdbscan_labels[hdbscan_labels >= 0])))
+        save_interactive_md_plot(
+            coords,
+            hdbscan_labels,
+            hdbscan_path,
+            palette="tab10",
+            cluster_color_map=hdbscan_color_map,
+            max_points=max_points,
+            marker_size=3.0,
+            marker_line_width=0.0,
+            title=f"{title}, k={n_hdb_clusters})",
+            label_prefix="HDBSCAN",
+            aspect_mode="cube",
+        )
+        outputs["hdbscan_interactive_html"] = str(hdbscan_path)
+    except ImportError:
+        print(
+            "Plotly not installed; skipping HDBSCAN interactive MD plot "
+            f"for {context_label}."
+        )
+    return outputs
+
+
+def _save_snapshot_md_outputs(
+    *,
+    out_dir: Path,
+    coords: np.ndarray,
+    cluster_labels: np.ndarray,
+    cluster_labels_by_k: dict[int, np.ndarray],
+    configured_k_values: list[int],
+    primary_k: int,
+    snapshot_source_groups: list[tuple[str, np.ndarray]],
+    snapshot_output_names: dict[str, str],
+    shared_cluster_color_maps_by_k: dict[int, dict[int, str]],
+    interactive_max_points: int | None,
+    hdbscan_result: HDBSCANResult,
+) -> dict[str, Any]:
+    snapshot_root = Path(out_dir) / "md_clusters_by_snapshot"
+    summary: dict[str, Any] = {
+        "root_dir": str(snapshot_root),
+        "primary_k": int(primary_k),
+        "k_values_used": [int(k) for k in configured_k_values],
+        "snapshots": [],
+    }
+    for source_name, indices in snapshot_source_groups:
+        snapshot_dirname = snapshot_output_names[str(source_name)]
+        snapshot_dir = snapshot_root / snapshot_dirname
+        coords_subset = coords[indices]
+        labels_subset = cluster_labels[indices]
+        coord_files = save_local_structure_assignments(
+            coords_subset,
+            labels_subset,
+            snapshot_dir,
+        )
+        if not coord_files:
+            raise RuntimeError(
+                "Failed to save per-snapshot MD cluster assignments. "
+                f"snapshot={source_name}, coords_shape={coords_subset.shape}, "
+                f"labels_shape={labels_subset.shape}, out_dir={snapshot_dir}."
+            )
+        snapshot_record: dict[str, Any] = {
+            "source_name": str(source_name),
+            "output_name": str(snapshot_dirname),
+            "sample_count": int(indices.size),
+            "coords_files": coord_files,
+        }
+        snapshot_record.update(
+            _save_md_cluster_outputs(
+                coords_subset,
+                {
+                    int(k_value): cluster_labels_by_k[int(k_value)][indices]
+                    for k_value in configured_k_values
+                },
+                snapshot_dir,
+                k_values_order=[int(k_value) for k_value in configured_k_values],
+                primary_k=int(primary_k),
+                shared_cluster_color_maps_by_k=shared_cluster_color_maps_by_k,
+                max_points=interactive_max_points,
+                source_name=str(source_name),
+            )
+        )
+        if hdbscan_result.info is not None:
+            snapshot_record["hdbscan"] = hdbscan_result.info
+        if hdbscan_result.labels is not None:
+            snapshot_record.update(
+                _save_hdbscan_md_outputs(
+                    coords_subset,
+                    hdbscan_result.labels[indices],
+                    snapshot_dir,
+                    hdbscan_color_map=hdbscan_result.color_map,
+                    max_points=interactive_max_points,
+                    title=(
+                        "MD local-structure clusters "
+                        f"(HDBSCAN, snapshot={source_name}, n={len(coords_subset)}"
+                    ),
+                    context_label=f"snapshot {source_name}",
+                )
+            )
+        summary["snapshots"].append(snapshot_record)
+    return summary
+
+
+def _build_md_metrics(
+    *,
+    out_dir: Path,
+    coords: np.ndarray,
+    cluster_labels: np.ndarray,
+    cluster_labels_by_k: dict[int, np.ndarray],
+    configured_k_values: list[int],
+    primary_k: int,
+    shared_cluster_color_maps_by_k: dict[int, dict[int, str]],
+    interactive_max_points: int | None,
+    multi_snapshot_real: bool,
+    snapshot_source_groups: list[tuple[str, np.ndarray]],
+    snapshot_output_names: dict[str, str],
+    hdbscan_result: HDBSCANResult,
+) -> dict[str, Any]:
+    unique_labels, counts = np.unique(cluster_labels, return_counts=True)
+    metrics: dict[str, Any] = {
+        "primary_k": int(primary_k),
+        "k_values_used": [int(k) for k in configured_k_values],
+        "n_clusters": int(len(unique_labels)),
+        "cluster_counts": {int(k): int(v) for k, v in zip(unique_labels, counts)},
+    }
+    if hdbscan_result.info is not None:
+        metrics["hdbscan"] = hdbscan_result.info
+
+    if multi_snapshot_real:
+        metrics["by_snapshot"] = _save_snapshot_md_outputs(
+            out_dir=out_dir,
+            coords=coords,
+            cluster_labels=cluster_labels,
+            cluster_labels_by_k=cluster_labels_by_k,
+            configured_k_values=configured_k_values,
+            primary_k=primary_k,
+            snapshot_source_groups=snapshot_source_groups,
+            snapshot_output_names=snapshot_output_names,
+            shared_cluster_color_maps_by_k=shared_cluster_color_maps_by_k,
+            interactive_max_points=interactive_max_points,
+            hdbscan_result=hdbscan_result,
+        )
+        return metrics
+
+    coord_files = save_local_structure_assignments(
+        coords,
+        cluster_labels,
+        out_dir,
+    )
+    if not coord_files:
+        raise RuntimeError(
+            "Failed to save MD cluster assignments. "
+            f"coords_shape={coords.shape}, labels_shape={cluster_labels.shape}, "
+            f"out_dir={out_dir}."
+        )
+    metrics["coords_files"] = coord_files
+    metrics.update(
+        _save_md_cluster_outputs(
+            coords,
+            {
+                int(k_value): cluster_labels_by_k[int(k_value)]
+                for k_value in configured_k_values
+            },
+            out_dir,
+            k_values_order=[int(k_value) for k_value in configured_k_values],
+            primary_k=int(primary_k),
+            shared_cluster_color_maps_by_k=shared_cluster_color_maps_by_k,
+            max_points=interactive_max_points,
+        )
+    )
+    if hdbscan_result.labels is not None:
+        metrics.update(
+            _save_hdbscan_md_outputs(
+                coords,
+                hdbscan_result.labels,
+                out_dir,
+                hdbscan_color_map=hdbscan_result.color_map,
+                max_points=interactive_max_points,
+                title=f"MD local-structure clusters (HDBSCAN, n={len(coords)}",
+                context_label="full dataset",
+            )
+        )
+    return metrics
+
+
 @contextmanager
 def _temporary_disable_dataset_aug(dataloader: torch.utils.data.DataLoader):
     changes: list[tuple[Any, str, float]] = []
@@ -1029,15 +2195,21 @@ def load_barlow_model(
     return model, cfg, device
 
 
-def build_datamodule(cfg: DictConfig):
-    """Instantiate and setup the matching datamodule."""
+def build_datamodule(
+    cfg: DictConfig,
+    *,
+    require_coords_for_real: bool = False,
+):
+    """Instantiate the matching datamodule."""
     if getattr(cfg, "data", None) is None:
         raise ValueError("Config missing data section")
     if getattr(cfg.data, "kind", None) == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
     else:
-        dm = RealPointCloudDataModule(cfg)
-    dm.setup(stage="test")
+        dm = RealPointCloudDataModule(
+            cfg,
+            return_coords=bool(require_coords_for_real),
+        )
     return dm
 
 
@@ -1070,10 +2242,6 @@ def _print_figure_set_summary(
                 print(f"  - ..._{tag}_k{k_fig}[_view*]_raytrace.png")
                 print(f"  - ..._{tag}_k{k_fig}_raytrace_gallery.png")
         print(f"  - cluster_figure_set_k{k_fig}/04_cluster_representatives_k{k_fig}*.png")
-        print(
-            "  - cluster_figure_set_k"
-            f"{k_fig}/07_cluster_representatives_two_shells_pca_spatial_neighbors_k{k_fig}.png"
-        )
         print(
             "  - cluster_figure_set_k"
             f"{k_fig}/08_cluster_representatives_spatial_neighbors_paper_k{k_fig}.png"
@@ -1119,6 +2287,7 @@ def run_post_training_analysis(
     cluster_figure_only: bool = False,
     md_render_saturation_boost: float | None = None,
     raytrace_render_enabled: bool | None = None,
+    cluster_k: int | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for contrastive checkpoints."""
     out_dir = Path(output_dir)
@@ -1133,31 +2302,17 @@ def run_post_training_analysis(
 
     _step("Loading analysis config")
     cfg = load_analysis_config(checkpoint_path, cfg=cfg)
+    unified_cluster_k = _apply_unified_cluster_k_override(
+        cfg,
+        cluster_k_override=cluster_k,
+    )
     model: BarlowTwinsModule | None = None
     device = f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu"
-
-    def _resolve_analysis_files() -> list[str] | None:
-        if cfg.data.kind != "real":
-            return None
-        if data_files_override:
-            return data_files_override
-
-        canonical_files = _as_list_of_str(
-            OmegaConf.select(cfg, "data.analysis_data_files", default=None)
-        )
-        if canonical_files:
-            return canonical_files
-
-        data_files = _as_list_of_str(OmegaConf.select(cfg, "data.data_files", default=None))
-        if not data_files:
-            raise ValueError(
-                "Cannot resolve analysis data files: data.data_files is missing or empty, "
-                "and no analysis-specific file override was provided."
-            )
-        return data_files
-
     analysis_source_names: list[str] | None = None
-    analysis_files = _resolve_analysis_files()
+    analysis_files = _resolve_analysis_files(
+        cfg,
+        data_files_override=data_files_override,
+    )
     if analysis_files is not None:
         analysis_source_names = _configure_real_analysis_inputs(cfg, analysis_files)
         print(f"Analysis data_files: {analysis_files}")
@@ -1168,390 +2323,53 @@ def run_post_training_analysis(
     analysis_num_workers = 4
     cfg.num_workers = analysis_num_workers
     print(f"Analysis dataloader workers: {analysis_num_workers}")
-
-    tsne_max_samples = int(getattr(cfg, "analysis_tsne_max_samples", 8000))
-    if max_samples_visualization is not None:
-        tsne_max_samples = min(tsne_max_samples, max_samples_visualization)
-    cluster_method = str(getattr(cfg, "analysis_cluster_method", "auto")).lower()
-    cluster_l2_normalize = bool(getattr(cfg, "analysis_cluster_l2_normalize", True))
-    cluster_standardize = bool(getattr(cfg, "analysis_cluster_standardize", True))
-    cluster_pca_var = float(getattr(cfg, "analysis_cluster_pca_var", 0.98))
-    cluster_pca_max_components = int(
-        getattr(cfg, "analysis_cluster_pca_max_components", 32)
-    )
-    cluster_k_values_cfg = _as_list_of_int(
-        getattr(cfg, "analysis_cluster_k_values", None),
-        field_name="analysis_cluster_k_values",
-    )
-    cluster_k_values = cluster_k_values_cfg or [3, 4, 5, 6]
-    cluster_k_values = [int(k) for k in cluster_k_values if int(k) >= 2]
-    cluster_k_values = list(dict.fromkeys(cluster_k_values))
-    if not cluster_k_values:
-        cluster_k_values = [3, 4, 5, 6]
-    data_overlap_fraction = _validate_overlap_fraction(getattr(cfg.data, "overlap_fraction", 0.0))
-    analysis_md_overlap_boost = float(getattr(cfg, "analysis_md_overlap_boost", 0.25))
-    analysis_md_overlap_fraction_raw = getattr(cfg, "analysis_md_overlap_fraction", None)
-    if analysis_md_overlap_fraction_raw is None:
-        analysis_md_overlap_fraction = min(0.95, data_overlap_fraction + analysis_md_overlap_boost)
-    else:
-        analysis_md_overlap_fraction = _validate_overlap_fraction(analysis_md_overlap_fraction_raw)
-    cfg.data.overlap_fraction = float(analysis_md_overlap_fraction)
-    md_use_all_points = bool(getattr(cfg, "analysis_md_use_all_points", True))
-    hdbscan_enabled = bool(getattr(cfg, "analysis_hdbscan_enabled", True))
-    hdbscan_fit_fraction = float(getattr(cfg, "analysis_hdbscan_fit_fraction", 0.75))
-    hdbscan_max_fit_samples = int(getattr(cfg, "analysis_hdbscan_max_fit_samples", 50000))
-    hdbscan_target_k_min = int(getattr(cfg, "analysis_hdbscan_target_k_min", 5))
-    hdbscan_target_k_max = int(getattr(cfg, "analysis_hdbscan_target_k_max", 6))
-    hdbscan_min_samples = getattr(cfg, "analysis_hdbscan_min_samples", None)
-    if hdbscan_min_samples is not None:
-        hdbscan_min_samples = int(hdbscan_min_samples)
-    _hdbscan_ms_raw = getattr(cfg, "analysis_hdbscan_min_samples_candidates", None)
-    hdbscan_min_samples_candidates = (
-        [int(v) for v in _hdbscan_ms_raw]
-        if _hdbscan_ms_raw is not None
-        else None
-    )
-    if hdbscan_min_samples_candidates is not None and len(hdbscan_min_samples_candidates) == 0:
-        hdbscan_min_samples_candidates = None
-    hdbscan_cluster_selection_epsilon = float(
-        getattr(cfg, "analysis_hdbscan_cluster_selection_epsilon", 0.0)
-    )
-    hdbscan_cluster_selection_method = str(
-        getattr(cfg, "analysis_hdbscan_cluster_selection_method", "auto")
-    ).lower()
-    _hdbscan_mcs_raw = getattr(cfg, "analysis_hdbscan_min_cluster_size_candidates", None)
-    hdbscan_min_cluster_size_candidates = (
-        [int(v) for v in _hdbscan_mcs_raw]
-        if _hdbscan_mcs_raw is not None
-        else None
-    )
-    hdbscan_refit_full_data = bool(
-        getattr(cfg, "analysis_hdbscan_refit_full_data", True)
-    )
-    progress_every_batches = int(getattr(cfg, "analysis_progress_every_batches", 25))
-    cluster_figure_only = bool(
-        cluster_figure_only or getattr(cfg, "analysis_cluster_figure_only", False)
-    )
-    cluster_figure_set_enabled = bool(
-        getattr(cfg, "analysis_cluster_figure_set_enabled", True)
-    ) or cluster_figure_only
-    cluster_figure_k = max(2, int(getattr(cfg, "analysis_cluster_figure_set_k", 6)))
-    cluster_figure_md_max_points = _positive_int_or_none(
-        getattr(cfg, "analysis_cluster_figure_md_max_points", None)
-    )
-    cluster_figure_md_point_size = float(
-        getattr(cfg, "analysis_cluster_figure_md_point_size", 5.6)
-    )
-    cluster_figure_md_alpha = float(
-        getattr(cfg, "analysis_cluster_figure_md_alpha", 0.62)
-    )
-    cluster_figure_md_halo_scale = float(
-        getattr(cfg, "analysis_cluster_figure_md_halo_scale", 1.0)
-    )
-    cluster_figure_md_halo_alpha = float(
-        getattr(cfg, "analysis_cluster_figure_md_halo_alpha", 0.0)
-    )
-    cluster_figure_md_saturation_cfg = float(
-        getattr(cfg, "analysis_cluster_figure_md_saturation_boost", 1.18)
-    )
-    cluster_figure_md_saturation_use = float(
-        cluster_figure_md_saturation_cfg
-        if md_render_saturation_boost is None
-        else md_render_saturation_boost
-    )
-    cluster_figure_md_view_elev = float(
-        getattr(cfg, "analysis_cluster_figure_md_view_elev", 24.0)
-    )
-    cluster_figure_md_view_azim = float(
-        getattr(cfg, "analysis_cluster_figure_md_view_azim", 35.0)
-    )
-    raytrace_render_enabled_use = bool(
-        getattr(cfg, "analysis_cluster_figure_raytrace_enabled", False)
-        if raytrace_render_enabled is None
-        else raytrace_render_enabled
-    )
-    raytrace_render_kwargs = {
-        "raytrace_blender_executable": str(
-            getattr(cfg, "analysis_cluster_figure_raytrace_blender_executable")
-        ).strip(),
-        "raytrace_render_resolution": int(
-            getattr(cfg, "analysis_cluster_figure_raytrace_resolution")
-        ),
-        "raytrace_render_max_points": _positive_int_or_none(
-            getattr(cfg, "analysis_cluster_figure_raytrace_max_points", None)
-        ),
-        "raytrace_render_samples": int(
-            getattr(cfg, "analysis_cluster_figure_raytrace_samples")
-        ),
-        "raytrace_render_projection": str(
-            getattr(cfg, "analysis_cluster_figure_raytrace_projection")
-        ).strip().lower(),
-        "raytrace_render_fov_deg": float(
-            getattr(cfg, "analysis_cluster_figure_raytrace_fov_deg")
-        ),
-        "raytrace_render_camera_distance_factor": float(
-            getattr(cfg, "analysis_cluster_figure_raytrace_camera_distance_factor")
-        ),
-        "raytrace_render_sphere_radius_fraction": float(
-            getattr(cfg, "analysis_cluster_figure_raytrace_sphere_radius_fraction")
-        ),
-        "raytrace_render_timeout_sec": int(
-            getattr(cfg, "analysis_cluster_figure_raytrace_timeout_sec")
-        ),
-        "raytrace_render_use_gpu": bool(
-            getattr(cfg, "analysis_cluster_figure_raytrace_use_gpu", False)
-        ),
-        "raytrace_parallel_views": bool(
-            getattr(cfg, "analysis_cluster_figure_raytrace_parallel_views", False)
-        ),
-        "raytrace_parallel_max_workers": _positive_int_or_none(
-            getattr(cfg, "analysis_cluster_figure_raytrace_parallel_max_workers", None)
-        ),
-    }
-    _cfg_visible_sets_raw = getattr(cfg, "analysis_cluster_figure_visible_sets", None)
-    if _cfg_visible_sets_raw is not None and visible_cluster_sets is None:
-        visible_cluster_sets = [
-            [int(v) for v in str(s).split(",")]
-            for s in _cfg_visible_sets_raw
-        ]
-    cluster_color_assignment_cfg = _normalize_cluster_color_assignment(
-        OmegaConf.select(cfg, "analysis_cluster_figure_color_assignment", default=None),
-        field_name="analysis_cluster_figure_color_assignment",
-    )
-    cluster_color_assignment_file_cfg = OmegaConf.select(
+    analysis_settings = _resolve_analysis_settings(
         cfg,
-        "analysis_cluster_figure_color_assignment_file",
-        default=None,
+        max_samples_visualization=max_samples_visualization,
     )
-    cluster_color_assignment_cfg_file = (
-        _load_cluster_color_assignment_file(
-            str(cluster_color_assignment_file_cfg),
-            base_dir=out_dir,
-        )
-        if cluster_color_assignment_file_cfg is not None
-        else None
+    hdbscan_settings = analysis_settings.hdbscan
+    figure_settings = _resolve_figure_set_settings(
+        cfg,
+        out_dir=out_dir,
+        visible_cluster_sets=visible_cluster_sets,
+        cluster_color_assignment=cluster_color_assignment,
+        cluster_color_assignment_file=cluster_color_assignment_file,
+        cluster_figure_only=cluster_figure_only,
+        md_render_saturation_boost=md_render_saturation_boost,
+        raytrace_render_enabled=raytrace_render_enabled,
     )
-    cluster_color_assignment_cli = _normalize_cluster_color_assignment(
-        cluster_color_assignment,
-        field_name="cluster_color_assignment",
+    _print_resolved_analysis_settings(
+        unified_cluster_k=unified_cluster_k,
+        analysis_settings=analysis_settings,
+        figure_settings=figure_settings,
     )
-    cluster_color_assignment_cli_file = (
-        _load_cluster_color_assignment_file(
-            str(cluster_color_assignment_file),
-            base_dir=out_dir,
-        )
-        if cluster_color_assignment_file is not None
-        else None
-    )
-    cluster_color_assignment_use = _merge_cluster_color_assignments(
-        cluster_color_assignment_cfg_file,
-        cluster_color_assignment_cfg,
-        cluster_color_assignment_cli_file,
-        cluster_color_assignment_cli,
-    )
-    cluster_profile_point_scale_enabled = bool(
-        getattr(cfg, "analysis_cluster_profile_point_scale_enabled", False)
-    )
-    cluster_figure_icl_enabled = bool(
-        getattr(cfg, "analysis_cluster_figure_icl_enabled", False)
-    )
-    cluster_figure_icl_k_min = int(getattr(cfg, "analysis_cluster_figure_icl_k_min", 2))
-    cluster_figure_icl_k_max = int(getattr(cfg, "analysis_cluster_figure_icl_k_max", 20))
-    cluster_figure_icl_max_samples = _positive_int_or_none(
-        getattr(cfg, "analysis_cluster_figure_icl_max_samples", 20000)
-    )
-    cluster_figure_icl_covariance = str(
-        getattr(cfg, "analysis_cluster_figure_icl_covariance", "diag")
-    ).lower()
-    representative_points_default = int(
-        getattr(
-            cfg.data,
-            "model_points",
-            getattr(cfg.data, "num_points", 48),
-        )
-    )
-    cluster_figure_representative_points = max(
-        16,
-        int(
-            getattr(
-                cfg,
-                "analysis_cluster_figure_representative_points",
-                representative_points_default,
-            )
-        ),
-    )
-    cluster_figure_representative_orientation = str(
-        getattr(cfg, "analysis_cluster_figure_representative_orientation", "pca")
-    ).strip().lower()
-    if cluster_figure_representative_orientation not in {"pca", "none"}:
-        raise ValueError(
-            "analysis_cluster_figure_representative_orientation must be one of "
-            "['pca', 'none'], got "
-            f"{cluster_figure_representative_orientation!r}."
-        )
-    cluster_figure_representative_view_elev = float(
-        getattr(cfg, "analysis_cluster_figure_representative_view_elev", 22.0)
-    )
-    cluster_figure_representative_view_azim = float(
-        getattr(cfg, "analysis_cluster_figure_representative_view_azim", 38.0)
-    )
-    cluster_figure_representative_projection = str(
-        getattr(cfg, "analysis_cluster_figure_representative_projection", "ortho")
-    ).strip().lower()
-    representative_ptm_enabled = bool(
-        getattr(cfg, "analysis_cluster_figure_representative_ptm_enabled", False)
-    )
-    representative_cna_enabled = bool(
-        getattr(cfg, "analysis_cluster_figure_representative_cna_enabled", False)
-    )
-    representative_cna_max_signatures = int(
-        getattr(cfg, "analysis_cluster_figure_representative_cna_max_signatures", 5)
-    )
-    representative_center_atom_tolerance = float(
-        getattr(
-            cfg,
-            "analysis_cluster_figure_representative_center_atom_tolerance",
-            1e-6,
-        )
-    )
-    representative_shell_min_neighbors = int(
-        getattr(
-            cfg,
-            "analysis_cluster_figure_representative_shell_min_neighbors",
-            8,
-        )
-    )
-    representative_shell_max_neighbors = int(
-        getattr(
-            cfg,
-            "analysis_cluster_figure_representative_shell_max_neighbors",
-            24,
-        )
-    )
-    if representative_cna_max_signatures <= 0:
-        raise ValueError(
-            "analysis_cluster_figure_representative_cna_max_signatures must be > 0, "
-            f"got {representative_cna_max_signatures}."
-        )
-    if representative_shell_min_neighbors < 2:
-        raise ValueError(
-            "analysis_cluster_figure_representative_shell_min_neighbors must be >= 2, "
-            f"got {representative_shell_min_neighbors}."
-        )
-    if representative_shell_max_neighbors <= representative_shell_min_neighbors:
-        raise ValueError(
-            "analysis_cluster_figure_representative_shell_max_neighbors must exceed "
-            "analysis_cluster_figure_representative_shell_min_neighbors, got "
-            f"{representative_shell_max_neighbors} <= {representative_shell_min_neighbors}."
-        )
-    inference_cache_enabled = bool(
-        getattr(cfg, "analysis_inference_cache_enabled", True)
-    )
-    inference_cache_force_recompute = bool(
-        getattr(cfg, "analysis_inference_cache_force_recompute", False)
-    )
-    inference_cache_file = str(
-        getattr(cfg, "analysis_inference_cache_file", "analysis_inference_cache.npz")
-    ).strip()
-    if inference_cache_file == "":
-        raise ValueError("analysis_inference_cache_file must be a non-empty file name.")
-    print(f"t-SNE sample cap: {tsne_max_samples}")
-    print(f"Clustering k values (configured): {cluster_k_values}")
-    print(
-        "MD overlap fraction (analysis): "
-        f"{data_overlap_fraction:.3f} -> {analysis_md_overlap_fraction:.3f}"
-    )
-    print(
-        "HDBSCAN settings: "
-        f"fit_fraction={hdbscan_fit_fraction:.3f}, "
-        f"max_fit_samples={hdbscan_max_fit_samples}, "
-        f"target_k=[{hdbscan_target_k_min}, {hdbscan_target_k_max}], "
-        f"selection_method={hdbscan_cluster_selection_method}, "
-        f"refit_full_data={hdbscan_refit_full_data}"
-    )
-    print(
-        "Fixed-k figure set: "
-        f"enabled={cluster_figure_set_enabled}, "
-        f"figure_only={cluster_figure_only}, "
-        f"k={cluster_figure_k}, "
-        f"visible_sets={visible_cluster_sets or []}, "
-        f"md_saturation={cluster_figure_md_saturation_use:.2f}, "
-        f"raytrace_enabled={raytrace_render_enabled_use}, "
-        f"raytrace_projection={raytrace_render_kwargs['raytrace_render_projection']}, "
-        f"raytrace_samples={raytrace_render_kwargs['raytrace_render_samples']}, "
-        f"raytrace_res={raytrace_render_kwargs['raytrace_render_resolution']}, "
-        f"raytrace_max_points={raytrace_render_kwargs['raytrace_render_max_points']}, "
-        f"raytrace_gpu={raytrace_render_kwargs['raytrace_render_use_gpu']}, "
-        f"raytrace_parallel_views={raytrace_render_kwargs['raytrace_parallel_views']}, "
-        "raytrace_parallel_max_workers="
-        f"{raytrace_render_kwargs['raytrace_parallel_max_workers']}, "
-        f"icl_enabled={cluster_figure_icl_enabled}, "
-        f"profile_point_scale_enabled={cluster_profile_point_scale_enabled}, "
-        f"rep_orientation={cluster_figure_representative_orientation}, "
-        "rep_view=("
-        f"{cluster_figure_representative_view_elev:.1f},"
-        f"{cluster_figure_representative_view_azim:.1f}"
-        "), "
-        f"rep_projection={cluster_figure_representative_projection}, "
-        f"rep_ptm={representative_ptm_enabled}, "
-        f"rep_cna={representative_cna_enabled}, "
-        "rep_cna_shell=("
-        f"{representative_shell_min_neighbors},"
-        f"{representative_shell_max_neighbors}"
-        "), "
-        "cluster_color_overrides="
-        f"{sorted(cluster_color_assignment_use) if cluster_color_assignment_use else []}"
-    )
-    _step("Building datamodule")
-    dm = build_datamodule(cfg)
     is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
-
+    _step("Building datamodule")
+    dm = build_datamodule(
+        cfg,
+        require_coords_for_real=not is_synthetic,
+    )
     dm.setup(stage="fit")
     all_metrics: Dict[str, Any] = {}
-
-    print("Using ALL dataset splits (train + test) for latent analysis")
-
-    if is_synthetic:
-        train_dataset = getattr(dm, "train_dataset", None)
-        test_dataset = getattr(dm, "test_dataset", None)
-        if train_dataset is None or test_dataset is None:
-            raise ValueError("Synthetic datamodule is missing train/test datasets.")
-        combined_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
-        dl = torch.utils.data.DataLoader(
-            combined_dataset,
-            batch_size=cfg.batch_size,
-            num_workers=4,
-            shuffle=False,
-            drop_last=False,
-            pin_memory=True,
-            persistent_workers=True,
-        )
-    else:
-        dl = build_real_coords_dataloader(
-            cfg,
-            dm,
-            use_train_data=True,
-            use_full_dataset=True,
-            prefer_existing_full_dataset=True,
-        )
-        print(
-            "Real data detected: using full dataset for local-structure clustering visualization"
-        )
+    dl = _build_analysis_dataloader(
+        cfg,
+        dm,
+        is_synthetic=is_synthetic,
+    )
 
     class_names = _extract_class_names(dm.train_dataset)
     print(f"Loaded class names: {class_names}")
 
     if max_batches_latent is None:
         max_batches_latent = _positive_int_or_none(getattr(cfg, "analysis_max_batches_latent", None))
-    max_samples_total = getattr(cfg, "analysis_max_samples_total", None)
-    if max_samples_total is None and not is_synthetic:
-        max_samples_total = 20000
-    if not is_synthetic and md_use_all_points:
-        max_samples_total = None
-    max_samples_total = _positive_int_or_none(max_samples_total)
+    max_samples_total = _resolve_analysis_max_samples_total(
+        cfg,
+        is_synthetic=is_synthetic,
+        md_use_all_points=analysis_settings.md_use_all_points,
+    )
 
-    seed_base = getattr(cfg, "analysis_seed_base", 123)
-    clustering_random_state = int(seed_base)
+    seed_base = int(analysis_settings.seed_base)
+    clustering_random_state = int(analysis_settings.seed_base)
     cache_spec = _build_inference_cache_spec(
         checkpoint_path=checkpoint_path,
         cfg=cfg,
@@ -1562,11 +2380,11 @@ def run_post_training_analysis(
 
     cache: dict[str, np.ndarray] | None = None
     cache_loaded = False
-    if cluster_figure_only:
+    if figure_settings.figure_only:
         _step("Loading cached inference batches")
         cache, cache_msg = _load_inference_cache(
             out_dir=out_dir,
-            cache_filename=inference_cache_file,
+            cache_filename=analysis_settings.inference_cache_file,
             expected_spec=cache_spec,
         )
         cache_loaded = cache is not None
@@ -1577,7 +2395,7 @@ def run_post_training_analysis(
                 "run model inference. "
                 f"Cache load failed: {cache_msg}. "
                 "Run the full analysis once without --cluster_figure_only to populate "
-                f"{out_dir / inference_cache_file}."
+                f"{out_dir / analysis_settings.inference_cache_file}."
             )
     else:
         _step("Loading model")
@@ -1587,19 +2405,25 @@ def run_post_training_analysis(
             cfg=cfg,
         )
         _step("Collecting inference batches")
-        if inference_cache_enabled and not inference_cache_force_recompute:
+        if (
+            analysis_settings.inference_cache_enabled
+            and not analysis_settings.inference_cache_force_recompute
+        ):
             cache, cache_msg = _load_inference_cache(
                 out_dir=out_dir,
-                cache_filename=inference_cache_file,
+                cache_filename=analysis_settings.inference_cache_file,
                 expected_spec=cache_spec,
             )
             cache_loaded = cache is not None
             print(f"[analysis][cache] {cache_msg}")
-        elif inference_cache_enabled and inference_cache_force_recompute:
+        elif (
+            analysis_settings.inference_cache_enabled
+            and analysis_settings.inference_cache_force_recompute
+        ):
             print("[analysis][cache] Forced recompute requested; skipping cache load.")
 
-    if cache is None and not cluster_figure_only:
-        if not inference_cache_enabled:
+    if cache is None and not figure_settings.figure_only:
+        if not analysis_settings.inference_cache_enabled:
             print("[analysis][cache] Inference cache disabled; running fresh inference.")
         if max_batches_latent is None:
             print("Gathering inference batches (ALL batches)...")
@@ -1619,40 +2443,52 @@ def run_post_training_analysis(
             max_samples_total=max_samples_total,
             collect_coords=True,
             seed_base=seed_base,
-            progress_every_batches=progress_every_batches,
+            progress_every_batches=analysis_settings.progress_every_batches,
             verbose=True,
         )
         _validate_inference_cache_arrays(cache)
-        if inference_cache_enabled:
+        if analysis_settings.inference_cache_enabled:
             _save_inference_cache(
                 out_dir=out_dir,
-                cache_filename=inference_cache_file,
+                cache_filename=analysis_settings.inference_cache_file,
                 cache=cache,
                 spec=cache_spec,
             )
-            cache_npz, _ = _inference_cache_paths(out_dir, inference_cache_file)
+            cache_npz, _ = _inference_cache_paths(
+                out_dir,
+                analysis_settings.inference_cache_file,
+            )
             print(f"[analysis][cache] Saved inference cache: {cache_npz}")
 
     _validate_inference_cache_arrays(cache)
     n_samples = len(cache["inv_latents"])
     print(f"Collected {n_samples} samples for analysis")
     all_metrics["inference_cache"] = {
-        "enabled": bool(inference_cache_enabled),
-        "file": str((out_dir / inference_cache_file)),
+        "enabled": bool(analysis_settings.inference_cache_enabled),
+        "file": str((out_dir / analysis_settings.inference_cache_file)),
         "loaded_from_cache": bool(cache_loaded),
-        "force_recompute": bool(inference_cache_force_recompute),
+        "force_recompute": bool(analysis_settings.inference_cache_force_recompute),
         "spec_sha256": _inference_cache_spec_hash(cache_spec),
     }
     coords = cache["coords"]
     md_metrics_key = "synthetic_md" if is_synthetic else "real_md"
     point_scale = (
         _resolve_point_scale(cfg)
-        if cluster_profile_point_scale_enabled
+        if figure_settings.profile_point_scale_enabled
         else 1.0
     )
     print(
         "Representative point scaling: "
-        f"enabled={cluster_profile_point_scale_enabled}, point_scale={point_scale:.6g}"
+        f"enabled={figure_settings.profile_point_scale_enabled}, point_scale={point_scale:.6g}"
+    )
+    _step("Preparing clustering features")
+    clustering_features, clustering_feature_prep = _prepare_clustering_features(
+        cache["inv_latents"],
+        random_state=int(clustering_random_state),
+        l2_normalize=analysis_settings.cluster_l2_normalize,
+        standardize=analysis_settings.cluster_standardize,
+        pca_variance=analysis_settings.cluster_pca_var,
+        pca_max_components=analysis_settings.cluster_pca_max_components,
     )
     dataset_obj = getattr(dl, "dataset", None)
     snapshot_source_groups: list[tuple[str, np.ndarray]] = []
@@ -1682,45 +2518,16 @@ def run_post_training_analysis(
                 f"{encountered_source_names}"
             )
 
-    figure_set_kwargs = dict(
+    figure_set_kwargs = figure_settings.build_run_kwargs(
         dataset=dataset_obj,
         latents=cache["inv_latents"],
         coords=coords,
-        k_value=int(cluster_figure_k),
         point_scale=point_scale,
-        l2_normalize=cluster_l2_normalize,
-        standardize=cluster_standardize,
-        pca_variance=cluster_pca_var,
-        pca_max_components=cluster_pca_max_components,
-        md_max_points=cluster_figure_md_max_points,
-        icl_enabled=cluster_figure_icl_enabled,
-        icl_k_min=cluster_figure_icl_k_min,
-        icl_k_max=cluster_figure_icl_k_max,
-        icl_max_samples=cluster_figure_icl_max_samples,
-        icl_covariance_type=cluster_figure_icl_covariance,
-        representative_points=cluster_figure_representative_points,
-        md_point_size=cluster_figure_md_point_size,
-        md_point_alpha=cluster_figure_md_alpha,
-        md_halo_scale=cluster_figure_md_halo_scale,
-        md_halo_alpha=cluster_figure_md_halo_alpha,
-        md_saturation_boost=cluster_figure_md_saturation_use,
-        md_view_elev=cluster_figure_md_view_elev,
-        md_view_azim=cluster_figure_md_view_azim,
-        representative_orientation_method=cluster_figure_representative_orientation,
-        representative_view_elev=cluster_figure_representative_view_elev,
-        representative_view_azim=cluster_figure_representative_view_azim,
-        representative_projection=cluster_figure_representative_projection,
-        representative_ptm_enabled=representative_ptm_enabled,
-        representative_cna_enabled=representative_cna_enabled,
-        representative_cna_max_signatures=representative_cna_max_signatures,
-        representative_center_atom_tolerance=representative_center_atom_tolerance,
-        representative_shell_min_neighbors=representative_shell_min_neighbors,
-        representative_shell_max_neighbors=representative_shell_max_neighbors,
-        visible_cluster_sets=visible_cluster_sets,
-        cluster_color_assignment=cluster_color_assignment_use,
         random_state=clustering_random_state,
-        raytrace_render_enabled=raytrace_render_enabled_use,
-        **raytrace_render_kwargs,
+        l2_normalize=analysis_settings.cluster_l2_normalize,
+        standardize=analysis_settings.cluster_standardize,
+        pca_variance=analysis_settings.cluster_pca_var,
+        pca_max_components=analysis_settings.cluster_pca_max_components,
     )
 
     def _run_figure_set(
@@ -1732,10 +2539,11 @@ def run_post_training_analysis(
         coords_override: np.ndarray | None = None,
         cluster_color_assignment_override: dict[int, int | str] | None = None,
         visible_cluster_sets_override: list[list[int]] | None = None,
+        representative_render_cache_override: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         _step("Generating fixed-k cluster figure set")
         figure_set_dir = (
-            out_dir / f"cluster_figure_set_k{cluster_figure_k}"
+            out_dir / f"cluster_figure_set_k{figure_settings.k}"
             if figure_out_dir is None
             else Path(figure_out_dir)
         )
@@ -1750,6 +2558,8 @@ def run_post_training_analysis(
             run_kwargs["cluster_color_assignment"] = cluster_color_assignment_override
         if visible_cluster_sets_override is not None:
             run_kwargs["visible_cluster_sets"] = visible_cluster_sets_override
+        if representative_render_cache_override is not None:
+            run_kwargs["representative_render_cache"] = representative_render_cache_override
         with _temporary_disable_dataset_aug(dl):
             return _save_fixed_k_cluster_figure_set(
                 out_dir=figure_set_dir,
@@ -1762,7 +2572,7 @@ def run_post_training_analysis(
     ) -> dict[int, str]:
         color_map = _build_cluster_color_map(
             labels_for_k,
-            cluster_color_assignment=cluster_color_assignment_use,
+            cluster_color_assignment=figure_settings.cluster_color_assignment,
         )
         return {int(cluster_id): str(color) for cluster_id, color in color_map.items()}
 
@@ -1778,7 +2588,7 @@ def run_post_training_analysis(
                 "Cannot generate per-snapshot cluster figure sets: dataloader dataset is missing."
             )
 
-        min_required_samples = int(cluster_figure_k) + 1
+        min_required_samples = int(figure_settings.k) + 1
         too_small = [
             (str(source_name), int(indices.size))
             for source_name, indices in snapshot_source_groups
@@ -1790,7 +2600,7 @@ def run_post_training_analysis(
                 "Cannot generate per-snapshot cluster figure sets because at least one "
                 "snapshot has too few collected samples for the requested fixed-k analysis. "
                 f"Need at least {min_required_samples} samples per snapshot for "
-                f"k={cluster_figure_k}, got {details}. "
+                f"k={figure_settings.k}, got {details}. "
                 "Increase analysis_max_samples_total / max_batches_latent, or lower "
                 "analysis_cluster_figure_set_k."
             )
@@ -1798,10 +2608,10 @@ def run_post_training_analysis(
         snapshot_root = out_dir / "cluster_figure_sets_by_snapshot"
         summary: dict[str, Any] = {
             "root_dir": str(snapshot_root),
-            "k_value": int(cluster_figure_k),
+            "k_value": int(figure_settings.k),
             "requested_visible_cluster_sets": [
                 sorted(int(v) for v in cluster_set)
-                for cluster_set in (visible_cluster_sets or [])
+                for cluster_set in (figure_settings.visible_cluster_sets or [])
             ],
             "snapshots": [],
         }
@@ -1825,14 +2635,16 @@ def run_post_training_analysis(
 
         for source_name, indices in ordered_snapshot_groups:
             snapshot_dirname = snapshot_output_names[str(source_name)]
-            snapshot_dir = snapshot_root / snapshot_dirname / f"cluster_figure_set_k{cluster_figure_k}"
+            snapshot_dir = (
+                snapshot_root / snapshot_dirname / f"cluster_figure_set_k{figure_settings.k}"
+            )
             subset_dataset = torch.utils.data.Subset(
                 dataset_obj,
                 [int(v) for v in indices.tolist()],
             )
             snapshot_visible_sets = _resolve_visible_cluster_sets_for_labels(
                 labels_for_k[indices],
-                visible_cluster_sets,
+                figure_settings.visible_cluster_sets,
                 context=f"snapshot={source_name}",
             )
             figure_info = _run_figure_set(
@@ -1852,39 +2664,41 @@ def run_post_training_analysis(
                     "figure_set": figure_info,
                 }
             )
-        if bool(raytrace_render_enabled_use):
+        if bool(figure_settings.raytrace_enabled):
             summary["raytrace_galleries_by_view"] = _save_snapshot_raytrace_galleries_by_view(
                 summary,
-                requested_visible_cluster_sets=visible_cluster_sets,
+                requested_visible_cluster_sets=figure_settings.visible_cluster_sets,
             )
         return summary
 
-    if cluster_figure_only:
+    if figure_settings.figure_only:
         clustering_metrics, _, cluster_labels_by_k, _ = _build_clustering_state(
             cache["inv_latents"],
             cache["phases"],
-            requested_k_values=[int(cluster_figure_k)],
-            cluster_method=cluster_method,
+            requested_k_values=[int(figure_settings.k)],
+            cluster_method=analysis_settings.cluster_method,
             random_state=clustering_random_state,
-            l2_normalize=cluster_l2_normalize,
-            standardize=cluster_standardize,
-            pca_variance=cluster_pca_var,
-            pca_max_components=cluster_pca_max_components,
+            l2_normalize=analysis_settings.cluster_l2_normalize,
+            standardize=analysis_settings.cluster_standardize,
+            pca_variance=analysis_settings.cluster_pca_var,
+            pca_max_components=analysis_settings.cluster_pca_max_components,
+            prepared_features=clustering_features,
+            prep_info=clustering_feature_prep,
         )
         all_metrics["clustering"] = clustering_metrics
-        if cluster_figure_set_enabled:
+        if figure_settings.enabled:
             if multi_snapshot_real:
                 snapshot_figure_sets = _run_snapshot_figure_sets(
-                    cluster_labels_by_k[int(cluster_figure_k)],
+                    cluster_labels_by_k[int(figure_settings.k)],
                     global_color_map=_build_shared_cluster_color_map(
-                        cluster_labels_by_k[int(cluster_figure_k)]
+                        cluster_labels_by_k[int(figure_settings.k)]
                     ),
                 )
                 if snapshot_figure_sets:
                     all_metrics["cluster_figure_sets_by_snapshot"] = snapshot_figure_sets
             else:
                 all_metrics["cluster_figure_set"] = _run_figure_set(
-                    cluster_labels_by_k[int(cluster_figure_k)]
+                    cluster_labels_by_k[int(figure_settings.k)]
                 )
 
         _step("Writing metrics")
@@ -1911,17 +2725,6 @@ def run_post_training_analysis(
         _print_figure_set_summary(all_metrics, n_samples, out_dir, time.perf_counter() - t0)
         return merged_metrics
 
-    if is_synthetic:
-        _step("Computing t-SNE visualization")
-        save_latent_tsne(
-            cache["inv_latents"],
-            cache["phases"],
-            out_dir,
-            max_samples=tsne_max_samples,
-            class_names=class_names,
-            random_state=clustering_random_state,
-        )
-
     _step("Computing PCA analysis")
     pca_stats = save_pca_visualization(
         cache["inv_latents"],
@@ -1943,19 +2746,21 @@ def run_post_training_analysis(
     all_metrics["latent_stats"] = latent_stats
 
     _step("Computing clustering labels")
-    clustering_requested_k_values = list(cluster_k_values)
-    if cluster_figure_set_enabled and int(cluster_figure_k) not in clustering_requested_k_values:
-        clustering_requested_k_values.append(int(cluster_figure_k))
+    clustering_requested_k_values = list(analysis_settings.cluster_k_values)
+    if figure_settings.enabled and int(figure_settings.k) not in clustering_requested_k_values:
+        clustering_requested_k_values.append(int(figure_settings.k))
     clustering_metrics, configured_k_values, cluster_labels_by_k, cluster_methods_by_k = _build_clustering_state(
         cache["inv_latents"],
         cache["phases"],
         requested_k_values=clustering_requested_k_values,
-        cluster_method=cluster_method,
+        cluster_method=analysis_settings.cluster_method,
         random_state=clustering_random_state,
-        l2_normalize=cluster_l2_normalize,
-        standardize=cluster_standardize,
-        pca_variance=cluster_pca_var,
-        pca_max_components=cluster_pca_max_components,
+        l2_normalize=analysis_settings.cluster_l2_normalize,
+        standardize=analysis_settings.cluster_standardize,
+        pca_variance=analysis_settings.cluster_pca_var,
+        pca_max_components=analysis_settings.cluster_pca_max_components,
+        prepared_features=clustering_features,
+        prep_info=clustering_feature_prep,
     )
     all_metrics["clustering"] = clustering_metrics
 
@@ -1971,20 +2776,61 @@ def run_post_training_analysis(
                 )
             primary_k = int(requested_primary_k)
     cluster_labels = cluster_labels_by_k[primary_k]
+    selected_real_md_k = int(
+        primary_k
+        if getattr(cfg, "analysis_real_md_k", None) is None
+        else int(getattr(cfg, "analysis_real_md_k"))
+    )
+    shared_representative_render_cache: dict[str, Any] | None = None
+    if (
+        not is_synthetic
+        and figure_settings.enabled
+        and not multi_snapshot_real
+        and bool(getattr(cfg, "analysis_real_md_enabled", True))
+        and bool(getattr(cfg, "analysis_cluster_profile_enabled", True))
+        and dataset_obj is not None
+        and int(selected_real_md_k) == int(figure_settings.k)
+        and int(figure_settings.real_md_profile_target_points)
+        == int(figure_settings.representative_points)
+    ):
+        _step("Preparing shared representative structures")
+        shared_representative_render_cache = _build_cluster_representative_render_cache(
+            dataset_obj,
+            np.asarray(cache["inv_latents"], dtype=np.float32),
+            np.asarray(cluster_labels_by_k[int(figure_settings.k)], dtype=int),
+            _build_shared_cluster_color_map(cluster_labels_by_k[int(figure_settings.k)]),
+            point_scale=float(point_scale),
+            target_points=int(figure_settings.representative_points),
+            representative_ptm_enabled=bool(figure_settings.representative_ptm_enabled),
+            representative_cna_enabled=bool(figure_settings.representative_cna_enabled),
+            representative_cna_max_signatures=int(
+                figure_settings.representative_cna_max_signatures
+            ),
+            representative_center_atom_tolerance=float(
+                figure_settings.representative_center_atom_tolerance
+            ),
+            representative_shell_min_neighbors=int(
+                figure_settings.representative_shell_min_neighbors
+            ),
+            representative_shell_max_neighbors=int(
+                figure_settings.representative_shell_max_neighbors
+            ),
+        )
 
-    if cluster_figure_set_enabled:
+    if figure_settings.enabled:
         if multi_snapshot_real:
             snapshot_figure_sets = _run_snapshot_figure_sets(
-                cluster_labels_by_k[int(cluster_figure_k)],
+                cluster_labels_by_k[int(figure_settings.k)],
                 global_color_map=_build_shared_cluster_color_map(
-                    cluster_labels_by_k[int(cluster_figure_k)]
+                    cluster_labels_by_k[int(figure_settings.k)]
                 ),
             )
             if snapshot_figure_sets:
                 all_metrics["cluster_figure_sets_by_snapshot"] = snapshot_figure_sets
         else:
             all_metrics["cluster_figure_set"] = _run_figure_set(
-                cluster_labels_by_k[int(cluster_figure_k)]
+                cluster_labels_by_k[int(figure_settings.k)],
+                representative_render_cache_override=shared_representative_render_cache,
             )
 
     _step("Building shared cluster color maps")
@@ -1998,7 +2844,10 @@ def run_post_training_analysis(
 
     _step("Computing t-SNE visualization (clusters)")
     tsne_n_iter = int(getattr(cfg, "analysis_tsne_n_iter", 1000))
-    tsne_idx = _sample_indices(len(cache["inv_latents"]), tsne_max_samples)
+    tsne_idx = _sample_indices(
+        len(cache["inv_latents"]),
+        analysis_settings.tsne_max_samples,
+    )
     tsne_latents = cache["inv_latents"][tsne_idx]
     tsne_perplexity = min(50, max(5, len(tsne_latents) // 100))
     tsne_coords = compute_tsne(
@@ -2007,10 +2856,19 @@ def run_post_training_analysis(
         perplexity=tsne_perplexity,
         n_iter=tsne_n_iter,
     )
+    if is_synthetic and cache["phases"].size == len(cache["inv_latents"]):
+        save_tsne_plot(
+            tsne_coords,
+            cache["phases"][tsne_idx],
+            out_file=str(out_dir / "latent_tsne_ground_truth.png"),
+            title=f"Latent space t-SNE (n={len(tsne_latents)}, ground truth phases)",
+            legend_title="phase",
+            class_names=class_names,
+        )
 
     for idx_k, k_val in enumerate(configured_k_values):
         labels_k = cluster_labels_by_k[int(k_val)]
-        method_k = cluster_methods_by_k.get(int(k_val), cluster_method)
+        method_k = cluster_methods_by_k.get(int(k_val), analysis_settings.cluster_method)
         out_name = "latent_tsne_clusters.png" if idx_k == 0 else f"latent_tsne_clusters_k{k_val}.png"
         save_tsne_plot_with_coords(
             tsne_coords,
@@ -2037,305 +2895,39 @@ def run_post_training_analysis(
             interactive_max_points = _positive_int_or_none(
                 getattr(cfg, "analysis_interactive_max_points", None)
             )
-            if md_use_all_points:
+            if analysis_settings.md_use_all_points:
                 interactive_max_points = None
-            hdbscan_info: Dict[str, Any] | None = None
-            hdbscan_labels: np.ndarray | None = None
-            hdbscan_color_map: dict[int, str] | None = None
-            if hdbscan_enabled:
-                _step("Running HDBSCAN clustering (sampled fit)")
-                try:
-                    hdbscan_labels, hdbscan_info = compute_hdbscan_labels(
-                        cache["inv_latents"],
-                        sample_fraction=hdbscan_fit_fraction,
-                        max_fit_samples=hdbscan_max_fit_samples,
-                        random_state=clustering_random_state,
-                        l2_normalize=cluster_l2_normalize,
-                        standardize=cluster_standardize,
-                        pca_variance=cluster_pca_var,
-                        pca_max_components=cluster_pca_max_components,
-                        target_clusters_min=hdbscan_target_k_min,
-                        target_clusters_max=hdbscan_target_k_max,
-                        min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
-                        min_samples=hdbscan_min_samples,
-                        min_samples_candidates=hdbscan_min_samples_candidates,
-                        cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
-                        cluster_selection_method=hdbscan_cluster_selection_method,
-                        refit_full_data=hdbscan_refit_full_data,
-                        return_info=True,
-                    )
-                    n_hdb_clusters_full = int(hdbscan_info.get("n_clusters_full", -1))
-                    if (
-                        hdbscan_cluster_selection_method != "auto"
-                        and n_hdb_clusters_full >= 0
-                        and n_hdb_clusters_full < hdbscan_target_k_min
-                    ):
-                        print(
-                            "[analysis][hdbscan] cluster count below target "
-                            f"({n_hdb_clusters_full} < {hdbscan_target_k_min}); "
-                            "retrying with cluster_selection_method='auto'."
-                        )
-                        hdbscan_labels_retry, hdbscan_info_retry = compute_hdbscan_labels(
-                            cache["inv_latents"],
-                            sample_fraction=hdbscan_fit_fraction,
-                            max_fit_samples=hdbscan_max_fit_samples,
-                            random_state=clustering_random_state,
-                            l2_normalize=cluster_l2_normalize,
-                            standardize=cluster_standardize,
-                            pca_variance=cluster_pca_var,
-                            pca_max_components=cluster_pca_max_components,
-                            target_clusters_min=hdbscan_target_k_min,
-                            target_clusters_max=hdbscan_target_k_max,
-                            min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
-                            min_samples=hdbscan_min_samples,
-                            min_samples_candidates=hdbscan_min_samples_candidates,
-                            cluster_selection_epsilon=hdbscan_cluster_selection_epsilon,
-                            cluster_selection_method="auto",
-                            refit_full_data=hdbscan_refit_full_data,
-                            return_info=True,
-                        )
-                        retry_clusters = int(hdbscan_info_retry.get("n_clusters_full", -1))
-                        retry_noise = float(hdbscan_info_retry.get("noise_fraction_full", 1.0))
-                        base_noise = float(hdbscan_info.get("noise_fraction_full", 1.0))
-                        if (
-                            retry_clusters > n_hdb_clusters_full
-                            or (
-                                retry_clusters == n_hdb_clusters_full
-                                and retry_noise < base_noise
-                            )
-                        ):
-                            hdbscan_labels = hdbscan_labels_retry
-                            hdbscan_info = hdbscan_info_retry
-                            print(
-                                "[analysis][hdbscan] using retry result: "
-                                f"clusters={retry_clusters}, noise={retry_noise:.4f}."
-                            )
-                    if hdbscan_labels.size != len(coords):
-                        print(
-                            "Warning: HDBSCAN labels do not match coordinate count; "
-                            "skipping HDBSCAN MD outputs."
-                        )
-                        hdbscan_labels = None
-                    else:
-                        valid_hdbscan = hdbscan_labels[hdbscan_labels >= 0]
-                        if valid_hdbscan.size > 0:
-                            hdbscan_color_map = _build_shared_cluster_color_map(hdbscan_labels)
-                        else:
-                            hdbscan_color_map = {}
-                        if np.any(hdbscan_labels < 0):
-                            hdbscan_color_map[-1] = "lightgray"
-                except ImportError:
-                    print("HDBSCAN package not installed; skipping HDBSCAN analysis.")
-
-            unique_labels, counts = np.unique(cluster_labels, return_counts=True)
-            all_metrics[md_metrics_key] = {
-                "primary_k": int(primary_k),
-                "k_values_used": [int(k) for k in configured_k_values],
-                "n_clusters": int(len(unique_labels)),
-                "cluster_counts": {int(k): int(v) for k, v in zip(unique_labels, counts)},
-            }
-            if hdbscan_info is not None:
-                all_metrics[md_metrics_key]["hdbscan"] = hdbscan_info
-
-            if multi_snapshot_real:
-                snapshot_root = out_dir / "md_clusters_by_snapshot"
-                snapshot_summary: dict[str, Any] = {
-                    "root_dir": str(snapshot_root),
-                    "primary_k": int(primary_k),
-                    "k_values_used": [int(k) for k in configured_k_values],
-                    "snapshots": [],
-                }
-                for source_name, indices in snapshot_source_groups:
-                    snapshot_dirname = snapshot_output_names[str(source_name)]
-                    snapshot_dir = snapshot_root / snapshot_dirname
-                    coords_subset = coords[indices]
-                    labels_subset = cluster_labels[indices]
-                    coord_files = save_local_structure_assignments(
-                        coords_subset,
-                        labels_subset,
-                        snapshot_dir,
-                    )
-                    snapshot_record: dict[str, Any] = {
-                        "source_name": str(source_name),
-                        "output_name": str(snapshot_dirname),
-                        "sample_count": int(indices.size),
-                        "coords_files": coord_files,
-                    }
-                    if coord_files:
-                        save_md_space_clusters_plot(
-                            coords_subset,
-                            labels_subset,
-                            snapshot_dir / "md_space_clusters.png",
-                            cluster_color_map=shared_cluster_color_map,
-                            max_points=interactive_max_points,
-                        )
-                        interactive_paths_snapshot: Dict[int, str] = {}
-                        interactive_path_snapshot = None
-                        try:
-                            for inner_idx, inner_k in enumerate(configured_k_values):
-                                labels_k_subset = cluster_labels_by_k[int(inner_k)][indices]
-                                out_path = (
-                                    snapshot_dir / "md_space_clusters.html"
-                                    if inner_idx == 0
-                                    else snapshot_dir / f"md_space_clusters_k{inner_k}.html"
-                                )
-                                save_interactive_md_plot(
-                                    coords_subset,
-                                    labels_k_subset,
-                                    out_path,
-                                    palette="tab10",
-                                    cluster_color_map=shared_cluster_color_maps_by_k[int(inner_k)],
-                                    max_points=interactive_max_points,
-                                    marker_size=3.0,
-                                    marker_line_width=0.0,
-                                    aspect_mode="cube",
-                                )
-                                if inner_idx == 0:
-                                    interactive_path_snapshot = out_path
-                                interactive_paths_snapshot[int(inner_k)] = str(out_path)
-                        except ImportError:
-                            interactive_path_snapshot = None
-                            print(
-                                f"Plotly not installed; skipping interactive MD plot for snapshot {source_name}."
-                            )
-                        if interactive_path_snapshot is not None:
-                            snapshot_record["interactive_html"] = str(interactive_path_snapshot)
-                        if interactive_paths_snapshot:
-                            snapshot_record["interactive_htmls"] = interactive_paths_snapshot
-                        if hdbscan_info is not None:
-                            snapshot_record["hdbscan"] = hdbscan_info
-                        if hdbscan_labels is not None:
-                            hdbscan_coord_files = save_local_structure_assignments(
-                                coords_subset,
-                                hdbscan_labels[indices],
-                                snapshot_dir,
-                                prefix="local_structure_hdbscan",
-                            )
-                            if hdbscan_coord_files:
-                                snapshot_record["hdbscan_coords_files"] = hdbscan_coord_files
-                            try:
-                                hdbscan_path = snapshot_dir / "md_space_clusters_hdbscan.html"
-                                n_hdb_clusters = int(
-                                    len(np.unique(hdbscan_labels[indices][hdbscan_labels[indices] >= 0]))
-                                )
-                                save_interactive_md_plot(
-                                    coords_subset,
-                                    hdbscan_labels[indices],
-                                    hdbscan_path,
-                                    palette="tab10",
-                                    cluster_color_map=hdbscan_color_map,
-                                    max_points=interactive_max_points,
-                                    marker_size=3.0,
-                                    marker_line_width=0.0,
-                                    title=(
-                                        "MD local-structure clusters "
-                                        f"(HDBSCAN, snapshot={source_name}, "
-                                        f"n={len(coords_subset)}, k={n_hdb_clusters})"
-                                    ),
-                                    label_prefix="HDBSCAN",
-                                    aspect_mode="cube",
-                                )
-                                snapshot_record["hdbscan_interactive_html"] = str(hdbscan_path)
-                            except ImportError:
-                                print(
-                                    "Plotly not installed; skipping HDBSCAN interactive MD plot "
-                                    f"for snapshot {source_name}."
-                                )
-                    snapshot_summary["snapshots"].append(snapshot_record)
-                all_metrics[md_metrics_key]["by_snapshot"] = snapshot_summary
-            else:
-                coord_files = save_local_structure_assignments(
-                    coords,
-                    cluster_labels,
-                    out_dir,
-                )
-                if coord_files:
-                    save_md_space_clusters_plot(
-                        coords,
-                        cluster_labels,
-                        out_dir / "md_space_clusters.png",
-                        cluster_color_map=shared_cluster_color_map,
-                        max_points=interactive_max_points,
-                    )
-                    interactive_path = None
-                    interactive_paths: Dict[int, str] = {}
-                    try:
-                        for inner_idx, inner_k in enumerate(configured_k_values):
-                            labels_k = cluster_labels_by_k[int(inner_k)]
-                            out_path = (
-                                out_dir / "md_space_clusters.html"
-                                if inner_idx == 0
-                                else out_dir / f"md_space_clusters_k{inner_k}.html"
-                            )
-                            save_interactive_md_plot(
-                                coords,
-                                labels_k,
-                                out_path,
-                                palette="tab10",
-                                cluster_color_map=shared_cluster_color_maps_by_k[int(inner_k)],
-                                max_points=interactive_max_points,
-                                marker_size=3.0,
-                                marker_line_width=0.0,
-                                aspect_mode="cube",
-                            )
-                            if inner_idx == 0:
-                                interactive_path = out_path
-                            interactive_paths[int(inner_k)] = str(out_path)
-                    except ImportError:
-                        interactive_path = None
-                        print("Plotly not installed; skipping interactive MD plot.")
-
-                    all_metrics[md_metrics_key]["coords_files"] = coord_files
-                    if interactive_path is not None:
-                        all_metrics[md_metrics_key]["interactive_html"] = str(interactive_path)
-                    if interactive_paths:
-                        all_metrics[md_metrics_key]["interactive_htmls"] = interactive_paths
-                    if hdbscan_info is not None:
-                        all_metrics[md_metrics_key]["hdbscan"] = hdbscan_info
-                    if hdbscan_labels is not None:
-                        hdbscan_coord_files = save_local_structure_assignments(
-                            coords,
-                            hdbscan_labels,
-                            out_dir,
-                            prefix="local_structure_hdbscan",
-                        )
-                        if hdbscan_coord_files:
-                            all_metrics[md_metrics_key]["hdbscan_coords_files"] = hdbscan_coord_files
-                        try:
-                            hdbscan_path = out_dir / "md_space_clusters_hdbscan.html"
-                            n_hdb_clusters = int(
-                                len(np.unique(hdbscan_labels[hdbscan_labels >= 0]))
-                            )
-                            save_interactive_md_plot(
-                                coords,
-                                hdbscan_labels,
-                                hdbscan_path,
-                                palette="tab10",
-                                cluster_color_map=hdbscan_color_map,
-                                max_points=interactive_max_points,
-                                marker_size=3.0,
-                                marker_line_width=0.0,
-                                title=(
-                                    "MD local-structure clusters "
-                                    f"(HDBSCAN, n={len(coords)}, k={n_hdb_clusters})"
-                                ),
-                                label_prefix="HDBSCAN",
-                                aspect_mode="cube",
-                            )
-                            all_metrics[md_metrics_key]["hdbscan_interactive_html"] = str(hdbscan_path)
-                        except ImportError:
-                            print("Plotly not installed; skipping HDBSCAN interactive MD plot.")
-                elif hdbscan_info is not None:
-                    all_metrics[md_metrics_key]["hdbscan"] = hdbscan_info
+            hdbscan_result = _run_optional_hdbscan_analysis(
+                cache["inv_latents"],
+                coords_count=len(coords),
+                settings=hdbscan_settings,
+                random_state=clustering_random_state,
+                l2_normalize=analysis_settings.cluster_l2_normalize,
+                standardize=analysis_settings.cluster_standardize,
+                pca_variance=analysis_settings.cluster_pca_var,
+                pca_max_components=analysis_settings.cluster_pca_max_components,
+                prepared_features=clustering_features,
+                prep_info=clustering_feature_prep,
+                cluster_color_assignment=figure_settings.cluster_color_assignment,
+                step=_step,
+            )
+            all_metrics[md_metrics_key] = _build_md_metrics(
+                out_dir=out_dir,
+                coords=coords,
+                cluster_labels=cluster_labels,
+                cluster_labels_by_k=cluster_labels_by_k,
+                configured_k_values=configured_k_values,
+                primary_k=primary_k,
+                shared_cluster_color_maps_by_k=shared_cluster_color_maps_by_k,
+                interactive_max_points=interactive_max_points,
+                multi_snapshot_real=multi_snapshot_real,
+                snapshot_source_groups=snapshot_source_groups,
+                snapshot_output_names=snapshot_output_names,
+                hdbscan_result=hdbscan_result,
+            )
 
     if not is_synthetic and bool(getattr(cfg, "analysis_real_md_enabled", True)):
         _step("Running real-MD qualitative analysis")
-        selected_real_md_k_raw = getattr(cfg, "analysis_real_md_k", None)
-        selected_real_md_k = (
-            int(primary_k)
-            if selected_real_md_k_raw is None
-            else int(selected_real_md_k_raw)
-        )
         shared_real_md_color_map = shared_cluster_color_maps_by_k.get(
             int(selected_real_md_k),
             shared_cluster_color_map,
@@ -2354,6 +2946,7 @@ def run_post_training_analysis(
             requested_frame_order=analysis_source_names,
             point_scale=float(point_scale),
             random_state=int(clustering_random_state),
+            representative_render_cache=shared_representative_render_cache,
         )
 
     _step("Evaluating equivariance")
@@ -2498,6 +3091,16 @@ def _parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--cluster_k",
+        type=int,
+        default=None,
+        help=(
+            "Primary analysis cluster count. When set, it pins the fixed-k figure "
+            "set, the real-MD qualitative analysis, and the primary clustering "
+            "outputs to this k. Equivalent config key: analysis_cluster_k."
+        ),
+    )
+    parser.add_argument(
         "--raytrace_render_enabled",
         action="store_true",
         default=None,
@@ -2557,6 +3160,7 @@ def main() -> None:
         cluster_figure_only=bool(args.cluster_figure_only),
         md_render_saturation_boost=args.cluster_figure_md_saturation_boost,
         raytrace_render_enabled=args.raytrace_render_enabled,
+        cluster_k=args.cluster_k,
     )
 
 

@@ -57,13 +57,14 @@ def _seeded_random_split(dataset, lengths: list[int], *, seed: int, context: str
 
 
 class RealPointCloudDataModule(pl.LightningDataModule):
-    def __init__(self, cfg):
+    def __init__(self, cfg, *, return_coords: bool = False):
         super().__init__()
         self.cfg = cfg
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
         self.max_samples = cfg.max_samples
         self.split_seed = _resolve_split_seed(cfg)
+        self.return_coords = bool(return_coords)
         self._datasets_initialized = False
 
     def setup(self, stage=None):
@@ -106,6 +107,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             overlap_fraction=getattr(data_cfg, "overlap_fraction", 0.0),
             n_samples=getattr(data_cfg, "n_samples", 1000),
             num_points=getattr(data_cfg, "num_points", 100),
+            return_coords=self.return_coords,
             drop_edge_samples=bool(getattr(data_cfg, "drop_edge_samples", True)),
             edge_drop_layers=getattr(data_cfg, "edge_drop_layers", None),
             pre_normalize=bool(getattr(data_cfg, "pre_normalize", True)),

@@ -943,6 +943,7 @@ def run_real_md_qualitative_analysis(
     requested_frame_order: list[str] | None,
     point_scale: float,
     random_state: int,
+    representative_render_cache: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if getattr(cfg.data, "kind", None) != "real":
         raise ValueError(
@@ -1096,12 +1097,13 @@ def run_real_md_qualitative_analysis(
                     24,
                 )
             ),
+            representative_render_cache=representative_render_cache,
         )
         summary["representatives"] = {
             "root_dir": str(representatives_dir),
             "shared_style": shared_style_summary,
             "primary_figure": str(
-                shared_style_summary["pca_two_shell_figures"]["spatial_neighbors"]["out_file"]
+                shared_style_summary["pca_two_shell_figures"]["spatial_neighbors_paper"]["out_file"]
             ),
             "edge_connected_figure": str(
                 shared_style_summary["pca_two_shell_figures"]["knn_edges"]["out_file"]

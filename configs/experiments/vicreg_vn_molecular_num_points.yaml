@@ -13,6 +13,7 @@
 name: vicreg_vn_molecular_num_points
 train_script: src/training_methods/contrastive_learning/train_contrastive.py
 config_name: vicreg_vn_molecular.yaml
+repeat_each: 5
 
 slurm:
   partition: L40S
@@ -22,9 +23,21 @@ slurm:
   time: "24:00:00"
 
 base_overrides:
-  - "devices=[0]"
+  - "epochs=60"
+  - "encoder.name=REVNET_InvariantFast"
+  - "latent_size=80"
+  - "encoder.kwargs=null"
+  - "+encoder.kwargs={latent_size:80,n_knn:24,feature_dims:[128,256,512],pooling:mean,dropout_rate:0.1,use_batchnorm:true,use_geom_head:true,emit_eq_latent:true}"
+  - "devices=[0,1]"
   - "load_supervised_checkpoint=false"
   - "init_from_checkpoint=null"
+  - "batch_size=128"
+  - "accumulate_grad_batches=8"
+  - "auto_batch_size_search=true"
+  - "auto_batch_size_adjust_accumulate=true"
+  - "auto_batch_size_target_effective_batch=1024"
+  - "auto_batch_size_init_val=128"
+  - "data.auto_cutoff.enabled=true"
   - "++run_post_training_analysis=false"
   - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
   - "++checkpoint_mode=max"
@@ -34,26 +47,31 @@ experiments:
     overrides:
       - "data.num_points=24"
       - "data.model_points=24"
+      - "data.auto_cutoff.target_points=24"
 
   - name: points_040
     overrides:
       - "data.num_points=40"
       - "data.model_points=40"
+      - "data.auto_cutoff.target_points=40"
 
   - name: points_080
     overrides:
       - "data.num_points=80"
       - "data.model_points=80"
+      - "data.auto_cutoff.target_points=80"
 
   - name: points_120
     overrides:
       - "data.num_points=120"
       - "data.model_points=120"
+      - "data.auto_cutoff.target_points=120"
 
   - name: points_160
     overrides:
       - "data.num_points=160"
       - "data.model_points=160"
+      - "data.auto_cutoff.target_points=160"
 
 metrics:
   final:

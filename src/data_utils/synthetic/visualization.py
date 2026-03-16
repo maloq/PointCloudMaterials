@@ -20,7 +20,7 @@ from __future__ import annotations
 import pathlib
 import textwrap
 import warnings
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 from collections import Counter, defaultdict
 
 import numpy as np
@@ -95,6 +95,10 @@ def generate_visualizations(
     
     # Build color maps
     color_map = _build_phase_color_map(phases)
+    closeup_color_map = _build_phase_color_map(
+        phases,
+        color_resolver=_paper_family_color_for_phase,
+    )
     if viz_target_norm == "local_base":
         print("  Generating visualizations (target=local_base)...")
         print("    • Local base gallery")
@@ -197,7 +201,7 @@ def generate_visualizations(
     # 6. Close-up view
     print("    • Close-up view")
     _render_closeup_view(
-        global_cfg, atoms, atoms_array, phases, color_map,
+        global_cfg, atoms, atoms_array, phases, closeup_color_map,
         output_dir / "figure_closeup.png", rng
     )
     
@@ -1727,6 +1731,9 @@ def _render_closeup_view(
     ax1.set_xlim(0, corner_max[0])
     ax1.set_ylim(0, corner_max[1])
     ax1.set_zlim(0, corner_max[2])
+    ax1.set_xticks([])
+    ax1.set_yticks([])
+    ax1.set_zticks([])
     ax1.set_title(f'Close-up (1/16 volume, {len(closeup_indices):,} atoms)')
     
     # Right: XY projection
@@ -1741,6 +1748,8 @@ def _render_closeup_view(
     ax2.set_xlim(0, corner_max[0])
     ax2.set_ylim(0, corner_max[1])
     ax2.set_aspect('equal')
+    ax2.set_xticks([])
+    ax2.set_yticks([])
     ax2.set_xlabel('X (Å)')
     ax2.set_ylabel('Y (Å)')
     ax2.set_title('XY Projection')
@@ -3726,11 +3735,12 @@ def _plot_local_neighborhood(
                             ax.plot([p1[0], p2[0]], [p1[1], p2[1]], [p1[2], p2[2]],
                                    color='#884422', linewidth=0.7, alpha=0.6)
     
-    # Dynamically set limits to fit the data
+    # Dynamically set limits to fit the data.
     if len(coords) > 0:
-        limit = max(radius, np.max(np.abs(coords)) * 1.1)
+        data_limit = float(np.max(np.abs(coords)) * 1.1)
+        limit = data_limit if radius is None else max(float(radius), data_limit)
     else:
-        limit = radius
+        limit = float(global_cfg.avg_nn_dist) if radius is None else float(radius)
         
     ax.set_xlim(-limit, limit)
     ax.set_ylim(-limit, limit)
@@ -3759,16 +3769,21 @@ def _phase_to_color(phase: str) -> str:
         return '#95A5A6'
 
 
-def _build_phase_color_map(phases: Sequence[str]) -> Dict[str, Any]:
+def _build_phase_color_map(
+    phases: Sequence[str],
+    *,
+    color_resolver: Optional[Callable[[str], Any]] = None,
+) -> Dict[str, Any]:
     """Build color map for phases."""
     unique_phases = sorted(set(map(str, phases)))
     if not unique_phases:
         return {}
-    
+
+    resolver = _phase_to_color if color_resolver is None else color_resolver
     color_map = {}
     for phase in unique_phases:
-        color_map[phase] = mcolors.to_rgba(_phase_to_color(phase))
-    
+        color_map[phase] = mcolors.to_rgba(resolver(phase))
+
     return color_map
 
 

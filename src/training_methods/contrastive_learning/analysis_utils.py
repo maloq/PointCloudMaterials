@@ -384,28 +384,22 @@ def evaluate_latent_equivariance(
 
             seed = 42 + batch_idx
 
-            # Determinism check (same input, same seed)
-            _, _, eq_z_1 = _seeded_forward(model, pc, seed)
-            _, _, eq_z_2 = _seeded_forward(model, pc, seed)
-            if eq_z_1 is not None and eq_z_2 is not None:
-                det_diff = torch.linalg.norm(eq_z_1 - eq_z_2, dim=-1).mean(dim=1)
+            # Determinism and identity checks share the same seeded forwards.
+            _, _, eq_z_seed_1 = _seeded_forward(model, pc, seed)
+            _, _, eq_z_seed_2 = _seeded_forward(model, pc, seed)
+            if eq_z_seed_1 is not None and eq_z_seed_2 is not None:
+                det_diff = torch.linalg.norm(eq_z_seed_1 - eq_z_seed_2, dim=-1).mean(dim=1)
                 determinism_errors.extend(det_diff.detach().cpu().numpy().tolist())
-
-            # Identity rotation check (should be ~0)
-            _, _, eq_z_orig = _seeded_forward(model, pc, seed)
-            _, _, eq_z_id = _seeded_forward(model, pc, seed)
-            if eq_z_orig is not None and eq_z_id is not None:
-                expected_id = torch.einsum("bij,bcj->bci", identity, eq_z_orig)
-                id_rel = torch.linalg.norm(eq_z_id - expected_id, dim=-1) / torch.linalg.norm(
+                expected_id = torch.einsum("bij,bcj->bci", identity, eq_z_seed_1)
+                id_rel = torch.linalg.norm(eq_z_seed_2 - expected_id, dim=-1) / torch.linalg.norm(
                     expected_id, dim=-1
                 ).clamp_min(1e-6)
                 identity_errors.extend(id_rel.mean(dim=1).detach().cpu().numpy().tolist())
 
             # Random rotation WITH seed control
-            _, _, eq_z = _seeded_forward(model, pc, seed)
             _, _, eq_z_rot = _seeded_forward(model, pc_rot, seed)
-            if eq_z is not None and eq_z_rot is not None:
-                expected_eq = torch.einsum("bij,bcj->bci", rots, eq_z)
+            if eq_z_seed_1 is not None and eq_z_rot is not None:
+                expected_eq = torch.einsum("bij,bcj->bci", rots, eq_z_seed_1)
                 rel = torch.linalg.norm(eq_z_rot - expected_eq, dim=-1) / torch.linalg.norm(
                     expected_eq, dim=-1
                 ).clamp_min(1e-6)

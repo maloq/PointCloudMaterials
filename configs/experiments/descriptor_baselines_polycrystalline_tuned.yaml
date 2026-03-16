@@ -1,0 +1,85 @@
+# Tuned classical descriptor baselines on the balanced polycrystalline
+# synthetic dataset, repeated across different held-out splits to obtain
+# grouped mean/std tables from scripts/run_experiments.py.
+#
+# Best settings were selected from:
+#   configs/experiments/descriptor_baselines_polycrystalline_tuning.yaml
+#
+# Usage:
+#   CONDA_NO_PLUGINS=true conda run -n pointnet \
+#     python scripts/run_experiments.py \
+#     --plan configs/experiments/descriptor_baselines_polycrystalline_tuned.yaml \
+#     --local
+#
+# The grouped CSV/JSON outputs include per-method mean/std and 95% CI over the
+# repeated split seeds.
+
+name: descriptor_baselines_polycrystalline_tuned
+train_script: src/baselines/run_descriptor_baselines.py
+config_name: descriptor_baselines.yaml
+repeat_each: 5
+repeat_seed_key: split_seed
+repeat_seed_base: 42
+
+slurm:
+  partition: L40S
+  gpus: 1
+  cpus: 8
+  mem: 64G
+  time: "12:00:00"
+
+base_overrides:
+  - "max_test_samples=3516"
+  - "val_cluster_acc_runs=10"
+  - "test_cluster_acc_runs=10"
+
+experiments:
+  - name: steinhardt
+    overrides:
+      - "descriptor.name=steinhardt"
+      - "descriptor.steinhardt.l_values=[4,6,8,10,12]"
+      - "descriptor.shell_min_neighbors=10"
+      - "descriptor.shell_max_neighbors=18"
+      - "descriptor.steinhardt.append_shell_size=false"
+
+  - name: cna
+    overrides:
+      - "descriptor.name=cna"
+      - "descriptor.cna.max_signatures=8"
+      - "descriptor.shell_min_neighbors=12"
+      - "descriptor.shell_max_neighbors=18"
+      - "descriptor.cna.append_shell_size=false"
+
+  - name: soap
+    overrides:
+      - "descriptor.name=soap"
+      - "descriptor.soap.n_max=12"
+      - "descriptor.soap.l_max=8"
+      - "descriptor.soap.pca_components=96"
+      - "descriptor.soap.r_cut_multiplier=1.6"
+      - "descriptor.soap.sigma=0.25"
+
+metrics:
+  final:
+    - val/class/acc_kmeans_plusplus_hungarian
+    - val/class/nmi
+    - val/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian
+    - test/class/nmi
+    - test/class/ari
+    - test/class/acc_kmeans_plusplus_hungarian_rotated
+    - test/class/nmi_rotated
+    - test/class/ari_rotated
+    - test/class/ari_rotated_std
+    - test/class/nmi_rotated_std
+  best:
+    - name: val/class/acc_kmeans_plusplus_hungarian
+      mode: max
+    - name: val/class/nmi
+      mode: max
+    - name: val/class/ari
+      mode: max
+    - name: test/class/acc_kmeans_plusplus_hungarian
+      mode: max
+
+output_root: output/experiments

@@ -27,7 +27,9 @@ from src.training_methods.contrastive_learning._cluster_geometry import (
     _draw_cube_wireframe,
 )
 from src.training_methods.contrastive_learning._representative_structure_analysis import (
+    _build_cluster_representative_analysis_summary,
     analyze_cluster_representatives,
+    materialize_cluster_representative_analysis_summary,
 )
 
 
@@ -400,6 +402,44 @@ def _prepare_cluster_representative_structures(
     return prepared
 
 
+def _build_cluster_representative_render_cache(
+    dataset: Any,
+    latents: np.ndarray,
+    cluster_labels: np.ndarray,
+    color_map: dict[int, str],
+    *,
+    point_scale: float,
+    target_points: int,
+    representative_ptm_enabled: bool,
+    representative_cna_enabled: bool,
+    representative_cna_max_signatures: int,
+    representative_center_atom_tolerance: float,
+    representative_shell_min_neighbors: int,
+    representative_shell_max_neighbors: int,
+) -> dict[str, Any]:
+    prepared_records = _prepare_cluster_representative_structures(
+        dataset,
+        latents,
+        cluster_labels,
+        color_map,
+        point_scale=float(point_scale),
+        target_points=int(target_points),
+    )
+    structure_analysis_summary = _build_cluster_representative_analysis_summary(
+        prepared_records,
+        ptm_enabled=bool(representative_ptm_enabled),
+        cna_enabled=bool(representative_cna_enabled),
+        cna_max_signatures=int(representative_cna_max_signatures),
+        center_atom_tolerance=float(representative_center_atom_tolerance),
+        shell_min_neighbors=int(representative_shell_min_neighbors),
+        shell_max_neighbors=int(representative_shell_max_neighbors),
+    )
+    return {
+        "prepared_records": prepared_records,
+        "structure_analysis_summary": structure_analysis_summary,
+    }
+
+
 def _attach_structure_analysis_to_summary(
     summary: dict[str, Any],
     analysis_by_cluster_id: dict[int, dict[str, Any]],
@@ -437,12 +477,6 @@ def _build_cluster_representative_variant_specs(
             "variant_name": f"{preferred_slug}_reciprocal",
             "file_suffix": f"_{preferred_slug}_reciprocal",
             "edge_method": "coordination_shell_mutual",
-            "orientation_method": preferred,
-        },
-        {
-            "variant_name": f"{preferred_slug}_degree_capped",
-            "file_suffix": f"_{preferred_slug}_degree_capped",
-            "edge_method": "coordination_shell_degree_capped",
             "orientation_method": preferred,
         },
     ]
@@ -561,71 +595,6 @@ def _render_cluster_representatives_variant(
     }
 
 
-def _build_squidpy_generic_spatial_neighbor_edges(
-    points: np.ndarray,
-    *,
-    n_neighs: int,
-) -> tuple[list[tuple[int, int]], dict[str, Any]]:
-    pts = np.asarray(points, dtype=np.float32)
-    if pts.ndim != 2 or pts.shape[1] < 3:
-        raise ValueError(f"points must have shape (N, >=3), got {pts.shape}.")
-    pts = pts[:, :3]
-    n_points = int(pts.shape[0])
-    if n_points < 2:
-        return [], {
-            "graph_method": "squidpy_spatial_neighbors_generic_knn",
-            "coord_type": "generic",
-            "n_neighs": 0,
-            "num_edges": 0,
-            "degree_median": 0.0,
-            "degree_min": 0,
-            "degree_max": 0,
-            "edge_distance_mean": 0.0,
-            "edge_distance_median": 0.0,
-        }
-
-    k_eff = min(max(1, int(n_neighs)), n_points - 1)
-    dmat = np.linalg.norm(pts[:, None, :] - pts[None, :, :], axis=-1)
-    np.fill_diagonal(dmat, np.inf)
-    knn_indices = np.argsort(dmat, axis=1)[:, :k_eff]
-
-    edges: set[tuple[int, int]] = set()
-    edge_distances: list[float] = []
-    for point_idx in range(n_points):
-        for neighbor_idx in knn_indices[point_idx]:
-            neighbor_idx_int = int(neighbor_idx)
-            edge = (min(int(point_idx), neighbor_idx_int), max(int(point_idx), neighbor_idx_int))
-            if edge[0] == edge[1]:
-                continue
-            if edge not in edges:
-                edges.add(edge)
-                edge_distances.append(float(np.linalg.norm(pts[edge[0]] - pts[edge[1]])))
-
-    degree_counts = np.zeros((n_points,), dtype=np.int32)
-    for src_idx, dst_idx in edges:
-        degree_counts[int(src_idx)] += 1
-        degree_counts[int(dst_idx)] += 1
-
-    if edge_distances:
-        edge_distance_mean = float(np.mean(edge_distances))
-        edge_distance_median = float(np.median(edge_distances))
-    else:
-        edge_distance_mean = 0.0
-        edge_distance_median = 0.0
-
-    return sorted(edges), {
-        "graph_method": "squidpy_spatial_neighbors_generic_knn",
-        "coord_type": "generic",
-        "n_neighs": int(k_eff),
-        "num_edges": int(len(edges)),
-        "degree_median": float(np.median(degree_counts)),
-        "degree_min": int(np.min(degree_counts)),
-        "degree_max": int(np.max(degree_counts)),
-        "edge_distance_mean": float(edge_distance_mean),
-        "edge_distance_median": float(edge_distance_median),
-    }
-
-
 def _build_knn_representative_edges(
     points: np.ndarray,
     *,
@@ -679,139 +648,6 @@ def _build_knn_representative_edges(
         "num_edges": int(len(connected_edges)),
         "edge_distance_mean": float(np.mean(connected_distances)) if connected_distances else 0.0,
         "edge_distance_median": float(np.median(connected_distances)) if connected_distances else 0.0,
-    }
-
-
-def _render_two_shell_cluster_representatives_variant(
-    prepared_records: list[dict[str, Any]],
-    out_file: Path,
-    *,
-    knn_k: int,
-    view_elev: float,
-    view_azim: float,
-    projection: str,
-    variant_name: str,
-    connection_mode: str = "spatial_neighbors_generic",
-) -> dict[str, Any]:
-    mode = str(connection_mode).strip().lower()
-    if mode != "spatial_neighbors_generic":
-        raise ValueError(
-            "Unsupported connection_mode for two-shell representative rendering: "
-            f"{connection_mode!r}. Expected 'spatial_neighbors_generic'."
-        )
-
-    proj_norm = str(projection).strip().lower()
-    n_clusters = len(prepared_records)
-    n_cols = min(3, n_clusters)
-    n_rows = int(np.ceil(n_clusters / max(1, n_cols)))
-    # Match paper representative styling so perceived colors are consistent with
-    # 08_cluster_representatives_spatial_neighbors_paper_k*.
-    point_size = 48.0
-    point_linewidth = 0.26
-    # Spatial-neighbor graphs are denser than the paper variant edges and can
-    # make colors look desaturated/darker by overpainting. Keep points identical
-    # to paper colors but lower edge prominence for perceptual color parity.
-    edge_alpha = 0.42
-    edge_linewidth = 0.86
-    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=300, facecolor="white")
-    summary_records: list[dict[str, Any]] = []
-
-    for pos, prepared in enumerate(prepared_records):
-        ax = fig.add_subplot(n_rows, n_cols, pos + 1, projection="3d")
-        ax.set_facecolor("white")
-        if hasattr(ax, "set_proj_type"):
-            ax.set_proj_type(proj_norm)
-        ax.view_init(elev=float(view_elev), azim=float(view_azim))
-
-        base_color = str(prepared["base_color"])
-        oriented_points, orientation_info = _orient_points_for_crystal_view(
-            prepared["local_points"],
-            method="pca",
-        )
-        # Keep representative coloring consistent with the paper single-column
-        # variant (08_cluster_representatives_spatial_neighbors_paper_k*).
-        point_colors = _compute_center_to_edge_colors(oriented_points, base_color)
-        spatial_n_neighs = max(1, int(knn_k))
-        edges, spatial_neighbor_info = _build_squidpy_generic_spatial_neighbor_edges(
-            oriented_points,
-            n_neighs=int(spatial_n_neighs),
-        )
-        edge_info = {
-            "connection_mode": str(mode),
-            "num_edges": int(len(edges)),
-            "input_point_count": int(oriented_points.shape[0]),
-            "spatial_neighbors": spatial_neighbor_info,
-        }
-
-        _draw_edges(
-            ax,
-            oriented_points,
-            edges,
-            point_colors=point_colors,
-            edge_alpha=float(edge_alpha),
-            edge_linewidth=float(edge_linewidth),
-        )
-        ax.scatter(
-            oriented_points[:, 0],
-            oriented_points[:, 1],
-            oriented_points[:, 2],
-            c=point_colors,
-            s=float(point_size),
-            alpha=0.97,
-            edgecolors="#222222",
-            linewidths=float(point_linewidth),
-            depthshade=False,
-        )
-        _set_equal_axes_3d(ax, oriented_points)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_zticks([])
-        ax.grid(False)
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-        ax.set_zlabel("")
-        for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
-            if hasattr(axis, "pane"):
-                axis.pane.fill = False
-                axis.pane.set_edgecolor((1.0, 1.0, 1.0, 1.0))
-            if hasattr(axis, "line"):
-                axis.line.set_color((1.0, 1.0, 1.0, 1.0))
-        panel_label = f"C{pos + 1}"
-        title_color = _cluster_label_color(base_color, darken_factor=0.58)
-        ax.set_title(
-            panel_label,
-            fontsize=12,
-            color=title_color,
-            pad=2,
-            fontweight="bold",
-        )
-        summary_records.append(
-            {
-                "panel_label": panel_label,
-                "cluster_id": int(prepared["cluster_id"]),
-                "sample_index": int(prepared["sample_index"]),
-                "num_points_plotted": int(oriented_points.shape[0]),
-                "orientation": orientation_info,
-                "edge_info": edge_info,
-            }
-        )
-
-    fig.suptitle("Cluster representatives", fontsize=12, fontweight="bold", y=0.965)
-    fig.subplots_adjust(left=0.02, right=0.988, bottom=0.035, top=0.91, wspace=0.03, hspace=0.06)
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
-    _log_saved_figure(out_file)
-    return {
-        "variant_name": str(variant_name),
-        "out_file": str(out_file),
-        "orientation_method": "pca",
-        "connection_mode": str(mode),
-        "view_elev": float(view_elev),
-        "view_azim": float(view_azim),
-        "projection": str(proj_norm),
-        "representatives": summary_records,
     }
 
 
@@ -1113,17 +949,10 @@ def _save_cluster_representatives_figure(
     representative_center_atom_tolerance: float = 1e-6,
     representative_shell_min_neighbors: int = 8,
     representative_shell_max_neighbors: int = 24,
+    representative_render_cache: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     proj_norm = str(projection).strip().lower()
     method_norm = str(orientation_method).strip().lower()
-    prepared_records = _prepare_cluster_representative_structures(
-        dataset,
-        latents,
-        cluster_labels,
-        color_map,
-        point_scale=float(point_scale),
-        target_points=int(target_points),
-    )
     out_file = Path(out_file)
     variant_specs = _build_cluster_representative_variant_specs(method_norm)
     variant_summaries: list[dict[str, Any]] = []
@@ -1134,17 +963,63 @@ def _save_cluster_representatives_figure(
             f"got {out_file.name!r}."
         )
     k_token = stem_parts[1].strip()
-    structure_analysis_summary = analyze_cluster_representatives(
-        prepared_records,
-        out_file.parent,
-        k_token=str(k_token),
-        ptm_enabled=bool(representative_ptm_enabled),
-        cna_enabled=bool(representative_cna_enabled),
-        cna_max_signatures=int(representative_cna_max_signatures),
-        center_atom_tolerance=float(representative_center_atom_tolerance),
-        shell_min_neighbors=int(representative_shell_min_neighbors),
-        shell_max_neighbors=int(representative_shell_max_neighbors),
-    )
+    if representative_render_cache is None:
+        prepared_records = _prepare_cluster_representative_structures(
+            dataset,
+            latents,
+            cluster_labels,
+            color_map,
+            point_scale=float(point_scale),
+            target_points=int(target_points),
+        )
+        structure_analysis_summary = analyze_cluster_representatives(
+            prepared_records,
+            out_file.parent,
+            k_token=str(k_token),
+            ptm_enabled=bool(representative_ptm_enabled),
+            cna_enabled=bool(representative_cna_enabled),
+            cna_max_signatures=int(representative_cna_max_signatures),
+            center_atom_tolerance=float(representative_center_atom_tolerance),
+            shell_min_neighbors=int(representative_shell_min_neighbors),
+            shell_max_neighbors=int(representative_shell_max_neighbors),
+        )
+    else:
+        cached_prepared_records = representative_render_cache.get("prepared_records")
+        if not isinstance(cached_prepared_records, list) or not cached_prepared_records:
+            raise ValueError(
+                "representative_render_cache must contain a non-empty 'prepared_records' list."
+            )
+        expected_cluster_ids = sorted(int(v) for v in np.unique(np.asarray(cluster_labels, dtype=int)) if int(v) >= 0)
+        cached_cluster_ids = sorted(
+            int(record["cluster_id"])
+            for record in cached_prepared_records
+        )
+        if cached_cluster_ids != expected_cluster_ids:
+            raise ValueError(
+                "representative_render_cache cluster ids do not match the current labels. "
+                f"cached_cluster_ids={cached_cluster_ids}, expected_cluster_ids={expected_cluster_ids}."
+            )
+        prepared_records = [
+            {
+                **dict(record),
+                "base_color": str(color_map.get(int(record["cluster_id"]), "#777777")),
+            }
+            for record in cached_prepared_records
+        ]
+        cached_structure_summary = representative_render_cache.get("structure_analysis_summary")
+        if bool(representative_ptm_enabled) or bool(representative_cna_enabled):
+            if not isinstance(cached_structure_summary, dict):
+                raise ValueError(
+                    "representative_render_cache must contain a dict 'structure_analysis_summary' "
+                    "when PTM or CNA analysis is enabled."
+                )
+            structure_analysis_summary = materialize_cluster_representative_analysis_summary(
+                cached_structure_summary,
+                out_file.parent,
+                k_token=str(k_token),
+            )
+        else:
+            structure_analysis_summary = None
     analysis_by_cluster_id: dict[int, dict[str, Any]] = {}
     if structure_analysis_summary is not None:
         analysis_by_cluster_id = {
@@ -1172,19 +1047,6 @@ def _save_cluster_representatives_figure(
         )
         _attach_structure_analysis_to_summary(variant_summary, analysis_by_cluster_id)
         variant_summaries.append(variant_summary)
-    two_shell_spatial_neighbors_summary = _render_two_shell_cluster_representatives_variant(
-        prepared_records,
-        out_file.with_name(
-            f"07_cluster_representatives_two_shells_pca_spatial_neighbors_k{k_token}.png"
-        ),
-        knn_k=int(knn_k),
-        view_elev=float(view_elev),
-        view_azim=float(view_azim),
-        projection=str(proj_norm),
-        variant_name="pca_two_shells_spatial_neighbors",
-        connection_mode="spatial_neighbors_generic",
-    )
-    _attach_structure_analysis_to_summary(two_shell_spatial_neighbors_summary, analysis_by_cluster_id)
     spatial_neighbors_paper_summary = _render_spatial_neighbors_paper_figure(
         prepared_records,
         out_file.with_name(
@@ -1213,7 +1075,6 @@ def _save_cluster_representatives_figure(
     primary_summary["projection"] = str(proj_norm)
     primary_summary["structure_analysis"] = structure_analysis_summary
     primary_summary["pca_two_shell_figures"] = {
-        "spatial_neighbors": two_shell_spatial_neighbors_summary,
         "spatial_neighbors_paper": spatial_neighbors_paper_summary,
         "knn_edges": knn_edges_summary,
     }
