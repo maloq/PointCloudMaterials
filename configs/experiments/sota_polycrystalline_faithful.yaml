@@ -24,8 +24,6 @@ base_overrides:
   - ++checkpoint_mode=max
   - ++run_post_training_analysis=false
   - "devices=[0]"
-  - "analysis_test_rotation_runs=5"
-  - "analysis_hdbscan_enabled=false"
 
 experiments:
   - name: pointgpt

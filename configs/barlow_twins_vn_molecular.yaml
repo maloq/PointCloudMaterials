@@ -4,7 +4,6 @@ defaults:
 # - data: data_ae_Al_80
 
 data:
-  analysis_data_files: ['175ps.npy']
 project_name: pointnet
 experiment_name: BT_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
@@ -184,42 +183,3 @@ augmentation:
 vicreg_enabled: False
 
 # Post-training clustering analysis
-analysis_cluster_method: auto
-analysis_cluster_l2_normalize: true
-analysis_cluster_standardize: true
-analysis_cluster_pca_var: 0.98
-analysis_cluster_pca_max_components: 32
-analysis_cluster_k_values: [3, 4, 5, 6]
-analysis_progress_every_batches: 20
-analysis_test_rotation_runs: 5
-analysis_test_max_samples: null
-analysis_max_samples_total: 0
-analysis_tsne_max_samples: 8000
-analysis_tsne_n_iter: 1000
-analysis_interactive_max_points: 0
-analysis_md_use_all_points: true
-analysis_hdbscan_enabled: true
-analysis_hdbscan_fit_fraction: 0.25
-analysis_hdbscan_max_fit_samples: 50000
-analysis_hdbscan_target_k_min: 5
-analysis_hdbscan_target_k_max: 6
-analysis_hdbscan_min_cluster_size_candidates: []
-analysis_hdbscan_min_samples: null
-analysis_hdbscan_cluster_selection_epsilon: 0.0
-analysis_hdbscan_cluster_selection_method: leaf
-analysis_cluster_figure_pretty_projection: perspective
-analysis_cluster_figure_pretty_fov_deg: 34.0
-analysis_cluster_figure_pretty_distance_factor: 1.4
-analysis_cluster_figure_pretty_color_mode: matplotlib_match
-analysis_cluster_figure_pretty_saturation_boost: 1.06
-analysis_cluster_figure_pretty_wireframe_width: 1
-analysis_cluster_figure_raytrace_blender_executable: blender
-analysis_cluster_figure_raytrace_enabled: true
-analysis_cluster_figure_raytrace_resolution: 1600
-analysis_cluster_figure_raytrace_max_points: null
-analysis_cluster_figure_raytrace_samples: 64
-analysis_cluster_figure_raytrace_projection: perspective
-analysis_cluster_figure_raytrace_fov_deg: 34.0
-analysis_cluster_figure_raytrace_camera_distance_factor: 2.8
-analysis_cluster_figure_raytrace_sphere_radius_fraction: 0.0105
-analysis_cluster_figure_raytrace_timeout_sec: 1200

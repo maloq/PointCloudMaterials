@@ -80,7 +80,7 @@ validate_visible_cluster_spec() {
 format_visible_cluster_spec() {
   local spec="$1"
   if [[ "${spec}" == "default" ]]; then
-    printf "<default from config/CLI passthrough>"
+    printf "<default from analysis config>"
     return 0
   fi
   printf "%s" "${spec//;/ | }"
@@ -90,8 +90,6 @@ usage() {
   cat <<'EOF'
 Usage:
   ./scripts/run_selected_checkpoint_analyses_with_clusters.sh
-  ./scripts/run_selected_checkpoint_analyses_with_clusters.sh \
-    -- --cluster_figure_only
 
 Per-checkpoint defaults:
   Edit visible_cluster_specs in this script.
@@ -99,18 +97,11 @@ Per-checkpoint defaults:
     default
     IDS[;IDS...]
 
-Arguments after `--` are forwarded unchanged to predict_and_visualize.py.
-Use passthrough args after `--` for global options that should apply to every
-checkpoint, for example:
-  ./scripts/run_selected_checkpoint_analyses_with_clusters.sh \
-    -- --visible_cluster_sets '3,4,5'
-
-Raytrace quality/camera/Blender parameters come from
-configs/analysis/cluster_figure_raytrace.yaml (or checkpoint config overrides).
+Shared analysis settings come from configs/analysis/checkpoint_analysis.yaml.
+This helper only overrides checkpoint.path, checkpoint.output_dir,
+figure_set.raytrace.enabled, and figure_set.visible_cluster_sets.
 EOF
 }
-
-extra_args=()
 
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
@@ -118,13 +109,8 @@ while [[ "$#" -gt 0 ]]; do
       usage
       exit 0
       ;;
-    --)
-      shift
-      extra_args=("$@")
-      break
-      ;;
     *)
-      die "Unexpected argument '$1'. Edit visible_cluster_specs in this script, or pass predict_and_visualize.py arguments after '--'."
+      die "Unexpected argument '$1'. Edit visible_cluster_specs or configs/analysis/checkpoint_analysis.yaml."
       ;;
   esac
 done
@@ -147,13 +133,7 @@ for idx in "${!visible_cluster_specs[@]}"; do
     "visible_cluster_specs[$((idx + 1))]"
 done
 
-extra_args_contains_visible_cluster_sets=false
-for arg in "${extra_args[@]}"; do
-  if [[ "${arg}" == "--visible_cluster_sets" ]]; then
-    extra_args_contains_visible_cluster_sets=true
-    break
-  fi
-done
+cd "${repo_root}"
 
 for idx in "${!checkpoints[@]}"; do
   ckpt_rel="${checkpoints[$idx]}"
@@ -168,24 +148,35 @@ for idx in "${!checkpoints[@]}"; do
 
   mkdir -p "${out_dir}"
 
-  visible_args=()
-  if [[ "${visible_spec}" != "default" ]]; then
-    if [[ "${extra_args_contains_visible_cluster_sets}" == true ]]; then
-      die "Refusing to mix per-checkpoint visible cluster specs with passthrough --visible_cluster_sets. Remove one mechanism to avoid ambiguous predict_and_visualize.py arguments."
-    fi
-    IFS=';' read -r -a cluster_sets_for_checkpoint <<< "${visible_spec}"
-    visible_args+=(--visible_cluster_sets)
-    visible_args+=("${cluster_sets_for_checkpoint[@]}")
-  fi
-
   echo "[$((idx + 1))/${#checkpoints[@]}] Running analysis for ${ckpt_rel}"
   echo "    Output: ${out_rel}"
   echo "    Visible cluster sets: $(format_visible_cluster_spec "${visible_spec}")"
 
-  python "${predict_script}" \
-    "${ckpt_path}" \
-    --output_dir "${out_dir}" \
-    --raytrace_render_enabled \
-    "${visible_args[@]}" \
-    "${extra_args[@]}"
+  python - "${ckpt_path}" "${out_dir}" "${visible_spec}" <<'PY'
+import sys
+from omegaconf import open_dict
+
+from src.training_methods.contrastive_learning.predict_and_visualize import (
+    load_checkpoint_analysis_config,
+    run_post_training_analysis,
+)
+
+checkpoint_path, output_dir, visible_spec = sys.argv[1:4]
+analysis_cfg = load_checkpoint_analysis_config()
+with open_dict(analysis_cfg):
+    analysis_cfg.checkpoint.path = checkpoint_path
+    analysis_cfg.checkpoint.output_dir = output_dir
+    analysis_cfg.figure_set.raytrace.enabled = True
+    if visible_spec == "default":
+        analysis_cfg.figure_set.visible_cluster_sets = list(
+            analysis_cfg.figure_set.visible_cluster_sets
+        )
+    else:
+        analysis_cfg.figure_set.visible_cluster_sets = [
+            [int(cluster_id) for cluster_id in cluster_set.split(",")]
+            for cluster_set in visible_spec.split(";")
+        ]
+
+run_post_training_analysis(analysis_cfg=analysis_cfg)
+PY
 done

@@ -1,0 +1,197 @@
+checkpoint:
+  # Required for manual runs. The training wrappers override this at runtime.
+  path: output/2026-03-13/14-38-53/VICREG_l128_N160_M80_RI_MAE_Invariant-epoch=114.ckpt
+  # null -> <checkpoint_dir>/analysis
+  output_dir: outputs/pretrain_only_128_k8
+  cuda_device: 0
+
+inputs:
+  # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
+  data_config: configs/data/data_ae_Al_80.yaml
+  # Optional real-data frame selection. null -> use data.data_files from the checkpoint config.
+  real_data_files: null
+  dataloader_num_workers: 4
+  max_batches_latent: null
+  # 0/null -> unlimited unless the code imposes a real-data fallback cap.
+  max_samples_total: 0
+
+cache:
+  enabled: true
+  force_recompute: false
+  file: analysis_inference_cache.npz
+
+runtime:
+  progress_every_batches: 20
+  seed_base: 123
+
+clustering:
+  # null -> first entry of k_values
+  primary_k: null
+  k_values: [5, 6, 7, 8]
+  method: auto
+  l2_normalize: true
+  standardize: true
+  pca_variance: 0.98
+  pca_max_components: 32
+  hdbscan:
+    enabled: false
+    fit_fraction: 0.25
+    max_fit_samples: 50000
+    target_k_min: 5
+    target_k_max: 6
+    min_cluster_size_candidates: []
+    min_samples: null
+    min_samples_candidates: null
+    cluster_selection_epsilon: 0.0
+    cluster_selection_method: leaf
+    refit_full_data: true
+
+md:
+  overlap_boost: 0.25
+  overlap_fraction: null
+  use_all_points: true
+  interactive_max_points: 0
+
+tsne:
+  max_samples: 8000
+  n_iter: 1000
+  paper_enabled: true
+
+figure_set:
+  enabled: true
+  figure_only: false
+  # null -> clustering.primary_k
+  k: null
+  visible_cluster_sets: []
+  color_assignment: {}
+  color_assignment_file: null
+  profile_point_scale_enabled: false
+  md:
+    max_points: null
+    point_size: 5.6
+    alpha: 0.62
+    halo_scale: 1.0
+    halo_alpha: 0.0
+    saturation_boost: 1.18
+    view_elev: 24.0
+    view_azim: 35.0
+  icl:
+    enabled: false
+    k_min: 2
+    k_max: 20
+    max_samples: 20000
+    covariance: diag
+  representatives:
+    # null -> data.model_points / data.num_points from the checkpoint config
+    points: null
+    orientation: pca
+    view_elev: 22.0
+    view_azim: 38.0
+    projection: ortho
+    ptm_enabled: true
+    cna_enabled: true
+    cna_max_signatures: 5
+    center_atom_tolerance: 1.0e-6
+    shell_min_neighbors: 8
+    shell_max_neighbors: 24
+  raytrace:
+    enabled: false
+    blender_executable: blender
+    resolution: 1600
+    max_points: null
+    samples: 64
+    projection: perspective
+    fov_deg: 34.0
+    camera_distance_factor: 2.8
+    sphere_radius_fraction: 0.0105
+    timeout_sec: 1200
+    use_gpu: true
+    parallel_views: true
+    parallel_max_workers: 4
+
+real_md:
+  enabled: true
+  # null -> clustering.primary_k
+  selected_k: null
+  time_series:
+    paper_enabled: true
+    alpha: 0.78
+    bar_alpha: 0.82
+    paper_alpha: 0.72
+  profiles:
+    enabled: true
+    samples_per_cluster: 6
+    target_points: 64
+    knn_k: 4
+    max_cluster_property_samples: 256
+  cluster_group_order: []
+  cluster_groups: {}
+  spatial:
+    enabled: true
+    max_points: 25000
+    point_size: 5.6
+    alpha: 0.62
+    saturation_boost: 1.18
+    view_elev: 24.0
+    view_azim: 35.0
+    auto_top_clusters: 2
+    auto_zoom_enabled: true
+    auto_zoom_count: 2
+    auto_zoom_half_extent: 18.0
+    auto_zoom_search_radius: 14.0
+    zoom_specs: []
+  projection:
+    method: umap
+    max_samples: 15000
+    umap_neighbors: 30
+    umap_min_dist: 0.15
+    umap_metric: euclidean
+    scalar_alpha: 0.86
+    scalar_background_alpha: 0.06
+  descriptors:
+    enabled: true
+    max_samples: 6000
+    physical_scalar: coord_mean
+    scalar_columns: []
+    optional:
+      steinhardt:
+        enabled: false
+        l_values: [4, 6]
+        append_shell_size: true
+        center_atom_tolerance: 1.0e-6
+        shell_min_neighbors: 8
+        shell_max_neighbors: 24
+      cna:
+        enabled: false
+        max_signatures: 12
+        append_shell_size: true
+        fit_max_pointclouds: 4000
+        center_atom_tolerance: 1.0e-6
+        shell_min_neighbors: 8
+        shell_max_neighbors: 24
+      soap:
+        enabled: false
+        species: Al
+        point_scale: null
+        r_cut: null
+        r_cut_multiplier: 1.25
+        r_cut_min: 0.35
+        n_max: 8
+        l_max: 6
+        sigma: 0.3
+        pca_components: 16
+        fit_max_pointclouds: 4000
+        n_jobs: 1
+        center_atom_tolerance: 1.0e-6
+        shell_min_neighbors: 8
+        shell_max_neighbors: 24
+  transitions:
+    enabled: true
+    require_mutual: true
+    max_distance: null
+    flow_mute_diagonal: true
+    flow_min_fraction: 0.001
+
+equivariance:
+  enabled: true
+  max_batches: 2

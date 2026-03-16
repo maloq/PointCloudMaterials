@@ -470,7 +470,7 @@ def _compute_projection(
             "explained_variance_ratio": [float(v) for v in pca.explained_variance_ratio_.tolist()],
         }
     raise ValueError(
-        "analysis_real_md_projection_method must be one of ['umap', 'tsne', 'pca'], "
+        "real_md.projection.method must be one of ['umap', 'tsne', 'pca'], "
         f"got {method!r}."
     )
 
@@ -487,7 +487,7 @@ def _compute_scalar_values_for_indices(
     frame_time_lookup: np.ndarray,
     point_scale: float,
     descriptor_table: pd.DataFrame,
-    cfg: Any,
+    descriptors_cfg_root: Any,
 ) -> np.ndarray | None:
     requested_scalar = str(scalar_name)
     sample_indices_arr = np.asarray(sample_indices, dtype=int)
@@ -515,7 +515,7 @@ def _compute_scalar_values_for_indices(
         if aligned.notna().all():
             return aligned.to_numpy(dtype=np.float32)
 
-    optional_descriptors_cfg = _to_plain(getattr(cfg, "analysis_real_md_descriptors", None))
+    optional_descriptors_cfg = _to_plain(descriptors_cfg_root)
     if not isinstance(optional_descriptors_cfg, dict):
         return None
 
@@ -542,23 +542,23 @@ def _compute_scalar_values_for_indices(
 
 
 def _build_cluster_groups(
-    cfg: Any,
+    real_md_cfg: Any,
     *,
     frames: list[FrameSlice],
     labels: np.ndarray,
 ) -> list[dict[str, Any]]:
-    groups_raw = _to_plain(getattr(cfg, "analysis_real_md_cluster_groups", None))
-    order_raw = _to_plain(getattr(cfg, "analysis_real_md_cluster_group_order", None))
+    groups_raw = _to_plain(getattr(real_md_cfg, "cluster_groups", None))
+    order_raw = _to_plain(getattr(real_md_cfg, "cluster_group_order", None))
     groups: list[dict[str, Any]] = []
     if isinstance(groups_raw, dict) and groups_raw:
         requested_order = [str(v) for v in list(order_raw)] if order_raw is not None else list(groups_raw.keys())
         for name in requested_order:
             if name not in groups_raw:
                 raise KeyError(
-                    "analysis_real_md_cluster_group_order references a missing group: "
+                    "real_md.cluster_group_order references a missing group: "
                     f"{name!r}. Available groups: {sorted(groups_raw.keys())}."
                 )
-            cluster_ids = sorted(_normalize_cluster_id_list(groups_raw[name], field_name=f"analysis_real_md_cluster_groups.{name}"))
+            cluster_ids = sorted(_normalize_cluster_id_list(groups_raw[name], field_name=f"real_md.cluster_groups.{name}"))
             groups.append(
                 {
                     "name": str(name),
@@ -571,7 +571,8 @@ def _build_cluster_groups(
     if not frames:
         return []
 
-    auto_top_clusters = max(0, _cfg_int(cfg, "analysis_real_md_spatial_auto_top_clusters", 2))
+    spatial_cfg = getattr(real_md_cfg, "spatial", None)
+    auto_top_clusters = max(0, _cfg_int(spatial_cfg, "auto_top_clusters", 2))
     if auto_top_clusters == 0:
         return []
     latest_frame = frames[-1]
@@ -593,22 +594,31 @@ def _build_cluster_groups(
 
 
 def _build_zoom_specs(
-    cfg: Any,
+    spatial_cfg: Any,
+    data_cfg: Any,
     *,
     frames: list[FrameSlice],
     coords: np.ndarray,
     labels: np.ndarray,
     cluster_groups: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    zoom_specs_raw = _to_plain(getattr(cfg, "analysis_real_md_spatial_zoom_specs", None))
-    default_half_extent = _cfg_float(cfg, "analysis_real_md_spatial_auto_zoom_half_extent", float(getattr(cfg.data, "radius", 8.0)) * 2.5)
-    search_radius = _cfg_float(cfg, "analysis_real_md_spatial_auto_zoom_search_radius", default_half_extent * 0.8)
+    zoom_specs_raw = _to_plain(getattr(spatial_cfg, "zoom_specs", None))
+    default_half_extent = _cfg_float(
+        spatial_cfg,
+        "auto_zoom_half_extent",
+        float(getattr(data_cfg, "radius", 8.0)) * 2.5,
+    )
+    search_radius = _cfg_float(
+        spatial_cfg,
+        "auto_zoom_search_radius",
+        default_half_extent * 0.8,
+    )
     specs: list[dict[str, Any]] = []
     if isinstance(zoom_specs_raw, list):
         for spec_idx, raw in enumerate(zoom_specs_raw):
             if not isinstance(raw, dict):
                 raise TypeError(
-                    "Each analysis_real_md_spatial_zoom_specs entry must be a dict, "
+                    "Each real_md.spatial.zoom_specs entry must be a dict, "
                     f"got {type(raw)!r} at index {spec_idx}."
                 )
             name = str(raw.get("name", f"zoom_{spec_idx + 1}"))
@@ -624,7 +634,7 @@ def _build_zoom_specs(
                 )
             cluster_ids = None
             if raw.get("cluster_ids") is not None:
-                cluster_ids = sorted(_normalize_cluster_id_list(raw.get("cluster_ids"), field_name=f"analysis_real_md_spatial_zoom_specs[{spec_idx}].cluster_ids"))
+                cluster_ids = sorted(_normalize_cluster_id_list(raw.get("cluster_ids"), field_name=f"real_md.spatial.zoom_specs[{spec_idx}].cluster_ids"))
             if raw.get("bounds") is not None:
                 bounds = _normalize_bounds(raw["bounds"])
             else:
@@ -668,12 +678,12 @@ def _build_zoom_specs(
                 }
             )
 
-    auto_zoom_enabled = _cfg_bool(cfg, "analysis_real_md_spatial_auto_zoom_enabled", True)
+    auto_zoom_enabled = _cfg_bool(spatial_cfg, "auto_zoom_enabled", True)
     if auto_zoom_enabled and cluster_groups and frames:
         latest_frame = frames[-1]
         frame_coords = coords[latest_frame.indices]
         frame_labels = labels[latest_frame.indices]
-        auto_limit = max(0, _cfg_int(cfg, "analysis_real_md_spatial_auto_zoom_count", len(cluster_groups)))
+        auto_limit = max(0, _cfg_int(spatial_cfg, "auto_zoom_count", len(cluster_groups)))
         for group in cluster_groups[:auto_limit]:
             cluster_ids = [int(v) for v in group["cluster_ids"]]
             mask = np.isin(frame_labels, np.asarray(cluster_ids, dtype=int))
@@ -931,7 +941,8 @@ def _write_summary_markdown(
 def run_real_md_qualitative_analysis(
     *,
     out_dir: Path,
-    cfg: Any,
+    model_cfg: Any,
+    analysis_cfg: Any,
     dataset: Any,
     latents: np.ndarray,
     coords: np.ndarray,
@@ -945,15 +956,28 @@ def run_real_md_qualitative_analysis(
     random_state: int,
     representative_render_cache: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    if getattr(cfg.data, "kind", None) != "real":
+    if getattr(model_cfg.data, "kind", None) != "real":
         raise ValueError(
-            "run_real_md_qualitative_analysis only supports cfg.data.kind='real', "
-            f"got {getattr(cfg.data, 'kind', None)!r}."
+            "run_real_md_qualitative_analysis only supports model_cfg.data.kind='real', "
+            f"got {getattr(model_cfg.data, 'kind', None)!r}."
         )
     if not frame_groups:
         raise ValueError("Real-MD qualitative analysis requires at least one frame group.")
 
-    selected_k_raw = getattr(cfg, "analysis_real_md_k", None)
+    clustering_cfg = getattr(analysis_cfg, "clustering", None)
+    tsne_cfg = getattr(analysis_cfg, "tsne", None)
+    figure_set_cfg = getattr(analysis_cfg, "figure_set", None)
+    figure_representatives_cfg = getattr(figure_set_cfg, "representatives", None)
+    figure_md_cfg = getattr(figure_set_cfg, "md", None)
+    real_md_cfg = getattr(analysis_cfg, "real_md", None)
+    time_series_cfg = getattr(real_md_cfg, "time_series", None)
+    profile_cfg = getattr(real_md_cfg, "profiles", None)
+    descriptor_cfg = getattr(real_md_cfg, "descriptors", None)
+    projection_cfg = getattr(real_md_cfg, "projection", None)
+    spatial_cfg = getattr(real_md_cfg, "spatial", None)
+    transition_cfg = getattr(real_md_cfg, "transitions", None)
+
+    selected_k_raw = getattr(real_md_cfg, "selected_k", None)
     if selected_k_raw is None:
         if not cluster_labels_by_k:
             raise ValueError("cluster_labels_by_k is empty.")
@@ -962,7 +986,7 @@ def run_real_md_qualitative_analysis(
         selected_k = int(selected_k_raw)
     if int(selected_k) not in cluster_labels_by_k:
         raise KeyError(
-            "Requested analysis_real_md_k is not available. "
+            "Requested real_md.selected_k is not available. "
             f"Requested k={selected_k}, available={sorted(cluster_labels_by_k.keys())}."
         )
     labels = np.asarray(cluster_labels_by_k[int(selected_k)], dtype=int)
@@ -997,7 +1021,7 @@ def run_real_md_qualitative_analysis(
             "Frame grouping did not cover all collected samples for real-MD qualitative analysis. "
             f"Missing assignments={missing_count}, total_samples={len(latents)}."
         )
-    cluster_groups = _build_cluster_groups(cfg, frames=frames, labels=labels)
+    cluster_groups = _build_cluster_groups(real_md_cfg, frames=frames, labels=labels)
 
     summary: dict[str, Any] = {
         "root_dir": str(out_root),
@@ -1037,14 +1061,14 @@ def run_real_md_qualitative_analysis(
             proportions_dir,
             cluster_color_map=labels_color_map,
             cluster_display_labels=cluster_display_labels,
-            save_paper_svg=_cfg_bool(cfg, "analysis_real_md_time_series_paper_enabled", True),
-            stack_alpha=_cfg_float(cfg, "analysis_real_md_time_series_alpha", 0.78),
-            bar_alpha=_cfg_float(cfg, "analysis_real_md_time_series_bar_alpha", 0.82),
-            paper_alpha=_cfg_float(cfg, "analysis_real_md_time_series_paper_alpha", 0.72),
+            save_paper_svg=_cfg_bool(time_series_cfg, "paper_enabled", True),
+            stack_alpha=_cfg_float(time_series_cfg, "alpha", 0.78),
+            bar_alpha=_cfg_float(time_series_cfg, "bar_alpha", 0.82),
+            paper_alpha=_cfg_float(time_series_cfg, "paper_alpha", 0.72),
         ),
     }
 
-    if _cfg_bool(cfg, "analysis_cluster_profile_enabled", True):
+    if _cfg_bool(profile_cfg, "enabled", True):
         representatives_dir = out_root / "representatives"
         representatives_dir.mkdir(parents=True, exist_ok=True)
         representative_base_path = representatives_dir / f"04_cluster_representatives_k{int(selected_k)}.png"
@@ -1056,46 +1080,35 @@ def run_real_md_qualitative_analysis(
             representative_base_path,
             point_scale=float(point_scale),
             target_points=_cfg_int(
-                cfg,
-                "analysis_cluster_profile_target_points",
-                max(32, int(getattr(cfg.data, "model_points", getattr(cfg.data, "num_points", 64)))),
+                profile_cfg,
+                "target_points",
+                max(
+                    32,
+                    int(getattr(model_cfg.data, "model_points", getattr(model_cfg.data, "num_points", 64))),
+                ),
             ),
-            knn_k=_cfg_int(cfg, "analysis_cluster_profile_knn_k", 4),
-            orientation_method=str(
-                getattr(cfg, "analysis_cluster_figure_representative_orientation", "pca")
-            ),
-            view_elev=float(getattr(cfg, "analysis_cluster_figure_representative_view_elev", 22.0)),
-            view_azim=float(getattr(cfg, "analysis_cluster_figure_representative_view_azim", 38.0)),
-            projection=str(getattr(cfg, "analysis_cluster_figure_representative_projection", "ortho")),
+            knn_k=_cfg_int(profile_cfg, "knn_k", 4),
+            orientation_method=str(getattr(figure_representatives_cfg, "orientation", "pca")),
+            view_elev=float(getattr(figure_representatives_cfg, "view_elev", 22.0)),
+            view_azim=float(getattr(figure_representatives_cfg, "view_azim", 38.0)),
+            projection=str(getattr(figure_representatives_cfg, "projection", "ortho")),
             representative_ptm_enabled=bool(
-                getattr(cfg, "analysis_cluster_figure_representative_ptm_enabled", False)
+                getattr(figure_representatives_cfg, "ptm_enabled", False)
             ),
             representative_cna_enabled=bool(
-                getattr(cfg, "analysis_cluster_figure_representative_cna_enabled", False)
+                getattr(figure_representatives_cfg, "cna_enabled", False)
             ),
             representative_cna_max_signatures=int(
-                getattr(cfg, "analysis_cluster_figure_representative_cna_max_signatures", 5)
+                getattr(figure_representatives_cfg, "cna_max_signatures", 5)
             ),
             representative_center_atom_tolerance=float(
-                getattr(
-                    cfg,
-                    "analysis_cluster_figure_representative_center_atom_tolerance",
-                    1e-6,
-                )
+                getattr(figure_representatives_cfg, "center_atom_tolerance", 1e-6)
             ),
             representative_shell_min_neighbors=int(
-                getattr(
-                    cfg,
-                    "analysis_cluster_figure_representative_shell_min_neighbors",
-                    8,
-                )
+                getattr(figure_representatives_cfg, "shell_min_neighbors", 8)
             ),
             representative_shell_max_neighbors=int(
-                getattr(
-                    cfg,
-                    "analysis_cluster_figure_representative_shell_max_neighbors",
-                    24,
-                )
+                getattr(figure_representatives_cfg, "shell_max_neighbors", 24)
             ),
             representative_render_cache=representative_render_cache,
         )
@@ -1110,9 +1123,9 @@ def run_real_md_qualitative_analysis(
             ),
         }
 
-    if _cfg_bool(cfg, "analysis_real_md_descriptor_enabled", True):
+    if _cfg_bool(descriptor_cfg, "enabled", True):
         descriptor_dir = out_root / "descriptors"
-        descriptor_max_samples = getattr(cfg, "analysis_real_md_descriptor_max_samples", 6000)
+        descriptor_max_samples = getattr(descriptor_cfg, "max_samples", 6000)
         descriptor_indices = _resolve_descriptor_sampling_indices(
             frames,
             labels,
@@ -1134,19 +1147,21 @@ def run_real_md_qualitative_analysis(
             frame_time_lookup=frame_time_lookup,
         )
 
-        optional_descriptors_cfg = _to_plain(getattr(cfg, "analysis_real_md_descriptors", None))
+        optional_descriptors_cfg = _to_plain(getattr(descriptor_cfg, "optional", None))
         optional_descriptor_summaries: list[dict[str, Any]] = []
         scalar_columns = list(_BUILTIN_SCALAR_COLUMNS)
         if isinstance(optional_descriptors_cfg, dict):
             for descriptor_name, descriptor_cfg_raw in optional_descriptors_cfg.items():
-                descriptor_cfg = descriptor_cfg_raw if isinstance(descriptor_cfg_raw, dict) else {}
-                if not bool(descriptor_cfg.get("enabled", False)):
+                optional_descriptor_cfg = (
+                    descriptor_cfg_raw if isinstance(descriptor_cfg_raw, dict) else {}
+                )
+                if not bool(optional_descriptor_cfg.get("enabled", False)):
                     continue
                 descriptor_df, descriptor_info = _evaluate_optional_descriptor(
                     str(descriptor_name),
                     point_clouds=descriptor_points,
                     point_scale=float(point_scale),
-                    descriptor_cfg=descriptor_cfg,
+                    descriptor_cfg=optional_descriptor_cfg,
                 )
                 if descriptor_df.shape[0] != descriptor_table.shape[0]:
                     raise RuntimeError(
@@ -1159,7 +1174,7 @@ def run_real_md_qualitative_analysis(
                     scalar_columns.extend(descriptor_info["feature_names"])
                 optional_descriptor_summaries.append(descriptor_info)
 
-        requested_scalar_columns_raw = _to_plain(getattr(cfg, "analysis_real_md_descriptor_scalar_columns", None))
+        requested_scalar_columns_raw = _to_plain(getattr(descriptor_cfg, "scalar_columns", None))
         if requested_scalar_columns_raw:
             scalar_columns = [str(v) for v in list(requested_scalar_columns_raw)]
         scalar_columns = [column for column in scalar_columns if column in descriptor_table.columns]
@@ -1237,8 +1252,8 @@ def run_real_md_qualitative_analysis(
         descriptor_table = pd.DataFrame()
 
     projection_dir = out_root / "latent"
-    projection_method = str(getattr(cfg, "analysis_real_md_projection_method", "umap")).strip().lower()
-    projection_max_samples = getattr(cfg, "analysis_real_md_projection_max_samples", 15000)
+    projection_method = str(getattr(projection_cfg, "method", "umap")).strip().lower()
+    projection_max_samples = getattr(projection_cfg, "max_samples", 15000)
     projection_indices = _resolve_descriptor_sampling_indices(
         frames,
         labels,
@@ -1249,14 +1264,14 @@ def run_real_md_qualitative_analysis(
         np.asarray(latents, dtype=np.float32)[projection_indices],
         method=projection_method,
         random_state=int(random_state),
-        l2_normalize=bool(getattr(cfg, "analysis_cluster_l2_normalize", True)),
-        standardize=bool(getattr(cfg, "analysis_cluster_standardize", True)),
-        pca_variance=float(getattr(cfg, "analysis_cluster_pca_var", 0.98)),
-        pca_max_components=int(getattr(cfg, "analysis_cluster_pca_max_components", 32)),
-        umap_neighbors=_cfg_int(cfg, "analysis_real_md_projection_umap_neighbors", 30),
-        umap_min_dist=_cfg_float(cfg, "analysis_real_md_projection_umap_min_dist", 0.15),
-        umap_metric=str(getattr(cfg, "analysis_real_md_projection_umap_metric", "euclidean")),
-        tsne_n_iter=_cfg_int(cfg, "analysis_tsne_n_iter", 1000),
+        l2_normalize=bool(getattr(clustering_cfg, "l2_normalize", True)),
+        standardize=bool(getattr(clustering_cfg, "standardize", True)),
+        pca_variance=float(getattr(clustering_cfg, "pca_variance", 0.98)),
+        pca_max_components=int(getattr(clustering_cfg, "pca_max_components", 32)),
+        umap_neighbors=_cfg_int(projection_cfg, "umap_neighbors", 30),
+        umap_min_dist=_cfg_float(projection_cfg, "umap_min_dist", 0.15),
+        umap_metric=str(getattr(projection_cfg, "umap_metric", "euclidean")),
+        tsne_n_iter=_cfg_int(tsne_cfg, "n_iter", 1000),
     )
     projection_dir.mkdir(parents=True, exist_ok=True)
     projection_table = pd.DataFrame(
@@ -1306,7 +1321,7 @@ def run_real_md_qualitative_analysis(
         label_prefix="F",
     )
 
-    scalar_name = str(getattr(cfg, "analysis_real_md_descriptor_physical_scalar", "coord_mean"))
+    scalar_name = str(getattr(descriptor_cfg, "physical_scalar", "coord_mean"))
     scalar_label = _BUILTIN_SCALAR_LABELS.get(scalar_name, scalar_name)
     projection_scalar = _compute_scalar_values_for_indices(
         scalar_name=scalar_name,
@@ -1319,7 +1334,7 @@ def run_real_md_qualitative_analysis(
         frame_time_lookup=frame_time_lookup,
         point_scale=float(point_scale),
         descriptor_table=descriptor_table,
-        cfg=cfg,
+        descriptors_cfg_root=getattr(descriptor_cfg, "optional", None),
     )
     if projection_scalar is not None:
         scalar_plot = projection_dir / f"latent_projection_{projection_method}_{scalar_name}.png"
@@ -1329,8 +1344,8 @@ def run_real_md_qualitative_analysis(
             scalar_plot,
             title=f"Latent projection ({projection_info['method']}) colored by {scalar_label}",
             colorbar_label=scalar_label,
-            alpha=_cfg_float(cfg, "analysis_real_md_projection_scalar_alpha", 0.86),
-            background_alpha=_cfg_float(cfg, "analysis_real_md_projection_scalar_background_alpha", 0.06),
+            alpha=_cfg_float(projection_cfg, "scalar_alpha", 0.86),
+            background_alpha=_cfg_float(projection_cfg, "scalar_background_alpha", 0.06),
         )
         summary["latent_projection"]["plots"]["physical_scalar"] = str(scalar_plot)
         summary["latent_projection"]["physical_scalar"] = {
@@ -1339,7 +1354,7 @@ def run_real_md_qualitative_analysis(
             "finite_fraction": float(scalar_plot_summary["finite_fraction"]),
         }
 
-    if _cfg_bool(cfg, "analysis_real_md_spatial_enabled", True):
+    if _cfg_bool(spatial_cfg, "enabled", True):
         spatial_dir = out_root / "spatial"
         spatial_dir.mkdir(parents=True, exist_ok=True)
         spatial_summary: dict[str, Any] = {
@@ -1348,12 +1363,32 @@ def run_real_md_qualitative_analysis(
             "zooms": [],
             "cluster_groups": cluster_groups,
         }
-        spatial_max_points = getattr(cfg, "analysis_real_md_spatial_max_points", None)
-        spatial_point_size = _cfg_float(cfg, "analysis_real_md_spatial_point_size", _cfg_float(cfg, "analysis_cluster_figure_md_point_size", 5.6))
-        spatial_alpha = _cfg_float(cfg, "analysis_real_md_spatial_alpha", _cfg_float(cfg, "analysis_cluster_figure_md_alpha", 0.62))
-        spatial_saturation = _cfg_float(cfg, "analysis_real_md_spatial_saturation_boost", _cfg_float(cfg, "analysis_cluster_figure_md_saturation_boost", 1.18))
-        spatial_elev = _cfg_float(cfg, "analysis_real_md_spatial_view_elev", _cfg_float(cfg, "analysis_cluster_figure_md_view_elev", 24.0))
-        spatial_azim = _cfg_float(cfg, "analysis_real_md_spatial_view_azim", _cfg_float(cfg, "analysis_cluster_figure_md_view_azim", 35.0))
+        spatial_max_points = getattr(spatial_cfg, "max_points", None)
+        spatial_point_size = _cfg_float(
+            spatial_cfg,
+            "point_size",
+            _cfg_float(figure_md_cfg, "point_size", 5.6),
+        )
+        spatial_alpha = _cfg_float(
+            spatial_cfg,
+            "alpha",
+            _cfg_float(figure_md_cfg, "alpha", 0.62),
+        )
+        spatial_saturation = _cfg_float(
+            spatial_cfg,
+            "saturation_boost",
+            _cfg_float(figure_md_cfg, "saturation_boost", 1.18),
+        )
+        spatial_elev = _cfg_float(
+            spatial_cfg,
+            "view_elev",
+            _cfg_float(figure_md_cfg, "view_elev", 24.0),
+        )
+        spatial_azim = _cfg_float(
+            spatial_cfg,
+            "view_azim",
+            _cfg_float(figure_md_cfg, "view_azim", 35.0),
+        )
         for frame in frames:
             frame_dir = spatial_dir / frame.output_name
             frame_record: dict[str, Any] = {
@@ -1384,7 +1419,8 @@ def run_real_md_qualitative_analysis(
             spatial_summary["frames"].append(frame_record)
 
         zoom_specs = _build_zoom_specs(
-            cfg,
+            spatial_cfg,
+            model_cfg.data,
             frames=frames,
             coords=np.asarray(coords, dtype=np.float32),
             labels=labels,
@@ -1414,12 +1450,14 @@ def run_real_md_qualitative_analysis(
             spatial_summary["zooms"].append(zoom_view)
         summary["spatial"] = spatial_summary
 
-    if _cfg_bool(cfg, "analysis_real_md_transition_enabled", True) and len(frames) >= 2:
+    if _cfg_bool(transition_cfg, "enabled", True) and len(frames) >= 2:
         transition_dir = out_root / "transitions"
         transition_dir.mkdir(parents=True, exist_ok=True)
-        stride = float(getattr(cfg.data, "radius", 8.0)) * (1.0 - float(getattr(cfg.data, "overlap_fraction", 0.0)))
+        stride = float(getattr(model_cfg.data, "radius", 8.0)) * (
+            1.0 - float(getattr(model_cfg.data, "overlap_fraction", 0.0))
+        )
         default_transition_tol = max(1e-3, 0.5 * stride)
-        transition_tol_cfg = getattr(cfg, "analysis_real_md_transition_max_distance", None)
+        transition_tol_cfg = getattr(transition_cfg, "max_distance", None)
         transition_tol = float(default_transition_tol if transition_tol_cfg is None else transition_tol_cfg)
         transition_data = _compute_transitions(
             frames,
@@ -1427,7 +1465,7 @@ def run_real_md_qualitative_analysis(
             labels=labels,
             cluster_ids=cluster_ids,
             max_distance=float(transition_tol),
-            require_mutual=_cfg_bool(cfg, "analysis_real_md_transition_require_mutual", True),
+            require_mutual=_cfg_bool(transition_cfg, "require_mutual", True),
         )
         pair_records: list[dict[str, Any]] = []
         for pair_idx, pair_summary in enumerate(transition_data["pairs"], start=1):
@@ -1441,8 +1479,8 @@ def run_real_md_qualitative_analysis(
                 row_labels=cluster_display_labels,
                 cluster_color_map=labels_color_map,
                 cluster_ids_for_palette=cluster_ids,
-                mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
-                min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
+                mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
             )
             save_transition_flow_plot(
                 counts,
@@ -1451,8 +1489,8 @@ def run_real_md_qualitative_analysis(
                 row_labels=cluster_display_labels,
                 cluster_color_map=labels_color_map,
                 cluster_ids_for_palette=cluster_ids,
-                mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
-                min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
+                mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
             )
             pair_records.append(
                 {
@@ -1474,8 +1512,8 @@ def run_real_md_qualitative_analysis(
             row_labels=cluster_display_labels,
             cluster_color_map=labels_color_map,
             cluster_ids_for_palette=cluster_ids,
-            mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
-            min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
+            mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+            min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
         )
         save_transition_flow_plot(
             transition_data["aggregate_counts"],
@@ -1484,8 +1522,8 @@ def run_real_md_qualitative_analysis(
             row_labels=cluster_display_labels,
             cluster_color_map=labels_color_map,
             cluster_ids_for_palette=cluster_ids,
-            mute_diagonal=_cfg_bool(cfg, "analysis_real_md_transition_flow_mute_diagonal", True),
-            min_draw_fraction=_cfg_float(cfg, "analysis_real_md_transition_flow_min_fraction", 0.001),
+            mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+            min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
         )
         summary["transitions"] = {
             "cluster_ids": [int(v) for v in cluster_ids],

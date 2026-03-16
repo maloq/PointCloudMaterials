@@ -4,7 +4,6 @@ defaults:
 - data: data_synth_polycrystalline_balanced_geometries
 
 data:
-  analysis_data_files: ['175ps.npy']
 
 project_name: pointnet
 experiment_name: WMSE_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
@@ -168,26 +167,3 @@ augmentation:
   scaling_range: 0.0
   track_augmentation: false
 
-analysis_cluster_method: auto
-analysis_cluster_l2_normalize: true
-analysis_cluster_standardize: true
-analysis_cluster_pca_var: 0.98
-analysis_cluster_pca_max_components: 32
-analysis_cluster_k_values: [5, 6, 7, 8]
-analysis_progress_every_batches: 20
-analysis_test_rotation_runs: 5
-analysis_test_max_samples: null
-analysis_max_samples_total: 0
-analysis_tsne_max_samples: 8000
-analysis_tsne_n_iter: 1000
-analysis_interactive_max_points: 0
-analysis_md_use_all_points: true
-analysis_hdbscan_enabled: false
-analysis_hdbscan_fit_fraction: 0.25
-analysis_hdbscan_max_fit_samples: 50000
-analysis_hdbscan_target_k_min: 5
-analysis_hdbscan_target_k_max: 6
-analysis_hdbscan_min_cluster_size_candidates: []
-analysis_hdbscan_min_samples: null
-analysis_hdbscan_cluster_selection_epsilon: 0.0
-analysis_hdbscan_cluster_selection_method: leaf

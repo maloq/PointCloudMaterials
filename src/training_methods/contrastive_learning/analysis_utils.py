@@ -1,16 +1,33 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Protocol, Tuple, runtime_checkable
 
 import numpy as np
 import torch
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from src.data_utils.data_load import PointCloudDataset
-from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
 from src.utils.spd_metrics import random_rotation_matrix
 from src.utils.spd_utils import apply_rotation
+
+
+@runtime_checkable
+class AnalyzableModel(Protocol):
+    """Protocol for models that can be used with the analysis pipeline.
+
+    Any model whose ``__call__`` returns
+    ``(invariant_latent, model_latent, equivariant_latent | None)``
+    satisfies this protocol.  ``BarlowTwinsModule`` already conforms.
+    """
+
+    def __call__(
+        self, pc: torch.Tensor
+    ) -> tuple[torch.Tensor | None, Any, torch.Tensor | None]: ...
+
+    def eval(self) -> "AnalyzableModel": ...
+
+    def to(self, device: str, **kwargs: Any) -> "AnalyzableModel": ...
 
 
 def cap_cluster_labels(
@@ -103,6 +120,13 @@ def _extract_pc_phase_coords(
 def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None]:
     pc, phase, _, _ = _extract_pc_phase_coords(batch)
     return pc, phase
+
+
+def _unwrap_dataset(dataset: Any) -> Any:
+    """Unwrap nested dataset wrappers (Subset, etc.) to get the underlying dataset."""
+    while hasattr(dataset, "dataset"):
+        dataset = dataset.dataset
+    return dataset
 
 
 def _unwrap_subset_indices(dataset: Any) -> Tuple[Any, list[int] | None]:
@@ -221,7 +245,7 @@ def build_real_coords_dataloader(
 
 
 def gather_inference_batches(
-    model: BarlowTwinsModule,
+    model: AnalyzableModel,
     dataloader: torch.utils.data.DataLoader,
     device: str,
     max_batches: int | None = 4,
@@ -332,7 +356,7 @@ def _default_cluster_count(num_samples: int, fallback: int = 4) -> int:
     return max(2, min(fallback, num_samples // 2))
 
 
-def _seeded_forward(model: BarlowTwinsModule, pc: torch.Tensor, seed: int):
+def _seeded_forward(model: AnalyzableModel, pc: torch.Tensor, seed: int):
     """Run forward pass with fixed random seed while preserving global RNG state."""
     cpu_state = torch.get_rng_state()
     cuda_states = torch.cuda.get_rng_state_all() if pc.is_cuda else None
@@ -348,7 +372,7 @@ def _seeded_forward(model: BarlowTwinsModule, pc: torch.Tensor, seed: int):
 
 
 def evaluate_latent_equivariance(
-    model: BarlowTwinsModule,
+    model: AnalyzableModel,
     dataloader: torch.utils.data.DataLoader,
     device: str,
     max_batches: int = 2,
@@ -458,8 +482,10 @@ def evaluate_latent_equivariance(
 
 
 __all__ = [
+    "AnalyzableModel",
     "_default_cluster_count",
     "_sample_indices",
+    "_unwrap_dataset",
     "build_real_coords_dataloader",
     "cap_cluster_labels",
     "evaluate_latent_equivariance",
