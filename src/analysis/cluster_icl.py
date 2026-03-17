@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from src.training_methods.contrastive_learning._cluster_colors import _l2_normalize_rows
+from .cluster_colors import _l2_normalize_rows
 
 
 def _prepare_icl_features(

@@ -26,7 +26,7 @@ def run_post_training_analysis_safe(
 ):
     """Run post-training analysis with error handling."""
     try:
-        from src.training_methods.contrastive_learning.predict_and_visualize import (
+        from src.analysis.pipeline import (
             run_post_training_analysis,
         )
 

@@ -12,16 +12,16 @@ import pandas as pd
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 
-from src.training_methods.contrastive_learning.cluster_profile_analysis import (
+from .cluster_profiles import (
     _ALL_PROFILE_PROPERTIES,
     _compute_sample_properties,
     _json_default,
     _load_point_cloud_from_dataset,
 )
-from src.training_methods.contrastive_learning._cluster_rendering import (
+from .cluster_rendering import (
     _save_cluster_representatives_figure,
 )
-from src.training_methods.contrastive_learning.cluster_figure_utils import _build_cluster_color_map
+from .cluster_figures import _build_cluster_color_map
 from src.vis_tools.latent_analysis_vis import _prepare_clustering_features
 from src.vis_tools.real_md_analysis_vis import (
     save_cna_cluster_signature_stacked_bar,

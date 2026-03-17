@@ -11,8 +11,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from src.training_methods.contrastive_learning._cluster_colors import _boost_saturation
-from src.training_methods.contrastive_learning._cluster_geometry import (
+from src.analysis.cluster_colors import _boost_saturation
+from src.analysis.cluster_geometry import (
     _draw_cube_wireframe,
     _sample_indices_stratified,
     _set_equal_axes_3d,

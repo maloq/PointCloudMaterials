@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import cKDTree
 
-from src.training_methods.contrastive_learning._cluster_colors import (
+from .cluster_colors import (
     _boost_saturation,
     _cluster_label_color,
     _compute_center_to_edge_colors,
 )
-from src.training_methods.contrastive_learning._cluster_geometry import (
+from .cluster_geometry import (
     _build_local_coordination_edges,
     _compute_cluster_representative_indices,
     _draw_edges,
@@ -26,7 +26,7 @@ from src.training_methods.contrastive_learning._cluster_geometry import (
     _set_equal_axes_3d,
     _draw_cube_wireframe,
 )
-from src.training_methods.contrastive_learning._representative_structure_analysis import (
+from .representative_structures import (
     _build_cluster_representative_analysis_summary,
     analyze_cluster_representatives,
     materialize_cluster_representative_analysis_summary,

@@ -12,68 +12,30 @@ from omegaconf import DictConfig, OmegaConf, open_dict
 sys.path.append(os.getcwd())
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
-from src.training_methods.contrastive_learning._cluster_rendering import (
-    _build_cluster_representative_render_cache,
-)
-from src.training_methods.contrastive_learning._analysis_config import (
-    DEFAULT_ANALYSIS_CONFIG_PATH,
-    _as_list_of_str,
-    _print_resolved_analysis_settings,
-    _positive_int_or_none,
-    _resolve_analysis_files,
-    _resolve_analysis_settings,
-    _resolve_figure_set_settings,
-    _resolve_input_settings,
-    _resolve_optional_cluster_k,
-    _resolve_run_settings,
-    build_runtime_model_config,
-    load_checkpoint_analysis_config,
-    load_checkpoint_training_config,
-)
-from src.training_methods.contrastive_learning._analysis_inference_cache import (
-    _build_inference_cache_spec,
-    _inference_cache_paths,
-    _inference_cache_spec_hash,
-    _load_inference_cache,
-    _save_inference_cache,
-    _validate_inference_cache_arrays,
-)
-from src.training_methods.contrastive_learning._analysis_figure_sets import (
-    build_shared_cluster_color_map,
-    print_figure_set_summary,
-    render_cluster_figure_outputs,
-    resolve_snapshot_figure_layout,
-    write_figure_only_metrics,
-)
-from src.training_methods.contrastive_learning._analysis_clustering import (
-    HDBSCANResult,
-    _build_clustering_state,
-    _run_optional_hdbscan_analysis,
-    prepare_clustering_features,
-)
-from src.training_methods.contrastive_learning._analysis_md_outputs import (
-    build_md_metrics,
-)
-from src.training_methods.contrastive_learning._analysis_latent_vis import (
-    print_analysis_summary,
-    run_equivariance_evaluation,
-    run_pca_and_latent_stats,
-    run_tsne_visualizations,
-)
-from src.training_methods.contrastive_learning.real_md_qualitative_analysis import (
-    run_real_md_qualitative_analysis,
-)
-from src.training_methods.contrastive_learning.analysis_utils import (
-    _sample_indices,
-    _unwrap_dataset,
-    build_real_coords_dataloader,
-    gather_inference_batches,
-)
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
-from src.training_methods.contrastive_learning.cluster_profile_analysis import (
-    resolve_point_scale,
-)
 from src.utils.model_utils import load_model_from_checkpoint
+
+from .cluster_profiles import resolve_point_scale
+from .cluster_rendering import _build_cluster_representative_render_cache
+from .clustering import _build_clustering_state, _run_optional_hdbscan_analysis, prepare_clustering_features
+from .config import (
+    DEFAULT_ANALYSIS_CONFIG_PATH, _positive_int_or_none, _print_resolved_analysis_settings,
+    _resolve_analysis_files, _resolve_analysis_settings, _resolve_figure_set_settings,
+    _resolve_input_settings, _resolve_optional_cluster_k, _resolve_run_settings,
+    build_runtime_model_config, load_checkpoint_analysis_config, load_checkpoint_training_config,
+)
+from .figure_sets import (
+    build_shared_cluster_color_map, print_figure_set_summary, render_cluster_figure_outputs,
+    resolve_snapshot_figure_layout, write_figure_only_metrics,
+)
+from .inference_cache import (
+    _build_inference_cache_spec, _inference_cache_paths, _inference_cache_spec_hash,
+    _load_inference_cache, _save_inference_cache, _validate_inference_cache_arrays,
+)
+from .latent_vis import print_analysis_summary, run_equivariance_evaluation, run_pca_and_latent_stats, run_tsne_visualizations
+from .md_outputs import build_md_metrics
+from .real_md_qualitative import run_real_md_qualitative_analysis
+from .utils import _unwrap_dataset, build_real_coords_dataloader, gather_inference_batches
 
 
 # ---------------------------------------------------------------------------
@@ -773,4 +735,14 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Support `python pipeline.py` in addition to `python -m ...analysis.pipeline`
+    if __package__ is None or __package__ == "":
+        import importlib, pathlib
+
+        _this = pathlib.Path(__file__).resolve()
+        _pkg = "src.analysis.pipeline"
+        sys.modules.pop(__name__, None)
+        mod = importlib.import_module(_pkg)
+        mod.main()
+    else:
+        main()

@@ -14,22 +14,22 @@ from typing import Any
 
 import numpy as np
 
-from src.training_methods.contrastive_learning.analysis_utils import _sample_indices
-from src.training_methods.contrastive_learning._cluster_colors import (
+from .utils import _sample_indices
+from .cluster_colors import (
     _build_cluster_color_map,
     _cluster_palette,
 )
-from src.training_methods.contrastive_learning._cluster_gallery import (
+from .cluster_gallery import (
     _save_horizontal_image_gallery,
 )
-from src.training_methods.contrastive_learning._cluster_geometry import (
+from .cluster_geometry import (
     _build_rotation_view_specs,
 )
-from src.training_methods.contrastive_learning._cluster_rendering import (
+from .cluster_rendering import (
     _save_cluster_representatives_figure,
     _save_md_cluster_snapshot,
 )
-from src.training_methods.contrastive_learning._cluster_blender import (
+from .cluster_blender import (
     _save_md_cluster_snapshot_raytrace_blender,
 )
 
@@ -384,7 +384,7 @@ def _save_fixed_k_cluster_figure_set(
     icl_prep: dict[str, Any] | None = None
     icl_num_samples = 0
     if bool(icl_enabled):
-        from src.training_methods.contrastive_learning._cluster_icl import (
+        from .cluster_icl import (
             _compute_icl_curve,
             _prepare_icl_features,
             _save_icl_curve_figure,

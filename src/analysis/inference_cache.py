@@ -16,10 +16,19 @@ def _as_list_of_str(value: Any) -> list[str] | None:
 
 
 def _normalize_data_sources_for_cache(value: Any) -> list[dict[str, Any]]:
+    from omegaconf import OmegaConf
+
     if value is None:
         return []
+    if OmegaConf.is_config(value):
+        value = OmegaConf.to_container(value, resolve=True)
+    if not isinstance(value, list):
+        raise ValueError(
+            "cfg.data.data_sources must be a list when present, "
+            f"got {type(value)!r}."
+        )
     normalized: list[dict[str, Any]] = []
-    for idx, entry in enumerate(list(value)):
+    for idx, entry in enumerate(value):
         if hasattr(entry, "keys"):
             entry_dict = dict(entry)
         elif isinstance(entry, dict):
@@ -29,29 +38,37 @@ def _normalize_data_sources_for_cache(value: Any) -> list[dict[str, Any]]:
                 "cfg.data.data_sources entries must be mapping-like for inference cache spec, "
                 f"got entry index {idx} with type {type(entry)!r}."
             )
-        if "file" not in entry_dict:
-            raise ValueError(
-                "cfg.data.data_sources entries must define 'file' for inference cache spec, "
-                f"missing at index {idx}: {entry_dict}."
+        # Synthetic format: file / label / n_samples / max_points
+        if "file" in entry_dict:
+            normalized.append(
+                {
+                    "file": str(entry_dict["file"]),
+                    "label": (
+                        None if entry_dict.get("label") is None else int(entry_dict["label"])
+                    ),
+                    "n_samples": (
+                        None
+                        if entry_dict.get("n_samples") is None
+                        else int(entry_dict["n_samples"])
+                    ),
+                    "max_points": (
+                        None
+                        if entry_dict.get("max_points") is None
+                        else int(entry_dict["max_points"])
+                    ),
+                }
             )
-        normalized.append(
-            {
-                "file": str(entry_dict["file"]),
-                "label": (
-                    None if entry_dict.get("label") is None else int(entry_dict["label"])
-                ),
-                "n_samples": (
-                    None
-                    if entry_dict.get("n_samples") is None
-                    else int(entry_dict["n_samples"])
-                ),
-                "max_points": (
-                    None
-                    if entry_dict.get("max_points") is None
-                    else int(entry_dict["max_points"])
-                ),
-            }
-        )
+        # Real-data format: name / data_path / data_files
+        else:
+            files = _as_list_of_str(entry_dict.get("data_files"))
+            normalized.append(
+                {
+                    "name": None if entry_dict.get("name") is None else str(entry_dict["name"]),
+                    "data_path": str(entry_dict.get("data_path", "")),
+                    "data_files": files or [],
+                    "radius": None if entry_dict.get("radius") is None else float(entry_dict["radius"]),
+                }
+            )
     return normalized
 
 

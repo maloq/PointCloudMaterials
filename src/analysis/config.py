@@ -10,7 +10,7 @@ from omegaconf import DictConfig, OmegaConf
 from src.utils.model_utils import resolve_config_path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
 DEFAULT_ANALYSIS_CONFIG_PATH = (
     PROJECT_ROOT / "configs" / "analysis" / "checkpoint_analysis.yaml"
 )

@@ -10,7 +10,7 @@ from typing import Any, Callable, Dict
 
 import numpy as np
 
-from src.training_methods.contrastive_learning.cluster_figure_utils import (
+from .cluster_figures import (
     _build_cluster_color_map,
 )
 from src.vis_tools.latent_analysis_vis import (

@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict
 import numpy as np
 from omegaconf import DictConfig, OmegaConf
 
-from src.training_methods.contrastive_learning.analysis_utils import (
+from .utils import (
     _sample_indices,
     evaluate_latent_equivariance,
 )

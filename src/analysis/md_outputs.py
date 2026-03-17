@@ -11,7 +11,7 @@ from typing import Any, Dict
 
 import numpy as np
 
-from src.training_methods.contrastive_learning._analysis_clustering import HDBSCANResult
+from .clustering import HDBSCANResult
 from src.vis_tools.latent_analysis_vis import (
     save_local_structure_assignments,
     save_md_space_clusters_plot,

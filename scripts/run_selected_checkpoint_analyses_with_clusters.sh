@@ -4,7 +4,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 
-predict_script="${repo_root}/src/training_methods/contrastive_learning/predict_and_visualize.py"
+predict_script="${repo_root}/src/analysis/pipeline.py"
 
 checkpoints=(
   "output/2026-03-02/17-22-18/VICREG_FT_l512_N128_M80_RI_MAE_Invariant-epoch=11.ckpt"
@@ -156,7 +156,7 @@ for idx in "${!checkpoints[@]}"; do
 import sys
 from omegaconf import open_dict
 
-from src.training_methods.contrastive_learning.predict_and_visualize import (
+from src.analysis import (
     load_checkpoint_analysis_config,
     run_post_training_analysis,
 )

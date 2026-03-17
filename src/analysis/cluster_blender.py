@@ -13,8 +13,8 @@ from typing import Any
 import matplotlib.colors as mcolors
 import numpy as np
 
-from src.training_methods.contrastive_learning._cluster_colors import _boost_saturation
-from src.training_methods.contrastive_learning._cluster_geometry import _estimate_ball_radius_world
+from .cluster_colors import _boost_saturation
+from .cluster_geometry import _estimate_ball_radius_world
 
 
 def _log_saved_figure(path: Path | str) -> None:

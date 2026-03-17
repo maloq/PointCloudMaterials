@@ -7,7 +7,7 @@ from typing import Any
 import numpy as np
 import torch
 
-from src.training_methods.contrastive_learning._cluster_colors import _darken_rgb
+from .cluster_colors import _darken_rgb
 
 
 def _build_rotation_view_specs(

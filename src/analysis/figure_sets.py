@@ -8,8 +8,8 @@ from typing import Any, Callable
 import numpy as np
 import torch
 
-from src.training_methods.contrastive_learning._analysis_config import FigureSetSettings
-from src.training_methods.contrastive_learning.cluster_figure_utils import (
+from .config import FigureSetSettings
+from .cluster_figures import (
     _build_cluster_color_map,
     _save_fixed_k_cluster_figure_set,
     _save_horizontal_image_gallery,

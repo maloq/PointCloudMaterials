@@ -2,12 +2,12 @@ checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
   path: output/2026-03-13/14-38-53/VICREG_l128_N160_M80_RI_MAE_Invariant-epoch=114.ckpt
   # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/pretrain_only_128_k8
+  output_dir: outputs/pretrain_only_Ta_128_k8
   cuda_device: 0
 
 inputs:
   # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
-  data_config: configs/data/data_ae_Al_80.yaml
+  data_config: configs/data/data_ae_Ta_80.yaml
   # Optional real-data frame selection. null -> use data.data_files from the checkpoint config.
   real_data_files: null
   dataloader_num_workers: 4
