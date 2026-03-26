@@ -335,6 +335,7 @@ def _save_fixed_k_cluster_figure_set(
     # -- 02  Selected cluster-subset views ------------------------------------
 
     panel_selected_sets: list[dict[str, Any]] = []
+    panel_subset_views_by_set: dict[str, list[dict[str, Any]]] = {}
     if visible_cluster_sets:
         for set_idx, id_set in enumerate(visible_cluster_sets):
             ids = sorted(int(v) for v in id_set)
@@ -367,6 +368,7 @@ def _save_fixed_k_cluster_figure_set(
             panel_set["views"] = panel_set_views
             panel_set["cluster_ids_shown"] = ids
             panel_selected_sets.append(panel_set)
+            panel_subset_views_by_set[tag] = panel_set_views
 
     if bool(raytrace_render_enabled) and bool(raytrace_parallel_views):
         _run_pending_parallel_raytrace_jobs()
@@ -445,6 +447,7 @@ def _save_fixed_k_cluster_figure_set(
         "panel_all_clusters": panel_all,
         "panel_all_clusters_views": panel_all_views,
         "panel_selected_sets": panel_selected_sets,
+        "panel_subset_views_by_set": panel_subset_views_by_set,
         "icl_enabled": bool(icl_enabled),
         "panel_icl": panel_icl,
         "panel_representatives": panel_reps,

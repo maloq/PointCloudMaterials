@@ -12,7 +12,7 @@ from pytorch_lightning.utilities.rank_zero import rank_zero_only
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
-from src.training_methods.spd.train_spd import train_model
+from src.training_methods.trainer import train_model
 
 torch.set_float32_matmul_precision('high')
 logger = setup_logging()

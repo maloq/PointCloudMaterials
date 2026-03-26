@@ -8,7 +8,7 @@ from omegaconf import DictConfig
 sys.path.append(os.getcwd())
 
 from src.training_methods.pointgpt.pointgpt_module import PointGPTModule
-from src.training_methods.spd.train_spd import train_model
+from src.training_methods.trainer import train_model
 
 
 torch.set_float32_matmul_precision("high")

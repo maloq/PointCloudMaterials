@@ -1,0 +1,196 @@
+dataset_name: temporal_atomistic_ssl_v1
+seed: 240325
+
+domain:
+  box_size: 120.0
+  avg_nn_distance: 2.49
+  neighborhood_radius: 12.0
+  atoms_per_site: 96
+  site_count: 48
+  layout: random
+  padding: 10.0
+  random_min_site_distance: 12.0
+
+time:
+  num_frames: 32
+  delta_t: 1.0
+
+states:
+  - name: L
+    template_kind: liquid
+    template_params:
+      min_pair_distance: 1.55
+    base_thermal_jitter: 0.20
+    base_defect_amplitude: 0.08
+    base_strain_scale: 0.02
+    metastable: true
+    grain_bearing: false
+    dwell:
+      distribution: uniform
+      min_steps: 2
+      max_steps: 6
+
+  - name: P
+    template_kind: precursor
+    crystal_structure: fcc
+    template_params:
+      min_pair_distance: 1.55
+      ordered_fraction: 0.62
+    base_thermal_jitter: 0.13
+    base_defect_amplitude: 0.10
+    base_strain_scale: 0.015
+    metastable: true
+    grain_bearing: true
+    dwell:
+      distribution: uniform
+      min_steps: 2
+      max_steps: 5
+
+  - name: I
+    template_kind: interface
+    crystal_structure: fcc
+    template_params:
+      min_pair_distance: 1.55
+      interface_width: 4.2
+      solid_fraction_start: 0.20
+      solid_fraction_end: 0.86
+      plane_jitter: 0.45
+    base_thermal_jitter: 0.10
+    base_defect_amplitude: 0.12
+    base_strain_scale: 0.012
+    metastable: false
+    grain_bearing: true
+    dwell:
+      distribution: uniform
+      min_steps: 1
+      max_steps: 3
+
+  - name: C
+    template_kind: crystal
+    crystal_structure: fcc
+    base_thermal_jitter: 0.04
+    base_defect_amplitude: 0.02
+    base_strain_scale: 0.006
+    metastable: true
+    grain_bearing: true
+    dwell:
+      distribution: uniform
+      min_steps: 3
+      max_steps: 8
+
+  - name: G
+    template_kind: grain_boundary
+    crystal_structure: fcc
+    template_params:
+      boundary_width: 3.0
+      plane_jitter: 0.35
+    base_thermal_jitter: 0.07
+    base_defect_amplitude: 0.10
+    base_strain_scale: 0.010
+    metastable: true
+    grain_bearing: true
+    dwell:
+      distribution: uniform
+      min_steps: 2
+      max_steps: 5
+
+transition_graph:
+  initial_state_probs:
+    L: 0.70
+    P: 0.30
+  primary_path: [L, P, I, C]
+  transitions:
+    - source: L
+      target: P
+      weight: 1.0
+    - source: P
+      target: L
+      weight: 1.0
+    - source: P
+      target: I
+      weight: 1.0
+    - source: I
+      target: C
+      weight: 1.0
+    - source: I
+      target: G
+      weight: 1.0
+    - source: I
+      target: P
+      weight: 1.0
+    - source: I
+      target: L
+      weight: 1.0
+
+dynamics:
+  mode: coupled
+  neighbor_count: 12
+  coupling_strength: 2.2
+  reverse_coupling_strength: 0.35
+  nucleation_seed_fraction: 0.02
+  nucleation_state: I
+  nucleation_start_frame: 0
+  nucleation_blob_hops: 2
+  metastable_min_dwell: 3
+  boundary_state_name: G
+  boundary_min_distinct_grains: 2
+  boundary_state_probability: 0.55
+  crystal_variant_probability: 0.02
+  crystal_variant_persistence: 0.985
+  liquid_to_precursor_front_threshold: 1
+  liquid_to_precursor_front_probability: 1.0
+  precursor_to_interface_blob_threshold: 2
+  precursor_to_interface_blob_probability: 1.0
+  interface_to_crystal_blob_threshold: 4
+  interface_to_crystal_blob_probability: 1.0
+
+nuisance:
+  orientation_drift_deg: 2.5
+  orientation_alignment: 0.92
+  strain_relaxation: 0.88
+  strain_drift_scale: 0.005
+  thermal_relaxation: 0.82
+  thermal_noise_scale: 0.015
+  defect_relaxation: 0.84
+  defect_noise_scale: 0.02
+
+rendering:
+  frame_style: dense_persistent_box
+  target_density: 0.0849
+  default_crystal_structure: fcc
+  save_frame_dirs: true
+  save_atom_tables: true
+  neighborhood_sampling_method: closest_to_center
+  parallel_workers: 32
+  site_assignment_candidate_count: 24
+  phase_region_radius_nn: 0.7
+  phase_region_target_atoms: 8
+  phase_field_jitter_fraction: 0.15
+  fast_mode: false
+
+trajectories:
+  center_neighborhoods: true
+  save_combined_npz: true
+
+output:
+  output_dir: output/synthetic_data/temporal_atomistic_ssl_v1
+  overwrite: true
+  compress: true
+  frame_storage: single_chunk_npz
+
+visualization:
+  enabled: true
+  output_subdir: visualizations
+  max_frames_to_plot: 6
+  max_sites_in_gallery: 8
+  max_atoms_per_frame: 9000
+  frame_slice_axis: 2
+  frame_slice_relative_thickness: 0.22
+  write_interactive_html: true
+  write_animations: true
+  animation_max_atoms_per_frame: 12000
+  animation_diagonal_cut_fraction: 0.85
+  animation_diagonal_visible_depth_nn: 3.0
+  animation_diagonal_marker_size: 18.0
+  animation_full_box_marker_size: 2.6
+  parallel_workers: 8

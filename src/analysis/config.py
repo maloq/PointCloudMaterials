@@ -10,7 +10,18 @@ from omegaconf import DictConfig, OmegaConf
 from src.utils.model_utils import resolve_config_path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[4]
+def _resolve_project_root() -> Path:
+    this_file = Path(__file__).resolve()
+    for parent in this_file.parents:
+        if (parent / "src").is_dir() and (parent / "configs").is_dir():
+            return parent
+    raise RuntimeError(
+        "Could not resolve project root from analysis config module path. "
+        f"Expected an ancestor of {this_file} containing both 'src' and 'configs'."
+    )
+
+
+PROJECT_ROOT = _resolve_project_root()
 DEFAULT_ANALYSIS_CONFIG_PATH = (
     PROJECT_ROOT / "configs" / "analysis" / "checkpoint_analysis.yaml"
 )

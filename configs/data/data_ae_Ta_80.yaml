@@ -5,7 +5,7 @@ sample_type: 'regular'
 n_samples: 8000000
 num_points: 160
 model_points: 80
-overlap_fraction: 0.4
+overlap_fraction: 0.3
 drop_edge_samples: true
 edge_drop_layers: 2
 dr: 0.01 # to calculate rdf

@@ -211,6 +211,46 @@ def _save_snapshot_raytrace_galleries_by_view(
             "output_name": output_name,
         }
 
+    def _get_subset_views_by_set(
+        figure_set_info: dict[str, Any],
+        *,
+        context: str,
+    ) -> dict[str, list[dict[str, Any]]]:
+        subset_views = figure_set_info.get("panel_subset_views_by_set")
+        if subset_views is not None:
+            if not isinstance(subset_views, dict):
+                raise RuntimeError(
+                    f"{context}: panel_subset_views_by_set must be a dict, "
+                    f"got {type(subset_views)!r}."
+                )
+            return subset_views
+
+        selected_sets = figure_set_info.get("panel_selected_sets")
+        if not isinstance(selected_sets, list):
+            return {}
+
+        derived: dict[str, list[dict[str, Any]]] = {}
+        for set_idx, panel_set in enumerate(selected_sets):
+            if not isinstance(panel_set, dict):
+                raise RuntimeError(
+                    f"{context}: panel_selected_sets[{set_idx}] must be a dict, "
+                    f"got {type(panel_set)!r}."
+                )
+            cluster_ids_shown = panel_set.get("cluster_ids_shown")
+            views = panel_set.get("views")
+            if not isinstance(cluster_ids_shown, list):
+                raise RuntimeError(
+                    f"{context}: panel_selected_sets[{set_idx}] is missing "
+                    "'cluster_ids_shown' list."
+                )
+            if not isinstance(views, list):
+                raise RuntimeError(
+                    f"{context}: panel_selected_sets[{set_idx}] is missing 'views' list."
+                )
+            tag = "-".join(str(int(v)) for v in cluster_ids_shown)
+            derived[tag] = views
+        return derived
+
     first_identity = _snapshot_identity(snapshots[0])
     first_figure_set = snapshots[0].get("figure_set")
     if not isinstance(first_figure_set, dict):
@@ -285,7 +325,10 @@ def _save_snapshot_raytrace_galleries_by_view(
                     raise RuntimeError(
                         f"Snapshot {identity['source_name']} is missing figure_set metadata."
                     )
-                subset_views = figure_set_info.get("panel_subset_views_by_set", {})
+                subset_views = _get_subset_views_by_set(
+                    figure_set_info,
+                    context=f"snapshot={identity['source_name']}",
+                )
                 set_views = subset_views.get(tag)
                 if set_views is None:
                     raise RuntimeError(

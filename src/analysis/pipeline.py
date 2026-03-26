@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import sys
@@ -725,13 +726,15 @@ def run_post_training_analysis(
 
 
 def main() -> None:
-    if len(sys.argv) != 1:
-        raise ValueError(
-            "predict_and_visualize.py no longer accepts CLI arguments. "
-            f"Edit {DEFAULT_ANALYSIS_CONFIG_PATH} instead. "
-            f"Unexpected arguments: {sys.argv[1:]}"
-        )
-    run_post_training_analysis()
+    parser = argparse.ArgumentParser(description="Post-training analysis pipeline")
+    parser.add_argument(
+        "config",
+        nargs="?",
+        default=str(DEFAULT_ANALYSIS_CONFIG_PATH),
+        help=f"Path to the analysis config YAML (default: {DEFAULT_ANALYSIS_CONFIG_PATH})",
+    )
+    args = parser.parse_args()
+    run_post_training_analysis(analysis_config_path=args.config)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
-  path: output/2026-03-13/14-38-53/VICREG_l128_N160_M80_RI_MAE_Invariant-epoch=114.ckpt
+  # path: output/2026-03-13/14-38-53/VICREG_l128_N160_M80_RI_MAE_Invariant-epoch=114.ckpt
+  path: output/2026-03-13/00-58-07/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
   # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/pretrain_only_Ta_128_k8
+  output_dir: outputs/pretrain_only_Ta_512_k8
   cuda_device: 0
 
 inputs:
@@ -62,7 +63,7 @@ figure_set:
   figure_only: false
   # null -> clustering.primary_k
   k: 6
-  visible_cluster_sets: []
+  visible_cluster_sets: [[3, 4, 5]]
   color_assignment: {}
   color_assignment_file: null
   profile_point_scale_enabled: false
@@ -76,9 +77,9 @@ figure_set:
     view_elev: 24.0
     view_azim: 35.0
   icl:
-    enabled: false
+    enabled: true
     k_min: 2
-    k_max: 20
+    k_max: 16
     max_samples: 20000
     covariance: diag
   representatives:
@@ -95,7 +96,7 @@ figure_set:
     shell_min_neighbors: 8
     shell_max_neighbors: 24
   raytrace:
-    enabled: false
+    enabled: true
     blender_executable: blender
     resolution: 1600
     max_points: null
@@ -106,8 +107,8 @@ figure_set:
     sphere_radius_fraction: 0.0105
     timeout_sec: 1200
     use_gpu: true
-    parallel_views: true
-    parallel_max_workers: 4
+    parallel_views: false
+    parallel_max_workers: 1
 
 real_md:
   enabled: true
@@ -170,8 +171,8 @@ real_md:
         shell_min_neighbors: 8
         shell_max_neighbors: 24
       soap:
-        enabled: false
-        species: Al
+        enabled: true
+        species: Ta
         point_scale: null
         r_cut: null
         r_cut_multiplier: 1.25
@@ -193,5 +194,5 @@ real_md:
     flow_min_fraction: 0.001
 
 equivariance:
-  enabled: true
+  enabled: false
   max_batches: 2

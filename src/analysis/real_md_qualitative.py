@@ -378,7 +378,7 @@ def _evaluate_optional_descriptor(
             shell_max_neighbors=int(descriptor_cfg.get("shell_max_neighbors", 24)),
             r_cut=descriptor_cfg.get("r_cut", None),
             r_cut_multiplier=float(descriptor_cfg.get("r_cut_multiplier", 1.25)),
-            r_cut_min=float(descriptor_cfg.get("r_cut_min", 0.35)),
+            r_cut_min=float(descriptor_cfg.get("r_cut_min", 1.01)),
             n_max=int(descriptor_cfg.get("n_max", 8)),
             l_max=int(descriptor_cfg.get("l_max", 6)),
             sigma=float(descriptor_cfg.get("sigma", 0.3)),

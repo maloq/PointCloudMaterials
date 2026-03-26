@@ -429,6 +429,18 @@ def _save_md_cluster_snapshot_raytrace_blender(
             else:
                 raise ValueError(f"Unsupported projection mode for Blender render: {proj!r}.")
 
+            bbox_corners = [
+                Vector((x, y, z))
+                for x in (bbox_min.x, bbox_max.x)
+                for y in (bbox_min.y, bbox_max.y)
+                for z in (bbox_min.z, bbox_max.z)
+            ]
+            max_corner_distance = max(
+                float((corner - camera_obj.location).length)
+                for corner in bbox_corners
+            )
+            camera_data.clip_end = max(1000.0, 1.1 * max_corner_distance)
+
             light_size = 0.65 * span
             _add_area_light(
                 "KeyLight",
