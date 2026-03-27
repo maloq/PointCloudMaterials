@@ -6,14 +6,12 @@ from typing import Callable, Iterable, List, Mapping, Tuple
 
 import numpy as np
 import torch
-import sys,os
+import sys, os
 import json
 import shutil
-import sys,os
 from omegaconf import OmegaConf
 from tqdm import tqdm
 sys.path.append(os.getcwd())
-from src.training_methods.spd.eval_spd import load_spd_model, create_spd_dataloader
 from datetime import datetime
 import warnings
 warnings.filterwarnings("ignore")
@@ -21,7 +19,7 @@ warnings.filterwarnings("ignore")
 
 @dataclass(frozen=True)
 class Backend:
-    """Bundle of helper call‑backs required for one model family."""
+    """Bundle of helper call-backs required for one model family."""
 
     load_model_and_cfg: Callable[..., Tuple[torch.nn.Module, dict, str]]
     create_dataloader: Callable[..., torch.utils.data.DataLoader]
@@ -37,18 +35,20 @@ class ModelType(str, Enum):
             return value
         try:
             return cls(value.strip().lower())
-        except ValueError:  # pragma: no cover – caught early during dev
+        except ValueError:
             opts = ", ".join(m.value for m in cls)
             raise ValueError(f"Unknown model_type '{value}'. Supported: {opts}")
 
 
-BACKENDS: Mapping[ModelType, Backend] = {
-
-    ModelType.SPD: Backend(
-        load_model_and_cfg=load_spd_model,
-        create_dataloader=create_spd_dataloader,
-    ),
-}
+def _get_backends() -> Mapping[ModelType, Backend]:
+    """Lazy-load backends to avoid hard import-time coupling."""
+    from src.training_methods.spd.eval_spd import load_spd_model, create_spd_dataloader
+    return {
+        ModelType.SPD: Backend(
+            load_model_and_cfg=load_spd_model,
+            create_dataloader=create_spd_dataloader,
+        ),
+    }
 
 
 @torch.inference_mode()
@@ -59,9 +59,11 @@ def _get_latents_from_dataloader(
     device: str = "cpu",
     return_coords: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray | None]:
-    """Return *(latents, reconstructions, originals)* for every batch in *dataloader*."""
+    """Return *(latents, reconstructions, originals)* for every batch in *dataloader*.
 
-    from src.training_methods.spd.spd_module import ShapePoseDisentanglement
+    The model's ``forward()`` must return ``(inv_z, recon, ...)`` where
+    ``inv_z`` is the latent and ``recon`` is the reconstruction.
+    """
 
     lats, recs, origs, coords = [], [], [], []
     for batch in tqdm(dataloader, desc="Extracting latents"):
@@ -72,12 +74,11 @@ def _get_latents_from_dataloader(
         else:
             points = batch  # (B, N, 3)
 
-        if isinstance(model, ShapePoseDisentanglement):
-            inv_z, recon, _, _ = model(points)
-            latent = inv_z
+        outputs = model(points)
+        inv_z, recon = outputs[0], outputs[1]
 
         coords.append(coords_batch.detach().cpu().numpy())
-        lats.append(latent.detach().cpu().numpy())
+        lats.append(inv_z.detach().cpu().numpy())
         recs.append(recon.detach().cpu().numpy())
         origs.append(points.detach().cpu().numpy())
 
@@ -142,7 +143,8 @@ def load_model_for_inference(
 ) -> Tuple[torch.nn.Module, dict, str, Backend, ModelType]:
     """Loads a model for inference from a checkpoint."""
     model_type = ModelType.from_any(model_type)
-    backend = BACKENDS[model_type]
+    backends = _get_backends()
+    backend = backends[model_type]
     model, cfg, device = backend.load_model_and_cfg(
         checkpoint_path=checkpoint_path,
         cuda_device=cuda_device,

@@ -5,8 +5,6 @@ from collections import defaultdict
 from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
-    CenteredModelNetDataset,
-    CenteredModelNetBalancedTopKDataset,
 )
 import time
 import logging
@@ -271,191 +269,10 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             scaling_range = 0.0
             track_augmentation = False
 
-        if dataset_type in {"modelnet_objects", "modelnet_objects_balanced_topk"}:
-            root_dir = self._get_param("data_path", data_cfg, synth_dict, required=True)
-            num_points = self._get_param("num_points", data_cfg, synth_dict, required=True)
-            pre_normalize = self._get_param("pre_normalize", data_cfg, synth_dict, default=True)
-            normalize = self._get_param("normalize", data_cfg, synth_dict, default=False)
-            dataset_max = self._get_param("dataset_max_samples", data_cfg, synth_dict, default=None)
-            add_center_point = self._get_param("add_center_point", data_cfg, synth_dict, default=True)
-            fps_cache = self._get_param("fps_cache", data_cfg, synth_dict, default=True)
-            fps_cache_dir = self._get_param("fps_cache_dir", data_cfg, synth_dict, default=None)
-            fps_use_gpu = self._get_param("fps_use_gpu", data_cfg, synth_dict, default=True)
-            strict_classes = self._get_param("strict_classes", data_cfg, synth_dict, default=False)
-            classes = self._get_param("classes", data_cfg, synth_dict, default=None)
-            if classes is not None:
-                classes = _to_container(classes)
-                if isinstance(classes, str):
-                    classes = [classes]
-
-            if dataset_type == "modelnet_objects_balanced_topk":
-                top_k_classes = int(self._get_param("top_k_classes", data_cfg, synth_dict, default=10))
-                class_selection_split = str(
-                    self._get_param("class_selection_split", data_cfg, synth_dict, default="train")
-                )
-                balance_mode = str(self._get_param("balance_mode", data_cfg, synth_dict, default="downsample"))
-                balance_seed = int(self._get_param("balance_seed", data_cfg, synth_dict, default=42))
-                modelnet_eval_split = str(
-                    self._get_param("modelnet_eval_split", data_cfg, synth_dict, default="test")
-                )
-
-                train_dataset = CenteredModelNetBalancedTopKDataset(
-                    root_dir=root_dir,
-                    split="train",
-                    top_k_classes=top_k_classes,
-                    selected_classes=classes,
-                    class_selection_split=class_selection_split,
-                    balance_mode=balance_mode,
-                    balance_seed=balance_seed,
-                    num_points=int(num_points),
-                    add_center_point=bool(add_center_point),
-                    pre_normalize=bool(pre_normalize),
-                    normalize=bool(normalize),
-                    max_samples=int(dataset_max) if dataset_max is not None else None,
-                    fps_cache=bool(fps_cache),
-                    fps_cache_dir=fps_cache_dir,
-                    fps_use_gpu=bool(fps_use_gpu),
-                    strict_classes=bool(strict_classes),
-                    rotation_scale=rotation_scale,
-                    noise_scale=noise_scale,
-                    jitter_scale=jitter_scale,
-                    scaling_range=scaling_range,
-                    track_augmentation=track_augmentation,
-                )
-
-                eval_dataset = CenteredModelNetBalancedTopKDataset(
-                    root_dir=root_dir,
-                    split=modelnet_eval_split,
-                    top_k_classes=top_k_classes,
-                    selected_classes=train_dataset.selected_classes,
-                    class_selection_split=class_selection_split,
-                    balance_mode=balance_mode,
-                    balance_seed=balance_seed,
-                    num_points=int(num_points),
-                    add_center_point=bool(add_center_point),
-                    pre_normalize=bool(pre_normalize),
-                    normalize=bool(normalize),
-                    max_samples=int(dataset_max) if dataset_max is not None else None,
-                    fps_cache=bool(fps_cache),
-                    fps_cache_dir=fps_cache_dir,
-                    fps_use_gpu=bool(fps_use_gpu),
-                    strict_classes=bool(strict_classes),
-                    rotation_scale=rotation_scale,
-                    noise_scale=noise_scale,
-                    jitter_scale=jitter_scale,
-                    scaling_range=scaling_range,
-                    track_augmentation=track_augmentation,
-                )
-                return train_dataset, eval_dataset
-
-            allowed_modelnet_splits = {"train", "test", "all"}
-            modelnet_split = str(self._get_param("modelnet_split", data_cfg, synth_dict, default="train")).lower()
-            if modelnet_split not in allowed_modelnet_splits:
-                raise ValueError(
-                    "modelnet_split must be one of "
-                    f"{sorted(allowed_modelnet_splits)}, got {modelnet_split!r}."
-                )
-
-            modelnet_eval_split_raw = self._get_param(
-                "modelnet_eval_split",
-                data_cfg,
-                synth_dict,
-                default=None,
-            )
-
-            # Preferred protocol for ModelNet: explicit train/eval split.
-            # Keeping the random split fallback preserves backward compatibility.
-            if modelnet_eval_split_raw is not None:
-                modelnet_eval_split = str(modelnet_eval_split_raw).lower()
-                if modelnet_eval_split not in allowed_modelnet_splits:
-                    raise ValueError(
-                        "modelnet_eval_split must be one of "
-                        f"{sorted(allowed_modelnet_splits)}, got {modelnet_eval_split!r}."
-                    )
-
-                train_dataset = CenteredModelNetDataset(
-                    root_dir=root_dir,
-                    split=modelnet_split,
-                    classes=classes,
-                    num_points=int(num_points),
-                    add_center_point=bool(add_center_point),
-                    pre_normalize=bool(pre_normalize),
-                    normalize=bool(normalize),
-                    max_samples=int(dataset_max) if dataset_max is not None else None,
-                    fps_cache=bool(fps_cache),
-                    fps_cache_dir=fps_cache_dir,
-                    fps_use_gpu=bool(fps_use_gpu),
-                    strict_classes=bool(strict_classes),
-                    rotation_scale=rotation_scale,
-                    noise_scale=noise_scale,
-                    jitter_scale=jitter_scale,
-                    scaling_range=scaling_range,
-                    track_augmentation=track_augmentation,
-                )
-
-                if classes is None:
-                    ordered_train_classes = [
-                        class_name
-                        for _, class_name in sorted(train_dataset.class_names.items(), key=lambda item: item[0])
-                    ]
-                else:
-                    ordered_train_classes = list(classes)
-
-                eval_dataset = CenteredModelNetDataset(
-                    root_dir=root_dir,
-                    split=modelnet_eval_split,
-                    classes=ordered_train_classes,
-                    num_points=int(num_points),
-                    add_center_point=bool(add_center_point),
-                    pre_normalize=bool(pre_normalize),
-                    normalize=bool(normalize),
-                    max_samples=int(dataset_max) if dataset_max is not None else None,
-                    fps_cache=bool(fps_cache),
-                    fps_cache_dir=fps_cache_dir,
-                    fps_use_gpu=bool(fps_use_gpu),
-                    strict_classes=bool(strict_classes),
-                    rotation_scale=rotation_scale,
-                    noise_scale=noise_scale,
-                    jitter_scale=jitter_scale,
-                    scaling_range=scaling_range,
-                    track_augmentation=track_augmentation,
-                )
-                return train_dataset, eval_dataset
-
-            logger.print(
-                "modelnet_eval_split is not set for dataset_type='modelnet_objects'; "
-                f"falling back to random split of '{modelnet_split}' with train_ratio."
-            )
-            dataset = CenteredModelNetDataset(
-                root_dir=root_dir,
-                split=modelnet_split,
-                classes=classes,
-                num_points=int(num_points),
-                add_center_point=bool(add_center_point),
-                pre_normalize=bool(pre_normalize),
-                normalize=bool(normalize),
-                max_samples=int(dataset_max) if dataset_max is not None else None,
-                fps_cache=bool(fps_cache),
-                fps_cache_dir=fps_cache_dir,
-                fps_use_gpu=bool(fps_use_gpu),
-                strict_classes=bool(strict_classes),
-                rotation_scale=rotation_scale,
-                noise_scale=noise_scale,
-                jitter_scale=jitter_scale,
-                scaling_range=scaling_range,
-                track_augmentation=track_augmentation,
-            )
-
-            train_ratio = float(self._get_param("train_ratio", data_cfg, synth_dict, default=0.8))
-            train_size = int(train_ratio * len(dataset))
-            val_size = len(dataset) - train_size
-            if train_size <= 0 or val_size <= 0:
-                raise ValueError("Synthetic dataset split resulted in empty train or val set")
-            return _seeded_random_split(
-                dataset,
-                [train_size, val_size],
-                seed=self.split_seed,
-                context="SyntheticPointCloudDataModule._build_datasets(modelnet fallback)",
+        if dataset_type != "synthetic_env":
+            raise ValueError(
+                f"Unsupported dataset_type {dataset_type!r}. "
+                "SyntheticPointCloudDataModule only supports 'synthetic_env'."
             )
 
         env_dirs = self._resolve_env_dirs(data_cfg, synth_dict)
@@ -591,7 +408,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
                     indices = [current[i] for i in indices]
                 dataset = dataset.dataset
                 continue
-            if isinstance(dataset, (SyntheticPointCloudDataset, CenteredModelNetDataset)):
+            if isinstance(dataset, SyntheticPointCloudDataset):
                 return dataset, indices
             next_dataset = getattr(dataset, 'dataset', None)
             if next_dataset is not None and next_dataset is not dataset:

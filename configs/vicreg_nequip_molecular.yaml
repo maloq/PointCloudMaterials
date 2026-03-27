@@ -136,32 +136,6 @@ vicreg_radial_m: null
 vicreg_radial_eps: 1e-8
 
 
-# Pose regression (symmetry-aware)
-pose:
-  enabled: False
-  weight: 0.4
-  start_epoch: 10
-  head_hidden: 256
-  jitter_std: 0.000
-  strain_std: 0.000
-  strain_volume_preserve: true
-  seeded_forward: true
-  view_rotation_mode: full
-  view_rotation_deg: 0.0
-  unambiguous_rotation: true
-  unambiguous_margin_deg: 1.0
-  curriculum_enabled: true
-  curriculum_epochs: 120
-  curriculum_start_deg: 8.0
-  eq_center: true
-  eq_l2_normalize: true
-  cov_normalize: true
-  head_loss_weight: 1.0
-  procrustes_loss_weight: 0.35
-  histogram_every_n_steps: 50
-  ambiguity_use_std: true
-  ambiguity_floor: 0.001
-
 # Data augmentation (applied in dataloaders)
 augmentation:
   rotation_scale: 0.0

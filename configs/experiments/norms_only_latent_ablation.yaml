@@ -27,7 +27,6 @@ base_overrides:
   - batch_size=32
   - accumulate_grad_batches=16
   - "devices=[0]"
-  - "pose.enabled=false"
 
 experiments:
   # --- norms_only_latent ON  +  larger latent sizes ---

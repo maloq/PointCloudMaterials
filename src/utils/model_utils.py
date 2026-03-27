@@ -23,21 +23,23 @@ def resolve_config_path(checkpoint_path: str) -> Tuple[str, str]:
 
 def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
     """
-    Load a ShapePoseDisentanglement model from a checkpoint.
-    
-    This function handles the proper loading of a ShapePoseDisentanglement model from a checkpoint.
-    It creates a new model instance, and then loads the state dictionary from the checkpoint.
-    
+    Load a Lightning model from a checkpoint.
+
     Args:
         checkpoint_path (str): Path to the checkpoint file
+        cfg: Hydra/OmegaConf configuration object
         device (str): Device to load the model on ('cpu' or 'cuda')
-        
+        module: The LightningModule class to instantiate. Required.
+
     Returns:
-        ShapePoseDisentanglement: The loaded model
+        The loaded model instance.
     """
-    
+
     if module is None:
-        from src.training_methods.spd.spd_module import ShapePoseDisentanglement as module
+        raise ValueError(
+            "module must be provided (e.g. ShapePoseDisentanglement, BarlowTwinsModule). "
+            "Pass the desired LightningModule class explicitly."
+        )
     model = None
     init_errors = []
     if cfg is not None:

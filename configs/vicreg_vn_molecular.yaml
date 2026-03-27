@@ -150,10 +150,6 @@ vicreg_radial_m: null
 vicreg_radial_eps: 1e-8
 
 
-# Pose regression (symmetry-aware)
-pose:
-  enabled: False
-
 # Data augmentation (applied in dataloaders)
 augmentation:
   rotation_scale: 0.0

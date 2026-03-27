@@ -94,7 +94,7 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
     print("Grouping samples by class...")
     for idx in range(len(dataset)):
         # dataset[idx] returns (pc, label, class_name)
-        # Optimization: Use class_names list directly if available (ModelNetFastDataset)
+        # Optimization: use per-sample class names directly when the dataset exposes them.
         if hasattr(dataset, 'class_names'):
             class_name = dataset.class_names[idx]
         elif hasattr(dataset, 'metadata'):

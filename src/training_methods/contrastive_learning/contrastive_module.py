@@ -8,14 +8,6 @@ sys.path.append(os.getcwd())
 
 from src.models.autoencoders.factory import build_model
 from src.training_methods.contrastive_learning.barlow_twins import BarlowTwinsLoss
-from src.training_methods.contrastive_learning.pose.head import PoseRotationHead
-from src.training_methods.contrastive_learning.pose.utils import (
-    cfg_get,
-    compute_pose_loss,
-    init_pose_components,
-    prepare_eq_latent,
-    rotation_geodesic_angles,
-)
 from src.training_methods.contrastive_learning.supervised_cache import (
     cache_limit_for_stage,
     cache_supervised_batch,
@@ -107,7 +99,6 @@ class BarlowTwinsModule(pl.LightningModule):
         self._active_invariant_losses = self._resolve_active_invariant_losses()
         self._shared_invariant_spec = self._resolve_shared_invariant_spec()
 
-        init_pose_components(self, cfg, latent_dim)
         init_supervised_cache(self, cfg)
         self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
         self._warned_cache_eq_fallback = False
@@ -225,20 +216,6 @@ class BarlowTwinsModule(pl.LightningModule):
         if "pointcontrast" in self._active_invariant_losses and self.pointcontrast is not None:
             return self.pointcontrast._invariant(z_inv_model, eq_z)
         return self.barlow._invariant(z_inv_model, eq_z)
-
-    @staticmethod
-    def _cfg_get(obj, name: str, default=None):
-        return cfg_get(obj, name, default)
-
-    @staticmethod
-    def _prepare_eq_latent(eq_z: torch.Tensor | None) -> torch.Tensor | None:
-        return prepare_eq_latent(eq_z)
-
-    @staticmethod
-    def _rotation_geodesic_angles(
-        pred: torch.Tensor, target: torch.Tensor, eps: float
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        return rotation_geodesic_angles(pred, target, eps)
 
     def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
         if getattr(self.encoder, "expects_channel_first", False):
@@ -367,9 +344,6 @@ class BarlowTwinsModule(pl.LightningModule):
         if self.model_points is not None:
             out = crop_to_num_points(out, self.model_points)
         return out
-
-    def _compute_pose_loss(self, pc: torch.Tensor, batch_idx: int, stage: str):
-        return compute_pose_loss(self, pc, batch_idx, stage)
 
     @staticmethod
     def _unpack_batch(batch):
@@ -508,13 +482,6 @@ class BarlowTwinsModule(pl.LightningModule):
             for name, value in pointcontrast_metrics.items():
                 self._log_metric(stage, name, value)
 
-        # Pose loss (relative-rotation NLL + optional equivariance consistency)
-        pose_loss, pose_metrics = self._compute_pose_loss(pc, batch_idx, stage)
-        if pose_loss is not None:
-            losses["pose"] = pose_loss
-            for name, value in pose_metrics.items():
-                self._log_metric(stage, name, value)
-
         total_loss = None
         if "barlow" in losses:
             total_loss = self.barlow.weight * losses["barlow"]
@@ -527,9 +494,6 @@ class BarlowTwinsModule(pl.LightningModule):
         if "pointcontrast" in losses and self.pointcontrast is not None:
             pointcontrast_total = self.pointcontrast.weight * losses["pointcontrast"]
             total_loss = pointcontrast_total if total_loss is None else total_loss + pointcontrast_total
-        if "pose" in losses:
-            pose_total = self.pose_weight * losses["pose"]
-            total_loss = pose_total if total_loss is None else total_loss + pose_total
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
@@ -561,9 +525,6 @@ class BarlowTwinsModule(pl.LightningModule):
         if "pointcontrast" in losses:
             # Unweighted PointContrast objective term.
             metrics_to_log["pointcontrast"] = losses["pointcontrast"]
-        if "pose" in losses:
-            # Unweighted pose-regression objective term.
-            metrics_to_log["pose"] = losses["pose"]
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():
@@ -615,56 +576,6 @@ class BarlowTwinsModule(pl.LightningModule):
         if "sync_dist" not in log_kwargs and stage != "train":
             log_kwargs["sync_dist"] = True
         self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
-
-    def _get_wandb_experiment(self):
-        logger_obj = getattr(self, "logger", None)
-        if logger_obj is None:
-            return None
-
-        if hasattr(logger_obj, "experiment"):
-            exp = logger_obj.experiment
-            if exp is not None and hasattr(exp, "log"):
-                return exp
-
-        loggers = getattr(logger_obj, "loggers", None)
-        if loggers is not None:
-            for lg in loggers:
-                exp = getattr(lg, "experiment", None)
-                if exp is not None and hasattr(exp, "log"):
-                    return exp
-        return None
-
-    def _log_pose_ambiguity_histogram(
-        self,
-        stage: str,
-        ambiguity: torch.Tensor | None,
-        batch_idx: int,
-    ) -> None:
-        if ambiguity is None:
-            return
-        if int(getattr(self, "global_rank", 0)) != 0:
-            return
-
-        every = int(self.pose_histogram_every_n_steps)
-        if stage == "train":
-            if every <= 0 or (int(self.global_step) % every) != 0:
-                return
-        else:
-            if int(batch_idx) != 0:
-                return
-
-        exp = self._get_wandb_experiment()
-        if exp is None:
-            return
-
-        with torch.no_grad():
-            amb_np = ambiguity.detach().to(dtype=torch.float32).cpu().numpy()
-
-        payload = {
-            f"{stage}/pose_orientation_ambiguity_hist": wandb.Histogram(amb_np),
-        }
-
-        exp.log(payload, step=int(self.global_step))
 
     def _handle_epoch_boundary(self, stage: str, is_start: bool):
         if is_start:
@@ -725,4 +636,4 @@ class PointContrastModule(BarlowTwinsModule):
     """Alias for clarity when running PointContrast-specific experiments."""
 
 
-__all__ = ["BarlowTwinsModule", "PointContrastModule", "PoseRotationHead"]
+__all__ = ["BarlowTwinsModule", "PointContrastModule"]

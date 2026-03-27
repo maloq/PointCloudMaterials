@@ -16,7 +16,6 @@ from scipy.spatial import cKDTree
 
 # Import configuration classes from the main generator to maintain compatibility
 import yaml
-import torch
 
 # ---------------------------------------------------------------------------
 # Configuration Dataclasses (Decoupled)
@@ -48,7 +47,6 @@ class SimpleGlobalConfig:
     collision_safety_factor: float = 4.2
     random_seed: int = 0
     data_path: pathlib.Path = field(default_factory=lambda: pathlib.Path("output/simple_data"))
-    modelnet_path: pathlib.Path = field(default_factory=lambda: pathlib.Path("datasets/ModelNet40_fast"))
 
 # ---------------------------------------------------------------------------
 # Structured Array Dtype for Atoms (Copied to ensure compatibility)
@@ -88,7 +86,6 @@ def load_simple_config(path: str | pathlib.Path) -> Tuple[SimpleGlobalConfig, Di
         collision_safety_factor=float(global_raw.get("collision_safety_factor", 4.2)),
         random_seed=int(global_raw.get("random_seed", 0)),
         data_path=data_path,
-        modelnet_path=pathlib.Path(global_raw.get("modelnet_path", "datasets/ModelNet40_fast")),
     )
     
     phases_section = raw.get("phases", {})
@@ -107,20 +104,10 @@ def load_simple_config(path: str | pathlib.Path) -> Tuple[SimpleGlobalConfig, Di
     else:
         probs = grain_section.get("probabilities")
         if probs is None:
-            # Fallback or error, for simple generator let's be strict
-            if "explicit" not in grain_section: # Should have been caught
-                 # Ensure at least probabilities or explicit exists
-                 pass
-        
-        # If probabilities provided
-        if probs:
-            if not np.isclose(sum(probs.values()), 1.0):
-                 raise ValueError("grain assignment probabilities must sum to 1.0")
-            assignment_cfg = SimpleGrainAssignmentConfig(mode="probabilistic", probabilities=dict(probs))
-        elif "explicit" in grain_section:
-             pass # Already handled
-        else:
-             raise ValueError("grain_assignment must provide 'explicit' or 'probabilities'")
+            raise ValueError("grain_assignment must provide 'explicit' or 'probabilities'")
+        if not np.isclose(sum(probs.values()), 1.0):
+            raise ValueError("grain assignment probabilities must sum to 1.0")
+        assignment_cfg = SimpleGrainAssignmentConfig(mode="probabilistic", probabilities=dict(probs))
 
     return global_cfg, phase_configs, assignment_cfg
 
@@ -232,81 +219,45 @@ class SimpleSyntheticGenerator:
             
         return pos
 
-    def _load_modelnet_data(self) -> None:
-        """Loads ModelNet data for all required phases."""
-        self._progress("Loading ModelNet data...")
-        
-        # Identify all required classes
-        required_classes = set()
-        for phase in self.phase_cfgs.values():
-            # For ModelNet mode, phase_type is the class name
-            required_classes.add(phase.phase_type)
-            
-        if not required_classes:
-            return
+    def _get_sphere_points(self, n_p: int, radius: float) -> np.ndarray:
+        if n_p <= 0:
+            return np.zeros((0, 3), dtype=np.float32)
+        vecs = self.rng.normal(0.0, 1.0, size=(n_p, 3))
+        norms = np.linalg.norm(vecs, axis=1, keepdims=True)
+        if np.any(norms == 0.0):
+            raise RuntimeError("Random sphere sampling generated a zero-length direction vector.")
+        return ((vecs / norms) * radius).astype(np.float32)
 
-        try:
-            from src.data_utils.modelnet_fast_loader import ModelNetFastDataset
-        except ImportError:
-            # Fallback if running from a different directory structure or if module not found
-            import sys
-            # simple_generator.py is in src/data_utils/synthetic
-            # we need to add the project root (containing 'src') to sys.path
-            project_root = str(pathlib.Path(__file__).resolve().parents[3])
-            if project_root not in sys.path:
-                sys.path.insert(0, project_root)
-            from src.data_utils.modelnet_fast_loader import ModelNetFastDataset
+    def _generate_local_points(
+        self,
+        phase_cfg: SimplePhaseConfig,
+        *,
+        points_per_object: int,
+        base_size: float,
+    ) -> np.ndarray:
+        phase_type = phase_cfg.phase_type.lower()
+        params = phase_cfg.structural_params
 
-        modelnet_path = getattr(self.global_cfg, 'modelnet_path', 'datasets/ModelNet40_fast')
-        
-        # We load a single dataset containing all required classes
-        # We ask for max points (e.g. 2048) and will sample down later
-        self.modelnet_dataset = ModelNetFastDataset(
-            root_dir=modelnet_path,
-            split='train', # Use train split for generation usually
-            classes=list(required_classes),
-            n_points=2048 
+        if phase_type == "sphere":
+            radius = float(params.get("radius", base_size))
+            return self._get_sphere_points(points_per_object, radius)
+
+        if phase_type == "box":
+            dims_raw = params.get("dims", (2.0 * base_size, 2.0 * base_size, 2.0 * base_size))
+            if len(dims_raw) != 3:
+                raise ValueError(
+                    f"Box phase {phase_cfg.name!r} requires exactly three dimensions, got {dims_raw!r}."
+                )
+            dims = tuple(float(v) for v in dims_raw)
+            return self._get_box_points(points_per_object, dims)
+
+        raise ValueError(
+            f"Unsupported simple_generator phase_type {phase_cfg.phase_type!r} for phase {phase_cfg.name!r}. "
+            "Supported values are 'sphere' and 'box'."
         )
-        
-        # Organize by class for O(1) access
-        self.modelnet_samples = {cls: [] for cls in required_classes}
-        
-        # We iterate manually to group them. 
-        # Accessing self.modelnet_dataset.points directly is faster if possible
-        # but let's be safe and use usage patterns
-        
-        # Optim: Directly access the internal lists if possible to avoid huge loop overhead
-        points_tensor = self.modelnet_dataset.points
-        labels_tensor = self.modelnet_dataset.labels
-        
-        for cls in required_classes:
-            cls_idx = self.modelnet_dataset.class_to_idx.get(cls)
-            if cls_idx is None:
-                print(f"Warning: Class {cls} not found in ModelNet dataset!")
-                continue
-                
-            # Find all indices for this class
-            indices = torch.where(labels_tensor == cls_idx)[0]
-            if len(indices) == 0:
-                 print(f"Warning: No samples found for class {cls}")
-            
-            # Store as list of numpy arrays
-            self.modelnet_samples[cls] = points_tensor[indices].numpy()
-
-        self._progress(f"Loaded ModelNet data for classes: {list(self.modelnet_samples.keys())}")
 
     def populate_atoms(self) -> None:
         self._progress("Generating objects...")
-        
-        # Load data if not already (check if any phase looks like a modelnet class? 
-        # Or just always try to load if we are in that mode?
-        # A heuristic: if phase_type is NOT one of the known geometric shapes, assume ModelNet)
-        
-        known_shapes = {'box', 'sphere', 'cylinder', 'torus', 'helix', 'airplane', 'chair', 'simple_placeholder'}
-        # airplane and chair are in both, but we want to use ModelNet for them if possible
-        # Let's check config. If user provided a path or if we want to force it.
-        # For now, let's load ModelNet data if we can.
-        self._load_modelnet_data()
 
         all_atoms_list = []
         
@@ -370,43 +321,15 @@ class SimpleSyntheticGenerator:
             
             phase_name = grain['base_phase_id']
             phase_cfg = self.phase_cfgs[phase_name]
-            class_name = phase_cfg.phase_type # Use phase_type as class name
             
             # Structural params
             structural_params = phase_cfg.structural_params
             noise_sigma = float(structural_params.get("noise_sigma", 0.0))
-            
-            # Use ModelNet sample if available
-            if class_name in self.modelnet_samples and len(self.modelnet_samples[class_name]) > 0:
-                # Pick a random sample index
-                samples = self.modelnet_samples[class_name] # (N_samples, 2048, 3)
-                sample_idx = self.rng.integers(0, len(samples))
-                raw_points = samples[sample_idx] # (2048, 3)
-                
-                # Randomly sample points from the cloud
-                # If we need more points than available, replace=True
-                curr_n = raw_points.shape[0]
-                if curr_n >= points_per_object:
-                    choice = self.rng.choice(curr_n, points_per_object, replace=False)
-                else:
-                    choice = self.rng.choice(curr_n, points_per_object, replace=True)
-                
-                local_pos = raw_points[choice].copy()
-                
-                # Normalize just in case? ModelNet is usually in unit sphere/box.
-                # Let's scale it to our base_size.
-                # Usually ModelNet is in [-1, 1]. So radius is 1.
-                # We want radius ~ base_size.
-                local_pos *= base_size 
-
-            else:
-                 # Fallback to sphere
-                 shape_type = 'sphere' 
-                 radius = base_size
-                 vecs = self.rng.normal(0, 1, size=(points_per_object, 3))
-                 norms = np.linalg.norm(vecs, axis=1, keepdims=True)
-                 local_pos = (vecs / norms) * radius
-                 local_pos = local_pos.astype(np.float32)
+            local_pos = self._generate_local_points(
+                phase_cfg,
+                points_per_object=points_per_object,
+                base_size=base_size,
+            )
 
             # Apply Noise
             if noise_sigma > 0 and len(local_pos) > 0:
@@ -569,7 +492,7 @@ class SimpleSyntheticGenerator:
 def main() -> None:
     import argparse
     parser = argparse.ArgumentParser(description="Generate simple synthetic atomistic datasets")
-    parser.add_argument("config", type=str, nargs="?", default="configs/data/synth_modelnet.yaml")
+    parser.add_argument("config", type=str, help="Path to a simple generator YAML config")
     parser.add_argument("--quiet", "-q", action="store_true")
     parser.add_argument("--skip-viz", action="store_true")
 

@@ -9,13 +9,11 @@ predict_script="${repo_root}/src/analysis/pipeline.py"
 checkpoints=(
   "output/2026-03-02/17-22-18/VICREG_FT_l512_N128_M80_RI_MAE_Invariant-epoch=11.ckpt"
   "output/2026-02-26/19-53-51/VICREG_l512_N128_M80_RI_MAE_Invariant-epoch=59.ckpt"
-  "output/2026-02-25/23-55-50/VICREG_l768_N128_M80_RI_MAE_Invariant-epoch=119.ckpt"
 )
 
 analysis_dirs=(
   "outputs/analysis_1"
   "outputs/analysis_2"
-  "outputs/analysis_3"
 )
 
 # Order must match checkpoints and analysis_dirs above. Each entry must be either:

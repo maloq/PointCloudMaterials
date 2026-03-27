@@ -1,6 +1,6 @@
 import os
-# Hack to fix multi-GPU training on this server (NCCL P2P hang)
-os.environ["NCCL_P2P_DISABLE"] = "1"
+# Hack to fix multi-GPU training on server (NCCL P2P hang)
+os.environ["NCCL_P2P_DISABLE"] = "0"
 
 import math
 import sys
@@ -489,7 +489,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
     Args:
         cfg: Hydra configuration
-        model_class: The model class to instantiate (e.g., ShapePoseDisentanglement, EquivariantAutoencoder)
+        model_class: The LightningModule class to instantiate (e.g., BarlowTwinsModule, ShapePoseDisentanglement)
         run_dir: Optional custom output directory (default: auto-generated from timestamp)
         checkpoint_callbacks: Optional list of checkpoint callbacks (default: single checkpoint monitoring val/loss)
         devices: Optional device list (default: from cfg.devices or [0])
