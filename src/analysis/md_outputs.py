@@ -5,13 +5,13 @@ per-snapshot breakdown, and HDBSCAN MD outputs.
 """
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 from typing import Any, Dict
 
 import numpy as np
 
 from .clustering import HDBSCANResult
+from .output_layout import snapshot_md_space_dir, snapshot_outputs_root
 from src.vis_tools.latent_analysis_vis import (
     save_local_structure_assignments,
     save_md_space_clusters_plot,
@@ -119,11 +119,9 @@ def _save_md_cluster_outputs(
         static_pngs[int(k_value)] = str(static_path)
 
     primary_static_path = out_dir / f"md_space_clusters_k{int(primary_k)}.png"
-    primary_static_alias = out_dir / "md_space_clusters.png"
-    shutil.copyfile(primary_static_path, primary_static_alias)
 
     results: dict[str, Any] = {
-        "static_png": str(primary_static_alias),
+        "static_png": str(primary_static_path),
         "static_pngs": static_pngs,
     }
 
@@ -151,9 +149,7 @@ def _save_md_cluster_outputs(
             )
             interactive_htmls[int(k_value)] = str(interactive_path)
         primary_interactive_path = out_dir / f"md_space_clusters_k{int(primary_k)}.html"
-        primary_interactive_alias = out_dir / "md_space_clusters.html"
-        shutil.copyfile(primary_interactive_path, primary_interactive_alias)
-        results["interactive_html"] = str(primary_interactive_alias)
+        results["interactive_html"] = str(primary_interactive_path)
         results["interactive_htmls"] = interactive_htmls
     except ImportError:
         context = "full dataset" if source_name is None else f"snapshot {source_name}"
@@ -223,7 +219,7 @@ def _save_snapshot_md_outputs(
     interactive_max_points: int | None,
     hdbscan_result: HDBSCANResult,
 ) -> dict[str, Any]:
-    snapshot_root = Path(out_dir) / "md_clusters_by_snapshot"
+    snapshot_root = snapshot_outputs_root(out_dir)
     summary: dict[str, Any] = {
         "root_dir": str(snapshot_root),
         "primary_k": int(primary_k),
@@ -232,7 +228,7 @@ def _save_snapshot_md_outputs(
     }
     for source_name, indices in snapshot_source_groups:
         snapshot_dirname = snapshot_output_names[str(source_name)]
-        snapshot_dir = snapshot_root / snapshot_dirname
+        snapshot_dir = snapshot_md_space_dir(out_dir, snapshot_dirname)
         coords_subset = coords[indices]
         labels_subset = cluster_labels[indices]
         coord_files = save_local_structure_assignments(

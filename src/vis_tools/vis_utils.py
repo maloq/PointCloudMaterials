@@ -3,7 +3,6 @@ General visualization utilities for point cloud models.
 
 This module provides visualization functions for model reconstructions
 and point cloud data. For t-SNE specific visualizations, see tsne_vis.py.
-For SPD-specific visualizations, see spd_reference_viz.py and spd_clustering_viz.py.
 """
 
 import os

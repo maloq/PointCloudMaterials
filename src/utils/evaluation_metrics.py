@@ -1,6 +1,7 @@
 """
-Metrics for evaluating Shape-Pose Disentanglement model.
-Includes embedding quality, rotation equivariance, and reconstruction consistency metrics.
+Evaluation metrics for point-cloud representation learning.
+Includes clustering, embedding quality, rotation equivariance,
+and reconstruction consistency metrics.
 """
 
 import logging
@@ -15,7 +16,6 @@ from scipy.spatial.distance import pdist, cdist
 from scipy.spatial.transform import Rotation
 
 from src.loss.reconstruction_loss import sinkhorn_distance
-from src.training_methods.spd.rot_heads import kabsch_rotation
 
 logger = logging.getLogger(__name__)
 

@@ -422,6 +422,7 @@ def _resolve_analysis_settings(
     model_cfg: DictConfig,
 ) -> AnalysisSettings:
     clustering_cfg = OmegaConf.select(analysis_cfg, "clustering", default=None)
+    figure_cfg = OmegaConf.select(analysis_cfg, "figure_set", default=None)
     md_cfg = OmegaConf.select(analysis_cfg, "md", default=None)
     tsne_cfg = OmegaConf.select(analysis_cfg, "tsne", default=None)
     cache_cfg = OmegaConf.select(analysis_cfg, "cache", default=None)
@@ -432,6 +433,10 @@ def _resolve_analysis_settings(
         OmegaConf.select(clustering_cfg, "primary_k", default=None),
         field_name="clustering.primary_k",
     )
+    figure_set_k = _resolve_optional_cluster_k(
+        OmegaConf.select(figure_cfg, "k", default=None),
+        field_name="figure_set.k",
+    )
     cluster_k_values = _as_list_of_int(
         OmegaConf.select(clustering_cfg, "k_values", default=None),
         field_name="clustering.k_values",
@@ -439,12 +444,13 @@ def _resolve_analysis_settings(
     cluster_k_values = list(dict.fromkeys(int(k) for k in cluster_k_values if int(k) >= 2))
     if not cluster_k_values:
         cluster_k_values = [3, 4, 5, 6]
-    if primary_k is None:
+    if figure_set_k is not None:
+        primary_k = int(figure_set_k)
+    elif primary_k is None:
         primary_k = int(cluster_k_values[0])
-    else:
-        cluster_k_values = [int(primary_k)] + [
-            int(k) for k in cluster_k_values if int(k) != int(primary_k)
-        ]
+    cluster_k_values = [int(primary_k)] + [
+        int(k) for k in cluster_k_values if int(k) != int(primary_k)
+    ]
 
     data_overlap_fraction = _validate_overlap_fraction(
         getattr(model_cfg.data, "overlap_fraction", 0.0)
@@ -723,7 +729,7 @@ def _print_resolved_analysis_settings(
     print(
         "Unified analysis cluster count: "
         f"k={analysis_settings.primary_k} "
-        "(applied to clustering.primary_k, figure_set.k, real_md.selected_k)"
+        "(driven by figure_set.k when set; applied to clustering.primary_k, figure_set.k, real_md.selected_k)"
     )
     print(f"t-SNE sample cap: {analysis_settings.tsne_max_samples}")
     print(f"Clustering k values (configured): {analysis_settings.cluster_k_values}")

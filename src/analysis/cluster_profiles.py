@@ -64,7 +64,8 @@ def resolve_point_scale(cfg: Any) -> float:
 
 def _safe_xyz(points: np.ndarray) -> np.ndarray:
     arr = np.asarray(points, dtype=np.float32)
-    if arr.ndim == 3 and arr.shape[0] == 1:
+    if arr.ndim == 3:
+        # Temporal datasets provide (T, N, 3); old qualitative plots should use the anchor frame.
         arr = arr[0]
     if arr.ndim != 2:
         arr = np.reshape(arr, (-1, arr.shape[-1]))

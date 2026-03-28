@@ -14,6 +14,10 @@ from .cluster_figures import (
     _save_fixed_k_cluster_figure_set,
     _save_horizontal_image_gallery,
 )
+from .output_layout import (
+    snapshot_figure_set_dir,
+    snapshot_outputs_root,
+)
 
 
 @dataclass(frozen=True)
@@ -21,6 +25,45 @@ class SnapshotFigureLayout:
     source_groups: list[tuple[str, np.ndarray]]
     output_names: dict[str, str]
     multi_snapshot_real: bool
+
+
+def filter_snapshot_figure_layout(
+    snapshot_layout: SnapshotFigureLayout,
+    *,
+    allowed_source_names: list[str] | None,
+) -> SnapshotFigureLayout:
+    if not allowed_source_names:
+        return snapshot_layout
+    allowed = [str(v) for v in allowed_source_names]
+    allowed_set = set(allowed)
+    filtered_groups = [
+        (str(source_name), np.asarray(indices, dtype=int))
+        for source_name, indices in snapshot_layout.source_groups
+        if str(source_name) in allowed_set
+    ]
+    missing = [name for name in allowed if name not in {str(source_name) for source_name, _ in filtered_groups}]
+    if missing:
+        raise RuntimeError(
+            "Requested snapshot names were not found in the resolved snapshot layout. "
+            f"missing={missing}, available={[str(name) for name, _ in snapshot_layout.source_groups]}."
+        )
+    ordered_groups = [
+        next(
+            (group_name, group_indices)
+            for group_name, group_indices in filtered_groups
+            if str(group_name) == name
+        )
+        for name in allowed
+    ]
+    filtered_output_names = {
+        str(name): str(snapshot_layout.output_names[str(name)])
+        for name in allowed
+    }
+    return SnapshotFigureLayout(
+        source_groups=ordered_groups,
+        output_names=filtered_output_names,
+        multi_snapshot_real=len(ordered_groups) > 1,
+    )
 
 
 def _unwrap_dataset_with_subset_indices(
@@ -152,7 +195,7 @@ def _save_snapshot_raytrace_galleries_by_view(
     root_dir_raw = snapshot_figure_sets.get("root_dir")
     if not root_dir_raw:
         raise ValueError("snapshot_figure_sets is missing 'root_dir'.")
-    gallery_root = Path(str(root_dir_raw)) / "_galleries_by_view" / f"cluster_figure_set_k{k_value}"
+    gallery_root = Path(str(root_dir_raw)) / "_galleries_by_view" / f"figure_set_k{k_value}"
     gallery_root.mkdir(parents=True, exist_ok=True)
     stale_paths: set[Path] = set()
     for pattern in (
@@ -257,14 +300,17 @@ def _save_snapshot_raytrace_galleries_by_view(
         raise RuntimeError(
             f"Snapshot {first_identity['source_name']} is missing figure_set metadata."
         )
-    all_view_lookup = _build_view_lookup(
-        first_figure_set.get("panel_all_clusters_views"),
-        context=f"snapshot={first_identity['source_name']} panel_all_clusters_views",
-    )
-    ordered_view_names = list(all_view_lookup.keys())
+    first_all_cluster_views = first_figure_set.get("panel_all_clusters_views")
+    ordered_view_names: list[str] = []
+    if isinstance(first_all_cluster_views, list) and first_all_cluster_views:
+        all_view_lookup = _build_view_lookup(
+            first_all_cluster_views,
+            context=f"snapshot={first_identity['source_name']} panel_all_clusters_views",
+        )
+        ordered_view_names = list(all_view_lookup.keys())
 
     summary: dict[str, Any] = {
-        "root_dir": str(gallery_root.parent.parent),
+        "root_dir": str(Path(str(root_dir_raw))),
         "gallery_root": str(gallery_root),
         "k_value": k_value,
         "all_clusters": [],
@@ -314,8 +360,24 @@ def _save_snapshot_raytrace_galleries_by_view(
 
     for cluster_set in requested_visible_cluster_sets or []:
         tag = "-".join(str(int(v)) for v in cluster_set)
+        subset_view_names = list(ordered_view_names)
+        if not subset_view_names:
+            first_subset_views = _get_subset_views_by_set(
+                first_figure_set,
+                context=f"snapshot={first_identity['source_name']}",
+            ).get(tag)
+            if isinstance(first_subset_views, list) and first_subset_views:
+                subset_view_names = list(
+                    _build_view_lookup(
+                        first_subset_views,
+                        context=(
+                            f"snapshot={first_identity['source_name']} "
+                            f"panel_subset_views_by_set[{tag}]"
+                        ),
+                    ).keys()
+                )
         per_view_entries: list[dict[str, Any]] = []
-        for view_name in ordered_view_names:
+        for view_name in subset_view_names:
             panel_paths = []
             panel_titles = []
             for snapshot_entry in snapshots:
@@ -473,6 +535,8 @@ def render_cluster_figure_outputs(
     step: Callable[[str], None],
     representative_render_cache: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    visible_cluster_sets_unset = object()
+
     def _run_figure_set(
         labels_subset: np.ndarray,
         *,
@@ -481,8 +545,9 @@ def render_cluster_figure_outputs(
         latents_override: np.ndarray | None = None,
         coords_override: np.ndarray | None = None,
         cluster_color_assignment_override: dict[int, int | str] | None = None,
-        visible_cluster_sets_override: list[list[int]] | None = None,
+        visible_cluster_sets_override: Any = visible_cluster_sets_unset,
         representative_render_cache_override: dict[str, Any] | None = None,
+        include_all_cluster_panels_override: bool | None = None,
     ) -> dict[str, Any]:
         step("Generating fixed-k cluster figure set")
         figure_set_dir = (
@@ -499,10 +564,12 @@ def render_cluster_figure_outputs(
             run_kwargs["coords"] = coords_override
         if cluster_color_assignment_override is not None:
             run_kwargs["cluster_color_assignment"] = cluster_color_assignment_override
-        if visible_cluster_sets_override is not None:
+        if visible_cluster_sets_override is not visible_cluster_sets_unset:
             run_kwargs["visible_cluster_sets"] = visible_cluster_sets_override
         if representative_render_cache_override is not None:
             run_kwargs["representative_render_cache"] = representative_render_cache_override
+        if include_all_cluster_panels_override is not None:
+            run_kwargs["include_all_cluster_panels"] = bool(include_all_cluster_panels_override)
         with _temporary_disable_dataset_aug(dataloader):
             return _save_fixed_k_cluster_figure_set(
                 out_dir=figure_set_dir,
@@ -545,7 +612,7 @@ def render_cluster_figure_outputs(
         labels_for_k,
         cluster_color_assignment=figure_settings.cluster_color_assignment,
     )
-    snapshot_root = out_dir / "cluster_figure_sets_by_snapshot"
+    snapshot_root = snapshot_outputs_root(out_dir)
     snapshot_summary: dict[str, Any] = {
         "root_dir": str(snapshot_root),
         "k_value": int(figure_settings.k),
@@ -576,7 +643,11 @@ def render_cluster_figure_outputs(
 
     for source_name, indices in ordered_snapshot_groups:
         snapshot_dirname = snapshot_layout.output_names[str(source_name)]
-        snapshot_dir = snapshot_root / snapshot_dirname / f"cluster_figure_set_k{figure_settings.k}"
+        snapshot_dir = snapshot_figure_set_dir(
+            out_dir,
+            snapshot_dirname,
+            k_value=int(figure_settings.k),
+        )
         subset_dataset = torch.utils.data.Subset(
             dataset_obj,
             [int(v) for v in indices.tolist()],
@@ -594,6 +665,7 @@ def render_cluster_figure_outputs(
             coords_override=coords[indices],
             cluster_color_assignment_override=global_color_map,
             visible_cluster_sets_override=snapshot_visible_sets,
+            include_all_cluster_panels_override=False,
         )
         snapshot_summary["snapshots"].append(
             {
@@ -659,10 +731,12 @@ def print_figure_set_summary(
         k_fig = fs.get("k_value", "N/A")
         raytrace_on = bool(fs.get("raytrace_render_settings", {}).get("enabled", False))
         print(f"  - cluster_figure_set_k{k_fig}/cluster_color_assignment_k{k_fig}.json")
-        print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*].png")
+        if fs.get("panel_all_clusters_views"):
+            print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*].png")
         if raytrace_on:
-            print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*]_raytrace.png")
-            print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}_raytrace_gallery.png")
+            if fs.get("panel_all_clusters_views"):
+                print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*]_raytrace.png")
+                print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}_raytrace_gallery.png")
         for s in fs.get("visible_cluster_sets", []):
             tag = "-".join(str(c) for c in s)
             print(f"  - cluster_figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}[_view*].png")
@@ -685,17 +759,17 @@ def print_figure_set_summary(
                 f"{k_fig}/10_cluster_representatives_structure_analysis_k{k_fig}.csv"
             )
     if has_snapshot_sets:
-        print("  - cluster_figure_sets_by_snapshot/<snapshot>/cluster_figure_set_k*/...")
+        print("  - snapshots/<snapshot>/figure_set_k*/...")
         snapshot_gallery_sets = snapshot_sets.get("raytrace_galleries_by_view", {})
         if isinstance(snapshot_gallery_sets, dict) and snapshot_gallery_sets.get("all_clusters"):
             k_fig = snapshot_gallery_sets.get("k_value", "N/A")
             print(
-                "  - cluster_figure_sets_by_snapshot/_galleries_by_view/"
-                f"cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}_view*_raytrace_gallery.png"
+                "  - snapshots/_galleries_by_view/"
+                f"figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}_view*_raytrace_gallery.png"
             )
             for s in snapshot_sets.get("requested_visible_cluster_sets", []):
                 tag = "-".join(str(c) for c in s)
                 print(
-                    "  - cluster_figure_sets_by_snapshot/_galleries_by_view/"
-                    f"cluster_figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}_view*_raytrace_gallery.png"
+                    "  - snapshots/_galleries_by_view/"
+                    f"figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}_view*_raytrace_gallery.png"
                 )

@@ -9,8 +9,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC, SVC
 from torch.utils.data import DataLoader
 
-from src.utils.spd_metrics import compute_cluster_metrics, compute_embedding_quality_metrics
-from src.utils.spd_utils import cached_sample_count
+from src.utils.evaluation_metrics import compute_cluster_metrics, compute_embedding_quality_metrics
+from src.utils.training_utils import cached_sample_count
 
 
 def _as_string_list(value, default: list[str]) -> list[str]:

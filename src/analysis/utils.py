@@ -8,8 +8,8 @@ import torch
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from src.data_utils.data_load import PointCloudDataset
-from src.utils.spd_metrics import random_rotation_matrix
-from src.utils.spd_utils import apply_rotation
+from src.utils.evaluation_metrics import random_rotation_matrix
+from src.utils.training_utils import apply_rotation
 
 
 @runtime_checkable
@@ -120,6 +120,45 @@ def _extract_pc_phase_coords(
 def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None]:
     pc, phase, _, _ = _extract_pc_phase_coords(batch)
     return pc, phase
+
+
+def _prepare_pointcloud_batch_for_model(
+    pc: torch.Tensor,
+    *,
+    temporal_sequence_mode: str = "static_anchor",
+    temporal_static_frame_index: int | None = 0,
+) -> torch.Tensor:
+    if not torch.is_tensor(pc):
+        pc = torch.as_tensor(pc)
+    if pc.ndim == 3:
+        if pc.shape[-1] != 3:
+            raise ValueError(
+                "Static point-cloud batches must have shape (B, N, 3), "
+                f"got {tuple(pc.shape)}."
+            )
+        return pc
+    if pc.ndim != 4 or pc.shape[-1] != 3:
+        raise ValueError(
+            "Analysis inference supports point-cloud batches with shape "
+            "(B, N, 3) or temporal batches with shape (B, T, N, 3), "
+            f"got {tuple(pc.shape)}."
+        )
+
+    mode = str(temporal_sequence_mode).strip().lower()
+    if mode == "static_anchor":
+        frame_index = 0 if temporal_static_frame_index is None else int(temporal_static_frame_index)
+        if frame_index != 0:
+            raise ValueError(
+                "temporal_sequence_mode='static_anchor' expects frame_index=0, "
+                f"got temporal_static_frame_index={frame_index}."
+            )
+        return pc[:, 0, :, :]
+    if mode == "temporal":
+        return pc
+    raise ValueError(
+        "temporal_sequence_mode must be one of ['static_anchor', 'temporal'], "
+        f"got {temporal_sequence_mode!r}."
+    )
 
 
 def _unwrap_dataset(dataset: Any) -> Any:
@@ -254,6 +293,8 @@ def gather_inference_batches(
     seed_base: int | None = 123,
     progress_every_batches: int = 25,
     verbose: bool = False,
+    temporal_sequence_mode: str = "static_anchor",
+    temporal_static_frame_index: int | None = 0,
 ) -> Dict[str, np.ndarray]:
     """Collect inputs and latents from batches."""
     inv_latents, eq_latents, phases, coords_list, instance_ids = [], [], [], [], []
@@ -266,6 +307,11 @@ def gather_inference_batches(
             if max_batches is not None and batch_idx >= max_batches:
                 break
             pc, phase, coords, instance_id = _extract_pc_phase_coords(batch)
+            pc = _prepare_pointcloud_batch_for_model(
+                pc,
+                temporal_sequence_mode=temporal_sequence_mode,
+                temporal_static_frame_index=temporal_static_frame_index,
+            )
             pc = pc.to(device)
             if hasattr(model, "_prepare_model_input"):
                 pc = model._prepare_model_input(pc)
@@ -376,6 +422,8 @@ def evaluate_latent_equivariance(
     dataloader: torch.utils.data.DataLoader,
     device: str,
     max_batches: int = 2,
+    temporal_sequence_mode: str = "static_anchor",
+    temporal_static_frame_index: int | None = 0,
 ) -> Tuple[Dict[str, float], np.ndarray]:
     """Evaluate equivariance in encoder outputs (seeded vs unseeded)."""
     eq_errors_seeded = []
@@ -390,6 +438,11 @@ def evaluate_latent_equivariance(
             if batch_idx >= max_batches:
                 break
             pc, _ = _extract_pc_and_phase(batch)
+            pc = _prepare_pointcloud_batch_for_model(
+                pc,
+                temporal_sequence_mode=temporal_sequence_mode,
+                temporal_static_frame_index=temporal_static_frame_index,
+            )
             pc = pc.to(device)
             if hasattr(model, "_prepare_model_input"):
                 pc = model._prepare_model_input(pc)

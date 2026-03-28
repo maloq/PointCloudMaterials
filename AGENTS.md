@@ -1,3 +1,5 @@
+use conda environment: `pointnet`
+
 ## No silent failures / no ambiguity
 
 This is research code: correctness and clarity beat cleverness.

@@ -1,19 +1,38 @@
 checkpoint:
-  # Required for manual runs. The training wrappers override this at runtime.
-  path: output/2026-03-13/14-38-53/VICREG_l128_N160_M80_RI_MAE_Invariant-epoch=114.ckpt
-  # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/pretrain_only_Ta_128_k8
+  path: output/2026-03-10/19-24-39/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=59.ckpt
+  output_dir: outputs/temporal_real_Al_500K
   cuda_device: 0
 
 inputs:
-  # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
-  data_config: configs/data/data_ae_Ta_80.yaml
-  # Optional real-data frame selection. null -> use data.data_files from the checkpoint config.
+  data_config: configs/data/data_ae_Al_80.yaml
   real_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null
-  # 0/null -> unlimited unless the code imposes a real-data fallback cap.
   max_samples_total: 0
+  temporal_real:
+    enabled: true
+    dump_file: datasets/dump_Pure_Al_500K.pos
+    cache_dir: null
+    sequence_length: 4
+    frame_stride: 1
+    inference_mode: static
+    analysis_snapshot_count: 6
+    inference_snapshot_fraction: 1.0
+    center_selection:
+      mode: regular_grid
+      regular_grid:
+        overlap: 0.75
+        reference_frame: first_anchor
+    center_selection_seed: 0
+    radius: null
+    num_points: null
+    normalize: true
+    center_neighborhoods: true
+    selection_method: closest
+    rebuild_cache: false
+    tree_cache_size: 4
+    time_scale: 1000.0
+    time_unit: ps
 
 cache:
   enabled: true
@@ -25,9 +44,8 @@ runtime:
   seed_base: 123
 
 clustering:
-  # null -> figure_set.k when set, otherwise first entry of k_values
   primary_k: null
-  k_values: [5, 6, 7, 8]
+  k_values: [8]
   method: auto
   l2_normalize: true
   standardize: true
@@ -53,14 +71,14 @@ md:
   interactive_max_points: 0
 
 tsne:
-  max_samples: 8000
+  enabled: false
+  max_samples: 200000
   n_iter: 1000
   paper_enabled: true
 
 figure_set:
   enabled: true
   figure_only: false
-  # Controls the unified cluster count used across clustering, figure sets, and real_md plots.
   k: 8
   visible_cluster_sets:
     - [0, 1, 2, 3, 4, 5]
@@ -83,7 +101,6 @@ figure_set:
     max_samples: 20000
     covariance: diag
   representatives:
-    # null -> data.model_points / data.num_points from the checkpoint config
     points: null
     orientation: pca
     view_elev: 22.0
@@ -107,12 +124,11 @@ figure_set:
     sphere_radius_fraction: 0.0105
     timeout_sec: 1200
     use_gpu: true
-    parallel_views: true
-    parallel_max_workers: 4
+    parallel_views: false
+    parallel_max_workers: 1
 
 real_md:
   enabled: true
-  # null -> unified cluster count (figure_set.k when set)
   selected_k: null
   time_series:
     paper_enabled: true
@@ -149,6 +165,29 @@ real_md:
     umap_metric: euclidean
     scalar_alpha: 0.86
     scalar_background_alpha: 0.06
+  temporal:
+    enabled: true
+    animation_max_points: 25000
+    frame_duration_ms: 250
+    md_space:
+      enabled: true
+      point_size: 12.0
+      alpha: 1.0
+      diagonal_visible_depth_fraction: 0.10
+    umap:
+      enabled: true
+      point_size: 8.0
+      alpha: 0.74
+      trajectory_enabled: true
+      trajectory_max_points: 1000
+      trajectory_line_width: 0.8
+      trajectory_line_alpha: 0.22
+      trajectory_fade_min_alpha_fraction: 0.18
+      trajectory_fade_power: 1.0
+      trajectory_directional_subsegments: 6
+      trajectory_directional_start_alpha_fraction: 0.32
+      trajectory_directional_start_width_fraction: 0.60
+      trajectory_directional_end_width_fraction: 1.35
   descriptors:
     enabled: true
     max_samples: 6000
@@ -194,5 +233,5 @@ real_md:
     flow_min_fraction: 0.001
 
 equivariance:
-  enabled: true
+  enabled: false
   max_batches: 2

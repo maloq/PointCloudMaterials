@@ -28,7 +28,7 @@ from src.training_methods.contrastive_learning.supervised_cache import (
     _collect_split_supervised_features,
     _resolve_hungarian_eval_k,
 )
-from src.utils.spd_metrics import _hungarian_cluster_accuracy
+from src.utils.evaluation_metrics import _hungarian_cluster_accuracy
 
 
 torch.set_float32_matmul_precision("high")

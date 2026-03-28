@@ -78,6 +78,10 @@ def run_tsne_visualizations(
     step: Callable[[str], None],
 ) -> None:
     """Compute t-SNE and save ground-truth + cluster plots."""
+    if not bool(OmegaConf.select(analysis_cfg, "tsne.enabled", default=True)):
+        step("Skipping t-SNE visualization")
+        return
+
     step("Computing t-SNE visualization (clusters)")
     tsne_idx = _sample_indices(
         len(cache["inv_latents"]),
@@ -134,6 +138,8 @@ def run_equivariance_evaluation(
     *,
     analysis_cfg: DictConfig,
     step: Callable[[str], None],
+    temporal_sequence_mode: str = "static_anchor",
+    temporal_static_frame_index: int | None = 0,
 ) -> dict[str, Any]:
     """Evaluate equivariance and save plot. Returns metrics dict (may be empty)."""
     step("Evaluating equivariance")
@@ -145,6 +151,8 @@ def run_equivariance_evaluation(
         dl,
         device,
         max_batches=int(eq_max_batches),
+        temporal_sequence_mode=temporal_sequence_mode,
+        temporal_static_frame_index=temporal_static_frame_index,
     )
     save_equivariance_plot(eq_err, out_dir / "equivariance.png")
     return {"equivariance": eq_metrics}

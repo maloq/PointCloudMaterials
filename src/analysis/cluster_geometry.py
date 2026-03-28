@@ -183,7 +183,8 @@ def _extract_points_from_sample(sample: Any) -> np.ndarray:
     if not torch.is_tensor(points):
         points = torch.as_tensor(points)
     pts = points.detach().cpu().numpy()
-    if pts.ndim == 3 and pts.shape[0] == 1:
+    if pts.ndim == 3:
+        # Temporal datasets provide (T, N, 3); representative renders use the anchor frame.
         pts = pts[0]
     if pts.ndim != 2:
         pts = np.reshape(pts, (-1, pts.shape[-1]))

@@ -95,6 +95,7 @@ def _save_fixed_k_cluster_figure_set(
     raytrace_parallel_views: bool = False,
     raytrace_parallel_max_workers: int | None = None,
     representative_render_cache: dict[str, Any] | None = None,
+    include_all_cluster_panels: bool = True,
 ) -> dict[str, Any]:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -314,23 +315,25 @@ def _save_fixed_k_cluster_figure_set(
         num_views=4,
     )
     panel_all_views: list[dict[str, Any]] = []
-    for view_name, elev, azim in all_view_specs:
-        out_name = (
-            f"01_md_clusters_all_k{k_value}.png"
-            if view_name == "view1"
-            else f"01_md_clusters_all_k{k_value}_{view_name}.png"
-        )
-        snapshot_path = out_dir / out_name
-        snapshot_title = f"MD space clusters (k={k_value}, all clusters, {view_name})"
-        panel_view = _render_cluster_view(
-            snapshot_path=snapshot_path,
-            snapshot_title=snapshot_title,
-            view_name=str(view_name),
-            elev=float(elev),
-            azim=float(azim),
-        )
-        panel_all_views.append(panel_view)
-    panel_all = panel_all_views[0]
+    panel_all: dict[str, Any] | None = None
+    if bool(include_all_cluster_panels):
+        for view_name, elev, azim in all_view_specs:
+            out_name = (
+                f"01_md_clusters_all_k{k_value}.png"
+                if view_name == "view1"
+                else f"01_md_clusters_all_k{k_value}_{view_name}.png"
+            )
+            snapshot_path = out_dir / out_name
+            snapshot_title = f"MD space clusters (k={k_value}, all clusters, {view_name})"
+            panel_view = _render_cluster_view(
+                snapshot_path=snapshot_path,
+                snapshot_title=snapshot_title,
+                view_name=str(view_name),
+                elev=float(elev),
+                azim=float(azim),
+            )
+            panel_all_views.append(panel_view)
+        panel_all = panel_all_views[0]
 
     # -- 02  Selected cluster-subset views ------------------------------------
 

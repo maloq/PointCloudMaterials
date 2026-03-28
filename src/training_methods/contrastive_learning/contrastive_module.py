@@ -18,9 +18,18 @@ from src.training_methods.contrastive_learning.supervised_cache import (
 from src.training_methods.contrastive_learning.pointcontrast import PointContrastLoss
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 from src.training_methods.contrastive_learning.wmse import WMSELoss
-from src.training_methods.equivariant_autoencoder.idec import resolve_latent_dim
 from src.utils.pointcloud_ops import crop_to_num_points
-from src.utils.spd_utils import get_optimizers_and_scheduler, cached_sample_count
+from src.utils.training_utils import get_optimizers_and_scheduler, cached_sample_count
+
+
+def resolve_latent_dim(cfg):
+    if hasattr(cfg, "latent_size"):
+        return int(cfg.latent_size)
+    if hasattr(cfg, "encoder") and hasattr(cfg.encoder, "kwargs"):
+        latent_size = cfg.encoder.kwargs.get("latent_size", None)
+        if latent_size is not None:
+            return int(latent_size)
+    return None
 
 
 class BarlowTwinsModule(pl.LightningModule):

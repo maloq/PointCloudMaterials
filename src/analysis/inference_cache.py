@@ -79,6 +79,8 @@ def _build_inference_cache_spec(
     max_batches_latent: int | None,
     max_samples_total: int | None,
     seed_base: int,
+    temporal_real_selection: dict[str, Any] | None = None,
+    temporal_sequence_inference: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "version": 1,
@@ -101,6 +103,8 @@ def _build_inference_cache_spec(
         "max_samples_total": None if max_samples_total is None else int(max_samples_total),
         "seed_base": int(seed_base),
         "collect_coords": True,
+        "temporal_real_selection": temporal_real_selection,
+        "temporal_sequence_inference": temporal_sequence_inference,
     }
 
 

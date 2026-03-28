@@ -53,6 +53,25 @@ def _normalize_point_cloud(points: np.ndarray, radius: float | None) -> np.ndarr
     return points / max_norm
 
 
+def _sanitize_periodic_points(points: np.ndarray, box_lengths: np.ndarray) -> np.ndarray:
+    """Force coordinates into the half-open periodic domain [0, box_length)."""
+    box_lengths = np.asarray(box_lengths, dtype=np.float32)
+    upper = np.nextafter(box_lengths, np.zeros_like(box_lengths, dtype=np.float32))
+    sanitized = np.asarray(points, dtype=np.float32)
+    if np.any(sanitized < 0.0) or np.any(sanitized >= box_lengths[None, :]):
+        sanitized = np.array(sanitized, dtype=np.float32, copy=True)
+        np.clip(sanitized, 0.0, upper[None, :], out=sanitized)
+    return sanitized
+
+
+def _stable_unique_int(values: np.ndarray) -> np.ndarray:
+    arr = np.asarray(values, dtype=np.int64).reshape(-1)
+    if arr.size == 0:
+        return np.zeros((0,), dtype=np.int64)
+    _, first_positions = np.unique(arr, return_index=True)
+    return arr[np.sort(first_positions)].astype(np.int64, copy=False)
+
+
 @dataclass(frozen=True)
 class _DumpScanResult:
     frame_count: int
@@ -90,6 +109,60 @@ def inspect_lammps_dump_file(dump_file: str | Path) -> dict[str, Any]:
     }
 
 
+def estimate_lammps_dump_cutoff_radius(
+    dump_file: str | Path,
+    *,
+    reference_frame_index: int = 0,
+    target_points: int,
+    quantile: float,
+    estimation_samples: int,
+    seed: int,
+    safety_factor: float,
+) -> dict[str, Any]:
+    dump_path = Path(dump_file).expanduser().resolve()
+    if not dump_path.exists():
+        raise FileNotFoundError(f"LAMMPS dump file does not exist: {dump_path}")
+    if not dump_path.is_file():
+        raise ValueError(f"dump_file must be a file, got: {dump_path}")
+    if target_points <= 0:
+        raise ValueError(f"target_points must be > 0, got {target_points}.")
+    if not (0.0 < float(quantile) <= 1.0):
+        raise ValueError(f"quantile must be in (0, 1], got {quantile}.")
+    if estimation_samples <= 0:
+        raise ValueError(f"estimation_samples must be > 0, got {estimation_samples}.")
+    if safety_factor <= 0.0:
+        raise ValueError(f"safety_factor must be > 0, got {safety_factor}.")
+
+    points, box_lengths, timestep = TemporalLAMMPSDumpDataset.load_dump_frame_positions(
+        dump_path,
+        frame_index=int(reference_frame_index),
+    )
+    num_atoms = int(points.shape[0])
+    k = min(int(target_points), num_atoms)
+    rng = np.random.default_rng(int(seed))
+    sampled = min(int(estimation_samples), num_atoms)
+    center_indices = rng.choice(num_atoms, size=sampled, replace=False)
+    tree = cKDTree(points, boxsize=box_lengths, balanced_tree=False)
+    dists, _ = tree.query(points[center_indices], k=k)
+    dists = np.asarray(dists, dtype=np.float64)
+    kth = dists.reshape(-1) if k == 1 else dists[:, k - 1]
+    estimated_radius = float(np.quantile(kth, float(quantile))) * float(safety_factor)
+    coverage = float(np.mean(kth <= estimated_radius))
+    return {
+        "reference_frame_index": int(reference_frame_index),
+        "reference_timestep": int(timestep),
+        "target_points": int(target_points),
+        "quantile": float(quantile),
+        "estimation_samples": int(sampled),
+        "seed": int(seed),
+        "safety_factor": float(safety_factor),
+        "estimated_radius": float(estimated_radius),
+        "coverage": float(coverage),
+        "kth_distance_mean": float(np.mean(kth)),
+        "kth_distance_max": float(np.max(kth)),
+    }
+
+
 class TemporalLAMMPSDumpDataset(Dataset):
     """Temporal dataset for tracked local neighborhoods from LAMMPS dump files.
 
@@ -120,10 +193,15 @@ class TemporalLAMMPSDumpDataset(Dataset):
         window_stride: int = 1,
         frame_start: int = 0,
         frame_stop: int | None = None,
+        anchor_frame_indices: Sequence[int] | None = None,
+        anchor_source_names: Sequence[str] | None = None,
+        center_selection_mode: str | None = None,
         center_atom_ids: Sequence[int] | None = None,
         center_atom_stride: int | None = None,
         max_center_atoms: int | None = None,
         center_selection_seed: int = 0,
+        center_grid_overlap: float | None = None,
+        center_grid_reference_frame_index: int | None = None,
         normalize: bool = True,
         center_neighborhoods: bool = True,
         selection_method: str = "closest",
@@ -147,9 +225,26 @@ class TemporalLAMMPSDumpDataset(Dataset):
         self.window_stride = int(window_stride)
         self.frame_start = int(frame_start)
         self.frame_stop = None if frame_stop is None else int(frame_stop)
+        self.anchor_frame_indices = (
+            None if anchor_frame_indices is None else np.asarray(anchor_frame_indices, dtype=np.int64)
+        )
+        self.anchor_source_names = None if anchor_source_names is None else [str(v) for v in anchor_source_names]
+        self.center_selection_mode = (
+            None if center_selection_mode is None else str(center_selection_mode).strip().lower()
+        )
         self.normalize = bool(normalize)
         self.center_neighborhoods = bool(center_neighborhoods)
         self.center_selection_seed = int(center_selection_seed)
+        self.center_grid_overlap = (
+            None
+            if center_grid_overlap is None
+            else float(center_grid_overlap)
+        )
+        self.center_grid_reference_frame_index = (
+            None
+            if center_grid_reference_frame_index is None
+            else int(center_grid_reference_frame_index)
+        )
         self.tree_cache_size = int(tree_cache_size)
         self.build_lock_timeout_sec = float(build_lock_timeout_sec)
         self.build_lock_stale_sec = float(build_lock_stale_sec)
@@ -168,6 +263,22 @@ class TemporalLAMMPSDumpDataset(Dataset):
             raise ValueError(f"frame_start must be >= 0, got {self.frame_start}")
         if self.tree_cache_size <= 0:
             raise ValueError(f"tree_cache_size must be > 0, got {self.tree_cache_size}")
+        if (
+            self.center_grid_overlap is not None
+            and self.center_grid_overlap >= 2.0
+        ):
+            raise ValueError(
+                "center_grid_overlap must be < 2.0 so the derived center spacing stays positive. "
+                f"Got {self.center_grid_overlap}."
+            )
+        if (
+            self.center_grid_reference_frame_index is not None
+            and self.center_grid_reference_frame_index < 0
+        ):
+            raise ValueError(
+                "center_grid_reference_frame_index must be >= 0, "
+                f"got {self.center_grid_reference_frame_index}."
+            )
 
         selection_method = str(selection_method).strip().lower()
         if selection_method not in {"closest", "radius_then_closest"}:
@@ -197,7 +308,9 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 f"for dump_file={self.dump_file}."
             )
 
+        self._tree_cache: OrderedDict[int, cKDTree] = OrderedDict()
         self._center_atom_indices = self._resolve_center_atom_indices(
+            center_selection_mode=self.center_selection_mode,
             center_atom_ids=center_atom_ids,
             center_atom_stride=center_atom_stride,
             max_center_atoms=max_center_atoms,
@@ -217,13 +330,23 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 f"frame_stop={self.frame_stop}, window_stride={self.window_stride}."
             )
 
-        self._tree_cache: OrderedDict[int, cKDTree] = OrderedDict()
+        self.window_source_names = self._resolve_window_source_names()
+        self.sample_source_names = [
+            str(self.window_source_names[window_slot])
+            for window_slot in range(int(self._window_start_frames.size))
+            for _ in range(int(self._center_atom_indices.size))
+        ]
+        self.sample_anchor_frame_indices = np.repeat(
+            self._window_start_frames.astype(np.int64, copy=False),
+            int(self._center_atom_indices.size),
+        )
 
         logger.print(
             "[temporal-lammps] "
             f"Loaded dataset from {self.dump_file} with "
             f"{self.frame_count} frames, {self.num_atoms} atoms, "
-            f"{self._center_atom_indices.size} tracked centers, "
+            f"{self._center_atom_indices.size} tracked centers "
+            f"(selection={self.center_selection_mode or 'legacy'}), "
             f"{self._window_start_frames.size} windows, total_samples={len(self)}."
         )
 
@@ -262,10 +385,14 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
         return {
             "points": torch.from_numpy(sequence_points),
+            "coords": torch.from_numpy(center_positions[0].copy()),
             "center_positions": torch.from_numpy(center_positions),
             "timesteps": torch.as_tensor(timesteps, dtype=torch.int64),
             "frame_indices": torch.as_tensor(frame_indices, dtype=torch.int64),
             "center_atom_id": torch.as_tensor(center_atom_id, dtype=torch.int64),
+            "instance_id": torch.as_tensor(center_atom_id, dtype=torch.int64),
+            "anchor_frame_index": torch.as_tensor(int(frame_indices[0]), dtype=torch.int64),
+            "anchor_timestep": torch.as_tensor(int(timesteps[0]), dtype=torch.int64),
             "source_path": str(self.dump_file),
         }
 
@@ -460,6 +587,70 @@ class TemporalLAMMPSDumpDataset(Dataset):
             box_high=np.asarray(box_high, dtype=np.float32),
         )
 
+    @classmethod
+    def load_dump_frame_positions(
+        cls,
+        dump_file: str | Path,
+        *,
+        frame_index: int,
+    ) -> tuple[np.ndarray, np.ndarray, int]:
+        dump_path = Path(dump_file).expanduser().resolve()
+        if not dump_path.exists():
+            raise FileNotFoundError(f"LAMMPS dump file does not exist: {dump_path}")
+        if not dump_path.is_file():
+            raise ValueError(f"dump_file must be a file, got: {dump_path}")
+        if frame_index < 0:
+            raise ValueError(f"frame_index must be >= 0, got {frame_index}.")
+
+        with dump_path.open("r", encoding="utf-8") as handle:
+            for current_frame_index in range(int(frame_index) + 1):
+                header = cls._read_frame_header(handle, source_path=dump_path)
+                if header is None:
+                    raise IndexError(
+                        "Requested frame_index exceeds the number of frames in the LAMMPS dump. "
+                        f"frame_index={frame_index}, source_path={dump_path}."
+                    )
+                atom_columns = tuple(str(name) for name in header["atom_columns"])
+                values = np.fromfile(
+                    handle,
+                    dtype=np.float64,
+                    count=int(header["num_atoms"]) * len(atom_columns),
+                    sep=" ",
+                )
+                expected_values = int(header["num_atoms"]) * len(atom_columns)
+                if values.size != expected_values:
+                    raise ValueError(
+                        "Failed to read the full atom block while loading a dump frame. "
+                        f"frame_index={current_frame_index}, expected_values={expected_values}, "
+                        f"got={values.size}, source_path={dump_path}."
+                    )
+                if current_frame_index != int(frame_index):
+                    continue
+
+                position_columns = cls._resolve_position_columns(atom_columns)
+                frame_table = values.reshape(int(header["num_atoms"]), len(atom_columns))
+                coords = frame_table[:, position_columns].astype(np.float32, copy=False)
+                box_low = np.asarray(header["box_low"], dtype=np.float32)
+                box_high = np.asarray(header["box_high"], dtype=np.float32)
+                box_lengths = box_high - box_low
+                if np.any(box_lengths <= 0.0):
+                    raise ValueError(
+                        "Encountered invalid box lengths while loading dump frame positions. "
+                        f"frame_index={current_frame_index}, box_low={box_low.tolist()}, "
+                        f"box_high={box_high.tolist()}, source_path={dump_path}."
+                    )
+                wrapped = np.mod(coords - box_low[None, :], box_lengths[None, :]).astype(np.float32, copy=False)
+                return (
+                    _sanitize_periodic_points(wrapped, box_lengths),
+                    box_lengths.astype(np.float32, copy=False),
+                    int(header["timestep"]),
+                )
+
+        raise RuntimeError(
+            "Failed to load the requested dump frame even though the file traversal completed. "
+            f"frame_index={frame_index}, source_path={dump_path}."
+        )
+
     def _build_cache(self, scan: _DumpScanResult) -> None:
         positions_path = self.cache_dir / "positions.npy"
         positions_memmap = open_memmap(
@@ -532,10 +723,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
                         f"frame_idx={frame_idx}, box_low={box_low.tolist()}, box_high={box_high.tolist()}, "
                         f"source_path={self.dump_file}."
                     )
-                positions_memmap[frame_idx] = np.mod(coords - box_low[None, :], box_lengths[None, :]).astype(
-                    np.float32,
-                    copy=False,
-                )
+                wrapped = np.mod(coords - box_low[None, :], box_lengths[None, :]).astype(np.float32, copy=False)
+                positions_memmap[frame_idx] = _sanitize_periodic_points(wrapped, box_lengths)
 
                 if frame_idx == 0 or (frame_idx + 1) % 10 == 0 or (frame_idx + 1) == scan.frame_count:
                     logger.print(
@@ -615,28 +804,21 @@ class TemporalLAMMPSDumpDataset(Dataset):
     def _resolve_center_atom_indices(
         self,
         *,
+        center_selection_mode: str | None,
         center_atom_ids: Sequence[int] | None,
         center_atom_stride: int | None,
         max_center_atoms: int | None,
     ) -> np.ndarray:
-        specified_modes = sum(
-            option is not None
-            for option in (center_atom_ids, center_atom_stride, max_center_atoms)
+        mode = self._resolve_center_selection_mode(
+            center_selection_mode=center_selection_mode,
+            center_atom_ids=center_atom_ids,
+            center_atom_stride=center_atom_stride,
+            max_center_atoms=max_center_atoms,
         )
-        if specified_modes == 0:
-            raise ValueError(
-                "Explicit center atom selection is required for TemporalLAMMPSDumpDataset. "
-                "Set one of center_atom_ids, center_atom_stride, or max_center_atoms to avoid "
-                "accidentally creating billions of samples."
-            )
-        if specified_modes > 1:
-            raise ValueError(
-                "Use exactly one center atom selection mode. "
-                f"Got center_atom_ids={center_atom_ids is not None}, "
-                f"center_atom_stride={center_atom_stride}, max_center_atoms={max_center_atoms}."
-            )
 
-        if center_atom_ids is not None:
+        if mode == "atom_ids":
+            if center_atom_ids is None:
+                raise RuntimeError("Internal error: atom_ids mode resolved without center_atom_ids.")
             requested = np.asarray(center_atom_ids, dtype=np.int64)
             if requested.ndim != 1:
                 raise ValueError(
@@ -660,12 +842,22 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 )
             return positions.astype(np.int64, copy=False)
 
-        if center_atom_stride is not None:
+        if mode == "atom_stride":
+            if center_atom_stride is None:
+                raise RuntimeError("Internal error: atom_stride mode resolved without center_atom_stride.")
             stride = int(center_atom_stride)
             if stride <= 0:
                 raise ValueError(f"center_atom_stride must be > 0, got {stride}")
             return np.arange(0, self.num_atoms, stride, dtype=np.int64)
 
+        if mode == "regular_grid":
+            return self._resolve_regular_grid_center_atom_indices()
+
+        if mode != "random_subset":
+            raise RuntimeError(f"Unsupported center selection mode resolved: {mode!r}.")
+
+        if max_center_atoms is None:
+            raise RuntimeError("Internal error: random_subset mode resolved without max_center_atoms.")
         count = int(max_center_atoms)
         if count <= 0:
             raise ValueError(f"max_center_atoms must be > 0, got {count}")
@@ -674,7 +866,167 @@ class TemporalLAMMPSDumpDataset(Dataset):
         picked = rng.choice(self.num_atoms, size=count, replace=False)
         return np.sort(picked.astype(np.int64, copy=False))
 
+    def _resolve_center_selection_mode(
+        self,
+        *,
+        center_selection_mode: str | None,
+        center_atom_ids: Sequence[int] | None,
+        center_atom_stride: int | None,
+        max_center_atoms: int | None,
+    ) -> str:
+        if center_selection_mode is None:
+            specified_modes = sum(
+                option is not None
+                for option in (center_atom_ids, center_atom_stride, max_center_atoms)
+            )
+            if specified_modes == 0:
+                raise ValueError(
+                    "Explicit center atom selection is required for TemporalLAMMPSDumpDataset. "
+                    "Set center_selection_mode='regular_grid' for periodic grid sampling, or set one of "
+                    "center_atom_ids, center_atom_stride, or max_center_atoms."
+                )
+            if specified_modes > 1:
+                raise ValueError(
+                    "Use exactly one legacy center atom selection mode when center_selection_mode is omitted. "
+                    f"Got center_atom_ids={center_atom_ids is not None}, "
+                    f"center_atom_stride={center_atom_stride}, max_center_atoms={max_center_atoms}."
+                )
+            if center_atom_ids is not None:
+                return "atom_ids"
+            if center_atom_stride is not None:
+                return "atom_stride"
+            return "random_subset"
+
+        mode = str(center_selection_mode).strip().lower()
+        if mode not in {"atom_ids", "atom_stride", "random_subset", "regular_grid"}:
+            raise ValueError(
+                "center_selection_mode must be one of "
+                "['atom_ids', 'atom_stride', 'random_subset', 'regular_grid'], "
+                f"got {center_selection_mode!r}."
+            )
+        if mode == "atom_ids":
+            if center_atom_ids is None:
+                raise ValueError("center_selection_mode='atom_ids' requires center_atom_ids to be set.")
+            if center_atom_stride is not None or max_center_atoms is not None:
+                raise ValueError(
+                    "center_selection_mode='atom_ids' is incompatible with center_atom_stride, "
+                    "and max_center_atoms."
+                )
+        elif mode == "atom_stride":
+            if center_atom_stride is None:
+                raise ValueError("center_selection_mode='atom_stride' requires center_atom_stride to be set.")
+            if center_atom_ids is not None or max_center_atoms is not None:
+                raise ValueError(
+                    "center_selection_mode='atom_stride' is incompatible with center_atom_ids, "
+                    "and max_center_atoms."
+                )
+        elif mode == "random_subset":
+            if max_center_atoms is None:
+                raise ValueError("center_selection_mode='random_subset' requires max_center_atoms to be set.")
+            if center_atom_ids is not None or center_atom_stride is not None:
+                raise ValueError(
+                    "center_selection_mode='random_subset' is incompatible with center_atom_ids, "
+                    "and center_atom_stride."
+                )
+        else:
+            if center_atom_ids is not None or center_atom_stride is not None:
+                raise ValueError(
+                    "center_selection_mode='regular_grid' is incompatible with center_atom_ids "
+                    "and center_atom_stride."
+                )
+            if max_center_atoms is not None:
+                raise ValueError(
+                    "center_selection_mode='regular_grid' is incompatible with max_center_atoms. "
+                    "Use center_grid_overlap to control temporal regular-grid density."
+                )
+            if self.radius is None:
+                raise ValueError(
+                    "center_selection_mode='regular_grid' requires radius to be set so the grid spacing "
+                    "can be derived from local-structure size."
+                )
+            if self.center_grid_overlap is None:
+                raise ValueError(
+                    "center_selection_mode='regular_grid' requires center_grid_overlap to be set."
+                )
+        return mode
+
+    def _resolve_regular_grid_center_atom_indices(
+        self,
+    ) -> np.ndarray:
+        if self.radius is None:
+            raise RuntimeError("Regular-grid center selection requires radius, but radius is None.")
+        if self.center_grid_overlap is None:
+            raise RuntimeError(
+                "Regular-grid center selection requires center_grid_overlap, but it is None."
+            )
+        reference_frame_idx = self._resolve_center_grid_reference_frame_index()
+        box_lengths = np.asarray(self.box_lengths[reference_frame_idx], dtype=np.float64)
+        if np.any(box_lengths <= 0.0):
+            raise ValueError(
+                "Regular-grid center selection encountered non-positive box lengths. "
+                f"reference_frame_idx={reference_frame_idx}, box_lengths={box_lengths.tolist()}."
+            )
+
+        desired_stride = (2.0 - float(self.center_grid_overlap)) * float(self.radius)
+        if desired_stride <= 0.0:
+            raise ValueError(
+                "Regular-grid center selection requires positive grid stride. "
+                f"radius={self.radius}, center_grid_overlap={self.center_grid_overlap}, "
+                f"derived_stride={desired_stride}."
+            )
+
+        counts = np.maximum(1, np.floor(box_lengths / desired_stride).astype(np.int64))
+        if np.prod(counts.astype(np.int64), dtype=np.int64) <= 0:
+            raise RuntimeError(
+                "Regular-grid center selection produced a non-positive grid size. "
+                f"counts={counts.tolist()}, reference_frame_idx={reference_frame_idx}."
+            )
+
+        actual_spacing = box_lengths / counts.astype(np.float64)
+        grid_axes = [np.arange(int(count), dtype=np.float64) for count in counts.tolist()]
+        mesh = np.meshgrid(*grid_axes, indexing="ij")
+        grid_ijk = np.column_stack([axis.ravel() for axis in mesh]).astype(np.float64, copy=False)
+        grid_centers = (grid_ijk + 0.5) * actual_spacing[None, :]
+
+        tree = self._get_tree(reference_frame_idx)
+        _, nearest_indices = tree.query(grid_centers.astype(np.float32, copy=False), k=1)
+        return _stable_unique_int(nearest_indices)
+
+    def _resolve_center_grid_reference_frame_index(self) -> int:
+        if self.center_grid_reference_frame_index is not None:
+            reference_frame_idx = int(self.center_grid_reference_frame_index)
+        elif self.anchor_frame_indices is not None and self.anchor_frame_indices.size > 0:
+            reference_frame_idx = int(np.asarray(self.anchor_frame_indices, dtype=np.int64).reshape(-1)[0])
+        else:
+            reference_frame_idx = int(self.frame_start)
+        if reference_frame_idx < 0 or reference_frame_idx >= self.frame_count:
+            raise ValueError(
+                "center_grid_reference_frame_index is out of range. "
+                f"reference_frame_idx={reference_frame_idx}, frame_count={self.frame_count}."
+            )
+        return reference_frame_idx
+
     def _resolve_window_start_frames(self) -> np.ndarray:
+        if self.anchor_frame_indices is not None:
+            anchors = np.asarray(self.anchor_frame_indices, dtype=np.int64).reshape(-1)
+            if anchors.size == 0:
+                return np.zeros((0,), dtype=np.int64)
+            if np.any(anchors < 0):
+                raise ValueError(
+                    f"anchor_frame_indices must be >= 0, got {anchors.tolist()}."
+                )
+            max_start = self.frame_count - (self.sequence_length - 1) * self.frame_stride - 1
+            if max_start < 0:
+                return np.zeros((0,), dtype=np.int64)
+            if np.any(anchors > max_start):
+                raise ValueError(
+                    "Some anchor_frame_indices do not leave enough trailing frames for the requested sequence. "
+                    f"max_valid_start={max_start}, anchor_frame_indices={anchors.tolist()}, "
+                    f"sequence_length={self.sequence_length}, frame_stride={self.frame_stride}."
+                )
+            unique_anchors = np.unique(anchors.astype(np.int64, copy=False))
+            return np.sort(unique_anchors)
+
         stop = self.frame_count if self.frame_stop is None else self.frame_stop
         if stop <= self.frame_start:
             raise ValueError(
@@ -686,13 +1038,31 @@ class TemporalLAMMPSDumpDataset(Dataset):
         max_start = stop - (self.sequence_length - 1) * self.frame_stride
         return np.arange(self.frame_start, max_start, self.window_stride, dtype=np.int64)
 
+    def _resolve_window_source_names(self) -> list[str]:
+        if self.anchor_source_names is not None:
+            if len(self.anchor_source_names) != int(self._window_start_frames.size):
+                raise ValueError(
+                    "anchor_source_names must match the number of resolved window start frames. "
+                    f"len(anchor_source_names)={len(self.anchor_source_names)}, "
+                    f"num_windows={int(self._window_start_frames.size)}."
+                )
+            return [str(v) for v in self.anchor_source_names]
+        return [
+            self._default_window_source_name(int(frame_idx))
+            for frame_idx in self._window_start_frames.tolist()
+        ]
+
+    def _default_window_source_name(self, frame_idx: int) -> str:
+        timestep = int(self.timesteps[int(frame_idx)])
+        return f"frame_{int(frame_idx):03d}_t{timestep}"
+
     def _get_tree(self, frame_idx: int) -> cKDTree:
         tree = self._tree_cache.get(frame_idx)
         if tree is not None:
             self._tree_cache.move_to_end(frame_idx)
             return tree
 
-        points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+        points = _sanitize_periodic_points(self.positions[frame_idx], self.box_lengths[frame_idx])
         box_lengths = np.asarray(self.box_lengths[frame_idx], dtype=np.float32)
         tree = cKDTree(points, boxsize=box_lengths, balanced_tree=False)
         self._tree_cache[frame_idx] = tree

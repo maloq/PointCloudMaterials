@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 from .cluster_profiles import (
     _ALL_PROFILE_PROPERTIES,
@@ -18,19 +19,22 @@ from .cluster_profiles import (
     _json_default,
     _load_point_cloud_from_dataset,
 )
+from .cluster_geometry import _sample_indices_stratified
 from .cluster_rendering import (
     _save_cluster_representatives_figure,
 )
 from .cluster_figures import _build_cluster_color_map
-from src.vis_tools.latent_analysis_vis import _prepare_clustering_features
+from .output_layout import real_md_outputs_root
 from src.vis_tools.real_md_analysis_vis import (
     save_cna_cluster_signature_stacked_bar,
     save_cna_signature_time_series,
     save_cluster_proportion_plots,
     save_descriptor_violin_grid,
-    save_embedding_continuous_plot,
     save_embedding_discrete_plot,
-    save_spatial_cluster_view,
+    save_temporal_embedding_cluster_animation,
+    save_temporal_embedding_trajectory_animation,
+    save_temporal_spatial_cluster_animation,
+    save_temporal_transition_flow_animation,
     save_transition_flow_plot,
 )
 from src.vis_tools.tsne_vis import compute_tsne
@@ -59,6 +63,14 @@ class FrameSlice:
         if abs(value - round(value)) < 1e-9:
             return f"{int(round(value))}{self.time_unit}"
         return f"{value:g}{self.time_unit}"
+
+
+@dataclass(frozen=True)
+class ProjectionFeaturePrep:
+    l2_normalize: bool
+    scaler: StandardScaler | None
+    pca: PCA | None
+    pca_keep_components: int
 
 
 def _to_plain(value: Any) -> Any:
@@ -123,67 +135,6 @@ def _normalize_cluster_id_list(value: Any, *, field_name: str) -> list[int]:
     if not tokens:
         raise ValueError(f"{field_name} must contain at least one cluster ID.")
     return [int(v) for v in tokens]
-
-
-def _normalize_bounds(bounds: Any) -> np.ndarray:
-    arr = np.asarray(bounds, dtype=np.float32)
-    if arr.shape == (6,):
-        arr = arr.reshape(2, 3)
-    if arr.shape != (2, 3):
-        raise ValueError(
-            "Spatial zoom bounds must have shape (6,) or (2, 3), "
-            f"got {arr.shape}."
-        )
-    mins = np.minimum(arr[0], arr[1])
-    maxs = np.maximum(arr[0], arr[1])
-    return np.stack([mins, maxs], axis=0)
-
-
-def _resolve_half_extent(
-    value: Any,
-    *,
-    default_half_extent: float,
-) -> np.ndarray:
-    if value is None:
-        return np.full((3,), float(default_half_extent), dtype=np.float32)
-    arr = np.asarray(value, dtype=np.float32)
-    if arr.shape == ():
-        return np.full((3,), float(arr), dtype=np.float32)
-    if arr.shape != (3,):
-        raise ValueError(
-            "half_extent must be a scalar or length-3 vector, "
-            f"got shape {arr.shape}."
-        )
-    return arr.astype(np.float32, copy=False)
-
-
-def _compute_hotspot_bounds(
-    coords: np.ndarray,
-    *,
-    default_half_extent: float,
-    half_extent_override: Any = None,
-    search_radius: float | None = None,
-) -> np.ndarray:
-    points = np.asarray(coords, dtype=np.float32)
-    if points.ndim != 2 or points.shape[1] < 3:
-        raise ValueError(f"coords must have shape (N, >=3), got {points.shape}.")
-    points = points[:, :3]
-    if points.shape[0] == 0:
-        raise ValueError("Cannot compute hotspot bounds for an empty point set.")
-    if points.shape[0] == 1:
-        center = points[0]
-    else:
-        radius = float(search_radius) if search_radius is not None else float(default_half_extent) * 0.8
-        radius = max(radius, 1e-3)
-        tree = cKDTree(points)
-        neighbor_lists = tree.query_ball_point(points, r=radius)
-        counts = np.asarray([len(neigh) for neigh in neighbor_lists], dtype=np.int32)
-        center = points[int(np.argmax(counts))]
-    half_extent = _resolve_half_extent(
-        half_extent_override,
-        default_half_extent=float(default_half_extent),
-    )
-    return np.stack([center - half_extent, center + half_extent], axis=0)
 
 
 def _cfg_bool(cfg: Any, field_name: str, default: bool) -> bool:
@@ -404,29 +355,86 @@ def _evaluate_optional_descriptor(
     return df, {"name": str(name), "feature_names": list(feature_names)}
 
 
-def _compute_projection(
+def _prepare_projection_features(
     latents: np.ndarray,
     *,
-    method: str,
     random_state: int,
     l2_normalize: bool,
     standardize: bool,
     pca_variance: float | None,
     pca_max_components: int,
+) -> tuple[np.ndarray, ProjectionFeaturePrep, dict[str, Any]]:
+    x = np.asarray(latents, dtype=np.float32)
+    if x.ndim != 2:
+        x = np.reshape(x, (x.shape[0], -1))
+    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+
+    info: dict[str, Any] = {
+        "input_dim": int(x.shape[1]),
+        "l2_normalize": bool(l2_normalize),
+        "standardize": bool(standardize),
+    }
+
+    if bool(l2_normalize):
+        norms = np.linalg.norm(x, axis=1, keepdims=True)
+        x = x / np.clip(norms, 1e-8, None)
+
+    scaler: StandardScaler | None = None
+    if bool(standardize) and x.shape[0] > 1:
+        scaler = StandardScaler()
+        x = scaler.fit_transform(x).astype(np.float32, copy=False)
+
+    pca_model: PCA | None = None
+    pca_keep = int(x.shape[1])
+    use_pca = (
+        pca_variance is not None
+        and float(pca_variance) > 0.0
+        and x.shape[1] > 2
+        and x.shape[0] > 3
+    )
+    if use_pca:
+        n_max = min(int(pca_max_components), x.shape[1], x.shape[0] - 1)
+        if n_max >= 2:
+            pca_model = PCA(n_components=n_max, random_state=int(random_state))
+            x_proj = pca_model.fit_transform(x)
+            if float(pca_variance) >= 1.0:
+                pca_keep = int(n_max)
+            else:
+                csum = np.cumsum(pca_model.explained_variance_ratio_)
+                pca_keep = int(np.searchsorted(csum, float(pca_variance)) + 1)
+                pca_keep = max(2, min(pca_keep, int(n_max)))
+            x = np.asarray(x_proj[:, :pca_keep], dtype=np.float32)
+            info["pca_components"] = int(pca_keep)
+            info["pca_explained_variance"] = float(
+                np.sum(pca_model.explained_variance_ratio_[:pca_keep])
+            )
+        else:
+            info["pca_components"] = int(x.shape[1])
+            info["pca_explained_variance"] = 1.0
+    else:
+        info["pca_components"] = int(x.shape[1])
+        info["pca_explained_variance"] = 1.0
+
+    info["output_dim"] = int(x.shape[1])
+    return x.astype(np.float32, copy=False), ProjectionFeaturePrep(
+        l2_normalize=bool(l2_normalize),
+        scaler=scaler,
+        pca=pca_model,
+        pca_keep_components=int(pca_keep),
+    ), info
+
+
+def _fit_projection_embedding(
+    features: np.ndarray,
+    *,
+    method: str,
+    random_state: int,
     umap_neighbors: int,
     umap_min_dist: float,
     umap_metric: str,
     tsne_n_iter: int,
-) -> tuple[np.ndarray, dict[str, Any]]:
+) -> tuple[np.ndarray, dict[str, Any], Any | None]:
     method_norm = str(method).strip().lower()
-    features, prep_info = _prepare_clustering_features(
-        latents,
-        random_state=int(random_state),
-        l2_normalize=bool(l2_normalize),
-        standardize=bool(standardize),
-        pca_variance=pca_variance,
-        pca_max_components=int(pca_max_components),
-    )
     if method_norm == "umap":
         try:
             import umap
@@ -441,12 +449,11 @@ def _compute_projection(
         )
         embedding = reducer.fit_transform(features)
         return np.asarray(embedding, dtype=np.float32), {
-            **prep_info,
             "method": "umap",
             "n_neighbors": int(umap_neighbors),
             "min_dist": float(umap_min_dist),
             "metric": str(umap_metric),
-        }
+        }, reducer
     if method_norm == "tsne":
         perplexity = min(50, max(5, len(features) // 100))
         embedding = compute_tsne(
@@ -456,89 +463,93 @@ def _compute_projection(
             n_iter=int(tsne_n_iter),
         )
         return np.asarray(embedding, dtype=np.float32), {
-            **prep_info,
             "method": "tsne",
             "perplexity": int(perplexity),
             "n_iter": int(tsne_n_iter),
-        }
+        }, None
     if method_norm == "pca":
-        pca = PCA(n_components=2, random_state=int(random_state))
+        pca = PCA(n_components=2)
         embedding = pca.fit_transform(features)
         return np.asarray(embedding, dtype=np.float32), {
-            **prep_info,
             "method": "pca",
             "explained_variance_ratio": [float(v) for v in pca.explained_variance_ratio_.tolist()],
-        }
+        }, pca
     raise ValueError(
         "real_md.projection.method must be one of ['umap', 'tsne', 'pca'], "
         f"got {method!r}."
     )
 
 
-def _compute_scalar_values_for_indices(
+def _transform_projection_features(
+    feature_prep: ProjectionFeaturePrep,
+    latents: np.ndarray,
     *,
-    scalar_name: str,
-    dataset: Any,
-    sample_indices: np.ndarray,
-    labels: np.ndarray,
-    coords: np.ndarray,
-    frame_index_lookup: np.ndarray,
-    frame_name_lookup: list[str],
-    frame_time_lookup: np.ndarray,
-    point_scale: float,
-    descriptor_table: pd.DataFrame,
-    descriptors_cfg_root: Any,
-) -> np.ndarray | None:
-    requested_scalar = str(scalar_name)
-    sample_indices_arr = np.asarray(sample_indices, dtype=int)
+    method: str,
+    fitted_projection: Any,
+) -> np.ndarray:
+    x = np.asarray(latents, dtype=np.float32)
+    if x.ndim != 2:
+        x = np.reshape(x, (x.shape[0], -1))
+    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+    if feature_prep.l2_normalize:
+        norms = np.linalg.norm(x, axis=1, keepdims=True)
+        x = x / np.clip(norms, 1e-8, None)
+    if feature_prep.scaler is not None:
+        x = feature_prep.scaler.transform(x).astype(np.float32, copy=False)
+    if feature_prep.pca is not None:
+        x = feature_prep.pca.transform(x)[:, : int(feature_prep.pca_keep_components)]
 
-    if requested_scalar in _BUILTIN_SCALAR_COLUMNS:
-        projection_points = _load_point_cloud_batch(
-            dataset,
-            sample_indices_arr,
-            point_scale=float(point_scale),
+    method_norm = str(method).strip().lower()
+    if method_norm not in {"umap", "pca"}:
+        raise ValueError(
+            "Projection transforms are only available for methods ['umap', 'pca'], "
+            f"got {method!r}."
         )
-        projection_descriptor_table = _build_builtin_descriptor_table(
-            point_clouds=projection_points,
-            sample_indices=sample_indices_arr,
-            labels=labels,
-            coords=np.asarray(coords, dtype=np.float32),
-            frame_index_lookup=frame_index_lookup,
-            frame_name_lookup=frame_name_lookup,
-            frame_time_lookup=frame_time_lookup,
+    if fitted_projection is None or not hasattr(fitted_projection, "transform"):
+        raise RuntimeError(
+            "Projection model does not provide a transform(...) method. "
+            f"method={method!r}, projection_type={type(fitted_projection)!r}."
         )
-        return projection_descriptor_table[requested_scalar].to_numpy(dtype=np.float32)
+    return np.asarray(fitted_projection.transform(x), dtype=np.float32)
 
-    if not descriptor_table.empty and requested_scalar in descriptor_table.columns:
-        scalar_lookup = descriptor_table.set_index("sample_index")[requested_scalar]
-        aligned = scalar_lookup.reindex(sample_indices_arr)
-        if aligned.notna().all():
-            return aligned.to_numpy(dtype=np.float32)
 
-    optional_descriptors_cfg = _to_plain(descriptors_cfg_root)
-    if not isinstance(optional_descriptors_cfg, dict):
-        return None
+def _compute_projection(
+    latents: np.ndarray,
+    *,
+    method: str,
+    random_state: int,
+    l2_normalize: bool,
+    standardize: bool,
+    pca_variance: float | None,
+    pca_max_components: int,
+    umap_neighbors: int,
+    umap_min_dist: float,
+    umap_metric: str,
+    tsne_n_iter: int,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    features, _, prep_info = _prepare_projection_features(
+        latents,
+        random_state=int(random_state),
+        l2_normalize=bool(l2_normalize),
+        standardize=bool(standardize),
+        pca_variance=pca_variance,
+        pca_max_components=int(pca_max_components),
+    )
+    embedding, projection_info, _ = _fit_projection_embedding(
+        features,
+        method=method,
+        random_state=int(random_state),
+        umap_neighbors=int(umap_neighbors),
+        umap_min_dist=float(umap_min_dist),
+        umap_metric=str(umap_metric),
+        tsne_n_iter=int(tsne_n_iter),
+    )
+    return embedding, {
+        **prep_info,
+        **projection_info,
+    }
 
-    projection_points: np.ndarray | None = None
-    for descriptor_name, descriptor_cfg_raw in optional_descriptors_cfg.items():
-        descriptor_cfg = descriptor_cfg_raw if isinstance(descriptor_cfg_raw, dict) else {}
-        if not bool(descriptor_cfg.get("enabled", False)):
-            continue
-        if projection_points is None:
-            projection_points = _load_point_cloud_batch(
-                dataset,
-                sample_indices_arr,
-                point_scale=float(point_scale),
-            )
-        descriptor_df, _ = _evaluate_optional_descriptor(
-            str(descriptor_name),
-            point_clouds=projection_points,
-            point_scale=float(point_scale),
-            descriptor_cfg=descriptor_cfg,
-        )
-        if requested_scalar in descriptor_df.columns:
-            return descriptor_df[requested_scalar].to_numpy(dtype=np.float32)
-    return None
+
 
 
 def _build_cluster_groups(
@@ -571,8 +582,7 @@ def _build_cluster_groups(
     if not frames:
         return []
 
-    spatial_cfg = getattr(real_md_cfg, "spatial", None)
-    auto_top_clusters = max(0, _cfg_int(spatial_cfg, "auto_top_clusters", 2))
+    auto_top_clusters = max(0, _cfg_int(real_md_cfg, "auto_top_clusters", 2))
     if auto_top_clusters == 0:
         return []
     latest_frame = frames[-1]
@@ -591,120 +601,6 @@ def _build_cluster_groups(
             }
         )
     return groups
-
-
-def _build_zoom_specs(
-    spatial_cfg: Any,
-    data_cfg: Any,
-    *,
-    frames: list[FrameSlice],
-    coords: np.ndarray,
-    labels: np.ndarray,
-    cluster_groups: list[dict[str, Any]],
-) -> list[dict[str, Any]]:
-    zoom_specs_raw = _to_plain(getattr(spatial_cfg, "zoom_specs", None))
-    default_half_extent = _cfg_float(
-        spatial_cfg,
-        "auto_zoom_half_extent",
-        float(getattr(data_cfg, "radius", 8.0)) * 2.5,
-    )
-    search_radius = _cfg_float(
-        spatial_cfg,
-        "auto_zoom_search_radius",
-        default_half_extent * 0.8,
-    )
-    specs: list[dict[str, Any]] = []
-    if isinstance(zoom_specs_raw, list):
-        for spec_idx, raw in enumerate(zoom_specs_raw):
-            if not isinstance(raw, dict):
-                raise TypeError(
-                    "Each real_md.spatial.zoom_specs entry must be a dict, "
-                    f"got {type(raw)!r} at index {spec_idx}."
-                )
-            name = str(raw.get("name", f"zoom_{spec_idx + 1}"))
-            frame_selector = str(raw.get("frame", "latest"))
-            target_frame = frames[-1] if frame_selector == "latest" else next(
-                (frame for frame in frames if str(frame.source_name) == frame_selector or str(frame.output_name) == frame_selector),
-                None,
-            )
-            if target_frame is None:
-                raise ValueError(
-                    "Zoom spec references an unknown frame. "
-                    f"spec={raw}, available_frames={[frame.source_name for frame in frames]}."
-                )
-            cluster_ids = None
-            if raw.get("cluster_ids") is not None:
-                cluster_ids = sorted(_normalize_cluster_id_list(raw.get("cluster_ids"), field_name=f"real_md.spatial.zoom_specs[{spec_idx}].cluster_ids"))
-            if raw.get("bounds") is not None:
-                bounds = _normalize_bounds(raw["bounds"])
-            else:
-                frame_coords = coords[target_frame.indices]
-                frame_labels = labels[target_frame.indices]
-                if cluster_ids is not None:
-                    mask = np.isin(frame_labels, np.asarray(cluster_ids, dtype=int))
-                    frame_coords = frame_coords[mask]
-                if frame_coords.size == 0:
-                    raise ValueError(
-                        "Zoom spec resolved to zero points after cluster filtering: "
-                        f"spec={raw}."
-                    )
-                if raw.get("center") is not None:
-                    center = np.asarray(raw.get("center"), dtype=np.float32)
-                    if center.shape != (3,):
-                        raise ValueError(
-                            "Zoom spec center must have shape (3,), "
-                            f"got {center.shape}."
-                        )
-                    half_extent = _resolve_half_extent(
-                        raw.get("half_extent"),
-                        default_half_extent=float(default_half_extent),
-                    )
-                    bounds = np.stack([center - half_extent, center + half_extent], axis=0)
-                else:
-                    bounds = _compute_hotspot_bounds(
-                        frame_coords,
-                        default_half_extent=float(default_half_extent),
-                        half_extent_override=raw.get("half_extent"),
-                        search_radius=float(search_radius),
-                    )
-            specs.append(
-                {
-                    "name": str(name),
-                    "frame_name": str(target_frame.source_name),
-                    "frame_output_name": str(target_frame.output_name),
-                    "cluster_ids": None if cluster_ids is None else [int(v) for v in cluster_ids],
-                    "bounds": bounds.astype(float).tolist(),
-                    "source": "config",
-                }
-            )
-
-    auto_zoom_enabled = _cfg_bool(spatial_cfg, "auto_zoom_enabled", True)
-    if auto_zoom_enabled and cluster_groups and frames:
-        latest_frame = frames[-1]
-        frame_coords = coords[latest_frame.indices]
-        frame_labels = labels[latest_frame.indices]
-        auto_limit = max(0, _cfg_int(spatial_cfg, "auto_zoom_count", len(cluster_groups)))
-        for group in cluster_groups[:auto_limit]:
-            cluster_ids = [int(v) for v in group["cluster_ids"]]
-            mask = np.isin(frame_labels, np.asarray(cluster_ids, dtype=int))
-            if not np.any(mask):
-                continue
-            bounds = _compute_hotspot_bounds(
-                frame_coords[mask],
-                default_half_extent=float(default_half_extent),
-                search_radius=float(search_radius),
-            )
-            specs.append(
-                {
-                    "name": f"auto_{group['name']}",
-                    "frame_name": str(latest_frame.source_name),
-                    "frame_output_name": str(latest_frame.output_name),
-                    "cluster_ids": cluster_ids,
-                    "bounds": bounds.astype(float).tolist(),
-                    "source": "auto_hotspot_latest_frame",
-                }
-            )
-    return specs
 
 
 def _cluster_counts_by_frame(
@@ -736,6 +632,134 @@ def _cluster_counts_by_frame(
             row[f"cluster_{cluster_id}_fraction"] = float(count_val / total) if total > 0 else np.nan
         rows.append(row)
     return pd.DataFrame.from_records(rows), cluster_ids, counts_matrix
+
+
+def _select_temporal_animation_sample_indices(
+    frames: list[FrameSlice],
+    labels: np.ndarray,
+    *,
+    max_points_per_frame: int | None,
+    random_state: int,
+) -> dict[str, np.ndarray]:
+    selected: dict[str, np.ndarray] = {}
+    labels_arr = np.asarray(labels, dtype=int).reshape(-1)
+    for frame in frames:
+        frame_indices = np.asarray(frame.indices, dtype=int)
+        frame_labels = labels_arr[frame_indices]
+        local_indices = _sample_indices_stratified(
+            frame_labels,
+            max_points_per_frame,
+            random_seed=int(random_state) + 1009 + int(frame.order_index),
+        )
+        selected[str(frame.source_name)] = frame_indices[local_indices].astype(int, copy=False)
+    return selected
+
+
+def _select_temporal_trajectory_sample_indices(
+    frames: list[FrameSlice],
+    labels: np.ndarray,
+    instance_ids: np.ndarray | None,
+    *,
+    max_points: int | None,
+    random_state: int,
+) -> tuple[dict[str, np.ndarray], np.ndarray]:
+    if instance_ids is None:
+        raise ValueError(
+            "Temporal trajectory animation requires instance_ids so local structures can be tracked across frames."
+        )
+    labels_arr = np.asarray(labels, dtype=int).reshape(-1)
+    instance_ids_arr = np.asarray(instance_ids, dtype=np.int64).reshape(-1)
+    if labels_arr.shape[0] != instance_ids_arr.shape[0]:
+        raise ValueError(
+            "labels and instance_ids length mismatch for temporal trajectory sampling: "
+            f"labels={labels_arr.shape[0]}, instance_ids={instance_ids_arr.shape[0]}."
+        )
+
+    sorted_ids_by_frame: dict[str, np.ndarray] = {}
+    sorted_indices_by_frame: dict[str, np.ndarray] = {}
+    common_ids: np.ndarray | None = None
+    for frame in frames:
+        frame_indices = np.asarray(frame.indices, dtype=int)
+        frame_instance_ids = instance_ids_arr[frame_indices]
+        order = np.argsort(frame_instance_ids, kind="mergesort")
+        sorted_ids = frame_instance_ids[order].astype(np.int64, copy=False)
+        if sorted_ids.size == 0:
+            raise ValueError(
+                f"Temporal trajectory animation encountered an empty frame: {frame.source_name!r}."
+            )
+        if np.any(np.diff(sorted_ids) == 0):
+            raise ValueError(
+                "Temporal trajectory animation requires unique instance_ids within each frame, "
+                f"but duplicates were found in frame {frame.source_name!r}."
+            )
+        sorted_indices = frame_indices[order].astype(int, copy=False)
+        sorted_ids_by_frame[str(frame.source_name)] = sorted_ids
+        sorted_indices_by_frame[str(frame.source_name)] = sorted_indices
+        common_ids = (
+            sorted_ids.copy()
+            if common_ids is None
+            else np.intersect1d(common_ids, sorted_ids, assume_unique=True)
+        )
+
+    assert common_ids is not None
+    if common_ids.size == 0:
+        raise RuntimeError("Temporal trajectory animation found no instance_ids shared across frames.")
+
+    reference_frame = frames[0]
+    reference_name = str(reference_frame.source_name)
+    reference_ids = sorted_ids_by_frame[reference_name]
+    reference_indices = sorted_indices_by_frame[reference_name]
+    reference_pos = np.searchsorted(reference_ids, common_ids)
+    if np.any(reference_pos < 0) or np.any(reference_pos >= reference_ids.size):
+        raise RuntimeError(
+            "Failed to resolve shared instance_ids in the reference frame for temporal trajectory animation."
+        )
+    if not np.array_equal(reference_ids[reference_pos], common_ids):
+        raise RuntimeError(
+            "Reference-frame instance_id ordering mismatch while preparing temporal trajectory animation."
+        )
+    reference_global_indices = reference_indices[reference_pos]
+    reference_labels = labels_arr[reference_global_indices]
+    selected_local = _sample_indices_stratified(
+        reference_labels,
+        max_points,
+        random_seed=int(random_state) + 1703,
+    )
+    selected_ids = common_ids[selected_local].astype(np.int64, copy=False)
+    if selected_ids.size == 0:
+        raise RuntimeError("Temporal trajectory animation selected zero tracked local structures.")
+
+    selected_indices_by_frame: dict[str, np.ndarray] = {}
+    for frame in frames:
+        frame_name = str(frame.source_name)
+        sorted_ids = sorted_ids_by_frame[frame_name]
+        sorted_indices = sorted_indices_by_frame[frame_name]
+        selected_pos = np.searchsorted(sorted_ids, selected_ids)
+        if np.any(selected_pos < 0) or np.any(selected_pos >= sorted_ids.size):
+            raise RuntimeError(
+                "Temporal trajectory animation found out-of-range positions while resolving selected instance_ids. "
+                f"frame={frame_name!r}."
+            )
+        if not np.array_equal(sorted_ids[selected_pos], selected_ids):
+            raise RuntimeError(
+                "Temporal trajectory animation lost one or more selected instance_ids in a frame. "
+                f"frame={frame_name!r}."
+            )
+        selected_indices_by_frame[frame_name] = sorted_indices[selected_pos].astype(int, copy=False)
+    return selected_indices_by_frame, selected_ids
+
+
+def _resolve_transition_tolerance(
+    *,
+    model_cfg: Any,
+    transition_cfg: Any,
+) -> float:
+    stride = float(getattr(model_cfg.data, "radius", 8.0)) * (
+        1.0 - float(getattr(model_cfg.data, "overlap_fraction", 0.0))
+    )
+    default_transition_tol = max(1e-3, 0.5 * stride)
+    transition_tol_cfg = getattr(transition_cfg, "max_distance", None)
+    return float(default_transition_tol if transition_tol_cfg is None else transition_tol_cfg)
 
 
 def _build_cna_signature_summary_tables(
@@ -775,6 +799,7 @@ def _compute_transitions(
     *,
     coords: np.ndarray,
     labels: np.ndarray,
+    instance_ids: np.ndarray | None,
     cluster_ids: list[int],
     max_distance: float,
     require_mutual: bool,
@@ -782,40 +807,52 @@ def _compute_transitions(
     cluster_to_pos = {int(cluster_id): int(pos) for pos, cluster_id in enumerate(cluster_ids)}
     aggregate_counts = np.zeros((len(cluster_ids), len(cluster_ids)), dtype=np.int64)
     pair_summaries: list[dict[str, Any]] = []
+    match_mode = "nearest_neighbor"
+    instance_ids_arr = None if instance_ids is None else np.asarray(instance_ids, dtype=np.int64).reshape(-1)
     for frame_a, frame_b in zip(frames[:-1], frames[1:], strict=True):
         coords_a = np.asarray(coords[frame_a.indices, :3], dtype=np.float32)
         coords_b = np.asarray(coords[frame_b.indices, :3], dtype=np.float32)
         labels_a = np.asarray(labels[frame_a.indices], dtype=int)
         labels_b = np.asarray(labels[frame_b.indices], dtype=int)
+        ids_a = None if instance_ids_arr is None else instance_ids_arr[frame_a.indices]
+        ids_b = None if instance_ids_arr is None else instance_ids_arr[frame_b.indices]
         if coords_a.size == 0 or coords_b.size == 0:
             continue
-        tree_b = cKDTree(coords_b)
-        dist_ab, idx_ab = tree_b.query(coords_a, k=1)
-        dist_ab = np.asarray(dist_ab, dtype=np.float32)
-        idx_ab = np.asarray(idx_ab, dtype=np.int64)
 
-        if require_mutual:
-            tree_a = cKDTree(coords_a)
-            dist_ba, idx_ba = tree_a.query(coords_b, k=1)
-            dist_ba = np.asarray(dist_ba, dtype=np.float32)
-            idx_ba = np.asarray(idx_ba, dtype=np.int64)
-            match_mask = (dist_ab <= float(max_distance)) & (idx_ba[idx_ab] == np.arange(len(coords_a)))
-            match_mask &= dist_ba[idx_ab] <= float(max_distance)
+        if ids_a is not None and ids_b is not None:
+            match_mode = "instance_id"
+            order_b = np.argsort(ids_b, kind="mergesort")
+            ids_b_sorted = np.asarray(ids_b[order_b], dtype=np.int64)
+            pos_b = np.searchsorted(ids_b_sorted, ids_a)
+            match_mask = pos_b < ids_b_sorted.size
+            match_mask &= ids_b_sorted[np.clip(pos_b, 0, max(ids_b_sorted.size - 1, 0))] == ids_a
+            matched_a = np.flatnonzero(match_mask)
+            matched_b = order_b[pos_b[match_mask]]
         else:
-            match_mask = dist_ab <= float(max_distance)
+            tree_b = cKDTree(coords_b)
+            dist_ab, idx_ab = tree_b.query(coords_a, k=1)
+            dist_ab = np.asarray(dist_ab, dtype=np.float32)
+            idx_ab = np.asarray(idx_ab, dtype=np.int64)
 
-        matched_a = np.flatnonzero(match_mask)
-        if matched_a.size == 0:
-            pair_counts = np.zeros((len(cluster_ids), len(cluster_ids)), dtype=np.int64)
-        else:
+            if require_mutual:
+                tree_a = cKDTree(coords_a)
+                dist_ba, idx_ba = tree_a.query(coords_b, k=1)
+                dist_ba = np.asarray(dist_ba, dtype=np.float32)
+                idx_ba = np.asarray(idx_ba, dtype=np.int64)
+                match_mask = (dist_ab <= float(max_distance)) & (idx_ba[idx_ab] == np.arange(len(coords_a)))
+                match_mask &= dist_ba[idx_ab] <= float(max_distance)
+            else:
+                match_mask = dist_ab <= float(max_distance)
+            matched_a = np.flatnonzero(match_mask)
             matched_b = idx_ab[matched_a]
-            pair_counts = np.zeros((len(cluster_ids), len(cluster_ids)), dtype=np.int64)
-            for idx_local_a, idx_local_b in zip(matched_a, matched_b, strict=True):
-                cluster_a = int(labels_a[int(idx_local_a)])
-                cluster_b = int(labels_b[int(idx_local_b)])
-                if cluster_a < 0 or cluster_b < 0:
-                    continue
-                pair_counts[cluster_to_pos[cluster_a], cluster_to_pos[cluster_b]] += 1
+
+        pair_counts = np.zeros((len(cluster_ids), len(cluster_ids)), dtype=np.int64)
+        for idx_local_a, idx_local_b in zip(matched_a, matched_b, strict=True):
+            cluster_a = int(labels_a[int(idx_local_a)])
+            cluster_b = int(labels_b[int(idx_local_b)])
+            if cluster_a < 0 or cluster_b < 0:
+                continue
+            pair_counts[cluster_to_pos[cluster_a], cluster_to_pos[cluster_b]] += 1
         aggregate_counts += pair_counts
         pair_summaries.append(
             {
@@ -833,6 +870,7 @@ def _compute_transitions(
         "pairs": pair_summaries,
         "max_distance": float(max_distance),
         "require_mutual": bool(require_mutual),
+        "match_mode": str(match_mode),
     }
 
 
@@ -931,10 +969,35 @@ def _write_summary_markdown(
             [
                 "",
                 "## Transitions",
+                f"- Match mode: `{summary['transitions'].get('match_mode', 'nearest_neighbor')}`",
                 f"- Match tolerance: `{summary['transitions']['match_tolerance']:.4f}`",
                 f"- Aggregate flow diagram: `{Path(summary['transitions']['aggregate_flow']).name}`",
             ]
         )
+    if "temporal" in summary:
+        lines.extend(
+            [
+                "",
+                "## Temporal animations",
+                f"- Frames rendered: `{summary['temporal']['frame_count']}`",
+            ]
+        )
+        if "md_space_animation" in summary["temporal"]:
+            lines.append(
+                f"- MD-space diagonal-cut animation: `{Path(summary['temporal']['md_space_animation']['out_file']).name}`"
+            )
+        if "transition_pair_flow_animation" in summary["temporal"]:
+            lines.append(
+                f"- Transition-flow animation: `{Path(summary['temporal']['transition_pair_flow_animation']['out_file']).name}`"
+            )
+        if "umap_animation" in summary["temporal"]:
+            lines.append(
+                f"- UMAP cluster animation: `{Path(summary['temporal']['umap_animation']['out_file']).name}`"
+            )
+        if "umap_trajectory_animation" in summary["temporal"]:
+            lines.append(
+                f"- UMAP trajectory animation: `{Path(summary['temporal']['umap_trajectory_animation']['out_file']).name}`"
+            )
     out_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -946,12 +1009,17 @@ def run_real_md_qualitative_analysis(
     dataset: Any,
     latents: np.ndarray,
     coords: np.ndarray,
+    instance_ids: np.ndarray | None,
     cluster_labels_by_k: dict[int, np.ndarray],
     cluster_methods_by_k: dict[int, str],
     cluster_color_map: dict[int, str] | None,
     frame_groups: list[tuple[str, np.ndarray]],
     frame_output_names: dict[str, str],
     requested_frame_order: list[str] | None,
+    temporal_all_frame_groups: list[tuple[str, np.ndarray]] | None = None,
+    temporal_all_frame_output_names: dict[str, str] | None = None,
+    temporal_all_frame_order: list[str] | None = None,
+    temporal_projection_fit_indices: np.ndarray | None = None,
     point_scale: float,
     random_state: int,
     representative_render_cache: dict[str, Any] | None = None,
@@ -974,7 +1042,7 @@ def run_real_md_qualitative_analysis(
     profile_cfg = getattr(real_md_cfg, "profiles", None)
     descriptor_cfg = getattr(real_md_cfg, "descriptors", None)
     projection_cfg = getattr(real_md_cfg, "projection", None)
-    spatial_cfg = getattr(real_md_cfg, "spatial", None)
+    temporal_cfg = getattr(real_md_cfg, "temporal", None)
     transition_cfg = getattr(real_md_cfg, "transitions", None)
 
     selected_k_raw = getattr(real_md_cfg, "selected_k", None)
@@ -1000,23 +1068,41 @@ def run_real_md_qualitative_analysis(
             "coords and latents length mismatch: "
             f"coords={coords.shape[0]}, latents={len(latents)}."
         )
+    if instance_ids is not None:
+        instance_ids_arr = np.asarray(instance_ids).reshape(-1)
+        if instance_ids_arr.shape[0] != len(latents):
+            raise ValueError(
+                "instance_ids and latents length mismatch: "
+                f"instance_ids={instance_ids_arr.shape[0]}, latents={len(latents)}."
+            )
+    else:
+        instance_ids_arr = None
     if dataset is None:
         raise ValueError("A dataset object is required to render representative local environments.")
 
-    out_root = Path(out_dir) / "real_md_qualitative"
+    out_root = real_md_outputs_root(out_dir)
     out_root.mkdir(parents=True, exist_ok=True)
     frames = _build_frame_slices(
         frame_groups,
         frame_output_names,
         requested_order=requested_frame_order,
     )
+    temporal_frames = (
+        _build_frame_slices(
+            temporal_all_frame_groups,
+            temporal_all_frame_output_names,
+            requested_order=temporal_all_frame_order,
+        )
+        if temporal_all_frame_groups is not None and temporal_all_frame_output_names is not None
+        else None
+    )
     labels_color_map = cluster_color_map or _build_cluster_color_map(labels)
     frame_index_lookup, frame_name_lookup, frame_time_lookup = _build_frame_lookup_for_samples(
         frames,
         num_samples=len(latents),
     )
-    if np.any(frame_index_lookup < 0):
-        missing_count = int(np.sum(frame_index_lookup < 0))
+    missing_count = int(np.sum(frame_index_lookup < 0))
+    if missing_count > 0 and temporal_frames is None:
         raise RuntimeError(
             "Frame grouping did not cover all collected samples for real-MD qualitative analysis. "
             f"Missing assignments={missing_count}, total_samples={len(latents)}."
@@ -1039,11 +1125,20 @@ def run_real_md_qualitative_analysis(
             }
             for frame in frames
         ],
+        "analysis_frame_selection": {
+            "assigned_sample_count": int(len(latents) - missing_count),
+            "unassigned_sample_count": int(missing_count),
+            "uses_subset_of_collected_samples": bool(missing_count > 0),
+        },
         "cluster_groups": cluster_groups,
     }
 
     proportions_dir = out_root / "time_series"
-    proportions_table, cluster_ids, counts_matrix = _cluster_counts_by_frame(frames, labels)
+    proportion_frames = temporal_frames if temporal_frames is not None else frames
+    proportions_table, cluster_ids, counts_matrix = _cluster_counts_by_frame(
+        proportion_frames,
+        labels,
+    )
     cluster_display_map = {
         int(cluster_id): f"C{pos + 1}"
         for pos, cluster_id in enumerate(cluster_ids)
@@ -1053,9 +1148,13 @@ def run_real_md_qualitative_analysis(
     proportions_dir.mkdir(parents=True, exist_ok=True)
     proportions_table.to_csv(proportions_csv, index=False)
     summary["cluster_proportions"] = {
+        "frame_source": (
+            "temporal_inference_frames" if temporal_frames is not None else "analysis_frames"
+        ),
+        "num_frames": int(len(proportion_frames)),
         "table_csv": str(proportions_csv),
         "plots": save_cluster_proportion_plots(
-            [frame.label for frame in frames],
+            [frame.label for frame in proportion_frames],
             counts_matrix,
             cluster_ids,
             proportions_dir,
@@ -1260,19 +1359,75 @@ def run_real_md_qualitative_analysis(
         max_samples=None if projection_max_samples is None else int(projection_max_samples),
         random_state=int(random_state) + 11,
     )
-    projection_embedding, projection_info = _compute_projection(
-        np.asarray(latents, dtype=np.float32)[projection_indices],
-        method=projection_method,
-        random_state=int(random_state),
-        l2_normalize=bool(getattr(clustering_cfg, "l2_normalize", True)),
-        standardize=bool(getattr(clustering_cfg, "standardize", True)),
-        pca_variance=float(getattr(clustering_cfg, "pca_variance", 0.98)),
-        pca_max_components=int(getattr(clustering_cfg, "pca_max_components", 32)),
-        umap_neighbors=_cfg_int(projection_cfg, "umap_neighbors", 30),
-        umap_min_dist=_cfg_float(projection_cfg, "umap_min_dist", 0.15),
-        umap_metric=str(getattr(projection_cfg, "umap_metric", "euclidean")),
-        tsne_n_iter=_cfg_int(tsne_cfg, "n_iter", 1000),
-    )
+    projection_l2_normalize = bool(getattr(clustering_cfg, "l2_normalize", True))
+    projection_standardize = bool(getattr(clustering_cfg, "standardize", True))
+    projection_pca_variance = float(getattr(clustering_cfg, "pca_variance", 0.98))
+    projection_pca_max_components = int(getattr(clustering_cfg, "pca_max_components", 32))
+    projection_umap_neighbors = _cfg_int(projection_cfg, "umap_neighbors", 30)
+    projection_umap_min_dist = _cfg_float(projection_cfg, "umap_min_dist", 0.15)
+    projection_umap_metric = str(getattr(projection_cfg, "umap_metric", "euclidean"))
+    projection_tsne_n_iter = _cfg_int(tsne_cfg, "n_iter", 1000)
+
+    fitted_projection = None
+    projection_feature_prep: ProjectionFeaturePrep | None = None
+    temporal_fit_indices = None
+    if temporal_projection_fit_indices is not None and projection_method in {"umap", "pca"}:
+        temporal_fit_indices = np.asarray(temporal_projection_fit_indices, dtype=int).reshape(-1)
+        if temporal_fit_indices.size == 0:
+            raise ValueError(
+                "temporal_projection_fit_indices resolved to an empty array, "
+                "but temporal projection fitting was requested."
+            )
+        if np.any(temporal_fit_indices < 0) or np.any(temporal_fit_indices >= len(latents)):
+            raise IndexError(
+                "temporal_projection_fit_indices contains out-of-range sample indices. "
+                f"min={int(np.min(temporal_fit_indices))}, max={int(np.max(temporal_fit_indices))}, "
+                f"num_samples={len(latents)}."
+            )
+        temporal_fit_indices = np.unique(temporal_fit_indices.astype(int, copy=False))
+        fit_features, projection_feature_prep, projection_prep_info = _prepare_projection_features(
+            np.asarray(latents, dtype=np.float32)[temporal_fit_indices],
+            random_state=int(random_state),
+            l2_normalize=projection_l2_normalize,
+            standardize=projection_standardize,
+            pca_variance=projection_pca_variance,
+            pca_max_components=projection_pca_max_components,
+        )
+        _, projection_model_info, fitted_projection = _fit_projection_embedding(
+            fit_features,
+            method=projection_method,
+            random_state=int(random_state),
+            umap_neighbors=projection_umap_neighbors,
+            umap_min_dist=projection_umap_min_dist,
+            umap_metric=projection_umap_metric,
+            tsne_n_iter=projection_tsne_n_iter,
+        )
+        projection_embedding = _transform_projection_features(
+            projection_feature_prep,
+            np.asarray(latents, dtype=np.float32)[projection_indices],
+            method=projection_method,
+            fitted_projection=fitted_projection,
+        )
+        projection_info = {
+            **projection_prep_info,
+            **projection_model_info,
+            "fit_sample_count": int(temporal_fit_indices.size),
+            "fit_sample_source": "temporal_inference_fraction",
+        }
+    else:
+        projection_embedding, projection_info = _compute_projection(
+            np.asarray(latents, dtype=np.float32)[projection_indices],
+            method=projection_method,
+            random_state=int(random_state),
+            l2_normalize=projection_l2_normalize,
+            standardize=projection_standardize,
+            pca_variance=projection_pca_variance,
+            pca_max_components=projection_pca_max_components,
+            umap_neighbors=projection_umap_neighbors,
+            umap_min_dist=projection_umap_min_dist,
+            umap_metric=projection_umap_metric,
+            tsne_n_iter=projection_tsne_n_iter,
+        )
     projection_dir.mkdir(parents=True, exist_ok=True)
     projection_table = pd.DataFrame(
         {
@@ -1288,20 +1443,14 @@ def run_real_md_qualitative_analysis(
             ],
         }
     )
-    frame_plot_labels = np.asarray(
-        [frame_index_lookup[int(idx)] for idx in projection_indices],
-        dtype=int,
-    )
     projection_csv = projection_dir / "latent_projection.csv"
     projection_table.to_csv(projection_csv, index=False)
     cluster_plot = projection_dir / f"latent_projection_{projection_method}_clusters.png"
-    frame_plot = projection_dir / f"latent_projection_{projection_method}_frames.png"
     summary["latent_projection"] = {
         "projection_csv": str(projection_csv),
         "projection_info": projection_info,
         "plots": {
             "cluster": str(cluster_plot),
-            "frame": str(frame_plot),
         },
         "num_samples": int(projection_table.shape[0]),
     }
@@ -1313,156 +1462,344 @@ def run_real_md_qualitative_analysis(
         cluster_color_map=labels_color_map,
         display_label_map=cluster_display_map,
     )
-    save_embedding_discrete_plot(
-        projection_embedding,
-        frame_plot_labels,
-        frame_plot,
-        title=f"Latent projection ({projection_info['method']}) colored by frame",
-        label_prefix="F",
-    )
 
-    scalar_name = str(getattr(descriptor_cfg, "physical_scalar", "coord_mean"))
-    scalar_label = _BUILTIN_SCALAR_LABELS.get(scalar_name, scalar_name)
-    projection_scalar = _compute_scalar_values_for_indices(
-        scalar_name=scalar_name,
-        dataset=dataset,
-        sample_indices=projection_indices,
-        labels=labels,
-        coords=np.asarray(coords, dtype=np.float32),
-        frame_index_lookup=frame_index_lookup,
-        frame_name_lookup=frame_name_lookup,
-        frame_time_lookup=frame_time_lookup,
-        point_scale=float(point_scale),
-        descriptor_table=descriptor_table,
-        descriptors_cfg_root=getattr(descriptor_cfg, "optional", None),
-    )
-    if projection_scalar is not None:
-        scalar_plot = projection_dir / f"latent_projection_{projection_method}_{scalar_name}.png"
-        scalar_plot_summary = save_embedding_continuous_plot(
-            projection_embedding,
-            projection_scalar,
-            scalar_plot,
-            title=f"Latent projection ({projection_info['method']}) colored by {scalar_label}",
-            colorbar_label=scalar_label,
-            alpha=_cfg_float(projection_cfg, "scalar_alpha", 0.86),
-            background_alpha=_cfg_float(projection_cfg, "scalar_background_alpha", 0.06),
+    transition_tol = None
+    if _cfg_bool(transition_cfg, "enabled", True):
+        transition_tol = _resolve_transition_tolerance(
+            model_cfg=model_cfg,
+            transition_cfg=transition_cfg,
         )
-        summary["latent_projection"]["plots"]["physical_scalar"] = str(scalar_plot)
-        summary["latent_projection"]["physical_scalar"] = {
-            "name": str(scalar_name),
-            "label": str(scalar_label),
-            "finite_fraction": float(scalar_plot_summary["finite_fraction"]),
-        }
 
-    if _cfg_bool(spatial_cfg, "enabled", True):
-        spatial_dir = out_root / "spatial"
-        spatial_dir.mkdir(parents=True, exist_ok=True)
-        spatial_summary: dict[str, Any] = {
-            "root_dir": str(spatial_dir),
-            "frames": [],
-            "zooms": [],
-            "cluster_groups": cluster_groups,
-        }
-        spatial_max_points = getattr(spatial_cfg, "max_points", None)
-        spatial_point_size = _cfg_float(
-            spatial_cfg,
-            "point_size",
-            _cfg_float(figure_md_cfg, "point_size", 5.6),
-        )
-        spatial_alpha = _cfg_float(
-            spatial_cfg,
-            "alpha",
-            _cfg_float(figure_md_cfg, "alpha", 0.62),
-        )
-        spatial_saturation = _cfg_float(
-            spatial_cfg,
-            "saturation_boost",
-            _cfg_float(figure_md_cfg, "saturation_boost", 1.18),
-        )
-        spatial_elev = _cfg_float(
-            spatial_cfg,
-            "view_elev",
-            _cfg_float(figure_md_cfg, "view_elev", 24.0),
-        )
-        spatial_azim = _cfg_float(
-            spatial_cfg,
-            "view_azim",
-            _cfg_float(figure_md_cfg, "view_azim", 35.0),
-        )
-        for frame in frames:
-            frame_dir = spatial_dir / frame.output_name
-            frame_record: dict[str, Any] = {
-                "frame_name": str(frame.source_name),
-                "frame_label": str(frame.label),
-                "filtered_views": [],
-            }
-            for group in cluster_groups:
-                visible_cluster_ids = [int(v) for v in group["cluster_ids"]]
-                if not np.any(np.isin(labels[frame.indices], np.asarray(visible_cluster_ids, dtype=int))):
-                    continue
-                filtered_view = save_spatial_cluster_view(
-                    np.asarray(coords[frame.indices], dtype=np.float32),
-                    labels[frame.indices],
-                    frame_dir / f"filtered_{group['name']}.png",
-                    title=f"MD clusters ({frame.label}, {group['name']})",
-                    cluster_color_map=labels_color_map,
-                    visible_cluster_ids=visible_cluster_ids,
-                    max_points=None if spatial_max_points is None else int(spatial_max_points),
-                    point_size=float(spatial_point_size),
-                    alpha=float(spatial_alpha),
-                    saturation_boost=float(spatial_saturation),
-                    view_elev=float(spatial_elev),
-                    view_azim=float(spatial_azim),
-                )
-                filtered_view["group_name"] = str(group["name"])
-                frame_record["filtered_views"].append(filtered_view)
-            spatial_summary["frames"].append(frame_record)
-
-        zoom_specs = _build_zoom_specs(
-            spatial_cfg,
-            model_cfg.data,
-            frames=frames,
-            coords=np.asarray(coords, dtype=np.float32),
-            labels=labels,
-            cluster_groups=cluster_groups,
-        )
-        frame_lookup = {str(frame.source_name): frame for frame in frames}
-        for zoom_spec in zoom_specs:
-            target_frame = frame_lookup[str(zoom_spec["frame_name"])]
-            zoom_out = spatial_dir / target_frame.output_name / f"zoom_{zoom_spec['name']}.png"
-            zoom_view = save_spatial_cluster_view(
-                np.asarray(coords[target_frame.indices], dtype=np.float32),
-                labels[target_frame.indices],
-                zoom_out,
-                title=f"MD clusters ({target_frame.label}, zoom={zoom_spec['name']})",
-                cluster_color_map=labels_color_map,
-                visible_cluster_ids=zoom_spec["cluster_ids"],
-                bounds=np.asarray(zoom_spec["bounds"], dtype=np.float32),
-                max_points=None if spatial_max_points is None else int(spatial_max_points),
-                point_size=float(spatial_point_size),
-                alpha=float(spatial_alpha),
-                saturation_boost=float(spatial_saturation),
-                view_elev=float(spatial_elev),
-                view_azim=float(spatial_azim),
+    if _cfg_bool(temporal_cfg, "enabled", False):
+        if temporal_frames is None or not temporal_frames:
+            raise ValueError(
+                "real_md.temporal.enabled=true requires temporal_all_frame_groups to be provided."
             )
-            zoom_view["name"] = str(zoom_spec["name"])
-            zoom_view["source"] = str(zoom_spec["source"])
-            spatial_summary["zooms"].append(zoom_view)
-        summary["spatial"] = spatial_summary
+        temporal_dir = out_root / "temporal"
+        temporal_dir.mkdir(parents=True, exist_ok=True)
+        animation_max_points_raw = getattr(temporal_cfg, "animation_max_points", None)
+        animation_max_points = (
+            None
+            if animation_max_points_raw is None or int(animation_max_points_raw) <= 0
+            else int(animation_max_points_raw)
+        )
+        temporal_animation_indices = _select_temporal_animation_sample_indices(
+            temporal_frames,
+            labels,
+            max_points_per_frame=animation_max_points,
+            random_state=int(random_state),
+        )
+        temporal_summary: dict[str, Any] = {
+            "root_dir": str(temporal_dir),
+            "frame_count": int(len(temporal_frames)),
+            "render_max_points_per_frame": (
+                None if animation_max_points is None else int(animation_max_points)
+            ),
+            "frames": [
+                {
+                    "frame_name": str(frame.source_name),
+                    "frame_label": str(frame.label),
+                    "sample_count": int(frame.indices.size),
+                    "render_count": int(temporal_animation_indices[str(frame.source_name)].size),
+                }
+                for frame in temporal_frames
+            ],
+        }
+        temporal_frame_label_by_name = {
+            str(frame.source_name): str(frame.label)
+            for frame in temporal_frames
+        }
+
+        temporal_md_cfg = getattr(temporal_cfg, "md_space", None)
+        if _cfg_bool(temporal_md_cfg, "enabled", True):
+            temporal_md_records = [
+                {
+                    "frame_name": str(frame.source_name),
+                    "frame_label": str(frame.label),
+                    "coords": np.asarray(
+                        coords[temporal_animation_indices[str(frame.source_name)]],
+                        dtype=np.float32,
+                    ),
+                    "labels": np.asarray(
+                        labels[temporal_animation_indices[str(frame.source_name)]],
+                        dtype=int,
+                    ),
+                }
+                for frame in temporal_frames
+            ]
+            md_animation_path = temporal_dir / f"md_space_clusters_diagonal_cut_k{int(selected_k)}.gif"
+            temporal_summary["md_space_animation"] = save_temporal_spatial_cluster_animation(
+                temporal_md_records,
+                md_animation_path,
+                cluster_color_map=labels_color_map,
+                cluster_display_map=cluster_display_map,
+                point_size=_cfg_float(
+                    temporal_md_cfg,
+                    "point_size",
+                    _cfg_float(figure_md_cfg, "point_size", 5.6),
+                ),
+                alpha=_cfg_float(
+                    temporal_md_cfg,
+                    "alpha",
+                    _cfg_float(figure_md_cfg, "alpha", 0.62),
+                ),
+                saturation_boost=_cfg_float(
+                    temporal_md_cfg,
+                    "saturation_boost",
+                    _cfg_float(figure_md_cfg, "saturation_boost", 1.18),
+                ),
+                view_elev=_cfg_float(
+                    temporal_md_cfg,
+                    "view_elev",
+                    _cfg_float(figure_md_cfg, "view_elev", 24.0),
+                ),
+                view_azim=_cfg_float(
+                    temporal_md_cfg,
+                    "view_azim",
+                    _cfg_float(figure_md_cfg, "view_azim", 35.0),
+                ),
+                diagonal_visible_depth_fraction=_cfg_float(
+                    temporal_md_cfg,
+                    "diagonal_visible_depth_fraction",
+                    0.10,
+                ),
+                frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
+            )
+
+        if _cfg_bool(transition_cfg, "enabled", True):
+            if transition_tol is None:
+                raise RuntimeError("transition_tol was not resolved for temporal transition animation.")
+            temporal_transition_dir = temporal_dir / "transition_pairs"
+            temporal_transition_dir.mkdir(parents=True, exist_ok=True)
+            temporal_transition_data = _compute_transitions(
+                temporal_frames,
+                coords=np.asarray(coords, dtype=np.float32),
+                labels=labels,
+                instance_ids=instance_ids_arr,
+                cluster_ids=cluster_ids,
+                max_distance=float(transition_tol),
+                require_mutual=_cfg_bool(transition_cfg, "require_mutual", True),
+            )
+            temporal_pair_records: list[dict[str, Any]] = []
+            temporal_pair_plots: list[dict[str, Any]] = []
+            for pair_idx, pair_summary in enumerate(temporal_transition_data["pairs"], start=1):
+                frame_from = str(pair_summary["frame_from"])
+                frame_to = str(pair_summary["frame_to"])
+                frame_from_label = temporal_frame_label_by_name.get(frame_from, frame_from)
+                frame_to_label = temporal_frame_label_by_name.get(frame_to, frame_to)
+                flow_path = temporal_transition_dir / f"transition_pair_{pair_idx:02d}_flow.png"
+                save_transition_flow_plot(
+                    np.asarray(pair_summary["counts"], dtype=np.float64),
+                    flow_path,
+                    title=f"Cluster transition flow | {frame_from_label} -> {frame_to_label}",
+                    row_labels=cluster_display_labels,
+                    cluster_color_map=labels_color_map,
+                    cluster_ids_for_palette=cluster_ids,
+                    mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                    min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
+                )
+                temporal_pair_records.append(
+                    {
+                        "frame_from": frame_from,
+                        "frame_to": frame_to,
+                        "frame_from_label": frame_from_label,
+                        "frame_to_label": frame_to_label,
+                        "counts": np.asarray(pair_summary["counts"], dtype=np.float64),
+                        "title": f"Cluster transition flow | {frame_from_label} -> {frame_to_label}",
+                    }
+                )
+                temporal_pair_plots.append(
+                    {
+                        "frame_from": frame_from,
+                        "frame_to": frame_to,
+                        "frame_from_label": frame_from_label,
+                        "frame_to_label": frame_to_label,
+                        "matched_samples": int(pair_summary["matched_samples"]),
+                        "coverage_fraction": float(pair_summary["coverage_fraction"]),
+                        "flow_plot": str(flow_path),
+                    }
+                )
+            if temporal_pair_records:
+                transition_animation_path = temporal_dir / "transition_pair_flows.gif"
+                temporal_summary["transition_pair_flow_animation"] = save_temporal_transition_flow_animation(
+                    temporal_pair_records,
+                    transition_animation_path,
+                    row_labels=cluster_display_labels,
+                    cluster_color_map=labels_color_map,
+                    cluster_ids_for_palette=cluster_ids,
+                    mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                    min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
+                    frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
+                    title="Cluster transition flow",
+                )
+            temporal_summary["transition_pairs"] = {
+                "root_dir": str(temporal_transition_dir),
+                "pair_count": int(len(temporal_pair_plots)),
+                "match_mode": str(temporal_transition_data["match_mode"]),
+                "match_tolerance": float(temporal_transition_data["max_distance"]),
+                "require_mutual": bool(temporal_transition_data["require_mutual"]),
+                "pairs": temporal_pair_plots,
+            }
+
+        temporal_umap_cfg = getattr(temporal_cfg, "umap", None)
+        if _cfg_bool(temporal_umap_cfg, "enabled", True):
+            if projection_method != "umap":
+                raise ValueError(
+                    "real_md.temporal.umap.enabled=true requires real_md.projection.method='umap'. "
+                    f"Got projection.method={projection_method!r}."
+                )
+            if projection_feature_prep is None or fitted_projection is None:
+                raise RuntimeError(
+                    "Temporal UMAP animation requires a fitted transformable projection, "
+                    "but no fitted projection state was available."
+                )
+            all_animation_indices = np.concatenate(
+                [
+                    temporal_animation_indices[str(frame.source_name)]
+                    for frame in temporal_frames
+                ]
+            ).astype(int, copy=False)
+            if all_animation_indices.size == 0:
+                raise RuntimeError(
+                    "Temporal UMAP animation resolved to zero sampled points across all frames."
+                )
+            all_animation_embedding = _transform_projection_features(
+                projection_feature_prep,
+                np.asarray(latents, dtype=np.float32)[all_animation_indices],
+                method=projection_method,
+                fitted_projection=fitted_projection,
+            )
+            temporal_embedding_records: list[dict[str, Any]] = []
+            cursor = 0
+            for frame in temporal_frames:
+                frame_indices = temporal_animation_indices[str(frame.source_name)]
+                next_cursor = cursor + int(frame_indices.size)
+                temporal_embedding_records.append(
+                    {
+                        "frame_name": str(frame.source_name),
+                        "frame_label": str(frame.label),
+                        "embedding": np.asarray(
+                            all_animation_embedding[cursor:next_cursor],
+                            dtype=np.float32,
+                        ),
+                        "labels": np.asarray(labels[frame_indices], dtype=int),
+                    }
+                )
+                cursor = next_cursor
+            umap_animation_path = temporal_dir / f"latent_projection_{projection_method}_clusters.gif"
+            temporal_summary["umap_animation"] = save_temporal_embedding_cluster_animation(
+                temporal_embedding_records,
+                umap_animation_path,
+                cluster_color_map=labels_color_map,
+                cluster_display_map=cluster_display_map,
+                point_size=_cfg_float(temporal_umap_cfg, "point_size", 8.0),
+                alpha=_cfg_float(temporal_umap_cfg, "alpha", 0.74),
+                frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
+                title=f"{projection_method.upper()} cluster evolution",
+            )
+            if _cfg_bool(temporal_umap_cfg, "trajectory_enabled", True):
+                trajectory_max_points_raw = getattr(temporal_umap_cfg, "trajectory_max_points", animation_max_points)
+                trajectory_max_points = (
+                    None
+                    if trajectory_max_points_raw is None or int(trajectory_max_points_raw) <= 0
+                    else int(trajectory_max_points_raw)
+                )
+                trajectory_indices_by_frame, trajectory_instance_ids = _select_temporal_trajectory_sample_indices(
+                    temporal_frames,
+                    labels,
+                    instance_ids_arr,
+                    max_points=trajectory_max_points,
+                    random_state=int(random_state) + 31,
+                )
+                trajectory_concat = np.concatenate(
+                    [
+                        trajectory_indices_by_frame[str(frame.source_name)]
+                        for frame in temporal_frames
+                    ]
+                ).astype(int, copy=False)
+                trajectory_embedding = _transform_projection_features(
+                    projection_feature_prep,
+                    np.asarray(latents, dtype=np.float32)[trajectory_concat],
+                    method=projection_method,
+                    fitted_projection=fitted_projection,
+                )
+                temporal_trajectory_records: list[dict[str, Any]] = []
+                cursor = 0
+                for frame in temporal_frames:
+                    frame_indices = trajectory_indices_by_frame[str(frame.source_name)]
+                    next_cursor = cursor + int(frame_indices.size)
+                    temporal_trajectory_records.append(
+                        {
+                            "frame_name": str(frame.source_name),
+                            "frame_label": str(frame.label),
+                            "embedding": np.asarray(
+                                trajectory_embedding[cursor:next_cursor],
+                                dtype=np.float32,
+                            ),
+                            "labels": np.asarray(labels[frame_indices], dtype=int),
+                            "instance_ids": np.asarray(instance_ids_arr[frame_indices], dtype=np.int64),
+                        }
+                    )
+                    cursor = next_cursor
+                trajectory_animation_path = (
+                    temporal_dir / f"latent_projection_{projection_method}_trajectories.gif"
+                )
+                temporal_summary["umap_trajectory_animation"] = save_temporal_embedding_trajectory_animation(
+                    temporal_trajectory_records,
+                    trajectory_animation_path,
+                    cluster_color_map=labels_color_map,
+                    cluster_display_map=cluster_display_map,
+                    line_width=_cfg_float(temporal_umap_cfg, "trajectory_line_width", 0.8),
+                    line_alpha=_cfg_float(temporal_umap_cfg, "trajectory_line_alpha", 0.22),
+                    fade_min_alpha_fraction=_cfg_float(
+                        temporal_umap_cfg,
+                        "trajectory_fade_min_alpha_fraction",
+                        0.18,
+                    ),
+                    fade_power=_cfg_float(
+                        temporal_umap_cfg,
+                        "trajectory_fade_power",
+                        1.0,
+                    ),
+                    directional_subsegments=_cfg_int(
+                        temporal_umap_cfg,
+                        "trajectory_directional_subsegments",
+                        6,
+                    ),
+                    directional_start_alpha_fraction=_cfg_float(
+                        temporal_umap_cfg,
+                        "trajectory_directional_start_alpha_fraction",
+                        0.32,
+                    ),
+                    directional_start_width_fraction=_cfg_float(
+                        temporal_umap_cfg,
+                        "trajectory_directional_start_width_fraction",
+                        0.60,
+                    ),
+                    directional_end_width_fraction=_cfg_float(
+                        temporal_umap_cfg,
+                        "trajectory_directional_end_width_fraction",
+                        1.35,
+                    ),
+                    frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
+                    title=f"{projection_method.upper()} cluster trajectories",
+                )
+                temporal_summary["trajectory_sample_count"] = int(trajectory_instance_ids.size)
+        temporal_summary["projection_fit_sample_count"] = (
+            None if temporal_fit_indices is None else int(temporal_fit_indices.size)
+        )
+        summary["temporal"] = temporal_summary
 
     if _cfg_bool(transition_cfg, "enabled", True) and len(frames) >= 2:
         transition_dir = out_root / "transitions"
         transition_dir.mkdir(parents=True, exist_ok=True)
-        stride = float(getattr(model_cfg.data, "radius", 8.0)) * (
-            1.0 - float(getattr(model_cfg.data, "overlap_fraction", 0.0))
-        )
-        default_transition_tol = max(1e-3, 0.5 * stride)
-        transition_tol_cfg = getattr(transition_cfg, "max_distance", None)
-        transition_tol = float(default_transition_tol if transition_tol_cfg is None else transition_tol_cfg)
+        if transition_tol is None:
+            raise RuntimeError("transition_tol was not resolved for transition analysis.")
         transition_data = _compute_transitions(
             frames,
             coords=np.asarray(coords, dtype=np.float32),
             labels=labels,
+            instance_ids=instance_ids_arr,
             cluster_ids=cluster_ids,
             max_distance=float(transition_tol),
             require_mutual=_cfg_bool(transition_cfg, "require_mutual", True),
@@ -1530,6 +1867,7 @@ def run_real_md_qualitative_analysis(
             "cluster_display_labels": cluster_display_labels,
             "match_tolerance": float(transition_data["max_distance"]),
             "require_mutual": bool(transition_data["require_mutual"]),
+            "match_mode": str(transition_data["match_mode"]),
             "pairs": pair_records,
             "aggregate_flow": str(aggregate_flow_path),
             "aggregate_flow_svg": str(aggregate_flow_svg_path),

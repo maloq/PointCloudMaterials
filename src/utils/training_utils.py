@@ -1,6 +1,7 @@
 """
-Utility functions for Shape-Pose Disentanglement module.
-Contains tensor operations, rotation utilities, batch processing, and configuration helpers.
+Shared training utilities.
+Contains optimizer/scheduler setup, tensor operations, rotation utilities,
+batch processing, and configuration helpers.
 """
 
 import torch

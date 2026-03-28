@@ -26,8 +26,8 @@ from .config import (
     build_runtime_model_config, load_checkpoint_analysis_config, load_checkpoint_training_config,
 )
 from .figure_sets import (
-    build_shared_cluster_color_map, print_figure_set_summary, render_cluster_figure_outputs,
-    resolve_snapshot_figure_layout, write_figure_only_metrics,
+    build_shared_cluster_color_map, filter_snapshot_figure_layout, print_figure_set_summary,
+    render_cluster_figure_outputs, resolve_snapshot_figure_layout, write_figure_only_metrics,
 )
 from .inference_cache import (
     _build_inference_cache_spec, _inference_cache_paths, _inference_cache_spec_hash,
@@ -36,7 +36,12 @@ from .inference_cache import (
 from .latent_vis import print_analysis_summary, run_equivariance_evaluation, run_pca_and_latent_stats, run_tsne_visualizations
 from .md_outputs import build_md_metrics
 from .real_md_qualitative import run_real_md_qualitative_analysis
-from .utils import _unwrap_dataset, build_real_coords_dataloader, gather_inference_batches
+from .temporal_real import (
+    build_temporal_real_analysis_bundle,
+    resolve_temporal_real_inference_spec,
+    temporal_real_analysis_enabled,
+)
+from .utils import _sample_indices, _unwrap_dataset, build_real_coords_dataloader, gather_inference_batches
 
 
 # ---------------------------------------------------------------------------
@@ -236,7 +241,10 @@ def run_post_training_analysis(
     model: BarlowTwinsModule | None = None
     device = f"cuda:{run_settings.cuda_device}" if torch.cuda.is_available() else "cpu"
     analysis_source_names: list[str] | None = None
-    analysis_files = _resolve_analysis_files(cfg, input_settings)
+    temporal_bundle = None
+    temporal_inference_spec = None
+    temporal_real_mode = temporal_real_analysis_enabled(analysis_cfg)
+    analysis_files = None if temporal_real_mode else _resolve_analysis_files(cfg, input_settings)
     if analysis_files is not None:
         analysis_source_names = _configure_real_analysis_inputs(cfg, analysis_files)
         print(f"Analysis data_files: {analysis_files}")
@@ -268,29 +276,62 @@ def run_post_training_analysis(
     is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
 
     # ── Data loading ───────────────────────────────────────────────────
-    _step("Building datamodule")
-    dm = build_datamodule(
-        cfg,
-        require_coords_for_real=not is_synthetic,
-    )
-    dm.setup(stage="fit")
     all_metrics: Dict[str, Any] = {}
-    dl = _build_analysis_dataloader(
-        cfg,
-        dm,
-        is_synthetic=is_synthetic,
-        dataloader_num_workers=int(input_settings.dataloader_num_workers),
-    )
-
-    class_names = _extract_class_names(dm.train_dataset)
+    dm = None
+    if temporal_real_mode:
+        _step("Building temporal-real analysis dataset")
+        temporal_inference_spec = resolve_temporal_real_inference_spec(analysis_cfg)
+        temporal_bundle = build_temporal_real_analysis_bundle(
+            analysis_cfg=analysis_cfg,
+            model_cfg=cfg,
+            batch_size=int(cfg.batch_size),
+            dataloader_num_workers=int(input_settings.dataloader_num_workers),
+        )
+        dl = temporal_bundle.dataloader
+        analysis_source_names = list(temporal_bundle.selection.analysis_source_names)
+        all_metrics["temporal_real_inputs"] = {
+            **temporal_bundle.selection.dump_summary,
+            **temporal_bundle.selection.to_cache_spec(),
+            "inference": temporal_inference_spec.to_cache_spec(),
+        }
+        class_names = None
+        print(
+            "Temporal real-data analysis enabled: "
+            f"inference_snapshots={len(temporal_bundle.selection.inference_source_names)}, "
+            f"analysis_snapshots={len(temporal_bundle.selection.analysis_source_names)}, "
+            f"center_count={len(getattr(temporal_bundle.dataset, '_center_atom_indices', []))}, "
+            f"inference_mode={temporal_inference_spec.mode}."
+        )
+    else:
+        _step("Building datamodule")
+        dm = build_datamodule(
+            cfg,
+            require_coords_for_real=not is_synthetic,
+        )
+        dm.setup(stage="fit")
+        dl = _build_analysis_dataloader(
+            cfg,
+            dm,
+            is_synthetic=is_synthetic,
+            dataloader_num_workers=int(input_settings.dataloader_num_workers),
+        )
+        class_names = _extract_class_names(dm.train_dataset)
     print(f"Loaded class names: {class_names}")
 
     max_batches_latent = input_settings.max_batches_latent
-    max_samples_total = _resolve_analysis_max_samples_total(
-        input_settings,
-        is_synthetic=is_synthetic,
-        md_use_all_points=analysis_settings.md_use_all_points,
-    )
+    if temporal_real_mode:
+        max_samples_total = None
+        if input_settings.max_samples_total is not None:
+            print(
+                "[analysis] inputs.max_samples_total is ignored for temporal real-data analysis; "
+                "the temporal inference snapshot selection already defines the full inference set."
+            )
+    else:
+        max_samples_total = _resolve_analysis_max_samples_total(
+            input_settings,
+            is_synthetic=is_synthetic,
+            md_use_all_points=analysis_settings.md_use_all_points,
+        )
 
     # ── Inference / cache ──────────────────────────────────────────────
     seed_base = int(analysis_settings.seed_base)
@@ -301,6 +342,12 @@ def run_post_training_analysis(
         max_batches_latent=max_batches_latent,
         max_samples_total=max_samples_total,
         seed_base=int(seed_base),
+        temporal_real_selection=(
+            None if temporal_bundle is None else temporal_bundle.selection.to_cache_spec()
+        ),
+        temporal_sequence_inference=(
+            None if temporal_inference_spec is None else temporal_inference_spec.to_cache_spec()
+        ),
     )
 
     cache: dict[str, np.ndarray] | None = None
@@ -370,6 +417,12 @@ def run_post_training_analysis(
             seed_base=seed_base,
             progress_every_batches=analysis_settings.progress_every_batches,
             verbose=True,
+            temporal_sequence_mode=(
+                "static_anchor" if temporal_inference_spec is None else temporal_inference_spec.mode
+            ),
+            temporal_static_frame_index=(
+                0 if temporal_inference_spec is None else temporal_inference_spec.static_frame_index
+            ),
         )
         _validate_inference_cache_arrays(cache)
         if analysis_settings.inference_cache_enabled:
@@ -418,11 +471,23 @@ def run_post_training_analysis(
         pca_max_components=analysis_settings.cluster_pca_max_components,
     )
     dataset_obj = getattr(dl, "dataset", None)
-    snapshot_layout = resolve_snapshot_figure_layout(
+    snapshot_layout_inference = resolve_snapshot_figure_layout(
         dataset_obj,
         is_synthetic=is_synthetic,
         n_samples=n_samples,
-        analysis_source_names=analysis_source_names,
+        analysis_source_names=(
+            None
+            if temporal_bundle is None
+            else temporal_bundle.selection.inference_source_names
+        ),
+    )
+    snapshot_layout = (
+        filter_snapshot_figure_layout(
+            snapshot_layout_inference,
+            allowed_source_names=temporal_bundle.selection.analysis_source_names,
+        )
+        if temporal_bundle is not None
+        else snapshot_layout_inference
     )
     snapshot_source_groups = snapshot_layout.source_groups
     snapshot_output_names = snapshot_layout.output_names
@@ -672,6 +737,17 @@ def run_post_training_analysis(
             int(real_md_selected_k),
             shared_cluster_color_map,
         )
+        temporal_projection_fit_indices = (
+            None
+            if temporal_bundle is None
+            else np.asarray(
+                _sample_indices(
+                    n_samples,
+                    analysis_settings.tsne_max_samples,
+                ),
+                dtype=int,
+            )
+        )
         all_metrics["real_md_qualitative"] = run_real_md_qualitative_analysis(
             out_dir=out_dir,
             model_cfg=cfg,
@@ -679,12 +755,23 @@ def run_post_training_analysis(
             dataset=dataset_obj,
             latents=cache["inv_latents"],
             coords=coords,
+            instance_ids=np.asarray(cache["instance_ids"]),
             cluster_labels_by_k=cluster_labels_by_k,
             cluster_methods_by_k=cluster_methods_by_k,
             cluster_color_map=shared_real_md_color_map,
             frame_groups=snapshot_source_groups,
             frame_output_names=snapshot_output_names,
             requested_frame_order=analysis_source_names,
+            temporal_all_frame_groups=(
+                None if temporal_bundle is None else snapshot_layout_inference.source_groups
+            ),
+            temporal_all_frame_output_names=(
+                None if temporal_bundle is None else snapshot_layout_inference.output_names
+            ),
+            temporal_all_frame_order=(
+                None if temporal_bundle is None else temporal_bundle.selection.inference_source_names
+            ),
+            temporal_projection_fit_indices=temporal_projection_fit_indices,
             point_scale=float(point_scale),
             random_state=int(clustering_random_state),
             representative_render_cache=shared_representative_render_cache,
@@ -699,6 +786,12 @@ def run_post_training_analysis(
             out_dir,
             analysis_cfg=analysis_cfg,
             step=_step,
+            temporal_sequence_mode=(
+                "static_anchor" if temporal_inference_spec is None else temporal_inference_spec.mode
+            ),
+            temporal_static_frame_index=(
+                0 if temporal_inference_spec is None else temporal_inference_spec.static_frame_index
+            ),
         )
     )
 
