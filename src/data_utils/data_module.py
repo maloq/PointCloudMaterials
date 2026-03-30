@@ -1,6 +1,9 @@
+import math
+
 import torch
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, Sampler, random_split
+from torch.utils.data._utils.collate import default_collate
 from collections import defaultdict
 from src.data_utils.data_load import (
     PointCloudDataset,
@@ -18,6 +21,73 @@ from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
+
+
+def _temporal_identity_or_default_collate(batch):
+    if isinstance(batch, dict):
+        return batch
+    return default_collate(batch)
+
+
+class TemporalWindowBatchSampler(Sampler[list[int]]):
+    def __init__(
+        self,
+        dataset,
+        *,
+        batch_size: int,
+        drop_last: bool,
+        shuffle_windows: bool,
+        shuffle_centers: bool,
+    ) -> None:
+        self.dataset = dataset
+        self.batch_size = int(batch_size)
+        self.drop_last = bool(drop_last)
+        self.shuffle_windows = bool(shuffle_windows)
+        self.shuffle_centers = bool(shuffle_centers)
+
+        if self.batch_size <= 0:
+            raise ValueError(f"batch_size must be > 0, got {self.batch_size}.")
+        if not hasattr(dataset, "window_count") or not hasattr(dataset, "center_count"):
+            raise TypeError(
+                "TemporalWindowBatchSampler requires a dataset exposing window_count and center_count. "
+                f"Got dataset={type(dataset)}."
+            )
+        self.window_count = int(dataset.window_count)
+        self.center_count = int(dataset.center_count)
+        self.total_samples = int(len(dataset))
+        if self.window_count <= 0 or self.center_count <= 0:
+            raise ValueError(
+                "TemporalWindowBatchSampler requires a non-empty temporal dataset. "
+                f"window_count={self.window_count}, center_count={self.center_count}."
+            )
+
+    def __len__(self) -> int:
+        if self.drop_last:
+            return self.total_samples // self.batch_size
+        return int(math.ceil(self.total_samples / float(self.batch_size)))
+
+    def __iter__(self):
+        if self.shuffle_windows:
+            window_order = torch.randperm(self.window_count).tolist()
+        else:
+            window_order = list(range(self.window_count))
+
+        batch: list[int] = []
+        for window_slot in window_order:
+            if self.shuffle_centers:
+                center_order = torch.randperm(self.center_count).tolist()
+            else:
+                center_order = list(range(self.center_count))
+
+            base_index = int(window_slot) * self.center_count
+            for center_slot in center_order:
+                batch.append(base_index + int(center_slot))
+                if len(batch) == self.batch_size:
+                    yield batch
+                    batch = []
+
+        if batch and not self.drop_last:
+            yield batch
 
 
 def _resolve_split_seed(cfg, *, default: int = 42) -> int:
@@ -312,6 +382,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         dump_file = getattr(data_cfg, "dump_file", None)
         if dump_file is None or str(dump_file).strip() == "":
             raise ValueError("Temporal LAMMPS data configuration must provide data.dump_file")
+        cache_dir = getattr(data_cfg, "cache_dir", None)
 
         sequence_length = int(getattr(data_cfg, "sequence_length", 0))
         num_points = int(getattr(data_cfg, "num_points", 0))
@@ -326,7 +397,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         if num_points <= 0:
             raise ValueError(f"data.num_points must be > 0, got {num_points}")
 
-        scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file)
+        scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file, cache_dir=cache_dir)
         radius = self._resolve_radius(
             dump_file=dump_file,
             data_cfg=data_cfg,
@@ -367,7 +438,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             normalize=bool(getattr(data_cfg, "normalize", True)),
             center_neighborhoods=bool(getattr(data_cfg, "center_neighborhoods", True)),
             selection_method=str(getattr(data_cfg, "selection_method", "closest")),
-            cache_dir=getattr(data_cfg, "cache_dir", None),
+            cache_dir=cache_dir,
             rebuild_cache=bool(getattr(data_cfg, "rebuild_cache", False)),
             tree_cache_size=int(getattr(data_cfg, "tree_cache_size", 4)),
             build_lock_timeout_sec=float(getattr(data_cfg, "build_lock_timeout_sec", 7200.0)),
@@ -420,33 +491,45 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         )
         return radius_value
 
-    def train_dataloader(self):
-        return DataLoader(
-            self.train_dataset,
+    def _temporal_loader(self, dataset, *, shuffle_windows: bool, shuffle_centers: bool, drop_last: bool):
+        batch_sampler = TemporalWindowBatchSampler(
+            dataset,
             batch_size=self.batch_size,
+            drop_last=drop_last,
+            shuffle_windows=shuffle_windows,
+            shuffle_centers=shuffle_centers,
+        )
+        return DataLoader(
+            dataset,
+            batch_sampler=batch_sampler,
             num_workers=self.num_workers,
-            shuffle=True,
-            drop_last=True,
             pin_memory=True,
             persistent_workers=self.num_workers > 0,
+            collate_fn=_temporal_identity_or_default_collate,
+        )
+
+    def train_dataloader(self):
+        return self._temporal_loader(
+            self.train_dataset,
+            shuffle_windows=True,
+            shuffle_centers=True,
+            drop_last=True,
         )
 
     def val_dataloader(self):
-        return DataLoader(
+        return self._temporal_loader(
             self.val_dataset,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=True,
-            persistent_workers=self.num_workers > 0,
+            shuffle_windows=False,
+            shuffle_centers=False,
+            drop_last=False,
         )
 
     def test_dataloader(self):
-        return DataLoader(
+        return self._temporal_loader(
             self.test_dataset,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=True,
-            persistent_workers=self.num_workers > 0,
+            shuffle_windows=False,
+            shuffle_centers=False,
+            drop_last=False,
         )
 
 

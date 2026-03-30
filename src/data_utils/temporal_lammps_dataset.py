@@ -82,6 +82,9 @@ class _DumpScanResult:
     box_high: np.ndarray
 
 
+_SCAN_RESULT_PROCESS_CACHE: dict[tuple[str, int, int], _DumpScanResult] = {}
+
+
 def inspect_lammps_dump_file(dump_file: str | Path) -> dict[str, Any]:
     dump_path = Path(dump_file).expanduser().resolve()
     if not dump_path.exists():
@@ -351,50 +354,34 @@ class TemporalLAMMPSDumpDataset(Dataset):
         )
 
     def __len__(self) -> int:
-        return int(self._window_start_frames.size) * int(self._center_atom_indices.size)
+        return self.window_count * self.center_count
+
+    @property
+    def center_count(self) -> int:
+        return int(self._center_atom_indices.size)
+
+    @property
+    def window_count(self) -> int:
+        return int(self._window_start_frames.size)
 
     def __getitem__(self, index: int) -> dict[str, Any]:
-        if index < 0 or index >= len(self):
-            raise IndexError(f"index out of range: index={index}, len={len(self)}")
-
-        window_slot = int(index) // int(self._center_atom_indices.size)
-        center_slot = int(index) % int(self._center_atom_indices.size)
-        start_frame = int(self._window_start_frames[window_slot])
-        center_atom_index = int(self._center_atom_indices[center_slot])
-        center_atom_id = int(self.atom_ids[center_atom_index])
-
-        frame_indices = start_frame + np.arange(self.sequence_length, dtype=np.int64) * self.frame_stride
-        sequence_points = np.empty((self.sequence_length, self.num_points, 3), dtype=np.float32)
-        center_positions = np.empty((self.sequence_length, 3), dtype=np.float32)
-        timesteps = self.timesteps[frame_indices].astype(np.int64, copy=False)
-
-        for local_frame_idx, frame_idx in enumerate(frame_indices.tolist()):
-            frame_points = self.positions[frame_idx]
-            center = np.asarray(frame_points[center_atom_index], dtype=np.float32)
-            selected = self._query_local_structure(frame_idx=frame_idx, center=center)
-            local_points = np.asarray(frame_points[selected], dtype=np.float32)
-            local_points = self._to_local_coordinates(
-                frame_idx=frame_idx,
-                points=local_points,
-                center=center,
-            )
-            if self.normalize:
-                local_points = _normalize_point_cloud(local_points, self.radius).astype(np.float32, copy=False)
-            sequence_points[local_frame_idx] = local_points
-            center_positions[local_frame_idx] = center + self.box_low[frame_idx]
-
+        batch = self._build_batch_from_indices(np.asarray([index], dtype=np.int64))
         return {
-            "points": torch.from_numpy(sequence_points),
-            "coords": torch.from_numpy(center_positions[0].copy()),
-            "center_positions": torch.from_numpy(center_positions),
-            "timesteps": torch.as_tensor(timesteps, dtype=torch.int64),
-            "frame_indices": torch.as_tensor(frame_indices, dtype=torch.int64),
-            "center_atom_id": torch.as_tensor(center_atom_id, dtype=torch.int64),
-            "instance_id": torch.as_tensor(center_atom_id, dtype=torch.int64),
-            "anchor_frame_index": torch.as_tensor(int(frame_indices[0]), dtype=torch.int64),
-            "anchor_timestep": torch.as_tensor(int(timesteps[0]), dtype=torch.int64),
-            "source_path": str(self.dump_file),
+            "points": batch["points"][0],
+            "coords": batch["coords"][0],
+            "center_positions": batch["center_positions"][0],
+            "timesteps": batch["timesteps"][0],
+            "frame_indices": batch["frame_indices"][0],
+            "center_atom_id": batch["center_atom_id"][0],
+            "instance_id": batch["instance_id"][0],
+            "anchor_frame_index": batch["anchor_frame_index"][0],
+            "anchor_timestep": batch["anchor_timestep"][0],
+            "source_path": batch["source_path"][0],
         }
+
+    def __getitems__(self, indices: Sequence[int]) -> dict[str, Any]:
+        index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
+        return self._build_batch_from_indices(index_array)
 
     def __getstate__(self) -> dict[str, Any]:
         state = dict(self.__dict__)
@@ -506,12 +493,107 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 path.unlink()
 
     @classmethod
-    def scan_dump_file(cls, dump_file: str | Path) -> _DumpScanResult:
+    def _scan_cache_key(cls, dump_path: Path) -> tuple[str, int, int]:
+        stat = dump_path.stat()
+        return str(dump_path), int(stat.st_size), int(stat.st_mtime_ns)
+
+    @classmethod
+    def _resolve_cache_dir_for_dump(
+        cls,
+        dump_file: str | Path,
+        *,
+        cache_dir: str | Path | None = None,
+    ) -> Path:
+        dump_path = Path(dump_file).expanduser().resolve()
+        if cache_dir is not None:
+            return Path(cache_dir).expanduser().resolve()
+        return dump_path.with_suffix(".temporal_cache")
+
+    @classmethod
+    def _load_scan_result_from_cache(
+        cls,
+        dump_path: Path,
+        *,
+        cache_dir: str | Path | None = None,
+    ) -> _DumpScanResult | None:
+        resolved_cache_dir = cls._resolve_cache_dir_for_dump(dump_path, cache_dir=cache_dir)
+        manifest_path = resolved_cache_dir / "manifest.json"
+        if not manifest_path.exists():
+            return None
+
+        try:
+            with manifest_path.open("r", encoding="utf-8") as handle:
+                manifest = json.load(handle)
+        except Exception as exc:
+            logger.print(
+                "[temporal-lammps] "
+                f"Ignoring unreadable cache manifest at {manifest_path}: {exc}."
+            )
+            return None
+
+        required_files = [
+            resolved_cache_dir / "positions.npy",
+            resolved_cache_dir / "atom_ids.npy",
+            resolved_cache_dir / "timesteps.npy",
+            resolved_cache_dir / "box_low.npy",
+            resolved_cache_dir / "box_high.npy",
+        ]
+        for path in required_files:
+            if not path.exists():
+                return None
+
+        source_stat = dump_path.stat()
+        if int(manifest.get("cache_version", -1)) != cls.cache_version:
+            return None
+        if manifest.get("source_path") != str(dump_path):
+            return None
+        if int(manifest.get("source_size_bytes", -1)) != int(source_stat.st_size):
+            return None
+        if int(manifest.get("source_mtime_ns", -1)) != int(source_stat.st_mtime_ns):
+            return None
+
+        atom_columns_raw = manifest.get("atom_columns")
+        if not isinstance(atom_columns_raw, list) or not atom_columns_raw:
+            return None
+
+        timesteps = np.load(resolved_cache_dir / "timesteps.npy", mmap_mode="r")
+        box_low = np.load(resolved_cache_dir / "box_low.npy", mmap_mode="r")
+        box_high = np.load(resolved_cache_dir / "box_high.npy", mmap_mode="r")
+        return _DumpScanResult(
+            frame_count=int(manifest["frame_count"]),
+            num_atoms=int(manifest["num_atoms"]),
+            atom_columns=tuple(str(name) for name in atom_columns_raw),
+            timesteps=np.asarray(timesteps, dtype=np.int64, copy=False),
+            box_low=np.asarray(box_low, dtype=np.float32, copy=False),
+            box_high=np.asarray(box_high, dtype=np.float32, copy=False),
+        )
+
+    @classmethod
+    def scan_dump_file(
+        cls,
+        dump_file: str | Path,
+        *,
+        cache_dir: str | Path | None = None,
+    ) -> _DumpScanResult:
         dump_path = Path(dump_file).expanduser().resolve()
         if not dump_path.exists():
             raise FileNotFoundError(f"LAMMPS dump file does not exist: {dump_path}")
         if not dump_path.is_file():
             raise ValueError(f"dump_file must be a file, got: {dump_path}")
+
+        cache_key = cls._scan_cache_key(dump_path)
+        cached_scan = _SCAN_RESULT_PROCESS_CACHE.get(cache_key)
+        if cached_scan is not None:
+            return cached_scan
+
+        scan_from_cache = cls._load_scan_result_from_cache(dump_path, cache_dir=cache_dir)
+        if scan_from_cache is not None:
+            logger.print(
+                "[temporal-lammps] "
+                f"Loaded cached scan metadata from {cls._resolve_cache_dir_for_dump(dump_path, cache_dir=cache_dir)}."
+            )
+            _SCAN_RESULT_PROCESS_CACHE[cache_key] = scan_from_cache
+            return scan_from_cache
 
         frame_count = 0
         num_atoms_expected: int | None = None
@@ -578,7 +660,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
             f"Scan complete: frames={frame_count}, num_atoms={num_atoms_expected}, "
             f"atom_columns={list(atom_columns_expected)}."
         )
-        return _DumpScanResult(
+        result = _DumpScanResult(
             frame_count=frame_count,
             num_atoms=int(num_atoms_expected),
             atom_columns=atom_columns_expected,
@@ -586,6 +668,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
             box_low=np.asarray(box_low, dtype=np.float32),
             box_high=np.asarray(box_high, dtype=np.float32),
         )
+        _SCAN_RESULT_PROCESS_CACHE[cache_key] = result
+        return result
 
     @classmethod
     def load_dump_frame_positions(
@@ -1089,6 +1173,39 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 return within[: self.num_points]
         return indices
 
+    def _query_local_structures(
+        self,
+        *,
+        frame_idx: int,
+        centers: np.ndarray,
+    ) -> np.ndarray:
+        tree = self._get_tree(frame_idx)
+        distances, indices = tree.query(centers, k=self.num_points)
+        distances = np.asarray(distances, dtype=np.float32)
+        indices = np.asarray(indices, dtype=np.int64)
+        if indices.ndim == 1:
+            indices = indices.reshape(1, -1)
+            distances = distances.reshape(1, -1)
+        if indices.shape != (int(centers.shape[0]), self.num_points):
+            raise RuntimeError(
+                "KDTree batch query returned an unexpected neighbor array shape. "
+                f"frame_idx={frame_idx}, centers_shape={tuple(centers.shape)}, "
+                f"expected_shape={(int(centers.shape[0]), self.num_points)}, "
+                f"got_shape={tuple(indices.shape)}, source_path={self.dump_file}."
+            )
+
+        if self.selection_method == "radius_then_closest":
+            assert self.radius is not None
+            selected = np.empty_like(indices)
+            for row_idx in range(indices.shape[0]):
+                within = indices[row_idx, distances[row_idx] <= self.radius]
+                if within.size >= self.num_points:
+                    selected[row_idx] = within[: self.num_points]
+                else:
+                    selected[row_idx] = indices[row_idx]
+            return selected
+        return indices
+
     def _to_local_coordinates(
         self,
         *,
@@ -1102,6 +1219,108 @@ class TemporalLAMMPSDumpDataset(Dataset):
         box_lengths = np.asarray(self.box_lengths[frame_idx], dtype=np.float32)
         rel = rel - box_lengths[None, :] * np.round(rel / box_lengths[None, :])
         return rel.astype(np.float32, copy=False)
+
+    def _to_local_coordinates_batch(
+        self,
+        *,
+        frame_idx: int,
+        points: np.ndarray,
+        centers: np.ndarray,
+    ) -> np.ndarray:
+        if not self.center_neighborhoods:
+            return points.astype(np.float32, copy=False)
+        rel = points - centers[:, None, :]
+        box_lengths = np.asarray(self.box_lengths[frame_idx], dtype=np.float32)
+        rel = rel - box_lengths[None, None, :] * np.round(rel / box_lengths[None, None, :])
+        return rel.astype(np.float32, copy=False)
+
+    def _normalize_point_cloud_batch(self, points: np.ndarray) -> np.ndarray:
+        if self.radius is not None:
+            return points / float(self.radius)
+
+        squared = np.square(points, dtype=np.float32)
+        max_norm = np.sqrt(np.max(np.sum(squared, axis=2, dtype=np.float32), axis=1))
+        if np.any(max_norm <= 0.0):
+            raise ValueError(
+                "Cannot normalize a local-structure batch with zero spatial extent. "
+                f"points_shape={points.shape}, max_norm_min={float(np.min(max_norm))}."
+            )
+        return points / max_norm[:, None, None]
+
+    def _build_batch_from_indices(self, indices: np.ndarray) -> dict[str, Any]:
+        index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
+        if index_array.size == 0:
+            raise ValueError("Temporal batch indices must be non-empty.")
+        if np.any(index_array < 0) or np.any(index_array >= len(self)):
+            raise IndexError(
+                "Temporal batch indices are out of range. "
+                f"min_index={int(index_array.min())}, max_index={int(index_array.max())}, len={len(self)}."
+            )
+
+        batch_size = int(index_array.size)
+        sequence_points = np.empty(
+            (batch_size, self.sequence_length, self.num_points, 3),
+            dtype=np.float32,
+        )
+        center_positions = np.empty((batch_size, self.sequence_length, 3), dtype=np.float32)
+        timesteps_batch = np.empty((batch_size, self.sequence_length), dtype=np.int64)
+        frame_indices_batch = np.empty((batch_size, self.sequence_length), dtype=np.int64)
+        center_atom_ids = np.empty((batch_size,), dtype=np.int64)
+        anchor_frame_indices = np.empty((batch_size,), dtype=np.int64)
+        anchor_timesteps = np.empty((batch_size,), dtype=np.int64)
+
+        window_slots = (index_array // self.center_count).astype(np.int64, copy=False)
+        center_slots = (index_array % self.center_count).astype(np.int64, copy=False)
+
+        grouped_positions: dict[int, list[int]] = {}
+        for batch_pos, window_slot in enumerate(window_slots.tolist()):
+            grouped_positions.setdefault(int(window_slot), []).append(int(batch_pos))
+
+        frame_offsets = np.arange(self.sequence_length, dtype=np.int64) * self.frame_stride
+        for window_slot, batch_positions_list in grouped_positions.items():
+            batch_positions = np.asarray(batch_positions_list, dtype=np.int64)
+            start_frame = int(self._window_start_frames[window_slot])
+            frame_indices = start_frame + frame_offsets
+            timesteps = self.timesteps[frame_indices].astype(np.int64, copy=False)
+            center_atom_indices = np.asarray(
+                self._center_atom_indices[center_slots[batch_positions]],
+                dtype=np.int64,
+            )
+            center_atom_ids_window = np.asarray(self.atom_ids[center_atom_indices], dtype=np.int64)
+
+            frame_indices_batch[batch_positions] = frame_indices[None, :]
+            timesteps_batch[batch_positions] = timesteps[None, :]
+            center_atom_ids[batch_positions] = center_atom_ids_window
+            anchor_frame_indices[batch_positions] = int(frame_indices[0])
+            anchor_timesteps[batch_positions] = int(timesteps[0])
+
+            for local_frame_idx, frame_idx in enumerate(frame_indices.tolist()):
+                frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+                centers = np.asarray(frame_points[center_atom_indices], dtype=np.float32)
+                selected = self._query_local_structures(frame_idx=frame_idx, centers=centers)
+                local_points = np.asarray(frame_points[selected], dtype=np.float32)
+                local_points = self._to_local_coordinates_batch(
+                    frame_idx=frame_idx,
+                    points=local_points,
+                    centers=centers,
+                )
+                if self.normalize:
+                    local_points = self._normalize_point_cloud_batch(local_points).astype(np.float32, copy=False)
+                sequence_points[batch_positions, local_frame_idx] = local_points
+                center_positions[batch_positions, local_frame_idx] = centers + self.box_low[frame_idx]
+
+        return {
+            "points": torch.from_numpy(sequence_points),
+            "coords": torch.from_numpy(center_positions[:, 0].copy()),
+            "center_positions": torch.from_numpy(center_positions),
+            "timesteps": torch.from_numpy(timesteps_batch),
+            "frame_indices": torch.from_numpy(frame_indices_batch),
+            "center_atom_id": torch.from_numpy(center_atom_ids),
+            "instance_id": torch.from_numpy(center_atom_ids.copy()),
+            "anchor_frame_index": torch.from_numpy(anchor_frame_indices),
+            "anchor_timestep": torch.from_numpy(anchor_timesteps),
+            "source_path": [str(self.dump_file)] * batch_size,
+        }
 
     @staticmethod
     def _resolve_position_columns(atom_columns: Sequence[str]) -> tuple[int, int, int]:
