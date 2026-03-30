@@ -215,18 +215,23 @@ class VICRegLoss(nn.Module):
         prepare_input,
         split_output,
         current_epoch: int,
+        views: dict[str, torch.Tensor] | None = None,
         invariant_transform=None,
     ):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
-        use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
-        apply_occlusion_a, apply_occlusion_b = self._resolve_pair_occlusion_flags(
-            use_neighbor_a=use_neighbor_a,
-            use_neighbor_b=use_neighbor_b,
-            device=pc.device,
-        )
-        y_a = self._augment(pc, use_neighbor=use_neighbor_a, apply_occlusion=apply_occlusion_a)
-        y_b = self._augment(pc, use_neighbor=use_neighbor_b, apply_occlusion=apply_occlusion_b)
+        if views is None:
+            use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
+            apply_occlusion_a, apply_occlusion_b = self._resolve_pair_occlusion_flags(
+                use_neighbor_a=use_neighbor_a,
+                use_neighbor_b=use_neighbor_b,
+                device=pc.device,
+            )
+            y_a = self._augment(pc, use_neighbor=use_neighbor_a, apply_occlusion=apply_occlusion_a)
+            y_b = self._augment(pc, use_neighbor=use_neighbor_b, apply_occlusion=apply_occlusion_b)
+        else:
+            y_a = views["y_a"]
+            y_b = views["y_b"]
 
         enc_a = encoder(prepare_input(y_a))
         inv_a, eq_a = split_output(enc_a)

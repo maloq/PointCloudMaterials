@@ -6,6 +6,10 @@ from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
 )
+from src.data_utils.temporal_lammps_dataset import (
+    TemporalLAMMPSDumpDataset,
+    estimate_lammps_dump_cutoff_radius,
+)
 import time
 import logging
 from pathlib import Path
@@ -52,6 +56,85 @@ def _seeded_random_split(dataset, lengths: list[int], *, seed: int, context: str
     generator = torch.Generator()
     generator.manual_seed(int(seed))
     return random_split(dataset, split_lengths, generator=generator)
+
+
+def _resolve_temporal_window_start_frames(
+    *,
+    frame_count: int,
+    sequence_length: int,
+    frame_stride: int,
+    frame_start: int,
+    frame_stop: int | None,
+    window_stride: int,
+) -> list[int]:
+    frame_count = int(frame_count)
+    sequence_length = int(sequence_length)
+    frame_stride = int(frame_stride)
+    frame_start = int(frame_start)
+    window_stride = int(window_stride)
+    stop = frame_count if frame_stop is None else int(frame_stop)
+
+    if frame_count <= 0:
+        raise ValueError(f"frame_count must be > 0, got {frame_count}")
+    if sequence_length <= 0:
+        raise ValueError(f"sequence_length must be > 0, got {sequence_length}")
+    if frame_stride <= 0:
+        raise ValueError(f"frame_stride must be > 0, got {frame_stride}")
+    if window_stride <= 0:
+        raise ValueError(f"window_stride must be > 0, got {window_stride}")
+    if frame_start < 0 or frame_start >= frame_count:
+        raise ValueError(
+            f"frame_start must satisfy 0 <= frame_start < frame_count, got frame_start={frame_start}, "
+            f"frame_count={frame_count}."
+        )
+    if stop <= frame_start:
+        raise ValueError(
+            f"frame_stop must be > frame_start, got frame_start={frame_start}, frame_stop={stop}."
+        )
+    if stop > frame_count:
+        raise ValueError(
+            f"frame_stop must be <= frame_count, got frame_stop={stop}, frame_count={frame_count}."
+        )
+
+    last_required_frame = frame_start + (sequence_length - 1) * frame_stride
+    if last_required_frame >= stop:
+        return []
+    max_start = stop - (sequence_length - 1) * frame_stride
+    return list(range(frame_start, max_start, window_stride))
+
+
+def _split_temporal_window_start_frames(
+    anchor_frames: list[int],
+    *,
+    train_ratio: float,
+    seed: int,
+    context: str,
+) -> tuple[list[int], list[int]]:
+    if not anchor_frames:
+        raise ValueError(f"{context}: anchor_frames must be non-empty")
+
+    train_ratio = float(train_ratio)
+    if not (0.0 < train_ratio < 1.0):
+        raise ValueError(f"{context}: train_ratio must be in (0, 1), got {train_ratio}")
+
+    num_frames = len(anchor_frames)
+    train_size = int(train_ratio * num_frames)
+    val_size = num_frames - train_size
+    if train_size <= 0 or val_size <= 0:
+        raise ValueError(
+            f"{context}: temporal split produced an empty subset. "
+            f"num_windows={num_frames}, train_ratio={train_ratio}, "
+            f"train_size={train_size}, val_size={val_size}."
+        )
+
+    generator = torch.Generator()
+    generator.manual_seed(int(seed))
+    perm = torch.randperm(num_frames, generator=generator).tolist()
+    train_idx = perm[:train_size]
+    val_idx = perm[train_size:]
+    train_frames = sorted(int(anchor_frames[idx]) for idx in train_idx)
+    val_frames = sorted(int(anchor_frames[idx]) for idx in val_idx)
+    return train_frames, val_frames
 
 
 class RealPointCloudDataModule(pl.LightningDataModule):
@@ -178,6 +261,186 @@ class RealPointCloudDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         print(f"Using {self.num_workers} workers for test dataloader")
+        return DataLoader(
+            self.test_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            pin_memory=True,
+            persistent_workers=self.num_workers > 0,
+        )
+
+
+class TemporalLAMMPSDataModule(pl.LightningDataModule):
+    def __init__(self, cfg):
+        super().__init__()
+        self.cfg = cfg
+        self.batch_size = cfg.batch_size
+        self.num_workers = cfg.num_workers
+        self.max_samples = cfg.max_samples
+        self.split_seed = _resolve_split_seed(cfg)
+        self._datasets_initialized = False
+
+    def setup(self, stage=None):
+        start_time = time.time()
+        initialized_now = False
+        if not self._datasets_initialized:
+            self.train_dataset, self.val_dataset = self._build_datasets()
+            self.test_dataset = self.val_dataset
+
+            if self.max_samples > 0:
+                max_train = min(self.max_samples, len(self.train_dataset))
+                max_val = min(self.max_samples, len(self.val_dataset))
+                self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
+                self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+                self.test_dataset = self.val_dataset
+            self._datasets_initialized = True
+            initialized_now = True
+
+        elapsed_time = time.time() - start_time
+        if not initialized_now:
+            logger.print(
+                f"Reusing existing temporal LAMMPS dataset split for stage={stage!r} "
+                f"(split_seed={self.split_seed})."
+            )
+        logger.print(f"Temporal train dataset size: {len(self.train_dataset)}")
+        logger.print(f"Temporal val dataset size: {len(self.val_dataset)}")
+        logger.print(f"Temporal test dataset size: {len(self.test_dataset)}")
+        logger.print(f"Temporal dataloader prep took {elapsed_time:.4f} seconds")
+
+    def _build_datasets(self):
+        data_cfg = self.cfg.data
+        dump_file = getattr(data_cfg, "dump_file", None)
+        if dump_file is None or str(dump_file).strip() == "":
+            raise ValueError("Temporal LAMMPS data configuration must provide data.dump_file")
+
+        sequence_length = int(getattr(data_cfg, "sequence_length", 0))
+        num_points = int(getattr(data_cfg, "num_points", 0))
+        frame_stride = int(getattr(data_cfg, "frame_stride", 1))
+        window_stride = int(getattr(data_cfg, "window_stride", 1))
+        frame_start = int(getattr(data_cfg, "frame_start", 0))
+        frame_stop = getattr(data_cfg, "frame_stop", None)
+        frame_stop = None if frame_stop is None else int(frame_stop)
+
+        if sequence_length <= 0:
+            raise ValueError(f"data.sequence_length must be > 0, got {sequence_length}")
+        if num_points <= 0:
+            raise ValueError(f"data.num_points must be > 0, got {num_points}")
+
+        scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file)
+        radius = self._resolve_radius(
+            dump_file=dump_file,
+            data_cfg=data_cfg,
+            frame_start=frame_start,
+            num_points=num_points,
+        )
+        anchor_frames = _resolve_temporal_window_start_frames(
+            frame_count=int(scan.frame_count),
+            sequence_length=sequence_length,
+            frame_stride=frame_stride,
+            frame_start=frame_start,
+            frame_stop=frame_stop,
+            window_stride=window_stride,
+        )
+        train_anchor_frames, val_anchor_frames = _split_temporal_window_start_frames(
+            anchor_frames,
+            train_ratio=float(getattr(data_cfg, "train_ratio", 0.8)),
+            seed=self.split_seed,
+            context="TemporalLAMMPSDataModule._build_datasets",
+        )
+
+        common_kwargs = dict(
+            dump_file=dump_file,
+            sequence_length=sequence_length,
+            num_points=num_points,
+            radius=radius,
+            frame_stride=frame_stride,
+            window_stride=window_stride,
+            frame_start=frame_start,
+            frame_stop=frame_stop,
+            center_selection_mode=getattr(data_cfg, "center_selection_mode", None),
+            center_atom_ids=_to_container(getattr(data_cfg, "center_atom_ids", None)),
+            center_atom_stride=getattr(data_cfg, "center_atom_stride", None),
+            max_center_atoms=getattr(data_cfg, "max_center_atoms", None),
+            center_selection_seed=int(getattr(data_cfg, "center_selection_seed", 0)),
+            center_grid_overlap=getattr(data_cfg, "center_grid_overlap", None),
+            center_grid_reference_frame_index=getattr(data_cfg, "center_grid_reference_frame_index", None),
+            normalize=bool(getattr(data_cfg, "normalize", True)),
+            center_neighborhoods=bool(getattr(data_cfg, "center_neighborhoods", True)),
+            selection_method=str(getattr(data_cfg, "selection_method", "closest")),
+            cache_dir=getattr(data_cfg, "cache_dir", None),
+            rebuild_cache=bool(getattr(data_cfg, "rebuild_cache", False)),
+            tree_cache_size=int(getattr(data_cfg, "tree_cache_size", 4)),
+            build_lock_timeout_sec=float(getattr(data_cfg, "build_lock_timeout_sec", 7200.0)),
+            build_lock_stale_sec=float(getattr(data_cfg, "build_lock_stale_sec", 86400.0)),
+        )
+
+        train_ds = TemporalLAMMPSDumpDataset(
+            anchor_frame_indices=train_anchor_frames,
+            **common_kwargs,
+        )
+        val_ds = TemporalLAMMPSDumpDataset(
+            anchor_frame_indices=val_anchor_frames,
+            **common_kwargs,
+        )
+        return train_ds, val_ds
+
+    def _resolve_radius(self, *, dump_file, data_cfg, frame_start: int, num_points: int) -> float:
+        radius = getattr(data_cfg, "radius", None)
+        if radius is not None:
+            radius_value = float(radius)
+            if radius_value <= 0.0:
+                raise ValueError(f"data.radius must be > 0, got {radius_value}.")
+            logger.print(f"Temporal LAMMPS radius: {radius_value:.6f} (source=data.radius)")
+            return radius_value
+
+        auto_cutoff_cfg = _to_container(getattr(data_cfg, "auto_cutoff", None))
+        if not isinstance(auto_cutoff_cfg, dict) or not bool(auto_cutoff_cfg.get("enabled", False)):
+            raise ValueError(
+                "Temporal LAMMPS data requires either data.radius or data.auto_cutoff.enabled=true."
+            )
+
+        reference_frame_index = int(auto_cutoff_cfg.get("reference_frame_index", frame_start))
+        estimation = estimate_lammps_dump_cutoff_radius(
+            dump_file,
+            reference_frame_index=reference_frame_index,
+            target_points=max(
+                int(num_points),
+                int(auto_cutoff_cfg.get("target_points", num_points)),
+            ),
+            quantile=float(auto_cutoff_cfg.get("quantile", 1.0)),
+            estimation_samples=int(auto_cutoff_cfg.get("estimation_samples_per_file", 4096)),
+            seed=int(auto_cutoff_cfg.get("seed", 0)),
+            safety_factor=float(auto_cutoff_cfg.get("safety_factor", 1.0)),
+        )
+        radius_value = float(estimation["estimated_radius"])
+        logger.print(
+            "Temporal LAMMPS radius: "
+            f"{radius_value:.6f} (source=auto_cutoff, reference_frame_index={reference_frame_index}, "
+            f"coverage={float(estimation['coverage']):.4f})"
+        )
+        return radius_value
+
+    def train_dataloader(self):
+        return DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            shuffle=True,
+            drop_last=True,
+            pin_memory=True,
+            persistent_workers=self.num_workers > 0,
+        )
+
+    def val_dataloader(self):
+        return DataLoader(
+            self.val_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            pin_memory=True,
+            persistent_workers=self.num_workers > 0,
+        )
+
+    def test_dataloader(self):
         return DataLoader(
             self.test_dataset,
             batch_size=self.batch_size,
@@ -535,6 +798,8 @@ class PointCloudDataModule(pl.LightningDataModule):
         kind = getattr(cfg.data, "kind", "real")
         if kind == "synthetic":
             self.impl = SyntheticPointCloudDataModule(cfg)
+        elif kind == "temporal_lammps":
+            self.impl = TemporalLAMMPSDataModule(cfg)
         else:
             self.impl = RealPointCloudDataModule(cfg)
 
@@ -558,3 +823,4 @@ def _to_container(cfg):
     return cfg
 
 SynthPointCloudDataModule = SyntheticPointCloudDataModule
+TemporalPointCloudDataModule = TemporalLAMMPSDataModule

@@ -182,12 +182,15 @@ real_md:
       trajectory_max_points: 1000
       trajectory_line_width: 0.8
       trajectory_line_alpha: 0.22
+      trajectory_history_steps: 8
       trajectory_fade_min_alpha_fraction: 0.18
       trajectory_fade_power: 1.0
       trajectory_directional_subsegments: 6
       trajectory_directional_start_alpha_fraction: 0.32
       trajectory_directional_start_width_fraction: 0.60
       trajectory_directional_end_width_fraction: 1.35
+      trajectory_endpoint_point_size: 3.0
+      trajectory_endpoint_point_alpha: 0.95
   descriptors:
     enabled: true
     max_samples: 6000

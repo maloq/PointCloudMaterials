@@ -22,6 +22,7 @@ from src.utils.logging_config import setup_logging
 from src.data_utils.data_module import (
     RealPointCloudDataModule,
     SyntheticPointCloudDataModule,
+    TemporalLAMMPSDataModule,
 )
 torch.set_float32_matmul_precision('high')
 
@@ -517,6 +518,8 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
     if cfg.data.kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
+    elif cfg.data.kind == "temporal_lammps":
+        dm = TemporalLAMMPSDataModule(cfg)
     else:
         dm = RealPointCloudDataModule(cfg)
     model = model_class(cfg)

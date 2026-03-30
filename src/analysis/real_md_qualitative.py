@@ -1751,6 +1751,11 @@ def run_real_md_qualitative_analysis(
                     cluster_display_map=cluster_display_map,
                     line_width=_cfg_float(temporal_umap_cfg, "trajectory_line_width", 0.8),
                     line_alpha=_cfg_float(temporal_umap_cfg, "trajectory_line_alpha", 0.22),
+                    history_steps=_cfg_int(
+                        temporal_umap_cfg,
+                        "trajectory_history_steps",
+                        8,
+                    ),
                     fade_min_alpha_fraction=_cfg_float(
                         temporal_umap_cfg,
                         "trajectory_fade_min_alpha_fraction",
@@ -1780,6 +1785,16 @@ def run_real_md_qualitative_analysis(
                         temporal_umap_cfg,
                         "trajectory_directional_end_width_fraction",
                         1.35,
+                    ),
+                    endpoint_point_size=_cfg_float(
+                        temporal_umap_cfg,
+                        "trajectory_endpoint_point_size",
+                        3.0,
+                    ),
+                    endpoint_point_alpha=_cfg_float(
+                        temporal_umap_cfg,
+                        "trajectory_endpoint_point_alpha",
+                        0.95,
                     ),
                     frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
                     title=f"{projection_method.upper()} cluster trajectories",

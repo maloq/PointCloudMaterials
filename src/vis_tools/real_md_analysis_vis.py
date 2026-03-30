@@ -874,12 +874,15 @@ def save_temporal_embedding_trajectory_animation(
     cluster_display_map: dict[int, str] | None = None,
     line_width: float = 0.8,
     line_alpha: float = 0.22,
+    history_steps: int | None = 8,
     fade_min_alpha_fraction: float = 0.18,
     fade_power: float = 1.0,
     directional_subsegments: int = 6,
     directional_start_alpha_fraction: float = 0.32,
     directional_start_width_fraction: float = 0.60,
     directional_end_width_fraction: float = 1.35,
+    endpoint_point_size: float = 3.0,
+    endpoint_point_alpha: float = 0.95,
     frame_duration_ms: int = 450,
     title: str = "Latent trajectory evolution",
 ) -> dict[str, Any]:
@@ -920,6 +923,8 @@ def save_temporal_embedding_trajectory_animation(
             "fade_min_alpha_fraction must be in (0, 1], "
             f"got {fade_min_alpha_fraction}."
         )
+    if history_steps is not None and int(history_steps) <= 0:
+        raise ValueError(f"history_steps must be > 0 when provided, got {history_steps}.")
     if fade_power <= 0.0:
         raise ValueError(f"fade_power must be > 0, got {fade_power}.")
     if int(directional_subsegments) <= 0:
@@ -940,6 +945,13 @@ def save_temporal_embedding_trajectory_animation(
         raise ValueError(
             "directional_end_width_fraction must be > 0, "
             f"got {directional_end_width_fraction}."
+        )
+    if endpoint_point_size < 0.0:
+        raise ValueError(f"endpoint_point_size must be >= 0, got {endpoint_point_size}.")
+    if endpoint_point_alpha < 0.0 or endpoint_point_alpha > 1.0:
+        raise ValueError(
+            "endpoint_point_alpha must be in [0, 1], "
+            f"got {endpoint_point_alpha}."
         )
     all_embeddings = np.concatenate(embeddings_by_frame, axis=0)
     cluster_ids = _sorted_cluster_ids(np.concatenate(labels_by_frame, axis=0))
@@ -972,11 +984,15 @@ def save_temporal_embedding_trajectory_animation(
         legend_ax = fig.add_axes([0.76, 0.18, 0.22, 0.60])
         legend_ax.axis("off")
 
-        for step_idx in range(1, frame_idx + 1):
+        start_step_idx = 1
+        if history_steps is not None:
+            start_step_idx = max(1, frame_idx - int(history_steps) + 1)
+        visible_step_count = max(1, frame_idx - start_step_idx + 1)
+        for step_idx in range(start_step_idx, frame_idx + 1):
             prev_embedding = embeddings_by_frame[step_idx - 1]
             curr_embedding = embeddings_by_frame[step_idx]
             curr_labels = labels_by_frame[step_idx]
-            recency = float(step_idx) / float(frame_idx)
+            recency = float(step_idx - start_step_idx + 1) / float(visible_step_count)
             fade_weight = float(fade_min_alpha_fraction) + (
                 1.0 - float(fade_min_alpha_fraction)
             ) * (recency ** float(fade_power))
@@ -1029,6 +1045,18 @@ def save_temporal_embedding_trajectory_animation(
                 zorder=1,
             )
             ax.add_collection(collection)
+
+        if float(endpoint_point_size) > 0.0:
+            current_embedding = embeddings_by_frame[frame_idx]
+            ax.scatter(
+                current_embedding[:, 0],
+                current_embedding[:, 1],
+                s=float(endpoint_point_size),
+                alpha=float(endpoint_point_alpha),
+                color="#000000",
+                linewidths=0.0,
+                zorder=3,
+            )
 
         ax.set_xlim(*x_limits)
         ax.set_ylim(*y_limits)
