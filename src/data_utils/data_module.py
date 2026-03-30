@@ -4,7 +4,7 @@ import torch
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, Sampler, random_split
 from torch.utils.data._utils.collate import default_collate
-from collections import defaultdict
+from collections import defaultdict, deque
 from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
@@ -38,15 +38,24 @@ class TemporalWindowBatchSampler(Sampler[list[int]]):
         drop_last: bool,
         shuffle_windows: bool,
         shuffle_centers: bool,
+        mixed_windows_per_batch: int | None = None,
     ) -> None:
         self.dataset = dataset
         self.batch_size = int(batch_size)
         self.drop_last = bool(drop_last)
         self.shuffle_windows = bool(shuffle_windows)
         self.shuffle_centers = bool(shuffle_centers)
+        self.mixed_windows_per_batch = (
+            None if mixed_windows_per_batch is None else int(mixed_windows_per_batch)
+        )
 
         if self.batch_size <= 0:
             raise ValueError(f"batch_size must be > 0, got {self.batch_size}.")
+        if self.mixed_windows_per_batch is not None and self.mixed_windows_per_batch <= 0:
+            raise ValueError(
+                "mixed_windows_per_batch must be > 0 when provided, "
+                f"got {self.mixed_windows_per_batch}."
+            )
         if not hasattr(dataset, "window_count") or not hasattr(dataset, "center_count"):
             raise TypeError(
                 "TemporalWindowBatchSampler requires a dataset exposing window_count and center_count. "
@@ -67,17 +76,9 @@ class TemporalWindowBatchSampler(Sampler[list[int]]):
         return int(math.ceil(self.total_samples / float(self.batch_size)))
 
     def __iter__(self):
-        if self.shuffle_windows and self.shuffle_centers:
-            # Training with globally shuffled sample indices avoids batches that
-            # are homogeneous in time when center_count >> batch_size.
-            perm = torch.randperm(self.total_samples)
-            full_size = int(perm.numel())
-            if self.drop_last:
-                full_size = (full_size // self.batch_size) * self.batch_size
-            for start in range(0, full_size, self.batch_size):
-                yield perm[start : start + self.batch_size].tolist()
-            if not self.drop_last and full_size < int(perm.numel()):
-                yield perm[full_size:].tolist()
+        mix_windows = self._resolve_mixed_windows_per_batch()
+        if mix_windows is not None:
+            yield from self._iter_mixed_window_batches(mix_windows)
             return
 
         if self.shuffle_windows:
@@ -100,6 +101,92 @@ class TemporalWindowBatchSampler(Sampler[list[int]]):
                     batch = []
 
         if batch and not self.drop_last:
+            yield batch
+
+    def _resolve_mixed_windows_per_batch(self) -> int | None:
+        if not (self.shuffle_windows and self.shuffle_centers):
+            return None
+        if self.mixed_windows_per_batch is None:
+            return None
+        resolved = min(self.window_count, self.batch_size, int(self.mixed_windows_per_batch))
+        if resolved <= 1:
+            return None
+        return resolved
+
+    def _iter_mixed_window_batches(self, mix_windows: int):
+        if self.shuffle_windows:
+            window_order = torch.randperm(self.window_count).tolist()
+        else:
+            window_order = list(range(self.window_count))
+
+        window_queue: deque[int] = deque(int(window_slot) for window_slot in window_order)
+        center_offsets = torch.zeros(self.window_count, dtype=torch.int64)
+        center_orders: dict[int, torch.Tensor] = {}
+        produced_samples = 0
+
+        while produced_samples < self.total_samples:
+            remaining_global = self.total_samples - produced_samples
+            target_batch_size = min(self.batch_size, remaining_global)
+            if target_batch_size < self.batch_size and self.drop_last:
+                break
+
+            batch: list[int] = []
+            safety_rounds = 0
+            while len(batch) < target_batch_size:
+                active_windows: list[int] = []
+                while window_queue and len(active_windows) < mix_windows:
+                    active_windows.append(int(window_queue.popleft()))
+                if not active_windows:
+                    raise RuntimeError(
+                        "TemporalWindowBatchSampler could not assemble a mixed-window batch "
+                        f"with target_batch_size={target_batch_size}, produced={produced_samples}, "
+                        f"window_count={self.window_count}, center_count={self.center_count}."
+                    )
+
+                need = target_batch_size - len(batch)
+                share, remainder = divmod(need, len(active_windows))
+                for active_pos, window_slot in enumerate(active_windows):
+                    take_target = share + (1 if active_pos < remainder else 0)
+                    if take_target <= 0:
+                        if int(center_offsets[window_slot].item()) < self.center_count:
+                            window_queue.append(window_slot)
+                        continue
+
+                    center_order = center_orders.get(window_slot)
+                    if center_order is None:
+                        if self.shuffle_centers:
+                            center_order = torch.randperm(self.center_count, dtype=torch.int64)
+                        else:
+                            center_order = torch.arange(self.center_count, dtype=torch.int64)
+                        center_orders[window_slot] = center_order
+
+                    offset = int(center_offsets[window_slot].item())
+                    remaining_centers = self.center_count - offset
+                    take = min(take_target, remaining_centers)
+                    if take > 0:
+                        base_index = window_slot * self.center_count
+                        sample_indices = center_order[offset : offset + take] + int(base_index)
+                        batch.extend(sample_indices.tolist())
+                        center_offsets[window_slot] = offset + take
+
+                    if int(center_offsets[window_slot].item()) < self.center_count:
+                        window_queue.append(window_slot)
+
+                safety_rounds += 1
+                if safety_rounds > self.window_count + 1:
+                    raise RuntimeError(
+                        "TemporalWindowBatchSampler exceeded the expected number of refill rounds "
+                        f"while assembling a batch. target_batch_size={target_batch_size}, "
+                        f"current_batch_size={len(batch)}, mix_windows={mix_windows}."
+                    )
+
+            if len(batch) != target_batch_size:
+                raise RuntimeError(
+                    "TemporalWindowBatchSampler assembled an unexpected batch size. "
+                    f"expected={target_batch_size}, got={len(batch)}, produced={produced_samples}."
+                )
+
+            produced_samples += len(batch)
             yield batch
 
 
@@ -504,13 +591,22 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         )
         return radius_value
 
-    def _temporal_loader(self, dataset, *, shuffle_windows: bool, shuffle_centers: bool, drop_last: bool):
+    def _temporal_loader(
+        self,
+        dataset,
+        *,
+        shuffle_windows: bool,
+        shuffle_centers: bool,
+        drop_last: bool,
+        mixed_windows_per_batch: int | None = None,
+    ):
         batch_sampler = TemporalWindowBatchSampler(
             dataset,
             batch_size=self.batch_size,
             drop_last=drop_last,
             shuffle_windows=shuffle_windows,
             shuffle_centers=shuffle_centers,
+            mixed_windows_per_batch=mixed_windows_per_batch,
         )
         return DataLoader(
             dataset,
@@ -522,11 +618,13 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         )
 
     def train_dataloader(self):
+        mixed_windows_per_batch = int(getattr(self.cfg, "temporal_train_windows_per_batch", 4))
         return self._temporal_loader(
             self.train_dataset,
             shuffle_windows=True,
             shuffle_centers=True,
             drop_last=True,
+            mixed_windows_per_batch=mixed_windows_per_batch,
         )
 
     def val_dataloader(self):
@@ -535,6 +633,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             shuffle_windows=False,
             shuffle_centers=False,
             drop_last=False,
+            mixed_windows_per_batch=None,
         )
 
     def test_dataloader(self):
@@ -543,6 +642,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             shuffle_windows=False,
             shuffle_centers=False,
             drop_last=False,
+            mixed_windows_per_batch=None,
         )
 
 
