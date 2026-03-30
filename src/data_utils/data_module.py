@@ -67,6 +67,19 @@ class TemporalWindowBatchSampler(Sampler[list[int]]):
         return int(math.ceil(self.total_samples / float(self.batch_size)))
 
     def __iter__(self):
+        if self.shuffle_windows and self.shuffle_centers:
+            # Training with globally shuffled sample indices avoids batches that
+            # are homogeneous in time when center_count >> batch_size.
+            perm = torch.randperm(self.total_samples)
+            full_size = int(perm.numel())
+            if self.drop_last:
+                full_size = (full_size // self.batch_size) * self.batch_size
+            for start in range(0, full_size, self.batch_size):
+                yield perm[start : start + self.batch_size].tolist()
+            if not self.drop_last and full_size < int(perm.numel()):
+                yield perm[full_size:].tolist()
+            return
+
         if self.shuffle_windows:
             window_order = torch.randperm(self.window_count).tolist()
         else:

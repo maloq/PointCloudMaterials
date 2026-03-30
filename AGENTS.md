@@ -1,4 +1,4 @@
-use conda environment: `pointnet`
+use conda environment `pointnet` if avilable
 
 ## No silent failures / no ambiguity
 

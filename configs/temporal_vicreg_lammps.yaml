@@ -23,8 +23,8 @@ data:
   frame_stop: null
   train_ratio: 0.8
   radius: 12.0
-  num_points: 96
-  model_points: 96
+  num_points: 160
+  model_points: 80
   center_selection_mode: atom_stride
   center_atom_ids: null
   center_atom_stride: 32
@@ -75,7 +75,7 @@ decoder:
     latent_size: ${latent_size}
 
 learning_rate: 0.003
-batch_size: 512
+batch_size: 1024
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1
@@ -128,8 +128,8 @@ vicreg_start_epoch: 0
 vicreg_jitter_std: 0.01
 vicreg_jitter_mode: physical
 vicreg_drop_ratio: 0.0
-vicreg_neighbor_view: false
-vicreg_neighbor_view_mode: none
+vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: second
 vicreg_neighbor_k: 8
 vicreg_neighbor_max_relative_distance: 0.0
 vicreg_view_points: ${data.model_points}
