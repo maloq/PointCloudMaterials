@@ -2,7 +2,11 @@ import math
 import torch
 import torch.nn as nn
 
-from src.training_methods.contrastive_learning.invariant_utils import TensorProductInvariantHead
+from src.training_methods.contrastive_learning.config_warnings import (
+    warn_common_view_sampler_ignored_fields,
+    warn_fixed_invariant_fields,
+)
+from src.training_methods.contrastive_learning.invariant_utils import NormInvariantHead
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 
 
@@ -36,11 +40,6 @@ class BarlowTwinsLoss(nn.Module):
         occlusion_cone_deg: float,
         occlusion_prob: float,
         input_dim,
-        invariant_mode: str = "norms",
-        invariant_max_factor: float = 4.0,
-        invariant_groups: int = 0,
-        invariant_use_third_order: bool = True,
-        invariant_eps: float = 1e-6,
     ) -> None:
         super().__init__()
         self.enabled = bool(enabled)
@@ -76,13 +75,9 @@ class BarlowTwinsLoss(nn.Module):
         self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
         if projector_input_dim is not None:
-            self.invariant_head = TensorProductInvariantHead(
+            self.invariant_head = NormInvariantHead(
                 channels=projector_input_dim,
-                mode=invariant_mode,
-                max_factor=float(invariant_max_factor),
-                groups=int(invariant_groups),
-                include_third_order=bool(invariant_use_third_order),
-                eps=float(invariant_eps),
+                eps=1e-6,
             )
             projector_input_dim = int(self.invariant_head.output_dim)
 
@@ -103,7 +98,7 @@ class BarlowTwinsLoss(nn.Module):
             )
 
     @classmethod
-    def from_config(cls, cfg, *, input_dim, invariant_mode_override: str | None = None):
+    def from_config(cls, cfg, *, input_dim):
         data_cfg = getattr(cfg, "data", None)
         view_points = getattr(cfg, "barlow_view_points", None)
         if view_points is None and data_cfg is not None:
@@ -114,46 +109,75 @@ class BarlowTwinsLoss(nn.Module):
         jitter_mode = str(getattr(cfg, "barlow_jitter_mode", "absolute")).lower()
         jitter_scale_cfg = getattr(cfg, "barlow_jitter_scale", None)
         jitter_scale = cls._resolve_jitter_scale(cfg, jitter_mode=jitter_mode, jitter_scale=jitter_scale_cfg)
-        invariant_mode = (
-            str(invariant_mode_override).lower()
-            if invariant_mode_override is not None
-            else str(getattr(cfg, "barlow_invariant_mode", "norms")).lower()
+        enabled = bool(getattr(cfg, "barlow_enabled", False))
+        weight = float(getattr(cfg, "barlow_weight", 0.0))
+        lambda_ = float(getattr(cfg, "barlow_lambda", 5e-3))
+        embed_dim = int(getattr(cfg, "barlow_embed_dim", 8192))
+        start_epoch = int(getattr(cfg, "barlow_start_epoch", 0))
+        jitter_std = float(getattr(cfg, "barlow_jitter_std", 0.01))
+        drop_ratio = float(getattr(cfg, "barlow_drop_ratio", 0.2))
+        resolved_view_points = int(view_points) if view_points is not None else None
+        neighbor_view = bool(getattr(cfg, "barlow_neighbor_view", False))
+        neighbor_view_mode = str(getattr(cfg, "barlow_neighbor_view_mode", "both"))
+        neighbor_k = int(getattr(cfg, "barlow_neighbor_k", 8))
+        neighbor_max_relative_distance = float(
+            getattr(cfg, "barlow_neighbor_max_relative_distance", 0.0)
+        )
+        view_crop_mode = str(getattr(cfg, "barlow_view_crop_mode", "nearest_origin"))
+        drop_apply_to_both = bool(getattr(cfg, "barlow_drop_apply_to_both", True))
+        rotation_mode = str(getattr(cfg, "barlow_rotation_mode", "none"))
+        rotation_deg = float(getattr(cfg, "barlow_rotation_deg", 0.0))
+        strain_std = float(getattr(cfg, "barlow_strain_std", 0.0))
+        strain_volume_preserve = bool(getattr(cfg, "barlow_strain_volume_preserve", True))
+        occlusion_mode = str(getattr(cfg, "barlow_occlusion_mode", "none"))
+        occlusion_view = str(getattr(cfg, "barlow_occlusion_view", "second"))
+        occlusion_slab_frac = float(getattr(cfg, "barlow_occlusion_slab_frac", 0.4))
+        occlusion_cone_deg = float(getattr(cfg, "barlow_occlusion_cone_deg", 20.0))
+        occlusion_prob = float(getattr(cfg, "barlow_occlusion_prob", 1.0))
+        warn_common_view_sampler_ignored_fields(
+            cfg,
+            prefix="barlow",
+            jitter_std=jitter_std,
+            jitter_mode=jitter_mode,
+            neighbor_view=neighbor_view,
+            neighbor_view_mode=neighbor_view_mode,
+            drop_ratio=drop_ratio,
+            rotation_mode=rotation_mode,
+            strain_std=strain_std,
+            occlusion_mode=occlusion_mode,
+        )
+        warn_fixed_invariant_fields(
+            cfg,
+            prefix="barlow",
         )
 
         return cls(
-            enabled=bool(getattr(cfg, "barlow_enabled", False)),
-            weight=float(getattr(cfg, "barlow_weight", 0.0)),
-            lambda_=float(getattr(cfg, "barlow_lambda", 5e-3)),
-            embed_dim=int(getattr(cfg, "barlow_embed_dim", 8192)),
-            start_epoch=int(getattr(cfg, "barlow_start_epoch", 0)),
-            jitter_std=float(getattr(cfg, "barlow_jitter_std", 0.01)),
+            enabled=enabled,
+            weight=weight,
+            lambda_=lambda_,
+            embed_dim=embed_dim,
+            start_epoch=start_epoch,
+            jitter_std=jitter_std,
             jitter_mode=jitter_mode,
             jitter_scale=jitter_scale,
-            drop_ratio=float(getattr(cfg, "barlow_drop_ratio", 0.2)),
-            view_points=int(view_points) if view_points is not None else None,
-            neighbor_view=bool(getattr(cfg, "barlow_neighbor_view", False)),
-            neighbor_view_mode=str(getattr(cfg, "barlow_neighbor_view_mode", "both")),
-            neighbor_k=int(getattr(cfg, "barlow_neighbor_k", 8)),
-            neighbor_max_relative_distance=float(
-                getattr(cfg, "barlow_neighbor_max_relative_distance", 0.0)
-            ),
-            view_crop_mode=str(getattr(cfg, "barlow_view_crop_mode", "nearest_origin")),
-            drop_apply_to_both=bool(getattr(cfg, "barlow_drop_apply_to_both", True)),
-            rotation_mode=str(getattr(cfg, "barlow_rotation_mode", "none")),
-            rotation_deg=float(getattr(cfg, "barlow_rotation_deg", 0.0)),
-            strain_std=float(getattr(cfg, "barlow_strain_std", 0.0)),
-            strain_volume_preserve=bool(getattr(cfg, "barlow_strain_volume_preserve", True)),
-            occlusion_mode=str(getattr(cfg, "barlow_occlusion_mode", "none")),
-            occlusion_view=str(getattr(cfg, "barlow_occlusion_view", "second")),
-            occlusion_slab_frac=float(getattr(cfg, "barlow_occlusion_slab_frac", 0.4)),
-            occlusion_cone_deg=float(getattr(cfg, "barlow_occlusion_cone_deg", 20.0)),
-            occlusion_prob=float(getattr(cfg, "barlow_occlusion_prob", 1.0)),
+            drop_ratio=drop_ratio,
+            view_points=resolved_view_points,
+            neighbor_view=neighbor_view,
+            neighbor_view_mode=neighbor_view_mode,
+            neighbor_k=neighbor_k,
+            neighbor_max_relative_distance=neighbor_max_relative_distance,
+            view_crop_mode=view_crop_mode,
+            drop_apply_to_both=drop_apply_to_both,
+            rotation_mode=rotation_mode,
+            rotation_deg=rotation_deg,
+            strain_std=strain_std,
+            strain_volume_preserve=strain_volume_preserve,
+            occlusion_mode=occlusion_mode,
+            occlusion_view=occlusion_view,
+            occlusion_slab_frac=occlusion_slab_frac,
+            occlusion_cone_deg=occlusion_cone_deg,
+            occlusion_prob=occlusion_prob,
             input_dim=input_dim,
-            invariant_mode=invariant_mode,
-            invariant_max_factor=float(getattr(cfg, "barlow_invariant_max_factor", 4.0)),
-            invariant_groups=int(getattr(cfg, "barlow_invariant_groups", 0)),
-            invariant_use_third_order=bool(getattr(cfg, "barlow_invariant_use_third_order", True)),
-            invariant_eps=float(getattr(cfg, "barlow_invariant_eps", 1e-6)),
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -595,7 +619,7 @@ class BarlowTwinsLoss(nn.Module):
                 warnings.warn(
                     "No invariant_head: reinterpreting inv_z (3D, last_dim=3) as eq_z "
                     f"and reducing via norm. Shape: {tuple(inv_z.shape)}. "
-                    "Set invariant_mode explicitly if this is unintended.",
+                    "Contrastive training is norms-only, so equivariant tensors are reduced channel-wise.",
                 )
                 eq_z = inv_z
                 inv_z = None

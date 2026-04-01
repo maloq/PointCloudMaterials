@@ -1,9 +1,10 @@
 import os
 # Hack to fix multi-GPU training on server (NCCL P2P hang)
-os.environ["NCCL_P2P_DISABLE"] = "0"
+os.environ["NCCL_P2P_DISABLE"] = "1"
 
 import math
 import sys
+import warnings
 import hydra
 from hydra.core.hydra_config import HydraConfig
 import torch
@@ -27,6 +28,18 @@ from src.data_utils.data_module import (
 torch.set_float32_matmul_precision('high')
 
 logger = setup_logging()
+
+
+def _suppress_dataloader_worker_count_warning() -> None:
+    warnings.filterwarnings(
+        "ignore",
+        message=(
+            r"This DataLoader will create \d+ worker processes in total\..*"
+            r"lower the worker number to avoid potential slowness/freeze if necessary\."
+        ),
+        category=UserWarning,
+        module=r"torch\.utils\.data\.dataloader",
+    )
 
 
 def _seed_training_run(cfg: DictConfig) -> None:
@@ -499,6 +512,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     Returns:
         tuple: (trainer, model, datamodule, checkpoint_callbacks) for post-training processing
     """
+    _suppress_dataloader_worker_count_warning()
     logger.print(f"Starting in {os.getcwd()}")
 
     if run_dir is None:
@@ -696,7 +710,11 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
     if init_ckpt_path is not None:
         init_strict = bool(getattr(cfg, "init_from_checkpoint_strict", False))
-        _load_model_weights_from_checkpoint(model, init_ckpt_path, strict=init_strict)
+        model_specific_loader = getattr(model, "load_pretrained_weights_from_checkpoint", None)
+        if callable(model_specific_loader):
+            model_specific_loader(init_ckpt_path, strict=init_strict)
+        else:
+            _load_model_weights_from_checkpoint(model, init_ckpt_path, strict=init_strict)
         logger.print("Starting fresh training from loaded model weights (epoch/optimizer reset).")
         trainer.fit(model, dm)
     else:

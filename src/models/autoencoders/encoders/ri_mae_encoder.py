@@ -196,6 +196,14 @@ class RIAttentionBlock(nn.Module):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_heads = int(num_heads)
+        if self.num_heads <= 0:
+            raise ValueError(f"num_heads must be positive, got {self.num_heads}.")
+        if self.embed_dim % self.num_heads != 0:
+            raise ValueError(
+                "RIAttentionBlock requires embed_dim to be divisible by num_heads. "
+                f"Got embed_dim={self.embed_dim}, num_heads={self.num_heads}, "
+                f"remainder={self.embed_dim % self.num_heads}."
+            )
         self.head_dim = self.embed_dim // self.num_heads
         self.scale = 1.0 / math.sqrt(float(self.head_dim))
         self.norm1 = nn.LayerNorm(self.embed_dim)

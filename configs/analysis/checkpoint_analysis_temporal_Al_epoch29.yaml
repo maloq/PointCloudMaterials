@@ -1,6 +1,6 @@
 checkpoint:
-  path: output/2026-04-01/13-59-31/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=09.ckpt
-  output_dir: outputs/temporal_real_AlNi50_1150K
+  path: output/2026-03-31/13-35-49/TEMPORAL_VICREG_l128_N160_M80_RI_MAE_Invariant-epoch=29.ckpt
+  output_dir: null
   cuda_device: 0
 
 inputs:
@@ -11,7 +11,7 @@ inputs:
   max_samples_total: 0
   temporal_real:
     enabled: true
-    dump_file: datasets/dump_Al50Ni50_1150K.pos
+    dump_file: datasets/dump_Pure_Al_500K.pos
     cache_dir: null
     sequence_length: 3
     frame_stride: 1
@@ -113,7 +113,7 @@ figure_set:
     shell_min_neighbors: 8
     shell_max_neighbors: 24
   raytrace:
-    enabled: false
+    enabled: true
     blender_executable: blender
     resolution: 1600
     max_points: null

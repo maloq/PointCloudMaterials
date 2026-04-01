@@ -2,8 +2,6 @@ defaults:
  - data: data_synth_polycrystalline_balanced_geometries
  - _self_
 
-data:
-
 project_name: pointnet
 experiment_name: VICREG_NEQUIP_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
@@ -78,8 +76,6 @@ warmup_epochs: 12
 warmup_start_factor: 0.1
 
 decay_rate: 0.0004
-# VICReg in this repo derives the invariant branch from eq_z when eq_z is present.
-contrastive_norms_only_latent: true
 enable_embedding_metrics: false
 enable_svm_accuracy: false
 
@@ -124,11 +120,6 @@ vicreg_occlusion_slab_frac: 0.0
 vicreg_occlusion_cone_deg: 0.0
 vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
-vicreg_invariant_mode: norms
-vicreg_invariant_max_factor: 4.0
-vicreg_invariant_groups: 0
-vicreg_invariant_use_third_order: true
-vicreg_invariant_eps: 1e-6
 vicreg_radial_enabled: false
 vicreg_radial_beta1: 1.0
 vicreg_radial_beta2: 0.1
@@ -143,4 +134,3 @@ augmentation:
   jitter_scale: 0.0
   scaling_range: 0.0
   track_augmentation: false
-

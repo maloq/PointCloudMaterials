@@ -6,11 +6,18 @@ import time
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
+if __package__ is None or __package__ == "":
+    # Allow `python src/analysis/pipeline.py ...` from the repo root by making
+    # the project importable before any relative imports execute.
+    project_root = Path(__file__).resolve().parents[2]
+    project_root_str = str(project_root)
+    if project_root_str not in sys.path:
+        sys.path.insert(0, project_root_str)
+    __package__ = "src.analysis"
+
 import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf, open_dict
-
-sys.path.append(os.getcwd())
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
 from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
@@ -831,14 +838,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    # Support `python pipeline.py` in addition to `python -m ...analysis.pipeline`
-    if __package__ is None or __package__ == "":
-        import importlib, pathlib
-
-        _this = pathlib.Path(__file__).resolve()
-        _pkg = "src.analysis.pipeline"
-        sys.modules.pop(__name__, None)
-        mod = importlib.import_module(_pkg)
-        mod.main()
-    else:
-        main()
+    main()

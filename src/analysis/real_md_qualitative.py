@@ -1024,10 +1024,12 @@ def run_real_md_qualitative_analysis(
     random_state: int,
     representative_render_cache: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    if getattr(model_cfg.data, "kind", None) != "real":
+    data_kind = getattr(model_cfg.data, "kind", None)
+    if data_kind not in {"real", "temporal_lammps"}:
         raise ValueError(
-            "run_real_md_qualitative_analysis only supports model_cfg.data.kind='real', "
-            f"got {getattr(model_cfg.data, 'kind', None)!r}."
+            "run_real_md_qualitative_analysis only supports model_cfg.data.kind in "
+            "['real', 'temporal_lammps'], "
+            f"got {data_kind!r}."
         )
     if not frame_groups:
         raise ValueError("Real-MD qualitative analysis requires at least one frame group.")

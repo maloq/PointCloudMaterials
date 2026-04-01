@@ -4,6 +4,8 @@ Contains optimizer/scheduler setup, tensor operations, rotation utilities,
 batch processing, and configuration helpers.
 """
 
+import warnings
+
 import torch
 from typing import Tuple, Dict, Any, Optional
 from bisect import bisect_right
@@ -75,10 +77,43 @@ def get_optimizers_and_scheduler(hparams, parameters):
     else:
         raise ValueError(f"Scheduler {scheduler_name} not found")
 
+    if getattr(hparams, "scheduler_gamma", None) is not None and scheduler_name != "Step":
+        warnings.warn(
+            f"Ignoring configured field scheduler_gamma: scheduler_name={scheduler_name!r} does not use gamma.",
+            stacklevel=2,
+        )
+    if getattr(hparams, "scheduler_min_lr", None) is not None and scheduler_name != "Cosine":
+        warnings.warn(
+            f"Ignoring configured field scheduler_min_lr: scheduler_name={scheduler_name!r} does not use eta_min.",
+            stacklevel=2,
+        )
+
     # Optional epoch-level linear warmup for non-step schedulers.
     warmup_enabled = bool(getattr(hparams, "warmup_enabled", False))
     warmup_epochs = int(getattr(hparams, "warmup_epochs", 0) or 0)
     warmup_start_factor = float(getattr(hparams, "warmup_start_factor", 0.1))
+    if not warmup_enabled:
+        if getattr(hparams, "warmup_epochs", None) is not None:
+            warnings.warn(
+                "Ignoring configured field warmup_epochs: warmup_enabled=false disables warmup.",
+                stacklevel=2,
+            )
+        if getattr(hparams, "warmup_start_factor", None) is not None:
+            warnings.warn(
+                "Ignoring configured field warmup_start_factor: warmup_enabled=false disables warmup.",
+                stacklevel=2,
+            )
+    elif warmup_epochs <= 0:
+        if getattr(hparams, "warmup_start_factor", None) is not None:
+            warnings.warn(
+                f"Ignoring configured field warmup_start_factor: warmup_epochs={warmup_epochs} disables warmup.",
+                stacklevel=2,
+            )
+    elif step_interval_scheduler:
+        warnings.warn(
+            f"Ignoring configured warmup fields: scheduler_name={scheduler_name!r} already schedules learning rate per step.",
+            stacklevel=2,
+        )
     if warmup_enabled and warmup_epochs > 0 and not step_interval_scheduler:
         warmup_epochs = min(warmup_epochs, max(1, int(epochs_before_swa)))
         warmup_start_factor = min(max(warmup_start_factor, 1e-6), 1.0)

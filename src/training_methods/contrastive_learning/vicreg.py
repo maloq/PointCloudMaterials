@@ -3,7 +3,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from src.training_methods.contrastive_learning.invariant_utils import TensorProductInvariantHead
+from src.training_methods.contrastive_learning.config_warnings import (
+    warn_common_view_sampler_ignored_fields,
+    warn_disabled_radial_fields,
+    warn_fixed_invariant_fields,
+)
+from src.training_methods.contrastive_learning.invariant_utils import NormInvariantHead
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 
 
@@ -27,7 +32,6 @@ class VICRegLoss(nn.Module):
         neighbor_view_mode: str,
         neighbor_k: int,
         neighbor_max_relative_distance: float,
-        view_crop_mode: str,
         drop_apply_to_both: bool,
         rotation_mode: str,
         rotation_deg: float,
@@ -41,11 +45,6 @@ class VICRegLoss(nn.Module):
         std_eps: float,
         std_target: float,
         input_dim,
-        invariant_mode: str = "norms",
-        invariant_max_factor: float = 4.0,
-        invariant_groups: int = 0,
-        invariant_use_third_order: bool = True,
-        invariant_eps: float = 1e-6,
         radial_enabled: bool = False,
         radial_beta1: float = 1.0,
         radial_beta2: float = 0.1,
@@ -69,7 +68,6 @@ class VICRegLoss(nn.Module):
         self.neighbor_view_mode = str(neighbor_view_mode).lower()
         self.neighbor_k = int(neighbor_k)
         self.neighbor_max_relative_distance = max(0.0, float(neighbor_max_relative_distance))
-        self.view_crop_mode = str(view_crop_mode).lower()
         self.drop_apply_to_both = bool(drop_apply_to_both)
         self.rotation_mode = str(rotation_mode).lower()
         self.rotation_deg = float(rotation_deg)
@@ -95,13 +93,9 @@ class VICRegLoss(nn.Module):
         self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
         if projector_input_dim is not None:
-            self.invariant_head = TensorProductInvariantHead(
+            self.invariant_head = NormInvariantHead(
                 channels=projector_input_dim,
-                mode=invariant_mode,
-                max_factor=float(invariant_max_factor),
-                groups=int(invariant_groups),
-                include_third_order=bool(invariant_use_third_order),
-                eps=float(invariant_eps),
+                eps=1e-6,
             )
             projector_input_dim = int(self.invariant_head.output_dim)
 
@@ -122,7 +116,7 @@ class VICRegLoss(nn.Module):
             )
 
     @classmethod
-    def from_config(cls, cfg, *, input_dim, invariant_mode_override: str | None = None):
+    def from_config(cls, cfg, *, input_dim):
         data_cfg = getattr(cfg, "data", None)
         view_points = getattr(cfg, "vicreg_view_points", None)
         if view_points is None and data_cfg is not None:
@@ -138,65 +132,96 @@ class VICRegLoss(nn.Module):
             radial_m = int(radial_m)
             if radial_m <= 0:
                 radial_m = None
-        invariant_mode = (
-            str(invariant_mode_override).lower()
-            if invariant_mode_override is not None
-            else str(
-                getattr(cfg, "vicreg_invariant_mode", getattr(cfg, "barlow_invariant_mode", "norms"))
-            ).lower()
+        enabled = bool(getattr(cfg, "vicreg_enabled", False))
+        weight = float(getattr(cfg, "vicreg_weight", 0.0))
+        sim_coeff = float(getattr(cfg, "vicreg_sim_coeff", 25.0))
+        std_coeff = float(getattr(cfg, "vicreg_std_coeff", 25.0))
+        cov_coeff = float(getattr(cfg, "vicreg_cov_coeff", 1.0))
+        embed_dim = int(getattr(cfg, "vicreg_embed_dim", 8192))
+        start_epoch = int(getattr(cfg, "vicreg_start_epoch", 0))
+        jitter_std = float(getattr(cfg, "vicreg_jitter_std", 0.01))
+        drop_ratio = float(getattr(cfg, "vicreg_drop_ratio", 0.2))
+        resolved_view_points = int(view_points) if view_points is not None else None
+        neighbor_view = bool(getattr(cfg, "vicreg_neighbor_view", False))
+        neighbor_view_mode = str(getattr(cfg, "vicreg_neighbor_view_mode", "both"))
+        neighbor_k = int(getattr(cfg, "vicreg_neighbor_k", 8))
+        neighbor_max_relative_distance = float(
+            getattr(cfg, "vicreg_neighbor_max_relative_distance", 0.0)
+        )
+        drop_apply_to_both = bool(getattr(cfg, "vicreg_drop_apply_to_both", True))
+        rotation_mode = str(getattr(cfg, "vicreg_rotation_mode", "none"))
+        rotation_deg = float(getattr(cfg, "vicreg_rotation_deg", 0.0))
+        strain_std = float(getattr(cfg, "vicreg_strain_std", 0.0))
+        strain_volume_preserve = bool(getattr(cfg, "vicreg_strain_volume_preserve", True))
+        occlusion_mode = str(getattr(cfg, "vicreg_occlusion_mode", "none"))
+        occlusion_view = str(getattr(cfg, "vicreg_occlusion_view", "second"))
+        occlusion_slab_frac = float(getattr(cfg, "vicreg_occlusion_slab_frac", 0.4))
+        occlusion_cone_deg = float(getattr(cfg, "vicreg_occlusion_cone_deg", 20.0))
+        occlusion_prob = float(getattr(cfg, "vicreg_occlusion_prob", 1.0))
+        std_eps = float(getattr(cfg, "vicreg_std_eps", 1e-4))
+        std_target = float(getattr(cfg, "vicreg_std_target", 1.0))
+        radial_enabled = bool(getattr(cfg, "vicreg_radial_enabled", False))
+        radial_beta1 = float(getattr(cfg, "vicreg_radial_beta1", 1.0))
+        radial_beta2 = float(getattr(cfg, "vicreg_radial_beta2", 0.1))
+        radial_eps = float(getattr(cfg, "vicreg_radial_eps", 1e-8))
+
+        warn_common_view_sampler_ignored_fields(
+            cfg,
+            prefix="vicreg",
+            jitter_std=jitter_std,
+            jitter_mode=jitter_mode,
+            neighbor_view=neighbor_view,
+            neighbor_view_mode=neighbor_view_mode,
+            drop_ratio=drop_ratio,
+            rotation_mode=rotation_mode,
+            strain_std=strain_std,
+            occlusion_mode=occlusion_mode,
+        )
+        warn_fixed_invariant_fields(
+            cfg,
+            prefix="vicreg",
+        )
+        warn_disabled_radial_fields(
+            cfg,
+            prefix="vicreg",
+            radial_enabled=radial_enabled,
         )
 
         return cls(
-            enabled=bool(getattr(cfg, "vicreg_enabled", False)),
-            weight=float(getattr(cfg, "vicreg_weight", 0.0)),
-            sim_coeff=float(getattr(cfg, "vicreg_sim_coeff", 25.0)),
-            std_coeff=float(getattr(cfg, "vicreg_std_coeff", 25.0)),
-            cov_coeff=float(getattr(cfg, "vicreg_cov_coeff", 1.0)),
-            embed_dim=int(getattr(cfg, "vicreg_embed_dim", 8192)),
-            start_epoch=int(getattr(cfg, "vicreg_start_epoch", 0)),
-            jitter_std=float(getattr(cfg, "vicreg_jitter_std", 0.01)),
+            enabled=enabled,
+            weight=weight,
+            sim_coeff=sim_coeff,
+            std_coeff=std_coeff,
+            cov_coeff=cov_coeff,
+            embed_dim=embed_dim,
+            start_epoch=start_epoch,
+            jitter_std=jitter_std,
             jitter_mode=jitter_mode,
             jitter_scale=jitter_scale,
-            drop_ratio=float(getattr(cfg, "vicreg_drop_ratio", 0.2)),
-            view_points=int(view_points) if view_points is not None else None,
-            neighbor_view=bool(getattr(cfg, "vicreg_neighbor_view", False)),
-            neighbor_view_mode=str(getattr(cfg, "vicreg_neighbor_view_mode", "both")),
-            neighbor_k=int(getattr(cfg, "vicreg_neighbor_k", 8)),
-            neighbor_max_relative_distance=float(
-                getattr(cfg, "vicreg_neighbor_max_relative_distance", 0.0)
-            ),
-            view_crop_mode=str(getattr(cfg, "vicreg_view_crop_mode", "nearest_origin")),
-            drop_apply_to_both=bool(getattr(cfg, "vicreg_drop_apply_to_both", True)),
-            rotation_mode=str(getattr(cfg, "vicreg_rotation_mode", "none")),
-            rotation_deg=float(getattr(cfg, "vicreg_rotation_deg", 0.0)),
-            strain_std=float(getattr(cfg, "vicreg_strain_std", 0.0)),
-            strain_volume_preserve=bool(getattr(cfg, "vicreg_strain_volume_preserve", True)),
-            occlusion_mode=str(getattr(cfg, "vicreg_occlusion_mode", "none")),
-            occlusion_view=str(getattr(cfg, "vicreg_occlusion_view", "second")),
-            occlusion_slab_frac=float(getattr(cfg, "vicreg_occlusion_slab_frac", 0.4)),
-            occlusion_cone_deg=float(getattr(cfg, "vicreg_occlusion_cone_deg", 20.0)),
-            occlusion_prob=float(getattr(cfg, "vicreg_occlusion_prob", 1.0)),
-            std_eps=float(getattr(cfg, "vicreg_std_eps", 1e-4)),
-            std_target=float(getattr(cfg, "vicreg_std_target", 1.0)),
+            drop_ratio=drop_ratio,
+            view_points=resolved_view_points,
+            neighbor_view=neighbor_view,
+            neighbor_view_mode=neighbor_view_mode,
+            neighbor_k=neighbor_k,
+            neighbor_max_relative_distance=neighbor_max_relative_distance,
+            drop_apply_to_both=drop_apply_to_both,
+            rotation_mode=rotation_mode,
+            rotation_deg=rotation_deg,
+            strain_std=strain_std,
+            strain_volume_preserve=strain_volume_preserve,
+            occlusion_mode=occlusion_mode,
+            occlusion_view=occlusion_view,
+            occlusion_slab_frac=occlusion_slab_frac,
+            occlusion_cone_deg=occlusion_cone_deg,
+            occlusion_prob=occlusion_prob,
+            std_eps=std_eps,
+            std_target=std_target,
             input_dim=input_dim,
-            invariant_mode=invariant_mode,
-            invariant_max_factor=float(
-                getattr(cfg, "vicreg_invariant_max_factor", getattr(cfg, "barlow_invariant_max_factor", 4.0))
-            ),
-            invariant_groups=int(getattr(cfg, "vicreg_invariant_groups", getattr(cfg, "barlow_invariant_groups", 0))),
-            invariant_use_third_order=bool(
-                getattr(
-                    cfg,
-                    "vicreg_invariant_use_third_order",
-                    getattr(cfg, "barlow_invariant_use_third_order", True),
-                )
-            ),
-            invariant_eps=float(getattr(cfg, "vicreg_invariant_eps", getattr(cfg, "barlow_invariant_eps", 1e-6))),
-            radial_enabled=bool(getattr(cfg, "vicreg_radial_enabled", False)),
-            radial_beta1=float(getattr(cfg, "vicreg_radial_beta1", 1.0)),
-            radial_beta2=float(getattr(cfg, "vicreg_radial_beta2", 0.1)),
+            radial_enabled=radial_enabled,
+            radial_beta1=radial_beta1,
+            radial_beta2=radial_beta2,
             radial_m=radial_m,
-            radial_eps=float(getattr(cfg, "vicreg_radial_eps", 1e-8)),
+            radial_eps=radial_eps,
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -288,28 +313,121 @@ class VICRegLoss(nn.Module):
                 neighbor_k=self.neighbor_k,
                 max_relative_distance=self.neighbor_max_relative_distance,
             )
+        return self.apply_view_postprocessing(
+            x,
+            use_neighbor=use_neighbor,
+            apply_occlusion=apply_occlusion,
+        )
+
+    @staticmethod
+    def _expand_batch_mask(
+        value: bool | torch.Tensor,
+        *,
+        batch_size: int,
+        device,
+        name: str,
+    ) -> torch.Tensor:
+        if isinstance(value, bool):
+            return torch.full((batch_size,), value, dtype=torch.bool, device=device)
+        if not torch.is_tensor(value):
+            raise TypeError(f"{name} must be a bool or a torch.Tensor, got {type(value)}.")
+
+        mask = value.to(device=device)
+        if mask.dim() == 0:
+            return torch.full((batch_size,), bool(mask.item()), dtype=torch.bool, device=device)
+
+        mask = mask.reshape(-1)
+        if mask.shape[0] != batch_size:
+            raise ValueError(
+                f"{name} must have shape ({batch_size},) when passed per sample, "
+                f"got {tuple(mask.shape)}."
+            )
+        if mask.dtype != torch.bool:
+            mask = mask != 0
+        return mask
+
+    def _apply_masked_occlusion(self, x: torch.Tensor, *, apply_mask: torch.Tensor) -> torch.Tensor:
+        if not bool(apply_mask.any().item()) or self.occlusion_mode == "none":
+            return x
+
+        mode = self._resolve_occlusion_mode(device=x.device)
+        if mode == "slab":
+            occluded = self._occlude_slab(x)
+        elif mode == "cone":
+            occluded = self._occlude_cone(x)
+        else:
+            return x
+        return torch.where(apply_mask.view(-1, 1, 1), occluded, x)
+
+    def _apply_masked_drop(self, x: torch.Tensor, *, apply_mask: torch.Tensor) -> torch.Tensor:
+        if not bool(apply_mask.any().item()) or self.drop_ratio <= 0:
+            return x
+
+        bsz, num_points, _ = x.shape
+        keep = (torch.rand(bsz, num_points, device=x.device) > self.drop_ratio)
+        keep[:, 0] = True
+        weights = keep.float()
+        weights = weights / (weights.sum(dim=1, keepdim=True) + 1e-8)
+        idx = torch.multinomial(weights, num_samples=num_points, replacement=True)
+        dropped = x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
+        return torch.where(apply_mask.view(-1, 1, 1), dropped, x)
+
+    def apply_view_postprocessing(
+        self,
+        x: torch.Tensor,
+        *,
+        use_neighbor: bool | torch.Tensor,
+        apply_occlusion: bool | torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        if x.dim() != 3 or x.shape[-1] != 3:
+            raise ValueError(
+                "apply_view_postprocessing expects a point cloud with shape (B, N, 3), "
+                f"got {tuple(x.shape)}."
+            )
+
+        bsz = int(x.shape[0])
+        use_neighbor_mask = self._expand_batch_mask(
+            use_neighbor,
+            batch_size=bsz,
+            device=x.device,
+            name="use_neighbor",
+        )
+        if apply_occlusion is None:
+            apply_occlusion_mask = self._expand_batch_mask(
+                self._should_occlude(False),
+                batch_size=bsz,
+                device=x.device,
+                name="apply_occlusion",
+            )
+            if self.occlusion_view == "first":
+                apply_occlusion_mask = ~use_neighbor_mask
+            elif self.occlusion_view == "second":
+                apply_occlusion_mask = use_neighbor_mask
+            elif self.occlusion_view == "both":
+                apply_occlusion_mask = torch.ones((bsz,), dtype=torch.bool, device=x.device)
+        else:
+            apply_occlusion_mask = self._expand_batch_mask(
+                apply_occlusion,
+                batch_size=bsz,
+                device=x.device,
+                name="apply_occlusion",
+            )
+
         if self.view_points is not None:
-            x = crop_to_num_points(x, self.view_points, mode=self.view_crop_mode)
+            x = crop_to_num_points(x, self.view_points)
         x = self._apply_rotation(x)
         x = self._apply_strain(x)
-        if apply_occlusion:
-            mode = self._resolve_occlusion_mode(device=x.device)
-            if mode == "slab":
-                x = self._occlude_slab(x)
-            elif mode == "cone":
-                x = self._occlude_cone(x)
+        x = self._apply_masked_occlusion(x, apply_mask=apply_occlusion_mask)
         if self.jitter_std > 0:
             x = x + torch.randn_like(x) * (self.jitter_std * self.jitter_scale)
-        apply_drop = self.drop_ratio > 0 and (self.drop_apply_to_both or (not use_neighbor))
-        if apply_drop:
-            bsz, num_points, _ = x.shape
-            keep = (torch.rand(bsz, num_points, device=x.device) > self.drop_ratio)
-            keep[:, 0] = True
-            w = keep.float()
-            w = w / (w.sum(dim=1, keepdim=True) + 1e-8)
-            idx = torch.multinomial(w, num_samples=num_points, replacement=True)
-            x = x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
 
+        drop_mask = torch.zeros((bsz,), dtype=torch.bool, device=x.device)
+        if self.drop_ratio > 0:
+            if self.drop_apply_to_both:
+                drop_mask.fill_(True)
+            else:
+                drop_mask = ~use_neighbor_mask
+        x = self._apply_masked_drop(x, apply_mask=drop_mask)
         return x
 
     @staticmethod
@@ -613,7 +731,7 @@ class VICRegLoss(nn.Module):
                 warnings.warn(
                     "No invariant_head: reinterpreting inv_z (3D, last_dim=3) as eq_z "
                     f"and reducing via norm. Shape: {tuple(inv_z.shape)}. "
-                    "Set invariant_mode explicitly if this is unintended.",
+                    "Contrastive training is norms-only, so equivariant tensors are reduced channel-wise.",
                 )
                 eq_z = inv_z
                 inv_z = None

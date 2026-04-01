@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import time
@@ -39,18 +40,16 @@ _SUPPORTED_POSITION_COLUMNS: tuple[tuple[str, str, str], ...] = (
     ("x", "y", "z"),
     ("xu", "yu", "zu"),
 )
+_PRECOMPUTED_NEIGHBOR_INDEX_PROCESS_CACHE: dict[str, np.ndarray] = {}
 
 
 def _normalize_point_cloud(points: np.ndarray, radius: float | None) -> np.ndarray:
-    if radius is not None:
-        return points / float(radius)
-    max_norm = np.max(np.sqrt(np.sum(points ** 2, axis=1)))
-    if max_norm <= 0.0:
+    if radius is None:
         raise ValueError(
-            "Cannot normalize a local structure with zero spatial extent. "
-            f"points_shape={points.shape}, max_norm={max_norm}."
+            "Temporal local-structure normalization requires an explicit cutoff radius. "
+            "Resolve data.radius or enable data.auto_cutoff so the normalization scale is well-defined."
         )
-    return points / max_norm
+    return points / float(radius)
 
 
 def _sanitize_periodic_points(points: np.ndarray, box_lengths: np.ndarray) -> np.ndarray:
@@ -121,6 +120,8 @@ def estimate_lammps_dump_cutoff_radius(
     estimation_samples: int,
     seed: int,
     safety_factor: float,
+    boundary_margin: float | None = None,
+    periodic: bool = True,
 ) -> dict[str, Any]:
     dump_path = Path(dump_file).expanduser().resolve()
     if not dump_path.exists():
@@ -135,6 +136,8 @@ def estimate_lammps_dump_cutoff_radius(
         raise ValueError(f"estimation_samples must be > 0, got {estimation_samples}.")
     if safety_factor <= 0.0:
         raise ValueError(f"safety_factor must be > 0, got {safety_factor}.")
+    if boundary_margin is not None and float(boundary_margin) < 0.0:
+        raise ValueError(f"boundary_margin must be >= 0 when provided, got {boundary_margin}.")
 
     points, box_lengths, timestep = TemporalLAMMPSDumpDataset.load_dump_frame_positions(
         dump_path,
@@ -143,9 +146,35 @@ def estimate_lammps_dump_cutoff_radius(
     num_atoms = int(points.shape[0])
     k = min(int(target_points), num_atoms)
     rng = np.random.default_rng(int(seed))
-    sampled = min(int(estimation_samples), num_atoms)
-    center_indices = rng.choice(num_atoms, size=sampled, replace=False)
-    tree = cKDTree(points, boxsize=box_lengths, balanced_tree=False)
+    candidate_indices = np.arange(num_atoms, dtype=np.int64)
+    if boundary_margin is not None and float(boundary_margin) > 0.0:
+        boundary_margin_value = float(boundary_margin)
+        if periodic:
+            lower = np.full((3,), boundary_margin_value, dtype=np.float32)
+            upper = np.asarray(box_lengths, dtype=np.float32) - boundary_margin_value
+            interior_mask = np.all(
+                (points >= lower[None, :]) & (points <= upper[None, :]),
+                axis=1,
+            )
+        else:
+            min_coords = points.min(axis=0)
+            max_coords = points.max(axis=0)
+            interior_mask = np.all(
+                (points >= (min_coords + boundary_margin_value))
+                & (points <= (max_coords - boundary_margin_value)),
+                axis=1,
+            )
+        interior_indices = np.flatnonzero(interior_mask)
+        if interior_indices.size > 0:
+            candidate_indices = interior_indices.astype(np.int64, copy=False)
+
+    sampled = min(int(estimation_samples), int(candidate_indices.size))
+    center_indices = rng.choice(candidate_indices, size=sampled, replace=False)
+    tree = cKDTree(
+        points,
+        boxsize=box_lengths if bool(periodic) else None,
+        balanced_tree=False,
+    )
     dists, _ = tree.query(points[center_indices], k=k)
     dists = np.asarray(dists, dtype=np.float64)
     kth = dists.reshape(-1) if k == 1 else dists[:, k - 1]
@@ -159,6 +188,8 @@ def estimate_lammps_dump_cutoff_radius(
         "estimation_samples": int(sampled),
         "seed": int(seed),
         "safety_factor": float(safety_factor),
+        "boundary_margin": None if boundary_margin is None else float(boundary_margin),
+        "periodic": bool(periodic),
         "estimated_radius": float(estimated_radius),
         "coverage": float(coverage),
         "kth_distance_mean": float(np.mean(kth)),
@@ -184,6 +215,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
     """
 
     cache_version: int = 1
+    neighbor_index_cache_version: int = 1
 
     def __init__(
         self,
@@ -211,6 +243,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         cache_dir: str | Path | None = None,
         rebuild_cache: bool = False,
         tree_cache_size: int = 4,
+        precompute_neighbor_indices: bool = False,
         build_lock_timeout_sec: float = 7200.0,
         build_lock_stale_sec: float = 86400.0,
     ) -> None:
@@ -249,6 +282,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
             else int(center_grid_reference_frame_index)
         )
         self.tree_cache_size = int(tree_cache_size)
+        self.precompute_neighbor_indices = bool(precompute_neighbor_indices)
         self.build_lock_timeout_sec = float(build_lock_timeout_sec)
         self.build_lock_stale_sec = float(build_lock_stale_sec)
 
@@ -258,6 +292,11 @@ class TemporalLAMMPSDumpDataset(Dataset):
             raise ValueError(f"num_points must be > 0, got {self.num_points}")
         if self.radius is not None and self.radius <= 0.0:
             raise ValueError(f"radius must be > 0 when provided, got {self.radius}")
+        if self.normalize and self.radius is None:
+            raise ValueError(
+                "TemporalLAMMPSDumpDataset normalization requires an explicit cutoff radius. "
+                "Pass radius=<resolved_cutoff> from data.radius or data.auto_cutoff before constructing the dataset."
+            )
         if self.frame_stride <= 0:
             raise ValueError(f"frame_stride must be > 0, got {self.frame_stride}")
         if self.window_stride <= 0:
@@ -312,6 +351,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
             )
 
         self._tree_cache: OrderedDict[int, cKDTree] = OrderedDict()
+        self._precomputed_neighbor_indices: np.ndarray | None = None
+        self._precomputed_neighbor_cache_path: Path | None = None
         self._center_atom_indices = self._resolve_center_atom_indices(
             center_selection_mode=self.center_selection_mode,
             center_atom_ids=center_atom_ids,
@@ -343,6 +384,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
             self._window_start_frames.astype(np.int64, copy=False),
             int(self._center_atom_indices.size),
         )
+        if self.precompute_neighbor_indices:
+            self._prepare_precomputed_neighbor_indices()
 
         logger.print(
             "[temporal-lammps] "
@@ -386,7 +429,176 @@ class TemporalLAMMPSDumpDataset(Dataset):
     def __getstate__(self) -> dict[str, Any]:
         state = dict(self.__dict__)
         state["_tree_cache"] = OrderedDict()
+        state["_precomputed_neighbor_indices"] = None
         return state
+
+    def _neighbor_index_cache_spec(self) -> dict[str, Any]:
+        source_stat = self.dump_file.stat()
+        center_atom_indices_bytes = np.asarray(
+            self._center_atom_indices,
+            dtype=np.int64,
+        ).tobytes()
+        return {
+            "neighbor_index_cache_version": self.neighbor_index_cache_version,
+            "source_path": str(self.dump_file),
+            "source_size_bytes": int(source_stat.st_size),
+            "source_mtime_ns": int(source_stat.st_mtime_ns),
+            "frame_count": int(self.frame_count),
+            "num_atoms": int(self.num_atoms),
+            "center_count": int(self.center_count),
+            "num_points": int(self.num_points),
+            "selection_method": str(self.selection_method),
+            "radius": None if self.radius is None else float(self.radius),
+            "center_atom_indices_sha1": hashlib.sha1(center_atom_indices_bytes).hexdigest(),
+        }
+
+    def _resolve_neighbor_index_cache_paths(self) -> tuple[dict[str, Any], Path, Path]:
+        spec = self._neighbor_index_cache_spec()
+        cache_key = hashlib.sha1(
+            json.dumps(spec, sort_keys=True).encode("utf-8")
+        ).hexdigest()[:16]
+        cache_path = self.cache_dir / f"neighbor_indices_{cache_key}.npy"
+        manifest_path = self.cache_dir / f"neighbor_indices_{cache_key}.json"
+        return spec, cache_path, manifest_path
+
+    def _neighbor_index_cache_is_valid(
+        self,
+        *,
+        spec: dict[str, Any],
+        cache_path: Path,
+        manifest_path: Path,
+    ) -> bool:
+        if not cache_path.exists() or not manifest_path.exists():
+            return False
+        with manifest_path.open("r", encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        if manifest != spec:
+            return False
+
+        cache_array = np.load(cache_path, mmap_mode="r")
+        expected_shape = (self.frame_count, self.center_count, self.num_points)
+        if tuple(cache_array.shape) != expected_shape:
+            return False
+        if cache_array.dtype != np.int32:
+            return False
+        return True
+
+    def _load_precomputed_neighbor_indices(self) -> np.ndarray | None:
+        if self._precomputed_neighbor_indices is not None:
+            return self._precomputed_neighbor_indices
+        if self._precomputed_neighbor_cache_path is None:
+            return None
+
+        cache_key = str(self._precomputed_neighbor_cache_path)
+        cached = _PRECOMPUTED_NEIGHBOR_INDEX_PROCESS_CACHE.get(cache_key)
+        if cached is not None:
+            self._precomputed_neighbor_indices = cached
+            return cached
+
+        if not self._precomputed_neighbor_cache_path.exists():
+            raise FileNotFoundError(
+                "Precomputed temporal neighbor-index cache is missing. "
+                f"cache_path={self._precomputed_neighbor_cache_path}."
+            )
+
+        cache_array = np.load(self._precomputed_neighbor_cache_path, mmap_mode="r")
+        expected_shape = (self.frame_count, self.center_count, self.num_points)
+        if tuple(cache_array.shape) != expected_shape:
+            raise ValueError(
+                "Precomputed temporal neighbor-index cache has an unexpected shape. "
+                f"expected={expected_shape}, got={tuple(cache_array.shape)}, "
+                f"cache_path={self._precomputed_neighbor_cache_path}."
+            )
+        if cache_array.dtype != np.int32:
+            raise ValueError(
+                "Precomputed temporal neighbor-index cache must use int32 indices. "
+                f"got dtype={cache_array.dtype}, cache_path={self._precomputed_neighbor_cache_path}."
+            )
+
+        _PRECOMPUTED_NEIGHBOR_INDEX_PROCESS_CACHE[cache_key] = cache_array
+        self._precomputed_neighbor_indices = cache_array
+        return cache_array
+
+    def _prepare_precomputed_neighbor_indices(self) -> None:
+        if self.num_atoms > np.iinfo(np.int32).max:
+            raise ValueError(
+                "Precomputed temporal neighbor-index cache requires num_atoms <= int32 max. "
+                f"Got num_atoms={self.num_atoms}."
+            )
+
+        spec, cache_path, manifest_path = self._resolve_neighbor_index_cache_paths()
+        self._precomputed_neighbor_cache_path = cache_path
+
+        if self._neighbor_index_cache_is_valid(
+            spec=spec,
+            cache_path=cache_path,
+            manifest_path=manifest_path,
+        ):
+            self._load_precomputed_neighbor_indices()
+            logger.print(
+                "[temporal-lammps] "
+                f"Loaded precomputed neighbor-index cache from {cache_path}."
+            )
+            return
+
+        lock_path = cache_path.with_suffix(cache_path.suffix + ".lock")
+        self._acquire_build_lock(lock_path)
+        try:
+            if self._neighbor_index_cache_is_valid(
+                spec=spec,
+                cache_path=cache_path,
+                manifest_path=manifest_path,
+            ):
+                self._load_precomputed_neighbor_indices()
+                logger.print(
+                    "[temporal-lammps] "
+                    f"Loaded precomputed neighbor-index cache from {cache_path}."
+                )
+                return
+
+            if cache_path.exists():
+                cache_path.unlink()
+            if manifest_path.exists():
+                manifest_path.unlink()
+
+            logger.print(
+                "[temporal-lammps] "
+                f"Building precomputed neighbor-index cache in {cache_path}."
+            )
+            cache_array = open_memmap(
+                cache_path,
+                mode="w+",
+                dtype=np.int32,
+                shape=(self.frame_count, self.center_count, self.num_points),
+            )
+            for frame_idx in range(self.frame_count):
+                frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+                centers = np.asarray(frame_points[self._center_atom_indices], dtype=np.float32)
+                selected = self._query_local_structures(frame_idx=frame_idx, centers=centers)
+                expected_shape = (self.center_count, self.num_points)
+                if tuple(selected.shape) != expected_shape:
+                    raise RuntimeError(
+                        "Precomputed temporal neighbor-index cache produced an unexpected shape. "
+                        f"frame_idx={frame_idx}, expected_shape={expected_shape}, "
+                        f"got_shape={tuple(selected.shape)}, cache_path={cache_path}."
+                    )
+                cache_array[frame_idx] = selected.astype(np.int32, copy=False)
+                if frame_idx == 0 or (frame_idx + 1) % 10 == 0 or (frame_idx + 1) == self.frame_count:
+                    logger.print(
+                        "[temporal-lammps] "
+                        f"Cached temporal neighbors for frame {frame_idx + 1}/{self.frame_count}."
+                    )
+            cache_array.flush()
+            with manifest_path.open("w", encoding="utf-8") as handle:
+                json.dump(spec, handle, indent=2)
+        finally:
+            self._release_build_lock(lock_path)
+
+        self._load_precomputed_neighbor_indices()
+        logger.print(
+            "[temporal-lammps] "
+            f"Finished building precomputed neighbor-index cache: {cache_path}."
+        )
 
     @property
     def frame_count(self) -> int:
@@ -563,9 +775,9 @@ class TemporalLAMMPSDumpDataset(Dataset):
             frame_count=int(manifest["frame_count"]),
             num_atoms=int(manifest["num_atoms"]),
             atom_columns=tuple(str(name) for name in atom_columns_raw),
-            timesteps=np.asarray(timesteps, dtype=np.int64, copy=False),
-            box_low=np.asarray(box_low, dtype=np.float32, copy=False),
-            box_high=np.asarray(box_high, dtype=np.float32, copy=False),
+            timesteps=timesteps.astype(np.int64, copy=False),
+            box_low=box_low.astype(np.float32, copy=False),
+            box_high=box_high.astype(np.float32, copy=False),
         )
 
     @classmethod
@@ -1235,17 +1447,12 @@ class TemporalLAMMPSDumpDataset(Dataset):
         return rel.astype(np.float32, copy=False)
 
     def _normalize_point_cloud_batch(self, points: np.ndarray) -> np.ndarray:
-        if self.radius is not None:
-            return points / float(self.radius)
-
-        squared = np.square(points, dtype=np.float32)
-        max_norm = np.sqrt(np.max(np.sum(squared, axis=2, dtype=np.float32), axis=1))
-        if np.any(max_norm <= 0.0):
-            raise ValueError(
-                "Cannot normalize a local-structure batch with zero spatial extent. "
-                f"points_shape={points.shape}, max_norm_min={float(np.min(max_norm))}."
+        if self.radius is None:
+            raise RuntimeError(
+                "Temporal local-structure batch normalization requires an explicit cutoff radius, "
+                f"but dataset.radius is None for dump_file={self.dump_file}."
             )
-        return points / max_norm[:, None, None]
+        return points / float(self.radius)
 
     def _build_batch_from_indices(self, indices: np.ndarray) -> dict[str, Any]:
         index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
@@ -1268,6 +1475,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         center_atom_ids = np.empty((batch_size,), dtype=np.int64)
         anchor_frame_indices = np.empty((batch_size,), dtype=np.int64)
         anchor_timesteps = np.empty((batch_size,), dtype=np.int64)
+        precomputed_neighbor_indices = self._load_precomputed_neighbor_indices()
 
         window_slots = (index_array // self.center_count).astype(np.int64, copy=False)
         center_slots = (index_array % self.center_count).astype(np.int64, copy=False)
@@ -1297,7 +1505,13 @@ class TemporalLAMMPSDumpDataset(Dataset):
             for local_frame_idx, frame_idx in enumerate(frame_indices.tolist()):
                 frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
                 centers = np.asarray(frame_points[center_atom_indices], dtype=np.float32)
-                selected = self._query_local_structures(frame_idx=frame_idx, centers=centers)
+                if precomputed_neighbor_indices is None:
+                    selected = self._query_local_structures(frame_idx=frame_idx, centers=centers)
+                else:
+                    selected = np.asarray(
+                        precomputed_neighbor_indices[frame_idx, center_slots[batch_positions]],
+                        dtype=np.int64,
+                    )
                 local_points = np.asarray(frame_points[selected], dtype=np.float32)
                 local_points = self._to_local_coordinates_batch(
                     frame_idx=frame_idx,

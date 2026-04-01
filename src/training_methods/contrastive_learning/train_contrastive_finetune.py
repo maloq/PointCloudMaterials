@@ -32,7 +32,6 @@ _COMMON_COMPATIBILITY_FIELDS = (
     "encoder.kwargs.mlp_ratio",
     "data.num_points",
     "data.model_points",
-    "contrastive_norms_only_latent",
     "barlow_enabled",
     "vicreg_enabled",
     "wmse_enabled",
@@ -42,24 +41,12 @@ _COMMON_COMPATIBILITY_FIELDS = (
 _OBJECTIVE_COMPATIBILITY_FIELDS = {
     "barlow_enabled": (
         "barlow_embed_dim",
-        "barlow_invariant_mode",
-        "barlow_invariant_max_factor",
-        "barlow_invariant_groups",
-        "barlow_invariant_use_third_order",
     ),
     "vicreg_enabled": (
         "vicreg_embed_dim",
-        "vicreg_invariant_mode",
-        "vicreg_invariant_max_factor",
-        "vicreg_invariant_groups",
-        "vicreg_invariant_use_third_order",
     ),
     "wmse_enabled": (
         "wmse_embed_dim",
-        "wmse_invariant_mode",
-        "wmse_invariant_max_factor",
-        "wmse_invariant_groups",
-        "wmse_invariant_use_third_order",
         "wmse_whitening_eps",
         "wmse_whitening_iters",
         "wmse_whitening_size",
@@ -67,10 +54,6 @@ _OBJECTIVE_COMPATIBILITY_FIELDS = {
     ),
     "pointcontrast_enabled": (
         "pointcontrast_embed_dim",
-        "pointcontrast_invariant_mode",
-        "pointcontrast_invariant_max_factor",
-        "pointcontrast_invariant_groups",
-        "pointcontrast_invariant_use_third_order",
     ),
 }
 

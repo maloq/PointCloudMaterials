@@ -18,7 +18,7 @@ from src.training_methods.contrastive_learning.supervised_cache import (
 )
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 from src.training_methods.contrastive_learning.wmse import WMSELoss
-from src.utils.pointcloud_ops import crop_to_num_points
+from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 from src.utils.training_utils import cached_sample_count, get_optimizers_and_scheduler
 
 
@@ -55,42 +55,14 @@ class TemporalSSLModule(pl.LightningModule):
                 "TemporalSSLModule requires data.sequence_length >= 3 so previous and next frames exist, "
                 f"got {self.sequence_length}."
             )
-
-        center_frame_index_cfg = getattr(cfg, "temporal_center_frame_index", None)
-        if center_frame_index_cfg is None:
-            if self.sequence_length % 2 == 0:
-                raise ValueError(
-                    "TemporalSSLModule needs an unambiguous center frame. "
-                    f"data.sequence_length={self.sequence_length} is even, so set temporal_center_frame_index "
-                    "explicitly to a value in [1, sequence_length - 2]."
-                )
-            self.center_frame_index = self.sequence_length // 2
-        else:
-            self.center_frame_index = int(center_frame_index_cfg)
-        if self.center_frame_index <= 0 or self.center_frame_index >= self.sequence_length - 1:
-            raise ValueError(
-                "temporal_center_frame_index must leave both a previous and next frame available. "
-                f"Got temporal_center_frame_index={self.center_frame_index}, "
-                f"sequence_length={self.sequence_length}."
-            )
+        self.center_frame_index = self.sequence_length // 2
         self.use_temporal_vicreg_views = bool(getattr(cfg, "temporal_vicreg_use_adjacent_views", True))
 
         if bool(getattr(cfg, "vicreg_use_ri_mae_backbone", False)):
             raise ValueError(
                 "vicreg_use_ri_mae_backbone is deprecated. "
-                "Use encoder.name='RI_MAE_Invariant' with vicreg_invariant_mode='passthrough'."
+                "Use encoder.name='RI_MAE_Invariant'. Contrastive training now uses a fixed norms-only invariant path."
             )
-
-        enc_cfg = getattr(cfg, "encoder", None)
-        enc_name = str(getattr(enc_cfg, "name", "")).strip()
-        if enc_name == "RI_MAE_Invariant":
-            vic_mode = str(getattr(cfg, "vicreg_invariant_mode", "norms")).lower()
-            if vic_mode not in {"passthrough", "norms"}:
-                raise ValueError(
-                    "RI_MAE_Invariant returns invariant 2D features directly. "
-                    f"Unsupported vicreg_invariant_mode='{vic_mode}'. "
-                    "Use 'passthrough' (recommended) or 'norms'."
-                )
 
         self.encoder, _ = build_model(cfg)
         latent_dim = resolve_latent_dim(cfg)
@@ -110,19 +82,15 @@ class TemporalSSLModule(pl.LightningModule):
                 f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
             )
 
-        self.norms_only_latent = bool(getattr(cfg, "contrastive_norms_only_latent", False))
-        invariant_mode_override = "norms" if self.norms_only_latent else None
         self.barlow = BarlowTwinsLoss.from_config(
             cfg,
             input_dim=latent_dim,
-            invariant_mode_override=invariant_mode_override,
         )
         vicreg_enabled = bool(getattr(cfg, "vicreg_enabled", False))
         self.vicreg = (
             VICRegLoss.from_config(
                 cfg,
                 input_dim=latent_dim,
-                invariant_mode_override=invariant_mode_override,
             )
             if vicreg_enabled
             else None
@@ -130,22 +98,207 @@ class TemporalSSLModule(pl.LightningModule):
         self.wmse = WMSELoss.from_config(
             cfg,
             input_dim=latent_dim,
-            invariant_mode_override=invariant_mode_override,
         )
         self.pointcontrast = PointContrastLoss.from_config(
             cfg,
             input_dim=latent_dim,
-            invariant_mode_override=invariant_mode_override,
         )
-        self._active_invariant_losses = self._resolve_active_invariant_losses()
-        self._shared_invariant_spec = self._resolve_shared_invariant_spec()
 
         init_supervised_cache(self, cfg)
         self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
         self._warned_cache_eq_fallback = False
-        self._warned_synthetic_eq_latent = False
         self._consecutive_nan_steps = 0
         self._max_consecutive_nan_steps = int(getattr(cfg, "max_consecutive_nan_steps", 20))
+
+    @staticmethod
+    def _load_checkpoint_payload(checkpoint_path: str):
+        if not os.path.exists(checkpoint_path):
+            raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
+        try:
+            return torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        except TypeError:
+            return torch.load(checkpoint_path, map_location="cpu")
+
+    @staticmethod
+    def _extract_state_dict(checkpoint, *, checkpoint_path: str) -> dict:
+        if isinstance(checkpoint, dict):
+            state_dict = checkpoint.get("state_dict")
+            if isinstance(state_dict, dict):
+                return state_dict
+            model_state_dict = checkpoint.get("model_state_dict")
+            if isinstance(model_state_dict, dict):
+                return model_state_dict
+            if checkpoint and all(torch.is_tensor(value) for value in checkpoint.values()):
+                return checkpoint
+        raise ValueError(
+            f"Checkpoint '{checkpoint_path}' does not contain a recognized state dictionary "
+            "(`state_dict` or `model_state_dict`)."
+        )
+
+    @staticmethod
+    def _strip_state_dict_prefixes(state_dict: dict) -> dict:
+        prefixes = ("model.", "module.")
+        normalized = {}
+        for key, value in state_dict.items():
+            new_key = key
+            changed = True
+            while changed:
+                changed = False
+                for prefix in prefixes:
+                    if new_key.startswith(prefix):
+                        new_key = new_key[len(prefix):]
+                        changed = True
+            normalized[new_key] = value
+        return normalized
+
+    @staticmethod
+    def _compatible_state_dict(state_dict: dict, target_state: dict) -> tuple[dict, list[str]]:
+        compatible = {}
+        shape_mismatch = []
+        for key, value in state_dict.items():
+            target_value = target_state.get(key)
+            if target_value is None:
+                continue
+            if tuple(target_value.shape) != tuple(value.shape):
+                shape_mismatch.append(key)
+                continue
+            compatible[key] = value
+        return compatible, shape_mismatch
+
+    @staticmethod
+    def _checkpoint_encoder_name(checkpoint) -> str | None:
+        if not isinstance(checkpoint, dict):
+            return None
+        hparams = checkpoint.get("hyper_parameters")
+        if hparams is None:
+            return None
+        encoder_cfg = getattr(hparams, "encoder", None)
+        if encoder_cfg is None and isinstance(hparams, dict):
+            encoder_cfg = hparams.get("encoder")
+        if encoder_cfg is None:
+            return None
+        encoder_name = getattr(encoder_cfg, "name", None)
+        if encoder_name is None and isinstance(encoder_cfg, dict):
+            encoder_name = encoder_cfg.get("name")
+        return None if encoder_name is None else str(encoder_name)
+
+    def _resolve_init_checkpoint_target(self) -> str:
+        raw_target = str(getattr(self.hparams, "init_from_checkpoint_target", "module")).strip().lower()
+        if raw_target == "model":
+            return "module"
+        if raw_target not in {"module", "encoder"}:
+            raise ValueError(
+                "init_from_checkpoint_target must be one of {'module', 'model', 'encoder'}, "
+                f"got {raw_target!r}."
+            )
+        return raw_target
+
+    def _select_module_state_dict(self, source_state_dict: dict) -> tuple[dict, list[str], bool]:
+        model_state = self.state_dict()
+        raw_compatible, raw_shape_mismatch = self._compatible_state_dict(source_state_dict, model_state)
+        stripped_state_dict = self._strip_state_dict_prefixes(source_state_dict)
+        stripped_compatible, stripped_shape_mismatch = self._compatible_state_dict(
+            stripped_state_dict,
+            model_state,
+        )
+        use_stripped = len(stripped_compatible) > len(raw_compatible)
+        if use_stripped:
+            return stripped_compatible, stripped_shape_mismatch, True
+        return raw_compatible, raw_shape_mismatch, False
+
+    def _select_encoder_state_dict(self, source_state_dict: dict) -> tuple[str, dict, list[str]]:
+        encoder_state = self.encoder.state_dict()
+        normalized_state_dict = self._strip_state_dict_prefixes(source_state_dict)
+        candidates = [("checkpoint", normalized_state_dict)]
+        for prefix in ("encoder.", "backbone."):
+            prefixed_state_dict = {
+                key[len(prefix):]: value
+                for key, value in normalized_state_dict.items()
+                if key.startswith(prefix)
+            }
+            if prefixed_state_dict:
+                candidates.append((f"checkpoint stripped '{prefix}'", prefixed_state_dict))
+
+        best_label = candidates[0][0]
+        best_compatible: dict = {}
+        best_shape_mismatch: list[str] = []
+        for label, candidate_state_dict in candidates:
+            compatible, shape_mismatch = self._compatible_state_dict(candidate_state_dict, encoder_state)
+            if len(compatible) > len(best_compatible):
+                best_label = label
+                best_compatible = compatible
+                best_shape_mismatch = shape_mismatch
+        return best_label, best_compatible, best_shape_mismatch
+
+    def load_pretrained_weights_from_checkpoint(self, checkpoint_path: str, *, strict: bool = False) -> None:
+        checkpoint = self._load_checkpoint_payload(checkpoint_path)
+        source_state_dict = self._extract_state_dict(checkpoint, checkpoint_path=checkpoint_path)
+
+        checkpoint_encoder_name = self._checkpoint_encoder_name(checkpoint)
+        current_encoder_name = str(getattr(getattr(self.hparams, "encoder", None), "name", ""))
+        if checkpoint_encoder_name and current_encoder_name and checkpoint_encoder_name != current_encoder_name:
+            self._status_print(
+                "[temporal-ssl] Warning: init checkpoint encoder differs from current config: "
+                f"checkpoint={checkpoint_encoder_name}, current={current_encoder_name}. "
+                "Only compatible tensors will be loaded."
+            )
+
+        target = self._resolve_init_checkpoint_target()
+        if target == "module":
+            selected_state_dict, shape_mismatch, used_stripped_prefixes = self._select_module_state_dict(
+                source_state_dict
+            )
+            if not selected_state_dict:
+                raise RuntimeError(
+                    f"No compatible module tensors found when loading checkpoint '{checkpoint_path}'. "
+                    "If this checkpoint only contains encoder weights, set "
+                    "init_from_checkpoint_target='encoder'."
+                )
+
+            missing_keys, unexpected_keys = self.load_state_dict(selected_state_dict, strict=strict)
+            model_state = self.state_dict()
+            source_encoder_keys = sum(1 for key in source_state_dict if key.startswith("encoder."))
+            model_encoder_keys = sum(1 for key in model_state if key.startswith("encoder."))
+            loaded_encoder_keys = sum(1 for key in selected_state_dict if key.startswith("encoder."))
+
+            self._status_print(f"[temporal-ssl] Initialized module weights from checkpoint: {checkpoint_path}")
+            self._status_print(
+                "[temporal-ssl] Checkpoint load summary: "
+                f"target=module, "
+                f"loaded={len(selected_state_dict)} / model_tensors={len(model_state)}, "
+                f"shape_mismatch_skipped={len(shape_mismatch)}, "
+                f"missing_after_load={len(missing_keys)}, "
+                f"unexpected_after_load={len(unexpected_keys)}, "
+                f"stripped_prefixes={used_stripped_prefixes}, "
+                f"strict={strict}"
+            )
+            if source_encoder_keys > 0 and model_encoder_keys > 0 and loaded_encoder_keys == 0:
+                self._status_print(
+                    "[temporal-ssl] Warning: No encoder weights were loaded from the init checkpoint. "
+                    "Current encoder remains randomly initialized."
+                )
+            return
+
+        candidate_label, selected_state_dict, shape_mismatch = self._select_encoder_state_dict(source_state_dict)
+        if not selected_state_dict:
+            raise RuntimeError(
+                f"No compatible encoder tensors found when loading checkpoint '{checkpoint_path}'. "
+                "Expected either encoder-prefixed keys or a raw encoder state_dict with matching tensor shapes."
+            )
+
+        missing_keys, unexpected_keys = self.encoder.load_state_dict(selected_state_dict, strict=strict)
+        encoder_state = self.encoder.state_dict()
+        self._status_print(f"[temporal-ssl] Initialized encoder weights from checkpoint: {checkpoint_path}")
+        self._status_print(
+            "[temporal-ssl] Checkpoint load summary: "
+            f"target=encoder, "
+            f"source={candidate_label}, "
+            f"loaded={len(selected_state_dict)} / encoder_tensors={len(encoder_state)}, "
+            f"shape_mismatch_skipped={len(shape_mismatch)}, "
+            f"missing_after_load={len(missing_keys)}, "
+            f"unexpected_after_load={len(unexpected_keys)}, "
+            f"strict={strict}"
+        )
 
     @property
     def barlow_projector(self):
@@ -163,95 +316,9 @@ class TemporalSSLModule(pl.LightningModule):
     def pointcontrast_projector(self):
         return self.pointcontrast.projector if self.pointcontrast is not None else None
 
-    def _resolve_active_invariant_losses(self) -> dict[str, object]:
-        losses: dict[str, object] = {}
-        if getattr(self.barlow, "invariant_head", None) is not None and self.barlow.enabled and self.barlow.weight > 0:
-            losses["barlow"] = self.barlow
-        if (
-            self.vicreg is not None
-            and getattr(self.vicreg, "invariant_head", None) is not None
-            and self.vicreg.enabled
-            and self.vicreg.weight > 0
-        ):
-            losses["vicreg"] = self.vicreg
-        if (
-            self.wmse is not None
-            and getattr(self.wmse, "invariant_head", None) is not None
-            and self.wmse.enabled
-            and self.wmse.weight > 0
-        ):
-            losses["wmse"] = self.wmse
-        if (
-            self.pointcontrast is not None
-            and getattr(self.pointcontrast, "invariant_head", None) is not None
-            and self.pointcontrast.enabled
-            and self.pointcontrast.weight > 0
-        ):
-            losses["pointcontrast"] = self.pointcontrast
-        if losses:
-            return losses
-
-        if getattr(self.barlow, "invariant_head", None) is not None:
-            return {"barlow": self.barlow}
-        if self.vicreg is not None and getattr(self.vicreg, "invariant_head", None) is not None:
-            return {"vicreg": self.vicreg}
-        if self.wmse is not None and getattr(self.wmse, "invariant_head", None) is not None:
-            return {"wmse": self.wmse}
-        if self.pointcontrast is not None and getattr(self.pointcontrast, "invariant_head", None) is not None:
-            return {"pointcontrast": self.pointcontrast}
-        return {}
-
-    @staticmethod
-    def _invariant_spec(loss_obj: object) -> dict[str, int | str] | None:
-        head = getattr(loss_obj, "invariant_head", None)
-        if head is None:
-            return None
-        return {
-            "mode": str(getattr(head, "mode", "norms")).lower(),
-            "channels": int(getattr(head, "channels", 0)),
-            "output_dim": int(getattr(head, "output_dim", 0)),
-            "num_groups": int(getattr(head, "num_groups", 0)),
-            "num_second_order": int(getattr(head, "num_second_order", 0)),
-            "num_third_order": int(getattr(head, "num_third_order", 0)),
-        }
-
-    def _resolve_shared_invariant_spec(self) -> dict[str, int | str] | None:
-        if not self._active_invariant_losses:
-            return None
-
-        named_specs: dict[str, dict[str, int | str]] = {}
-        for name, loss_obj in self._active_invariant_losses.items():
-            spec = self._invariant_spec(loss_obj)
-            if spec is None:
-                continue
-            named_specs[name] = spec
-
-        if not named_specs:
-            return None
-
-        names = list(named_specs.keys())
-        ref_name = names[0]
-        ref_spec = named_specs[ref_name]
-        for name in names[1:]:
-            if named_specs[name] != ref_spec:
-                raise ValueError(
-                    "Active contrastive objectives must use matching invariant specs, but got: "
-                    f"{ref_name}={ref_spec}, {name}={named_specs[name]}. "
-                    "Align *invariant_* settings across objectives (or disable one objective)."
-                )
-        return ref_spec
-
     def _shared_invariant(self, z_inv_model, eq_z):
-        if eq_z is not None:
-            z_inv_model = None
-        if "barlow" in self._active_invariant_losses:
-            return self.barlow._invariant(z_inv_model, eq_z)
-        if "vicreg" in self._active_invariant_losses and self.vicreg is not None:
-            return self.vicreg._invariant(z_inv_model, eq_z)
-        if "wmse" in self._active_invariant_losses and self.wmse is not None:
-            return self.wmse._invariant(z_inv_model, eq_z)
-        if "pointcontrast" in self._active_invariant_losses and self.pointcontrast is not None:
-            return self.pointcontrast._invariant(z_inv_model, eq_z)
+        # Contrastive training always prefers norms(eq_z) when eq_z exists and
+        # otherwise falls back to the encoder invariant branch.
         return self.barlow._invariant(z_inv_model, eq_z)
 
     def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
@@ -264,82 +331,6 @@ class TemporalSSLModule(pl.LightningModule):
             self.print(message)
             return
         print(message)
-
-    @staticmethod
-    def _channel_basis(channels: int, *, device, dtype) -> torch.Tensor:
-        if channels <= 0:
-            raise ValueError(f"channels must be > 0, got {channels}")
-        idx = torch.arange(channels, device=device, dtype=torch.float32)
-        theta = (2.0 * torch.pi * idx) / float(channels)
-        z = (2.0 * (idx + 0.5) / float(channels)) - 1.0
-        z = z.clamp(min=-0.999999, max=0.999999)
-        radial = torch.sqrt((1.0 - z * z).clamp_min(0.0))
-        basis = torch.stack(
-            (
-                radial * torch.cos(theta),
-                radial * torch.sin(theta),
-                z,
-            ),
-            dim=-1,
-        )
-        return basis.to(dtype=dtype)
-
-    def _maybe_synthesize_eq_latent(
-        self,
-        z_inv_model: torch.Tensor | None,
-        eq_z: torch.Tensor | None,
-        *,
-        source: str,
-    ) -> torch.Tensor | None:
-        if eq_z is not None:
-            return eq_z
-        if z_inv_model is None:
-            return None
-        if not torch.is_tensor(z_inv_model) or z_inv_model.dim() != 2:
-            raise ValueError(
-                f"{source}: expected z_inv_model to be a 2D tensor when eq_z is missing, "
-                f"got type={type(z_inv_model)} with shape={getattr(z_inv_model, 'shape', None)}."
-            )
-
-        spec = self._shared_invariant_spec
-        if spec is None:
-            return None
-
-        inv_dim = int(z_inv_model.shape[1])
-        channels = int(spec["channels"])
-        output_dim = int(spec["output_dim"])
-        mode = str(spec["mode"])
-
-        if inv_dim == output_dim:
-            return None
-        if channels <= 0:
-            raise ValueError(
-                f"{source}: invariant_head has invalid channels={channels} while inv_dim={inv_dim} "
-                f"and output_dim={output_dim}."
-            )
-        if inv_dim != channels:
-            raise ValueError(
-                f"{source}: cannot synthesize eq_z because inv_dim={inv_dim} does not match "
-                f"invariant_head.channels={channels}; output_dim={output_dim}, mode='{mode}'."
-            )
-
-        basis = self._channel_basis(channels, device=z_inv_model.device, dtype=z_inv_model.dtype)
-        synthetic_eq = z_inv_model.unsqueeze(-1) * basis.unsqueeze(0)
-
-        if synthetic_eq.shape != (z_inv_model.shape[0], channels, 3):
-            raise RuntimeError(
-                f"{source}: synthesized eq_z has unexpected shape {tuple(synthetic_eq.shape)}; "
-                f"expected {(z_inv_model.shape[0], channels, 3)}."
-            )
-
-        if not self._warned_synthetic_eq_latent:
-            self._status_print(
-                "[temporal-ssl] Encoder did not return eq_z; synthesized pseudo-equivariant latent "
-                f"from z_inv_model for invariant mode='{mode}' "
-                f"(inv_dim={inv_dim}, output_dim={output_dim})."
-            )
-            self._warned_synthetic_eq_latent = True
-        return synthetic_eq
 
     def _split_encoder_output(self, enc_out):
         if isinstance(enc_out, (tuple, list)):
@@ -359,19 +350,8 @@ class TemporalSSLModule(pl.LightningModule):
                 if candidate.shape[1] != 3:
                     eq_z = candidate
                     break
-            eq_z = self._maybe_synthesize_eq_latent(
-                z_inv_model,
-                eq_z,
-                source="split_encoder_output(tuple)",
-            )
             return z_inv_model, eq_z
-        z_inv_model = enc_out
-        eq_z = self._maybe_synthesize_eq_latent(
-            z_inv_model,
-            None,
-            source="split_encoder_output(tensor)",
-        )
-        return z_inv_model, eq_z
+        return enc_out, None
 
     def _prepare_model_input(self, pc: torch.Tensor) -> torch.Tensor:
         out = pc
@@ -455,13 +435,8 @@ class TemporalSSLModule(pl.LightningModule):
         stage: str | None = None,
     ):
         stage_name = stage if stage is not None else "unknown"
-        eq_ready = self._maybe_synthesize_eq_latent(
-            z_inv_model,
-            eq_z,
-            source=f"contrastive_invariant_from_eq_latent(stage={stage_name})",
-        )
-        if eq_ready is not None:
-            return self._shared_invariant(None, eq_ready)
+        if eq_z is not None:
+            return self._shared_invariant(None, eq_z)
         if z_inv_model is not None and not self._warned_cache_eq_fallback:
             self._status_print(
                 f"[temporal-ssl/cache] eq_z is missing at stage='{stage_name}'. "
@@ -470,23 +445,89 @@ class TemporalSSLModule(pl.LightningModule):
             self._warned_cache_eq_fallback = True
         return self._shared_invariant(z_inv_model, None)
 
-    def _prepare_explicit_view(self, pc: torch.Tensor, *, target_points: int | None, crop_mode: str) -> torch.Tensor:
-        return crop_to_num_points(pc, target_points, mode=crop_mode)
+    def _prepare_explicit_view(self, pc: torch.Tensor, *, target_points: int | None) -> torch.Tensor:
+        return crop_to_num_points(pc, target_points)
 
-    def _build_vicreg_temporal_views(self, prev_pc: torch.Tensor, next_pc: torch.Tensor):
+    def _build_vicreg_temporal_views(
+        self,
+        center_pc: torch.Tensor,
+        prev_pc: torch.Tensor,
+        next_pc: torch.Tensor,
+    ) -> dict[str, torch.Tensor] | None:
         if self.vicreg is None:
             return None
+
+        target_points = self.vicreg.view_points
+        neighbor_mode = str(self.vicreg.neighbor_view_mode).lower()
+        if self.vicreg.neighbor_view and neighbor_mode not in {"none", "second"}:
+            raise ValueError(
+                "Temporal VICReg mixed temporal/spatial neighbor sampling currently requires "
+                "vicreg_neighbor_view_mode in {'none', 'second'} when "
+                "temporal_vicreg_use_adjacent_views=true and vicreg_neighbor_view=true. "
+                f"Got vicreg_neighbor_view_mode={neighbor_mode!r}."
+            )
+        apply_occlusion_a, apply_occlusion_b = self.vicreg._resolve_pair_occlusion_flags(
+            use_neighbor_a=False,
+            use_neighbor_b=bool(self.vicreg.neighbor_view and neighbor_mode != "none"),
+            device=center_pc.device,
+        )
+
+        anchor_view = self._prepare_explicit_view(
+            center_pc,
+            target_points=target_points,
+        )
+        prev_view = self._prepare_explicit_view(
+            prev_pc,
+            target_points=target_points,
+        )
+        next_view = self._prepare_explicit_view(
+            next_pc,
+            target_points=target_points,
+        )
+
+        batch_size = int(center_pc.shape[0])
+        choose_next_mask = torch.rand((batch_size,), device=center_pc.device) < 0.5
+        temporal_view = torch.where(
+            choose_next_mask.view(-1, 1, 1),
+            next_view,
+            prev_view,
+        )
+        anchor_view = self.vicreg.apply_view_postprocessing(
+            anchor_view,
+            use_neighbor=False,
+            apply_occlusion=apply_occlusion_a,
+        )
+        temporal_view = self.vicreg.apply_view_postprocessing(
+            temporal_view,
+            use_neighbor=False,
+            apply_occlusion=apply_occlusion_b,
+        )
+
+        if not self.vicreg.neighbor_view or neighbor_mode == "none":
+            mixed_second_view = temporal_view
+        else:
+            spatial_view = self._prepare_explicit_view(
+                shift_to_neighbor(
+                    center_pc,
+                    neighbor_k=self.vicreg.neighbor_k,
+                    max_relative_distance=self.vicreg.neighbor_max_relative_distance,
+                ),
+                target_points=target_points,
+            )
+            spatial_view = self.vicreg.apply_view_postprocessing(
+                spatial_view,
+                use_neighbor=True,
+                apply_occlusion=apply_occlusion_b,
+            )
+            temporal_mask = torch.rand((batch_size,), device=center_pc.device) < 0.5
+            mixed_second_view = torch.where(
+                temporal_mask.view(-1, 1, 1),
+                temporal_view,
+                spatial_view,
+            )
         return {
-            "y_a": self._prepare_explicit_view(
-                prev_pc,
-                target_points=self.vicreg.view_points,
-                crop_mode=self.vicreg.view_crop_mode,
-            ),
-            "y_b": self._prepare_explicit_view(
-                next_pc,
-                target_points=self.vicreg.view_points,
-                crop_mode=self.vicreg.view_crop_mode,
-            ),
+            "y_a": anchor_view,
+            "y_b": mixed_second_view,
         }
 
     def forward(self, pc: torch.Tensor):
@@ -500,6 +541,7 @@ class TemporalSSLModule(pl.LightningModule):
 
     def _step(self, batch, batch_idx, stage: str):
         pc_raw, prev_pc, next_pc, meta = self._unpack_temporal_batch(batch)
+        batch_size = int(pc_raw.shape[0])
         pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
         prev_pc = prev_pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
         next_pc = next_pc.to(device=self.device, dtype=self.dtype, non_blocking=True)
@@ -522,11 +564,11 @@ class TemporalSSLModule(pl.LightningModule):
         if barlow_loss is not None:
             losses["barlow"] = barlow_loss
         for name, value in barlow_metrics.items():
-            self._log_metric(stage, name, value)
+            self._log_metric(stage, name, value, batch_size=batch_size)
 
         if self.vicreg is not None:
             vicreg_views = (
-                self._build_vicreg_temporal_views(prev_pc, next_pc)
+                self._build_vicreg_temporal_views(pc_raw, prev_pc, next_pc)
                 if self.use_temporal_vicreg_views
                 else None
             )
@@ -542,7 +584,7 @@ class TemporalSSLModule(pl.LightningModule):
             if vicreg_loss is not None:
                 losses["vicreg"] = vicreg_loss
             for name, value in vicreg_metrics.items():
-                self._log_metric(stage, name, value)
+                self._log_metric(stage, name, value, batch_size=batch_size)
 
         if self.wmse is not None:
             wmse_loss, wmse_metrics = self.wmse.compute_loss(
@@ -556,7 +598,7 @@ class TemporalSSLModule(pl.LightningModule):
             if wmse_loss is not None:
                 losses["wmse"] = wmse_loss
             for name, value in wmse_metrics.items():
-                self._log_metric(stage, name, value)
+                self._log_metric(stage, name, value, batch_size=batch_size)
 
         if self.pointcontrast is not None:
             pointcontrast_loss, pointcontrast_metrics = self.pointcontrast.compute_loss(
@@ -570,7 +612,7 @@ class TemporalSSLModule(pl.LightningModule):
             if pointcontrast_loss is not None:
                 losses["pointcontrast"] = pointcontrast_loss
             for name, value in pointcontrast_metrics.items():
-                self._log_metric(stage, name, value)
+                self._log_metric(stage, name, value, batch_size=batch_size)
 
         total_loss = None
         if "barlow" in losses:
@@ -589,7 +631,14 @@ class TemporalSSLModule(pl.LightningModule):
 
         if not torch.isfinite(total_loss).item():
             self._consecutive_nan_steps += 1
-            self._log_metric(stage, "loss_nonfinite", 1.0, on_step=True, on_epoch=False)
+            self._log_metric(
+                stage,
+                "loss_nonfinite",
+                1.0,
+                on_step=True,
+                on_epoch=False,
+                batch_size=batch_size,
+            )
             if self._consecutive_nan_steps >= self._max_consecutive_nan_steps:
                 raise RuntimeError(
                     f"Training produced {self._consecutive_nan_steps} consecutive "
@@ -611,7 +660,13 @@ class TemporalSSLModule(pl.LightningModule):
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():
-            self._log_metric(stage, name, value, prog_bar=(name in prog_bar_keys))
+            self._log_metric(
+                stage,
+                name,
+                value,
+                prog_bar=(name in prog_bar_keys),
+                batch_size=batch_size,
+            )
 
         if should_cache_stage:
             limit = self._cache_limit_for_stage(stage)
@@ -647,12 +702,24 @@ class TemporalSSLModule(pl.LightningModule):
     def configure_optimizers(self):
         return get_optimizers_and_scheduler(self.hparams, self.parameters())
 
-    def _log_metric(self, stage: str, name: str, value, *, on_step=None, on_epoch=None, **kwargs) -> None:
+    def _log_metric(
+        self,
+        stage: str,
+        name: str,
+        value,
+        *,
+        on_step=None,
+        on_epoch=None,
+        batch_size: int | None = None,
+        **kwargs,
+    ) -> None:
         if on_step is None:
             on_step = stage == "train"
         if on_epoch is None:
             on_epoch = stage != "train"
         log_kwargs = dict(kwargs)
+        if batch_size is not None and "batch_size" not in log_kwargs:
+            log_kwargs["batch_size"] = int(batch_size)
         if "sync_dist" not in log_kwargs and stage != "train":
             log_kwargs["sync_dist"] = True
         self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)

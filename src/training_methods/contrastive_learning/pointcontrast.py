@@ -3,6 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from src.training_methods.contrastive_learning.barlow_twins import BarlowTwinsLoss
+from src.training_methods.contrastive_learning.config_warnings import (
+    warn_common_view_sampler_ignored_fields,
+    warn_fixed_invariant_fields,
+)
 
 
 class PointContrastLoss(nn.Module):
@@ -42,11 +46,6 @@ class PointContrastLoss(nn.Module):
         occlusion_cone_deg: float,
         occlusion_prob: float,
         input_dim,
-        invariant_mode: str = "norms",
-        invariant_max_factor: float = 4.0,
-        invariant_groups: int = 0,
-        invariant_use_third_order: bool = True,
-        invariant_eps: float = 1e-6,
         queue_size: int = 0,
         symmetric: bool = True,
         normalize_embeddings: bool = True,
@@ -100,11 +99,6 @@ class PointContrastLoss(nn.Module):
             occlusion_cone_deg=float(occlusion_cone_deg),
             occlusion_prob=float(occlusion_prob),
             input_dim=input_dim,
-            invariant_mode=str(invariant_mode),
-            invariant_max_factor=float(invariant_max_factor),
-            invariant_groups=int(invariant_groups),
-            invariant_use_third_order=bool(invariant_use_third_order),
-            invariant_eps=float(invariant_eps),
         )
         self.invariant_head = self._view_sampler.invariant_head
 
@@ -150,7 +144,7 @@ class PointContrastLoss(nn.Module):
         return default
 
     @classmethod
-    def from_config(cls, cfg, *, input_dim, invariant_mode_override: str | None = None):
+    def from_config(cls, cfg, *, input_dim):
         data_cfg = getattr(cfg, "data", None)
         view_points = cls._cfg_value(
             cfg,
@@ -183,205 +177,203 @@ class PointContrastLoss(nn.Module):
             jitter_scale=jitter_scale_cfg,
         )
 
-        invariant_mode = (
-            str(invariant_mode_override).lower()
-            if invariant_mode_override is not None
-            else str(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_invariant_mode",
-                    fallback=("barlow_invariant_mode",),
-                    default="norms",
-                )
-            ).lower()
+        enabled = bool(cls._cfg_value(cfg, "pointcontrast_enabled", default=False))
+        weight = float(cls._cfg_value(cfg, "pointcontrast_weight", default=0.0))
+        temperature = float(
+            cls._cfg_value(cfg, "pointcontrast_temperature", default=0.07)
+        )
+        embed_dim = int(cls._cfg_value(cfg, "pointcontrast_embed_dim", default=256))
+        start_epoch = int(cls._cfg_value(cfg, "pointcontrast_start_epoch", default=0))
+        jitter_std = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_jitter_std",
+                fallback=("barlow_jitter_std",),
+                default=0.01,
+            )
+        )
+        drop_ratio = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_drop_ratio",
+                fallback=("barlow_drop_ratio",),
+                default=0.2,
+            )
+        )
+        resolved_view_points = int(view_points) if view_points is not None else None
+        neighbor_view = bool(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_neighbor_view",
+                fallback=("barlow_neighbor_view",),
+                default=False,
+            )
+        )
+        neighbor_view_mode = str(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_neighbor_view_mode",
+                fallback=("barlow_neighbor_view_mode",),
+                default="both",
+            )
+        )
+        neighbor_k = int(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_neighbor_k",
+                fallback=("barlow_neighbor_k",),
+                default=8,
+            )
+        )
+        neighbor_max_relative_distance = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_neighbor_max_relative_distance",
+                fallback=("barlow_neighbor_max_relative_distance",),
+                default=0.0,
+            )
+        )
+        view_crop_mode = str(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_view_crop_mode",
+                fallback=("barlow_view_crop_mode",),
+                default="nearest_origin",
+            )
+        )
+        drop_apply_to_both = bool(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_drop_apply_to_both",
+                fallback=("barlow_drop_apply_to_both",),
+                default=True,
+            )
+        )
+        rotation_mode = str(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_rotation_mode",
+                fallback=("barlow_rotation_mode",),
+                default="none",
+            )
+        )
+        rotation_deg = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_rotation_deg",
+                fallback=("barlow_rotation_deg",),
+                default=0.0,
+            )
+        )
+        strain_std = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_strain_std",
+                fallback=("barlow_strain_std",),
+                default=0.0,
+            )
+        )
+        strain_volume_preserve = bool(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_strain_volume_preserve",
+                fallback=("barlow_strain_volume_preserve",),
+                default=True,
+            )
+        )
+        occlusion_mode = str(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_occlusion_mode",
+                fallback=("barlow_occlusion_mode",),
+                default="none",
+            )
+        )
+        occlusion_view = str(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_occlusion_view",
+                fallback=("barlow_occlusion_view",),
+                default="second",
+            )
+        )
+        occlusion_slab_frac = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_occlusion_slab_frac",
+                fallback=("barlow_occlusion_slab_frac",),
+                default=0.4,
+            )
+        )
+        occlusion_cone_deg = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_occlusion_cone_deg",
+                fallback=("barlow_occlusion_cone_deg",),
+                default=20.0,
+            )
+        )
+        occlusion_prob = float(
+            cls._cfg_value(
+                cfg,
+                "pointcontrast_occlusion_prob",
+                fallback=("barlow_occlusion_prob",),
+                default=1.0,
+            )
+        )
+        queue_size = int(cls._cfg_value(cfg, "pointcontrast_queue_size", default=0))
+        symmetric = bool(cls._cfg_value(cfg, "pointcontrast_symmetric", default=True))
+        normalize_embeddings = bool(
+            cls._cfg_value(cfg, "pointcontrast_normalize_embeddings", default=True)
+        )
+
+        warn_common_view_sampler_ignored_fields(
+            cfg,
+            prefix="pointcontrast",
+            jitter_std=jitter_std,
+            jitter_mode=jitter_mode,
+            neighbor_view=neighbor_view,
+            neighbor_view_mode=neighbor_view_mode,
+            drop_ratio=drop_ratio,
+            rotation_mode=rotation_mode,
+            strain_std=strain_std,
+            occlusion_mode=occlusion_mode,
+        )
+        warn_fixed_invariant_fields(
+            cfg,
+            prefix="pointcontrast",
         )
 
         return cls(
-            enabled=bool(cls._cfg_value(cfg, "pointcontrast_enabled", default=False)),
-            weight=float(cls._cfg_value(cfg, "pointcontrast_weight", default=0.0)),
-            temperature=float(
-                cls._cfg_value(cfg, "pointcontrast_temperature", default=0.07)
-            ),
-            embed_dim=int(cls._cfg_value(cfg, "pointcontrast_embed_dim", default=256)),
-            start_epoch=int(cls._cfg_value(cfg, "pointcontrast_start_epoch", default=0)),
-            jitter_std=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_jitter_std",
-                    fallback=("barlow_jitter_std",),
-                    default=0.01,
-                )
-            ),
+            enabled=enabled,
+            weight=weight,
+            temperature=temperature,
+            embed_dim=embed_dim,
+            start_epoch=start_epoch,
+            jitter_std=jitter_std,
             jitter_mode=jitter_mode,
             jitter_scale=float(jitter_scale),
-            drop_ratio=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_drop_ratio",
-                    fallback=("barlow_drop_ratio",),
-                    default=0.2,
-                )
-            ),
-            view_points=int(view_points) if view_points is not None else None,
-            neighbor_view=bool(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_neighbor_view",
-                    fallback=("barlow_neighbor_view",),
-                    default=False,
-                )
-            ),
-            neighbor_view_mode=str(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_neighbor_view_mode",
-                    fallback=("barlow_neighbor_view_mode",),
-                    default="both",
-                )
-            ),
-            neighbor_k=int(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_neighbor_k",
-                    fallback=("barlow_neighbor_k",),
-                    default=8,
-                )
-            ),
-            neighbor_max_relative_distance=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_neighbor_max_relative_distance",
-                    fallback=("barlow_neighbor_max_relative_distance",),
-                    default=0.0,
-                )
-            ),
-            view_crop_mode=str(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_view_crop_mode",
-                    fallback=("barlow_view_crop_mode",),
-                    default="nearest_origin",
-                )
-            ),
-            drop_apply_to_both=bool(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_drop_apply_to_both",
-                    fallback=("barlow_drop_apply_to_both",),
-                    default=True,
-                )
-            ),
-            rotation_mode=str(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_rotation_mode",
-                    fallback=("barlow_rotation_mode",),
-                    default="none",
-                )
-            ),
-            rotation_deg=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_rotation_deg",
-                    fallback=("barlow_rotation_deg",),
-                    default=0.0,
-                )
-            ),
-            strain_std=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_strain_std",
-                    fallback=("barlow_strain_std",),
-                    default=0.0,
-                )
-            ),
-            strain_volume_preserve=bool(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_strain_volume_preserve",
-                    fallback=("barlow_strain_volume_preserve",),
-                    default=True,
-                )
-            ),
-            occlusion_mode=str(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_occlusion_mode",
-                    fallback=("barlow_occlusion_mode",),
-                    default="none",
-                )
-            ),
-            occlusion_view=str(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_occlusion_view",
-                    fallback=("barlow_occlusion_view",),
-                    default="second",
-                )
-            ),
-            occlusion_slab_frac=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_occlusion_slab_frac",
-                    fallback=("barlow_occlusion_slab_frac",),
-                    default=0.4,
-                )
-            ),
-            occlusion_cone_deg=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_occlusion_cone_deg",
-                    fallback=("barlow_occlusion_cone_deg",),
-                    default=20.0,
-                )
-            ),
-            occlusion_prob=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_occlusion_prob",
-                    fallback=("barlow_occlusion_prob",),
-                    default=1.0,
-                )
-            ),
+            drop_ratio=drop_ratio,
+            view_points=resolved_view_points,
+            neighbor_view=neighbor_view,
+            neighbor_view_mode=neighbor_view_mode,
+            neighbor_k=neighbor_k,
+            neighbor_max_relative_distance=neighbor_max_relative_distance,
+            view_crop_mode=view_crop_mode,
+            drop_apply_to_both=drop_apply_to_both,
+            rotation_mode=rotation_mode,
+            rotation_deg=rotation_deg,
+            strain_std=strain_std,
+            strain_volume_preserve=strain_volume_preserve,
+            occlusion_mode=occlusion_mode,
+            occlusion_view=occlusion_view,
+            occlusion_slab_frac=occlusion_slab_frac,
+            occlusion_cone_deg=occlusion_cone_deg,
+            occlusion_prob=occlusion_prob,
             input_dim=input_dim,
-            invariant_mode=invariant_mode,
-            invariant_max_factor=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_invariant_max_factor",
-                    fallback=("barlow_invariant_max_factor",),
-                    default=4.0,
-                )
-            ),
-            invariant_groups=int(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_invariant_groups",
-                    fallback=("barlow_invariant_groups",),
-                    default=0,
-                )
-            ),
-            invariant_use_third_order=bool(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_invariant_use_third_order",
-                    fallback=("barlow_invariant_use_third_order",),
-                    default=True,
-                )
-            ),
-            invariant_eps=float(
-                cls._cfg_value(
-                    cfg,
-                    "pointcontrast_invariant_eps",
-                    fallback=("barlow_invariant_eps",),
-                    default=1e-6,
-                )
-            ),
-            queue_size=int(cls._cfg_value(cfg, "pointcontrast_queue_size", default=0)),
-            symmetric=bool(cls._cfg_value(cfg, "pointcontrast_symmetric", default=True)),
-            normalize_embeddings=bool(
-                cls._cfg_value(cfg, "pointcontrast_normalize_embeddings", default=True)
-            ),
+            queue_size=queue_size,
+            symmetric=symmetric,
+            normalize_embeddings=normalize_embeddings,
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
