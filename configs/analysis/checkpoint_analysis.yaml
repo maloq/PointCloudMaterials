@@ -1,13 +1,13 @@
 checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
-  path: output/2026-03-13/14-38-53/VICREG_l128_N160_M80_RI_MAE_Invariant-epoch=114.ckpt
+  path: output/2026-03-02/17-22-18/VICREG_FT_l512_N128_M80_RI_MAE_Invariant-epoch=11.ckpt
   # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/pretrain_only_Ta_128_k8
+  output_dir: outputs/pretrain_only_Al_512_k8
   cuda_device: 0
 
 inputs:
   # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
-  data_config: configs/data/data_ae_Ta_80.yaml
+  data_config: configs/data/data_ae_Al_80.yaml
   # Optional real-data frame selection. null -> use data.data_files from the checkpoint config.
   real_data_files: null
   dataloader_num_workers: 4
@@ -25,10 +25,14 @@ runtime:
   seed_base: 123
 
 clustering:
-  # null -> figure_set.k when set, otherwise first entry of k_values
-  primary_k: null
-  k_values: [5, 6, 7, 8]
-  method: auto
+  # Unified selected clustering k used by figure_set and real_md outputs.
+  primary_k: 8
+  # null -> run clustering-dependent analyses only for primary_k.
+  # Set a list such as [5, 6, 7, 8] to additionally run clustering-dependent analyses for each key.
+  k_values: null
+  # Supported: auto, kmeans, spherical_kmeans. Default is spherical_kmeans.
+  method: spherical_kmeans
+  compare_methods: []
   l2_normalize: true
   standardize: true
   pca_variance: 0.98
@@ -56,12 +60,15 @@ tsne:
   max_samples: 8000
   n_iter: 1000
   paper_enabled: true
+  umap_comparison_enabled: false
+  umap_backend: auto
+  umap_neighbors: 30
+  umap_min_dist: 0.15
+  umap_metric: euclidean
 
 figure_set:
   enabled: true
   figure_only: false
-  # Controls the unified cluster count used across clustering, figure sets, and real_md plots.
-  k: 8
   visible_cluster_sets:
     - [0, 1, 2, 3, 4, 5]
   color_assignment: {}
@@ -112,8 +119,6 @@ figure_set:
 
 real_md:
   enabled: true
-  # null -> unified cluster count (figure_set.k when set)
-  selected_k: null
   time_series:
     paper_enabled: true
     alpha: 0.78
@@ -143,6 +148,7 @@ real_md:
     zoom_specs: []
   projection:
     method: umap
+    umap_backend: auto
     max_samples: 15000
     umap_neighbors: 30
     umap_min_dist: 0.15
@@ -150,7 +156,7 @@ real_md:
     scalar_alpha: 0.86
     scalar_background_alpha: 0.06
   descriptors:
-    enabled: true
+    enabled: false
     max_samples: 6000
     physical_scalar: coord_mean
     scalar_columns: []

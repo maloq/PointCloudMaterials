@@ -97,11 +97,16 @@ def resolve_temporal_real_inference_spec(analysis_cfg: Any) -> TemporalRealInfer
         "inputs.temporal_real.inference_mode",
         default="static",
     )
+    static_frame_index_raw = OmegaConf.select(
+        analysis_cfg,
+        "inputs.temporal_real.static_frame_index",
+        default=0,
+    )
     mode = str(mode_raw).strip().lower()
     if mode in {"static", "static_anchor"}:
         return TemporalRealInferenceSpec(
             mode="static_anchor",
-            static_frame_index=0,
+            static_frame_index=int(static_frame_index_raw),
         )
     if mode == "temporal":
         return TemporalRealInferenceSpec(

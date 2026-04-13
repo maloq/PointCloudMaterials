@@ -30,3 +30,7 @@ def snapshot_raytrace_gallery_root(out_dir: Path | str, *, k_value: int) -> Path
 
 def real_md_outputs_root(out_dir: Path | str) -> Path:
     return Path(out_dir) / "real_md"
+
+
+def real_md_outputs_root_for_k(out_dir: Path | str, *, k_value: int) -> Path:
+    return Path(out_dir) / f"real_md_k{int(k_value)}"

@@ -64,6 +64,7 @@ class AnalysisSettings:
     tsne_n_iter: int
     interactive_max_points: int | None
     cluster_method: str
+    cluster_compare_methods: list[str]
     cluster_l2_normalize: bool
     cluster_standardize: bool
     cluster_pca_var: float
@@ -437,17 +438,52 @@ def _resolve_analysis_settings(
         OmegaConf.select(figure_cfg, "k", default=None),
         field_name="figure_set.k",
     )
-    cluster_k_values = _as_list_of_int(
+    real_md_selected_k = _resolve_optional_cluster_k(
+        OmegaConf.select(analysis_cfg, "real_md.selected_k", default=None),
+        field_name="real_md.selected_k",
+    )
+    cluster_k_values_raw = _as_list_of_int(
         OmegaConf.select(clustering_cfg, "k_values", default=None),
         field_name="clustering.k_values",
-    ) or [3, 4, 5, 6]
-    cluster_k_values = list(dict.fromkeys(int(k) for k in cluster_k_values if int(k) >= 2))
-    if not cluster_k_values:
-        cluster_k_values = [3, 4, 5, 6]
-    if figure_set_k is not None:
-        primary_k = int(figure_set_k)
-    elif primary_k is None:
+    )
+    cluster_k_values = (
+        []
+        if cluster_k_values_raw is None
+        else list(dict.fromkeys(int(k) for k in cluster_k_values_raw if int(k) >= 2))
+    )
+
+    legacy_selected_k_candidates = {
+        "figure_set.k": figure_set_k,
+        "real_md.selected_k": real_md_selected_k,
+    }
+    if primary_k is None:
+        for field_name, field_value in legacy_selected_k_candidates.items():
+            if field_value is not None:
+                primary_k = int(field_value)
+                break
+    if primary_k is None and cluster_k_values:
         primary_k = int(cluster_k_values[0])
+    if primary_k is None:
+        raise ValueError(
+            "Could not resolve a unified clustering k. Set clustering.primary_k explicitly, "
+            "or provide one of the legacy fields figure_set.k / real_md.selected_k, "
+            "or provide clustering.k_values with at least one integer >= 2."
+        )
+
+    for field_name, field_value in legacy_selected_k_candidates.items():
+        if field_value is not None and int(field_value) != int(primary_k):
+            raise ValueError(
+                f"{field_name}={int(field_value)} conflicts with clustering.primary_k="
+                f"{int(primary_k)}. Use clustering.primary_k as the single selected "
+                "clustering k and leave per-section overrides null."
+            )
+
+    if cluster_k_values_raw is None:
+        cluster_k_values = [int(primary_k)]
+    elif not cluster_k_values:
+        raise ValueError(
+            "clustering.k_values was provided, but it does not contain any integers >= 2."
+        )
     cluster_k_values = [int(primary_k)] + [
         int(k) for k in cluster_k_values if int(k) != int(primary_k)
     ]
@@ -497,6 +533,20 @@ def _resolve_analysis_settings(
     if inference_cache_file == "":
         raise ValueError("cache.file must be a non-empty file name.")
 
+    compare_methods_raw = _as_list_of_str(
+        OmegaConf.select(clustering_cfg, "compare_methods", default=None)
+    ) or []
+    compare_methods: list[str] = []
+    seen_compare_methods: set[str] = set()
+    for method_name in compare_methods_raw:
+        normalized_method = str(method_name).strip().lower()
+        if normalized_method == "":
+            raise ValueError("clustering.compare_methods entries must be non-empty strings.")
+        if normalized_method in seen_compare_methods:
+            continue
+        seen_compare_methods.add(normalized_method)
+        compare_methods.append(normalized_method)
+
     return AnalysisSettings(
         primary_k=int(primary_k),
         tsne_max_samples=int(OmegaConf.select(tsne_cfg, "max_samples", default=8000)),
@@ -504,7 +554,10 @@ def _resolve_analysis_settings(
         interactive_max_points=_positive_int_or_none(
             OmegaConf.select(md_cfg, "interactive_max_points", default=None)
         ),
-        cluster_method=str(OmegaConf.select(clustering_cfg, "method", default="auto")).lower(),
+        cluster_method=str(
+            OmegaConf.select(clustering_cfg, "method", default="spherical_kmeans")
+        ).lower(),
+        cluster_compare_methods=compare_methods,
         cluster_l2_normalize=bool(OmegaConf.select(clustering_cfg, "l2_normalize", default=True)),
         cluster_standardize=bool(OmegaConf.select(clustering_cfg, "standardize", default=True)),
         cluster_pca_var=float(OmegaConf.select(clustering_cfg, "pca_variance", default=0.98)),
@@ -548,8 +601,13 @@ def _resolve_figure_set_settings(
         OmegaConf.select(figure_cfg, "k", default=None),
         field_name="figure_set.k",
     )
-    if cluster_k is None:
-        cluster_k = int(primary_k)
+    if cluster_k is not None and int(cluster_k) != int(primary_k):
+        raise ValueError(
+            f"figure_set.k={int(cluster_k)} conflicts with clustering.primary_k="
+            f"{int(primary_k)}. Use clustering.primary_k as the single selected "
+            "clustering k and keep figure_set.k unset."
+        )
+    cluster_k = int(primary_k)
 
     cluster_color_assignment_cfg = _normalize_cluster_color_assignment(
         OmegaConf.select(figure_cfg, "color_assignment", default=None),
@@ -724,15 +782,23 @@ def _resolve_figure_set_settings(
 def _print_resolved_analysis_settings(
     analysis_settings: AnalysisSettings,
     figure_settings: FigureSetSettings,
-    real_md_selected_k: int,
 ) -> None:
     print(
-        "Unified analysis cluster count: "
+        "Unified selected clustering k: "
         f"k={analysis_settings.primary_k} "
-        "(driven by figure_set.k when set; applied to clustering.primary_k, figure_set.k, real_md.selected_k)"
+        "(driven by clustering.primary_k; figure_set.k and real_md.selected_k inherit it)"
     )
     print(f"t-SNE sample cap: {analysis_settings.tsne_max_samples}")
-    print(f"Clustering k values (configured): {analysis_settings.cluster_k_values}")
+    print(f"Available clustering keys: {analysis_settings.cluster_k_values}")
+    print(
+        "Clustering backend settings: "
+        f"method={analysis_settings.cluster_method}, "
+        f"compare_methods={analysis_settings.cluster_compare_methods}, "
+        f"l2_normalize={analysis_settings.cluster_l2_normalize}, "
+        f"standardize={analysis_settings.cluster_standardize}, "
+        f"pca_variance={analysis_settings.cluster_pca_var}, "
+        f"pca_max_components={analysis_settings.cluster_pca_max_components}"
+    )
     print(
         "MD overlap fraction (analysis): "
         f"{analysis_settings.data_overlap_fraction:.3f} -> {analysis_settings.md_overlap_fraction:.3f}"
@@ -776,10 +842,6 @@ def _print_resolved_analysis_settings(
         "cluster_color_overrides="
         f"{sorted((figure_settings.cluster_color_assignment or {}).items())}"
     )
-    if int(real_md_selected_k) != int(analysis_settings.primary_k):
-        print(f"Real-MD selected k override: {real_md_selected_k}")
-
-
 def load_checkpoint_training_config(checkpoint_path: str) -> DictConfig:
     config_dir, config_name = resolve_config_path(checkpoint_path)
     config_path = Path(config_dir) / f"{config_name}.yaml"

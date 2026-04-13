@@ -15,6 +15,12 @@ def _as_list_of_str(value: Any) -> list[str] | None:
     return [str(v) for v in list(value)]
 
 
+def _optional_float(value: Any) -> float | None:
+    if value is None:
+        return None
+    return float(value)
+
+
 def _normalize_data_sources_for_cache(value: Any) -> list[dict[str, Any]]:
     from omegaconf import OmegaConf
 
@@ -91,7 +97,7 @@ def _build_inference_cache_spec(
         "data_sources": _normalize_data_sources_for_cache(
             getattr(cfg.data, "data_sources", None)
         ),
-        "data_radius": float(getattr(cfg.data, "radius", 0.0)),
+        "data_radius": _optional_float(getattr(cfg.data, "radius", None)),
         "data_sample_type": str(getattr(cfg.data, "sample_type", "")),
         "data_overlap_fraction": float(getattr(cfg.data, "overlap_fraction", 0.0)),
         "data_n_samples": int(getattr(cfg.data, "n_samples", 0)),

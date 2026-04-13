@@ -1,5 +1,5 @@
 checkpoint:
-  path: output/2026-04-01/13-59-31/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=09.ckpt
+  path: output/2026-04-01/18-25-29/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=24.ckpt
   output_dir: outputs/temporal_real_AlNi50_1150K
   cuda_device: 0
 
@@ -44,8 +44,8 @@ runtime:
   seed_base: 123
 
 clustering:
-  primary_k: null
-  k_values: [8]
+  primary_k: 8
+  k_values: null
   method: auto
   l2_normalize: true
   standardize: true
@@ -79,7 +79,6 @@ tsne:
 figure_set:
   enabled: true
   figure_only: false
-  k: 8
   visible_cluster_sets:
     - [0, 1, 2, 3, 4, 5]
   color_assignment: {}
@@ -129,7 +128,6 @@ figure_set:
 
 real_md:
   enabled: true
-  selected_k: null
   time_series:
     paper_enabled: true
     alpha: 0.78
@@ -159,6 +157,7 @@ real_md:
     zoom_specs: []
   projection:
     method: umap
+    umap_backend: auto
     max_samples: 15000
     umap_neighbors: 30
     umap_min_dist: 0.15
@@ -192,7 +191,7 @@ real_md:
       trajectory_endpoint_point_size: 3.0
       trajectory_endpoint_point_alpha: 0.95
   descriptors:
-    enabled: true
+    enabled: false
     max_samples: 6000
     physical_scalar: coord_mean
     scalar_columns: []

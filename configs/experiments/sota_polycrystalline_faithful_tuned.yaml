@@ -42,13 +42,6 @@ experiments:
       - learning_rate=0.0008
       - point_m2ae.mask_ratio=0.7
       - ++check_val_every_n_epoch=5
-  - name: pointcontrast
-    train_script: src/training_methods/contrastive_learning/train_pointcontrast.py
-    config_name: pointcontrast_polycrystalline.yaml
-    overrides:
-      - epochs=90
-      - pointcontrast_temperature=0.07
-      - ++check_val_every_n_epoch=5
   - name: ri_mae
     train_script: src/training_methods/ri_mae_faithful/train_ri_mae_faithful.py
     config_name: ri_mae_polycrystalline_faithful.yaml

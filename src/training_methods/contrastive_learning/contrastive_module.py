@@ -15,9 +15,7 @@ from src.training_methods.contrastive_learning.supervised_cache import (
     log_supervised_metrics,
     reset_supervised_cache,
 )
-from src.training_methods.contrastive_learning.pointcontrast import PointContrastLoss
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
-from src.training_methods.contrastive_learning.wmse import WMSELoss
 from src.utils.pointcloud_ops import crop_to_num_points
 from src.utils.training_utils import get_optimizers_and_scheduler, cached_sample_count
 
@@ -34,7 +32,7 @@ def resolve_latent_dim(cfg):
 
 class BarlowTwinsModule(pl.LightningModule):
     """
-    Self-supervised Barlow Twins / VICReg / W-MSE / PointContrast training.
+    Self-supervised Barlow Twins / VICReg training.
     """
 
     def __init__(self, cfg):
@@ -80,14 +78,6 @@ class BarlowTwinsModule(pl.LightningModule):
             if vicreg_enabled
             else None
         )
-        self.wmse = WMSELoss.from_config(
-            cfg,
-            input_dim=latent_dim,
-        )
-        self.pointcontrast = PointContrastLoss.from_config(
-            cfg,
-            input_dim=latent_dim,
-        )
 
         init_supervised_cache(self, cfg)
         self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
@@ -102,14 +92,6 @@ class BarlowTwinsModule(pl.LightningModule):
     @property
     def vicreg_projector(self):
         return self.vicreg.projector if self.vicreg is not None else None
-
-    @property
-    def wmse_projector(self):
-        return self.wmse.projector if self.wmse is not None else None
-
-    @property
-    def pointcontrast_projector(self):
-        return self.pointcontrast.projector if self.pointcontrast is not None else None
 
     def _shared_invariant(self, z_inv_model, eq_z):
         # Contrastive training always prefers norms(eq_z) when eq_z exists and
@@ -262,46 +244,12 @@ class BarlowTwinsModule(pl.LightningModule):
             for name, value in vicreg_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
-        if self.wmse is not None:
-            wmse_loss, wmse_metrics = self.wmse.compute_loss(
-                pc=pc_raw,
-                encoder=self.encoder,
-                prepare_input=self._prepare_encoder_input,
-                split_output=self._split_encoder_output,
-                current_epoch=int(self.current_epoch),
-                invariant_transform=self._shared_invariant,
-            )
-            if wmse_loss is not None:
-                losses["wmse"] = wmse_loss
-            for name, value in wmse_metrics.items():
-                self._log_metric(stage, name, value, batch_size=batch_size)
-
-        if self.pointcontrast is not None:
-            pointcontrast_loss, pointcontrast_metrics = self.pointcontrast.compute_loss(
-                pc=pc_raw,
-                encoder=self.encoder,
-                prepare_input=self._prepare_encoder_input,
-                split_output=self._split_encoder_output,
-                current_epoch=int(self.current_epoch),
-                invariant_transform=self._shared_invariant,
-            )
-            if pointcontrast_loss is not None:
-                losses["pointcontrast"] = pointcontrast_loss
-            for name, value in pointcontrast_metrics.items():
-                self._log_metric(stage, name, value, batch_size=batch_size)
-
         total_loss = None
         if "barlow" in losses:
             total_loss = self.barlow.weight * losses["barlow"]
         if "vicreg" in losses and self.vicreg is not None:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
-        if "wmse" in losses and self.wmse is not None:
-            wmse_total = self.wmse.weight * losses["wmse"]
-            total_loss = wmse_total if total_loss is None else total_loss + wmse_total
-        if "pointcontrast" in losses and self.pointcontrast is not None:
-            pointcontrast_total = self.pointcontrast.weight * losses["pointcontrast"]
-            total_loss = pointcontrast_total if total_loss is None else total_loss + pointcontrast_total
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
@@ -334,12 +282,6 @@ class BarlowTwinsModule(pl.LightningModule):
         if "vicreg" in losses:
             # Unweighted VICReg objective term.
             metrics_to_log["vicreg"] = losses["vicreg"]
-        if "wmse" in losses:
-            # Unweighted W-MSE objective term.
-            metrics_to_log["wmse"] = losses["wmse"]
-        if "pointcontrast" in losses:
-            # Unweighted PointContrast objective term.
-            metrics_to_log["pointcontrast"] = losses["pointcontrast"]
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():
@@ -464,9 +406,4 @@ class BarlowTwinsModule(pl.LightningModule):
     def _log_supervised_metrics(self, stage: str) -> None:
         log_supervised_metrics(self, stage)
 
-
-class PointContrastModule(BarlowTwinsModule):
-    """Alias for clarity when running PointContrast-specific experiments."""
-
-
-__all__ = ["BarlowTwinsModule", "PointContrastModule"]
+__all__ = ["BarlowTwinsModule"]

@@ -159,6 +159,7 @@ real_md:
     zoom_specs: []
   projection:
     method: umap
+    umap_backend: auto
     max_samples: 15000
     umap_neighbors: 30
     umap_min_dist: 0.15
@@ -192,7 +193,7 @@ real_md:
       trajectory_endpoint_point_size: 3.0
       trajectory_endpoint_point_alpha: 0.95
   descriptors:
-    enabled: true
+    enabled: false
     max_samples: 6000
     physical_scalar: coord_mean
     scalar_columns: []

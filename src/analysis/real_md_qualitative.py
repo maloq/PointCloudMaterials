@@ -26,7 +26,6 @@ from .cluster_rendering import (
 from .cluster_figures import _build_cluster_color_map
 from .output_layout import real_md_outputs_root
 from src.vis_tools.real_md_analysis_vis import (
-    save_cna_cluster_signature_stacked_bar,
     save_cna_signature_time_series,
     save_cluster_proportion_plots,
     save_descriptor_violin_grid,
@@ -432,28 +431,44 @@ def _fit_projection_embedding(
     umap_neighbors: int,
     umap_min_dist: float,
     umap_metric: str,
+    umap_backend: str,
     tsne_n_iter: int,
 ) -> tuple[np.ndarray, dict[str, Any], Any | None]:
     method_norm = str(method).strip().lower()
     if method_norm == "umap":
-        try:
-            import umap
-        except ImportError as exc:
-            raise ImportError("UMAP projection requested but umap-learn is not installed.") from exc
-        reducer = umap.UMAP(
-            n_components=2,
-            n_neighbors=int(umap_neighbors),
-            min_dist=float(umap_min_dist),
-            metric=str(umap_metric),
+        backend_info = _resolve_umap_backend(str(umap_backend))
+        reducer = _build_umap_reducer(
+            backend_info,
             random_state=int(random_state),
+            umap_neighbors=int(umap_neighbors),
+            umap_min_dist=float(umap_min_dist),
+            umap_metric=str(umap_metric),
         )
-        embedding = reducer.fit_transform(features)
-        return np.asarray(embedding, dtype=np.float32), {
+        try:
+            embedding = reducer.fit_transform(features)
+        except Exception as exc:
+            raise RuntimeError(
+                "UMAP fit_transform failed. "
+                f"backend={backend_info['backend']}, device={backend_info['device']}, "
+                f"requested_backend={backend_info['requested_backend']}, "
+                f"features_shape={features.shape}, features_dtype={features.dtype}, "
+                f"n_neighbors={int(umap_neighbors)}, min_dist={float(umap_min_dist)}, "
+                f"metric={str(umap_metric)!r}."
+            ) from exc
+        projection_info = {
             "method": "umap",
             "n_neighbors": int(umap_neighbors),
             "min_dist": float(umap_min_dist),
             "metric": str(umap_metric),
-        }, reducer
+            "backend": str(backend_info["backend"]),
+            "device": str(backend_info["device"]),
+            "backend_preference": str(backend_info["requested_backend"]),
+            "gpu_available": bool(backend_info["gpu_available"]),
+        }
+        backend_reason = backend_info.get("reason")
+        if backend_reason is not None:
+            projection_info["backend_reason"] = str(backend_reason)
+        return np.asarray(embedding, dtype=np.float32), projection_info, reducer
     if method_norm == "tsne":
         perplexity = min(50, max(5, len(features) // 100))
         embedding = compute_tsne(
@@ -510,7 +525,15 @@ def _transform_projection_features(
             "Projection model does not provide a transform(...) method. "
             f"method={method!r}, projection_type={type(fitted_projection)!r}."
         )
-    return np.asarray(fitted_projection.transform(x), dtype=np.float32)
+    try:
+        transformed = fitted_projection.transform(x)
+    except Exception as exc:
+        raise RuntimeError(
+            "Projection transform failed. "
+            f"method={method!r}, projection_type={type(fitted_projection)!r}, "
+            f"input_shape={x.shape}, input_dtype={x.dtype}."
+        ) from exc
+    return np.asarray(transformed, dtype=np.float32)
 
 
 def _compute_projection(
@@ -525,6 +548,7 @@ def _compute_projection(
     umap_neighbors: int,
     umap_min_dist: float,
     umap_metric: str,
+    umap_backend: str,
     tsne_n_iter: int,
 ) -> tuple[np.ndarray, dict[str, Any]]:
     features, _, prep_info = _prepare_projection_features(
@@ -542,12 +566,136 @@ def _compute_projection(
         umap_neighbors=int(umap_neighbors),
         umap_min_dist=float(umap_min_dist),
         umap_metric=str(umap_metric),
+        umap_backend=str(umap_backend),
         tsne_n_iter=int(tsne_n_iter),
     )
     return embedding, {
         **prep_info,
         **projection_info,
     }
+
+
+def _resolve_umap_backend(requested_backend: str) -> dict[str, Any]:
+    backend_norm = str(requested_backend).strip().lower() or "auto"
+    if backend_norm not in {"auto", "cpu", "gpu"}:
+        raise ValueError(
+            "real_md.projection.umap_backend must be one of ['auto', 'cpu', 'gpu'], "
+            f"got {requested_backend!r}."
+        )
+
+    gpu_available = False
+    gpu_probe_error: str | None = None
+    try:
+        import torch
+    except ImportError as exc:
+        gpu_probe_error = f"PyTorch import failed while probing CUDA availability: {exc}"
+    else:
+        gpu_available = bool(torch.cuda.is_available())
+
+    if backend_norm == "cpu":
+        return {
+            "backend": "umap-learn",
+            "device": "cpu",
+            "requested_backend": backend_norm,
+            "gpu_available": bool(gpu_available),
+            "reason": "CPU backend forced by real_md.projection.umap_backend='cpu'.",
+        }
+
+    if gpu_available:
+        try:
+            from cuml.manifold import UMAP as CuMLUMAP
+        except ImportError as exc:
+            if backend_norm == "gpu":
+                raise ImportError(
+                    "real_md.projection.umap_backend='gpu' requires RAPIDS cuML "
+                    "(cuml.manifold.UMAP), but it is not installed."
+                ) from exc
+            return {
+                "backend": "umap-learn",
+                "device": "cpu",
+                "requested_backend": backend_norm,
+                "gpu_available": True,
+                "reason": (
+                    "CUDA is available, but RAPIDS cuML is not installed. "
+                    "Falling back to CPU umap-learn."
+                ),
+            }
+        return {
+            "backend": "cuml",
+            "device": "gpu",
+            "requested_backend": backend_norm,
+            "gpu_available": True,
+            "reason": None,
+            "umap_class": CuMLUMAP,
+        }
+
+    if backend_norm == "gpu":
+        raise RuntimeError(
+            "real_md.projection.umap_backend='gpu' requires a CUDA-capable runtime, "
+            f"but torch.cuda.is_available() returned False. Probe details: {gpu_probe_error or 'ok'}."
+        )
+
+    return {
+        "backend": "umap-learn",
+        "device": "cpu",
+        "requested_backend": backend_norm,
+        "gpu_available": False,
+        "reason": (
+            "CUDA is not available for UMAP acceleration."
+            if gpu_probe_error is None
+            else gpu_probe_error
+        ),
+    }
+
+
+def _build_umap_reducer(
+    backend_info: dict[str, Any],
+    *,
+    random_state: int,
+    umap_neighbors: int,
+    umap_min_dist: float,
+    umap_metric: str,
+) -> Any:
+    reducer_kwargs = {
+        "n_components": 2,
+        "n_neighbors": int(umap_neighbors),
+        "min_dist": float(umap_min_dist),
+        "metric": str(umap_metric),
+    }
+    if str(backend_info["backend"]) == "cuml":
+        import inspect
+
+        reducer_cls = backend_info.get("umap_class")
+        if reducer_cls is None:
+            raise RuntimeError("Missing cuml UMAP class in backend_info.")
+        try:
+            reducer_signature = inspect.signature(reducer_cls.__init__)
+        except (TypeError, ValueError):
+            reducer_signature = None
+        if reducer_signature is not None and "output_type" in reducer_signature.parameters:
+            reducer_kwargs["output_type"] = "numpy"
+        if reducer_signature is not None and "random_state" in reducer_signature.parameters:
+            reducer_kwargs["random_state"] = None
+        return reducer_cls(**reducer_kwargs)
+
+    try:
+        import umap
+    except ImportError as exc:
+        raise ImportError("UMAP projection requested but umap-learn is not installed.") from exc
+    import inspect
+
+    try:
+        reducer_signature = inspect.signature(umap.UMAP.__init__)
+    except (TypeError, ValueError):
+        reducer_signature = None
+    if reducer_signature is not None:
+        if "n_jobs" in reducer_signature.parameters:
+            reducer_kwargs["n_jobs"] = -1
+        if "random_state" in reducer_signature.parameters:
+            reducer_kwargs["random_state"] = None
+        if "transform_seed" in reducer_signature.parameters:
+            reducer_kwargs["transform_seed"] = None
+    return umap.UMAP(**reducer_kwargs)
 
 
 
@@ -752,11 +900,21 @@ def _select_temporal_trajectory_sample_indices(
 def _resolve_transition_tolerance(
     *,
     model_cfg: Any,
+    dataset: Any,
     transition_cfg: Any,
 ) -> float:
-    stride = float(getattr(model_cfg.data, "radius", 8.0)) * (
-        1.0 - float(getattr(model_cfg.data, "overlap_fraction", 0.0))
-    )
+    radius_raw = getattr(model_cfg.data, "radius", None)
+    if radius_raw is None:
+        radius_raw = getattr(dataset, "radius", None)
+    radius = 8.0 if radius_raw is None else float(radius_raw)
+
+    center_grid_overlap_raw = getattr(dataset, "center_grid_overlap", None)
+    if center_grid_overlap_raw is not None and getattr(dataset, "radius", None) is not None:
+        stride = (2.0 - float(center_grid_overlap_raw)) * float(radius)
+    else:
+        overlap_fraction_raw = getattr(model_cfg.data, "overlap_fraction", None)
+        overlap_fraction = 0.0 if overlap_fraction_raw is None else float(overlap_fraction_raw)
+        stride = float(radius) * (1.0 - float(overlap_fraction))
     default_transition_tol = max(1e-3, 0.5 * stride)
     transition_tol_cfg = getattr(transition_cfg, "max_distance", None)
     return float(default_transition_tol if transition_tol_cfg is None else transition_tol_cfg)
@@ -904,7 +1062,6 @@ def _write_summary_markdown(
                 "## Cluster proportions",
                 f"- CSV: `{Path(summary['cluster_proportions']['table_csv']).name}`",
                 f"- Stacked area: `{Path(summary['cluster_proportions']['plots']['stacked_area']).name}`",
-                f"- Stacked counts: `{Path(summary['cluster_proportions']['plots']['stacked_bar_count']).name}`",
             ]
         )
         if paper_plots:
@@ -939,14 +1096,19 @@ def _write_summary_markdown(
             ]
         )
     if "latent_projection" in summary:
+        projection_info = summary["latent_projection"]["projection_info"]
         lines.extend(
             [
                 "",
                 "## Latent projection",
-                f"- Method: `{summary['latent_projection']['projection_info']['method']}`",
+                f"- Method: `{projection_info['method']}`",
                 f"- CSV: `{Path(summary['latent_projection']['projection_csv']).name}`",
             ]
         )
+        if "backend" in projection_info:
+            lines.append(
+                f"- Backend: `{projection_info['backend']}` on `{projection_info['device']}`"
+            )
     if "descriptor_analysis" in summary:
         lines.extend(
             [
@@ -958,9 +1120,6 @@ def _write_summary_markdown(
         )
         cna_vis = summary["descriptor_analysis"].get("cna_visualization")
         if isinstance(cna_vis, dict):
-            lines.append(
-                f"- CNA cluster composition: `{Path(cna_vis['cluster_plot']).name}`"
-            )
             lines.append(
                 f"- CNA time series: `{Path(cna_vis['time_series_plot']).name}`"
             )
@@ -1023,6 +1182,8 @@ def run_real_md_qualitative_analysis(
     point_scale: float,
     random_state: int,
     representative_render_cache: dict[str, Any] | None = None,
+    selected_k_override: int | None = None,
+    output_root_dir: Path | None = None,
 ) -> dict[str, Any]:
     data_kind = getattr(model_cfg.data, "kind", None)
     if data_kind not in {"real", "temporal_lammps"}:
@@ -1047,7 +1208,9 @@ def run_real_md_qualitative_analysis(
     temporal_cfg = getattr(real_md_cfg, "temporal", None)
     transition_cfg = getattr(real_md_cfg, "transitions", None)
 
-    selected_k_raw = getattr(real_md_cfg, "selected_k", None)
+    selected_k_raw = selected_k_override
+    if selected_k_raw is None:
+        selected_k_raw = getattr(real_md_cfg, "selected_k", None)
     if selected_k_raw is None:
         if not cluster_labels_by_k:
             raise ValueError("cluster_labels_by_k is empty.")
@@ -1072,7 +1235,15 @@ def run_real_md_qualitative_analysis(
         )
     if instance_ids is not None:
         instance_ids_arr = np.asarray(instance_ids).reshape(-1)
-        if instance_ids_arr.shape[0] != len(latents):
+        if instance_ids_arr.size == 0:
+            print(
+                "[analysis][real_md] instance_ids are unavailable in the inference cache; "
+                "falling back to coordinate-based matching where supported. "
+                "Identity-tracked temporal outputs remain unavailable until inference is "
+                "re-collected with non-empty instance_ids."
+            )
+            instance_ids_arr = None
+        elif instance_ids_arr.shape[0] != len(latents):
             raise ValueError(
                 "instance_ids and latents length mismatch: "
                 f"instance_ids={instance_ids_arr.shape[0]}, latents={len(latents)}."
@@ -1082,7 +1253,7 @@ def run_real_md_qualitative_analysis(
     if dataset is None:
         raise ValueError("A dataset object is required to render representative local environments.")
 
-    out_root = real_md_outputs_root(out_dir)
+    out_root = real_md_outputs_root(out_dir) if output_root_dir is None else Path(output_root_dir)
     out_root.mkdir(parents=True, exist_ok=True)
     frames = _build_frame_slices(
         frame_groups,
@@ -1224,7 +1395,7 @@ def run_real_md_qualitative_analysis(
             ),
         }
 
-    if _cfg_bool(descriptor_cfg, "enabled", True):
+    if _cfg_bool(descriptor_cfg, "enabled", False):
         descriptor_dir = out_root / "descriptors"
         descriptor_max_samples = getattr(descriptor_cfg, "max_samples", 6000)
         descriptor_indices = _resolve_descriptor_sampling_indices(
@@ -1321,15 +1492,7 @@ def run_real_md_qualitative_analysis(
             cna_cluster_summary.to_csv(cna_cluster_csv, index=False)
             cna_frame_summary.to_csv(cna_frame_csv, index=False)
 
-            cna_cluster_plot = descriptor_dir / "cna_signature_cluster_stacked_bar.png"
             cna_time_plot = descriptor_dir / "cna_signature_time_stacked_area.png"
-            cluster_plot_summary = save_cna_cluster_signature_stacked_bar(
-                cna_cluster_summary,
-                out_file=cna_cluster_plot,
-                cluster_color_map=labels_color_map,
-                cluster_label_map=cluster_display_map,
-                save_svg=True,
-            )
             time_plot_summary = save_cna_signature_time_series(
                 [str(frame.label) for frame in frames],
                 cna_frame_summary[cna_signature_columns].to_numpy(dtype=np.float64),
@@ -1343,8 +1506,6 @@ def run_real_md_qualitative_analysis(
             summary["descriptor_analysis"]["cna_visualization"] = {
                 "cluster_csv": str(cna_cluster_csv),
                 "frame_csv": str(cna_frame_csv),
-                "cluster_plot": str(cluster_plot_summary["out_file"]),
-                "cluster_plot_svg": cluster_plot_summary.get("svg"),
                 "time_series_plot": str(time_plot_summary["out_file"]),
                 "time_series_plot_svg": time_plot_summary.get("svg"),
                 "signature_columns": list(cna_signature_columns),
@@ -1368,6 +1529,7 @@ def run_real_md_qualitative_analysis(
     projection_umap_neighbors = _cfg_int(projection_cfg, "umap_neighbors", 30)
     projection_umap_min_dist = _cfg_float(projection_cfg, "umap_min_dist", 0.15)
     projection_umap_metric = str(getattr(projection_cfg, "umap_metric", "euclidean"))
+    projection_umap_backend = str(getattr(projection_cfg, "umap_backend", "auto"))
     projection_tsne_n_iter = _cfg_int(tsne_cfg, "n_iter", 1000)
 
     fitted_projection = None
@@ -1402,6 +1564,7 @@ def run_real_md_qualitative_analysis(
             umap_neighbors=projection_umap_neighbors,
             umap_min_dist=projection_umap_min_dist,
             umap_metric=projection_umap_metric,
+            umap_backend=projection_umap_backend,
             tsne_n_iter=projection_tsne_n_iter,
         )
         projection_embedding = _transform_projection_features(
@@ -1428,6 +1591,7 @@ def run_real_md_qualitative_analysis(
             umap_neighbors=projection_umap_neighbors,
             umap_min_dist=projection_umap_min_dist,
             umap_metric=projection_umap_metric,
+            umap_backend=projection_umap_backend,
             tsne_n_iter=projection_tsne_n_iter,
         )
     projection_dir.mkdir(parents=True, exist_ok=True)
@@ -1469,6 +1633,7 @@ def run_real_md_qualitative_analysis(
     if _cfg_bool(transition_cfg, "enabled", True):
         transition_tol = _resolve_transition_tolerance(
             model_cfg=model_cfg,
+            dataset=dataset,
             transition_cfg=transition_cfg,
         )
 

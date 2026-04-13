@@ -34,8 +34,6 @@ _COMMON_COMPATIBILITY_FIELDS = (
     "data.model_points",
     "barlow_enabled",
     "vicreg_enabled",
-    "wmse_enabled",
-    "pointcontrast_enabled",
 )
 
 _OBJECTIVE_COMPATIBILITY_FIELDS = {
@@ -44,16 +42,6 @@ _OBJECTIVE_COMPATIBILITY_FIELDS = {
     ),
     "vicreg_enabled": (
         "vicreg_embed_dim",
-    ),
-    "wmse_enabled": (
-        "wmse_embed_dim",
-        "wmse_whitening_eps",
-        "wmse_whitening_iters",
-        "wmse_whitening_size",
-        "wmse_normalize_embeddings",
-    ),
-    "pointcontrast_enabled": (
-        "pointcontrast_embed_dim",
     ),
 }
 

@@ -150,65 +150,8 @@ def save_cluster_proportion_plots(
     plt.close(fig)
     _log_saved_figure(stacked_area_path)
 
-    stacked_bar_path = out_dir / "cluster_proportions_stacked_bar.png"
-    fig, ax = plt.subplots(figsize=(11, 5), dpi=220)
-    bottom = np.zeros((len(frame_labels),), dtype=np.float64)
-    for pos, cluster_id in enumerate(cluster_ids):
-        ax.bar(
-            x,
-            fractions[:, pos],
-            bottom=bottom,
-            color=colors[pos],
-            alpha=float(bar_alpha),
-            edgecolor="white",
-            linewidth=0.45,
-            width=0.82,
-            label=display_labels[pos],
-        )
-        bottom += fractions[:, pos]
-    ax.set_ylim(0.0, 1.0)
-    ax.set_xticks(x)
-    ax.set_xticklabels(frame_labels, rotation=35, ha="right")
-    ax.set_ylabel("Fraction of local environments")
-    ax.set_title("Cluster proportions across time")
-    ax.legend(title="cluster", ncol=2)
-    ax.grid(True, axis="y", alpha=0.22)
-    fig.tight_layout()
-    fig.savefig(stacked_bar_path, bbox_inches="tight")
-    plt.close(fig)
-    _log_saved_figure(stacked_bar_path)
-
-    counts_bar_path = out_dir / "cluster_counts_stacked_bar.png"
-    fig, ax = plt.subplots(figsize=(11, 5), dpi=220)
-    bottom = np.zeros((len(frame_labels),), dtype=np.float64)
-    for pos, cluster_id in enumerate(cluster_ids):
-        ax.bar(
-            x,
-            counts_arr[:, pos],
-            bottom=bottom,
-            color=colors[pos],
-            alpha=float(bar_alpha),
-            edgecolor="white",
-            linewidth=0.45,
-            width=0.82,
-            label=display_labels[pos],
-        )
-        bottom += counts_arr[:, pos]
-    ax.set_xticks(x)
-    ax.set_xticklabels(frame_labels, rotation=35, ha="right")
-    ax.set_ylabel("Number of local environments")
-    ax.set_title("Cluster counts across time")
-    ax.legend(title="cluster", ncol=2)
-    ax.grid(True, axis="y", alpha=0.22)
-    fig.tight_layout()
-    fig.savefig(counts_bar_path, bbox_inches="tight")
-    plt.close(fig)
-    _log_saved_figure(counts_bar_path)
-
     outputs: dict[str, Any] = {
         "stacked_area": str(stacked_area_path),
-        "stacked_bar_fraction": str(stacked_bar_path),
-        "stacked_bar_count": str(counts_bar_path),
     }
     if save_paper_svg:
         paper_outputs: dict[str, str] = {}
@@ -247,78 +190,6 @@ def save_cluster_proportion_plots(
         _log_saved_figure(stacked_area_paper_path)
         paper_outputs["stacked_area_svg"] = str(stacked_area_paper_path)
 
-        stacked_bar_paper_path = out_dir / "cluster_proportions_stacked_bar_paper.svg"
-        fig, ax = plt.subplots(figsize=(7.2, 3.2), dpi=220)
-        bottom = np.zeros((len(frame_labels),), dtype=np.float64)
-        for pos, cluster_id in enumerate(cluster_ids):
-            ax.bar(
-                x,
-                fractions[:, pos],
-                bottom=bottom,
-                color=colors[pos],
-                alpha=float(paper_alpha),
-                edgecolor="white",
-                linewidth=0.35,
-                width=0.78,
-                label=display_labels[pos],
-            )
-            bottom += fractions[:, pos]
-        ax.set_ylim(0.0, 1.0)
-        ax.set_xticks(x)
-        ax.set_xticklabels(frame_labels, rotation=0, ha="center")
-        ax.set_ylabel("Fraction")
-        _style_paper_axes(ax)
-        ax.legend(
-            title="Cluster",
-            ncol=min(3, max(1, len(cluster_ids))),
-            loc="upper left",
-            bbox_to_anchor=(1.01, 1.0),
-            borderaxespad=0.0,
-            frameon=False,
-            fontsize=9,
-            title_fontsize=10,
-        )
-        fig.tight_layout()
-        fig.savefig(stacked_bar_paper_path, bbox_inches="tight", transparent=True)
-        plt.close(fig)
-        _log_saved_figure(stacked_bar_paper_path)
-        paper_outputs["stacked_bar_fraction_svg"] = str(stacked_bar_paper_path)
-
-        counts_bar_paper_path = out_dir / "cluster_counts_stacked_bar_paper.svg"
-        fig, ax = plt.subplots(figsize=(7.2, 3.2), dpi=220)
-        bottom = np.zeros((len(frame_labels),), dtype=np.float64)
-        for pos, cluster_id in enumerate(cluster_ids):
-            ax.bar(
-                x,
-                counts_arr[:, pos],
-                bottom=bottom,
-                color=colors[pos],
-                alpha=float(paper_alpha),
-                edgecolor="white",
-                linewidth=0.35,
-                width=0.78,
-                label=display_labels[pos],
-            )
-            bottom += counts_arr[:, pos]
-        ax.set_xticks(x)
-        ax.set_xticklabels(frame_labels, rotation=0, ha="center")
-        ax.set_ylabel("Count")
-        _style_paper_axes(ax)
-        ax.legend(
-            title="Cluster",
-            ncol=min(3, max(1, len(cluster_ids))),
-            loc="upper left",
-            bbox_to_anchor=(1.01, 1.0),
-            borderaxespad=0.0,
-            frameon=False,
-            fontsize=9,
-            title_fontsize=10,
-        )
-        fig.tight_layout()
-        fig.savefig(counts_bar_paper_path, bbox_inches="tight", transparent=True)
-        plt.close(fig)
-        _log_saved_figure(counts_bar_paper_path)
-        paper_outputs["stacked_bar_count_svg"] = str(counts_bar_paper_path)
         outputs["paper"] = paper_outputs
     return outputs
 
@@ -1232,138 +1103,6 @@ def save_descriptor_violin_grid(
     }
 
 
-def save_cna_cluster_signature_stacked_bar(
-    signature_table: pd.DataFrame,
-    *,
-    out_file: Path,
-    cluster_color_map: dict[int, str] | None = None,
-    cluster_label_map: dict[int, str] | None = None,
-    save_svg: bool = False,
-) -> dict[str, Any]:
-    if signature_table.empty:
-        raise ValueError("signature_table is empty.")
-    if "cluster_id" not in signature_table.columns:
-        raise KeyError("signature_table must contain 'cluster_id'.")
-    signature_columns = [
-        str(column)
-        for column in signature_table.columns
-        if column != "cluster_id"
-    ]
-    if not signature_columns:
-        raise ValueError("signature_table must contain at least one CNA signature column.")
-
-    table = signature_table.copy()
-    table["cluster_id"] = pd.to_numeric(table["cluster_id"], errors="raise").astype(int)
-    cluster_ids = _sorted_cluster_ids(table["cluster_id"].to_numpy())
-    grouped = (
-        table.groupby("cluster_id", sort=True)[signature_columns]
-        .mean(numeric_only=True)
-        .reindex(cluster_ids)
-        .fillna(0.0)
-    )
-    values = grouped.to_numpy(dtype=np.float64)
-    row_sums = values.sum(axis=1, keepdims=True)
-    values = np.divide(
-        values,
-        row_sums,
-        out=np.zeros_like(values),
-        where=row_sums > 0.0,
-    )
-
-    colors = _cluster_palette_from_map(list(range(len(signature_columns))), None)
-    signature_color_map = {
-        str(column): ("#c8c8c8" if str(column) == "cna_other" else str(colors[pos]))
-        for pos, column in enumerate(signature_columns)
-    }
-    x = np.arange(len(cluster_ids), dtype=np.float64)
-    display_labels = [
-        str(cluster_label_map[int(cluster_id)])
-        if cluster_label_map is not None and int(cluster_id) in cluster_label_map
-        else f"C{int(cluster_id)}"
-        for cluster_id in cluster_ids
-    ]
-
-    fig, ax = plt.subplots(figsize=(8.2, 4.6), dpi=220)
-    bottom = np.zeros((len(cluster_ids),), dtype=np.float64)
-    for col_idx, column in enumerate(signature_columns):
-        ax.bar(
-            x,
-            values[:, col_idx],
-            bottom=bottom,
-            color=signature_color_map[str(column)],
-            edgecolor="white",
-            linewidth=0.4,
-            width=0.80,
-            label=_format_cna_plot_label(str(column)),
-        )
-        bottom += values[:, col_idx]
-    ax.set_xticks(x)
-    ax.set_xticklabels(display_labels)
-    ax.set_ylim(0.0, 1.0)
-    ax.set_ylabel("Mean CNA fraction")
-    ax.set_title("CNA signature composition by cluster")
-    ax.grid(True, axis="y", alpha=0.18)
-    ax.legend(
-        title="signature",
-        ncol=min(4, max(1, len(signature_columns))),
-        fontsize=8,
-        title_fontsize=9,
-        frameon=False,
-        loc="upper left",
-        bbox_to_anchor=(1.01, 1.0),
-        borderaxespad=0.0,
-    )
-    fig.tight_layout()
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
-    _log_saved_figure(out_file)
-
-    result = {
-        "out_file": str(out_file),
-        "cluster_ids": [int(v) for v in cluster_ids],
-        "signature_columns": list(signature_columns),
-    }
-    if save_svg:
-        svg_path = out_file.with_suffix(".svg")
-        fig, ax = plt.subplots(figsize=(7.0, 3.1), dpi=220)
-        bottom = np.zeros((len(cluster_ids),), dtype=np.float64)
-        for col_idx, column in enumerate(signature_columns):
-            ax.bar(
-                x,
-                values[:, col_idx],
-                bottom=bottom,
-                color=signature_color_map[str(column)],
-                edgecolor="white",
-                linewidth=0.35,
-                width=0.76,
-                label=_format_cna_plot_label(str(column)),
-            )
-            bottom += values[:, col_idx]
-        ax.set_xticks(x)
-        ax.set_xticklabels(display_labels)
-        ax.set_ylim(0.0, 1.0)
-        ax.set_ylabel("Fraction")
-        _style_paper_axes(ax)
-        ax.legend(
-            title="CNA",
-            ncol=min(4, max(1, len(signature_columns))),
-            fontsize=8,
-            title_fontsize=9,
-            frameon=False,
-            loc="upper left",
-            bbox_to_anchor=(1.01, 1.0),
-            borderaxespad=0.0,
-        )
-        fig.tight_layout()
-        fig.savefig(svg_path, bbox_inches="tight", transparent=True)
-        plt.close(fig)
-        _log_saved_figure(svg_path)
-        result["svg"] = str(svg_path)
-    return result
-
-
 def save_cna_signature_time_series(
     frame_labels: list[str],
     signature_matrix: np.ndarray,
@@ -1718,7 +1457,6 @@ __all__ = [
     "save_cluster_proportion_plots",
     "save_embedding_discrete_plot",
     "save_descriptor_violin_grid",
-    "save_cna_cluster_signature_stacked_bar",
     "save_cna_signature_time_series",
     "save_temporal_embedding_cluster_animation",
     "save_temporal_embedding_trajectory_animation",

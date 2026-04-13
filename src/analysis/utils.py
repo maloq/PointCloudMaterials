@@ -146,19 +146,66 @@ def _prepare_pointcloud_batch_for_model(
 
     mode = str(temporal_sequence_mode).strip().lower()
     if mode == "static_anchor":
-        frame_index = 0 if temporal_static_frame_index is None else int(temporal_static_frame_index)
-        if frame_index != 0:
-            raise ValueError(
-                "temporal_sequence_mode='static_anchor' expects frame_index=0, "
-                f"got temporal_static_frame_index={frame_index}."
-            )
-        return pc[:, 0, :, :]
+        frame_index = _resolve_temporal_frame_index(
+            sequence_length=int(pc.shape[1]),
+            frame_index=temporal_static_frame_index,
+            field_name="temporal_static_frame_index",
+        )
+        return pc[:, frame_index, :, :]
     if mode == "temporal":
         return pc
     raise ValueError(
         "temporal_sequence_mode must be one of ['static_anchor', 'temporal'], "
         f"got {temporal_sequence_mode!r}."
     )
+
+
+def _resolve_temporal_frame_index(
+    *,
+    sequence_length: int,
+    frame_index: int | None,
+    field_name: str,
+) -> int:
+    if sequence_length <= 0:
+        raise ValueError(f"sequence_length must be > 0, got {sequence_length}.")
+    resolved = 0 if frame_index is None else int(frame_index)
+    if resolved < 0:
+        resolved += int(sequence_length)
+    if resolved < 0 or resolved >= int(sequence_length):
+        raise ValueError(
+            f"{field_name} is out of range for temporal sequence length {sequence_length}. "
+            f"Got {frame_index!r}, resolved_index={resolved}."
+        )
+    return resolved
+
+
+def _prepare_coords_batch_for_model(
+    batch: Any,
+    coords: torch.Tensor | None,
+    *,
+    temporal_sequence_mode: str = "static_anchor",
+    temporal_static_frame_index: int | None = 0,
+) -> torch.Tensor | None:
+    if str(temporal_sequence_mode).strip().lower() != "static_anchor":
+        return coords
+    if not isinstance(batch, dict):
+        return coords
+    center_positions = batch.get("center_positions", None)
+    if center_positions is None:
+        return coords
+    if not torch.is_tensor(center_positions):
+        center_positions = torch.as_tensor(center_positions)
+    if center_positions.ndim != 3 or center_positions.shape[-1] != 3:
+        raise ValueError(
+            "Temporal analysis expects batch['center_positions'] with shape (B, T, 3), "
+            f"got {tuple(center_positions.shape)}."
+        )
+    frame_index = _resolve_temporal_frame_index(
+        sequence_length=int(center_positions.shape[1]),
+        frame_index=temporal_static_frame_index,
+        field_name="temporal_static_frame_index",
+    )
+    return center_positions[:, frame_index, :]
 
 
 def _unwrap_dataset(dataset: Any) -> Any:
@@ -309,6 +356,12 @@ def gather_inference_batches(
             pc, phase, coords, instance_id = _extract_pc_phase_coords(batch)
             pc = _prepare_pointcloud_batch_for_model(
                 pc,
+                temporal_sequence_mode=temporal_sequence_mode,
+                temporal_static_frame_index=temporal_static_frame_index,
+            )
+            coords = _prepare_coords_batch_for_model(
+                batch,
+                coords,
                 temporal_sequence_mode=temporal_sequence_mode,
                 temporal_static_frame_index=temporal_static_frame_index,
             )

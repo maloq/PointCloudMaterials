@@ -1,4 +1,4 @@
-# Compare VICReg, Barlow Twins, and W-MSE on the molecular setup with
+# Compare VICReg and Barlow Twins on the molecular setup with
 # VN_REVNET_Backbone, while keeping the VICReg molecular config as the base.
 #
 # Usage:
@@ -35,10 +35,6 @@ base_overrides:
   - "barlow_weight=0.0"
   - "vicreg_enabled=false"
   - "vicreg_weight=0.0"
-  - "++wmse_enabled=false"
-  - "++wmse_weight=0.0"
-  - "++pointcontrast_enabled=false"
-  - "++pointcontrast_weight=0.0"
   - "++barlow_lambda=0.005"
   - "++barlow_embed_dim=120"
   - "++barlow_start_epoch=0"
@@ -61,31 +57,6 @@ base_overrides:
   - "++barlow_occlusion_slab_frac=0.0"
   - "++barlow_occlusion_cone_deg=0.0"
   - "++barlow_occlusion_prob=1.0"
-  - "++wmse_embed_dim=120"
-  - "++wmse_start_epoch=0"
-  - "++wmse_jitter_std=0.01"
-  - "++wmse_jitter_mode=physical"
-  - "++wmse_drop_ratio=0.0"
-  - "++wmse_neighbor_view=true"
-  - "++wmse_neighbor_view_mode=second"
-  - "++wmse_neighbor_k=8"
-  - "++wmse_neighbor_max_relative_distance=0.0"
-  - "++wmse_view_points=80"
-  - "++wmse_view_crop_mode=nearest_origin"
-  - "++wmse_drop_apply_to_both=true"
-  - "++wmse_rotation_mode=none"
-  - "++wmse_rotation_deg=10.0"
-  - "++wmse_strain_std=0.02"
-  - "++wmse_strain_volume_preserve=true"
-  - "++wmse_occlusion_mode=mixed"
-  - "++wmse_occlusion_view=second"
-  - "++wmse_occlusion_slab_frac=0.0"
-  - "++wmse_occlusion_cone_deg=0.0"
-  - "++wmse_occlusion_prob=1.0"
-  - "++wmse_whitening_eps=1e-4"
-  - "++wmse_whitening_iters=1"
-  - "++wmse_whitening_size=256"
-  - "++wmse_normalize_embeddings=true"
   - "++run_post_training_analysis=false"
   - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
   - "++checkpoint_mode=max"
@@ -102,12 +73,6 @@ experiments:
       - "model_type=barlow_twins"
       - "barlow_enabled=true"
       - "barlow_weight=1.0"
-
-  - name: wmse
-    overrides:
-      - "model_type=wmse"
-      - "wmse_enabled=true"
-      - "wmse_weight=1.0"
 
 metrics:
   final:

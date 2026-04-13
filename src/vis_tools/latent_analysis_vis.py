@@ -7,8 +7,13 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, kmeans_plusplus
 from sklearn.decomposition import PCA
+from sklearn.metrics import (
+    calinski_harabasz_score,
+    davies_bouldin_score,
+    silhouette_score,
+)
 from sklearn.preprocessing import StandardScaler
 
 from src.vis_tools.tsne_vis import compute_tsne, save_tsne_plot
@@ -106,6 +111,265 @@ def save_latent_tsne(
 def _l2_normalize_rows(x: np.ndarray, eps: float = 1e-8) -> np.ndarray:
     norms = np.linalg.norm(x, axis=1, keepdims=True)
     return x / np.clip(norms, eps, None)
+
+
+def _l2_normalize_rows_strict(
+    x: np.ndarray,
+    *,
+    eps: float = 1e-8,
+    context: str,
+) -> np.ndarray:
+    arr = np.asarray(x, dtype=np.float32)
+    if arr.ndim != 2:
+        raise ValueError(
+            f"{context} must be a 2D array, got shape={tuple(arr.shape)}."
+        )
+    norms = np.linalg.norm(arr, axis=1, keepdims=True)
+    zero_mask = np.asarray(norms <= float(eps)).reshape(-1)
+    if np.any(zero_mask):
+        zero_count = int(np.count_nonzero(zero_mask))
+        raise ValueError(
+            f"{context} contains {zero_count} zero-norm row(s), which cannot be "
+            "projected onto the unit sphere for spherical k-means."
+        )
+    return arr / norms
+
+
+def _normalize_clustering_method_name(method: str) -> str:
+    raw_method = str(method).strip()
+    if raw_method == "":
+        raise ValueError("Clustering method must be a non-empty string.")
+    key = raw_method.lower().replace(" ", "").replace("-", "").replace("_", "")
+    if key in {"auto", "kmeans", "euclideankmeans", "regularkmeans", "standardkmeans"}:
+        return "kmeans"
+    if key in {"spherical", "sphericalkmeans"}:
+        return "spherical_kmeans"
+    raise ValueError(
+        "Unsupported clustering method "
+        f"{method!r}. Supported values: auto, kmeans, spherical_kmeans."
+    )
+
+
+def _compute_internal_clustering_metrics(
+    features: np.ndarray,
+    labels: np.ndarray,
+    *,
+    random_state: int,
+    max_samples: int = 3000,
+) -> Dict[str, Any]:
+    feats = np.asarray(features, dtype=np.float32)
+    labels_arr = np.asarray(labels, dtype=int).reshape(-1)
+    if feats.ndim != 2:
+        raise ValueError(
+            "Internal clustering metric features must be 2D, "
+            f"got shape={tuple(feats.shape)}."
+        )
+    if feats.shape[0] != labels_arr.shape[0]:
+        raise ValueError(
+            "Internal clustering metrics require matching feature/label lengths, "
+            f"got features.shape[0]={feats.shape[0]} and labels.shape[0]={labels_arr.shape[0]}."
+        )
+
+    cluster_ids, cluster_counts = np.unique(labels_arr, return_counts=True)
+    metrics: Dict[str, Any] = {
+        "cluster_counts": {
+            int(cluster_id): int(count)
+            for cluster_id, count in zip(cluster_ids, cluster_counts)
+        },
+        "n_clusters_observed": int(cluster_ids.size),
+        "smallest_cluster_size": int(cluster_counts.min()),
+        "largest_cluster_size": int(cluster_counts.max()),
+        "cluster_validation_sample_size": int(min(int(max_samples), feats.shape[0])),
+    }
+    fractions = cluster_counts.astype(np.float64) / float(cluster_counts.sum())
+    entropy = -np.sum(fractions * np.log(np.clip(fractions, 1.0e-12, None)))
+    metrics["cluster_size_entropy"] = float(entropy)
+    metrics["cluster_size_entropy_normalized"] = float(
+        entropy / np.log(float(cluster_ids.size))
+    ) if int(cluster_ids.size) > 1 else 0.0
+    metrics["largest_cluster_fraction"] = float(fractions.max())
+    metrics["smallest_cluster_fraction"] = float(fractions.min())
+
+    if cluster_ids.size < 2 or cluster_ids.size >= feats.shape[0]:
+        metrics["internal_validation_skipped"] = (
+            "Requires 2 <= number of clusters < number of samples."
+        )
+        return metrics
+
+    sample_size = min(int(max_samples), feats.shape[0])
+    if sample_size < feats.shape[0]:
+        sample_idx = np.random.default_rng(int(random_state)).choice(
+            feats.shape[0],
+            size=sample_size,
+            replace=False,
+        )
+        feats_eval = feats[sample_idx]
+        labels_eval = labels_arr[sample_idx]
+    else:
+        feats_eval = feats
+        labels_eval = labels_arr
+
+    sampled_cluster_ids = np.unique(labels_eval)
+    if sampled_cluster_ids.size < 2 or sampled_cluster_ids.size >= feats_eval.shape[0]:
+        metrics["internal_validation_skipped"] = (
+            "Sampled subset does not contain a valid multi-cluster partition."
+        )
+        return metrics
+
+    unit_feats_eval = _l2_normalize_rows_strict(
+        feats_eval,
+        context="Internal clustering metric features",
+    )
+    metrics["silhouette_euclidean"] = float(
+        silhouette_score(feats_eval, labels_eval, metric="euclidean")
+    )
+    metrics["silhouette_cosine"] = float(
+        silhouette_score(unit_feats_eval, labels_eval, metric="cosine")
+    )
+    metrics["calinski_harabasz"] = float(
+        calinski_harabasz_score(feats_eval, labels_eval)
+    )
+    metrics["davies_bouldin"] = float(
+        davies_bouldin_score(feats_eval, labels_eval)
+    )
+    return metrics
+
+
+def _run_spherical_kmeans(
+    features: np.ndarray,
+    n_clusters: int,
+    *,
+    random_state: int,
+    n_init: int = 10,
+    max_iter: int = 100,
+    tol: float = 1.0e-4,
+) -> tuple[np.ndarray, Dict[str, Any], np.ndarray]:
+    feats_unit = _l2_normalize_rows_strict(
+        features,
+        context="Spherical k-means input features",
+    )
+    n_samples = int(feats_unit.shape[0])
+    if n_clusters < 2 or n_clusters > n_samples:
+        raise ValueError(
+            "spherical k-means requires 2 <= n_clusters <= n_samples, "
+            f"got n_clusters={n_clusters}, n_samples={n_samples}."
+        )
+
+    best_labels: np.ndarray | None = None
+    best_objective = -np.inf
+    best_info: Dict[str, Any] | None = None
+
+    for init_idx in range(int(n_init)):
+        init_seed = int(random_state) + int(init_idx)
+        centers_init, center_indices = kmeans_plusplus(
+            feats_unit,
+            n_clusters=int(n_clusters),
+            random_state=int(init_seed),
+        )
+        centers = _l2_normalize_rows_strict(
+            centers_init,
+            context=f"Spherical k-means initial centers (init {init_idx})",
+        )
+        prev_labels: np.ndarray | None = None
+        empty_cluster_reassignments = 0
+        final_iteration = 0
+        converged = False
+
+        for iteration in range(1, int(max_iter) + 1):
+            similarities = feats_unit @ centers.T
+            labels = np.argmax(similarities, axis=1).astype(int, copy=False)
+            assigned_similarity = similarities[np.arange(n_samples), labels]
+
+            new_centers = np.zeros_like(centers)
+            empty_clusters: list[int] = []
+            for cluster_id in range(int(n_clusters)):
+                mask = labels == int(cluster_id)
+                if not np.any(mask):
+                    empty_clusters.append(int(cluster_id))
+                    continue
+                centroid = np.mean(feats_unit[mask], axis=0, dtype=np.float64)
+                centroid_norm = float(np.linalg.norm(centroid))
+                if centroid_norm <= 1.0e-12:
+                    raise ValueError(
+                        "Spherical k-means produced a zero-norm centroid for "
+                        f"cluster_id={cluster_id}, iteration={iteration}, init_idx={init_idx}."
+                    )
+                new_centers[cluster_id] = (
+                    centroid / centroid_norm
+                ).astype(np.float32, copy=False)
+
+            if empty_clusters:
+                candidate_order = np.argsort(assigned_similarity, kind="stable")
+                used_candidate_indices: set[int] = set()
+                candidate_cursor = 0
+                for cluster_id in empty_clusters:
+                    while (
+                        candidate_cursor < candidate_order.size
+                        and int(candidate_order[candidate_cursor]) in used_candidate_indices
+                    ):
+                        candidate_cursor += 1
+                    if candidate_cursor >= candidate_order.size:
+                        raise RuntimeError(
+                            "Failed to reseed an empty spherical k-means cluster. "
+                            f"iteration={iteration}, init_idx={init_idx}, "
+                            f"empty_clusters={empty_clusters}."
+                        )
+                    sample_idx = int(candidate_order[candidate_cursor])
+                    used_candidate_indices.add(sample_idx)
+                    new_centers[cluster_id] = feats_unit[sample_idx]
+                    empty_cluster_reassignments += 1
+                    candidate_cursor += 1
+
+            center_alignment = np.sum(centers * new_centers, axis=1)
+            center_shift = float(
+                np.max(1.0 - np.clip(center_alignment, -1.0, 1.0))
+            )
+            centers = new_centers
+            final_iteration = int(iteration)
+            if prev_labels is not None and np.array_equal(labels, prev_labels):
+                converged = True
+                break
+            if center_shift <= float(tol):
+                converged = True
+                break
+            prev_labels = labels.copy()
+
+        final_similarities = feats_unit @ centers.T
+        final_labels = np.argmax(final_similarities, axis=1).astype(int, copy=False)
+        final_assigned_similarity = final_similarities[np.arange(n_samples), final_labels]
+        objective = float(np.sum(final_assigned_similarity, dtype=np.float64))
+        spherical_inertia = float(
+            np.sum(1.0 - final_assigned_similarity, dtype=np.float64)
+        )
+
+        if objective > best_objective:
+            best_objective = objective
+            best_labels = final_labels.copy()
+            best_info = {
+                "requested_method": "spherical_kmeans",
+                "method": "spherical_kmeans",
+                "fallback_used": False,
+                "model_score_name": "spherical_inertia",
+                "model_score": float(spherical_inertia),
+                "mean_assigned_cosine_similarity": float(
+                    np.mean(final_assigned_similarity, dtype=np.float64)
+                ),
+                "sum_assigned_cosine_similarity": float(objective),
+                "n_init": int(n_init),
+                "max_iter": int(max_iter),
+                "tol": float(tol),
+                "best_init_index": int(init_idx),
+                "best_init_seed": int(init_seed),
+                "iterations_run": int(final_iteration),
+                "converged": bool(converged),
+                "empty_cluster_reassignments": int(empty_cluster_reassignments),
+                "initial_center_indices": [int(v) for v in np.asarray(center_indices, dtype=int)],
+                "random_state": int(random_state),
+            }
+
+    if best_labels is None or best_info is None:
+        raise RuntimeError("Spherical k-means failed to produce a valid clustering result.")
+    return best_labels, best_info, feats_unit
 
 
 def _prepare_clustering_features(
@@ -266,19 +530,43 @@ def _cluster_with_method_selection(
     method: str,
     random_state: int,
 ) -> tuple[np.ndarray, Dict[str, Any]]:
-    requested_method = str(method).lower()
-    resolved_method = "kmeans"
-    model = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=20)
-    labels = model.fit_predict(features).astype(int, copy=False)
-    labels_canonical, canonical_info = _canonicalize_cluster_labels(labels, features)
+    features_arr = np.asarray(features, dtype=np.float32)
+    resolved_method = _normalize_clustering_method_name(method)
+
+    if resolved_method == "kmeans":
+        model = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=20)
+        labels = model.fit_predict(features_arr).astype(int, copy=False)
+        canonical_features = features_arr
+        fit_info: Dict[str, Any] = {
+            "method": "kmeans",
+            "requested_method": str(method),
+            "fallback_used": False,
+            "model_score_name": "inertia",
+            "model_score": float(model.inertia_),
+            "random_state": int(random_state),
+        }
+    elif resolved_method == "spherical_kmeans":
+        labels, fit_info, canonical_features = _run_spherical_kmeans(
+            features_arr,
+            int(n_clusters),
+            random_state=int(random_state),
+        )
+    else:
+        raise AssertionError(f"Unhandled resolved clustering method {resolved_method!r}.")
+
+    labels_canonical, canonical_info = _canonicalize_cluster_labels(
+        labels,
+        canonical_features,
+    )
+    internal_metrics = _compute_internal_clustering_metrics(
+        features_arr,
+        labels_canonical,
+        random_state=int(random_state),
+    )
     return labels_canonical, {
-        "method": resolved_method,
-        "requested_method": requested_method,
-        "fallback_used": requested_method != resolved_method,
-        "model_score_name": "inertia",
-        "model_score": float(model.inertia_),
-        "random_state": int(random_state),
+        **fit_info,
         **canonical_info,
+        **internal_metrics,
     }
 
 

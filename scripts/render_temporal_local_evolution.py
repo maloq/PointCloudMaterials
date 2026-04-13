@@ -93,7 +93,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--gif-duration-ms",
         type=int,
-        default=900,
+        default=400,
         help="Per-frame duration for GIF animations in milliseconds.",
     )
     parser.add_argument(
@@ -389,13 +389,50 @@ def _format_delta_time(
     time_scale: float | None,
     time_unit: str | None,
 ) -> str:
+    delta_value = _format_delta_time_value(
+        anchor_timestep=anchor_timestep,
+        current_timestep=current_timestep,
+        time_scale=time_scale,
+    )
     if time_scale is None or time_unit is None or time_unit == "":
         return f"t={int(current_timestep)}"
+    return f"+{delta_value} {time_unit}"
+
+
+def _format_delta_time_value(
+    *,
+    anchor_timestep: int,
+    current_timestep: int,
+    time_scale: float | None,
+) -> str:
+    if time_scale is None:
+        return str(int(current_timestep))
     delta_value = (float(current_timestep) - float(anchor_timestep)) / float(time_scale)
     rounded = round(delta_value)
     if abs(delta_value - float(rounded)) < 1e-9:
-        return f"+{int(rounded)} {time_unit}"
-    return f"+{delta_value:g} {time_unit}"
+        return str(int(rounded))
+    return f"{delta_value:g}"
+
+
+def _build_gif_footer_text(
+    *,
+    current_frame_number: int,
+    total_frames: int,
+    anchor_timestep: int,
+    current_timestep: int,
+    time_scale: float | None,
+    time_unit: str | None,
+) -> str:
+    if time_scale is None or time_unit is None or time_unit == "":
+        time_text = f"timestep {int(current_timestep)}"
+    else:
+        time_value = _format_delta_time_value(
+            anchor_timestep=anchor_timestep,
+            current_timestep=current_timestep,
+            time_scale=time_scale,
+        )
+        time_text = f"{time_value} {time_unit}"
+    return f"frames {int(current_frame_number)}/{int(total_frames)}   {time_text}"
 
 
 def _prepare_local_points(points: np.ndarray, *, target_points: int) -> np.ndarray:
@@ -442,14 +479,12 @@ def _apply_locked_orientation(
     method: str,
 ) -> np.ndarray:
     pts = np.asarray(points, dtype=np.float32)
-    center_index = int(np.argmin(np.linalg.norm(pts, axis=1)))
-    centered = pts - pts[center_index]
     method_norm = str(method).strip().lower()
     if method_norm == "none":
-        return centered.astype(np.float32, copy=False)
+        return pts.astype(np.float32, copy=False)
     if basis is None:
         raise ValueError("PCA orientation requested but no anchor basis was provided.")
-    return (centered @ np.asarray(basis, dtype=np.float32)).astype(np.float32, copy=False)
+    return (pts @ np.asarray(basis, dtype=np.float32)).astype(np.float32, copy=False)
 
 
 def _prepare_structure_render_records(
@@ -662,13 +697,27 @@ def _render_structure_axis(
 
 def _figure_to_pil_image(fig: Any) -> Image.Image:
     buffer = io.BytesIO()
-    fig.savefig(buffer, format="png")
+    fig.savefig(buffer, format="png", bbox_inches=None, pad_inches=0.0)
     plt.close(fig)
     buffer.seek(0)
     with Image.open(buffer) as image:
         converted = image.convert("RGB").copy()
     buffer.close()
     return converted
+
+
+def _prepare_gif_frames(
+    pil_frames: list[Image.Image],
+) -> tuple[list[Image.Image], tuple[int, int]]:
+    if not pil_frames:
+        raise ValueError("pil_frames must be non-empty.")
+    target_size = pil_frames[0].size
+    if any(image.size != target_size for image in pil_frames):
+        raise RuntimeError(
+            "GIF frames must share one canvas size before encoding. "
+            f"expected={target_size}, got={[tuple(image.size) for image in pil_frames]}."
+        )
+    return pil_frames, target_size
 
 
 def _render_structure_png(
@@ -768,6 +817,8 @@ def _render_structure_gif(
     label_color = _cluster_label_color(base_color, darken_factor=0.68)
     pil_frames: list[Image.Image] = []
     frame_summaries: list[dict[str, Any]] = []
+    total_frames = int(len(structure_record["frames"]))
+    anchor_timestep = int(structure_record["frames"][0]["timestep"])
     for frame_record, oriented_points in zip(
         structure_record["frames"],
         structure_record["oriented_sequence"],
@@ -775,8 +826,10 @@ def _render_structure_gif(
     ):
         fig = plt.figure(figsize=(3.45, 3.5), dpi=int(dpi), facecolor="white")
         ax = fig.add_subplot(111, projection="3d")
-        time_label = _format_delta_time(
-            anchor_timestep=int(structure_record["frames"][0]["timestep"]),
+        footer_text = _build_gif_footer_text(
+            current_frame_number=int(frame_record["local_frame_index"]) + 1,
+            total_frames=total_frames,
+            anchor_timestep=anchor_timestep,
             current_timestep=int(frame_record["timestep"]),
             time_scale=time_scale,
             time_unit=time_unit,
@@ -798,13 +851,14 @@ def _render_structure_gif(
             y=0.965,
         )
         fig.text(
-            0.5,
+            0.36,
             0.05,
-            f"horizon={int(horizon)} | f+{int(frame_record['local_frame_index'])} | {time_label}",
-            ha="center",
+            footer_text,
+            ha="left",
             va="bottom",
             fontsize=8,
             color="#444444",
+            fontfamily="monospace",
         )
         fig.subplots_adjust(left=0.02, right=0.985, bottom=0.09, top=0.88)
         pil_frames.append(_figure_to_pil_image(fig))
@@ -820,22 +874,25 @@ def _render_structure_gif(
             f"No GIF frames were rendered for center_atom_id={structure_record['center_atom_id']}."
         )
 
+    gif_frames, canvas_size_px = _prepare_gif_frames(pil_frames)
     out_file.parent.mkdir(parents=True, exist_ok=True)
-    pil_frames[0].save(
+    gif_frames[0].save(
         out_file,
         save_all=True,
-        append_images=pil_frames[1:],
+        append_images=gif_frames[1:],
         duration=int(gif_duration_ms),
         loop=0,
         disposal=2,
+        optimize=False,
     )
-    for image in pil_frames:
+    for image in gif_frames:
         image.close()
     print(f"[temporal-local-evolution][gif] {out_file.resolve()}")
 
     return {
         "gif_file": str(out_file),
         "gif_duration_ms": int(gif_duration_ms),
+        "canvas_size_px": [int(canvas_size_px[0]), int(canvas_size_px[1])],
         "frames": frame_summaries,
     }
 

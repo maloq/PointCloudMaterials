@@ -1,4 +1,5 @@
 import argparse
+from dataclasses import replace
 import json
 import os
 import sys
@@ -25,7 +26,12 @@ from src.utils.model_utils import load_model_from_checkpoint
 
 from .cluster_profiles import resolve_point_scale
 from .cluster_rendering import _build_cluster_representative_render_cache
-from .clustering import _build_clustering_state, _run_optional_hdbscan_analysis, prepare_clustering_features
+from .clustering import (
+    _build_clustering_state,
+    _run_optional_hdbscan_analysis,
+    build_clustering_method_comparison,
+    prepare_clustering_features,
+)
 from .config import (
     DEFAULT_ANALYSIS_CONFIG_PATH, _positive_int_or_none, _print_resolved_analysis_settings,
     _resolve_analysis_files, _resolve_analysis_settings, _resolve_figure_set_settings,
@@ -42,6 +48,7 @@ from .inference_cache import (
 )
 from .latent_vis import print_analysis_summary, run_equivariance_evaluation, run_pca_and_latent_stats, run_tsne_visualizations
 from .md_outputs import build_md_metrics
+from .output_layout import real_md_outputs_root, real_md_outputs_root_for_k
 from .real_md_qualitative import run_real_md_qualitative_analysis
 from .temporal_real import (
     build_temporal_real_analysis_bundle,
@@ -263,12 +270,22 @@ def run_post_training_analysis(
     print(f"Analysis dataloader workers: {input_settings.dataloader_num_workers}")
     analysis_settings = _resolve_analysis_settings(analysis_cfg, cfg)
     hdbscan_settings = analysis_settings.hdbscan
-    real_md_selected_k = _resolve_optional_cluster_k(
+    real_md_selected_k_override = _resolve_optional_cluster_k(
         OmegaConf.select(analysis_cfg, "real_md.selected_k", default=None),
         field_name="real_md.selected_k",
     )
-    if real_md_selected_k is None:
-        real_md_selected_k = int(analysis_settings.primary_k)
+    if (
+        real_md_selected_k_override is not None
+        and int(real_md_selected_k_override) != int(analysis_settings.primary_k)
+    ):
+        raise ValueError(
+            "real_md.selected_k conflicts with clustering.primary_k. "
+            f"Got real_md.selected_k={int(real_md_selected_k_override)} and "
+            f"clustering.primary_k={int(analysis_settings.primary_k)}. "
+            "Use clustering.primary_k as the single selected clustering k and "
+            "leave real_md.selected_k unset."
+        )
+    real_md_selected_k = int(analysis_settings.primary_k)
     figure_settings = _resolve_figure_set_settings(
         analysis_cfg,
         cfg,
@@ -278,7 +295,6 @@ def run_post_training_analysis(
     _print_resolved_analysis_settings(
         analysis_settings=analysis_settings,
         figure_settings=figure_settings,
-        real_md_selected_k=real_md_selected_k,
     )
     is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
 
@@ -500,24 +516,66 @@ def run_post_training_analysis(
     snapshot_output_names = snapshot_layout.output_names
     multi_snapshot_real = snapshot_layout.multi_snapshot_real
 
-    figure_set_run_kwargs = figure_settings.build_run_kwargs(
-        dataset=dataset_obj,
-        latents=cache["inv_latents"],
-        coords=coords,
-        point_scale=point_scale,
-        random_state=clustering_random_state,
-        l2_normalize=analysis_settings.cluster_l2_normalize,
-        standardize=analysis_settings.cluster_standardize,
-        pca_variance=analysis_settings.cluster_pca_var,
-        pca_max_components=analysis_settings.cluster_pca_max_components,
-    )
+    def _build_figure_set_run_kwargs(figure_settings_for_k: Any) -> dict[str, Any]:
+        return figure_settings_for_k.build_run_kwargs(
+            dataset=dataset_obj,
+            latents=cache["inv_latents"],
+            coords=coords,
+            point_scale=point_scale,
+            random_state=clustering_random_state,
+            l2_normalize=analysis_settings.cluster_l2_normalize,
+            standardize=analysis_settings.cluster_standardize,
+            pca_variance=analysis_settings.cluster_pca_var,
+            pca_max_components=analysis_settings.cluster_pca_max_components,
+        )
+
+    def _resolve_visible_cluster_sets_for_k(
+        labels_for_k: np.ndarray,
+        requested_visible_cluster_sets: list[list[int]] | None,
+        *,
+        context: str,
+    ) -> list[list[int]] | None:
+        if not requested_visible_cluster_sets:
+            return None
+        available_cluster_ids = {
+            int(v)
+            for v in np.unique(np.asarray(labels_for_k, dtype=int).reshape(-1))
+            if int(v) >= 0
+        }
+        resolved_visible_sets: list[list[int]] = []
+        for set_idx, cluster_set in enumerate(requested_visible_cluster_sets):
+            normalized_cluster_ids = [int(v) for v in cluster_set]
+            present_cluster_ids = [
+                cluster_id
+                for cluster_id in normalized_cluster_ids
+                if cluster_id in available_cluster_ids
+            ]
+            missing_cluster_ids = [
+                cluster_id
+                for cluster_id in normalized_cluster_ids
+                if cluster_id not in available_cluster_ids
+            ]
+            if missing_cluster_ids and present_cluster_ids:
+                print(
+                    f"[analysis] {context}: visible_cluster_sets[{set_idx}] drops missing "
+                    f"cluster IDs {missing_cluster_ids}; using {present_cluster_ids}."
+                )
+            elif missing_cluster_ids:
+                print(
+                    f"[analysis] {context}: skipping visible_cluster_sets[{set_idx}]="
+                    f"{normalized_cluster_ids} because none of those cluster IDs are "
+                    "present for this k."
+                )
+            if present_cluster_ids:
+                resolved_visible_sets.append(present_cluster_ids)
+        return resolved_visible_sets or None
 
     # ── Figure-only early return ───────────────────────────────────────
     if figure_settings.figure_only:
-        clustering_metrics, _, cluster_labels_by_k, _ = _build_clustering_state(
+        clustering_metrics, configured_k_values, cluster_labels_by_k, _ = _build_clustering_state(
             cache["inv_latents"],
             cache["phases"],
-            requested_k_values=[int(figure_settings.k)],
+            requested_k_values=list(analysis_settings.cluster_k_values),
             cluster_method=analysis_settings.cluster_method,
             random_state=clustering_random_state,
             l2_normalize=analysis_settings.cluster_l2_normalize,
@@ -528,23 +586,45 @@ def run_post_training_analysis(
             prep_info=clustering_feature_prep,
         )
         all_metrics["clustering"] = clustering_metrics
-        cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
-            out_dir=out_dir,
-            dataloader=dl,
-            figure_settings=figure_settings,
-            figure_set_run_kwargs=figure_set_run_kwargs,
-            labels_for_k=cluster_labels_by_k[int(figure_settings.k)],
-            latents=cache["inv_latents"],
-            coords=coords,
-            dataset_obj=dataset_obj,
-            snapshot_layout=snapshot_layout,
-            analysis_source_names=analysis_source_names,
-            step=_step,
-        )
-        if cluster_figure_set is not None:
-            all_metrics["cluster_figure_set"] = cluster_figure_set
-        if snapshot_figure_sets is not None:
-            all_metrics["cluster_figure_sets_by_snapshot"] = snapshot_figure_sets
+        cluster_figure_sets_by_k: dict[str, Any] = {}
+        primary_cluster_figure_set = None
+        primary_snapshot_figure_sets = None
+        for k_value in configured_k_values:
+            figure_settings_for_k = replace(
+                figure_settings,
+                k=int(k_value),
+                visible_cluster_sets=_resolve_visible_cluster_sets_for_k(
+                    cluster_labels_by_k[int(k_value)],
+                    figure_settings.visible_cluster_sets,
+                    context=f"figure_only k={int(k_value)}",
+                ),
+            )
+            cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
+                out_dir=out_dir,
+                dataloader=dl,
+                figure_settings=figure_settings_for_k,
+                figure_set_run_kwargs=_build_figure_set_run_kwargs(figure_settings_for_k),
+                labels_for_k=cluster_labels_by_k[int(k_value)],
+                latents=cache["inv_latents"],
+                coords=coords,
+                dataset_obj=dataset_obj,
+                snapshot_layout=snapshot_layout,
+                analysis_source_names=analysis_source_names,
+                step=_step,
+            )
+            cluster_figure_sets_by_k[str(int(k_value))] = {
+                "cluster_figure_set": cluster_figure_set,
+                "cluster_figure_sets_by_snapshot": snapshot_figure_sets,
+            }
+            if int(k_value) == int(analysis_settings.primary_k):
+                primary_cluster_figure_set = cluster_figure_set
+                primary_snapshot_figure_sets = snapshot_figure_sets
+        if primary_cluster_figure_set is not None:
+            all_metrics["cluster_figure_set"] = primary_cluster_figure_set
+        if primary_snapshot_figure_sets is not None:
+            all_metrics["cluster_figure_sets_by_snapshot"] = primary_snapshot_figure_sets
+        if len(configured_k_values) > 1:
+            all_metrics["cluster_figure_sets_by_k"] = cluster_figure_sets_by_k
 
         _step("Writing metrics")
         metrics_path = out_dir / "analysis_metrics.json"
@@ -574,13 +654,6 @@ def run_post_training_analysis(
     # ── Clustering ─────────────────────────────────────────────────────
     _step("Computing clustering labels")
     clustering_requested_k_values = list(analysis_settings.cluster_k_values)
-    if figure_settings.enabled and int(figure_settings.k) not in clustering_requested_k_values:
-        clustering_requested_k_values.append(int(figure_settings.k))
-    if (
-        not is_synthetic
-        and int(real_md_selected_k) not in clustering_requested_k_values
-    ):
-        clustering_requested_k_values.append(int(real_md_selected_k))
     clustering_metrics, configured_k_values, cluster_labels_by_k, cluster_methods_by_k = _build_clustering_state(
         cache["inv_latents"],
         cache["phases"],
@@ -595,17 +668,28 @@ def run_post_training_analysis(
         prep_info=clustering_feature_prep,
     )
     all_metrics["clustering"] = clustering_metrics
+    clustering_comparison, comparison_labels_by_method = build_clustering_method_comparison(
+        cache["inv_latents"],
+        cache["phases"],
+        requested_k_values=clustering_requested_k_values,
+        primary_method=analysis_settings.cluster_method,
+        compare_methods=analysis_settings.cluster_compare_methods,
+        random_state=clustering_random_state,
+        l2_normalize=analysis_settings.cluster_l2_normalize,
+        standardize=analysis_settings.cluster_standardize,
+        pca_variance=analysis_settings.cluster_pca_var,
+        pca_max_components=analysis_settings.cluster_pca_max_components,
+        prepared_features=clustering_features,
+        prep_info=clustering_feature_prep,
+    )
+    if clustering_comparison is not None:
+        all_metrics["clustering_comparison"] = clustering_comparison
 
     primary_k = int(analysis_settings.primary_k)
     if primary_k not in configured_k_values:
         raise KeyError(
             "Requested clustering.primary_k is not available in configured clustering results. "
             f"Requested k={primary_k}, available={configured_k_values}."
-        )
-    if int(real_md_selected_k) not in configured_k_values:
-        raise KeyError(
-            "Requested real_md.selected_k is not available in configured clustering results. "
-            f"Requested k={int(real_md_selected_k)}, available={configured_k_values}."
         )
     cluster_labels = cluster_labels_by_k[primary_k]
 
@@ -654,24 +738,52 @@ def run_post_training_analysis(
         )
 
     # ── Figure set rendering ───────────────────────────────────────────
-    cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
-        out_dir=out_dir,
-        dataloader=dl,
-        figure_settings=figure_settings,
-        figure_set_run_kwargs=figure_set_run_kwargs,
-        labels_for_k=cluster_labels_by_k[int(figure_settings.k)],
-        latents=cache["inv_latents"],
-        coords=coords,
-        dataset_obj=dataset_obj,
-        snapshot_layout=snapshot_layout,
-        analysis_source_names=analysis_source_names,
-        step=_step,
-        representative_render_cache=shared_representative_render_cache,
-    )
-    if cluster_figure_set is not None:
-        all_metrics["cluster_figure_set"] = cluster_figure_set
-    if snapshot_figure_sets is not None:
-        all_metrics["cluster_figure_sets_by_snapshot"] = snapshot_figure_sets
+    cluster_figure_sets_by_k: dict[str, Any] = {}
+    primary_cluster_figure_set = None
+    primary_snapshot_figure_sets = None
+    if figure_settings.enabled:
+        for k_value in configured_k_values:
+            figure_settings_for_k = replace(
+                figure_settings,
+                k=int(k_value),
+                visible_cluster_sets=_resolve_visible_cluster_sets_for_k(
+                    cluster_labels_by_k[int(k_value)],
+                    figure_settings.visible_cluster_sets,
+                    context=f"k={int(k_value)}",
+                ),
+            )
+            representative_render_cache_for_k = (
+                shared_representative_render_cache
+                if int(k_value) == int(primary_k)
+                else None
+            )
+            cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
+                out_dir=out_dir,
+                dataloader=dl,
+                figure_settings=figure_settings_for_k,
+                figure_set_run_kwargs=_build_figure_set_run_kwargs(figure_settings_for_k),
+                labels_for_k=cluster_labels_by_k[int(k_value)],
+                latents=cache["inv_latents"],
+                coords=coords,
+                dataset_obj=dataset_obj,
+                snapshot_layout=snapshot_layout,
+                analysis_source_names=analysis_source_names,
+                step=_step,
+                representative_render_cache=representative_render_cache_for_k,
+            )
+            cluster_figure_sets_by_k[str(int(k_value))] = {
+                "cluster_figure_set": cluster_figure_set,
+                "cluster_figure_sets_by_snapshot": snapshot_figure_sets,
+            }
+            if int(k_value) == int(primary_k):
+                primary_cluster_figure_set = cluster_figure_set
+                primary_snapshot_figure_sets = snapshot_figure_sets
+    if primary_cluster_figure_set is not None:
+        all_metrics["cluster_figure_set"] = primary_cluster_figure_set
+    if primary_snapshot_figure_sets is not None:
+        all_metrics["cluster_figure_sets_by_snapshot"] = primary_snapshot_figure_sets
+    if len(cluster_figure_sets_by_k) > 1:
+        all_metrics["cluster_figure_sets_by_k"] = cluster_figure_sets_by_k
 
     # ── Shared cluster color maps ──────────────────────────────────────
     _step("Building shared cluster color maps")
@@ -685,12 +797,13 @@ def run_post_training_analysis(
     shared_cluster_color_map = shared_cluster_color_maps_by_k[int(primary_k)]
 
     # ── t-SNE ──────────────────────────────────────────────────────────
-    run_tsne_visualizations(
+    tsne_metrics = run_tsne_visualizations(
         cache,
         out_dir,
         analysis_cfg=analysis_cfg,
         cluster_labels_by_k=cluster_labels_by_k,
         cluster_methods_by_k=cluster_methods_by_k,
+        comparison_labels_by_method=comparison_labels_by_method,
         configured_k_values=configured_k_values,
         primary_k=primary_k,
         shared_cluster_color_maps_by_k=shared_cluster_color_maps_by_k,
@@ -702,6 +815,8 @@ def run_post_training_analysis(
         cluster_method=analysis_settings.cluster_method,
         step=_step,
     )
+    if tsne_metrics:
+        all_metrics["latent_projection_visualizations"] = tsne_metrics
 
     # ── MD-space cluster outputs ───────────────────────────────────────
     _step("Saving coordinate-space clustering outputs")
@@ -740,10 +855,6 @@ def run_post_training_analysis(
     # ── Real-MD qualitative analysis ───────────────────────────────────
     if not is_synthetic and real_md_enabled:
         _step("Running real-MD qualitative analysis")
-        shared_real_md_color_map = shared_cluster_color_maps_by_k.get(
-            int(real_md_selected_k),
-            shared_cluster_color_map,
-        )
         temporal_projection_fit_indices = (
             None
             if temporal_bundle is None
@@ -755,34 +866,60 @@ def run_post_training_analysis(
                 dtype=int,
             )
         )
-        all_metrics["real_md_qualitative"] = run_real_md_qualitative_analysis(
-            out_dir=out_dir,
-            model_cfg=cfg,
-            analysis_cfg=analysis_cfg,
-            dataset=dataset_obj,
-            latents=cache["inv_latents"],
-            coords=coords,
-            instance_ids=np.asarray(cache["instance_ids"]),
-            cluster_labels_by_k=cluster_labels_by_k,
-            cluster_methods_by_k=cluster_methods_by_k,
-            cluster_color_map=shared_real_md_color_map,
-            frame_groups=snapshot_source_groups,
-            frame_output_names=snapshot_output_names,
-            requested_frame_order=analysis_source_names,
-            temporal_all_frame_groups=(
-                None if temporal_bundle is None else snapshot_layout_inference.source_groups
-            ),
-            temporal_all_frame_output_names=(
-                None if temporal_bundle is None else snapshot_layout_inference.output_names
-            ),
-            temporal_all_frame_order=(
-                None if temporal_bundle is None else temporal_bundle.selection.inference_source_names
-            ),
-            temporal_projection_fit_indices=temporal_projection_fit_indices,
-            point_scale=float(point_scale),
-            random_state=int(clustering_random_state),
-            representative_render_cache=shared_representative_render_cache,
-        )
+        real_md_summaries_by_k: dict[str, Any] = {}
+        primary_real_md_summary = None
+        for k_value in configured_k_values:
+            shared_real_md_color_map = shared_cluster_color_maps_by_k.get(
+                int(k_value),
+                shared_cluster_color_map,
+            )
+            real_md_output_root = (
+                real_md_outputs_root(out_dir)
+                if int(k_value) == int(primary_k)
+                else real_md_outputs_root_for_k(out_dir, k_value=int(k_value))
+            )
+            representative_render_cache_for_k = (
+                shared_representative_render_cache
+                if int(k_value) == int(primary_k)
+                else None
+            )
+            real_md_summary = run_real_md_qualitative_analysis(
+                out_dir=out_dir,
+                model_cfg=cfg,
+                analysis_cfg=analysis_cfg,
+                dataset=dataset_obj,
+                latents=cache["inv_latents"],
+                coords=coords,
+                instance_ids=np.asarray(cache["instance_ids"]),
+                cluster_labels_by_k=cluster_labels_by_k,
+                cluster_methods_by_k=cluster_methods_by_k,
+                cluster_color_map=shared_real_md_color_map,
+                frame_groups=snapshot_source_groups,
+                frame_output_names=snapshot_output_names,
+                requested_frame_order=analysis_source_names,
+                temporal_all_frame_groups=(
+                    None if temporal_bundle is None else snapshot_layout_inference.source_groups
+                ),
+                temporal_all_frame_output_names=(
+                    None if temporal_bundle is None else snapshot_layout_inference.output_names
+                ),
+                temporal_all_frame_order=(
+                    None if temporal_bundle is None else temporal_bundle.selection.inference_source_names
+                ),
+                temporal_projection_fit_indices=temporal_projection_fit_indices,
+                point_scale=float(point_scale),
+                random_state=int(clustering_random_state),
+                representative_render_cache=representative_render_cache_for_k,
+                selected_k_override=int(k_value),
+                output_root_dir=real_md_output_root,
+            )
+            real_md_summaries_by_k[str(int(k_value))] = real_md_summary
+            if int(k_value) == int(primary_k):
+                primary_real_md_summary = real_md_summary
+        if primary_real_md_summary is not None:
+            all_metrics["real_md_qualitative"] = primary_real_md_summary
+        if len(real_md_summaries_by_k) > 1:
+            all_metrics["real_md_qualitative_by_k"] = real_md_summaries_by_k
 
     # ── Equivariance ───────────────────────────────────────────────────
     all_metrics.update(
