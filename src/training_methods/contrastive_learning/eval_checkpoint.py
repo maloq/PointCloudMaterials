@@ -13,7 +13,7 @@ from omegaconf import DictConfig
 sys.path.append(os.getcwd())
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
-from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
+from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 
 
@@ -39,11 +39,11 @@ def _resolve_output_dir(path: str | None, *, checkpoint_path: str) -> Path:
     return Path(output_dir).resolve()
 
 
-def load_barlow_model(
+def load_vicreg_model(
     checkpoint_path: str,
     cuda_device: int = 0,
     cfg: DictConfig | None = None,
-) -> tuple[BarlowTwinsModule, DictConfig, str]:
+) -> tuple[VICRegModule, DictConfig, str]:
     """Restore the contrastive module together with its Hydra config and device."""
     if cuda_device < 0:
         raise ValueError(f"cuda_device must be >= 0, got {cuda_device}")
@@ -68,11 +68,11 @@ def load_barlow_model(
         device = "cpu"
         print("[eval] CUDA is not available; running evaluation on CPU.")
 
-    model: BarlowTwinsModule = load_model_from_checkpoint(
+    model: VICRegModule = load_model_from_checkpoint(
         checkpoint_path,
         cfg,
         device=device,
-        module=BarlowTwinsModule,
+        module=VICRegModule,
     )
     model.to(device).eval()
     return model, cfg, device
@@ -211,7 +211,7 @@ def run_checkpoint_evaluation(
     if not run_validation and not run_test:
         raise ValueError("Both run_validation and run_test are disabled. Enable at least one stage.")
 
-    model, cfg, device = load_barlow_model(
+    model, cfg, device = load_vicreg_model(
         checkpoint_path=checkpoint_path,
         cuda_device=cuda_device,
         cfg=cfg,

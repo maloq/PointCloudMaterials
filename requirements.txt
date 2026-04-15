@@ -12,6 +12,7 @@ matplotlib
 nbformat
 scikit-learn
 scipy
+deeptime
 dscribe
 ase
 hdbscan

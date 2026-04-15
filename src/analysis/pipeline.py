@@ -21,7 +21,7 @@ import torch
 from omegaconf import DictConfig, OmegaConf, open_dict
 
 from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
-from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
+from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint
 
 from .cluster_profiles import resolve_point_scale
@@ -173,20 +173,20 @@ def _configure_real_analysis_inputs(
 # Model loading
 # ---------------------------------------------------------------------------
 
-def load_barlow_model(
+def load_vicreg_model(
     checkpoint_path: str, cuda_device: int = 0, cfg: DictConfig | None = None
-) -> Tuple[BarlowTwinsModule, DictConfig, str]:
+) -> Tuple[VICRegModule, DictConfig, str]:
     """Restore the contrastive module together with its Hydra cfg and device string."""
     if cfg is None:
         cfg = load_checkpoint_training_config(checkpoint_path)
     if not isinstance(cfg, DictConfig):
         raise TypeError(
-            "load_barlow_model expects cfg to be a DictConfig when provided, "
+            "load_vicreg_model expects cfg to be a DictConfig when provided, "
             f"got {type(cfg)!r}."
         )
     device = f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu"
-    model: BarlowTwinsModule = load_model_from_checkpoint(
-        checkpoint_path, cfg, device=device, module=BarlowTwinsModule
+    model: VICRegModule = load_model_from_checkpoint(
+        checkpoint_path, cfg, device=device, module=VICRegModule
     )
     model.to(device).eval()
     return model, cfg, device
@@ -252,7 +252,7 @@ def run_post_training_analysis(
     _step("Loading checkpoint training config")
     cfg = build_runtime_model_config(run_settings.checkpoint_path, analysis_cfg)
     input_settings = _resolve_input_settings(analysis_cfg)
-    model: BarlowTwinsModule | None = None
+    model: VICRegModule | None = None
     device = f"cuda:{run_settings.cuda_device}" if torch.cuda.is_available() else "cpu"
     analysis_source_names: list[str] | None = None
     temporal_bundle = None
@@ -394,7 +394,7 @@ def run_post_training_analysis(
             )
     else:
         _step("Loading model")
-        model, cfg, device = load_barlow_model(
+        model, cfg, device = load_vicreg_model(
             run_settings.checkpoint_path,
             cuda_device=run_settings.cuda_device,
             cfg=cfg,

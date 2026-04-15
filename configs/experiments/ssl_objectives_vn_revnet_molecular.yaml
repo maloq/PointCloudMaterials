@@ -1,11 +1,11 @@
-# Compare VICReg and Barlow Twins on the molecular setup with
-# VN_REVNET_Backbone, while keeping the VICReg molecular config as the base.
+# Run the molecular VICReg setup with VN_REVNET_Backbone,
+# while keeping the VICReg molecular config as the base.
 #
 # Usage:
 #   python scripts/run_experiments.py --plan configs/experiments/ssl_objectives_vn_revnet_molecular.yaml
 #   python scripts/run_experiments.py --plan configs/experiments/ssl_objectives_vn_revnet_molecular.yaml --dry-run
 
-name: ssl_objectives_vn_revnet_molecular
+name: vicreg_vn_revnet_molecular
 train_script: src/training_methods/contrastive_learning/train_contrastive.py
 config_name: vicreg_vn_molecular.yaml
 
@@ -31,32 +31,8 @@ base_overrides:
   - "auto_batch_size_adjust_accumulate=true"
   - "auto_batch_size_target_effective_batch=1024"
   - "auto_batch_size_init_val=128"
-  - "barlow_enabled=false"
-  - "barlow_weight=0.0"
   - "vicreg_enabled=false"
   - "vicreg_weight=0.0"
-  - "++barlow_lambda=0.005"
-  - "++barlow_embed_dim=120"
-  - "++barlow_start_epoch=0"
-  - "++barlow_jitter_std=0.01"
-  - "++barlow_jitter_mode=physical"
-  - "++barlow_drop_ratio=0.0"
-  - "++barlow_neighbor_view=true"
-  - "++barlow_neighbor_view_mode=second"
-  - "++barlow_neighbor_k=8"
-  - "++barlow_neighbor_max_relative_distance=0.0"
-  - "++barlow_view_points=80"
-  - "++barlow_view_crop_mode=nearest_origin"
-  - "++barlow_drop_apply_to_both=true"
-  - "++barlow_rotation_mode=none"
-  - "++barlow_rotation_deg=10.0"
-  - "++barlow_strain_std=0.02"
-  - "++barlow_strain_volume_preserve=true"
-  - "++barlow_occlusion_mode=mixed"
-  - "++barlow_occlusion_view=second"
-  - "++barlow_occlusion_slab_frac=0.0"
-  - "++barlow_occlusion_cone_deg=0.0"
-  - "++barlow_occlusion_prob=1.0"
   - "++run_post_training_analysis=false"
   - "++checkpoint_monitor=val/class/acc_kmeans_plusplus_hungarian"
   - "++checkpoint_mode=max"
@@ -67,12 +43,6 @@ experiments:
       - "model_type=vicreg"
       - "vicreg_enabled=true"
       - "vicreg_weight=1.0"
-
-  - name: barlow_twins
-    overrides:
-      - "model_type=barlow_twins"
-      - "barlow_enabled=true"
-      - "barlow_weight=1.0"
 
 metrics:
   final:

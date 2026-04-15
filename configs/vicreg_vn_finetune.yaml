@@ -91,9 +91,6 @@ idec_use_global_p: true
 idec_normalize_z: true
 idec_init_kmeans: true
 
-barlow_enabled: false
-barlow_weight: 0.0
-
 vicreg_enabled: true
 vicreg_weight: 1.0
 vicreg_sim_coeff: 25.0

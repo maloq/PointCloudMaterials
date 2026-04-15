@@ -263,11 +263,28 @@ def _render_figure_to_rgb_array(fig: Any) -> np.ndarray:
     return image[..., :3].copy()
 
 
+def _set_3d_scatter_offsets(collection: Any, coords: np.ndarray) -> None:
+    coords_arr = np.asarray(coords, dtype=np.float32)
+    if coords_arr.ndim != 2 or coords_arr.shape[1] != 3:
+        raise ValueError(
+            "3D scatter updates require coords with shape (N, 3), "
+            f"got {coords_arr.shape}."
+        )
+    # Matplotlib's 3D scatter API exposes coordinate updates through this
+    # private attribute rather than a public setter.
+    collection._offsets3d = (
+        coords_arr[:, 0],
+        coords_arr[:, 1],
+        coords_arr[:, 2],
+    )
+
+
 def _save_rgb_frames_as_gif(
     frames_rgb: list[np.ndarray],
     out_file: Path,
     *,
-    frame_duration_ms: int,
+    frame_duration_ms: int | None = None,
+    total_duration_seconds: float | None = None,
 ) -> None:
     if not frames_rgb:
         raise ValueError("frames_rgb must be a non-empty list.")
@@ -279,12 +296,39 @@ def _save_rgb_frames_as_gif(
         ) from exc
     out_file = Path(out_file)
     out_file.parent.mkdir(parents=True, exist_ok=True)
+    frame_count = int(len(frames_rgb))
+    if total_duration_seconds is not None:
+        total_seconds = float(total_duration_seconds)
+        if total_seconds <= 0.0:
+            raise ValueError(
+                f"total_duration_seconds must be > 0, got {total_seconds}."
+            )
+        total_centiseconds = int(round(total_seconds * 100.0))
+        if total_centiseconds < frame_count:
+            raise ValueError(
+                "total_duration_seconds is too short to encode all frames while keeping every frame. "
+                f"total_duration_seconds={total_seconds}, frame_count={frame_count}."
+            )
+        base_centiseconds = total_centiseconds // frame_count
+        remainder_centiseconds = total_centiseconds % frame_count
+        durations = [
+            10 * (base_centiseconds + (1 if idx < remainder_centiseconds else 0))
+            for idx in range(frame_count)
+        ]
+    else:
+        if frame_duration_ms is None:
+            raise ValueError(
+                "Either frame_duration_ms or total_duration_seconds must be provided."
+            )
+        if int(frame_duration_ms) <= 0:
+            raise ValueError(f"frame_duration_ms must be > 0, got {frame_duration_ms}.")
+        durations = [int(frame_duration_ms)] * frame_count
     images = [Image.fromarray(frame_rgb) for frame_rgb in frames_rgb]
     images[0].save(
         out_file,
         save_all=True,
         append_images=images[1:],
-        duration=int(frame_duration_ms),
+        duration=durations,
         loop=0,
     )
     _log_saved_figure(out_file)
@@ -457,15 +501,10 @@ def save_temporal_spatial_cluster_animation(
     view_azim: float = 35.0,
     diagonal_visible_depth_fraction: float = 0.10,
     frame_duration_ms: int = 450,
+    total_duration_seconds: float | None = None,
 ) -> dict[str, Any]:
     if not frame_records:
         raise ValueError("frame_records must be a non-empty list.")
-    try:
-        from PIL import Image
-    except ImportError as exc:
-        raise ImportError(
-            "Temporal animation export requires Pillow. Install the project requirements."
-        ) from exc
 
     global_bounds = _resolve_global_spatial_bounds(frame_records)
     cluster_ids = _sorted_cluster_ids(
@@ -490,7 +529,20 @@ def save_temporal_spatial_cluster_animation(
         for cluster_id in cluster_ids
     }
 
-    frames_rgb: list[np.ndarray] = []
+    boosted_color_lookup: dict[int, tuple[float, float, float]] = {}
+    for cluster_id in cluster_ids:
+        boosted = _boost_saturation(
+            np.asarray([mcolors.to_rgb(color_lookup[int(cluster_id)])], dtype=np.float32),
+            float(saturation_boost),
+        )[0]
+        boosted_color_lookup[int(cluster_id)] = (
+            float(boosted[0]),
+            float(boosted[1]),
+            float(boosted[2]),
+        )
+
+    empty_xyz = np.zeros((0, 3), dtype=np.float32)
+    selected_frame_records: list[dict[str, Any]] = []
     for record in frame_records:
         frame_coords, frame_labels = _select_diagonal_cut_points(
             np.asarray(record["coords"], dtype=np.float32),
@@ -498,41 +550,48 @@ def save_temporal_spatial_cluster_animation(
             bounds=global_bounds,
             visible_depth_fraction=float(diagonal_visible_depth_fraction),
         )
-        fig = plt.figure(figsize=(9.6, 7.2), dpi=180)
+        selected_frame_records.append(
+            {
+                "frame_label": str(record["frame_label"]),
+                "coords": np.asarray(frame_coords, dtype=np.float32),
+                "labels": np.asarray(frame_labels, dtype=int),
+            }
+        )
+
+    frames_rgb: list[np.ndarray] = []
+    fig = plt.figure(figsize=(9.6, 7.2), dpi=180)
+    try:
         fig.patch.set_facecolor("white")
         ax = fig.add_axes([0.04, 0.08, 0.66, 0.84], projection="3d")
         legend_ax = fig.add_axes([0.74, 0.16, 0.24, 0.64])
         legend_ax.axis("off")
         ax.set_facecolor("white")
+
+        scatter_by_cluster: dict[int, Any] = {}
         for cluster_id in cluster_ids:
-            mask = frame_labels == int(cluster_id)
-            if not np.any(mask):
-                continue
-            cluster_points = frame_coords[mask]
-            base_color = np.asarray(mcolors.to_rgb(color_lookup[int(cluster_id)]), dtype=np.float32)
-            point_colors = np.repeat(base_color[None, :], cluster_points.shape[0], axis=0)
-            point_colors = _boost_saturation(point_colors, float(saturation_boost))
-            ax.scatter(
-                cluster_points[:, 0],
-                cluster_points[:, 1],
-                cluster_points[:, 2],
-                c=point_colors,
+            scatter_by_cluster[int(cluster_id)] = ax.scatter(
+                empty_xyz[:, 0],
+                empty_xyz[:, 1],
+                empty_xyz[:, 2],
+                color=boosted_color_lookup[int(cluster_id)],
                 s=float(point_size),
                 alpha=float(alpha),
                 linewidths=0.0,
                 depthshade=False,
             )
-        if frame_coords.shape[0] == 0:
-            ax.text2D(
-                0.50,
-                0.50,
-                "no points",
-                transform=ax.transAxes,
-                ha="center",
-                va="center",
-                fontsize=10,
-                color="#6f6f6f",
-            )
+
+        no_points_text = ax.text2D(
+            0.50,
+            0.50,
+            "no points",
+            transform=ax.transAxes,
+            ha="center",
+            va="center",
+            fontsize=10,
+            color="#6f6f6f",
+        )
+        no_points_text.set_visible(False)
+
         _draw_cube_wireframe(ax, global_bounds[0], global_bounds[1], linewidth=1.0, alpha=0.30, color="#475569")
         _draw_diagonal_cut_plane(ax, bounds=global_bounds)
         center = 0.5 * (global_bounds[0] + global_bounds[1])
@@ -548,8 +607,7 @@ def save_temporal_spatial_cluster_animation(
         ax.set_xlabel("x")
         ax.set_ylabel("y")
         ax.set_zlabel("z")
-        tick_values = np.linspace(center[0] - half, center[0] + half, num=3)
-        ax.set_xticks(tick_values)
+        ax.set_xticks(np.linspace(center[0] - half, center[0] + half, num=3))
         ax.set_yticks(np.linspace(center[1] - half, center[1] + half, num=3))
         ax.set_zticks(np.linspace(center[2] - half, center[2] + half, num=3))
         for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
@@ -576,21 +634,30 @@ def save_temporal_spatial_cluster_animation(
             loc="upper left",
             frameon=False,
         )
-        fig.suptitle(f"MD-space clusters | {record['frame_label']}", fontsize=13)
-        frames_rgb.append(_render_figure_to_rgb_array(fig))
+        title_artist = fig.suptitle("", fontsize=13)
+
+        for record in selected_frame_records:
+            frame_coords = np.asarray(record["coords"], dtype=np.float32)
+            frame_labels = np.asarray(record["labels"], dtype=int)
+            for cluster_id in cluster_ids:
+                cluster_points = frame_coords[frame_labels == int(cluster_id)]
+                _set_3d_scatter_offsets(
+                    scatter_by_cluster[int(cluster_id)],
+                    cluster_points if cluster_points.size > 0 else empty_xyz,
+                )
+            no_points_text.set_visible(frame_coords.shape[0] == 0)
+            title_artist.set_text(f"MD-space clusters | {record['frame_label']}")
+            frames_rgb.append(_render_figure_to_rgb_array(fig))
+    finally:
         plt.close(fig)
 
     out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    images = [Image.fromarray(frame_rgb) for frame_rgb in frames_rgb]
-    images[0].save(
+    _save_rgb_frames_as_gif(
+        frames_rgb,
         out_file,
-        save_all=True,
-        append_images=images[1:],
-        duration=int(frame_duration_ms),
-        loop=0,
+        frame_duration_ms=int(frame_duration_ms),
+        total_duration_seconds=total_duration_seconds,
     )
-    _log_saved_figure(out_file)
     return {
         "out_file": str(out_file),
         "frame_count": int(len(frame_records)),
@@ -608,16 +675,13 @@ def save_temporal_embedding_cluster_animation(
     point_size: float = 8.0,
     alpha: float = 0.74,
     frame_duration_ms: int = 450,
+    total_duration_seconds: float | None = None,
     title: str = "Latent cluster evolution",
+    xlabel: str = "UMAP 1",
+    ylabel: str = "UMAP 2",
 ) -> dict[str, Any]:
     if not frame_records:
         raise ValueError("frame_records must be a non-empty list.")
-    try:
-        from PIL import Image
-    except ImportError as exc:
-        raise ImportError(
-            "Temporal animation export requires Pillow. Install the project requirements."
-        ) from exc
 
     all_embeddings = np.concatenate(
         [
@@ -662,36 +726,30 @@ def save_temporal_embedding_cluster_animation(
     x_limits = (float(mins[0] - pad[0]), float(maxs[0] + pad[0]))
     y_limits = (float(mins[1] - pad[1]), float(maxs[1] + pad[1]))
 
+    empty_xy = np.zeros((0, 2), dtype=np.float32)
     frames_rgb: list[np.ndarray] = []
-    for record in frame_records:
-        embedding = np.asarray(record["embedding"], dtype=np.float32)
-        labels = np.asarray(record["labels"], dtype=int).reshape(-1)
-        if embedding.shape[0] != labels.shape[0]:
-            raise ValueError(
-                "embedding and labels length mismatch for temporal embedding animation: "
-                f"{embedding.shape[0]} vs {labels.shape[0]}."
-            )
-        fig = plt.figure(figsize=(9.0, 6.8), dpi=180)
+    fig = plt.figure(figsize=(9.0, 6.8), dpi=180)
+    try:
         fig.patch.set_facecolor("white")
         ax = fig.add_axes([0.08, 0.12, 0.64, 0.78])
         legend_ax = fig.add_axes([0.76, 0.18, 0.22, 0.60])
         legend_ax.axis("off")
+
+        scatter_by_cluster: dict[int, Any] = {}
         for cluster_id in cluster_ids:
-            mask = labels == int(cluster_id)
-            if not np.any(mask):
-                continue
-            ax.scatter(
-                embedding[mask, 0],
-                embedding[mask, 1],
+            scatter_by_cluster[int(cluster_id)] = ax.scatter(
+                empty_xy[:, 0],
+                empty_xy[:, 1],
                 s=float(point_size),
                 alpha=float(alpha),
                 color=color_lookup[int(cluster_id)],
                 linewidths=0.0,
             )
+
         ax.set_xlim(*x_limits)
         ax.set_ylim(*y_limits)
-        ax.set_xlabel("UMAP 1")
-        ax.set_ylabel("UMAP 2")
+        ax.set_xlabel(str(xlabel))
+        ax.set_ylabel(str(ylabel))
         ax.grid(True, alpha=0.18, linewidth=0.6)
         legend_handles = [
             plt.Line2D(
@@ -713,21 +771,33 @@ def save_temporal_embedding_cluster_animation(
             loc="upper left",
             frameon=False,
         )
-        fig.suptitle(f"{title} | {record['frame_label']}", fontsize=13)
-        frames_rgb.append(_render_figure_to_rgb_array(fig))
+        title_artist = fig.suptitle("", fontsize=13)
+
+        for record in frame_records:
+            embedding = np.asarray(record["embedding"], dtype=np.float32)
+            labels = np.asarray(record["labels"], dtype=int).reshape(-1)
+            if embedding.shape[0] != labels.shape[0]:
+                raise ValueError(
+                    "embedding and labels length mismatch for temporal embedding animation: "
+                    f"{embedding.shape[0]} vs {labels.shape[0]}."
+                )
+            for cluster_id in cluster_ids:
+                cluster_offsets = embedding[labels == int(cluster_id)]
+                scatter_by_cluster[int(cluster_id)].set_offsets(
+                    cluster_offsets if cluster_offsets.size > 0 else empty_xy
+                )
+            title_artist.set_text(f"{title} | {record['frame_label']}")
+            frames_rgb.append(_render_figure_to_rgb_array(fig))
+    finally:
         plt.close(fig)
 
     out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    images = [Image.fromarray(frame_rgb) for frame_rgb in frames_rgb]
-    images[0].save(
+    _save_rgb_frames_as_gif(
+        frames_rgb,
         out_file,
-        save_all=True,
-        append_images=images[1:],
-        duration=int(frame_duration_ms),
-        loop=0,
+        frame_duration_ms=int(frame_duration_ms),
+        total_duration_seconds=total_duration_seconds,
     )
-    _log_saved_figure(out_file)
     return {
         "out_file": str(out_file),
         "frame_count": int(len(frame_records)),
@@ -755,7 +825,10 @@ def save_temporal_embedding_trajectory_animation(
     endpoint_point_size: float = 3.0,
     endpoint_point_alpha: float = 0.95,
     frame_duration_ms: int = 450,
+    total_duration_seconds: float | None = None,
     title: str = "Latent trajectory evolution",
+    xlabel: str = "UMAP 1",
+    ylabel: str = "UMAP 2",
 ) -> dict[str, Any]:
     if not frame_records:
         raise ValueError("frame_records must be a non-empty list.")
@@ -846,33 +919,52 @@ def save_temporal_embedding_trajectory_animation(
     x_limits = (float(mins[0] - pad[0]), float(maxs[0] + pad[0]))
     y_limits = (float(mins[1] - pad[1]), float(maxs[1] + pad[1]))
 
-    frames_rgb: list[np.ndarray] = []
-    num_instances = int(instance_ids_ref.shape[0])
-    for frame_idx, record in enumerate(frame_records):
-        fig = plt.figure(figsize=(9.0, 6.8), dpi=180)
-        fig.patch.set_facecolor("white")
-        ax = fig.add_axes([0.08, 0.12, 0.64, 0.78])
-        legend_ax = fig.add_axes([0.76, 0.18, 0.22, 0.60])
-        legend_ax.axis("off")
-
+    empty_xy = np.zeros((0, 2), dtype=np.float32)
+    empty_segments = np.zeros((0, 2, 2), dtype=np.float32)
+    empty_rgba = np.zeros((0, 4), dtype=np.float32)
+    empty_widths = np.zeros((0,), dtype=np.float32)
+    trajectory_payloads: list[dict[str, np.ndarray]] = []
+    interpolation = np.linspace(
+        0.0,
+        1.0,
+        num=int(directional_subsegments) + 1,
+        dtype=np.float32,
+    )
+    segment_alpha_profile = (
+        float(directional_start_alpha_fraction)
+        + (1.0 - float(directional_start_alpha_fraction)) * interpolation[1:]
+    ).astype(np.float32, copy=False)
+    segment_width_profile = (
+        float(directional_start_width_fraction)
+        + (
+            float(directional_end_width_fraction)
+            - float(directional_start_width_fraction)
+        )
+        * interpolation[1:]
+    ).astype(np.float32, copy=False)
+    base_rgba_by_frame = [
+        np.asarray(
+            [mcolors.to_rgba(color_lookup[int(label)]) for label in frame_labels],
+            dtype=np.float32,
+        )
+        for frame_labels in labels_by_frame
+    ]
+    for frame_idx in range(len(frame_records)):
         start_step_idx = 1
         if history_steps is not None:
             start_step_idx = max(1, frame_idx - int(history_steps) + 1)
         visible_step_count = max(1, frame_idx - start_step_idx + 1)
+        frame_segments: list[np.ndarray] = []
+        frame_colors: list[np.ndarray] = []
+        frame_widths: list[np.ndarray] = []
         for step_idx in range(start_step_idx, frame_idx + 1):
             prev_embedding = embeddings_by_frame[step_idx - 1]
             curr_embedding = embeddings_by_frame[step_idx]
-            curr_labels = labels_by_frame[step_idx]
+            curr_base_rgba = base_rgba_by_frame[step_idx]
             recency = float(step_idx - start_step_idx + 1) / float(visible_step_count)
             fade_weight = float(fade_min_alpha_fraction) + (
                 1.0 - float(fade_min_alpha_fraction)
             ) * (recency ** float(fade_power))
-            interpolation = np.linspace(
-                0.0,
-                1.0,
-                num=int(directional_subsegments) + 1,
-                dtype=np.float32,
-            )
             start_points = (
                 prev_embedding[:, None, :] * (1.0 - interpolation[:-1][None, :, None])
                 + curr_embedding[:, None, :] * interpolation[:-1][None, :, None]
@@ -881,47 +973,65 @@ def save_temporal_embedding_trajectory_animation(
                 prev_embedding[:, None, :] * (1.0 - interpolation[1:][None, :, None])
                 + curr_embedding[:, None, :] * interpolation[1:][None, :, None]
             )
-            segments = np.stack([start_points, end_points], axis=2).reshape(-1, 2, 2)
-            segment_alpha_profile = (
-                float(directional_start_alpha_fraction)
-                + (1.0 - float(directional_start_alpha_fraction)) * interpolation[1:]
+            frame_segments.append(
+                np.stack([start_points, end_points], axis=2).reshape(-1, 2, 2)
             )
-            segment_width_profile = (
-                float(directional_start_width_fraction)
-                + (
-                    float(directional_end_width_fraction)
-                    - float(directional_start_width_fraction)
-                )
-                * interpolation[1:]
+            segment_rgba = np.repeat(
+                curr_base_rgba[:, None, :],
+                int(directional_subsegments),
+                axis=1,
             )
-            base_rgba = np.asarray(
-                [mcolors.to_rgba(color_lookup[int(label)]) for label in curr_labels],
-                dtype=np.float32,
-            )
-            segment_rgba = np.repeat(base_rgba[:, None, :], int(directional_subsegments), axis=1)
             segment_rgba[:, :, 3] = (
-                float(line_alpha)
-                * fade_weight
-                * segment_alpha_profile[None, :]
+                float(line_alpha) * fade_weight * segment_alpha_profile[None, :]
             )
-            segment_linewidths = (
-                float(line_width) * segment_width_profile[None, :]
-            ).reshape(-1)
-            collection = LineCollection(
-                segments,
-                colors=segment_rgba.reshape(-1, 4),
-                linewidths=segment_linewidths,
-                capstyle="round",
-                joinstyle="round",
-                zorder=1,
+            frame_colors.append(segment_rgba.reshape(-1, 4).astype(np.float32, copy=False))
+            frame_widths.append(
+                (
+                    float(line_width) * segment_width_profile[None, :]
+                ).repeat(curr_embedding.shape[0], axis=0).reshape(-1).astype(np.float32, copy=False)
             )
-            ax.add_collection(collection)
+        trajectory_payloads.append(
+            {
+                "segments": (
+                    np.concatenate(frame_segments, axis=0)
+                    if frame_segments
+                    else empty_segments
+                ),
+                "colors": (
+                    np.concatenate(frame_colors, axis=0)
+                    if frame_colors
+                    else empty_rgba
+                ),
+                "widths": (
+                    np.concatenate(frame_widths, axis=0)
+                    if frame_widths
+                    else empty_widths
+                ),
+            }
+        )
 
+    frames_rgb: list[np.ndarray] = []
+    num_instances = int(instance_ids_ref.shape[0])
+    fig = plt.figure(figsize=(9.0, 6.8), dpi=180)
+    try:
+        fig.patch.set_facecolor("white")
+        ax = fig.add_axes([0.08, 0.12, 0.64, 0.78])
+        legend_ax = fig.add_axes([0.76, 0.18, 0.22, 0.60])
+        legend_ax.axis("off")
+        trajectory_collection = LineCollection(
+            empty_segments,
+            colors=empty_rgba,
+            linewidths=empty_widths,
+            capstyle="round",
+            joinstyle="round",
+            zorder=1,
+        )
+        ax.add_collection(trajectory_collection)
+        endpoint_scatter = None
         if float(endpoint_point_size) > 0.0:
-            current_embedding = embeddings_by_frame[frame_idx]
-            ax.scatter(
-                current_embedding[:, 0],
-                current_embedding[:, 1],
+            endpoint_scatter = ax.scatter(
+                empty_xy[:, 0],
+                empty_xy[:, 1],
                 s=float(endpoint_point_size),
                 alpha=float(endpoint_point_alpha),
                 color="#000000",
@@ -931,8 +1041,8 @@ def save_temporal_embedding_trajectory_animation(
 
         ax.set_xlim(*x_limits)
         ax.set_ylim(*y_limits)
-        ax.set_xlabel("UMAP 1")
-        ax.set_ylabel("UMAP 2")
+        ax.set_xlabel(str(xlabel))
+        ax.set_ylabel(str(ylabel))
         ax.grid(True, alpha=0.18, linewidth=0.6)
         legend_handles = [
             plt.Line2D(
@@ -952,8 +1062,27 @@ def save_temporal_embedding_trajectory_animation(
             loc="upper left",
             frameon=False,
         )
-        fig.suptitle(f"{title} | {record['frame_label']}", fontsize=13)
-        frames_rgb.append(_render_figure_to_rgb_array(fig))
+        title_artist = fig.suptitle("", fontsize=13)
+
+        for frame_idx, record in enumerate(frame_records):
+            payload = trajectory_payloads[frame_idx]
+            if payload["segments"].shape[0] == 0:
+                trajectory_collection.set_segments([])
+                trajectory_collection.set_color([])
+                trajectory_collection.set_linewidth([])
+            else:
+                trajectory_collection.set_segments(payload["segments"])
+                trajectory_collection.set_color(payload["colors"])
+                trajectory_collection.set_linewidth(payload["widths"])
+            if endpoint_scatter is not None:
+                endpoint_scatter.set_offsets(
+                    embeddings_by_frame[frame_idx]
+                    if embeddings_by_frame[frame_idx].size > 0
+                    else empty_xy
+                )
+            title_artist.set_text(f"{title} | {record['frame_label']}")
+            frames_rgb.append(_render_figure_to_rgb_array(fig))
+    finally:
         plt.close(fig)
 
     out_file = Path(out_file)
@@ -961,6 +1090,7 @@ def save_temporal_embedding_trajectory_animation(
         frames_rgb,
         out_file,
         frame_duration_ms=int(frame_duration_ms),
+        total_duration_seconds=total_duration_seconds,
     )
     return {
         "out_file": str(out_file),
@@ -983,6 +1113,7 @@ def save_temporal_transition_flow_animation(
     mute_diagonal: bool = True,
     min_draw_fraction: float = 0.0,
     frame_duration_ms: int = 450,
+    total_duration_seconds: float | None = None,
     title: str = "Cluster transition flow",
 ) -> dict[str, Any]:
     if not pair_records:
@@ -1015,6 +1146,7 @@ def save_temporal_transition_flow_animation(
         frames_rgb,
         out_file,
         frame_duration_ms=int(frame_duration_ms),
+        total_duration_seconds=total_duration_seconds,
     )
     return {
         "out_file": str(out_file),

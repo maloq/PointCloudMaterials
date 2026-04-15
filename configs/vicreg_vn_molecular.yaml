@@ -106,10 +106,6 @@ idec_use_global_p: True
 idec_normalize_z: True
 idec_init_kmeans: True
 
-# Barlow Twins (disabled)
-barlow_enabled: False
-barlow_weight: 0.0
-
 # VICReg (self-supervised)
 vicreg_enabled: True
 vicreg_weight: 1.0

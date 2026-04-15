@@ -66,12 +66,14 @@ class TemporalWindowBatchSampler(BatchSampler):
         shuffle_centers: bool = False,
         mixed_windows_per_batch: int | None = None,
         shuffle_window_block_size: int | None = None,
+        shared_center_order: bool = False,
     ) -> None:
         super().__init__(sampler=sampler, batch_size=int(batch_size), drop_last=bool(drop_last))
         self.sampler = _EpochTrackingSampler(self.sampler)
         self.dataset = dataset if dataset is not None else self._resolve_dataset_from_sampler(sampler)
         self.shuffle_windows = bool(shuffle_windows)
         self.shuffle_centers = bool(shuffle_centers)
+        self.shared_center_order = bool(shared_center_order)
         self.mixed_windows_per_batch = (
             None if mixed_windows_per_batch is None else int(mixed_windows_per_batch)
         )
@@ -273,13 +275,15 @@ class TemporalWindowBatchSampler(BatchSampler):
         if not self.shuffle_centers:
             return list(range(base_index + offset, base_index + end))
 
-        center_order = center_order_cache.get(int(window_slot))
+        cache_key = "__shared__" if self.shared_center_order else int(window_slot)
+        center_order = center_order_cache.get(cache_key)
         if center_order is None:
+            salt = 1_000_003 if self.shared_center_order else 1_000_003 + int(window_slot)
             center_order = torch.randperm(
                 self.center_count,
-                generator=self._generator(salt=1_000_003 + int(window_slot)),
+                generator=self._generator(salt=salt),
             )
-            center_order_cache[int(window_slot)] = center_order
+            center_order_cache[cache_key] = center_order
         return (base_index + center_order[offset:end]).tolist()
 
     def _iter_mixed_window_batches(
@@ -785,6 +789,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         drop_last: bool,
         mixed_windows_per_batch: int | None = None,
         shuffle_window_block_size: int | None = None,
+        shared_center_order: bool = False,
     ):
         batch_sampler = TemporalWindowBatchSampler(
             SequentialSampler(dataset),
@@ -795,6 +800,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             shuffle_centers=shuffle_centers,
             mixed_windows_per_batch=mixed_windows_per_batch,
             shuffle_window_block_size=shuffle_window_block_size,
+            shared_center_order=shared_center_order,
         )
         loader_kwargs = dict(
             batch_sampler=batch_sampler,
@@ -836,6 +842,9 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             "temporal_train_window_shuffle_block_size",
             None,
         )
+        shared_center_order = bool(
+            getattr(self.cfg, "temporal_train_shared_center_order", False)
+        )
         return self._temporal_loader(
             self.train_dataset,
             shuffle_windows=True,
@@ -843,6 +852,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             drop_last=True,
             mixed_windows_per_batch=mixed_windows_per_batch,
             shuffle_window_block_size=shuffle_window_block_size,
+            shared_center_order=shared_center_order,
         )
 
     def val_dataloader(self):
@@ -925,8 +935,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         model_type = str(getattr(self.cfg, "model_type", "")).lower()
         disable_dataset_aug_for_ssl = bool(getattr(self.cfg, "disable_dataset_augmentation_for_ssl", True))
         uses_ssl_views = (
-            model_type in {"barlow_twins", "vicreg"}
-            or bool(getattr(self.cfg, "barlow_enabled", False))
+            model_type == "vicreg"
             or bool(getattr(self.cfg, "vicreg_enabled", False))
         )
         if uses_ssl_views and disable_dataset_aug_for_ssl:

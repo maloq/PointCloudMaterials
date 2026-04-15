@@ -9,14 +9,14 @@ model_type: temporal_lejepa
 latent_size: 256
 
 resume_from_checkpoint: null
-init_from_checkpoint: output/2026-03-31/23-54-11/VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=49.ckpt
+init_from_checkpoint: null
 init_from_checkpoint_encoder_only: true
 run_post_training_analysis: false
 run_test_after_training: true
 
 data:
   kind: temporal_lammps
-  dump_file: datasets/dump_Al50Ni50_1150K.pos
+  dump_file: datasets/dump_first_10.pos
   sequence_length: 4
   frame_stride: 1
   window_stride: 3
@@ -99,7 +99,7 @@ max_samples: 0
 check_val_every_n_epoch: 4
 
 gpu: true
-devices: [0]
+devices: [0, 1]
 ddp_find_unused_parameters: false
 log_every_n_steps: 5
 num_workers: 6
@@ -113,9 +113,6 @@ warmup_enabled: false
 decay_rate: 0.0003
 enable_embedding_metrics: false
 enable_svm_accuracy: false
-
-barlow_enabled: false
-barlow_weight: 0.0
 
 # LeJEPA uses the temporal window, while VICReg regularizes the predicted
 # last frame with purely spatial views (no adjacent-frame temporal mixing).

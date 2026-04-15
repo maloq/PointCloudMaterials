@@ -404,8 +404,20 @@ class TemporalLAMMPSDumpDataset(Dataset):
         return int(self._center_atom_indices.size)
 
     @property
+    def center_atom_indices(self) -> np.ndarray:
+        return np.asarray(self._center_atom_indices, dtype=np.int64).copy()
+
+    @property
+    def center_atom_ids(self) -> np.ndarray:
+        return np.asarray(self.atom_ids[self._center_atom_indices], dtype=np.int64).copy()
+
+    @property
     def window_count(self) -> int:
         return int(self._window_start_frames.size)
+
+    @property
+    def window_start_frames(self) -> np.ndarray:
+        return np.asarray(self._window_start_frames, dtype=np.int64).copy()
 
     def __getitem__(self, index: int) -> dict[str, Any]:
         batch = self._build_batch_from_indices(np.asarray([index], dtype=np.int64))

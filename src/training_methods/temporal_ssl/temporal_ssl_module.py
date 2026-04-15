@@ -4,13 +4,13 @@ from collections.abc import Sequence
 
 import pytorch_lightning as pl
 import torch
+import torch.distributed
 import torch.nn as nn
 import torch.nn.functional as F
 
 sys.path.append(os.getcwd())
 
 from src.models.autoencoders.factory import build_model
-from src.training_methods.contrastive_learning.barlow_twins import BarlowTwinsLoss
 from src.training_methods.contrastive_learning.supervised_cache import (
     cache_limit_for_stage,
     cache_supervised_batch,
@@ -357,18 +357,9 @@ class TemporalSSLModule(pl.LightningModule):
                 f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
             )
 
-        self.barlow = BarlowTwinsLoss.from_config(
+        self.vicreg = VICRegLoss.from_config(
             cfg,
             input_dim=latent_dim,
-        )
-        vicreg_enabled = bool(getattr(cfg, "vicreg_enabled", False))
-        self.vicreg = (
-            VICRegLoss.from_config(
-                cfg,
-                input_dim=latent_dim,
-            )
-            if vicreg_enabled
-            else None
         )
         self.lejepa = LeJEPALoss.from_config(
             cfg,
@@ -577,17 +568,13 @@ class TemporalSSLModule(pl.LightningModule):
         )
 
     @property
-    def barlow_projector(self):
-        return self.barlow.projector
-
-    @property
     def vicreg_projector(self):
-        return self.vicreg.projector if self.vicreg is not None else None
+        return self.vicreg.projector
 
     def _shared_invariant(self, z_inv_model, eq_z):
         # Contrastive training always prefers norms(eq_z) when eq_z exists and
         # otherwise falls back to the encoder invariant branch.
-        return self.barlow._invariant(z_inv_model, eq_z)
+        return self.vicreg._invariant(z_inv_model, eq_z)
 
     def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
         if getattr(self.encoder, "expects_channel_first", False):
@@ -764,6 +751,73 @@ class TemporalSSLModule(pl.LightningModule):
         self._temporal_frame_span_cache[stage] = frame_span
         return frame_span
 
+    @staticmethod
+    def _distributed_world_size() -> int:
+        if not (torch.distributed.is_available() and torch.distributed.is_initialized()):
+            return 1
+        return int(torch.distributed.get_world_size())
+
+    def _gather_all_tensor(self, tensor: torch.Tensor) -> torch.Tensor:
+        world_size = self._distributed_world_size()
+        if world_size <= 1:
+            return tensor
+
+        local_size = torch.tensor([tensor.shape[0]], device=tensor.device, dtype=torch.long)
+        gathered_sizes = [torch.zeros_like(local_size) for _ in range(world_size)]
+        torch.distributed.all_gather(gathered_sizes, local_size)
+        sizes = [int(size.item()) for size in gathered_sizes]
+        max_size = max(sizes)
+        if max_size == 0:
+            return tensor
+
+        if int(tensor.shape[0]) != max_size:
+            pad = tensor.new_zeros((max_size - int(tensor.shape[0]), *tensor.shape[1:]))
+            padded = torch.cat([tensor, pad], dim=0)
+        else:
+            padded = tensor
+        padded = padded.contiguous()
+
+        gathered = [padded.new_zeros((max_size, *tensor.shape[1:])) for _ in range(world_size)]
+        torch.distributed.all_gather(gathered, padded)
+
+        rank = int(torch.distributed.get_rank())
+        gathered[rank] = padded
+        trimmed = [chunk[:size] for chunk, size in zip(gathered, sizes, strict=True)]
+        return torch.cat(trimmed, dim=0)
+
+    def _gather_all_source_paths(
+        self,
+        source_paths: Sequence[str] | None,
+        *,
+        batch_size: int,
+    ) -> list[str] | None:
+        if source_paths is None:
+            local_paths = ["<shared-source>"] * int(batch_size)
+        else:
+            local_paths = [str(path) for path in source_paths]
+            if len(local_paths) != int(batch_size):
+                raise ValueError(
+                    "source_paths must match the local batch size before distributed gathering. "
+                    f"batch_size={batch_size}, len(source_paths)={len(local_paths)}."
+                )
+
+        world_size = self._distributed_world_size()
+        if world_size <= 1:
+            return local_paths
+
+        gathered_paths: list[list[str] | None] = [None for _ in range(world_size)]
+        torch.distributed.all_gather_object(gathered_paths, local_paths)
+
+        flattened: list[str] = []
+        for rank_idx, rank_paths in enumerate(gathered_paths):
+            if not isinstance(rank_paths, list):
+                raise TypeError(
+                    "Distributed source-path gather returned a non-list object. "
+                    f"rank={rank_idx}, type={type(rank_paths)}."
+                )
+            flattened.extend(str(path) for path in rank_paths)
+        return flattened
+
     def _unpack_batch(self, batch):
         if not isinstance(batch, dict):
             raise TypeError(
@@ -828,9 +882,6 @@ class TemporalSSLModule(pl.LightningModule):
         prev_pc: torch.Tensor,
         next_pc: torch.Tensor,
     ) -> dict[str, torch.Tensor] | None:
-        if self.vicreg is None:
-            return None
-
         target_points = self.vicreg.view_points
         neighbor_mode = str(self.vicreg.neighbor_view_mode).lower()
         if self.vicreg.neighbor_view and neighbor_mode not in {"none", "second"}:
@@ -938,6 +989,7 @@ class TemporalSSLModule(pl.LightningModule):
         should_run_temporal_contrastive = self.temporal_contrastive.should_run(
             current_epoch=int(self.current_epoch)
         )
+        should_run_vicreg = self.vicreg.should_run(current_epoch=int(self.current_epoch))
 
         losses = {}
         center_embeddings = None
@@ -955,20 +1007,7 @@ class TemporalSSLModule(pl.LightningModule):
                     stage=stage,
                 )
 
-        barlow_loss, barlow_metrics = self.barlow.compute_loss(
-            pc=pc_raw,
-            encoder=self.encoder,
-            prepare_input=self._prepare_encoder_input,
-            split_output=self._split_encoder_output,
-            current_epoch=int(self.current_epoch),
-            invariant_transform=self._shared_invariant,
-        )
-        if barlow_loss is not None:
-            losses["barlow"] = barlow_loss
-        for name, value in barlow_metrics.items():
-            self._log_metric(stage, name, value, batch_size=batch_size)
-
-        if self.vicreg is not None:
+        if should_run_vicreg:
             vicreg_views = (
                 self._build_vicreg_temporal_views(pc_raw, prev_pc, next_pc)
                 if self.use_temporal_vicreg_views
@@ -1015,11 +1054,23 @@ class TemporalSSLModule(pl.LightningModule):
             if center_atom_ids is None:
                 raise KeyError("Temporal contrastive loss requires batch['center_atom_id'].")
 
+            gathered_embeddings = self._gather_all_tensor(center_embeddings)
+            gathered_frame_indices = self._gather_all_tensor(
+                frame_indices[:, self.center_frame_index].reshape(-1, 1)
+            ).reshape(-1)
+            gathered_center_atom_ids = self._gather_all_tensor(
+                center_atom_ids.reshape(-1, 1)
+            ).reshape(-1)
+            gathered_source_paths = self._gather_all_source_paths(
+                meta.get("source_path"),
+                batch_size=batch_size,
+            )
+
             temporal_contrastive_loss, temporal_contrastive_metrics = self.temporal_contrastive.compute_loss(
-                embeddings=center_embeddings,
-                frame_indices=frame_indices[:, self.center_frame_index],
-                center_atom_ids=center_atom_ids,
-                source_paths=meta.get("source_path"),
+                embeddings=gathered_embeddings,
+                frame_indices=gathered_frame_indices,
+                center_atom_ids=gathered_center_atom_ids,
+                source_paths=gathered_source_paths,
                 simulation_frame_span=self._resolve_temporal_frame_span(stage),
                 current_epoch=int(self.current_epoch),
             )
@@ -1038,9 +1089,7 @@ class TemporalSSLModule(pl.LightningModule):
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
         total_loss = None
-        if "barlow" in losses:
-            total_loss = self.barlow.weight * losses["barlow"]
-        if "vicreg" in losses and self.vicreg is not None:
+        if "vicreg" in losses:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
         if "lejepa" in losses and self.lejepa is not None:
@@ -1084,8 +1133,6 @@ class TemporalSSLModule(pl.LightningModule):
             self._consecutive_nan_steps = 0
 
         metrics_to_log = {"loss": total_loss}
-        if "barlow" in losses:
-            metrics_to_log["barlow"] = losses["barlow"]
         if "vicreg" in losses:
             metrics_to_log["vicreg"] = losses["vicreg"]
         if "lejepa" in losses:
@@ -1145,6 +1192,12 @@ class TemporalSSLModule(pl.LightningModule):
             on_step = True
         if on_epoch is None:
             on_epoch = True
+        if stage == "train":
+            on_epoch = False
+        elif stage == "val":
+            on_step = False
+        if not on_step and not on_epoch:
+            return
         log_kwargs = dict(kwargs)
         if batch_size is not None and "batch_size" not in log_kwargs:
             log_kwargs["batch_size"] = int(batch_size)

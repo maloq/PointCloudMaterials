@@ -7,7 +7,6 @@ import os
 sys.path.append(os.getcwd())
 
 from src.models.autoencoders.factory import build_model
-from src.training_methods.contrastive_learning.barlow_twins import BarlowTwinsLoss
 from src.training_methods.contrastive_learning.supervised_cache import (
     cache_limit_for_stage,
     cache_supervised_batch,
@@ -30,9 +29,9 @@ def resolve_latent_dim(cfg):
     return None
 
 
-class BarlowTwinsModule(pl.LightningModule):
+class VICRegModule(pl.LightningModule):
     """
-    Self-supervised Barlow Twins / VICReg training.
+    Self-supervised VICReg training.
     """
 
     def __init__(self, cfg):
@@ -65,18 +64,9 @@ class BarlowTwinsModule(pl.LightningModule):
                 f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
             )
 
-        self.barlow = BarlowTwinsLoss.from_config(
+        self.vicreg = VICRegLoss.from_config(
             cfg,
             input_dim=latent_dim,
-        )
-        vicreg_enabled = bool(getattr(cfg, "vicreg_enabled", False))
-        self.vicreg = (
-            VICRegLoss.from_config(
-                cfg,
-                input_dim=latent_dim,
-            )
-            if vicreg_enabled
-            else None
         )
 
         init_supervised_cache(self, cfg)
@@ -86,17 +76,13 @@ class BarlowTwinsModule(pl.LightningModule):
         self._max_consecutive_nan_steps = int(getattr(cfg, "max_consecutive_nan_steps", 20))
 
     @property
-    def barlow_projector(self):
-        return self.barlow.projector
-
-    @property
     def vicreg_projector(self):
-        return self.vicreg.projector if self.vicreg is not None else None
+        return self.vicreg.projector
 
     def _shared_invariant(self, z_inv_model, eq_z):
         # Contrastive training always prefers norms(eq_z) when eq_z exists and
         # otherwise falls back to the encoder invariant branch.
-        return self.barlow._invariant(z_inv_model, eq_z)
+        return self.vicreg._invariant(z_inv_model, eq_z)
 
     def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
         if getattr(self.encoder, "expects_channel_first", False):
@@ -215,8 +201,7 @@ class BarlowTwinsModule(pl.LightningModule):
 
         losses = {}
 
-        # Barlow Twins loss (self-supervised)
-        barlow_loss, barlow_metrics = self.barlow.compute_loss(
+        vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
             pc=pc_raw,
             encoder=self.encoder,
             prepare_input=self._prepare_encoder_input,
@@ -224,30 +209,13 @@ class BarlowTwinsModule(pl.LightningModule):
             current_epoch=int(self.current_epoch),
             invariant_transform=self._shared_invariant,
         )
-        if barlow_loss is not None:
-            losses["barlow"] = barlow_loss
-        for name, value in barlow_metrics.items():
+        if vicreg_loss is not None:
+            losses["vicreg"] = vicreg_loss
+        for name, value in vicreg_metrics.items():
             self._log_metric(stage, name, value, batch_size=batch_size)
 
-        # VICReg loss (self-supervised, optionally with Radial-VICReg regularization).
-        if self.vicreg is not None:
-            vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
-                pc=pc_raw,
-                encoder=self.encoder,
-                prepare_input=self._prepare_encoder_input,
-                split_output=self._split_encoder_output,
-                current_epoch=int(self.current_epoch),
-                invariant_transform=self._shared_invariant,
-            )
-            if vicreg_loss is not None:
-                losses["vicreg"] = vicreg_loss
-            for name, value in vicreg_metrics.items():
-                self._log_metric(stage, name, value, batch_size=batch_size)
-
         total_loss = None
-        if "barlow" in losses:
-            total_loss = self.barlow.weight * losses["barlow"]
-        if "vicreg" in losses and self.vicreg is not None:
+        if "vicreg" in losses:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
         if total_loss is None:
@@ -276,9 +244,6 @@ class BarlowTwinsModule(pl.LightningModule):
             # Total weighted optimization objective.
             "loss": total_loss,
         }
-        if "barlow" in losses:
-            # Unweighted Barlow objective term.
-            metrics_to_log["barlow"] = losses["barlow"]
         if "vicreg" in losses:
             # Unweighted VICReg objective term.
             metrics_to_log["vicreg"] = losses["vicreg"]
@@ -406,4 +371,4 @@ class BarlowTwinsModule(pl.LightningModule):
     def _log_supervised_metrics(self, stage: str) -> None:
         log_supervised_metrics(self, stage)
 
-__all__ = ["BarlowTwinsModule"]
+__all__ = ["VICRegModule"]

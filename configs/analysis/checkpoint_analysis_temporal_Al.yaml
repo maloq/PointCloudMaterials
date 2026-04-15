@@ -1,6 +1,6 @@
 checkpoint:
-  path: output/2026-04-01/18-25-29/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=24.ckpt
-  output_dir: outputs/temporal_real_AlNi50_1150K
+  path: output/2026-04-13/21-26-19/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=34.ckpt
+  output_dir: outputs/temporal_Al_500frames
   cuda_device: 0
 
 inputs:
@@ -11,7 +11,7 @@ inputs:
   max_samples_total: 0
   temporal_real:
     enabled: true
-    dump_file: datasets/dump_Al50Ni50_1150K.pos
+    dump_file: datasets/dump_first_10.pos
     cache_dir: null
     sequence_length: 3
     frame_stride: 1
@@ -168,6 +168,7 @@ real_md:
     enabled: true
     animation_max_points: 25000
     frame_duration_ms: 250
+    total_duration_seconds: 20.0
     md_space:
       enabled: true
       point_size: 12.0

@@ -1,0 +1,141 @@
+pipeline:
+  run_embed: true
+  run_fit: true
+  run_analyze: true
+  run_verify: false
+
+runtime:
+  cuda_device: 0
+
+paths:
+  checkpoint_path: output/2026-03-13/00-58-07/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
+  dump_file: datasets/dump_first_10.pos
+
+outputs:
+  root_dir: outputs/vamp_analysis_Al_500frames
+  embeddings_dir: ${outputs.root_dir}/embeddings
+  fit_dir: ${outputs.root_dir}/fit
+  analysis_dir: ${outputs.root_dir}/analysis
+  verify_dir: ${outputs.root_dir}/verification
+
+embed:
+  output: ${outputs.embeddings_dir}/artifacts/trajectory_embeddings.npz
+  cache_dir: null
+  radius: null
+  num_points: null
+  batch_size: 512
+  num_workers: 0
+  frame_start: 0
+  frame_stop: 500
+  center_selection_mode: random_subset
+  center_atom_stride: null
+  max_center_atoms: 2048
+  center_selection_seed: 0
+  selection_method: closest
+  tree_cache_size: 2
+  disable_normalize: false
+  disable_center_neighborhoods: false
+  precompute_neighbor_indices: false
+
+fit:
+  embeddings_path: ${embed.output}
+  output_dir: ${outputs.fit_dir}
+  lags: 1,2,4,8,12,16,24,32
+  window: full
+  frame_start: null
+  frame_stop: null
+  train_fraction: 0.6
+  val_fraction: 0.2
+  epsilon: 1.0e-6
+  eigenvalue_cutoff: null
+  dim: 12
+  projection_dim: 6
+  scaling: kinetic_map
+  verify_deeptime: true
+
+analyze:
+  embeddings_path: ${embed.output}
+  fit_dir: ${fit.output_dir}
+  output_dir: ${outputs.analysis_dir}
+  analysis_window: fit
+  frame_start: null
+  frame_stop: null
+  k: 6
+  projection_dim: 6
+  random_state: 0
+  visualization_max_samples: 20000
+  snapshot_count: 6
+  compare_structural_clustering: true
+  time_series:
+    enabled: true
+    paper_enabled: true
+    alpha: 0.78
+    paper_alpha: 0.72
+  temporal:
+    enabled: true
+    animation_max_points: 25000
+    frame_duration_ms: 250
+    total_duration_seconds: 20.0
+    md_space:
+      enabled: true
+      point_size: 12.0
+      alpha: 1.0
+      saturation_boost: 1.18
+      view_elev: 24.0
+      view_azim: 35.0
+      diagonal_visible_depth_fraction: 0.10
+    vamp_space:
+      enabled: true
+      point_size: 8.0
+      alpha: 0.74
+      trajectory_enabled: true
+      trajectory_max_points: 1000
+      trajectory_line_width: 0.8
+      trajectory_line_alpha: 0.22
+      trajectory_history_steps: 8
+      trajectory_fade_min_alpha_fraction: 0.18
+      trajectory_fade_power: 1.0
+      trajectory_directional_subsegments: 6
+      trajectory_directional_start_alpha_fraction: 0.32
+      trajectory_directional_start_width_fraction: 0.60
+      trajectory_directional_end_width_fraction: 1.35
+      trajectory_endpoint_point_size: 3.0
+      trajectory_endpoint_point_alpha: 0.95
+  md_space:
+    enabled: true
+    static_max_points: 40000
+    interactive_enabled: true
+    interactive_max_points: 25000
+    interactive_marker_size: 3.0
+    interactive_marker_line_width: 0.0
+    interactive_aspect_mode: cube
+    raytrace_enabled: false
+    raytrace_snapshot_count: 3
+    view_elev: 24.0
+    view_azim: 35.0
+    blender_executable: blender
+    raytrace_resolution: 1600
+    raytrace_max_points: 4000
+    raytrace_samples: 64
+    raytrace_projection: perspective
+    raytrace_fov_deg: 34.0
+    raytrace_camera_distance_factor: 2.8
+    raytrace_sphere_radius_fraction: 0.0105
+    raytrace_timeout_sec: 1200
+    raytrace_use_gpu: false
+
+verify:
+  embeddings_path: ${embed.output}
+  lag: 8
+  window: full
+  frame_start: null
+  frame_stop: null
+  train_fraction: 0.6
+  val_fraction: 0.2
+  epsilon: 1.0e-6
+  eigenvalue_cutoff: null
+  dim: 12
+  scaling: kinetic_map
+  output_dir: ${outputs.verify_dir}
+  max_score_diff: null
+  max_transform_error: null

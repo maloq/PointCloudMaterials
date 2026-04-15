@@ -18,7 +18,7 @@ class AnalyzableModel(Protocol):
 
     Any model whose ``__call__`` returns
     ``(invariant_latent, model_latent, equivariant_latent | None)``
-    satisfies this protocol.  ``BarlowTwinsModule`` already conforms.
+    satisfies this protocol.  ``VICRegModule`` already conforms.
     """
 
     def __call__(

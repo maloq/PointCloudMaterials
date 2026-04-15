@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 import json
+import multiprocessing as mp
+import os
 import re
 from pathlib import Path
 from typing import Any
@@ -146,6 +149,97 @@ def _cfg_int(cfg: Any, field_name: str, default: int) -> int:
 
 def _cfg_float(cfg: Any, field_name: str, default: float) -> float:
     return float(getattr(cfg, field_name, default))
+
+
+def _resolve_temporal_animation_parallel_workers(
+    temporal_cfg: Any,
+    *,
+    task_count: int,
+) -> int:
+    if task_count < 0:
+        raise ValueError(f"task_count must be >= 0, got {task_count}.")
+    if task_count <= 1:
+        return int(max(task_count, 0))
+    requested = int(getattr(temporal_cfg, "animation_parallel_workers", 0))
+    if requested < 0:
+        raise ValueError(
+            "real_md.temporal.animation_parallel_workers must be >= 0, "
+            f"got {requested}."
+        )
+    if requested == 0:
+        cpu_count = os.cpu_count() or 1
+        return max(1, min(task_count, cpu_count, 2))
+    return max(1, min(task_count, requested))
+
+
+def _temporal_animation_process_context() -> mp.context.BaseContext:
+    if os.name == "posix" and "fork" in mp.get_all_start_methods():
+        # These renderer workers only touch NumPy/Matplotlib output state, so
+        # `fork` avoids the large serialization overhead of `spawn`.
+        return mp.get_context("fork")
+    return mp.get_context("spawn")
+
+
+def _run_temporal_animation_task(
+    task_kind: str,
+    task_kwargs: dict[str, Any],
+) -> dict[str, Any]:
+    if task_kind == "spatial_clusters":
+        return save_temporal_spatial_cluster_animation(**task_kwargs)
+    if task_kind == "embedding_clusters":
+        return save_temporal_embedding_cluster_animation(**task_kwargs)
+    if task_kind == "embedding_trajectories":
+        return save_temporal_embedding_trajectory_animation(**task_kwargs)
+    if task_kind == "transition_flow":
+        return save_temporal_transition_flow_animation(**task_kwargs)
+    raise ValueError(
+        "Unsupported temporal animation task kind. "
+        f"Expected one of ['spatial_clusters', 'embedding_clusters', "
+        f"'embedding_trajectories', 'transition_flow'], got {task_kind!r}."
+    )
+
+
+def _execute_temporal_animation_jobs(
+    animation_jobs: list[tuple[str, str, dict[str, Any]]],
+    *,
+    temporal_cfg: Any,
+) -> dict[str, Any]:
+    if not animation_jobs:
+        return {}
+    max_workers = _resolve_temporal_animation_parallel_workers(
+        temporal_cfg,
+        task_count=len(animation_jobs),
+    )
+    if max_workers <= 1:
+        return {
+            str(summary_key): _run_temporal_animation_task(task_kind, task_kwargs)
+            for summary_key, task_kind, task_kwargs in animation_jobs
+        }
+
+    results: dict[str, Any] = {}
+    with ProcessPoolExecutor(
+        max_workers=int(max_workers),
+        mp_context=_temporal_animation_process_context(),
+    ) as executor:
+        submitted = [
+            (
+                str(summary_key),
+                executor.submit(_run_temporal_animation_task, task_kind, task_kwargs),
+            )
+            for summary_key, task_kind, task_kwargs in animation_jobs
+        ]
+        for summary_key, future in submitted:
+            results[str(summary_key)] = future.result()
+    return results
+
+
+def _remove_existing_transition_pair_flow_artifacts(out_dir: Path) -> None:
+    out_dir = Path(out_dir)
+    if not out_dir.exists():
+        return
+    for pattern in ("transition_pair_*_flow.png", "transition_pair_*_flow.svg"):
+        for artifact_path in out_dir.glob(pattern):
+            artifact_path.unlink()
 
 
 def _resolve_descriptor_sampling_indices(
@@ -1644,6 +1738,11 @@ def run_real_md_qualitative_analysis(
             )
         temporal_dir = out_root / "temporal"
         temporal_dir.mkdir(parents=True, exist_ok=True)
+        frame_duration_ms = _cfg_int(temporal_cfg, "frame_duration_ms", 450)
+        total_duration_seconds_raw = getattr(temporal_cfg, "total_duration_seconds", None)
+        total_duration_seconds = (
+            None if total_duration_seconds_raw is None else float(total_duration_seconds_raw)
+        )
         animation_max_points_raw = getattr(temporal_cfg, "animation_max_points", None)
         animation_max_points = (
             None
@@ -1676,6 +1775,7 @@ def run_real_md_qualitative_analysis(
             str(frame.source_name): str(frame.label)
             for frame in temporal_frames
         }
+        temporal_animation_jobs: list[tuple[str, str, dict[str, Any]]] = []
 
         temporal_md_cfg = getattr(temporal_cfg, "md_space", None)
         if _cfg_bool(temporal_md_cfg, "enabled", True):
@@ -1695,49 +1795,56 @@ def run_real_md_qualitative_analysis(
                 for frame in temporal_frames
             ]
             md_animation_path = temporal_dir / f"md_space_clusters_diagonal_cut_k{int(selected_k)}.gif"
-            temporal_summary["md_space_animation"] = save_temporal_spatial_cluster_animation(
-                temporal_md_records,
-                md_animation_path,
-                cluster_color_map=labels_color_map,
-                cluster_display_map=cluster_display_map,
-                point_size=_cfg_float(
-                    temporal_md_cfg,
-                    "point_size",
-                    _cfg_float(figure_md_cfg, "point_size", 5.6),
-                ),
-                alpha=_cfg_float(
-                    temporal_md_cfg,
-                    "alpha",
-                    _cfg_float(figure_md_cfg, "alpha", 0.62),
-                ),
-                saturation_boost=_cfg_float(
-                    temporal_md_cfg,
-                    "saturation_boost",
-                    _cfg_float(figure_md_cfg, "saturation_boost", 1.18),
-                ),
-                view_elev=_cfg_float(
-                    temporal_md_cfg,
-                    "view_elev",
-                    _cfg_float(figure_md_cfg, "view_elev", 24.0),
-                ),
-                view_azim=_cfg_float(
-                    temporal_md_cfg,
-                    "view_azim",
-                    _cfg_float(figure_md_cfg, "view_azim", 35.0),
-                ),
-                diagonal_visible_depth_fraction=_cfg_float(
-                    temporal_md_cfg,
-                    "diagonal_visible_depth_fraction",
-                    0.10,
-                ),
-                frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
+            temporal_animation_jobs.append(
+                (
+                    "md_space_animation",
+                    "spatial_clusters",
+                    {
+                        "frame_records": temporal_md_records,
+                        "out_file": md_animation_path,
+                        "cluster_color_map": labels_color_map,
+                        "cluster_display_map": cluster_display_map,
+                        "point_size": _cfg_float(
+                            temporal_md_cfg,
+                            "point_size",
+                            _cfg_float(figure_md_cfg, "point_size", 5.6),
+                        ),
+                        "alpha": _cfg_float(
+                            temporal_md_cfg,
+                            "alpha",
+                            _cfg_float(figure_md_cfg, "alpha", 0.62),
+                        ),
+                        "saturation_boost": _cfg_float(
+                            temporal_md_cfg,
+                            "saturation_boost",
+                            _cfg_float(figure_md_cfg, "saturation_boost", 1.18),
+                        ),
+                        "view_elev": _cfg_float(
+                            temporal_md_cfg,
+                            "view_elev",
+                            _cfg_float(figure_md_cfg, "view_elev", 24.0),
+                        ),
+                        "view_azim": _cfg_float(
+                            temporal_md_cfg,
+                            "view_azim",
+                            _cfg_float(figure_md_cfg, "view_azim", 35.0),
+                        ),
+                        "diagonal_visible_depth_fraction": _cfg_float(
+                            temporal_md_cfg,
+                            "diagonal_visible_depth_fraction",
+                            0.10,
+                        ),
+                        "frame_duration_ms": int(frame_duration_ms),
+                        "total_duration_seconds": total_duration_seconds,
+                    },
+                )
             )
 
         if _cfg_bool(transition_cfg, "enabled", True):
             if transition_tol is None:
                 raise RuntimeError("transition_tol was not resolved for temporal transition animation.")
             temporal_transition_dir = temporal_dir / "transition_pairs"
-            temporal_transition_dir.mkdir(parents=True, exist_ok=True)
+            _remove_existing_transition_pair_flow_artifacts(temporal_transition_dir)
             temporal_transition_data = _compute_transitions(
                 temporal_frames,
                 coords=np.asarray(coords, dtype=np.float32),
@@ -1749,22 +1856,11 @@ def run_real_md_qualitative_analysis(
             )
             temporal_pair_records: list[dict[str, Any]] = []
             temporal_pair_plots: list[dict[str, Any]] = []
-            for pair_idx, pair_summary in enumerate(temporal_transition_data["pairs"], start=1):
+            for pair_summary in temporal_transition_data["pairs"]:
                 frame_from = str(pair_summary["frame_from"])
                 frame_to = str(pair_summary["frame_to"])
                 frame_from_label = temporal_frame_label_by_name.get(frame_from, frame_from)
                 frame_to_label = temporal_frame_label_by_name.get(frame_to, frame_to)
-                flow_path = temporal_transition_dir / f"transition_pair_{pair_idx:02d}_flow.png"
-                save_transition_flow_plot(
-                    np.asarray(pair_summary["counts"], dtype=np.float64),
-                    flow_path,
-                    title=f"Cluster transition flow | {frame_from_label} -> {frame_to_label}",
-                    row_labels=cluster_display_labels,
-                    cluster_color_map=labels_color_map,
-                    cluster_ids_for_palette=cluster_ids,
-                    mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                    min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-                )
                 temporal_pair_records.append(
                     {
                         "frame_from": frame_from,
@@ -1775,32 +1871,36 @@ def run_real_md_qualitative_analysis(
                         "title": f"Cluster transition flow | {frame_from_label} -> {frame_to_label}",
                     }
                 )
-                temporal_pair_plots.append(
-                    {
-                        "frame_from": frame_from,
-                        "frame_to": frame_to,
-                        "frame_from_label": frame_from_label,
-                        "frame_to_label": frame_to_label,
-                        "matched_samples": int(pair_summary["matched_samples"]),
-                        "coverage_fraction": float(pair_summary["coverage_fraction"]),
-                        "flow_plot": str(flow_path),
-                    }
-                )
+                temporal_pair_plot_record = {
+                    "frame_from": frame_from,
+                    "frame_to": frame_to,
+                    "frame_from_label": frame_from_label,
+                    "frame_to_label": frame_to_label,
+                    "matched_samples": int(pair_summary["matched_samples"]),
+                    "coverage_fraction": float(pair_summary["coverage_fraction"]),
+                }
+                temporal_pair_plots.append(temporal_pair_plot_record)
             if temporal_pair_records:
                 transition_animation_path = temporal_dir / "transition_pair_flows.gif"
-                temporal_summary["transition_pair_flow_animation"] = save_temporal_transition_flow_animation(
-                    temporal_pair_records,
-                    transition_animation_path,
-                    row_labels=cluster_display_labels,
-                    cluster_color_map=labels_color_map,
-                    cluster_ids_for_palette=cluster_ids,
-                    mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                    min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-                    frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
-                    title="Cluster transition flow",
+                temporal_animation_jobs.append(
+                    (
+                        "transition_pair_flow_animation",
+                        "transition_flow",
+                        {
+                            "pair_records": temporal_pair_records,
+                            "out_file": transition_animation_path,
+                            "row_labels": cluster_display_labels,
+                            "cluster_color_map": labels_color_map,
+                            "cluster_ids_for_palette": cluster_ids,
+                            "mute_diagonal": _cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                            "min_draw_fraction": _cfg_float(transition_cfg, "flow_min_fraction", 0.001),
+                            "frame_duration_ms": int(frame_duration_ms),
+                            "total_duration_seconds": total_duration_seconds,
+                            "title": "Cluster transition flow",
+                        },
+                    )
                 )
             temporal_summary["transition_pairs"] = {
-                "root_dir": str(temporal_transition_dir),
                 "pair_count": int(len(temporal_pair_plots)),
                 "match_mode": str(temporal_transition_data["match_mode"]),
                 "match_tolerance": float(temporal_transition_data["max_distance"]),
@@ -1854,15 +1954,22 @@ def run_real_md_qualitative_analysis(
                 )
                 cursor = next_cursor
             umap_animation_path = temporal_dir / f"latent_projection_{projection_method}_clusters.gif"
-            temporal_summary["umap_animation"] = save_temporal_embedding_cluster_animation(
-                temporal_embedding_records,
-                umap_animation_path,
-                cluster_color_map=labels_color_map,
-                cluster_display_map=cluster_display_map,
-                point_size=_cfg_float(temporal_umap_cfg, "point_size", 8.0),
-                alpha=_cfg_float(temporal_umap_cfg, "alpha", 0.74),
-                frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
-                title=f"{projection_method.upper()} cluster evolution",
+            temporal_animation_jobs.append(
+                (
+                    "umap_animation",
+                    "embedding_clusters",
+                    {
+                        "frame_records": temporal_embedding_records,
+                        "out_file": umap_animation_path,
+                        "cluster_color_map": labels_color_map,
+                        "cluster_display_map": cluster_display_map,
+                        "point_size": _cfg_float(temporal_umap_cfg, "point_size", 8.0),
+                        "alpha": _cfg_float(temporal_umap_cfg, "alpha", 0.74),
+                            "frame_duration_ms": int(frame_duration_ms),
+                            "total_duration_seconds": total_duration_seconds,
+                            "title": f"{projection_method.upper()} cluster evolution",
+                    },
+                )
             )
             if _cfg_bool(temporal_umap_cfg, "trajectory_enabled", True):
                 trajectory_max_points_raw = getattr(temporal_umap_cfg, "trajectory_max_points", animation_max_points)
@@ -1911,62 +2018,85 @@ def run_real_md_qualitative_analysis(
                 trajectory_animation_path = (
                     temporal_dir / f"latent_projection_{projection_method}_trajectories.gif"
                 )
-                temporal_summary["umap_trajectory_animation"] = save_temporal_embedding_trajectory_animation(
-                    temporal_trajectory_records,
-                    trajectory_animation_path,
-                    cluster_color_map=labels_color_map,
-                    cluster_display_map=cluster_display_map,
-                    line_width=_cfg_float(temporal_umap_cfg, "trajectory_line_width", 0.8),
-                    line_alpha=_cfg_float(temporal_umap_cfg, "trajectory_line_alpha", 0.22),
-                    history_steps=_cfg_int(
-                        temporal_umap_cfg,
-                        "trajectory_history_steps",
-                        8,
-                    ),
-                    fade_min_alpha_fraction=_cfg_float(
-                        temporal_umap_cfg,
-                        "trajectory_fade_min_alpha_fraction",
-                        0.18,
-                    ),
-                    fade_power=_cfg_float(
-                        temporal_umap_cfg,
-                        "trajectory_fade_power",
-                        1.0,
-                    ),
-                    directional_subsegments=_cfg_int(
-                        temporal_umap_cfg,
-                        "trajectory_directional_subsegments",
-                        6,
-                    ),
-                    directional_start_alpha_fraction=_cfg_float(
-                        temporal_umap_cfg,
-                        "trajectory_directional_start_alpha_fraction",
-                        0.32,
-                    ),
-                    directional_start_width_fraction=_cfg_float(
-                        temporal_umap_cfg,
-                        "trajectory_directional_start_width_fraction",
-                        0.60,
-                    ),
-                    directional_end_width_fraction=_cfg_float(
-                        temporal_umap_cfg,
-                        "trajectory_directional_end_width_fraction",
-                        1.35,
-                    ),
-                    endpoint_point_size=_cfg_float(
-                        temporal_umap_cfg,
-                        "trajectory_endpoint_point_size",
-                        3.0,
-                    ),
-                    endpoint_point_alpha=_cfg_float(
-                        temporal_umap_cfg,
-                        "trajectory_endpoint_point_alpha",
-                        0.95,
-                    ),
-                    frame_duration_ms=_cfg_int(temporal_cfg, "frame_duration_ms", 450),
-                    title=f"{projection_method.upper()} cluster trajectories",
+                temporal_animation_jobs.append(
+                    (
+                        "umap_trajectory_animation",
+                        "embedding_trajectories",
+                        {
+                            "frame_records": temporal_trajectory_records,
+                            "out_file": trajectory_animation_path,
+                            "cluster_color_map": labels_color_map,
+                            "cluster_display_map": cluster_display_map,
+                            "line_width": _cfg_float(temporal_umap_cfg, "trajectory_line_width", 0.8),
+                            "line_alpha": _cfg_float(temporal_umap_cfg, "trajectory_line_alpha", 0.22),
+                            "history_steps": _cfg_int(
+                                temporal_umap_cfg,
+                                "trajectory_history_steps",
+                                8,
+                            ),
+                            "fade_min_alpha_fraction": _cfg_float(
+                                temporal_umap_cfg,
+                                "trajectory_fade_min_alpha_fraction",
+                                0.18,
+                            ),
+                            "fade_power": _cfg_float(
+                                temporal_umap_cfg,
+                                "trajectory_fade_power",
+                                1.0,
+                            ),
+                            "directional_subsegments": _cfg_int(
+                                temporal_umap_cfg,
+                                "trajectory_directional_subsegments",
+                                6,
+                            ),
+                            "directional_start_alpha_fraction": _cfg_float(
+                                temporal_umap_cfg,
+                                "trajectory_directional_start_alpha_fraction",
+                                0.32,
+                            ),
+                            "directional_start_width_fraction": _cfg_float(
+                                temporal_umap_cfg,
+                                "trajectory_directional_start_width_fraction",
+                                0.60,
+                            ),
+                            "directional_end_width_fraction": _cfg_float(
+                                temporal_umap_cfg,
+                                "trajectory_directional_end_width_fraction",
+                                1.35,
+                            ),
+                            "endpoint_point_size": _cfg_float(
+                                temporal_umap_cfg,
+                                "trajectory_endpoint_point_size",
+                                3.0,
+                            ),
+                            "endpoint_point_alpha": _cfg_float(
+                                temporal_umap_cfg,
+                                "trajectory_endpoint_point_alpha",
+                                0.95,
+                            ),
+                            "frame_duration_ms": int(frame_duration_ms),
+                            "total_duration_seconds": total_duration_seconds,
+                            "title": f"{projection_method.upper()} cluster trajectories",
+                        },
+                    )
                 )
                 temporal_summary["trajectory_sample_count"] = int(trajectory_instance_ids.size)
+        temporal_parallel_workers = _resolve_temporal_animation_parallel_workers(
+            temporal_cfg,
+            task_count=len(temporal_animation_jobs),
+        )
+        temporal_summary["animation_parallel_workers"] = int(temporal_parallel_workers)
+        if temporal_parallel_workers > 1:
+            print(
+                "[analysis] Rendering temporal animations in parallel with "
+                f"{temporal_parallel_workers} worker processes."
+            )
+        temporal_animation_results = _execute_temporal_animation_jobs(
+            temporal_animation_jobs,
+            temporal_cfg=temporal_cfg,
+        )
+        for summary_key, _task_kind, _task_kwargs in temporal_animation_jobs:
+            temporal_summary[str(summary_key)] = temporal_animation_results[str(summary_key)]
         temporal_summary["projection_fit_sample_count"] = (
             None if temporal_fit_indices is None else int(temporal_fit_indices.size)
         )
@@ -1975,6 +2105,7 @@ def run_real_md_qualitative_analysis(
     if _cfg_bool(transition_cfg, "enabled", True) and len(frames) >= 2:
         transition_dir = out_root / "transitions"
         transition_dir.mkdir(parents=True, exist_ok=True)
+        _remove_existing_transition_pair_flow_artifacts(transition_dir)
         if transition_tol is None:
             raise RuntimeError("transition_tol was not resolved for transition analysis.")
         transition_data = _compute_transitions(
@@ -1987,10 +2118,11 @@ def run_real_md_qualitative_analysis(
             require_mutual=_cfg_bool(transition_cfg, "require_mutual", True),
         )
         pair_records: list[dict[str, Any]] = []
-        for pair_idx, pair_summary in enumerate(transition_data["pairs"], start=1):
+        for pair_summary in transition_data["pairs"]:
+            counts = np.asarray(pair_summary["counts"], dtype=np.float64)
+            pair_idx = int(len(pair_records) + 1)
             flow_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.png"
             flow_svg_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.svg"
-            counts = np.asarray(pair_summary["counts"], dtype=np.float64)
             save_transition_flow_plot(
                 counts,
                 flow_path,

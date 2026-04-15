@@ -32,14 +32,10 @@ _COMMON_COMPATIBILITY_FIELDS = (
     "encoder.kwargs.mlp_ratio",
     "data.num_points",
     "data.model_points",
-    "barlow_enabled",
     "vicreg_enabled",
 )
 
 _OBJECTIVE_COMPATIBILITY_FIELDS = {
-    "barlow_enabled": (
-        "barlow_embed_dim",
-    ),
     "vicreg_enabled": (
         "vicreg_embed_dim",
     ),

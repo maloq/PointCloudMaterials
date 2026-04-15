@@ -177,6 +177,7 @@ real_md:
     enabled: true
     animation_max_points: 25000
     frame_duration_ms: 250
+    total_duration_seconds: 20.0
     md_space:
       enabled: true
       point_size: 12.0

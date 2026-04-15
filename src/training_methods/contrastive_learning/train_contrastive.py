@@ -11,7 +11,7 @@ from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
-from src.training_methods.contrastive_learning.contrastive_module import BarlowTwinsModule
+from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.training_methods.trainer import train_model
 
 torch.set_float32_matmul_precision('high')
@@ -51,7 +51,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
     run_test = bool(getattr(cfg, "run_test_after_training", True))
     trainer, model, dm, checkpoint_callbacks = train_model(
         cfg,
-        BarlowTwinsModule,
+        VICRegModule,
         run_test=run_test,
     )
 

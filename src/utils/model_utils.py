@@ -37,7 +37,7 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
 
     if module is None:
         raise ValueError(
-            "module must be provided (e.g. ShapePoseDisentanglement, BarlowTwinsModule). "
+            "module must be provided (e.g. ShapePoseDisentanglement, VICRegModule). "
             "Pass the desired LightningModule class explicitly."
         )
     model = None

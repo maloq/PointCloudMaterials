@@ -503,7 +503,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
 
     Args:
         cfg: Hydra configuration
-        model_class: The LightningModule class to instantiate (e.g., BarlowTwinsModule, ShapePoseDisentanglement)
+        model_class: The LightningModule class to instantiate (e.g., VICRegModule, ShapePoseDisentanglement)
         run_dir: Optional custom output directory (default: auto-generated from timestamp)
         checkpoint_callbacks: Optional list of checkpoint callbacks (default: single checkpoint monitoring val/loss)
         devices: Optional device list (default: from cfg.devices or [0])
