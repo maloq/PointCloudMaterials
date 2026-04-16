@@ -4,8 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Tuple
 
-from ..base     import Encoder
-from ..registry import register_encoder
+from .base import Encoder
+from .registry import register_encoder
 
 
 class STN3d(nn.Module):
@@ -152,6 +152,7 @@ class PointNetEncoder(Encoder):
         dropout_rate: float = 0.2,
     ):
         super().__init__()
+        self.invariant_dim = int(latent_size)
         self.backbone = _PointNetBackbone(
             channel=channel,
             feature_transform=feature_transform,
@@ -189,6 +190,7 @@ class PointNetEncoderSmall(Encoder):
         dropout_rate: float = 0.2,
     ):
         super().__init__()
+        self.invariant_dim = int(latent_size)
         self.backbone = _PointNetBackbone(
             channel=channel,
             feature_transform=feature_transform,

@@ -2,15 +2,15 @@ defaults:
  - _self_
 
 project_name: pointnet
-experiment_name: TEMPORAL_VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: SUCCESSOR_VICREG_l${latent_size}_H${successor_horizon_H}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
-model_type: temporal_vicreg
+model_type: successor_vicreg
 latent_size: 256
 
 resume_from_checkpoint: null
-init_from_checkpoint: output/2026-03-31/23-54-11/VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=49.ckpt
-init_from_checkpoint_encoder_only: true
+init_from_checkpoint: null
+init_from_checkpoint_encoder_only: false
 run_post_training_analysis: false
 run_test_after_training: true
 
@@ -19,10 +19,11 @@ data:
   dump_file: datasets/dump_first_10.pos
   sequence_length: 3
   frame_stride: 1
-  window_stride: 2
+  window_stride: 1
   frame_start: 0
   frame_stop: null
-  train_ratio: 0.8
+  train_ratio: 0.7
+  val_ratio: 0.15
   radius: null
   num_points: 160
   model_points: 80
@@ -72,7 +73,7 @@ encoder:
     center_input: true
 
 learning_rate: 0.003
-batch_size: 4096
+batch_size: 1024
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 4
@@ -88,9 +89,9 @@ auto_batch_size_strict: false
 
 enable_swa: false
 swa_epoch_start: 1000
-epochs: 120
+epochs: 80
 max_samples: 0
-check_val_every_n_epoch: 5
+check_val_every_n_epoch: 4
 
 gpu: true
 devices: [0, 1]
@@ -98,6 +99,7 @@ ddp_find_unused_parameters: false
 log_every_n_steps: 5
 num_workers: 6
 temporal_prefetch_factor: 2
+temporal_train_windows_per_batch: null
 temporal_train_window_shuffle_block_size: null
 temporal_train_shared_center_order: true
 scheduler_gamma: 0.5
@@ -110,8 +112,6 @@ warmup_start_factor: 0.1
 decay_rate: 0.0003
 enable_embedding_metrics: false
 enable_svm_accuracy: false
-
-temporal_vicreg_use_adjacent_views: false
 
 vicreg_enabled: true
 vicreg_weight: 1.0
@@ -128,23 +128,18 @@ vicreg_neighbor_view_mode: second
 vicreg_neighbor_k: 8
 vicreg_neighbor_max_relative_distance: 0.0
 vicreg_view_points: ${data.model_points}
-# vicreg_drop_apply_to_both: true
-# vicreg_rotation_mode: none
-# vicreg_rotation_deg: 0.0
-# vicreg_strain_std: 0.0
-# vicreg_strain_volume_preserve: true
-# vicreg_occlusion_mode: none
-# vicreg_occlusion_view: second
-# vicreg_occlusion_slab_frac: 0.0
-# vicreg_occlusion_cone_deg: 0.0
-# vicreg_occlusion_prob: 1.0
 vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
 vicreg_radial_enabled: false
-# vicreg_radial_beta1: 1.0
-# vicreg_radial_beta2: 0.1
-# vicreg_radial_m: null
-# vicreg_radial_eps: 1e-8
+
+enable_successor: true
+successor_horizon_H: 2
+successor_gamma: 0.95
+successor_lambda: 1.0
+successor_use_ema_teacher: true
+successor_predictor_hidden_dim: 512
+successor_predictor_num_layers: 2
+successor_use_concat_z_and_successor_for_clustering: false
 
 augmentation:
   rotation_scale: 0.0

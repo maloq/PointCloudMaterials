@@ -6,8 +6,8 @@ from collections.abc import Sequence
 import torch
 import torch.nn as nn
 
-from ..base import Encoder
-from ..registry import register_encoder
+from .base import Encoder
+from .registry import register_encoder
 
 try:
     from e3nn import o3
@@ -660,6 +660,8 @@ class NequIPBackboneEncoder(Encoder):
             raise ValueError(f"Unsupported pool={pool!r}; expected 'mean' or 'sum'.")
 
         self.latent_size = int(latent_size)
+        self.invariant_dim = self.latent_size
+        self.equivariant_dim = self.latent_size
         self.r_max = float(r_max)
         self.num_layers = int(num_layers)
         self.l_max = int(l_max)

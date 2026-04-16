@@ -1,19 +1,20 @@
 checkpoint:
   # Set this to your trained temporal LeJEPA checkpoint before running analysis,
   # or override at runtime with checkpoint.path=...
-  path: output/2026-04-02/18-36-13/LEJEPA_4D_l256_C3_V0.5_N160_M80_RI_MAE_Invariant-epoch=02.ckpt
-  output_dir: outputs/temporal_real_AlNi50_1150K_lejepa
+  path: output/2026-04-14/21-04-44/LEJEPA_4D_l256_C3_V0.8_N160_M80_RI_MAE_Invariant-epoch=59.ckpt
+  output_dir: outputs/temporal_Al_lejepa
   cuda_device: 0
 
 inputs:
   data_config: null
   real_data_files: null
   dataloader_num_workers: 4
+  inference_batch_size: 4096
   max_batches_latent: null
   max_samples_total: 0
   temporal_real:
     enabled: true
-    dump_file: datasets/dump_Al50Ni50_1150K.pos
+    dump_file: datasets/dump_first_10.pos
     cache_dir: null
     # Match the LeJEPA training window length so analysis samples come from the
     # same tracked local-structure sequences.

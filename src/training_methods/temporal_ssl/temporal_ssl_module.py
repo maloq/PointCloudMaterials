@@ -1,16 +1,12 @@
 import os
 import sys
-from collections.abc import Sequence
 
 import pytorch_lightning as pl
 import torch
-import torch.distributed
-import torch.nn as nn
-import torch.nn.functional as F
 
 sys.path.append(os.getcwd())
 
-from src.models.autoencoders.factory import build_model
+from src.models import EncoderAdapter, build_encoder, resolve_encoder_output_dim
 from src.training_methods.contrastive_learning.supervised_cache import (
     cache_limit_for_stage,
     cache_supervised_batch,
@@ -22,276 +18,6 @@ from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 from src.training_methods.temporal_ssl.lejepa import LeJEPALoss
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 from src.utils.training_utils import cached_sample_count, get_optimizers_and_scheduler
-
-
-def resolve_latent_dim(cfg):
-    if hasattr(cfg, "latent_size"):
-        return int(cfg.latent_size)
-    if hasattr(cfg, "encoder") and hasattr(cfg.encoder, "kwargs"):
-        latent_size = cfg.encoder.kwargs.get("latent_size", None)
-        if latent_size is not None:
-            return int(latent_size)
-    return None
-
-
-class TemporalFrameContrastiveLoss(nn.Module):
-    """Contrastive loss on center-frame embeddings for the same tracked atom."""
-
-    def __init__(
-        self,
-        *,
-        enabled: bool,
-        weight: float,
-        start_epoch: int,
-        positive_max_frame_delta: int,
-        negative_min_fraction: float,
-        negative_margin: float,
-        positive_coeff: float,
-        negative_coeff: float,
-    ) -> None:
-        super().__init__()
-        self.enabled = bool(enabled)
-        self.weight = float(weight)
-        self.start_epoch = max(0, int(start_epoch))
-        self.positive_max_frame_delta = int(positive_max_frame_delta)
-        self.negative_min_fraction = float(negative_min_fraction)
-        self.negative_margin = float(negative_margin)
-        self.positive_coeff = float(positive_coeff)
-        self.negative_coeff = float(negative_coeff)
-
-        if self.positive_max_frame_delta < 0:
-            raise ValueError(
-                "temporal_contrastive_positive_max_frame_delta must be >= 0, "
-                f"got {self.positive_max_frame_delta}."
-            )
-        if not (0.0 <= self.negative_min_fraction <= 1.0):
-            raise ValueError(
-                "temporal_contrastive_negative_min_fraction must be in [0, 1], "
-                f"got {self.negative_min_fraction}."
-            )
-        if not (-1.0 <= self.negative_margin <= 1.0):
-            raise ValueError(
-                "temporal_contrastive_negative_margin must be in [-1, 1], "
-                f"got {self.negative_margin}."
-            )
-        if self.positive_coeff < 0.0:
-            raise ValueError(
-                "temporal_contrastive_positive_coeff must be >= 0, "
-                f"got {self.positive_coeff}."
-            )
-        if self.negative_coeff < 0.0:
-            raise ValueError(
-                "temporal_contrastive_negative_coeff must be >= 0, "
-                f"got {self.negative_coeff}."
-            )
-
-    @classmethod
-    def from_config(cls, cfg):
-        return cls(
-            enabled=bool(getattr(cfg, "temporal_contrastive_enabled", False)),
-            weight=float(getattr(cfg, "temporal_contrastive_weight", 0.0)),
-            start_epoch=int(getattr(cfg, "temporal_contrastive_start_epoch", 0)),
-            positive_max_frame_delta=int(
-                getattr(cfg, "temporal_contrastive_positive_max_frame_delta", 2)
-            ),
-            negative_min_fraction=float(
-                getattr(cfg, "temporal_contrastive_negative_min_fraction", 0.5)
-            ),
-            negative_margin=float(getattr(cfg, "temporal_contrastive_negative_margin", 0.0)),
-            positive_coeff=float(getattr(cfg, "temporal_contrastive_positive_coeff", 1.0)),
-            negative_coeff=float(getattr(cfg, "temporal_contrastive_negative_coeff", 1.0)),
-        )
-
-    def should_run(self, *, current_epoch: int) -> bool:
-        return bool(
-            self.enabled
-            and self.weight > 0.0
-            and (self.positive_coeff > 0.0 or self.negative_coeff > 0.0)
-            and int(current_epoch) >= self.start_epoch
-        )
-
-    def compute_loss(
-        self,
-        *,
-        embeddings: torch.Tensor,
-        frame_indices: torch.Tensor,
-        center_atom_ids: torch.Tensor,
-        source_paths: Sequence[str] | None,
-        simulation_frame_span: int,
-        current_epoch: int,
-    ):
-        if not self.should_run(current_epoch=current_epoch):
-            return None, {}
-
-        self._validate_inputs(
-            embeddings=embeddings,
-            frame_indices=frame_indices,
-            center_atom_ids=center_atom_ids,
-            source_paths=source_paths,
-        )
-        if simulation_frame_span < 0:
-            raise ValueError(
-                "simulation_frame_span must be >= 0 for temporal contrastive loss, "
-                f"got {simulation_frame_span}."
-            )
-
-        normalized_embeddings = F.normalize(
-            embeddings.to(dtype=torch.float32),
-            dim=1,
-            eps=1e-6,
-        )
-        frame_indices = frame_indices.reshape(-1).to(
-            device=normalized_embeddings.device,
-            dtype=torch.float32,
-        )
-        grouped_indices = self._group_sample_indices(
-            center_atom_ids=center_atom_ids,
-            source_paths=source_paths,
-            batch_size=int(normalized_embeddings.shape[0]),
-        )
-        negative_min_delta = float(simulation_frame_span) * self.negative_min_fraction
-
-        zero = normalized_embeddings.new_zeros(())
-        positive_loss_sum = zero.clone()
-        negative_loss_sum = zero.clone()
-        positive_similarity_sum = zero.clone()
-        negative_similarity_sum = zero.clone()
-        positive_pair_count = 0
-        negative_pair_count = 0
-        active_track_count = 0
-
-        for sample_indices in grouped_indices:
-            if len(sample_indices) < 2:
-                continue
-            active_track_count += 1
-            index_tensor = torch.as_tensor(
-                sample_indices,
-                device=normalized_embeddings.device,
-                dtype=torch.long,
-            )
-            track_embeddings = normalized_embeddings.index_select(0, index_tensor)
-            track_frame_indices = frame_indices.index_select(0, index_tensor)
-            track_size = int(index_tensor.numel())
-            upper_triangle = torch.triu(
-                torch.ones(
-                    (track_size, track_size),
-                    device=normalized_embeddings.device,
-                    dtype=torch.bool,
-                ),
-                diagonal=1,
-            )
-            frame_diffs = (track_frame_indices[:, None] - track_frame_indices[None, :]).abs()
-            cosine_similarity = track_embeddings @ track_embeddings.transpose(0, 1)
-
-            positive_mask = upper_triangle & (frame_diffs <= float(self.positive_max_frame_delta))
-            if self.positive_coeff > 0.0 and positive_mask.any():
-                positive_similarity = cosine_similarity[positive_mask]
-                positive_loss_sum = positive_loss_sum + (1.0 - positive_similarity).sum()
-                positive_similarity_sum = positive_similarity_sum + positive_similarity.sum()
-                positive_pair_count += int(positive_similarity.numel())
-
-            negative_mask = upper_triangle & (frame_diffs > negative_min_delta)
-            if self.negative_coeff > 0.0 and negative_mask.any():
-                negative_similarity = cosine_similarity[negative_mask]
-                negative_loss_sum = negative_loss_sum + F.relu(
-                    negative_similarity - self.negative_margin
-                ).sum()
-                negative_similarity_sum = negative_similarity_sum + negative_similarity.sum()
-                negative_pair_count += int(negative_similarity.numel())
-
-        loss = None
-        metrics = {
-            "temporal_contrastive_pos_pairs": zero.new_tensor(float(positive_pair_count)),
-            "temporal_contrastive_neg_pairs": zero.new_tensor(float(negative_pair_count)),
-            "temporal_contrastive_active_tracks": zero.new_tensor(float(active_track_count)),
-            "temporal_contrastive_frame_span": zero.new_tensor(float(simulation_frame_span)),
-            "temporal_contrastive_far_threshold": zero.new_tensor(float(negative_min_delta)),
-        }
-
-        if positive_pair_count > 0:
-            positive_loss = positive_loss_sum / float(positive_pair_count)
-            positive_similarity_mean = positive_similarity_sum / float(positive_pair_count)
-            metrics["temporal_contrastive_positive"] = positive_loss
-            metrics["temporal_contrastive_positive_similarity"] = positive_similarity_mean
-            loss = self.positive_coeff * positive_loss if loss is None else loss + self.positive_coeff * positive_loss
-        else:
-            metrics["temporal_contrastive_positive"] = zero.clone()
-            metrics["temporal_contrastive_positive_similarity"] = zero.clone()
-
-        if negative_pair_count > 0:
-            negative_loss = negative_loss_sum / float(negative_pair_count)
-            negative_similarity_mean = negative_similarity_sum / float(negative_pair_count)
-            metrics["temporal_contrastive_negative"] = negative_loss
-            metrics["temporal_contrastive_negative_similarity"] = negative_similarity_mean
-            loss = self.negative_coeff * negative_loss if loss is None else loss + self.negative_coeff * negative_loss
-        else:
-            metrics["temporal_contrastive_negative"] = zero.clone()
-            metrics["temporal_contrastive_negative_similarity"] = zero.clone()
-
-        if loss is None:
-            loss = zero.clone()
-
-        if not torch.isfinite(loss).item():
-            metrics["temporal_contrastive_nonfinite"] = zero.new_tensor(1.0)
-            loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
-
-        return loss, metrics
-
-    @staticmethod
-    def _validate_inputs(
-        *,
-        embeddings: torch.Tensor,
-        frame_indices: torch.Tensor,
-        center_atom_ids: torch.Tensor,
-        source_paths: Sequence[str] | None,
-    ) -> None:
-        if not torch.is_tensor(embeddings):
-            raise TypeError(f"embeddings must be a torch.Tensor, got {type(embeddings)}.")
-        if embeddings.dim() != 2:
-            raise ValueError(
-                "Temporal contrastive embeddings must have shape (B, D), "
-                f"got {tuple(embeddings.shape)}."
-            )
-        batch_size = int(embeddings.shape[0])
-        if not torch.is_tensor(frame_indices):
-            raise TypeError(f"frame_indices must be a torch.Tensor, got {type(frame_indices)}.")
-        if frame_indices.reshape(-1).shape[0] != batch_size:
-            raise ValueError(
-                "frame_indices must provide exactly one representative frame index per embedding. "
-                f"batch_size={batch_size}, frame_indices_shape={tuple(frame_indices.shape)}."
-            )
-        if not torch.is_tensor(center_atom_ids):
-            raise TypeError(f"center_atom_ids must be a torch.Tensor, got {type(center_atom_ids)}.")
-        if center_atom_ids.reshape(-1).shape[0] != batch_size:
-            raise ValueError(
-                "center_atom_ids must provide exactly one tracked atom id per embedding. "
-                f"batch_size={batch_size}, center_atom_ids_shape={tuple(center_atom_ids.shape)}."
-            )
-        if source_paths is not None and len(source_paths) != batch_size:
-            raise ValueError(
-                "source_paths must match the embedding batch size when provided. "
-                f"batch_size={batch_size}, len(source_paths)={len(source_paths)}."
-            )
-
-    @staticmethod
-    def _group_sample_indices(
-        *,
-        center_atom_ids: torch.Tensor,
-        source_paths: Sequence[str] | None,
-        batch_size: int,
-    ) -> list[list[int]]:
-        atom_ids = center_atom_ids.reshape(-1).to(dtype=torch.int64, device="cpu").tolist()
-        resolved_source_paths = (
-            ["<shared-source>"] * batch_size
-            if source_paths is None
-            else [str(path) for path in source_paths]
-        )
-        groups: dict[tuple[str, int], list[int]] = {}
-        for sample_idx, (source_path, atom_id) in enumerate(
-            zip(resolved_source_paths, atom_ids, strict=True)
-        ):
-            groups.setdefault((source_path, int(atom_id)), []).append(int(sample_idx))
-        return [indices for indices in groups.values() if len(indices) > 1]
 
 
 class TemporalSSLModule(pl.LightningModule):
@@ -339,8 +65,9 @@ class TemporalSSLModule(pl.LightningModule):
                 "Use encoder.name='RI_MAE_Invariant'. Contrastive training now uses a fixed norms-only invariant path."
             )
 
-        self.encoder, _ = build_model(cfg)
-        latent_dim = resolve_latent_dim(cfg)
+        self.encoder = build_encoder(cfg)
+        self.encoder_io = EncoderAdapter(self.encoder)
+        latent_dim = resolve_encoder_output_dim(cfg, encoder=self.encoder)
 
         self.sample_points = int(getattr(data_cfg, "num_points", 0))
         model_points = getattr(data_cfg, "model_points", None)
@@ -365,15 +92,12 @@ class TemporalSSLModule(pl.LightningModule):
             cfg,
             sequence_length=self.sequence_length,
         )
-        self.temporal_contrastive = TemporalFrameContrastiveLoss.from_config(cfg)
 
         init_supervised_cache(self, cfg)
         self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
         self._warned_cache_eq_fallback = False
-        self._warned_temporal_contrastive_no_pairs = False
         self._consecutive_nan_steps = 0
         self._max_consecutive_nan_steps = int(getattr(cfg, "max_consecutive_nan_steps", 20))
-        self._temporal_frame_span_cache: dict[str, int] = {}
 
     @staticmethod
     def _load_checkpoint_payload(checkpoint_path: str):
@@ -576,37 +300,11 @@ class TemporalSSLModule(pl.LightningModule):
         # otherwise falls back to the encoder invariant branch.
         return self.vicreg._invariant(z_inv_model, eq_z)
 
-    def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
-        if getattr(self.encoder, "expects_channel_first", False):
-            return pc.permute(0, 2, 1).contiguous()
-        return pc
-
     def _status_print(self, message: str) -> None:
         if getattr(self, "_trainer", None) is not None:
             self.print(message)
             return
         print(message)
-
-    def _split_encoder_output(self, enc_out):
-        if isinstance(enc_out, (tuple, list)):
-            if not enc_out:
-                raise ValueError("Encoder returned empty output")
-            z_inv_model = enc_out[0]
-            eq_z = None
-            for candidate in enc_out[1:]:
-                if not (torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3):
-                    continue
-                if torch.is_tensor(z_inv_model) and z_inv_model.dim() == 2:
-                    if candidate.shape[1] == z_inv_model.shape[1]:
-                        eq_z = candidate
-                        break
-                    if candidate.shape[1] == 3:
-                        continue
-                if candidate.shape[1] != 3:
-                    eq_z = candidate
-                    break
-            return z_inv_model, eq_z
-        return enc_out, None
 
     def _prepare_model_input(self, pc: torch.Tensor) -> torch.Tensor:
         out = pc
@@ -635,10 +333,11 @@ class TemporalSSLModule(pl.LightningModule):
         batch_size, num_frames, num_points, _ = sequence_points.shape
         flat_points = sequence_points.reshape(batch_size * num_frames, num_points, 3).contiguous()
         flat_points = self._prepare_model_input(flat_points)
-        z_inv_model, eq_z = self._split_encoder_output(
-            self.encoder(self._prepare_encoder_input(flat_points))
+        encoded = self.encoder_io.encode(flat_points)
+        z_inv_contrastive = self._contrastive_invariant_latent(
+            encoded.invariant,
+            encoded.equivariant,
         )
-        z_inv_contrastive = self._contrastive_invariant_latent(z_inv_model, eq_z)
         if z_inv_contrastive is None:
             raise RuntimeError(
                 "LeJEPA requires invariant encoder embeddings, but the configured encoder "
@@ -690,134 +389,6 @@ class TemporalSSLModule(pl.LightningModule):
             "source_path": batch.get("source_path"),
         }
 
-    def _resolve_stage_dataset(self, stage: str):
-        trainer = getattr(self, "trainer", None)
-        if trainer is None:
-            return None
-        datamodule = getattr(trainer, "datamodule", None)
-        if datamodule is None:
-            return None
-        dataset_attr = {
-            "train": "train_dataset",
-            "val": "val_dataset",
-            "test": "test_dataset",
-        }.get(stage)
-        if dataset_attr is None:
-            return None
-        dataset = getattr(datamodule, dataset_attr, None)
-        while isinstance(dataset, torch.utils.data.Subset):
-            dataset = dataset.dataset
-        return dataset
-
-    def _resolve_temporal_frame_span(self, stage: str) -> int:
-        cached = self._temporal_frame_span_cache.get(stage)
-        if cached is not None:
-            return int(cached)
-
-        dataset = self._resolve_stage_dataset(stage)
-        if dataset is not None:
-            frame_start = int(getattr(dataset, "frame_start"))
-            frame_stop_raw = getattr(dataset, "frame_stop")
-            frame_stop = int(getattr(dataset, "frame_count")) if frame_stop_raw is None else int(frame_stop_raw)
-            frame_stride = int(getattr(dataset, "frame_stride"))
-            sequence_length = int(getattr(dataset, "sequence_length"))
-        else:
-            data_cfg = getattr(self.hparams, "data", None)
-            if data_cfg is None:
-                raise RuntimeError(
-                    "Temporal contrastive loss could not resolve a temporal dataset or fallback data config."
-                )
-            frame_start = int(getattr(data_cfg, "frame_start", 0))
-            frame_stop_raw = getattr(data_cfg, "frame_stop", None)
-            if frame_stop_raw is None:
-                raise RuntimeError(
-                    "Temporal contrastive loss requires either an attached TemporalLAMMPS dataset or "
-                    "data.frame_stop to resolve the simulation frame span."
-                )
-            frame_stop = int(frame_stop_raw)
-            frame_stride = int(getattr(data_cfg, "frame_stride", 1))
-            sequence_length = int(getattr(data_cfg, "sequence_length", self.sequence_length))
-
-        min_center_frame = frame_start + self.center_frame_index * frame_stride
-        max_center_frame = frame_stop - 1 - (sequence_length - 1 - self.center_frame_index) * frame_stride
-        if max_center_frame < min_center_frame:
-            raise RuntimeError(
-                "Temporal contrastive loss resolved an invalid center-frame span. "
-                f"stage={stage!r}, min_center_frame={min_center_frame}, "
-                f"max_center_frame={max_center_frame}, frame_start={frame_start}, "
-                f"frame_stop={frame_stop}, sequence_length={sequence_length}, frame_stride={frame_stride}."
-            )
-        frame_span = int(max_center_frame - min_center_frame)
-        self._temporal_frame_span_cache[stage] = frame_span
-        return frame_span
-
-    @staticmethod
-    def _distributed_world_size() -> int:
-        if not (torch.distributed.is_available() and torch.distributed.is_initialized()):
-            return 1
-        return int(torch.distributed.get_world_size())
-
-    def _gather_all_tensor(self, tensor: torch.Tensor) -> torch.Tensor:
-        world_size = self._distributed_world_size()
-        if world_size <= 1:
-            return tensor
-
-        local_size = torch.tensor([tensor.shape[0]], device=tensor.device, dtype=torch.long)
-        gathered_sizes = [torch.zeros_like(local_size) for _ in range(world_size)]
-        torch.distributed.all_gather(gathered_sizes, local_size)
-        sizes = [int(size.item()) for size in gathered_sizes]
-        max_size = max(sizes)
-        if max_size == 0:
-            return tensor
-
-        if int(tensor.shape[0]) != max_size:
-            pad = tensor.new_zeros((max_size - int(tensor.shape[0]), *tensor.shape[1:]))
-            padded = torch.cat([tensor, pad], dim=0)
-        else:
-            padded = tensor
-        padded = padded.contiguous()
-
-        gathered = [padded.new_zeros((max_size, *tensor.shape[1:])) for _ in range(world_size)]
-        torch.distributed.all_gather(gathered, padded)
-
-        rank = int(torch.distributed.get_rank())
-        gathered[rank] = padded
-        trimmed = [chunk[:size] for chunk, size in zip(gathered, sizes, strict=True)]
-        return torch.cat(trimmed, dim=0)
-
-    def _gather_all_source_paths(
-        self,
-        source_paths: Sequence[str] | None,
-        *,
-        batch_size: int,
-    ) -> list[str] | None:
-        if source_paths is None:
-            local_paths = ["<shared-source>"] * int(batch_size)
-        else:
-            local_paths = [str(path) for path in source_paths]
-            if len(local_paths) != int(batch_size):
-                raise ValueError(
-                    "source_paths must match the local batch size before distributed gathering. "
-                    f"batch_size={batch_size}, len(source_paths)={len(local_paths)}."
-                )
-
-        world_size = self._distributed_world_size()
-        if world_size <= 1:
-            return local_paths
-
-        gathered_paths: list[list[str] | None] = [None for _ in range(world_size)]
-        torch.distributed.all_gather_object(gathered_paths, local_paths)
-
-        flattened: list[str] = []
-        for rank_idx, rank_paths in enumerate(gathered_paths):
-            if not isinstance(rank_paths, list):
-                raise TypeError(
-                    "Distributed source-path gather returned a non-list object. "
-                    f"rank={rank_idx}, type={type(rank_paths)}."
-                )
-            flattened.extend(str(path) for path in rank_paths)
-        return flattened
-
     def _unpack_batch(self, batch):
         if not isinstance(batch, dict):
             raise TypeError(
@@ -845,9 +416,12 @@ class TemporalSSLModule(pl.LightningModule):
 
         pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
         pc = self._prepare_model_input(pc_raw)
-        z_inv_model, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
-        z_inv_contrastive = self._contrastive_invariant_latent(z_inv_model, eq_z)
-        features = z_inv_contrastive if z_inv_contrastive is not None else z_inv_model
+        encoded = self.encoder_io.encode(pc)
+        z_inv_contrastive = self._contrastive_invariant_latent(
+            encoded.invariant,
+            encoded.equivariant,
+        )
+        features = z_inv_contrastive if z_inv_contrastive is not None else encoded.invariant
         if features is None:
             return None, None
         return features.detach().to(torch.float32), class_id
@@ -959,10 +533,12 @@ class TemporalSSLModule(pl.LightningModule):
         if torch.is_tensor(pc) and pc.dim() == 4:
             self._validate_temporal_points(pc)
             pc = self._center_frame(pc)
-        enc_out = self.encoder(self._prepare_encoder_input(pc))
-        z_inv_model, eq_z = self._split_encoder_output(enc_out)
-        z_inv_contrastive = self._contrastive_invariant_latent(z_inv_model, eq_z)
-        return z_inv_contrastive, z_inv_model, eq_z
+        encoded = self.encoder_io.encode(pc)
+        z_inv_contrastive = self._contrastive_invariant_latent(
+            encoded.invariant,
+            encoded.equivariant,
+        )
+        return z_inv_contrastive, encoded.invariant, encoded.equivariant
 
     def _step(self, batch, batch_idx, stage: str):
         if not isinstance(batch, dict):
@@ -986,24 +562,17 @@ class TemporalSSLModule(pl.LightningModule):
         should_cache_stage = stage in self._supervised_cache and (
             stage != "train" or self.cache_train_supervised_metrics
         )
-        should_run_temporal_contrastive = self.temporal_contrastive.should_run(
-            current_epoch=int(self.current_epoch)
-        )
         should_run_vicreg = self.vicreg.should_run(current_epoch=int(self.current_epoch))
 
         losses = {}
         center_embeddings = None
 
-        need_center_embeddings = should_run_temporal_contrastive or should_cache_stage
-        if need_center_embeddings:
-            grad_context = torch.enable_grad if should_run_temporal_contrastive else torch.no_grad
-            with grad_context():
-                z_inv_model, eq_z = self._split_encoder_output(
-                    self.encoder(self._prepare_encoder_input(pc))
-                )
+        if should_cache_stage:
+            with torch.no_grad():
+                encoded = self.encoder_io.encode(pc)
                 center_embeddings = self._contrastive_invariant_from_eq_latent(
-                    eq_z,
-                    z_inv_model=z_inv_model,
+                    encoded.equivariant,
+                    z_inv_model=encoded.invariant,
                     stage=stage,
                 )
 
@@ -1016,8 +585,8 @@ class TemporalSSLModule(pl.LightningModule):
             vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
                 pc=vicreg_pc_raw,
                 encoder=self.encoder,
-                prepare_input=self._prepare_encoder_input,
-                split_output=self._split_encoder_output,
+                prepare_input=self.encoder_io.prepare_input,
+                split_output=self.encoder_io.split_output,
                 current_epoch=int(self.current_epoch),
                 views=vicreg_views,
                 invariant_transform=self._shared_invariant,
@@ -1041,53 +610,6 @@ class TemporalSSLModule(pl.LightningModule):
             for name, value in lejepa_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
-        if should_run_temporal_contrastive:
-            if center_embeddings is None:
-                raise RuntimeError(
-                    "Temporal contrastive loss requires invariant encoder embeddings, "
-                    "but the configured encoder did not produce a usable latent."
-                )
-            frame_indices = meta.get("frame_indices")
-            if frame_indices is None:
-                raise KeyError("Temporal contrastive loss requires batch['frame_indices'].")
-            center_atom_ids = meta.get("center_atom_id")
-            if center_atom_ids is None:
-                raise KeyError("Temporal contrastive loss requires batch['center_atom_id'].")
-
-            gathered_embeddings = self._gather_all_tensor(center_embeddings)
-            gathered_frame_indices = self._gather_all_tensor(
-                frame_indices[:, self.center_frame_index].reshape(-1, 1)
-            ).reshape(-1)
-            gathered_center_atom_ids = self._gather_all_tensor(
-                center_atom_ids.reshape(-1, 1)
-            ).reshape(-1)
-            gathered_source_paths = self._gather_all_source_paths(
-                meta.get("source_path"),
-                batch_size=batch_size,
-            )
-
-            temporal_contrastive_loss, temporal_contrastive_metrics = self.temporal_contrastive.compute_loss(
-                embeddings=gathered_embeddings,
-                frame_indices=gathered_frame_indices,
-                center_atom_ids=gathered_center_atom_ids,
-                source_paths=gathered_source_paths,
-                simulation_frame_span=self._resolve_temporal_frame_span(stage),
-                current_epoch=int(self.current_epoch),
-            )
-            if temporal_contrastive_loss is not None:
-                losses["temporal_contrastive"] = temporal_contrastive_loss
-                pos_pairs = int(temporal_contrastive_metrics["temporal_contrastive_pos_pairs"].item())
-                neg_pairs = int(temporal_contrastive_metrics["temporal_contrastive_neg_pairs"].item())
-                if pos_pairs + neg_pairs == 0 and not self._warned_temporal_contrastive_no_pairs:
-                    self._status_print(
-                        "[temporal-contrastive] Warning: the current batch did not contain any same-atom "
-                        "positive or far-negative temporal pairs. Increase batch mixing across windows if "
-                        "this persists."
-                    )
-                    self._warned_temporal_contrastive_no_pairs = True
-            for name, value in temporal_contrastive_metrics.items():
-                self._log_metric(stage, name, value, batch_size=batch_size)
-
         total_loss = None
         if "vicreg" in losses:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
@@ -1095,13 +617,6 @@ class TemporalSSLModule(pl.LightningModule):
         if "lejepa" in losses and self.lejepa is not None:
             lejepa_total = self.lejepa.weight * losses["lejepa"]
             total_loss = lejepa_total if total_loss is None else total_loss + lejepa_total
-        if "temporal_contrastive" in losses:
-            temporal_contrastive_total = self.temporal_contrastive.weight * losses["temporal_contrastive"]
-            total_loss = (
-                temporal_contrastive_total
-                if total_loss is None
-                else total_loss + temporal_contrastive_total
-            )
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
@@ -1137,8 +652,6 @@ class TemporalSSLModule(pl.LightningModule):
             metrics_to_log["vicreg"] = losses["vicreg"]
         if "lejepa" in losses:
             metrics_to_log["lejepa"] = losses["lejepa"]
-        if "temporal_contrastive" in losses:
-            metrics_to_log["temporal_contrastive"] = losses["temporal_contrastive"]
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():

@@ -530,7 +530,10 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     _seed_training_run(cfg)
     wandb_logger = init_wandb(cfg, run_dir)
 
-    if cfg.data.kind == "synthetic":
+    datamodule_class = getattr(model_class, "data_module_class", None)
+    if datamodule_class is not None:
+        dm = datamodule_class(cfg)
+    elif cfg.data.kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
     elif cfg.data.kind == "temporal_lammps":
         dm = TemporalLAMMPSDataModule(cfg)

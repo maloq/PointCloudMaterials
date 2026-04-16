@@ -71,12 +71,6 @@ encoder:
     sorting_mode: nearest
     center_input: true
 
-decoder:
-  name: VN_REVNET_Anchor
-  kwargs:
-    num_points: ${data.model_points}
-    latent_size: ${latent_size}
-
 learning_rate: 0.001
 batch_size: 1024
 precision: bf16-true

@@ -423,6 +423,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         batch = self._build_batch_from_indices(np.asarray([index], dtype=np.int64))
         return {
             "points": batch["points"][0],
+            "local_atom_ids": batch["local_atom_ids"][0],
             "coords": batch["coords"][0],
             "center_positions": batch["center_positions"][0],
             "timesteps": batch["timesteps"][0],
@@ -1481,6 +1482,10 @@ class TemporalLAMMPSDumpDataset(Dataset):
             (batch_size, self.sequence_length, self.num_points, 3),
             dtype=np.float32,
         )
+        local_atom_ids_batch = np.empty(
+            (batch_size, self.sequence_length, self.num_points),
+            dtype=np.int64,
+        )
         center_positions = np.empty((batch_size, self.sequence_length, 3), dtype=np.float32)
         timesteps_batch = np.empty((batch_size, self.sequence_length), dtype=np.int64)
         frame_indices_batch = np.empty((batch_size, self.sequence_length), dtype=np.int64)
@@ -1533,10 +1538,15 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 if self.normalize:
                     local_points = self._normalize_point_cloud_batch(local_points).astype(np.float32, copy=False)
                 sequence_points[batch_positions, local_frame_idx] = local_points
+                local_atom_ids_batch[batch_positions, local_frame_idx] = np.asarray(
+                    self.atom_ids[selected],
+                    dtype=np.int64,
+                )
                 center_positions[batch_positions, local_frame_idx] = centers + self.box_low[frame_idx]
 
         return {
             "points": torch.from_numpy(sequence_points),
+            "local_atom_ids": torch.from_numpy(local_atom_ids_batch),
             "coords": torch.from_numpy(center_positions[:, 0].copy()),
             "center_positions": torch.from_numpy(center_positions),
             "timesteps": torch.from_numpy(timesteps_batch),

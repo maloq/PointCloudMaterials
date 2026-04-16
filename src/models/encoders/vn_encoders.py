@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..base import Encoder
-from ..registry import register_encoder
+from .base import Encoder
+from .registry import register_encoder
 
 EPS = 1e-6
 
@@ -235,6 +235,8 @@ class PointNetEncoderVN(Encoder):
         Vector neuron PointNet backbone producing invariant/equivariant latents.
         """
         super().__init__()
+        self.invariant_dim = int(latent_size)
+        self.equivariant_dim = int(latent_size)
         self.n_knn = n_knn
         self.pooling = pooling
         self._warned_low_precision = False
@@ -348,6 +350,8 @@ class VNDGCNNEncoder(Encoder):
         if len(feature_dims) != 5:
             raise ValueError(f"feature_dims must provide five entries (got {feature_dims})")
 
+        self.invariant_dim = int(latent_size)
+        self.equivariant_dim = int(latent_size)
         self.n_knn = n_knn
         self.pooling = pooling
         self.use_cross_product = use_cross_product
@@ -504,42 +508,6 @@ class STNkd(nn.Module):
         return self.fc3(x)
 
 
-def _project_to_rotation_group(rot_mat: torch.Tensor, strict: str) -> torch.Tensor:
-    if strict == 'None':
-        return rot_mat
-    u, _, v = torch.linalg.svd(rot_mat)
-    return u @ v.transpose(-1, -2)
-
-
-class SimpleRot(nn.Module):
-    def __init__(self, in_ch: int, strict: str = 'None'):
-        super().__init__()
-        self.model = VNLinear(in_ch, 3)
-        self.strict = strict
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        rot_mat = self.model(x).squeeze(-1)
-        return _project_to_rotation_group(rot_mat, self.strict)
-
-
-class ComplexRot(nn.Module):
-    def __init__(self, in_ch: int, strict: str = 'None'):
-        super().__init__()
-        self.linear1 = VNLinearLeakyReLU(in_ch, in_ch * 6, dim=4, negative_slope=0.1)
-        self.linear2 = VNLinearLeakyReLU(in_ch * 6, in_ch * 4, dim=4, negative_slope=0.1)
-        self.linear3 = VNLinearLeakyReLU(in_ch * 4, in_ch, dim=4, negative_slope=0.1)
-        self.linearR = VNLinear(in_ch, 3)
-        self.strict = strict
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.linear1(x)
-        x = self.linear2(x)
-        x = self.linear3(x)
-        R = self.linearR(x)
-        rot_mat = torch.mean(R, dim=-1)
-        return _project_to_rotation_group(rot_mat, self.strict)
-
-
 def knn(x: torch.Tensor, k: int) -> torch.Tensor:
     inner = -2 * torch.matmul(x.transpose(2, 1), x)
     xx = torch.sum(x ** 2, dim=1, keepdim=True)
@@ -664,6 +632,8 @@ class VNDGCNNEncoderRefined(Encoder):
         use_cross_product: bool = False,
     ):
         super().__init__()
+        self.invariant_dim = int(latent_size)
+        self.equivariant_dim = int(latent_size)
         self.n_knn = n_knn
         self.pooling = pooling
         self.dropout_rate = dropout_rate
@@ -745,10 +715,10 @@ class VNDGCNNEncoderRefined(Encoder):
 
         # Outputs
         
-        # 1. Equivariant Embedding (for Rotation Head)
+        # 1. Equivariant embedding for equivariant downstream objectives.
         z_eq = self.eq_projector(x_mean) # (B, latent/3, 3)
 
-        # 2. Invariant Embedding (for Decoder/Clustering)
+        # 2. Invariant embedding for invariant downstream objectives.
         z_inv = self.inv_head(x_mean) # (B, latent)
 
         return z_inv, z_eq, None
@@ -757,8 +727,6 @@ class VNDGCNNEncoderRefined(Encoder):
 __all__ = [
     "PointNetEncoderVN",
     "VNDGCNNEncoder",
-    "SimpleRot",
-    "ComplexRot",
     "VNLinear",
     "VNLeakyReLU",
     "VNLinearLeakyReLU",
@@ -774,9 +742,9 @@ __all__ = [
 
 
 # ---------------------------------------------------------------------------
-# REVNET-inspired hierarchical VN anchor backbone encoder (autoencoder-friendly)
+# REVNET-inspired hierarchical VN anchor backbone encoder
 # ---------------------------------------------------------------------------
-# This follows the paper's key decoder/encoder-side ideas:
+# This follows the paper's key backbone ideas:
 # - Hierarchical downsampling to "anchors" (FPS) + neighborhood grouping (VN-SA)
 # - ZCA-based normalization for VN features
 # - Channel-wise subtraction attention (CWSA) on anchor tokens
@@ -1040,11 +1008,11 @@ class VNAnchorTransformerBlock(nn.Module):
 class VNRevnetBackboneEncoder(Encoder):
     """
     Encoder meant to replace VNDGCNNEncoderRefined when you want an easier-to-train,
-    fully SO(3)-equivariant VN autoencoder.
+    fully SO(3)-equivariant VN backbone.
 
     Output:
       inv_z: (B, latent_size)          (invariant head: per-channel norms)
-      eq_z:  (B, latent_size, 3)       equivariant VN latent for equivariant decoders
+      eq_z:  (B, latent_size, 3)       equivariant VN latent for downstream equivariant use
       center: (B, 3)                   mean input location (like other encoders here)
     """
 
@@ -1069,6 +1037,8 @@ class VNRevnetBackboneEncoder(Encoder):
         deterministic_fps: bool = False,
     ):
         super().__init__()
+        self.invariant_dim = int(latent_size)
+        self.equivariant_dim = int(latent_size)
         if len(sa_channels) != 2 or len(sa_npoints) != 2 or len(sa_knn) != 2:
             raise ValueError("This encoder currently expects 2-stage SA: sa_channels/npoints/knn must be length 2.")
 
@@ -1455,6 +1425,8 @@ class VNAtomicRevnetBackboneEncoder(Encoder):
     ):
         super().__init__()
         self.latent_size = int(latent_size)
+        self.invariant_dim = int(latent_size) + int(geom_dim)
+        self.equivariant_dim = int(latent_size)
         self.k_embed = int(k_embed)
         self.k_list = tuple(int(k) for k in k_list)
         self.invariant_eps = float(invariant_eps)
@@ -1678,6 +1650,8 @@ class REVNETInvariantFastEncoder(Encoder):
         self.use_geom_head = bool(use_geom_head)
         self.emit_eq_latent = bool(emit_eq_latent)
         self.eq_softmax_temperature = eq_temperature
+        self.invariant_dim = latent_size
+        self.equivariant_dim = eq_channels if self.emit_eq_latent else None
 
         first_dim = feature_dims[0]
         self.input_proj = nn.Sequential(

@@ -3,8 +3,8 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
-from ..base import Encoder
-from ..registry import register_encoder
+from .base import Encoder
+from .registry import register_encoder
 from .vn_encoders import index_points, knn
 
 
@@ -201,6 +201,8 @@ class EGNNEncoder(Encoder):
         if pooling not in {"mean", "max"}:
             raise ValueError(f"EGNNEncoder: unsupported pooling='{pooling}', expected 'mean' or 'max'")
 
+        self.invariant_dim = latent_size
+        self.equivariant_dim = latent_size
         self.n_knn = n_knn
         self.pooling = pooling
         self.use_fast_layer = bool(use_fast_layer)

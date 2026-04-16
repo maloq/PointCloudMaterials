@@ -82,6 +82,7 @@ def _build_inference_cache_spec(
     *,
     checkpoint_path: str,
     cfg: DictConfig,
+    inference_batch_size: int,
     max_batches_latent: int | None,
     max_samples_total: int | None,
     seed_base: int,
@@ -89,7 +90,7 @@ def _build_inference_cache_spec(
     temporal_sequence_inference: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
-        "version": 1,
+        "version": 2,
         "checkpoint_path": str(Path(checkpoint_path).resolve()),
         "data_kind": str(getattr(cfg.data, "kind", "unknown")),
         "data_path": str(getattr(cfg.data, "data_path", "")),
@@ -104,7 +105,8 @@ def _build_inference_cache_spec(
         "data_num_points": int(getattr(cfg.data, "num_points", 0)),
         "data_drop_edge_samples": bool(getattr(cfg.data, "drop_edge_samples", True)),
         "data_edge_drop_layers": getattr(cfg.data, "edge_drop_layers", None),
-        "batch_size": int(getattr(cfg, "batch_size", 0)),
+        "checkpoint_batch_size": int(getattr(cfg, "batch_size", 0)),
+        "inference_batch_size": int(inference_batch_size),
         "max_batches_latent": None if max_batches_latent is None else int(max_batches_latent),
         "max_samples_total": None if max_samples_total is None else int(max_samples_total),
         "seed_base": int(seed_base),

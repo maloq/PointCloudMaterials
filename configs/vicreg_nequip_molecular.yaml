@@ -35,13 +35,6 @@ encoder:
     resnet: false
     convnet_sc: true
 
-# Decoder config is required by the model factory but is not used for VICReg.
-decoder:
-  name: VN_REVNET_Anchor
-  kwargs:
-    num_points: ${data.model_points}
-    latent_size: ${latent_size}
-
 learning_rate: 0.001
 batch_size: 128
 precision: 32-true

@@ -7,8 +7,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..base import Encoder
-from ..registry import register_encoder
+from .base import Encoder
+from .registry import register_encoder
 
 
 # ---------------------------------------------------------------------------
@@ -421,6 +421,7 @@ class RIMAEInvariantEncoder(Encoder):
             )
 
         self.latent_size = output_dim
+        self.invariant_dim = output_dim
         backbone = RIMAEBackbone(
             num_group=int(num_group),
             group_size=int(group_size),

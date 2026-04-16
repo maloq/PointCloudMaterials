@@ -76,6 +76,7 @@ def _build_analysis_dataloader(
     dm: Any,
     *,
     is_synthetic: bool,
+    inference_batch_size: int,
     dataloader_num_workers: int,
 ) -> torch.utils.data.DataLoader:
     print("Using ALL dataset splits (train + test) for latent analysis")
@@ -87,7 +88,7 @@ def _build_analysis_dataloader(
         combined_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
         return torch.utils.data.DataLoader(
             combined_dataset,
-            batch_size=cfg.batch_size,
+            batch_size=int(inference_batch_size),
             num_workers=int(dataloader_num_workers),
             shuffle=False,
             drop_last=False,
@@ -101,11 +102,25 @@ def _build_analysis_dataloader(
         use_train_data=True,
         use_full_dataset=True,
         prefer_existing_full_dataset=True,
+        batch_size=int(inference_batch_size),
     )
     print(
         "Real data detected: using full dataset for local-structure clustering visualization"
     )
     return dl
+
+
+def _resolve_analysis_inference_batch_size(
+    cfg: DictConfig,
+    input_settings: Any,
+) -> int:
+    batch_size = input_settings.inference_batch_size
+    if batch_size is None:
+        batch_size = int(cfg.batch_size)
+    resolved = int(batch_size)
+    if resolved < 1:
+        raise ValueError(f"Analysis inference batch size must be >= 1, got {resolved}.")
+    return resolved
 
 
 def _resolve_analysis_max_samples_total(
@@ -297,6 +312,12 @@ def run_post_training_analysis(
         figure_settings=figure_settings,
     )
     is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
+    analysis_inference_batch_size = _resolve_analysis_inference_batch_size(cfg, input_settings)
+    print(
+        "Analysis inference batch size: "
+        f"{analysis_inference_batch_size} "
+        f"(checkpoint batch_size={int(cfg.batch_size)})"
+    )
 
     # ── Data loading ───────────────────────────────────────────────────
     all_metrics: Dict[str, Any] = {}
@@ -307,7 +328,7 @@ def run_post_training_analysis(
         temporal_bundle = build_temporal_real_analysis_bundle(
             analysis_cfg=analysis_cfg,
             model_cfg=cfg,
-            batch_size=int(cfg.batch_size),
+            batch_size=int(analysis_inference_batch_size),
             dataloader_num_workers=int(input_settings.dataloader_num_workers),
         )
         dl = temporal_bundle.dataloader
@@ -336,6 +357,7 @@ def run_post_training_analysis(
             cfg,
             dm,
             is_synthetic=is_synthetic,
+            inference_batch_size=int(analysis_inference_batch_size),
             dataloader_num_workers=int(input_settings.dataloader_num_workers),
         )
         class_names = _extract_class_names(dm.train_dataset)
@@ -362,6 +384,7 @@ def run_post_training_analysis(
     cache_spec = _build_inference_cache_spec(
         checkpoint_path=run_settings.checkpoint_path,
         cfg=cfg,
+        inference_batch_size=int(analysis_inference_batch_size),
         max_batches_latent=max_batches_latent,
         max_samples_total=max_samples_total,
         seed_base=int(seed_base),

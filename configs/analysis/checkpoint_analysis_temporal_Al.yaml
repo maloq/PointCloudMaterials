@@ -7,6 +7,7 @@ inputs:
   data_config: null
   real_data_files: null
   dataloader_num_workers: 4
+  inference_batch_size: 4096
   max_batches_latent: null
   max_samples_total: 0
   temporal_real:

@@ -6,7 +6,7 @@ import os
 
 sys.path.append(os.getcwd())
 
-from src.models.autoencoders.factory import build_model
+from src.models import EncoderAdapter, build_encoder, resolve_encoder_output_dim
 from src.training_methods.contrastive_learning.supervised_cache import (
     cache_limit_for_stage,
     cache_supervised_batch,
@@ -17,16 +17,6 @@ from src.training_methods.contrastive_learning.supervised_cache import (
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 from src.utils.pointcloud_ops import crop_to_num_points
 from src.utils.training_utils import get_optimizers_and_scheduler, cached_sample_count
-
-
-def resolve_latent_dim(cfg):
-    if hasattr(cfg, "latent_size"):
-        return int(cfg.latent_size)
-    if hasattr(cfg, "encoder") and hasattr(cfg.encoder, "kwargs"):
-        latent_size = cfg.encoder.kwargs.get("latent_size", None)
-        if latent_size is not None:
-            return int(latent_size)
-    return None
 
 
 class VICRegModule(pl.LightningModule):
@@ -44,9 +34,9 @@ class VICRegModule(pl.LightningModule):
                 "Use encoder.name='RI_MAE_Invariant'. Contrastive training now uses a fixed norms-only invariant path."
             )
 
-        # Build encoder (decoder is not used for contrastive training)
-        self.encoder, _ = build_model(cfg)
-        latent_dim = resolve_latent_dim(cfg)
+        self.encoder = build_encoder(cfg)
+        self.encoder_io = EncoderAdapter(self.encoder)
+        latent_dim = resolve_encoder_output_dim(cfg, encoder=self.encoder)
 
         data_cfg = getattr(cfg, "data", None)
         self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
@@ -84,40 +74,11 @@ class VICRegModule(pl.LightningModule):
         # otherwise falls back to the encoder invariant branch.
         return self.vicreg._invariant(z_inv_model, eq_z)
 
-    def _prepare_encoder_input(self, pc: torch.Tensor) -> torch.Tensor:
-        if getattr(self.encoder, "expects_channel_first", False):
-            return pc.permute(0, 2, 1).contiguous()
-        return pc
-
     def _status_print(self, message: str) -> None:
         if getattr(self, "_trainer", None) is not None:
             self.print(message)
             return
         print(message)
-
-    def _split_encoder_output(self, enc_out):
-        if isinstance(enc_out, (tuple, list)):
-            if not enc_out:
-                raise ValueError("Encoder returned empty output")
-            z_inv_model = enc_out[0]
-            eq_z = None
-            for candidate in enc_out[1:]:
-                if not (torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3):
-                    continue
-                # Accept canonical equivariant outputs (B, C, 3) where C matches
-                # invariant width; reject auxiliary transform matrices (B, 3, 3).
-                if torch.is_tensor(z_inv_model) and z_inv_model.dim() == 2:
-                    if candidate.shape[1] == z_inv_model.shape[1]:
-                        eq_z = candidate
-                        break
-                    if candidate.shape[1] == 3:
-                        continue
-                # Fallback for encoders that only expose equivariant latents.
-                if candidate.shape[1] != 3:
-                    eq_z = candidate
-                    break
-            return z_inv_model, eq_z
-        return enc_out, None
 
     def _prepare_model_input(self, pc: torch.Tensor) -> torch.Tensor:
         out = pc
@@ -150,11 +111,14 @@ class VICRegModule(pl.LightningModule):
 
         pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
         pc = self._prepare_model_input(pc_raw)
-        z_inv_model, eq_z = self._split_encoder_output(self.encoder(self._prepare_encoder_input(pc)))
-        z_inv_contrastive = self._contrastive_invariant_latent(z_inv_model, eq_z)
+        encoded = self.encoder_io.encode(pc)
+        z_inv_contrastive = self._contrastive_invariant_latent(
+            encoded.invariant,
+            encoded.equivariant,
+        )
         # Keep supervised diagnostics aligned with contrastive objectives: use
         # the invariant latent consumed by losses (prefer eq_z -> invariant).
-        features = z_inv_contrastive if z_inv_contrastive is not None else z_inv_model
+        features = z_inv_contrastive if z_inv_contrastive is not None else encoded.invariant
         if features is None:
             return None, None
         return features.detach().to(torch.float32), class_id
@@ -181,12 +145,14 @@ class VICRegModule(pl.LightningModule):
         return self._shared_invariant(z_inv_model, None)
 
     def forward(self, pc: torch.Tensor):
-        enc_out = self.encoder(self._prepare_encoder_input(pc))
-        z_inv_model, eq_z = self._split_encoder_output(enc_out)
-        z_inv_contrastive = self._contrastive_invariant_latent(z_inv_model, eq_z)
+        encoded = self.encoder_io.encode(pc)
+        z_inv_contrastive = self._contrastive_invariant_latent(
+            encoded.invariant,
+            encoded.equivariant,
+        )
         # Forward returns both invariant branches explicitly:
         # (z_inv_contrastive, z_inv_model, eq_z).
-        return z_inv_contrastive, z_inv_model, eq_z
+        return z_inv_contrastive, encoded.invariant, encoded.equivariant
 
     def _step(self, batch, batch_idx, stage: str):
         pc_raw, meta = self._unpack_batch(batch)
@@ -204,8 +170,8 @@ class VICRegModule(pl.LightningModule):
         vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
             pc=pc_raw,
             encoder=self.encoder,
-            prepare_input=self._prepare_encoder_input,
-            split_output=self._split_encoder_output,
+            prepare_input=self.encoder_io.prepare_input,
+            split_output=self.encoder_io.split_output,
             current_epoch=int(self.current_epoch),
             invariant_transform=self._shared_invariant,
         )
@@ -267,11 +233,11 @@ class VICRegModule(pl.LightningModule):
             already_cached = cached_sample_count(cache) if cache is not None else 0
             if limit is None or already_cached < limit:
                 with torch.no_grad():
-                    z_inv_model, eq_z = self._split_encoder_output(
-                        self.encoder(self._prepare_encoder_input(pc))
-                    )
+                    encoded = self.encoder_io.encode(pc)
                     z_inv_contrastive = self._contrastive_invariant_from_eq_latent(
-                        eq_z, z_inv_model=z_inv_model, stage=stage
+                        encoded.equivariant,
+                        z_inv_model=encoded.invariant,
+                        stage=stage,
                     )
                 if z_inv_contrastive is not None:
                     self._cache_supervised_batch(

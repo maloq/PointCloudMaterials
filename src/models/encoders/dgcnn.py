@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..base import Encoder
-from ..registry import register_encoder
+from .base import Encoder
+from .registry import register_encoder
 
 
 def _knn(x: torch.Tensor, k: int) -> torch.Tensor:
@@ -64,6 +64,7 @@ class DGCNNEncoder(Encoder):
         use_batchnorm: bool = True,
     ) -> None:
         super().__init__()
+        self.invariant_dim = int(latent_size)
         self.n_knn = int(n_knn)
         self.pooling = str(pooling).lower()
         if self.pooling not in {"max", "mean"}:

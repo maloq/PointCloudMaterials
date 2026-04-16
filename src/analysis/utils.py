@@ -247,6 +247,7 @@ def build_real_coords_dataloader(
     use_train_data: bool,
     use_full_dataset: bool = False,
     prefer_existing_full_dataset: bool = False,
+    batch_size: int | None = None,
 ) -> torch.utils.data.DataLoader:
     data_cfg = cfg.data
     auto_cutoff_cfg = getattr(data_cfg, "auto_cutoff", None)
@@ -321,7 +322,7 @@ def build_real_coords_dataloader(
 
     return torch.utils.data.DataLoader(
         dataset,
-        batch_size=cfg.batch_size,
+        batch_size=int(cfg.batch_size) if batch_size is None else int(batch_size),
         num_workers=cfg.num_workers,
         shuffle=False,
         drop_last=False,

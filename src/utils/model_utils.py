@@ -96,14 +96,13 @@ def load_model_from_checkpoint(checkpoint_path, cfg, device='cpu', module=None):
     return model
 
 
-def load_supervised_checkpoint(checkpoint_path: str, encoder, rot_net=None):
+def load_supervised_checkpoint(checkpoint_path: str, encoder):
     """
-    Load pretrained supervised encoder and rotation network from checkpoint.
+    Load pretrained supervised encoder weights from checkpoint.
     
     Args:
         checkpoint_path (str): Path to the checkpoint file
         encoder: Encoder model to load weights into
-        rot_net: Optional rotation network to load weights into
         
     Returns:
         dict: The loaded checkpoint dictionary
@@ -151,25 +150,6 @@ def load_supervised_checkpoint(checkpoint_path: str, encoder, rot_net=None):
             print(f"  Unexpected keys: {unexpected_keys[:5]}{'...' if len(unexpected_keys) > 5 else ''}")
     else:
         print("Warning: No encoder weights found in checkpoint")
-
-    # Extract rotation network state dict (if using rot_head mode)
-    if rot_net is not None:
-        rot_net_state = {}
-        for key, value in checkpoint['state_dict'].items():
-            if key.startswith('rot_net.'):
-                new_key = key.replace('rot_net.', '')
-                rot_net_state[new_key] = value
-
-        # Load rotation network weights
-        if rot_net_state:
-            missing_keys, unexpected_keys = rot_net.load_state_dict(rot_net_state, strict=False)
-            print(f"Loaded rotation network weights from supervised checkpoint")
-            if missing_keys:
-                print(f"  Missing keys: {missing_keys[:5]}{'...' if len(missing_keys) > 5 else ''}")
-            if unexpected_keys:
-                print(f"  Unexpected keys: {unexpected_keys[:5]}{'...' if len(unexpected_keys) > 5 else ''}")
-        else:
-            print("Warning: No rotation network weights found in checkpoint")
 
     if 'hyper_parameters' in checkpoint:
         hparams = checkpoint['hyper_parameters']

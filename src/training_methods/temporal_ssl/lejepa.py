@@ -2,6 +2,14 @@ import torch
 import torch.distributed as dist
 import torch.nn as nn
 
+try:
+    import torch.distributed.nn.functional as dist_nn_functional
+except ImportError as exc:
+    dist_nn_functional = None
+    _DIST_NN_FUNCTIONAL_IMPORT_ERROR = exc
+else:
+    _DIST_NN_FUNCTIONAL_IMPORT_ERROR = None
+
 
 class LeJEPALoss(nn.Module):
     """Lean temporal LeJEPA loss: predict the last-frame embedding from prior frames."""
@@ -151,15 +159,33 @@ class LeJEPALoss(nn.Module):
         return projections / norms
 
     @staticmethod
+    def _distributed_sum_tensor_(tensor: torch.Tensor) -> torch.Tensor:
+        if not dist.is_available() or not dist.is_initialized():
+            return tensor
+        if tensor.requires_grad:
+            if dist_nn_functional is None:
+                raise RuntimeError(
+                    "LeJEPALoss distributed SIGReg requires "
+                    "torch.distributed.nn.functional.all_reduce for gradient-carrying tensors, "
+                    f"but it is unavailable. tensor_shape={tuple(tensor.shape)}, "
+                    f"tensor_dtype={tensor.dtype}. Use a PyTorch build that provides "
+                    "torch.distributed.nn.functional, or disable multi-device LeJEPA."
+                ) from _DIST_NN_FUNCTIONAL_IMPORT_ERROR
+            return dist_nn_functional.all_reduce(tensor, op=dist.ReduceOp.SUM)
+        dist.all_reduce(tensor, op=dist.ReduceOp.SUM)
+        return tensor
+
+    @staticmethod
     def _distributed_sum_(
         real_sum: torch.Tensor,
         imag_sum: torch.Tensor,
         sample_count: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        if dist.is_available() and dist.is_initialized():
-            dist.all_reduce(real_sum, op=dist.ReduceOp.SUM)
-            dist.all_reduce(imag_sum, op=dist.ReduceOp.SUM)
-            dist.all_reduce(sample_count, op=dist.ReduceOp.SUM)
+        # SIGReg feeds these reduced statistics directly into the loss, so the
+        # rank-sum must stay connected to autograd under DDP.
+        real_sum = LeJEPALoss._distributed_sum_tensor_(real_sum)
+        imag_sum = LeJEPALoss._distributed_sum_tensor_(imag_sum)
+        sample_count = LeJEPALoss._distributed_sum_tensor_(sample_count)
         return real_sum, imag_sum, sample_count
 
     def _sigreg(

@@ -49,14 +49,6 @@ encoder:
 #     use_geom_head: true
 #     emit_eq_latent: true
 
-
-# Decoder config is required by the model factory but is not used for VICReg
-decoder:
-  name: VN_REVNET_Anchor
-  kwargs:
-    num_points: ${data.model_points}
-    latent_size: ${latent_size}
-
 # Training parameters
 learning_rate: 0.003
 batch_size: 4096

@@ -38,6 +38,7 @@ class RunSettings:
 class InputSettings:
     real_data_files: list[str] | None
     dataloader_num_workers: int
+    inference_batch_size: int | None
     max_batches_latent: int | None
     max_samples_total: int | None
 
@@ -391,6 +392,9 @@ def _resolve_input_settings(analysis_cfg: DictConfig) -> InputSettings:
         ),
         dataloader_num_workers=int(
             OmegaConf.select(analysis_cfg, "inputs.dataloader_num_workers", default=4)
+        ),
+        inference_batch_size=_positive_int_or_none(
+            OmegaConf.select(analysis_cfg, "inputs.inference_batch_size", default=None)
         ),
         max_batches_latent=_positive_int_or_none(
             OmegaConf.select(analysis_cfg, "inputs.max_batches_latent", default=None)
