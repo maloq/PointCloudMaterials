@@ -1,18 +1,16 @@
 checkpoint:
-  # Required for manual runs. The training wrappers override this at runtime.
-  path: output/2026-04-16/16-19-29/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=14.ckpt
+  # Fill this with the trained TMF checkpoint.
+  path: output/2026-04-16/21-26-34/TMF_l256_S32_B16_C5_RI_MAE_Invariant-epoch=05.ckpt
   # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/temporal_Al_6frames
+  output_dir: outputs/tmf_analysis
   cuda_device: 0
 
 inputs:
-  # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
-  data_config: configs/data/data_ae_Al_80.yaml
-  # Optional real-data frame selection. null -> use data.data_files from the checkpoint config.
+  # Keep this null for TMF so analysis reuses the temporal_lammps checkpoint data setup.
+  data_config: null
   real_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null
-  # 0/null -> unlimited unless the code imposes a real-data fallback cap.
   max_samples_total: 0
 
 cache:
@@ -25,18 +23,16 @@ runtime:
   seed_base: 123
 
 clustering:
-  # Unified selected clustering k used by figure_set and real_md outputs.
+  # Keep this as a fallback / comparison, even if model-native motifs are available.
   primary_k: 8
-  # null -> run clustering-dependent analyses only for primary_k.
-  # Set a list such as [5, 6, 7, 8] to additionally run clustering-dependent analyses for each key.
   k_values: null
-  # Supported: auto, kmeans, spherical_kmeans. Default is spherical_kmeans.
   method: spherical_kmeans
   compare_methods: []
   l2_normalize: true
   standardize: true
   pca_variance: 0.98
   pca_max_components: 32
+
   hdbscan:
     enabled: false
     fit_fraction: 0.25
@@ -74,6 +70,7 @@ figure_set:
   color_assignment: {}
   color_assignment_file: null
   profile_point_scale_enabled: false
+
   md:
     max_points: null
     point_size: 5.6
@@ -83,14 +80,15 @@ figure_set:
     saturation_boost: 1.18
     view_elev: 24.0
     view_azim: 35.0
+
   icl:
     enabled: false
     k_min: 2
     k_max: 20
     max_samples: 20000
     covariance: diag
+
   representatives:
-    # null -> data.model_points / data.num_points from the checkpoint config
     points: null
     orientation: pca
     view_elev: 22.0
@@ -102,8 +100,9 @@ figure_set:
     center_atom_tolerance: 1.0e-6
     shell_min_neighbors: 8
     shell_max_neighbors: 24
+
   raytrace:
-    enabled: true
+    enabled: false
     blender_executable: blender
     resolution: 1600
     max_points: null
@@ -119,19 +118,22 @@ figure_set:
 
 real_md:
   enabled: true
+
   time_series:
     paper_enabled: true
     alpha: 0.78
     bar_alpha: 0.82
     paper_alpha: 0.72
+
   profiles:
     enabled: true
     samples_per_cluster: 6
     target_points: 64
     knn_k: 4
     max_cluster_property_samples: 256
-  cluster_group_order: []
-  cluster_groups: {}
+    cluster_group_order: []
+    cluster_groups: {}
+
   spatial:
     enabled: true
     max_points: 25000
@@ -146,6 +148,7 @@ real_md:
     auto_zoom_half_extent: 18.0
     auto_zoom_search_radius: 14.0
     zoom_specs: []
+
   projection:
     method: umap
     umap_backend: auto
@@ -155,50 +158,80 @@ real_md:
     umap_metric: euclidean
     scalar_alpha: 0.86
     scalar_background_alpha: 0.06
+
   descriptors:
     enabled: false
     max_samples: 6000
     physical_scalar: coord_mean
     scalar_columns: []
-    optional:
-      steinhardt:
-        enabled: false
-        l_values: [4, 6]
-        append_shell_size: true
-        center_atom_tolerance: 1.0e-6
-        shell_min_neighbors: 8
-        shell_max_neighbors: 24
-      cna:
-        enabled: false
-        max_signatures: 12
-        append_shell_size: true
-        fit_max_pointclouds: 4000
-        center_atom_tolerance: 1.0e-6
-        shell_min_neighbors: 8
-        shell_max_neighbors: 24
-      soap:
-        enabled: false
-        species: Al
-        point_scale: null
-        r_cut: null
-        r_cut_multiplier: 1.25
-        r_cut_min: 1.01
-        n_max: 8
-        l_max: 6
-        sigma: 0.3
-        pca_components: 16
-        fit_max_pointclouds: 4000
-        n_jobs: 1
-        center_atom_tolerance: 1.0e-6
-        shell_min_neighbors: 8
-        shell_max_neighbors: 24
+
+  optional:
+    steinhardt:
+      enabled: false
+      l_values: [4, 6]
+      append_shell_size: true
+      center_atom_tolerance: 1.0e-6
+      shell_min_neighbors: 8
+      shell_max_neighbors: 24
+    cna:
+      enabled: false
+      max_signatures: 12
+      append_shell_size: true
+      fit_max_pointclouds: 4000
+      center_atom_tolerance: 1.0e-6
+      shell_min_neighbors: 8
+      shell_max_neighbors: 24
+    soap:
+      enabled: false
+      species: Al
+      point_scale: null
+      r_cut: null
+      r_cut_multiplier: 1.25
+      r_cut_min: 1.01
+      n_max: 8
+      l_max: 6
+      sigma: 0.3
+      pca_components: 16
+      fit_max_pointclouds: 4000
+      n_jobs: 1
+      center_atom_tolerance: 1.0e-6
+      shell_min_neighbors: 8
+      shell_max_neighbors: 24
+
   transitions:
     enabled: true
     require_mutual: true
     max_distance: null
     flow_mute_diagonal: true
     flow_min_fraction: 0.001
+    save_svg: false
+    pair_plots_enabled: false
+    pair_plots_max_count: 0
 
 equivariance:
   enabled: true
   max_batches: 2
+
+dynamic_motif:
+  enabled: true
+  export_per_sample_arrays: true
+  use_model_outputs: true
+  stable_k: null
+  bridge_k: null
+  representative_samples_per_motif: 12
+  transition_top_k: 20
+  transition_snapshot_flow_count: 5
+  bridge_min_support: 50
+  dwell_min_length: 1
+  recurrence_max_gap: 64
+
+  render:
+    heatmaps: true
+    timelines: true
+    representatives: true
+    event_gallery: true
+    sankey: true
+
+  field:
+    enabled: false
+    top_neighbors: 8

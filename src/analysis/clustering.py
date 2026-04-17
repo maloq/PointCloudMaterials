@@ -18,6 +18,7 @@ from src.vis_tools.latent_analysis_vis import (
     _prepare_clustering_features,
     compute_hdbscan_labels,
     compute_kmeans_labels,
+    compute_transfer_kmeans_labels,
 )
 
 
@@ -44,6 +45,7 @@ def _build_clustering_state(
     latents: np.ndarray,
     phases: np.ndarray,
     *,
+    fit_latents: np.ndarray | None = None,
     requested_k_values: list[int],
     cluster_method: str,
     random_state: int,
@@ -65,19 +67,33 @@ def _build_clustering_state(
     )
 
     for k_value in configured_k_values:
-        labels_k, info_k = compute_kmeans_labels(
-            latents,
-            int(k_value),
-            random_state=int(random_state),
-            method=cluster_method,
-            l2_normalize=l2_normalize,
-            standardize=standardize,
-            pca_variance=pca_variance,
-            pca_max_components=pca_max_components,
-            prepared_features=prepared_features,
-            prep_info=feature_prep,
-            return_info=True,
-        )
+        if fit_latents is None:
+            labels_k, info_k = compute_kmeans_labels(
+                latents,
+                int(k_value),
+                random_state=int(random_state),
+                method=cluster_method,
+                l2_normalize=l2_normalize,
+                standardize=standardize,
+                pca_variance=pca_variance,
+                pca_max_components=pca_max_components,
+                prepared_features=prepared_features,
+                prep_info=feature_prep,
+                return_info=True,
+            )
+        else:
+            labels_k, info_k = compute_transfer_kmeans_labels(
+                fit_latents,
+                latents,
+                int(k_value),
+                random_state=int(random_state),
+                method=cluster_method,
+                l2_normalize=l2_normalize,
+                standardize=standardize,
+                pca_variance=pca_variance,
+                pca_max_components=pca_max_components,
+                return_info=True,
+            )
         cluster_labels_by_k[int(k_value)] = labels_k
         cluster_methods_by_k[int(k_value)] = str(info_k.get("method", "kmeans"))
         cluster_info_by_k[int(k_value)] = dict(info_k)
@@ -125,18 +141,31 @@ def _build_clustering_state(
             gt_k = max(2, min(int(unique_phases.size), len(latents)))
             gt_labels = cluster_labels_by_k.get(int(gt_k))
             if gt_labels is None:
-                gt_labels = compute_kmeans_labels(
-                    latents,
-                    int(gt_k),
-                    random_state=int(random_state),
-                    method=cluster_method,
-                    l2_normalize=l2_normalize,
-                    standardize=standardize,
-                    pca_variance=pca_variance,
-                    pca_max_components=pca_max_components,
-                    prepared_features=prepared_features,
-                    prep_info=feature_prep,
-                )
+                if fit_latents is None:
+                    gt_labels = compute_kmeans_labels(
+                        latents,
+                        int(gt_k),
+                        random_state=int(random_state),
+                        method=cluster_method,
+                        l2_normalize=l2_normalize,
+                        standardize=standardize,
+                        pca_variance=pca_variance,
+                        pca_max_components=pca_max_components,
+                        prepared_features=prepared_features,
+                        prep_info=feature_prep,
+                    )
+                else:
+                    gt_labels = compute_transfer_kmeans_labels(
+                        fit_latents,
+                        latents,
+                        int(gt_k),
+                        random_state=int(random_state),
+                        method=cluster_method,
+                        l2_normalize=l2_normalize,
+                        standardize=standardize,
+                        pca_variance=pca_variance,
+                        pca_max_components=pca_max_components,
+                    )
             metrics["ari_with_gt"] = float(adjusted_rand_score(phases, gt_labels))
             metrics["nmi_with_gt"] = float(normalized_mutual_info_score(phases, gt_labels))
 
@@ -147,6 +176,7 @@ def build_clustering_method_comparison(
     latents: np.ndarray,
     phases: np.ndarray,
     *,
+    fit_latents: np.ndarray | None = None,
     requested_k_values: list[int],
     primary_method: str,
     compare_methods: list[str] | None,
@@ -183,6 +213,7 @@ def build_clustering_method_comparison(
         method_metrics, configured_k_values, cluster_labels_by_k, _ = _build_clustering_state(
             latents,
             phases,
+            fit_latents=fit_latents,
             requested_k_values=requested_k_values,
             cluster_method=requested_method,
             random_state=random_state,

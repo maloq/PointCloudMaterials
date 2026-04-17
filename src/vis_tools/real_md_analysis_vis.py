@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from typing import Any
 
 import matplotlib.colors as mcolors
@@ -17,6 +18,11 @@ from src.analysis.cluster_colors import _boost_saturation
 from src.analysis.cluster_geometry import (
     _draw_cube_wireframe,
     _set_equal_axes_3d,
+)
+
+
+_ANIMATION_TIME_LABEL_RE = re.compile(
+    r"^\s*(?P<value>[-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*(?P<unit>[A-Za-z]+)\s*$"
 )
 
 
@@ -41,6 +47,50 @@ def _cluster_palette_from_map(
             continue
         colors.append(mcolors.to_hex(default_palette[pos % len(default_palette)]))
     return colors
+
+
+def _format_animation_frame_label(frame_label: Any) -> str:
+    text = str(frame_label).strip()
+    match = _ANIMATION_TIME_LABEL_RE.fullmatch(text)
+    if match is None:
+        return text
+    value = float(match.group("value"))
+    unit = str(match.group("unit"))
+    if abs(value - round(value)) < 1e-9:
+        value_text = f"{int(round(value))}"
+    else:
+        value_text = f"{value:g}"
+    return f"t = {value_text} {unit}"
+
+
+def _create_animation_title_artists(
+    fig: Any,
+    ax: Any,
+    *,
+    main_title: str,
+    detail_color: str = "#334155",
+) -> tuple[Any, Any]:
+    axes_box = ax.get_position()
+    title_y = min(0.985, float(axes_box.y1) + 0.045)
+    main_title_artist = fig.text(
+        0.5 * (float(axes_box.x0) + float(axes_box.x1)),
+        title_y,
+        str(main_title),
+        ha="center",
+        va="top",
+        fontsize=13,
+    )
+    detail_title_artist = fig.text(
+        min(0.985, float(axes_box.x1) + 0.02),
+        title_y,
+        "",
+        ha="left",
+        va="top",
+        fontsize=12.5,
+        color=str(detail_color),
+        family="DejaVu Sans Mono",
+    )
+    return main_title_artist, detail_title_artist
 
 
 def _style_paper_axes(ax: Any) -> None:
@@ -634,7 +684,11 @@ def save_temporal_spatial_cluster_animation(
             loc="upper left",
             frameon=False,
         )
-        title_artist = fig.suptitle("", fontsize=13)
+        _, frame_title_artist = _create_animation_title_artists(
+            fig,
+            ax,
+            main_title="MD-space clusters",
+        )
 
         for record in selected_frame_records:
             frame_coords = np.asarray(record["coords"], dtype=np.float32)
@@ -646,7 +700,9 @@ def save_temporal_spatial_cluster_animation(
                     cluster_points if cluster_points.size > 0 else empty_xyz,
                 )
             no_points_text.set_visible(frame_coords.shape[0] == 0)
-            title_artist.set_text(f"MD-space clusters | {record['frame_label']}")
+            frame_title_artist.set_text(
+                _format_animation_frame_label(record["frame_label"])
+            )
             frames_rgb.append(_render_figure_to_rgb_array(fig))
     finally:
         plt.close(fig)
@@ -771,7 +827,11 @@ def save_temporal_embedding_cluster_animation(
             loc="upper left",
             frameon=False,
         )
-        title_artist = fig.suptitle("", fontsize=13)
+        _, frame_title_artist = _create_animation_title_artists(
+            fig,
+            ax,
+            main_title=str(title),
+        )
 
         for record in frame_records:
             embedding = np.asarray(record["embedding"], dtype=np.float32)
@@ -786,7 +846,9 @@ def save_temporal_embedding_cluster_animation(
                 scatter_by_cluster[int(cluster_id)].set_offsets(
                     cluster_offsets if cluster_offsets.size > 0 else empty_xy
                 )
-            title_artist.set_text(f"{title} | {record['frame_label']}")
+            frame_title_artist.set_text(
+                _format_animation_frame_label(record["frame_label"])
+            )
             frames_rgb.append(_render_figure_to_rgb_array(fig))
     finally:
         plt.close(fig)
@@ -1062,7 +1124,11 @@ def save_temporal_embedding_trajectory_animation(
             loc="upper left",
             frameon=False,
         )
-        title_artist = fig.suptitle("", fontsize=13)
+        _, frame_title_artist = _create_animation_title_artists(
+            fig,
+            ax,
+            main_title=str(title),
+        )
 
         for frame_idx, record in enumerate(frame_records):
             payload = trajectory_payloads[frame_idx]
@@ -1080,7 +1146,9 @@ def save_temporal_embedding_trajectory_animation(
                     if embeddings_by_frame[frame_idx].size > 0
                     else empty_xy
                 )
-            title_artist.set_text(f"{title} | {record['frame_label']}")
+            frame_title_artist.set_text(
+                _format_animation_frame_label(record["frame_label"])
+            )
             frames_rgb.append(_render_figure_to_rgb_array(fig))
     finally:
         plt.close(fig)
@@ -1423,7 +1491,7 @@ def _build_transition_flow_figure(
     colors = _cluster_palette_from_map(palette_cluster_ids, cluster_color_map)
     color_lookup = {
         int(idx): str(colors[idx])
-        for idx in range(len(cluster_ids_for_palette))
+        for idx in range(len(palette_cluster_ids))
     }
 
     fig, ax = plt.subplots(figsize=(8.4, 6.2), dpi=220)

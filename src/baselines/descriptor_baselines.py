@@ -14,10 +14,20 @@ import numpy as np
 import torch
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial import cKDTree
-from scipy.special import sph_harm
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+
+try:
+    from scipy.special import sph_harm as _scipy_sph_harm
+except ImportError:
+    from scipy.special import sph_harm_y as _scipy_sph_harm_y
+
+    def _scipy_sph_harm(m, n, theta, phi):
+        # SciPy >= 1.17 removed sph_harm in favor of sph_harm_y, which uses
+        # the argument order (n, m, polar, azimuth) instead of the legacy
+        # (m, n, azimuth, polar) convention used throughout this file.
+        return _scipy_sph_harm_y(n, m, phi, theta)
 
 
 @dataclass(frozen=True)
@@ -834,7 +844,7 @@ class SteinhardtDescriptorBaseline(DescriptorBaseline):
         for m in range(-l, l + 1):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", DeprecationWarning)
-                qlm.append(np.mean(sph_harm(m, l, theta, phi)))
+                qlm.append(np.mean(_scipy_sph_harm(m, l, theta, phi)))
         qlm_arr = np.asarray(qlm, dtype=np.complex128)
         prefactor = 4.0 * np.pi / float(2 * l + 1)
         return float(np.sqrt(prefactor * np.sum(np.abs(qlm_arr) ** 2)).real)

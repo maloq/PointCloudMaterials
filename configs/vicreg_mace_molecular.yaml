@@ -1,0 +1,126 @@
+defaults:
+ - data: data_synth_polycrystalline_balanced_geometries
+ - _self_
+
+project_name: pointnet
+experiment_name: VICREG_MACE_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+wandb_mode: online
+
+model_type: vicreg
+latent_size: 512
+
+load_supervised_checkpoint: null
+resume_from_checkpoint: null
+
+# MACE-style encoder core adapted to the repo's graph-level latent API.
+# This is an alternative to RI_MAE_Invariant / NequIP_Backbone.
+#
+# Key hyperparameters (see ACEsuit/mace for background):
+#  - num_interactions: number of MACE layers (must be >= 2)
+#  - max_ell:          max spherical-harmonic order for edge attributes
+#  - correlation:      body-order of the symmetric contraction (MACE's "nu"+1)
+#  - num_features:     channel count of each irrep block in hidden_irreps
+encoder:
+  name: MACE_Backbone
+  kwargs:
+    latent_size: ${latent_size}
+    r_max: 1.0
+    num_interactions: 2
+    max_ell: 2
+    num_features: 32
+    correlation: 3
+    num_bessel: 8
+    num_polynomial_cutoff: 6
+    radial_type: bessel
+    radial_MLP: [64, 64, 64]
+    avg_num_neighbors: 16.0
+    max_neighbors: 16
+    pool: mean
+    num_types: 1
+    include_parity_odd_scalars: false
+
+learning_rate: 0.001
+batch_size: 128
+precision: 32-true
+gradient_clip_val: 1.0
+accumulate_grad_batches: 8
+auto_batch_size_search: true
+auto_batch_size_mode: power
+auto_batch_size_init_val: 64
+auto_batch_size_max_trials: 8
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: true
+auto_batch_size_target_effective_batch: 1024
+auto_batch_size_strict: false
+
+enable_swa: False
+swa_epoch_start: 1000
+epochs: 60
+max_samples: 0
+check_val_every_n_epoch: 5
+
+gpu: True
+devices: [0, 1]
+ddp_find_unused_parameters: True
+log_every_n_steps: 5
+num_workers: 4
+scheduler_gamma: 0.5
+scheduler_name: Cosine
+scheduler_min_lr: 1e-6
+warmup_enabled: true
+warmup_epochs: 12
+warmup_start_factor: 0.1
+
+decay_rate: 0.0004
+enable_embedding_metrics: false
+enable_svm_accuracy: false
+
+idec_enabled: False
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: True
+idec_normalize_z: True
+idec_init_kmeans: True
+
+vicreg_enabled: True
+vicreg_weight: 1.0
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+vicreg_embed_dim: 120
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.01
+vicreg_jitter_mode: physical
+vicreg_drop_ratio: 0.0
+vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: second
+vicreg_neighbor_k: 6
+vicreg_neighbor_max_relative_distance: 0.0
+vicreg_view_points: ${data.model_points}
+vicreg_rotation_mode: none
+vicreg_rotation_deg: 10.0
+vicreg_strain_std: 0.02
+vicreg_strain_volume_preserve: true
+vicreg_occlusion_mode: mixed
+vicreg_occlusion_view: second
+vicreg_occlusion_slab_frac: 0.0
+vicreg_occlusion_cone_deg: 0.0
+vicreg_std_eps: 1e-4
+vicreg_std_target: 1.0
+vicreg_radial_enabled: false
+vicreg_radial_beta1: 1.0
+vicreg_radial_beta2: 0.1
+vicreg_radial_m: null
+vicreg_radial_eps: 1e-8
+
+
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false

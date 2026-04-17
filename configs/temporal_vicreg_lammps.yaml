@@ -9,7 +9,7 @@ model_type: temporal_vicreg
 latent_size: 256
 
 resume_from_checkpoint: null
-init_from_checkpoint: output/2026-03-31/23-54-11/VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=49.ckpt
+init_from_checkpoint: null
 init_from_checkpoint_encoder_only: true
 run_post_training_analysis: false
 run_test_after_training: true
@@ -70,6 +70,8 @@ encoder:
     deterministic_fps: false
     sorting_mode: nearest
     center_input: true
+    frame_builder: triad
+    frame_eps: 1e-6
 
 learning_rate: 0.003
 batch_size: 4096
@@ -93,7 +95,7 @@ max_samples: 0
 check_val_every_n_epoch: 5
 
 gpu: true
-devices: [0, 1]
+devices: [0]
 ddp_find_unused_parameters: false
 log_every_n_steps: 5
 num_workers: 6
@@ -111,7 +113,7 @@ decay_rate: 0.0003
 enable_embedding_metrics: false
 enable_svm_accuracy: false
 
-temporal_vicreg_use_adjacent_views: false
+temporal_vicreg_use_adjacent_views: true
 
 vicreg_enabled: true
 vicreg_weight: 1.0

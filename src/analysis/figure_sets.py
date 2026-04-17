@@ -746,7 +746,7 @@ def render_cluster_figure_outputs(
             coords_override=coords[indices],
             cluster_color_assignment_override=global_color_map,
             visible_cluster_sets_override=snapshot_visible_sets,
-            include_all_cluster_panels_override=False,
+            include_all_cluster_panels_override=True,
         )
         snapshot_summary["snapshots"].append(
             {

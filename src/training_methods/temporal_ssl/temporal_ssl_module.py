@@ -716,6 +716,8 @@ class TemporalSSLModule(pl.LightningModule):
             log_kwargs["batch_size"] = int(batch_size)
         if "sync_dist" not in log_kwargs:
             log_kwargs["sync_dist"] = True
+        if torch.is_tensor(value):
+            value = value.detach()
         self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
 
     def _handle_epoch_boundary(self, stage: str, is_start: bool):

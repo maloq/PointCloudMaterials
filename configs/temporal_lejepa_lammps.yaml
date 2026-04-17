@@ -70,6 +70,8 @@ encoder:
     deterministic_fps: false
     sorting_mode: nearest
     center_input: true
+    frame_builder: triad
+    frame_eps: 1e-6
 
 learning_rate: 0.001
 batch_size: 1024

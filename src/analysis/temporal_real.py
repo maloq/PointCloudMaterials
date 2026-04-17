@@ -91,7 +91,11 @@ def temporal_real_analysis_enabled(analysis_cfg: Any) -> bool:
     return bool(OmegaConf.select(analysis_cfg, "inputs.temporal_real.enabled", default=False))
 
 
-def resolve_temporal_real_inference_spec(analysis_cfg: Any) -> TemporalRealInferenceSpec:
+def resolve_temporal_real_inference_spec(
+    analysis_cfg: Any,
+    *,
+    default_static_frame_index: int | None = None,
+) -> TemporalRealInferenceSpec:
     mode_raw = OmegaConf.select(
         analysis_cfg,
         "inputs.temporal_real.inference_mode",
@@ -100,13 +104,18 @@ def resolve_temporal_real_inference_spec(analysis_cfg: Any) -> TemporalRealInfer
     static_frame_index_raw = OmegaConf.select(
         analysis_cfg,
         "inputs.temporal_real.static_frame_index",
-        default=0,
+        default=None,
     )
     mode = str(mode_raw).strip().lower()
     if mode in {"static", "static_anchor"}:
+        resolved_static_frame_index = (
+            int(default_static_frame_index)
+            if static_frame_index_raw is None
+            else int(static_frame_index_raw)
+        )
         return TemporalRealInferenceSpec(
             mode="static_anchor",
-            static_frame_index=int(static_frame_index_raw),
+            static_frame_index=resolved_static_frame_index,
         )
     if mode == "temporal":
         return TemporalRealInferenceSpec(
@@ -341,6 +350,155 @@ def build_temporal_real_analysis_bundle(
         dataloader=dataloader,
         selection=selection,
     )
+
+
+def build_temporal_real_single_snapshot_bundle(
+    *,
+    analysis_cfg: Any,
+    selection: TemporalRealAnalysisSelection,
+    batch_size: int,
+    dataloader_num_workers: int,
+    frame_index: int,
+    source_name: str,
+    center_grid_overlap: float,
+) -> TemporalRealAnalysisBundle:
+    temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
+    overlap = float(center_grid_overlap)
+    if not np.isfinite(overlap) or overlap >= 2.0:
+        raise ValueError(
+            "Temporal snapshot visualization requires center_grid_overlap to be finite "
+            f"and < 2.0, got {center_grid_overlap!r}."
+        )
+
+    dataset = TemporalLAMMPSDumpDataset(
+        dump_file=selection.dump_file,
+        cache_dir=selection.cache_dir,
+        sequence_length=int(selection.sequence_length),
+        num_points=int(selection.num_points),
+        radius=float(selection.radius),
+        frame_stride=int(selection.frame_stride),
+        anchor_frame_indices=[int(frame_index)],
+        anchor_source_names=[str(source_name)],
+        center_selection_mode="regular_grid",
+        center_grid_overlap=float(overlap),
+        center_grid_reference_frame_index=int(frame_index),
+        center_selection_seed=int(
+            OmegaConf.select(temporal_cfg, "center_selection_seed", default=0)
+        ),
+        normalize=bool(OmegaConf.select(temporal_cfg, "normalize", default=True)),
+        center_neighborhoods=bool(
+            OmegaConf.select(temporal_cfg, "center_neighborhoods", default=True)
+        ),
+        selection_method=str(
+            OmegaConf.select(temporal_cfg, "selection_method", default="closest")
+        ),
+        rebuild_cache=bool(OmegaConf.select(temporal_cfg, "rebuild_cache", default=False)),
+        tree_cache_size=int(OmegaConf.select(temporal_cfg, "tree_cache_size", default=4)),
+    )
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=int(batch_size),
+        num_workers=int(dataloader_num_workers),
+        shuffle=False,
+        drop_last=False,
+        pin_memory=True,
+        persistent_workers=bool(int(dataloader_num_workers) > 0),
+        collate_fn=_temporal_identity_or_default_collate,
+    )
+    single_selection = TemporalRealAnalysisSelection(
+        dump_file=selection.dump_file,
+        dump_summary=dict(selection.dump_summary),
+        sequence_length=int(selection.sequence_length),
+        frame_stride=int(selection.frame_stride),
+        analysis_snapshot_count=1,
+        inference_snapshot_fraction=1.0,
+        inference_frame_indices=np.asarray([int(frame_index)], dtype=np.int64),
+        analysis_frame_indices=np.asarray([int(frame_index)], dtype=np.int64),
+        inference_source_names=[str(source_name)],
+        analysis_source_names=[str(source_name)],
+        radius=float(selection.radius),
+        num_points=int(selection.num_points),
+        radius_source=str(selection.radius_source),
+        radius_estimation=(
+            None if selection.radius_estimation is None else dict(selection.radius_estimation)
+        ),
+        center_selection={
+            "mode": "regular_grid",
+            "overlap": float(overlap),
+            "semantics": "sphere_overlap_depth_in_radius_units",
+            "reference_frame": int(frame_index),
+        },
+        cache_dir=selection.cache_dir,
+    )
+    return TemporalRealAnalysisBundle(
+        dataset=dataset,
+        dataloader=dataloader,
+        selection=single_selection,
+    )
+
+
+def resolve_temporal_real_snapshot_subset(
+    *,
+    analysis_cfg: Any,
+    selection: TemporalRealAnalysisSelection,
+    snapshot_count: int,
+) -> tuple[np.ndarray, list[str]]:
+    requested_count = int(snapshot_count)
+    if requested_count <= 0:
+        raise ValueError(
+            "snapshot_count must be > 0 for temporal snapshot subset selection, "
+            f"got {snapshot_count}."
+        )
+
+    total_frames = int(selection.dump_summary["frame_count"])
+    eligible_snapshot_count = total_frames - (
+        int(selection.sequence_length) - 1
+    ) * int(selection.frame_stride)
+    if eligible_snapshot_count <= 0:
+        raise ValueError(
+            "Temporal snapshot subset selection has no eligible anchor frames. "
+            f"frame_count={total_frames}, sequence_length={int(selection.sequence_length)}, "
+            f"frame_stride={int(selection.frame_stride)}."
+        )
+    if requested_count > eligible_snapshot_count:
+        raise ValueError(
+            "Requested temporal snapshot subset exceeds the number of eligible anchor frames. "
+            f"snapshot_count={requested_count}, eligible_snapshot_count={eligible_snapshot_count}."
+        )
+
+    temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
+    time_scale_raw = OmegaConf.select(temporal_cfg, "time_scale", default=None)
+    time_unit_raw = OmegaConf.select(temporal_cfg, "time_unit", default=None)
+    time_scale = None if time_scale_raw is None else float(time_scale_raw)
+    time_unit = None if time_unit_raw is None else str(time_unit_raw).strip()
+
+    scan = TemporalLAMMPSDumpDataset.scan_dump_file(
+        selection.dump_file,
+        cache_dir=selection.cache_dir,
+    )
+    if int(scan.frame_count) != total_frames:
+        raise RuntimeError(
+            "Temporal dump metadata changed between selection resolution and subset selection. "
+            f"selection_frame_count={total_frames}, scan_frame_count={int(scan.frame_count)}, "
+            f"dump_file={selection.dump_file}."
+        )
+
+    eligible_frame_indices = np.arange(eligible_snapshot_count, dtype=np.int64)
+    selected_local_idx = _equidistant_selection_indices(
+        num_items=eligible_snapshot_count,
+        num_selected=requested_count,
+    )
+    selected_frame_indices = eligible_frame_indices[selected_local_idx]
+    source_names = [
+        _format_temporal_snapshot_name(
+            frame_index=int(frame_idx),
+            timestep=int(scan.timesteps[int(frame_idx)]),
+            time_scale=time_scale,
+            time_unit=time_unit,
+        )
+        for frame_idx in selected_frame_indices.tolist()
+    ]
+    return selected_frame_indices.astype(np.int64, copy=False), source_names
 
 
 def _equidistant_selection_indices(*, num_items: int, num_selected: int) -> np.ndarray:

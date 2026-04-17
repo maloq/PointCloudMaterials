@@ -8,15 +8,6 @@
 uv pip install torch torchvision \
   --index-url https://download.pytorch.org/whl/cu130
 ```
-
-### Install pytorch3d
-
-```bash
-conda install -c fvcore -c conda-forge fvcore -y
-pip install iopath black usort flake8 flake8-bugbear flake8-comprehensions scikit-image matplotlib imageio plotly opencv-python
-conda install pytorch3d -c pytorch3d-nightly -y
-```
-
 ### Install all other requirements
 
 ```bash

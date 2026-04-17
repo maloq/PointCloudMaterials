@@ -44,6 +44,16 @@ class InputSettings:
 
 
 @dataclass(frozen=True)
+class ClusteringFitSettings:
+    enabled: bool
+    data_config_path: str | None
+    input_settings: InputSettings
+    cache_enabled: bool
+    cache_force_recompute: bool
+    cache_file: str
+
+
+@dataclass(frozen=True)
 class HDBSCANSettings:
     enabled: bool
     fit_fraction: float
@@ -56,6 +66,38 @@ class HDBSCANSettings:
     cluster_selection_method: str
     min_cluster_size_candidates: list[int] | None
     refit_full_data: bool
+
+
+@dataclass(frozen=True)
+class DynamicMotifRenderSettings:
+    heatmaps: bool
+    timelines: bool
+    representatives: bool
+    event_gallery: bool
+    sankey: bool
+
+
+@dataclass(frozen=True)
+class DynamicMotifFieldSettings:
+    enabled: bool
+    top_neighbors: int
+
+
+@dataclass(frozen=True)
+class DynamicMotifSettings:
+    enabled: bool
+    export_per_sample_arrays: bool
+    use_model_outputs: bool
+    stable_k: int | None
+    bridge_k: int | None
+    representative_samples_per_motif: int
+    transition_top_k: int
+    transition_snapshot_flow_count: int
+    bridge_min_support: int
+    dwell_min_length: int
+    recurrence_max_gap: int
+    render: DynamicMotifRenderSettings
+    field: DynamicMotifFieldSettings
 
 
 @dataclass(frozen=True)
@@ -79,7 +121,9 @@ class AnalysisSettings:
     inference_cache_force_recompute: bool
     inference_cache_file: str
     seed_base: int
+    cluster_fit: ClusteringFitSettings | None
     hdbscan: HDBSCANSettings
+    dynamic_motif: DynamicMotifSettings
 
 
 @dataclass(frozen=True)
@@ -191,6 +235,12 @@ def _to_plain(value: Any) -> Any:
     if OmegaConf.is_config(value):
         return OmegaConf.to_container(value, resolve=True)
     return value
+
+
+def _cfg_select(cfg: Any, key: str, *, default: Any = None) -> Any:
+    if cfg is None:
+        return default
+    return OmegaConf.select(cfg, key, default=default)
 
 
 def _as_list_of_int(value: Any, *, field_name: str = "value") -> list[int] | None:
@@ -405,6 +455,83 @@ def _resolve_input_settings(analysis_cfg: DictConfig) -> InputSettings:
     )
 
 
+def _resolve_clustering_fit_settings(
+    analysis_cfg: DictConfig,
+) -> ClusteringFitSettings | None:
+    fit_cfg = OmegaConf.select(analysis_cfg, "clustering.fit_inputs", default=None)
+    enabled = bool(_cfg_select(fit_cfg, "enabled", default=False))
+    if not enabled:
+        return None
+
+    if bool(_cfg_select(fit_cfg, "temporal_real.enabled", default=False)):
+        raise ValueError(
+            "clustering.fit_inputs.temporal_real is not supported. "
+            "Provide a static/synthetic fit dataset through "
+            "clustering.fit_inputs.data_config and optional "
+            "clustering.fit_inputs.real_data_files."
+        )
+
+    parent_inputs = _resolve_input_settings(analysis_cfg)
+    data_config_path = _cfg_select(
+        fit_cfg,
+        "data_config",
+        default=OmegaConf.select(analysis_cfg, "inputs.data_config", default=None),
+    )
+    cache_cfg = _cfg_select(fit_cfg, "cache", default=None)
+    cache_file = str(
+        _cfg_select(cache_cfg, "file", default="clustering_fit_inference_cache.npz")
+    ).strip()
+    if cache_file == "":
+        raise ValueError("clustering.fit_inputs.cache.file must be a non-empty file name.")
+
+    return ClusteringFitSettings(
+        enabled=True,
+        data_config_path=(
+            None if data_config_path is None else str(data_config_path).strip() or None
+        ),
+        input_settings=InputSettings(
+            real_data_files=_as_list_of_str(
+                _cfg_select(
+                    fit_cfg,
+                    "real_data_files",
+                    default=parent_inputs.real_data_files,
+                )
+            ),
+            dataloader_num_workers=int(
+                _cfg_select(
+                    fit_cfg,
+                    "dataloader_num_workers",
+                    default=parent_inputs.dataloader_num_workers,
+                )
+            ),
+            inference_batch_size=_positive_int_or_none(
+                _cfg_select(
+                    fit_cfg,
+                    "inference_batch_size",
+                    default=parent_inputs.inference_batch_size,
+                )
+            ),
+            max_batches_latent=_positive_int_or_none(
+                _cfg_select(
+                    fit_cfg,
+                    "max_batches_latent",
+                    default=parent_inputs.max_batches_latent,
+                )
+            ),
+            max_samples_total=_positive_int_or_none(
+                _cfg_select(
+                    fit_cfg,
+                    "max_samples_total",
+                    default=parent_inputs.max_samples_total,
+                )
+            ),
+        ),
+        cache_enabled=bool(_cfg_select(cache_cfg, "enabled", default=True)),
+        cache_force_recompute=bool(_cfg_select(cache_cfg, "force_recompute", default=False)),
+        cache_file=cache_file,
+    )
+
+
 def _resolve_analysis_files(
     model_cfg: DictConfig,
     input_settings: InputSettings,
@@ -422,6 +549,60 @@ def _resolve_analysis_files(
     return data_files
 
 
+def _resolve_dynamic_motif_settings(analysis_cfg: DictConfig) -> DynamicMotifSettings:
+    dynamic_cfg = OmegaConf.select(analysis_cfg, "dynamic_motif", default=None)
+    render_cfg = _cfg_select(dynamic_cfg, "render", default=None)
+    field_cfg = _cfg_select(dynamic_cfg, "field", default=None)
+    return DynamicMotifSettings(
+        enabled=bool(_cfg_select(dynamic_cfg, "enabled", default=False)),
+        export_per_sample_arrays=bool(_cfg_select(dynamic_cfg, "export_per_sample_arrays", default=True)),
+        use_model_outputs=bool(_cfg_select(dynamic_cfg, "use_model_outputs", default=True)),
+        stable_k=_resolve_optional_cluster_k(
+            _cfg_select(dynamic_cfg, "stable_k", default=None),
+            field_name="dynamic_motif.stable_k",
+        ),
+        bridge_k=_resolve_optional_cluster_k(
+            _cfg_select(dynamic_cfg, "bridge_k", default=None),
+            field_name="dynamic_motif.bridge_k",
+        ),
+        representative_samples_per_motif=int(
+            _cfg_select(dynamic_cfg, "representative_samples_per_motif", default=12)
+        ),
+        transition_top_k=int(
+            _cfg_select(dynamic_cfg, "transition_top_k", default=20)
+        ),
+        transition_snapshot_flow_count=max(
+            0,
+            int(_cfg_select(dynamic_cfg, "transition_snapshot_flow_count", default=0)),
+        ),
+        bridge_min_support=int(
+            _cfg_select(dynamic_cfg, "bridge_min_support", default=50)
+        ),
+        dwell_min_length=max(
+            1,
+            int(_cfg_select(dynamic_cfg, "dwell_min_length", default=1)),
+        ),
+        recurrence_max_gap=max(
+            1,
+            int(_cfg_select(dynamic_cfg, "recurrence_max_gap", default=64)),
+        ),
+        render=DynamicMotifRenderSettings(
+            heatmaps=bool(_cfg_select(render_cfg, "heatmaps", default=True)),
+            timelines=bool(_cfg_select(render_cfg, "timelines", default=True)),
+            representatives=bool(_cfg_select(render_cfg, "representatives", default=True)),
+            event_gallery=bool(_cfg_select(render_cfg, "event_gallery", default=True)),
+            sankey=bool(_cfg_select(render_cfg, "sankey", default=True)),
+        ),
+        field=DynamicMotifFieldSettings(
+            enabled=bool(_cfg_select(field_cfg, "enabled", default=False)),
+            top_neighbors=max(
+                1,
+                int(_cfg_select(field_cfg, "top_neighbors", default=8)),
+            ),
+        ),
+    )
+
+
 def _resolve_analysis_settings(
     analysis_cfg: DictConfig,
     model_cfg: DictConfig,
@@ -435,11 +616,11 @@ def _resolve_analysis_settings(
     hdbscan_cfg = OmegaConf.select(analysis_cfg, "clustering.hdbscan", default=None)
 
     primary_k = _resolve_optional_cluster_k(
-        OmegaConf.select(clustering_cfg, "primary_k", default=None),
+        _cfg_select(clustering_cfg, "primary_k", default=None),
         field_name="clustering.primary_k",
     )
     figure_set_k = _resolve_optional_cluster_k(
-        OmegaConf.select(figure_cfg, "k", default=None),
+        _cfg_select(figure_cfg, "k", default=None),
         field_name="figure_set.k",
     )
     real_md_selected_k = _resolve_optional_cluster_k(
@@ -447,7 +628,7 @@ def _resolve_analysis_settings(
         field_name="real_md.selected_k",
     )
     cluster_k_values_raw = _as_list_of_int(
-        OmegaConf.select(clustering_cfg, "k_values", default=None),
+        _cfg_select(clustering_cfg, "k_values", default=None),
         field_name="clustering.k_values",
     )
     cluster_k_values = (
@@ -495,41 +676,42 @@ def _resolve_analysis_settings(
     data_overlap_fraction = _validate_overlap_fraction(
         getattr(model_cfg.data, "overlap_fraction", 0.0)
     )
-    md_overlap_fraction_raw = OmegaConf.select(md_cfg, "overlap_fraction", default=None)
+    md_overlap_fraction_raw = _cfg_select(md_cfg, "overlap_fraction", default=None)
     md_overlap_fraction = (
-        min(0.95, data_overlap_fraction + float(OmegaConf.select(md_cfg, "overlap_boost", default=0.25)))
+        min(0.95, data_overlap_fraction + float(_cfg_select(md_cfg, "overlap_boost", default=0.25)))
         if md_overlap_fraction_raw is None
         else _validate_overlap_fraction(md_overlap_fraction_raw)
     )
     model_cfg.data.overlap_fraction = float(md_overlap_fraction)
 
     hdbscan_min_samples_candidates = _as_list_of_int(
-        OmegaConf.select(hdbscan_cfg, "min_samples_candidates", default=None),
+        _cfg_select(hdbscan_cfg, "min_samples_candidates", default=None),
         field_name="clustering.hdbscan.min_samples_candidates",
     )
     hdbscan_min_cluster_size_candidates = _as_list_of_int(
-        OmegaConf.select(hdbscan_cfg, "min_cluster_size_candidates", default=None),
+        _cfg_select(hdbscan_cfg, "min_cluster_size_candidates", default=None),
         field_name="clustering.hdbscan.min_cluster_size_candidates",
     )
     hdbscan = HDBSCANSettings(
-        enabled=bool(OmegaConf.select(hdbscan_cfg, "enabled", default=True)),
-        fit_fraction=float(OmegaConf.select(hdbscan_cfg, "fit_fraction", default=0.75)),
-        max_fit_samples=int(OmegaConf.select(hdbscan_cfg, "max_fit_samples", default=50000)),
-        target_k_min=int(OmegaConf.select(hdbscan_cfg, "target_k_min", default=5)),
-        target_k_max=int(OmegaConf.select(hdbscan_cfg, "target_k_max", default=6)),
+        enabled=bool(_cfg_select(hdbscan_cfg, "enabled", default=True)),
+        fit_fraction=float(_cfg_select(hdbscan_cfg, "fit_fraction", default=0.75)),
+        max_fit_samples=int(_cfg_select(hdbscan_cfg, "max_fit_samples", default=50000)),
+        target_k_min=int(_cfg_select(hdbscan_cfg, "target_k_min", default=5)),
+        target_k_max=int(_cfg_select(hdbscan_cfg, "target_k_max", default=6)),
         min_samples=_positive_int_or_none(
-            OmegaConf.select(hdbscan_cfg, "min_samples", default=None)
+            _cfg_select(hdbscan_cfg, "min_samples", default=None)
         ),
         min_samples_candidates=hdbscan_min_samples_candidates,
         cluster_selection_epsilon=float(
-            OmegaConf.select(hdbscan_cfg, "cluster_selection_epsilon", default=0.0)
+            _cfg_select(hdbscan_cfg, "cluster_selection_epsilon", default=0.0)
         ),
         cluster_selection_method=str(
-            OmegaConf.select(hdbscan_cfg, "cluster_selection_method", default="auto")
+            _cfg_select(hdbscan_cfg, "cluster_selection_method", default="auto")
         ).lower(),
         min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
-        refit_full_data=bool(OmegaConf.select(hdbscan_cfg, "refit_full_data", default=True)),
+        refit_full_data=bool(_cfg_select(hdbscan_cfg, "refit_full_data", default=True)),
     )
+    dynamic_motif = _resolve_dynamic_motif_settings(analysis_cfg)
 
     inference_cache_file = str(
         OmegaConf.select(cache_cfg, "file", default="analysis_inference_cache.npz")
@@ -538,7 +720,7 @@ def _resolve_analysis_settings(
         raise ValueError("cache.file must be a non-empty file name.")
 
     compare_methods_raw = _as_list_of_str(
-        OmegaConf.select(clustering_cfg, "compare_methods", default=None)
+        _cfg_select(clustering_cfg, "compare_methods", default=None)
     ) or []
     compare_methods: list[str] = []
     seen_compare_methods: set[str] = set()
@@ -556,32 +738,32 @@ def _resolve_analysis_settings(
         tsne_max_samples=int(OmegaConf.select(tsne_cfg, "max_samples", default=8000)),
         tsne_n_iter=int(OmegaConf.select(tsne_cfg, "n_iter", default=1000)),
         interactive_max_points=_positive_int_or_none(
-            OmegaConf.select(md_cfg, "interactive_max_points", default=None)
+            _cfg_select(md_cfg, "interactive_max_points", default=None)
         ),
         cluster_method=str(
-            OmegaConf.select(clustering_cfg, "method", default="spherical_kmeans")
+            _cfg_select(clustering_cfg, "method", default="spherical_kmeans")
         ).lower(),
         cluster_compare_methods=compare_methods,
-        cluster_l2_normalize=bool(OmegaConf.select(clustering_cfg, "l2_normalize", default=True)),
-        cluster_standardize=bool(OmegaConf.select(clustering_cfg, "standardize", default=True)),
-        cluster_pca_var=float(OmegaConf.select(clustering_cfg, "pca_variance", default=0.98)),
+        cluster_l2_normalize=bool(_cfg_select(clustering_cfg, "l2_normalize", default=True)),
+        cluster_standardize=bool(_cfg_select(clustering_cfg, "standardize", default=True)),
+        cluster_pca_var=float(_cfg_select(clustering_cfg, "pca_variance", default=0.98)),
         cluster_pca_max_components=int(
-            OmegaConf.select(clustering_cfg, "pca_max_components", default=32)
+            _cfg_select(clustering_cfg, "pca_max_components", default=32)
         ),
         cluster_k_values=cluster_k_values,
         data_overlap_fraction=data_overlap_fraction,
         md_overlap_fraction=float(md_overlap_fraction),
-        md_use_all_points=bool(OmegaConf.select(md_cfg, "use_all_points", default=True)),
+        md_use_all_points=bool(_cfg_select(md_cfg, "use_all_points", default=True)),
         progress_every_batches=int(
-            OmegaConf.select(runtime_cfg, "progress_every_batches", default=25)
+            _cfg_select(runtime_cfg, "progress_every_batches", default=25)
         ),
-        inference_cache_enabled=bool(OmegaConf.select(cache_cfg, "enabled", default=True)),
-        inference_cache_force_recompute=bool(
-            OmegaConf.select(cache_cfg, "force_recompute", default=False)
-        ),
+        inference_cache_enabled=bool(_cfg_select(cache_cfg, "enabled", default=True)),
+        inference_cache_force_recompute=bool(_cfg_select(cache_cfg, "force_recompute", default=False)),
         inference_cache_file=inference_cache_file,
-        seed_base=int(OmegaConf.select(runtime_cfg, "seed_base", default=123)),
+        seed_base=int(_cfg_select(runtime_cfg, "seed_base", default=123)),
+        cluster_fit=_resolve_clustering_fit_settings(analysis_cfg),
         hdbscan=hdbscan,
+        dynamic_motif=dynamic_motif,
     )
 
 
@@ -599,10 +781,10 @@ def _resolve_figure_set_settings(
     raytrace_cfg = OmegaConf.select(analysis_cfg, "figure_set.raytrace", default=None)
     real_md_profile_cfg = OmegaConf.select(analysis_cfg, "real_md.profiles", default=None)
 
-    figure_only = bool(OmegaConf.select(figure_cfg, "figure_only", default=False))
-    enabled = bool(OmegaConf.select(figure_cfg, "enabled", default=True)) or figure_only
+    figure_only = bool(_cfg_select(figure_cfg, "figure_only", default=False))
+    enabled = bool(_cfg_select(figure_cfg, "enabled", default=True)) or figure_only
     cluster_k = _resolve_optional_cluster_k(
-        OmegaConf.select(figure_cfg, "k", default=None),
+        _cfg_select(figure_cfg, "k", default=None),
         field_name="figure_set.k",
     )
     if cluster_k is not None and int(cluster_k) != int(primary_k):
@@ -614,10 +796,10 @@ def _resolve_figure_set_settings(
     cluster_k = int(primary_k)
 
     cluster_color_assignment_cfg = _normalize_cluster_color_assignment(
-        OmegaConf.select(figure_cfg, "color_assignment", default=None),
+        _cfg_select(figure_cfg, "color_assignment", default=None),
         field_name="figure_set.color_assignment",
     )
-    cluster_color_assignment_file_cfg = OmegaConf.select(
+    cluster_color_assignment_file_cfg = _cfg_select(
         figure_cfg,
         "color_assignment_file",
         default=None,
@@ -631,7 +813,7 @@ def _resolve_figure_set_settings(
     representative_points_default = int(
         getattr(model_cfg.data, "model_points", getattr(model_cfg.data, "num_points", 48))
     )
-    representative_points_cfg = OmegaConf.select(rep_cfg, "points", default=None)
+    representative_points_cfg = _cfg_select(rep_cfg, "points", default=None)
     representative_points = max(
         16,
         representative_points_default
@@ -639,7 +821,7 @@ def _resolve_figure_set_settings(
         else int(representative_points_cfg),
     )
     representative_orientation = str(
-        OmegaConf.select(rep_cfg, "orientation", default="pca")
+        _cfg_select(rep_cfg, "orientation", default="pca")
     ).strip().lower()
     if representative_orientation not in {"pca", "none"}:
         raise ValueError(
@@ -648,13 +830,13 @@ def _resolve_figure_set_settings(
         )
 
     representative_cna_max_signatures = int(
-        OmegaConf.select(rep_cfg, "cna_max_signatures", default=5)
+        _cfg_select(rep_cfg, "cna_max_signatures", default=5)
     )
     representative_shell_min_neighbors = int(
-        OmegaConf.select(rep_cfg, "shell_min_neighbors", default=8)
+        _cfg_select(rep_cfg, "shell_min_neighbors", default=8)
     )
     representative_shell_max_neighbors = int(
-        OmegaConf.select(rep_cfg, "shell_max_neighbors", default=24)
+        _cfg_select(rep_cfg, "shell_max_neighbors", default=24)
     )
     if representative_cna_max_signatures <= 0:
         raise ValueError(
@@ -678,55 +860,55 @@ def _resolve_figure_set_settings(
         figure_only=figure_only,
         k=cluster_k,
         md_max_points=_positive_int_or_none(
-            OmegaConf.select(figure_md_cfg, "max_points", default=None)
+            _cfg_select(figure_md_cfg, "max_points", default=None)
         ),
-        md_point_size=float(OmegaConf.select(figure_md_cfg, "point_size", default=5.6)),
-        md_alpha=float(OmegaConf.select(figure_md_cfg, "alpha", default=0.62)),
-        md_halo_scale=float(OmegaConf.select(figure_md_cfg, "halo_scale", default=1.0)),
-        md_halo_alpha=float(OmegaConf.select(figure_md_cfg, "halo_alpha", default=0.0)),
+        md_point_size=float(_cfg_select(figure_md_cfg, "point_size", default=5.6)),
+        md_alpha=float(_cfg_select(figure_md_cfg, "alpha", default=0.62)),
+        md_halo_scale=float(_cfg_select(figure_md_cfg, "halo_scale", default=1.0)),
+        md_halo_alpha=float(_cfg_select(figure_md_cfg, "halo_alpha", default=0.0)),
         md_saturation_boost=float(
-            OmegaConf.select(figure_md_cfg, "saturation_boost", default=1.18)
+            _cfg_select(figure_md_cfg, "saturation_boost", default=1.18)
         ),
-        md_view_elev=float(OmegaConf.select(figure_md_cfg, "view_elev", default=24.0)),
-        md_view_azim=float(OmegaConf.select(figure_md_cfg, "view_azim", default=35.0)),
+        md_view_elev=float(_cfg_select(figure_md_cfg, "view_elev", default=24.0)),
+        md_view_azim=float(_cfg_select(figure_md_cfg, "view_azim", default=35.0)),
         visible_cluster_sets=_normalize_visible_cluster_sets(
-            OmegaConf.select(figure_cfg, "visible_cluster_sets", default=None)
+            _cfg_select(figure_cfg, "visible_cluster_sets", default=None)
         ),
         cluster_color_assignment=_merge_cluster_color_assignments(
             cluster_color_assignment_cfg_file,
             cluster_color_assignment_cfg,
         ),
         profile_point_scale_enabled=bool(
-            OmegaConf.select(figure_cfg, "profile_point_scale_enabled", default=False)
+            _cfg_select(figure_cfg, "profile_point_scale_enabled", default=False)
         ),
-        icl_enabled=bool(OmegaConf.select(icl_cfg, "enabled", default=False)),
-        icl_k_min=int(OmegaConf.select(icl_cfg, "k_min", default=2)),
-        icl_k_max=int(OmegaConf.select(icl_cfg, "k_max", default=20)),
+        icl_enabled=bool(_cfg_select(icl_cfg, "enabled", default=False)),
+        icl_k_min=int(_cfg_select(icl_cfg, "k_min", default=2)),
+        icl_k_max=int(_cfg_select(icl_cfg, "k_max", default=20)),
         icl_max_samples=_positive_int_or_none(
-            OmegaConf.select(icl_cfg, "max_samples", default=20000)
+            _cfg_select(icl_cfg, "max_samples", default=20000)
         ),
-        icl_covariance=str(OmegaConf.select(icl_cfg, "covariance", default="diag")).lower(),
+        icl_covariance=str(_cfg_select(icl_cfg, "covariance", default="diag")).lower(),
         representative_points=representative_points,
         representative_orientation=representative_orientation,
-        representative_view_elev=float(OmegaConf.select(rep_cfg, "view_elev", default=22.0)),
-        representative_view_azim=float(OmegaConf.select(rep_cfg, "view_azim", default=38.0)),
+        representative_view_elev=float(_cfg_select(rep_cfg, "view_elev", default=22.0)),
+        representative_view_azim=float(_cfg_select(rep_cfg, "view_azim", default=38.0)),
         representative_projection=str(
-            OmegaConf.select(rep_cfg, "projection", default="ortho")
+            _cfg_select(rep_cfg, "projection", default="ortho")
         ).strip().lower(),
         representative_ptm_enabled=bool(
-            OmegaConf.select(rep_cfg, "ptm_enabled", default=False)
+            _cfg_select(rep_cfg, "ptm_enabled", default=False)
         ),
         representative_cna_enabled=bool(
-            OmegaConf.select(rep_cfg, "cna_enabled", default=False)
+            _cfg_select(rep_cfg, "cna_enabled", default=False)
         ),
         representative_cna_max_signatures=representative_cna_max_signatures,
         representative_center_atom_tolerance=float(
-            OmegaConf.select(rep_cfg, "center_atom_tolerance", default=1e-6)
+            _cfg_select(rep_cfg, "center_atom_tolerance", default=1e-6)
         ),
         representative_shell_min_neighbors=representative_shell_min_neighbors,
         representative_shell_max_neighbors=representative_shell_max_neighbors,
         real_md_profile_target_points=int(
-            OmegaConf.select(
+            _cfg_select(
                 real_md_profile_cfg,
                 "target_points",
                 default=max(
@@ -741,43 +923,43 @@ def _resolve_figure_set_settings(
                 ),
             )
         ),
-        raytrace_enabled=bool(OmegaConf.select(raytrace_cfg, "enabled", default=False)),
+        raytrace_enabled=bool(_cfg_select(raytrace_cfg, "enabled", default=False)),
         raytrace_kwargs={
             "raytrace_blender_executable": str(
-                OmegaConf.select(raytrace_cfg, "blender_executable", default="blender")
+                _cfg_select(raytrace_cfg, "blender_executable", default="blender")
             ).strip(),
             "raytrace_render_resolution": int(
-                OmegaConf.select(raytrace_cfg, "resolution", default=1600)
+                _cfg_select(raytrace_cfg, "resolution", default=1600)
             ),
             "raytrace_render_max_points": _positive_int_or_none(
-                OmegaConf.select(raytrace_cfg, "max_points", default=None)
+                _cfg_select(raytrace_cfg, "max_points", default=None)
             ),
             "raytrace_render_samples": int(
-                OmegaConf.select(raytrace_cfg, "samples", default=64)
+                _cfg_select(raytrace_cfg, "samples", default=64)
             ),
             "raytrace_render_projection": str(
-                OmegaConf.select(raytrace_cfg, "projection", default="perspective")
+                _cfg_select(raytrace_cfg, "projection", default="perspective")
             ).strip().lower(),
             "raytrace_render_fov_deg": float(
-                OmegaConf.select(raytrace_cfg, "fov_deg", default=34.0)
+                _cfg_select(raytrace_cfg, "fov_deg", default=34.0)
             ),
             "raytrace_render_camera_distance_factor": float(
-                OmegaConf.select(raytrace_cfg, "camera_distance_factor", default=2.8)
+                _cfg_select(raytrace_cfg, "camera_distance_factor", default=2.8)
             ),
             "raytrace_render_sphere_radius_fraction": float(
-                OmegaConf.select(raytrace_cfg, "sphere_radius_fraction", default=0.0105)
+                _cfg_select(raytrace_cfg, "sphere_radius_fraction", default=0.0105)
             ),
             "raytrace_render_timeout_sec": int(
-                OmegaConf.select(raytrace_cfg, "timeout_sec", default=1200)
+                _cfg_select(raytrace_cfg, "timeout_sec", default=1200)
             ),
             "raytrace_render_use_gpu": bool(
-                OmegaConf.select(raytrace_cfg, "use_gpu", default=False)
+                _cfg_select(raytrace_cfg, "use_gpu", default=False)
             ),
             "raytrace_parallel_views": bool(
-                OmegaConf.select(raytrace_cfg, "parallel_views", default=False)
+                _cfg_select(raytrace_cfg, "parallel_views", default=False)
             ),
             "raytrace_parallel_max_workers": _positive_int_or_none(
-                OmegaConf.select(raytrace_cfg, "parallel_max_workers", default=None)
+                _cfg_select(raytrace_cfg, "parallel_max_workers", default=None)
             ),
         },
     )
@@ -803,6 +985,14 @@ def _print_resolved_analysis_settings(
         f"pca_variance={analysis_settings.cluster_pca_var}, "
         f"pca_max_components={analysis_settings.cluster_pca_max_components}"
     )
+    if analysis_settings.cluster_fit is not None:
+        print(
+            "Clustering fit-transfer settings: "
+            f"data_config={analysis_settings.cluster_fit.data_config_path}, "
+            f"real_data_files={analysis_settings.cluster_fit.input_settings.real_data_files}, "
+            f"cache_enabled={analysis_settings.cluster_fit.cache_enabled}, "
+            f"cache_file={analysis_settings.cluster_fit.cache_file}"
+        )
     print(
         "MD overlap fraction (analysis): "
         f"{analysis_settings.data_overlap_fraction:.3f} -> {analysis_settings.md_overlap_fraction:.3f}"
@@ -846,6 +1036,21 @@ def _print_resolved_analysis_settings(
         "cluster_color_overrides="
         f"{sorted((figure_settings.cluster_color_assignment or {}).items())}"
     )
+    print(
+        "Dynamic motif analysis: "
+        f"enabled={analysis_settings.dynamic_motif.enabled}, "
+        f"use_model_outputs={analysis_settings.dynamic_motif.use_model_outputs}, "
+        f"stable_k={analysis_settings.dynamic_motif.stable_k}, "
+        f"bridge_k={analysis_settings.dynamic_motif.bridge_k}, "
+        f"transition_snapshot_flow_count={analysis_settings.dynamic_motif.transition_snapshot_flow_count}, "
+        "render="
+        f"(heatmaps={analysis_settings.dynamic_motif.render.heatmaps}, "
+        f"timelines={analysis_settings.dynamic_motif.render.timelines}, "
+        f"representatives={analysis_settings.dynamic_motif.render.representatives}, "
+        f"event_gallery={analysis_settings.dynamic_motif.render.event_gallery}, "
+        f"sankey={analysis_settings.dynamic_motif.render.sankey}), "
+        f"field_enabled={analysis_settings.dynamic_motif.field.enabled}"
+    )
 def load_checkpoint_training_config(checkpoint_path: str) -> DictConfig:
     config_dir, config_name = resolve_config_path(checkpoint_path)
     config_path = Path(config_dir) / f"{config_name}.yaml"
@@ -883,13 +1088,23 @@ def load_checkpoint_analysis_config(config_path: str | None = None) -> DictConfi
 def build_runtime_model_config(
     checkpoint_path: str,
     analysis_cfg: DictConfig,
+    *,
+    data_config_path_override: str | None = None,
 ) -> DictConfig:
     model_cfg = load_checkpoint_training_config(checkpoint_path)
-    data_config_path = OmegaConf.select(analysis_cfg, "inputs.data_config", default=None)
+    data_config_path = (
+        data_config_path_override
+        if data_config_path_override is not None
+        else OmegaConf.select(analysis_cfg, "inputs.data_config", default=None)
+    )
     if data_config_path is not None:
         data_cfg = _load_override_config_file(
             str(data_config_path),
-            field_name="inputs.data_config",
+            field_name=(
+                "inputs.data_config"
+                if data_config_path_override is None
+                else "clustering.fit_inputs.data_config"
+            ),
         )
         override_piece = data_cfg if "data" in data_cfg else OmegaConf.create({"data": data_cfg})
         model_cfg = OmegaConf.merge(model_cfg, override_piece)

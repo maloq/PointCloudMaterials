@@ -256,11 +256,14 @@ class RITransformer(nn.Module):
 # ---------------------------------------------------------------------------
 
 class RIMAEBackbone(nn.Module):
+    _CUDA_EIGH_CHUNK_SIZE = 16384
+
     def __init__(
         self, *, num_group: int, group_size: int, encoder_dims: int, trans_dim: int,
         depth: int, predictor_depth: int, num_heads: int, mask_ratio: float,
         ema_decay: float, mlp_ratio: float, dropout: float,
         deterministic_fps: bool, sorting_mode: str,
+        frame_builder: str = "triad", frame_eps: float = 1e-6,
     ) -> None:
         super().__init__()
         self.num_group = int(num_group)
@@ -270,6 +273,15 @@ class RIMAEBackbone(nn.Module):
         self.num_heads = int(num_heads)
         self.mask_ratio = float(mask_ratio)
         self.ema_decay = float(ema_decay)
+        self.frame_builder = str(frame_builder).strip().lower()
+        self.frame_eps = float(frame_eps)
+        if self.frame_builder not in {"triad", "pca"}:
+            raise ValueError(
+                "RIMAEBackbone frame_builder must be one of {'triad', 'pca'}, "
+                f"got {frame_builder!r}."
+            )
+        if self.frame_eps <= 0.0:
+            raise ValueError(f"RIMAEBackbone frame_eps must be > 0, got {self.frame_eps}.")
 
         self.group_divider = Group(num_group=self.num_group, group_size=self.group_size,
                                    deterministic_fps=bool(deterministic_fps), sorting_mode=sorting_mode)
@@ -297,11 +309,99 @@ class RIMAEBackbone(nn.Module):
                                        depth=int(predictor_depth), mlp_ratio=float(mlp_ratio), dropout=float(dropout))
 
     @staticmethod
-    def _estimate_patch_frames(neighborhood: torch.Tensor) -> torch.Tensor:
+    def _stable_patch_eigh(cov: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        if cov.device.type != "cuda" or cov.shape[0] <= RIMAEBackbone._CUDA_EIGH_CHUNK_SIZE:
+            return torch.linalg.eigh(cov)
+
+        eigvals_chunks = []
+        eigvecs_chunks = []
+        chunk_size = RIMAEBackbone._CUDA_EIGH_CHUNK_SIZE
+
+        # Torch 2.11 can fail in cuSOLVER for large batches of tiny 3x3 matrices
+        # even when the covariances are fully finite, so we solve them in chunks.
+        for start in range(0, cov.shape[0], chunk_size):
+            stop = min(start + chunk_size, cov.shape[0])
+            cov_chunk = cov[start:stop]
+            try:
+                eigvals_chunk, eigvecs_chunk = torch.linalg.eigh(cov_chunk)
+            except RuntimeError as exc:
+                nonfinite = int((~torch.isfinite(cov_chunk)).sum().item())
+                if nonfinite > 0:
+                    raise RuntimeError(
+                        "Patch-frame covariance contains non-finite values before eigendecomposition. "
+                        f"cov_shape={tuple(cov.shape)}, chunk_start={start}, chunk_stop={stop}, "
+                        f"chunk_shape={tuple(cov_chunk.shape)}, nonfinite_values={nonfinite}, "
+                        f"device={cov.device}, dtype={cov.dtype}."
+                    ) from exc
+                try:
+                    eigvals_cpu, eigvecs_cpu = torch.linalg.eigh(cov_chunk.cpu())
+                except RuntimeError as cpu_exc:
+                    raise RuntimeError(
+                        "Patch-frame eigendecomposition failed on both CUDA and CPU for finite covariances. "
+                        f"cov_shape={tuple(cov.shape)}, chunk_start={start}, chunk_stop={stop}, "
+                        f"chunk_shape={tuple(cov_chunk.shape)}, device={cov.device}, dtype={cov.dtype}."
+                    ) from cpu_exc
+                eigvals_chunk = eigvals_cpu.to(device=cov.device, dtype=cov.dtype)
+                eigvecs_chunk = eigvecs_cpu.to(device=cov.device, dtype=cov.dtype)
+            eigvals_chunks.append(eigvals_chunk)
+            eigvecs_chunks.append(eigvecs_chunk)
+
+        return torch.cat(eigvals_chunks, dim=0), torch.cat(eigvecs_chunks, dim=0)
+
+    @staticmethod
+    def _normalize_frame_vectors(
+        vectors: torch.Tensor,
+        *,
+        eps: float,
+        context: str,
+    ) -> torch.Tensor:
+        norms = torch.linalg.vector_norm(vectors, dim=-1)
+        # Loud validation is only possible in eager mode: the `.item()` reads
+        # below force a CPU sync that torch.compile cannot trace, so we skip
+        # them while Dynamo is capturing the graph. Eager-mode paths
+        # (sanity check, validation, pre-compile forwards, torch.compile
+        # disabled) still raise on degenerate / non-finite inputs. In the
+        # compiled path we rely on the clamp_min(eps) safety net below, so a
+        # genuinely degenerate norm produces a large but finite vector
+        # instead of silently propagating NaN/inf through the transformer.
+        if not torch.compiler.is_compiling():
+            if not bool(torch.isfinite(norms).all().item()):
+                nonfinite = int((~torch.isfinite(norms)).sum().item())
+                raise RuntimeError(
+                    f"RI-MAE frame builder produced non-finite vector norms for {context}. "
+                    f"vectors_shape={tuple(vectors.shape)}, nonfinite_norms={nonfinite}, "
+                    f"dtype={vectors.dtype}, device={vectors.device}."
+                )
+            if bool((norms <= eps).any().item()):
+                degenerate = int((norms <= eps).sum().item())
+                raise RuntimeError(
+                    f"RI-MAE frame builder encountered degenerate vectors for {context}. "
+                    f"vectors_shape={tuple(vectors.shape)}, degenerate_count={degenerate}, "
+                    f"min_norm={float(norms.min().item()):.6e}, eps={float(eps):.6e}, "
+                    f"dtype={vectors.dtype}, device={vectors.device}."
+                )
+        return vectors / norms.clamp_min(eps).unsqueeze(-1)
+
+    @staticmethod
+    def _apply_axis_sign_convention(patches: torch.Tensor, axis: torch.Tensor) -> torch.Tensor:
+        projections = torch.einsum("bpc,bc->bp", patches, axis)
+        batch_idx = torch.arange(axis.shape[0], device=axis.device)
+        pivot_idx = projections.abs().argmax(dim=1)
+        pivot_val = projections[batch_idx, pivot_idx]
+        signs = torch.where(
+            pivot_val >= 0,
+            torch.ones_like(pivot_val),
+            -torch.ones_like(pivot_val),
+        )
+        return axis * signs.unsqueeze(-1)
+
+    @staticmethod
+    def _estimate_patch_frames_pca(neighborhood: torch.Tensor) -> torch.Tensor:
         batch_size, num_group, group_size, _ = neighborhood.shape
-        patches = neighborhood.reshape(batch_size * num_group, group_size, 3).to(torch.float32)
-        cov = torch.matmul(patches.transpose(1, 2), patches) / float(max(group_size, 1))
-        eigvals, eigvecs = torch.linalg.eigh(cov)
+        with torch.autocast(device_type=neighborhood.device.type, enabled=False):
+            patches = neighborhood.reshape(batch_size * num_group, group_size, 3).to(torch.float32)
+            cov = torch.matmul(patches.transpose(1, 2), patches) / float(max(group_size, 1))
+        eigvals, eigvecs = RIMAEBackbone._stable_patch_eigh(cov)
         order = torch.argsort(eigvals, dim=-1, descending=True)
         order_exp = order.unsqueeze(1).expand(-1, 3, -1)
         basis = torch.gather(eigvecs, 2, order_exp)
@@ -318,6 +418,75 @@ class RIMAEBackbone(nn.Module):
         handedness = torch.where(det < 0, -torch.ones_like(det), torch.ones_like(det))
         basis[:, :, 2] = basis[:, :, 2] * handedness.unsqueeze(-1)
         return basis.reshape(batch_size, num_group, 3, 3)
+
+    @staticmethod
+    def _estimate_patch_frames_triad(neighborhood: torch.Tensor, *, frame_eps: float) -> torch.Tensor:
+        batch_size, num_group, group_size, _ = neighborhood.shape
+        patches = neighborhood.reshape(batch_size * num_group, group_size, 3).contiguous()
+        batch_idx = torch.arange(patches.shape[0], device=patches.device)
+
+        radial_sq = torch.einsum("bpc,bpc->bp", patches, patches)
+        primary_idx = radial_sq.argmax(dim=1)
+        axis1_raw = patches[batch_idx, primary_idx]
+        axis1 = RIMAEBackbone._normalize_frame_vectors(
+            axis1_raw,
+            eps=frame_eps,
+            context="primary RI-MAE triad axis",
+        )
+        axis1 = RIMAEBackbone._apply_axis_sign_convention(patches, axis1)
+
+        axis1_proj = torch.einsum("bpc,bc->bp", patches, axis1).unsqueeze(-1)
+        residual = patches - axis1_proj * axis1.unsqueeze(1)
+        residual_sq = torch.einsum("bpc,bpc->bp", residual, residual)
+        secondary_idx = residual_sq.argmax(dim=1)
+        axis2_raw = residual[batch_idx, secondary_idx]
+        axis2 = RIMAEBackbone._normalize_frame_vectors(
+            axis2_raw,
+            eps=frame_eps,
+            context="secondary RI-MAE triad axis",
+        )
+        axis2 = RIMAEBackbone._apply_axis_sign_convention(patches, axis2)
+
+        axis3_raw = torch.cross(axis1, axis2, dim=-1)
+        axis3 = RIMAEBackbone._normalize_frame_vectors(
+            axis3_raw,
+            eps=frame_eps,
+            context="tertiary RI-MAE triad axis",
+        )
+
+        axis2 = torch.cross(axis3, axis1, dim=-1)
+        axis2 = RIMAEBackbone._normalize_frame_vectors(
+            axis2,
+            eps=frame_eps,
+            context="re-orthogonalized secondary RI-MAE triad axis",
+        )
+        axis2 = RIMAEBackbone._apply_axis_sign_convention(patches, axis2)
+
+        axis3 = torch.cross(axis1, axis2, dim=-1)
+        axis3 = RIMAEBackbone._normalize_frame_vectors(
+            axis3,
+            eps=frame_eps,
+            context="final tertiary RI-MAE triad axis",
+        )
+        basis = torch.stack([axis1, axis2, axis3], dim=-1)
+        return basis.reshape(batch_size, num_group, 3, 3)
+
+    @staticmethod
+    def _estimate_patch_frames(
+        neighborhood: torch.Tensor,
+        *,
+        frame_builder: str = "triad",
+        frame_eps: float = 1e-6,
+    ) -> torch.Tensor:
+        resolved_builder = str(frame_builder).strip().lower()
+        if resolved_builder == "triad":
+            return RIMAEBackbone._estimate_patch_frames_triad(neighborhood, frame_eps=float(frame_eps))
+        if resolved_builder == "pca":
+            return RIMAEBackbone._estimate_patch_frames_pca(neighborhood)
+        raise ValueError(
+            "RI-MAE frame builder must be one of {'triad', 'pca'}, "
+            f"got {frame_builder!r}."
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -342,10 +511,8 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
         self.orientation_mlp = backbone.orientation_mlp
         self.orientation_scale = backbone.orientation_scale
         self.student_encoder = backbone.student_encoder
-        estimate_patch_frames = getattr(type(backbone), "_estimate_patch_frames", None)
-        if not callable(estimate_patch_frames):
-            raise TypeError("backbone type must provide callable static method _estimate_patch_frames.")
-        self._estimate_patch_frames = estimate_patch_frames
+        self.frame_builder = str(getattr(backbone, "frame_builder", "triad"))
+        self.frame_eps = float(getattr(backbone, "frame_eps", 1e-6))
         self.center_input = bool(center_input)
         self.output_dim = int(output_dim)
 
@@ -362,7 +529,11 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
             bn3_points = bn3_points - bn3_points.mean(dim=1, keepdim=True)
         neighborhood, center = self.group_divider(bn3_points)
         with torch.no_grad():
-            frames = self._estimate_patch_frames(neighborhood)
+            frames = RIMAEBackbone._estimate_patch_frames(
+                neighborhood,
+                frame_builder=self.frame_builder,
+                frame_eps=self.frame_eps,
+            )
         frames = frames.to(dtype=bn3_points.dtype, device=bn3_points.device)
         canonical = torch.einsum("bgsc,bgcd->bgsd", neighborhood, frames)
         patch_tokens = self.input_proj(self.patch_encoder(canonical))
@@ -410,6 +581,8 @@ class RIMAEInvariantEncoder(Encoder):
         deterministic_fps: bool = False,
         sorting_mode: str = "nearest",
         center_input: bool = True,
+        frame_builder: str = "triad",
+        frame_eps: float = 1e-6,
     ) -> None:
         super().__init__()
         output_dim = int(2 * int(trans_dim))
@@ -436,6 +609,8 @@ class RIMAEInvariantEncoder(Encoder):
             dropout=float(dropout),
             deterministic_fps=bool(deterministic_fps),
             sorting_mode=str(sorting_mode),
+            frame_builder=str(frame_builder),
+            frame_eps=float(frame_eps),
         )
         self.encoder = RIMAEInvariantEncoderForContrastive(
             backbone,

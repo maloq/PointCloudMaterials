@@ -1,5 +1,5 @@
 checkpoint:
-  path: output/2026-04-13/21-26-19/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=34.ckpt
+  path: output/2026-04-16/16-19-29/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=14.ckpt
   output_dir: outputs/temporal_Al_500frames
   cuda_device: 0
 
@@ -34,6 +34,14 @@ inputs:
     tree_cache_size: 4
     time_scale: 1000.0
     time_unit: ps
+    snapshot_visualization:
+      enabled: true
+      static_overlap_fraction: 0.5
+      regular_grid_overlap: null
+      cache:
+        enabled: true
+        force_recompute: false
+        file: temporal_snapshot_dense_inference_cache.npz
 
 cache:
   enabled: true
@@ -47,11 +55,23 @@ runtime:
 clustering:
   primary_k: 8
   k_values: null
-  method: auto
+  method: spherical_kmeans
   l2_normalize: true
   standardize: true
   pca_variance: 0.98
   pca_max_components: 32
+  fit_inputs:
+    enabled: true
+    data_config: configs/data/data_ae_Al_80.yaml
+    real_data_files: null
+    dataloader_num_workers: 4
+    inference_batch_size: 4096
+    max_batches_latent: null
+    max_samples_total: 0
+    cache:
+      enabled: true
+      force_recompute: false
+      file: clustering_fit_inference_cache.npz
   hdbscan:
     enabled: false
     fit_fraction: 0.25
@@ -172,6 +192,12 @@ real_md:
     total_duration_seconds: 20.0
     md_space:
       enabled: true
+      animation_max_points: 0
+      dense_snapshot_count: 100
+      dense_snapshot_cache:
+        enabled: true
+        force_recompute: false
+        file: temporal_md_space_dense_inference_cache.npz
       point_size: 12.0
       alpha: 1.0
       diagonal_visible_depth_fraction: 0.10
@@ -235,6 +261,11 @@ real_md:
     max_distance: null
     flow_mute_diagonal: true
     flow_min_fraction: 0.001
+
+dynamic_motif:
+  enabled: false
+  render: {}
+  field: {}
 
 equivariance:
   enabled: false

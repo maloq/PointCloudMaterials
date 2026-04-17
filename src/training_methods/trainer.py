@@ -42,6 +42,49 @@ def _suppress_dataloader_worker_count_warning() -> None:
     )
 
 
+def _suppress_known_framework_warnings(cfg: DictConfig) -> None:
+    warnings.filterwarnings(
+        "ignore",
+        message=(
+            r"`isinstance\(treespec, LeafSpec\)` is deprecated, "
+            r"use `isinstance\(treespec, TreeSpec\) and treespec\.is_leaf\(\)` instead\."
+        ),
+        category=FutureWarning,
+    )
+
+    resolved_devices = getattr(cfg, "devices", None)
+    if isinstance(resolved_devices, ListConfig):
+        num_devices = len(resolved_devices)
+    elif isinstance(resolved_devices, (list, tuple)):
+        num_devices = len(resolved_devices)
+    elif isinstance(resolved_devices, int):
+        num_devices = int(resolved_devices)
+    else:
+        num_devices = 1
+
+    if str(getattr(cfg, "model_type", "")).strip().lower() == "temporal_motif_field":
+        warnings.filterwarnings(
+            "ignore",
+            message=(
+                r"Found \d+ module\(s\) in eval mode at the start of training\."
+                r" This may lead to unexpected behavior during training\. If this is intentional,"
+                r" you can ignore this warning\."
+            ),
+            category=UserWarning,
+            module=r"pytorch_lightning\.loops\.fit_loop",
+        )
+        if bool(getattr(cfg, "gpu", False)) and num_devices > 1:
+            warnings.filterwarnings(
+                "ignore",
+                message=(
+                    r"The AccumulateGrad node's stream does not match the stream of the node "
+                    r"that produced the incoming gradient\..*"
+                ),
+                category=UserWarning,
+                module=r"torch\.autograd\.graph",
+            )
+
+
 def _seed_training_run(cfg: DictConfig) -> None:
     """Optionally seed Lightning/PyTorch for reproducible repeated experiments."""
     seed_value = getattr(cfg, "seed_everything", None)
@@ -513,6 +556,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         tuple: (trainer, model, datamodule, checkpoint_callbacks) for post-training processing
     """
     _suppress_dataloader_worker_count_warning()
+    _suppress_known_framework_warnings(cfg)
     logger.print(f"Starting in {os.getcwd()}")
 
     if run_dir is None:
@@ -574,8 +618,17 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             devices = [0]
 
     ddp_strategy = None
-    if cfg.gpu and len(devices) > 1 and hasattr(cfg, 'ddp_find_unused_parameters') and cfg.ddp_find_unused_parameters:
-        ddp_strategy = DDPStrategy(find_unused_parameters=True)
+    if cfg.gpu and len(devices) > 1:
+        find_unused_parameters = bool(getattr(cfg, "ddp_find_unused_parameters", False))
+        if str(getattr(cfg, "model_type", "")).strip().lower() == "temporal_motif_field" and not find_unused_parameters:
+            logger.print(
+                "[tmf] Overriding ddp_find_unused_parameters=False -> True for multi-GPU training "
+                "because TMF stage scheduling intentionally leaves some parameter groups unused "
+                "until later stages."
+            )
+            find_unused_parameters = True
+        if find_unused_parameters:
+            ddp_strategy = DDPStrategy(find_unused_parameters=True)
 
     precision = getattr(cfg, "precision", "bf16-mixed")
     check_val_every_n_epoch = int(getattr(cfg, "check_val_every_n_epoch", 10))

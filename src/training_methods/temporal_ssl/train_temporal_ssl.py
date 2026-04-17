@@ -26,7 +26,7 @@ def train(cfg: DictConfig):
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="temporal_lejepa_lammps.yaml",
+    config_name="temporal_vicreg_lammps.yaml",
 )
 def main(cfg: DictConfig):
     train(cfg)

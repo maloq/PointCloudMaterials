@@ -45,6 +45,33 @@ from src.vis_tools.tsne_vis import compute_tsne
 _TIME_RE = re.compile(r"(?P<value>[-+]?(?:\d+(?:\.\d*)?|\.\d+))\s*(?P<unit>[A-Za-z]+)")
 _BUILTIN_SCALAR_COLUMNS = [str(key) for key, _ in _ALL_PROFILE_PROPERTIES]
 _BUILTIN_SCALAR_LABELS = {str(key): str(label) for key, label in _ALL_PROFILE_PROPERTIES}
+_FRAME_NAME_SUFFIXES = (
+    ".npy",
+    ".npz",
+    ".xyz",
+    ".extxyz",
+    ".lammpstrj",
+    ".dump",
+    ".pos",
+)
+
+
+def _frame_name_text(name: str) -> str:
+    text = Path(str(name)).name or str(name)
+    lower_text = text.lower()
+    for suffix in _FRAME_NAME_SUFFIXES:
+        if lower_text.endswith(suffix):
+            return text[: -len(suffix)]
+    return text
+
+
+def _format_time_label(value: float, unit: str) -> str:
+    numeric_value = float(value)
+    if abs(numeric_value - round(numeric_value)) < 1e-9:
+        numeric_text = f"{int(round(numeric_value))}"
+    else:
+        numeric_text = f"{numeric_value:g}"
+    return f"{numeric_text} {str(unit)}"
 
 
 @dataclass(frozen=True)
@@ -58,13 +85,10 @@ class FrameSlice:
 
     @property
     def label(self) -> str:
-        stem = Path(str(self.source_name)).stem or str(self.source_name)
+        stem = _frame_name_text(str(self.source_name))
         if self.time_value is None or self.time_unit is None:
             return stem
-        value = float(self.time_value)
-        if abs(value - round(value)) < 1e-9:
-            return f"{int(round(value))}{self.time_unit}"
-        return f"{value:g}{self.time_unit}"
+        return _format_time_label(float(self.time_value), str(self.time_unit))
 
 
 @dataclass(frozen=True)
@@ -82,7 +106,7 @@ def _to_plain(value: Any) -> Any:
 
 
 def _parse_time_from_name(name: str) -> tuple[float | None, str | None]:
-    stem = Path(str(name)).stem or str(name)
+    stem = _frame_name_text(str(name))
     match = _TIME_RE.search(stem)
     if match is None:
         return None, None
@@ -240,6 +264,41 @@ def _remove_existing_transition_pair_flow_artifacts(out_dir: Path) -> None:
     for pattern in ("transition_pair_*_flow.png", "transition_pair_*_flow.svg"):
         for artifact_path in out_dir.glob(pattern):
             artifact_path.unlink()
+
+
+def _remove_existing_transition_aggregate_flow_artifacts(out_dir: Path) -> None:
+    out_dir = Path(out_dir)
+    if not out_dir.exists():
+        return
+    for name in ("transition_aggregate_flow.png", "transition_aggregate_flow.svg"):
+        artifact_path = out_dir / name
+        if artifact_path.exists():
+            artifact_path.unlink()
+
+
+def _relative_path_for_markdown(target_path: Path, *, base_dir: Path) -> str:
+    target_resolved = Path(target_path).resolve()
+    base_resolved = Path(base_dir).resolve()
+    return os.path.relpath(target_resolved, start=base_resolved)
+
+
+def _resolve_transition_pair_plot_indices(
+    transition_cfg: Any,
+    *,
+    pair_count: int,
+) -> list[int]:
+    if pair_count <= 0:
+        return []
+    enabled = _cfg_bool(transition_cfg, "pair_plots_enabled", pair_count <= 12)
+    if not enabled:
+        return []
+    max_count = _cfg_int(transition_cfg, "pair_plots_max_count", pair_count)
+    if max_count <= 0:
+        return []
+    if max_count >= pair_count:
+        return list(range(pair_count))
+    selected = np.linspace(0, pair_count - 1, num=max_count, dtype=np.float64)
+    return sorted({int(round(value)) for value in selected.tolist()})
 
 
 def _resolve_descriptor_sampling_indices(
@@ -1250,8 +1309,64 @@ def _write_summary_markdown(
         if "umap_trajectory_animation" in summary["temporal"]:
             lines.append(
                 f"- UMAP trajectory animation: `{Path(summary['temporal']['umap_trajectory_animation']['out_file']).name}`"
-            )
+    )
     out_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def append_dynamic_motif_summary(
+    summary_markdown_path: Path,
+    *,
+    dynamic_summary_path: Path,
+    dynamic_metrics: dict[str, Any],
+    out_dir: Path,
+) -> None:
+    if not summary_markdown_path.exists():
+        raise FileNotFoundError(
+            "Cannot append dynamic motif summary because the real-MD summary markdown does not exist: "
+            f"{summary_markdown_path}."
+        )
+    if not dynamic_summary_path.exists():
+        raise FileNotFoundError(
+            "Cannot append dynamic motif summary because the dynamic summary markdown does not exist: "
+            f"{dynamic_summary_path}."
+        )
+    marker = "\n## Dynamic motifs\n"
+    original = summary_markdown_path.read_text(encoding="utf-8")
+    if marker in original:
+        original = original.split(marker, 1)[0].rstrip() + "\n"
+    summary_rel = _relative_path_for_markdown(
+        dynamic_summary_path,
+        base_dir=summary_markdown_path.parent,
+    )
+    lines = [
+        original.rstrip(),
+        "",
+        "## Dynamic motifs",
+        f"- Summary: `{summary_rel}`",
+    ]
+    artifacts = dynamic_metrics.get("artifacts", {})
+    for key in (
+        "frame_motif_proportions_csv",
+        "transition_matrix_png",
+        "dwell_histograms_png",
+        "recurrence_heatmap_png",
+        "motif_umap_png",
+        "neighbor_influence_heatmap_png",
+    ):
+        artifact_rel = artifacts.get(key)
+        if artifact_rel is None:
+            continue
+        artifact_path = (out_dir / artifact_rel).resolve()
+        display_rel = _relative_path_for_markdown(
+            artifact_path,
+            base_dir=summary_markdown_path.parent,
+        )
+        lines.append(f"- {key}: `{display_rel}`")
+    warnings_list = dynamic_metrics.get("warnings", [])
+    if warnings_list:
+        lines.append("- Warnings:")
+        lines.extend([f"  - {warning}" for warning in warnings_list])
+    summary_markdown_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def run_real_md_qualitative_analysis(
@@ -1272,6 +1387,12 @@ def run_real_md_qualitative_analysis(
     temporal_all_frame_groups: list[tuple[str, np.ndarray]] | None = None,
     temporal_all_frame_output_names: dict[str, str] | None = None,
     temporal_all_frame_order: list[str] | None = None,
+    temporal_md_animation_frame_groups: list[tuple[str, np.ndarray]] | None = None,
+    temporal_md_animation_frame_output_names: dict[str, str] | None = None,
+    temporal_md_animation_order: list[str] | None = None,
+    temporal_md_animation_coords: np.ndarray | None = None,
+    temporal_md_animation_cluster_labels_by_k: dict[int, np.ndarray] | None = None,
+    temporal_md_animation_frame_source: str | None = None,
     temporal_projection_fit_indices: np.ndarray | None = None,
     point_scale: float,
     random_state: int,
@@ -1361,6 +1482,16 @@ def run_real_md_qualitative_analysis(
             requested_order=temporal_all_frame_order,
         )
         if temporal_all_frame_groups is not None and temporal_all_frame_output_names is not None
+        else None
+    )
+    temporal_md_animation_frames = (
+        _build_frame_slices(
+            temporal_md_animation_frame_groups,
+            temporal_md_animation_frame_output_names,
+            requested_order=temporal_md_animation_order,
+        )
+        if temporal_md_animation_frame_groups is not None
+        and temporal_md_animation_frame_output_names is not None
         else None
     )
     labels_color_map = cluster_color_map or _build_cluster_color_map(labels)
@@ -1779,22 +1910,94 @@ def run_real_md_qualitative_analysis(
 
         temporal_md_cfg = getattr(temporal_cfg, "md_space", None)
         if _cfg_bool(temporal_md_cfg, "enabled", True):
+            md_animation_frames = (
+                temporal_md_animation_frames
+                if temporal_md_animation_frames is not None
+                else temporal_frames
+            )
+            if md_animation_frames is None or not md_animation_frames:
+                raise ValueError(
+                    "MD-space temporal animation requires temporal frames, but none were provided."
+                )
+            md_animation_coords = (
+                np.asarray(temporal_md_animation_coords, dtype=np.float32)
+                if temporal_md_animation_coords is not None
+                else np.asarray(coords, dtype=np.float32)
+            )
+            md_animation_labels = (
+                np.asarray(
+                    temporal_md_animation_cluster_labels_by_k[int(selected_k)],
+                    dtype=int,
+                )
+                if temporal_md_animation_cluster_labels_by_k is not None
+                else np.asarray(labels, dtype=int)
+            )
+            if md_animation_coords.shape[0] != md_animation_labels.shape[0]:
+                raise ValueError(
+                    "Temporal MD-space animation coords/labels length mismatch: "
+                    f"coords={md_animation_coords.shape[0]}, "
+                    f"labels={md_animation_labels.shape[0]}."
+                )
+            md_animation_max_points_raw = getattr(
+                temporal_md_cfg,
+                "animation_max_points",
+                animation_max_points,
+            )
+            md_animation_max_points = (
+                None
+                if md_animation_max_points_raw is None or int(md_animation_max_points_raw) <= 0
+                else int(md_animation_max_points_raw)
+            )
+            md_temporal_animation_indices = _select_temporal_animation_sample_indices(
+                md_animation_frames,
+                md_animation_labels,
+                max_points_per_frame=md_animation_max_points,
+                random_state=int(random_state),
+            )
             temporal_md_records = [
                 {
                     "frame_name": str(frame.source_name),
                     "frame_label": str(frame.label),
                     "coords": np.asarray(
-                        coords[temporal_animation_indices[str(frame.source_name)]],
+                        md_animation_coords[
+                            md_temporal_animation_indices[str(frame.source_name)]
+                        ],
                         dtype=np.float32,
                     ),
                     "labels": np.asarray(
-                        labels[temporal_animation_indices[str(frame.source_name)]],
+                        md_animation_labels[
+                            md_temporal_animation_indices[str(frame.source_name)]
+                        ],
                         dtype=int,
                     ),
                 }
-                for frame in temporal_frames
+                for frame in md_animation_frames
             ]
             md_animation_path = temporal_dir / f"md_space_clusters_diagonal_cut_k{int(selected_k)}.gif"
+            temporal_summary["md_space_frame_source"] = (
+                str(temporal_md_animation_frame_source)
+                if temporal_md_animation_frame_source is not None
+                else "dense_selected_frames"
+                if temporal_md_animation_frames is not None
+                else "temporal_inference_frames"
+            )
+            temporal_summary["md_space_frame_count"] = int(len(md_animation_frames))
+            temporal_summary["md_space_render_max_points_per_frame"] = (
+                None
+                if md_animation_max_points is None
+                else int(md_animation_max_points)
+            )
+            temporal_summary["md_space_frames"] = [
+                {
+                    "frame_name": str(frame.source_name),
+                    "frame_label": str(frame.label),
+                    "sample_count": int(frame.indices.size),
+                    "render_count": int(
+                        md_temporal_animation_indices[str(frame.source_name)].size
+                    ),
+                }
+                for frame in md_animation_frames
+            ]
             temporal_animation_jobs.append(
                 (
                     "md_space_animation",
@@ -2106,6 +2309,7 @@ def run_real_md_qualitative_analysis(
         transition_dir = out_root / "transitions"
         transition_dir.mkdir(parents=True, exist_ok=True)
         _remove_existing_transition_pair_flow_artifacts(transition_dir)
+        _remove_existing_transition_aggregate_flow_artifacts(transition_dir)
         if transition_tol is None:
             raise RuntimeError("transition_tol was not resolved for transition analysis.")
         transition_data = _compute_transitions(
@@ -2117,45 +2321,52 @@ def run_real_md_qualitative_analysis(
             max_distance=float(transition_tol),
             require_mutual=_cfg_bool(transition_cfg, "require_mutual", True),
         )
+        save_transition_svg = _cfg_bool(transition_cfg, "save_svg", False)
+        pair_plot_indices = set(
+            _resolve_transition_pair_plot_indices(
+                transition_cfg,
+                pair_count=len(transition_data["pairs"]),
+            )
+        )
         pair_records: list[dict[str, Any]] = []
-        for pair_summary in transition_data["pairs"]:
+        for pair_list_index, pair_summary in enumerate(transition_data["pairs"]):
             counts = np.asarray(pair_summary["counts"], dtype=np.float64)
             pair_idx = int(len(pair_records) + 1)
-            flow_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.png"
-            flow_svg_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.svg"
-            save_transition_flow_plot(
-                counts,
-                flow_path,
-                title=None,
-                row_labels=cluster_display_labels,
-                cluster_color_map=labels_color_map,
-                cluster_ids_for_palette=cluster_ids,
-                mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-            )
-            save_transition_flow_plot(
-                counts,
-                flow_svg_path,
-                title=None,
-                row_labels=cluster_display_labels,
-                cluster_color_map=labels_color_map,
-                cluster_ids_for_palette=cluster_ids,
-                mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-            )
-            pair_records.append(
-                {
-                    "frame_from": str(pair_summary["frame_from"]),
-                    "frame_to": str(pair_summary["frame_to"]),
-                    "matched_samples": int(pair_summary["matched_samples"]),
-                    "coverage_fraction": float(pair_summary["coverage_fraction"]),
-                    "flow_plot": str(flow_path),
-                    "flow_svg": str(flow_svg_path),
-                }
-            )
+            pair_record = {
+                "frame_from": str(pair_summary["frame_from"]),
+                "frame_to": str(pair_summary["frame_to"]),
+                "matched_samples": int(pair_summary["matched_samples"]),
+                "coverage_fraction": float(pair_summary["coverage_fraction"]),
+            }
+            if pair_list_index in pair_plot_indices:
+                flow_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.png"
+                save_transition_flow_plot(
+                    counts,
+                    flow_path,
+                    title=None,
+                    row_labels=cluster_display_labels,
+                    cluster_color_map=labels_color_map,
+                    cluster_ids_for_palette=cluster_ids,
+                    mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                    min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
+                )
+                pair_record["flow_plot"] = str(flow_path)
+                if save_transition_svg:
+                    flow_svg_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.svg"
+                    save_transition_flow_plot(
+                        counts,
+                        flow_svg_path,
+                        title=None,
+                        row_labels=cluster_display_labels,
+                        cluster_color_map=labels_color_map,
+                        cluster_ids_for_palette=cluster_ids,
+                        mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                        min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
+                    )
+                    pair_record["flow_svg"] = str(flow_svg_path)
+            pair_records.append(pair_record)
 
         aggregate_flow_path = transition_dir / "transition_aggregate_flow.png"
-        aggregate_flow_svg_path = transition_dir / "transition_aggregate_flow.svg"
         save_transition_flow_plot(
             transition_data["aggregate_counts"],
             aggregate_flow_path,
@@ -2166,16 +2377,19 @@ def run_real_md_qualitative_analysis(
             mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
             min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
         )
-        save_transition_flow_plot(
-            transition_data["aggregate_counts"],
-            aggregate_flow_svg_path,
-            title=None,
-            row_labels=cluster_display_labels,
-            cluster_color_map=labels_color_map,
-            cluster_ids_for_palette=cluster_ids,
-            mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-            min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-        )
+        aggregate_flow_svg_path = None
+        if save_transition_svg:
+            aggregate_flow_svg_path = transition_dir / "transition_aggregate_flow.svg"
+            save_transition_flow_plot(
+                transition_data["aggregate_counts"],
+                aggregate_flow_svg_path,
+                title=None,
+                row_labels=cluster_display_labels,
+                cluster_color_map=labels_color_map,
+                cluster_ids_for_palette=cluster_ids,
+                mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
+                min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
+            )
         summary["transitions"] = {
             "cluster_ids": [int(v) for v in cluster_ids],
             "cluster_display_labels": cluster_display_labels,
@@ -2184,7 +2398,9 @@ def run_real_md_qualitative_analysis(
             "match_mode": str(transition_data["match_mode"]),
             "pairs": pair_records,
             "aggregate_flow": str(aggregate_flow_path),
-            "aggregate_flow_svg": str(aggregate_flow_svg_path),
+            "aggregate_flow_svg": (
+                None if aggregate_flow_svg_path is None else str(aggregate_flow_svg_path)
+            ),
         }
 
     summary_json = out_root / "summary.json"
@@ -2206,4 +2422,4 @@ def run_real_md_qualitative_analysis(
     return summary
 
 
-__all__ = ["run_real_md_qualitative_analysis"]
+__all__ = ["append_dynamic_motif_summary", "run_real_md_qualitative_analysis"]

@@ -88,10 +88,12 @@ def _build_inference_cache_spec(
     seed_base: int,
     temporal_real_selection: dict[str, Any] | None = None,
     temporal_sequence_inference: dict[str, Any] | None = None,
+    collector_mode: str = "generic",
 ) -> dict[str, Any]:
     return {
-        "version": 2,
+        "version": 3,
         "checkpoint_path": str(Path(checkpoint_path).resolve()),
+        "model_type": str(getattr(cfg, "model_type", "")),
         "data_kind": str(getattr(cfg.data, "kind", "unknown")),
         "data_path": str(getattr(cfg.data, "data_path", "")),
         "data_files": _as_list_of_str(getattr(cfg.data, "data_files", None)) or [],
@@ -111,6 +113,7 @@ def _build_inference_cache_spec(
         "max_samples_total": None if max_samples_total is None else int(max_samples_total),
         "seed_base": int(seed_base),
         "collect_coords": True,
+        "collector_mode": str(collector_mode),
         "temporal_real_selection": temporal_real_selection,
         "temporal_sequence_inference": temporal_sequence_inference,
     }
@@ -166,6 +169,34 @@ def _validate_inference_cache_arrays(cache: dict[str, np.ndarray]) -> None:
                 "Inference cache sample mismatch: "
                 f"'inv_latents' has {num_samples} rows but '{key}' has shape={tuple(arr.shape)}."
             )
+    optional_sample_keys = [
+        key
+        for key in cache.keys()
+        if key not in required and key not in {"spec", "meta"}
+    ]
+    for key in optional_sample_keys:
+        arr = np.asarray(cache[key])
+        if arr.size == 0:
+            continue
+        if arr.ndim == 0:
+            raise ValueError(
+                "Inference cache dynamic arrays must remain per-sample arrays. "
+                f"Key {key!r} was saved as a scalar."
+            )
+        if arr.shape[0] != num_samples:
+            raise ValueError(
+                "Inference cache sample mismatch in optional array: "
+                f"'inv_latents' has {num_samples} rows but '{key}' has shape={tuple(arr.shape)}."
+            )
+
+
+def _normalize_spec_for_compatibility(spec: Any) -> Any:
+    if not isinstance(spec, dict):
+        return spec
+    normalized = dict(spec)
+    normalized.pop("version", None)
+    normalized.pop("dynamic_motif", None)
+    return normalized
 
 
 def _load_inference_cache(
@@ -190,10 +221,12 @@ def _load_inference_cache(
     expected_hash = _inference_cache_spec_hash(expected_spec)
     cached_hash = str(meta.get("spec_sha256", ""))
     if cached_hash != expected_hash:
-        return None, (
-            "cache spec mismatch: "
-            f"expected sha256={expected_hash}, found sha256={cached_hash}"
-        )
+        cached_spec = meta.get("spec")
+        if _normalize_spec_for_compatibility(cached_spec) != _normalize_spec_for_compatibility(expected_spec):
+            return None, (
+                "cache spec mismatch: "
+                f"expected sha256={expected_hash}, found sha256={cached_hash}"
+            )
 
     with np.load(npz_path) as data:
         cache = {key: np.asarray(data[key]) for key in data.files}
@@ -201,7 +234,12 @@ def _load_inference_cache(
         _validate_inference_cache_arrays(cache)
     except ValueError as exc:
         return None, f"cache validation failed for {npz_path}: {exc}"
-    return cache, f"loaded cache from {npz_path}"
+    if cached_hash == expected_hash:
+        return cache, f"loaded cache from {npz_path}"
+    return cache, (
+        f"loaded legacy-compatible cache from {npz_path}; "
+        "optional dynamic motif arrays may be missing."
+    )
 
 
 def _save_inference_cache(
@@ -214,15 +252,7 @@ def _save_inference_cache(
     _validate_inference_cache_arrays(cache)
     npz_path, meta_path = _inference_cache_paths(out_dir, cache_filename)
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    np.savez_compressed(
-        npz_path,
-        inv_latents=cache["inv_latents"],
-        eq_latents=cache["eq_latents"],
-        phases=cache["phases"],
-        coords=cache["coords"],
-        instance_ids=cache["instance_ids"],
-    )
+    np.savez_compressed(npz_path, **{key: np.asarray(value) for key, value in cache.items()})
     meta = {
         "spec": spec,
         "spec_sha256": _inference_cache_spec_hash(spec),

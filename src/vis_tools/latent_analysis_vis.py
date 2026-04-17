@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict
 import warnings
@@ -150,6 +151,31 @@ def _normalize_clustering_method_name(method: str) -> str:
     )
 
 
+@dataclass(frozen=True)
+class ClusteringFeatureTransform:
+    input_dim: int
+    output_dim: int
+    l2_normalize: bool
+    standardize: bool
+    scaler: Any | None
+    pca: Any | None
+    pca_components: int
+    pca_explained_variance: float
+
+
+@dataclass(frozen=True)
+class FittedClusteringModel:
+    method: str
+    requested_method: str
+    n_clusters: int
+    random_state: int
+    feature_transform: ClusteringFeatureTransform
+    label_remap: dict[int, int]
+    fit_info: dict[str, Any]
+    sklearn_model: Any | None = None
+    spherical_centers: np.ndarray | None = None
+
+
 def _compute_internal_clustering_metrics(
     features: np.ndarray,
     labels: np.ndarray,
@@ -235,7 +261,113 @@ def _compute_internal_clustering_metrics(
     return metrics
 
 
-def _run_spherical_kmeans(
+def fit_clustering_feature_transform(
+    latents: np.ndarray,
+    *,
+    random_state: int,
+    l2_normalize: bool,
+    standardize: bool,
+    pca_variance: float | None,
+    pca_max_components: int,
+) -> tuple[np.ndarray, ClusteringFeatureTransform, Dict[str, Any]]:
+    x = np.asarray(latents, dtype=np.float32)
+    if x.ndim != 2:
+        x = np.reshape(x, (x.shape[0], -1))
+    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+
+    info: Dict[str, Any] = {
+        "input_dim": int(x.shape[1]),
+        "l2_normalize": bool(l2_normalize),
+        "standardize": bool(standardize),
+    }
+
+    if l2_normalize:
+        x = _l2_normalize_rows(x)
+
+    scaler = None
+    if standardize and x.shape[0] > 1:
+        scaler = StandardScaler()
+        x = scaler.fit_transform(x)
+
+    pca_model = None
+    keep_components = int(x.shape[1])
+    explained_variance = 1.0
+    use_pca = (
+        pca_variance is not None
+        and float(pca_variance) > 0.0
+        and x.shape[1] > 2
+        and x.shape[0] > 3
+    )
+    if use_pca:
+        n_max = min(int(pca_max_components), x.shape[1], x.shape[0] - 1)
+        if n_max >= 2:
+            pca_model = PCA(n_components=n_max, random_state=random_state)
+            x_proj = pca_model.fit_transform(x)
+            if float(pca_variance) >= 1.0:
+                keep_components = n_max
+            else:
+                csum = np.cumsum(pca_model.explained_variance_ratio_)
+                keep_components = int(np.searchsorted(csum, float(pca_variance)) + 1)
+                keep_components = max(2, min(keep_components, n_max))
+            x = x_proj[:, :keep_components]
+            explained_variance = float(
+                np.sum(pca_model.explained_variance_ratio_[:keep_components])
+            )
+
+    info["pca_components"] = int(keep_components)
+    info["pca_explained_variance"] = float(explained_variance)
+    info["output_dim"] = int(x.shape[1])
+
+    transform = ClusteringFeatureTransform(
+        input_dim=int(info["input_dim"]),
+        output_dim=int(info["output_dim"]),
+        l2_normalize=bool(l2_normalize),
+        standardize=bool(standardize),
+        scaler=scaler,
+        pca=pca_model,
+        pca_components=int(keep_components),
+        pca_explained_variance=float(explained_variance),
+    )
+    return x.astype(np.float32, copy=False), transform, info
+
+
+def transform_clustering_features(
+    latents: np.ndarray,
+    *,
+    transform: ClusteringFeatureTransform,
+) -> np.ndarray:
+    x = np.asarray(latents, dtype=np.float32)
+    if x.ndim != 2:
+        x = np.reshape(x, (x.shape[0], -1))
+    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+    if int(x.shape[1]) != int(transform.input_dim):
+        raise ValueError(
+            "Clustering feature transform input dimension mismatch. "
+            f"Expected {int(transform.input_dim)}, got {int(x.shape[1])}."
+        )
+
+    if bool(transform.l2_normalize):
+        x = _l2_normalize_rows(x)
+    if transform.scaler is not None:
+        x = transform.scaler.transform(x)
+    if transform.pca is not None:
+        x = transform.pca.transform(x)[:, : int(transform.pca_components)]
+    return np.asarray(x, dtype=np.float32)
+
+
+def _remap_cluster_labels(
+    labels: np.ndarray,
+    *,
+    label_remap: dict[int, int],
+) -> np.ndarray:
+    labels_arr = np.asarray(labels, dtype=int).reshape(-1)
+    remapped = labels_arr.copy()
+    for old_label, new_label in label_remap.items():
+        remapped[labels_arr == int(old_label)] = int(new_label)
+    return remapped.astype(int, copy=False)
+
+
+def _fit_spherical_kmeans_model(
     features: np.ndarray,
     n_clusters: int,
     *,
@@ -243,7 +375,7 @@ def _run_spherical_kmeans(
     n_init: int = 10,
     max_iter: int = 100,
     tol: float = 1.0e-4,
-) -> tuple[np.ndarray, Dict[str, Any], np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, Dict[str, Any], np.ndarray]:
     feats_unit = _l2_normalize_rows_strict(
         features,
         context="Spherical k-means input features",
@@ -256,6 +388,7 @@ def _run_spherical_kmeans(
         )
 
     best_labels: np.ndarray | None = None
+    best_centers: np.ndarray | None = None
     best_objective = -np.inf
     best_info: Dict[str, Any] | None = None
 
@@ -345,6 +478,7 @@ def _run_spherical_kmeans(
         if objective > best_objective:
             best_objective = objective
             best_labels = final_labels.copy()
+            best_centers = centers.astype(np.float32, copy=True)
             best_info = {
                 "requested_method": "spherical_kmeans",
                 "method": "spherical_kmeans",
@@ -367,9 +501,29 @@ def _run_spherical_kmeans(
                 "random_state": int(random_state),
             }
 
-    if best_labels is None or best_info is None:
+    if best_labels is None or best_centers is None or best_info is None:
         raise RuntimeError("Spherical k-means failed to produce a valid clustering result.")
-    return best_labels, best_info, feats_unit
+    return best_labels, best_centers, best_info, feats_unit
+
+
+def _run_spherical_kmeans(
+    features: np.ndarray,
+    n_clusters: int,
+    *,
+    random_state: int,
+    n_init: int = 10,
+    max_iter: int = 100,
+    tol: float = 1.0e-4,
+) -> tuple[np.ndarray, Dict[str, Any], np.ndarray]:
+    labels, _, fit_info, feats_unit = _fit_spherical_kmeans_model(
+        features,
+        n_clusters,
+        random_state=random_state,
+        n_init=n_init,
+        max_iter=max_iter,
+        tol=tol,
+    )
+    return labels, fit_info, feats_unit
 
 
 def _prepare_clustering_features(
@@ -381,55 +535,15 @@ def _prepare_clustering_features(
     pca_variance: float | None,
     pca_max_components: int,
 ) -> tuple[np.ndarray, Dict[str, Any]]:
-    x = np.asarray(latents, dtype=np.float32)
-    if x.ndim != 2:
-        x = np.reshape(x, (x.shape[0], -1))
-    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
-
-    info: Dict[str, Any] = {
-        "input_dim": int(x.shape[1]),
-        "l2_normalize": bool(l2_normalize),
-        "standardize": bool(standardize),
-    }
-
-    if l2_normalize:
-        x = _l2_normalize_rows(x)
-
-    if standardize and x.shape[0] > 1:
-        scaler = StandardScaler()
-        x = scaler.fit_transform(x)
-
-    use_pca = (
-        pca_variance is not None
-        and float(pca_variance) > 0.0
-        and x.shape[1] > 2
-        and x.shape[0] > 3
+    x, _, info = fit_clustering_feature_transform(
+        latents,
+        random_state=random_state,
+        l2_normalize=l2_normalize,
+        standardize=standardize,
+        pca_variance=pca_variance,
+        pca_max_components=pca_max_components,
     )
-    if use_pca:
-        n_max = min(int(pca_max_components), x.shape[1], x.shape[0] - 1)
-        if n_max >= 2:
-            pca = PCA(n_components=n_max, random_state=random_state)
-            x_proj = pca.fit_transform(x)
-            if float(pca_variance) >= 1.0:
-                keep = n_max
-            else:
-                csum = np.cumsum(pca.explained_variance_ratio_)
-                keep = int(np.searchsorted(csum, float(pca_variance)) + 1)
-                keep = max(2, min(keep, n_max))
-            x = x_proj[:, :keep]
-            info["pca_components"] = int(keep)
-            info["pca_explained_variance"] = float(
-                np.sum(pca.explained_variance_ratio_[:keep])
-            )
-        else:
-            info["pca_components"] = int(x.shape[1])
-            info["pca_explained_variance"] = 1.0
-    else:
-        info["pca_components"] = int(x.shape[1])
-        info["pca_explained_variance"] = 1.0
-
-    info["output_dim"] = int(x.shape[1])
-    return x.astype(np.float32, copy=False), info
+    return x, info
 
 
 def _resolve_clustering_features(
@@ -481,6 +595,205 @@ def _resolve_clustering_features(
         }
     )
     return features.astype(np.float32, copy=False), resolved_info
+
+
+def fit_clustering_model(
+    latents: np.ndarray,
+    n_clusters: int,
+    *,
+    random_state: int = 42,
+    method: str = "auto",
+    l2_normalize: bool = True,
+    standardize: bool = True,
+    pca_variance: float | None = 0.98,
+    pca_max_components: int = 32,
+) -> tuple[FittedClusteringModel, np.ndarray, Dict[str, Any]]:
+    if latents.size == 0 or len(latents) < 2:
+        raise ValueError("Cannot fit a clustering model on fewer than 2 samples.")
+
+    n_clusters = max(2, min(int(n_clusters), len(latents)))
+    fit_features, feature_transform, prep_info = fit_clustering_feature_transform(
+        latents,
+        random_state=int(random_state),
+        l2_normalize=l2_normalize,
+        standardize=standardize,
+        pca_variance=pca_variance,
+        pca_max_components=pca_max_components,
+    )
+    resolved_method = _normalize_clustering_method_name(method)
+
+    sklearn_model = None
+    spherical_centers = None
+    if resolved_method == "kmeans":
+        sklearn_model = KMeans(
+            n_clusters=int(n_clusters),
+            random_state=int(random_state),
+            n_init=20,
+        )
+        raw_fit_labels = sklearn_model.fit_predict(fit_features).astype(int, copy=False)
+        canonical_features = fit_features
+        fit_info: Dict[str, Any] = {
+            "method": "kmeans",
+            "requested_method": str(method),
+            "fallback_used": False,
+            "model_score_name": "inertia",
+            "model_score": float(sklearn_model.inertia_),
+            "random_state": int(random_state),
+        }
+    elif resolved_method == "spherical_kmeans":
+        raw_fit_labels, spherical_centers, fit_info, canonical_features = _fit_spherical_kmeans_model(
+            fit_features,
+            int(n_clusters),
+            random_state=int(random_state),
+        )
+    else:
+        raise AssertionError(f"Unhandled resolved clustering method {resolved_method!r}.")
+
+    fit_labels, canonical_info = _canonicalize_cluster_labels(
+        raw_fit_labels,
+        canonical_features,
+    )
+    fit_internal_metrics = _compute_internal_clustering_metrics(
+        fit_features,
+        fit_labels,
+        random_state=int(random_state),
+    )
+    fit_summary = {
+        **prep_info,
+        **fit_info,
+        **canonical_info,
+        **fit_internal_metrics,
+        "n_clusters": int(n_clusters),
+        "random_state": int(random_state),
+        "fit_sample_count": int(len(latents)),
+    }
+    fitted_model = FittedClusteringModel(
+        method=str(resolved_method),
+        requested_method=str(method),
+        n_clusters=int(n_clusters),
+        random_state=int(random_state),
+        feature_transform=feature_transform,
+        label_remap={
+            int(old): int(new)
+            for old, new in canonical_info.get("cluster_label_remap", {}).items()
+        },
+        fit_info=dict(fit_summary),
+        sklearn_model=sklearn_model,
+        spherical_centers=(
+            None if spherical_centers is None else np.asarray(spherical_centers, dtype=np.float32)
+        ),
+    )
+    return fitted_model, fit_labels.astype(int, copy=False), fit_summary
+
+
+def predict_clustering_model(
+    latents: np.ndarray,
+    fitted_model: FittedClusteringModel,
+    *,
+    return_features: bool = False,
+) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
+    features = transform_clustering_features(
+        latents,
+        transform=fitted_model.feature_transform,
+    )
+    if fitted_model.method == "kmeans":
+        if fitted_model.sklearn_model is None:
+            raise RuntimeError("Fitted k-means model is missing the sklearn model state.")
+        raw_labels = fitted_model.sklearn_model.predict(features).astype(int, copy=False)
+    elif fitted_model.method == "spherical_kmeans":
+        if fitted_model.spherical_centers is None:
+            raise RuntimeError(
+                "Fitted spherical k-means model is missing the spherical centers."
+            )
+        features_unit = _l2_normalize_rows_strict(
+            features,
+            context="Spherical k-means prediction features",
+        )
+        raw_labels = np.argmax(
+            features_unit @ fitted_model.spherical_centers.T,
+            axis=1,
+        ).astype(int, copy=False)
+    else:
+        raise ValueError(
+            f"Unsupported fitted clustering method {fitted_model.method!r}."
+        )
+
+    labels = _remap_cluster_labels(
+        raw_labels,
+        label_remap=fitted_model.label_remap,
+    )
+    if return_features:
+        return labels, features
+    return labels
+
+
+def compute_transfer_kmeans_labels(
+    fit_latents: np.ndarray,
+    target_latents: np.ndarray,
+    n_clusters: int,
+    *,
+    random_state: int = 42,
+    method: str = "auto",
+    l2_normalize: bool = True,
+    standardize: bool = True,
+    pca_variance: float | None = 0.98,
+    pca_max_components: int = 32,
+    return_info: bool = False,
+) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
+    fitted_model, fit_labels, fit_info = fit_clustering_model(
+        fit_latents,
+        n_clusters,
+        random_state=int(random_state),
+        method=method,
+        l2_normalize=l2_normalize,
+        standardize=standardize,
+        pca_variance=pca_variance,
+        pca_max_components=pca_max_components,
+    )
+    target_labels, target_features = predict_clustering_model(
+        target_latents,
+        fitted_model,
+        return_features=True,
+    )
+    target_metrics = _compute_internal_clustering_metrics(
+        target_features,
+        target_labels,
+        random_state=int(random_state),
+    )
+    info = {
+        **{
+            key: value
+            for key, value in fit_info.items()
+            if key
+            not in {
+                "cluster_counts",
+                "n_clusters_observed",
+                "smallest_cluster_size",
+                "largest_cluster_size",
+                "cluster_validation_sample_size",
+                "cluster_size_entropy",
+                "cluster_size_entropy_normalized",
+                "largest_cluster_fraction",
+                "smallest_cluster_fraction",
+                "silhouette_euclidean",
+                "silhouette_cosine",
+                "calinski_harabasz",
+                "davies_bouldin",
+                "internal_validation_skipped",
+            }
+        },
+        **target_metrics,
+        "fit_sample_count": int(len(fit_latents)),
+        "target_sample_count": int(len(target_latents)),
+        "transfer_fit_enabled": True,
+        "fit_cluster_counts": {
+            int(k): int(v)
+            for k, v in zip(*np.unique(fit_labels, return_counts=True))
+        },
+    }
+    if return_info:
+        return target_labels.astype(int, copy=False), info
+    return target_labels.astype(int, copy=False)
 
 
 def _canonicalize_cluster_labels(
@@ -1607,6 +1920,13 @@ def save_equivariance_plot(eq_errors: np.ndarray, out_file: Path) -> None:
 
 
 __all__ = [
+    "ClusteringFeatureTransform",
+    "FittedClusteringModel",
+    "fit_clustering_feature_transform",
+    "transform_clustering_features",
+    "fit_clustering_model",
+    "predict_clustering_model",
+    "compute_transfer_kmeans_labels",
     "save_latent_tsne",
     "compute_kmeans_labels",
     "compute_hdbscan_labels",
