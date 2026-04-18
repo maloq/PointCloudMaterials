@@ -1,5 +1,5 @@
 checkpoint:
-  path: output/2026-04-16/16-19-29/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=14.ckpt
+  path: output/2026-04-17/11-08-33/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=54.ckpt
   output_dir: outputs/temporal_Al_500frames
   cuda_device: 0
 
