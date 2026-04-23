@@ -150,9 +150,7 @@ def _build_analysis_dataloader(
             cache_dir=cache_dir,
             rebuild_cache=False,
             tree_cache_size=int(getattr(data_cfg, "tree_cache_size", 4)),
-            precompute_neighbor_indices=bool(
-                getattr(data_cfg, "precompute_neighbor_indices", False)
-            ),
+            precompute_neighbor_indices=False,
             build_lock_timeout_sec=float(
                 getattr(data_cfg, "build_lock_timeout_sec", 7200.0)
             ),
@@ -454,6 +452,7 @@ def _collect_temporal_dense_snapshot_cache(
     snapshot_bundles = [
         build_temporal_real_single_snapshot_bundle(
             analysis_cfg=analysis_cfg,
+            model_cfg=model_cfg_for_module,
             selection=temporal_selection,
             batch_size=int(inference_batch_size),
             dataloader_num_workers=int(dataloader_num_workers),
@@ -474,7 +473,14 @@ def _collect_temporal_dense_snapshot_cache(
     snapshot_sample_counts: dict[str, int] = {}
     for bundle in snapshot_bundles:
         source_name = str(bundle.selection.analysis_source_names[0])
-        sample_count = int(len(bundle.dataset))
+        sample_count = int(len(bundle.inference_dataset))
+        if sample_count != int(len(bundle.dataset)):
+            raise RuntimeError(
+                "Temporal dense snapshot inference dataset and visualization dataset must "
+                "have identical sample counts. "
+                f"source_name={source_name}, inference_samples={sample_count}, "
+                f"visualization_samples={int(len(bundle.dataset))}."
+            )
         snapshot_sample_source_names.extend([source_name] * sample_count)
         snapshot_sample_counts[source_name] = sample_count
     setattr(snapshot_dataset, "sample_source_names", snapshot_sample_source_names)
@@ -539,13 +545,13 @@ def _collect_temporal_dense_snapshot_cache(
             source_name = str(bundle.selection.analysis_source_names[0])
             print(
                 f"{summary_label} inference: "
-                f"snapshot={source_name}, samples={len(bundle.dataset)}, "
+                f"snapshot={source_name}, samples={len(bundle.inference_dataset)}, "
                 f"regular_grid_overlap={regular_grid_overlap:.3f} "
                 f"(static_overlap_fraction={static_overlap_fraction:.3f})."
             )
             part_cache = gather_inference_batches(
                 model,
-                bundle.dataloader,
+                bundle.inference_dataloader,
                 f"cuda:{int(cuda_device)}" if torch.cuda.is_available() else "cpu",
                 max_batches=None,
                 max_samples_total=None,
@@ -558,7 +564,7 @@ def _collect_temporal_dense_snapshot_cache(
             )
             _validate_inference_cache_arrays(part_cache)
             part_sample_count = int(len(part_cache["inv_latents"]))
-            expected_sample_count = int(len(bundle.dataset))
+            expected_sample_count = int(len(bundle.inference_dataset))
             if part_sample_count != expected_sample_count:
                 raise RuntimeError(
                     f"{summary_label} inference collected an unexpected number of samples. "
@@ -832,6 +838,12 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
         from src.training_methods.temporal_ssl.temporal_ssl_module import TemporalSSLModule
 
         return TemporalSSLModule
+    if model_type == "temporal_rigs_vicreg":
+        from src.training_methods.temporal_ssl.temporal_rigs_ssl_module import (
+            TemporalRIGSSSLModule,
+        )
+
+        return TemporalRIGSSSLModule
     if model_type == "temporal_motif_field":
         from src.training_methods.temporal_motif_field.temporal_motif_field_module import (
             TemporalMotifFieldModule,
@@ -840,7 +852,7 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
         return TemporalMotifFieldModule
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
-        f"Expected one of ['vicreg', 'temporal_vicreg', 'temporal_lejepa', "
+        f"Expected one of ['vicreg', 'temporal_vicreg', 'temporal_lejepa', 'temporal_rigs_vicreg', "
         f"'temporal_motif_field'], got {model_type!r}."
     )
 
@@ -1028,7 +1040,7 @@ def run_post_training_analysis(
             batch_size=int(analysis_inference_batch_size),
             dataloader_num_workers=int(input_settings.dataloader_num_workers),
         )
-        dl = temporal_bundle.dataloader
+        dl = temporal_bundle.inference_dataloader
         analysis_source_names = list(temporal_bundle.selection.analysis_source_names)
         all_metrics["temporal_real_inputs"] = {
             **temporal_bundle.selection.dump_summary,
@@ -1296,6 +1308,14 @@ def run_post_training_analysis(
     temporal_md_space_animation_dataset = None
     temporal_md_space_animation_layout = None
     temporal_md_space_animation_source_names: list[str] | None = None
+    temporal_md_space_animation_reuse_main_cache = bool(
+        temporal_bundle is not None
+        and OmegaConf.select(
+            analysis_cfg,
+            "real_md.temporal.md_space.reuse_main_inference_cache",
+            default=False,
+        )
+    )
     temporal_md_space_animation_enabled = bool(
         temporal_bundle is not None
         and OmegaConf.select(analysis_cfg, "real_md.enabled", default=True)
@@ -1312,7 +1332,12 @@ def run_post_training_analysis(
         )
         not in {None, "", 0}
     )
-    if temporal_md_space_animation_enabled:
+    if temporal_md_space_animation_enabled and temporal_md_space_animation_reuse_main_cache:
+        print(
+            "[analysis] real_md.temporal.md_space.reuse_main_inference_cache=true: "
+            "reusing the main temporal inference cache for MD-space animation frames."
+        )
+    if temporal_md_space_animation_enabled and not temporal_md_space_animation_reuse_main_cache:
         _step("Loading dense temporal MD-space animation data")
         md_animation_cache_result = _collect_temporal_md_space_animation_cache(
             analysis_cfg=analysis_cfg,
@@ -1371,7 +1396,11 @@ def run_post_training_analysis(
     clustering_feature_prep_for_fixed_k = (
         None if fit_latents_for_clustering is not None else clustering_feature_prep
     )
-    dataset_obj = getattr(dl, "dataset", None)
+    dataset_obj = (
+        temporal_bundle.dataset
+        if temporal_bundle is not None
+        else getattr(dl, "dataset", None)
+    )
     snapshot_layout_inference = resolve_snapshot_figure_layout(
         dataset_obj,
         is_synthetic=is_synthetic,
@@ -1681,6 +1710,45 @@ def run_post_training_analysis(
         prep_info=clustering_feature_prep_for_fixed_k,
     )
     all_metrics["clustering"] = clustering_metrics
+    if temporal_md_space_animation_enabled and temporal_md_space_animation_reuse_main_cache:
+        dense_snapshot_count = int(
+            OmegaConf.select(
+                analysis_cfg,
+                "real_md.temporal.md_space.dense_snapshot_count",
+                default=0,
+            )
+        )
+        frame_indices, source_names = resolve_temporal_real_snapshot_subset(
+            analysis_cfg=analysis_cfg,
+            selection=temporal_bundle.selection,
+            snapshot_count=int(dense_snapshot_count),
+        )
+        temporal_md_animation_layout_for_outputs = filter_snapshot_figure_layout(
+            snapshot_layout_inference,
+            allowed_source_names=[str(v) for v in source_names],
+        )
+        temporal_md_animation_order_for_outputs = [str(v) for v in source_names]
+        temporal_md_animation_coords_for_outputs = np.asarray(coords, dtype=np.float32)
+        temporal_md_animation_cluster_labels_by_k_for_outputs = cluster_labels_by_k
+        temporal_md_animation_frame_source = "main_temporal_inference_subset"
+        all_metrics["temporal_md_space_animation_sampling"] = {
+            "enabled": True,
+            "reused_main_inference_cache": True,
+            "dense_snapshot_count": int(dense_snapshot_count),
+            "frame_indices": [int(v) for v in frame_indices.tolist()],
+            "source_names": [str(v) for v in source_names],
+            "sample_count": int(
+                sum(
+                    int(np.asarray(indices, dtype=int).size)
+                    for _source_name, indices in temporal_md_animation_layout_for_outputs.source_groups
+                )
+            ),
+            "sample_count_by_snapshot": {
+                str(source_name): int(np.asarray(indices, dtype=int).size)
+                for source_name, indices in temporal_md_animation_layout_for_outputs.source_groups
+            },
+            "clustering_projection": "reused_main_clustering",
+        }
     clustering_comparison, comparison_labels_by_method = build_clustering_method_comparison(
         cache["inv_latents"],
         cache["phases"],

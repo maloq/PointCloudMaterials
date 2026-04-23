@@ -17,6 +17,8 @@ from numpy.lib.format import open_memmap
 from scipy.spatial import cKDTree
 from torch.utils.data import Dataset
 
+from src.models.encoders.rigs_encoder import compute_sparse_rigs_graph
+
 def _setup_logger() -> logging.Logger:
     logger = logging.getLogger("temporal_lammps_dataset")
     if not logger.handlers:
@@ -41,6 +43,7 @@ _SUPPORTED_POSITION_COLUMNS: tuple[tuple[str, str, str], ...] = (
     ("xu", "yu", "zu"),
 )
 _PRECOMPUTED_NEIGHBOR_INDEX_PROCESS_CACHE: dict[str, np.ndarray] = {}
+_PRECOMPUTED_RIGS_GRAPH_PROCESS_CACHE: dict[str, np.ndarray] = {}
 
 
 def _normalize_point_cloud(points: np.ndarray, radius: float | None) -> np.ndarray:
@@ -216,6 +219,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
     cache_version: int = 1
     neighbor_index_cache_version: int = 1
+    rigs_graph_cache_version: int = 1
 
     def __init__(
         self,
@@ -244,6 +248,10 @@ class TemporalLAMMPSDumpDataset(Dataset):
         rebuild_cache: bool = False,
         tree_cache_size: int = 4,
         precompute_neighbor_indices: bool = False,
+        precompute_rigs_graph: bool = False,
+        rigs_num_points: int | None = None,
+        rigs_local_k: int = 16,
+        rigs_chunk_size: int = 256,
         build_lock_timeout_sec: float = 7200.0,
         build_lock_stale_sec: float = 86400.0,
     ) -> None:
@@ -283,6 +291,11 @@ class TemporalLAMMPSDumpDataset(Dataset):
         )
         self.tree_cache_size = int(tree_cache_size)
         self.precompute_neighbor_indices = bool(precompute_neighbor_indices)
+        self.precompute_rigs_graph = bool(precompute_rigs_graph)
+        resolved_rigs_num_points = self.num_points if rigs_num_points is None else int(rigs_num_points)
+        self.rigs_num_points = int(resolved_rigs_num_points)
+        self.rigs_local_k = int(rigs_local_k)
+        self.rigs_chunk_size = int(rigs_chunk_size)
         self.build_lock_timeout_sec = float(build_lock_timeout_sec)
         self.build_lock_stale_sec = float(build_lock_stale_sec)
 
@@ -305,6 +318,21 @@ class TemporalLAMMPSDumpDataset(Dataset):
             raise ValueError(f"frame_start must be >= 0, got {self.frame_start}")
         if self.tree_cache_size <= 0:
             raise ValueError(f"tree_cache_size must be > 0, got {self.tree_cache_size}")
+        if self.rigs_num_points <= 1:
+            raise ValueError(f"rigs_num_points must be > 1, got {self.rigs_num_points}.")
+        if self.rigs_num_points > self.num_points:
+            raise ValueError(
+                f"rigs_num_points ({self.rigs_num_points}) cannot exceed num_points ({self.num_points})."
+            )
+        if self.rigs_local_k <= 0:
+            raise ValueError(f"rigs_local_k must be > 0, got {self.rigs_local_k}.")
+        if self.rigs_local_k >= self.rigs_num_points:
+            raise ValueError(
+                "rigs_local_k must be smaller than rigs_num_points so non-self sparse RIGS edges exist. "
+                f"Got rigs_local_k={self.rigs_local_k}, rigs_num_points={self.rigs_num_points}."
+            )
+        if self.rigs_chunk_size <= 0:
+            raise ValueError(f"rigs_chunk_size must be > 0, got {self.rigs_chunk_size}.")
         if (
             self.center_grid_overlap is not None
             and self.center_grid_overlap >= 2.0
@@ -353,6 +381,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
         self._tree_cache: OrderedDict[int, cKDTree] = OrderedDict()
         self._precomputed_neighbor_indices: np.ndarray | None = None
         self._precomputed_neighbor_cache_path: Path | None = None
+        self._precomputed_rigs_cache_paths: dict[str, Path] | None = None
+        self._precomputed_rigs_graphs: dict[str, np.ndarray] | None = None
         self._center_atom_indices = self._resolve_center_atom_indices(
             center_selection_mode=self.center_selection_mode,
             center_atom_ids=center_atom_ids,
@@ -386,6 +416,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
         )
         if self.precompute_neighbor_indices:
             self._prepare_precomputed_neighbor_indices()
+        if self.precompute_rigs_graph:
+            self._prepare_precomputed_rigs_graph()
 
         logger.print(
             "[temporal-lammps] "
@@ -421,7 +453,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
     def __getitem__(self, index: int) -> dict[str, Any]:
         batch = self._build_batch_from_indices(np.asarray([index], dtype=np.int64))
-        return {
+        sample = {
             "points": batch["points"][0],
             "local_atom_ids": batch["local_atom_ids"][0],
             "coords": batch["coords"][0],
@@ -434,6 +466,10 @@ class TemporalLAMMPSDumpDataset(Dataset):
             "anchor_timestep": batch["anchor_timestep"][0],
             "source_path": batch["source_path"][0],
         }
+        rigs_graph = batch.get("rigs_graph")
+        if isinstance(rigs_graph, dict):
+            sample["rigs_graph"] = {key: value[0] for key, value in rigs_graph.items()}
+        return sample
 
     def __getitems__(self, indices: Sequence[int]) -> dict[str, Any]:
         index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
@@ -443,6 +479,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         state = dict(self.__dict__)
         state["_tree_cache"] = OrderedDict()
         state["_precomputed_neighbor_indices"] = None
+        state["_precomputed_rigs_graphs"] = None
         return state
 
     def _neighbor_index_cache_spec(self) -> dict[str, Any]:
@@ -611,6 +648,289 @@ class TemporalLAMMPSDumpDataset(Dataset):
         logger.print(
             "[temporal-lammps] "
             f"Finished building precomputed neighbor-index cache: {cache_path}."
+        )
+
+    def _rigs_graph_cache_spec(self) -> dict[str, Any]:
+        source_stat = self.dump_file.stat()
+        center_atom_indices_bytes = np.asarray(
+            self._center_atom_indices,
+            dtype=np.int64,
+        ).tobytes()
+        return {
+            "rigs_graph_cache_version": self.rigs_graph_cache_version,
+            "source_path": str(self.dump_file),
+            "source_size_bytes": int(source_stat.st_size),
+            "source_mtime_ns": int(source_stat.st_mtime_ns),
+            "frame_count": int(self.frame_count),
+            "center_count": int(self.center_count),
+            "num_points": int(self.num_points),
+            "rigs_num_points": int(self.rigs_num_points),
+            "rigs_local_k": int(self.rigs_local_k),
+            "normalize": bool(self.normalize),
+            "radius": None if self.radius is None else float(self.radius),
+            "center_neighborhoods": bool(self.center_neighborhoods),
+            "selection_method": str(self.selection_method),
+            "center_atom_indices_sha1": hashlib.sha1(center_atom_indices_bytes).hexdigest(),
+        }
+
+    def _resolve_rigs_graph_cache_paths(self) -> tuple[dict[str, Any], dict[str, Path], Path]:
+        spec = self._rigs_graph_cache_spec()
+        cache_key = hashlib.sha1(
+            json.dumps(spec, sort_keys=True).encode("utf-8")
+        ).hexdigest()[:16]
+        edge_index_suffix = "u8" if self.rigs_num_points <= np.iinfo(np.uint8).max else "u16"
+        paths = {
+            "radii": self.cache_dir / f"rigs_graph_{cache_key}_radii.npy",
+            "edge_index": self.cache_dir / f"rigs_graph_{cache_key}_edge_index_{edge_index_suffix}.npy",
+            "edge_distance": self.cache_dir / f"rigs_graph_{cache_key}_edge_distance.npy",
+            "edge_cosine": self.cache_dir / f"rigs_graph_{cache_key}_edge_cosine.npy",
+        }
+        manifest_path = self.cache_dir / f"rigs_graph_{cache_key}.json"
+        return spec, paths, manifest_path
+
+    def _rigs_edge_index_dtype(self):
+        if self.rigs_num_points <= np.iinfo(np.uint8).max:
+            return np.uint8
+        if self.rigs_num_points <= np.iinfo(np.uint16).max:
+            return np.uint16
+        raise ValueError(
+            "Precomputed sparse RIGS cache only supports rigs_num_points <= uint16 max so the "
+            f"local edge index array stays compact. Got rigs_num_points={self.rigs_num_points}."
+        )
+
+    def _rigs_graph_cache_is_valid(
+        self,
+        *,
+        spec: dict[str, Any],
+        paths: dict[str, Path],
+        manifest_path: Path,
+    ) -> bool:
+        if not manifest_path.exists():
+            return False
+        if not all(path.exists() for path in paths.values()):
+            return False
+
+        with manifest_path.open("r", encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        if manifest != spec:
+            return False
+
+        expected_edge_dtype = self._rigs_edge_index_dtype()
+        expected_shapes = {
+            "radii": (self.frame_count, self.center_count, self.rigs_num_points),
+            "edge_index": (self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+            "edge_distance": (self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+            "edge_cosine": (self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+        }
+        expected_dtypes = {
+            "radii": np.float16,
+            "edge_index": expected_edge_dtype,
+            "edge_distance": np.float16,
+            "edge_cosine": np.float16,
+        }
+        for key, path in paths.items():
+            arr = np.load(path, mmap_mode="r")
+            if tuple(arr.shape) != expected_shapes[key]:
+                return False
+            if arr.dtype != expected_dtypes[key]:
+                return False
+        return True
+
+    def _load_precomputed_rigs_graph(self) -> dict[str, np.ndarray] | None:
+        if self._precomputed_rigs_graphs is not None:
+            return self._precomputed_rigs_graphs
+        if self._precomputed_rigs_cache_paths is None:
+            return None
+
+        expected_shapes = {
+            "radii": (self.frame_count, self.center_count, self.rigs_num_points),
+            "edge_index": (self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+            "edge_distance": (self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+            "edge_cosine": (self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+        }
+        expected_dtypes = {
+            "radii": np.float16,
+            "edge_index": self._rigs_edge_index_dtype(),
+            "edge_distance": np.float16,
+            "edge_cosine": np.float16,
+        }
+
+        arrays: dict[str, np.ndarray] = {}
+        for key, path in self._precomputed_rigs_cache_paths.items():
+            cache_key = str(path)
+            cached = _PRECOMPUTED_RIGS_GRAPH_PROCESS_CACHE.get(cache_key)
+            if cached is None:
+                if not path.exists():
+                    raise FileNotFoundError(
+                        "Precomputed sparse RIGS cache is missing. "
+                        f"key={key}, cache_path={path}."
+                    )
+                cached = np.load(path, mmap_mode="r")
+                _PRECOMPUTED_RIGS_GRAPH_PROCESS_CACHE[cache_key] = cached
+            if tuple(cached.shape) != expected_shapes[key]:
+                raise ValueError(
+                    "Precomputed sparse RIGS cache has an unexpected shape. "
+                    f"key={key}, expected={expected_shapes[key]}, got={tuple(cached.shape)}, cache_path={path}."
+                )
+            if cached.dtype != expected_dtypes[key]:
+                raise ValueError(
+                    "Precomputed sparse RIGS cache has an unexpected dtype. "
+                    f"key={key}, expected={expected_dtypes[key]}, got={cached.dtype}, cache_path={path}."
+                )
+            arrays[key] = cached
+
+        self._precomputed_rigs_graphs = arrays
+        return arrays
+
+    def _estimate_rigs_graph_cache_bytes(self) -> int:
+        per_neighborhood = (
+            int(self.rigs_num_points) * np.dtype(np.float16).itemsize
+            + int(self.rigs_num_points) * int(self.rigs_local_k) * np.dtype(self._rigs_edge_index_dtype()).itemsize
+            + int(self.rigs_num_points) * int(self.rigs_local_k) * np.dtype(np.float16).itemsize
+            + int(self.rigs_num_points) * int(self.rigs_local_k) * np.dtype(np.float16).itemsize
+        )
+        return int(self.frame_count) * int(self.center_count) * int(per_neighborhood)
+
+    def _build_sparse_rigs_graph_batch(
+        self,
+        local_points: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        if local_points.ndim != 3 or local_points.shape[-1] != 3:
+            raise ValueError(
+                "Expected local_points with shape (B, N, 3) while building sparse RIGS cache, "
+                f"got {tuple(local_points.shape)}."
+            )
+        with torch.no_grad():
+            graph = compute_sparse_rigs_graph(
+                torch.from_numpy(np.asarray(local_points, dtype=np.float32)),
+                local_k=self.rigs_local_k,
+                eps=1e-8,
+            )
+        edge_index_dtype = self._rigs_edge_index_dtype()
+        return (
+            graph.radii.cpu().numpy().astype(np.float16, copy=False),
+            graph.edge_index.cpu().numpy().astype(edge_index_dtype, copy=False),
+            graph.edge_distance.cpu().numpy().astype(np.float16, copy=False),
+            graph.edge_cosine.cpu().numpy().astype(np.float16, copy=False),
+        )
+
+    def _prepare_precomputed_rigs_graph(self) -> None:
+        spec, paths, manifest_path = self._resolve_rigs_graph_cache_paths()
+        self._precomputed_rigs_cache_paths = paths
+
+        if self._rigs_graph_cache_is_valid(
+            spec=spec,
+            paths=paths,
+            manifest_path=manifest_path,
+        ):
+            self._load_precomputed_rigs_graph()
+            logger.print(
+                "[temporal-lammps] "
+                f"Loaded precomputed sparse RIGS cache from {manifest_path}."
+            )
+            return
+
+        lock_path = manifest_path.with_suffix(manifest_path.suffix + ".lock")
+        self._acquire_build_lock(lock_path)
+        try:
+            if self._rigs_graph_cache_is_valid(
+                spec=spec,
+                paths=paths,
+                manifest_path=manifest_path,
+            ):
+                self._load_precomputed_rigs_graph()
+                logger.print(
+                    "[temporal-lammps] "
+                    f"Loaded precomputed sparse RIGS cache from {manifest_path}."
+                )
+                return
+
+            for path in [*paths.values(), manifest_path]:
+                if path.exists():
+                    path.unlink()
+
+            estimated_bytes = self._estimate_rigs_graph_cache_bytes()
+            logger.print(
+                "[temporal-lammps] "
+                f"Building precomputed sparse RIGS cache (~{estimated_bytes / float(1024 ** 3):.2f} GiB) "
+                f"in {self.cache_dir}."
+            )
+
+            radii_array = open_memmap(
+                paths["radii"],
+                mode="w+",
+                dtype=np.float16,
+                shape=(self.frame_count, self.center_count, self.rigs_num_points),
+            )
+            edge_index_array = open_memmap(
+                paths["edge_index"],
+                mode="w+",
+                dtype=self._rigs_edge_index_dtype(),
+                shape=(self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+            )
+            edge_distance_array = open_memmap(
+                paths["edge_distance"],
+                mode="w+",
+                dtype=np.float16,
+                shape=(self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+            )
+            edge_cosine_array = open_memmap(
+                paths["edge_cosine"],
+                mode="w+",
+                dtype=np.float16,
+                shape=(self.frame_count, self.center_count, self.rigs_num_points, self.rigs_local_k),
+            )
+
+            precomputed_neighbor_indices = self._load_precomputed_neighbor_indices()
+            for frame_idx in range(self.frame_count):
+                frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+                centers = np.asarray(frame_points[self._center_atom_indices], dtype=np.float32)
+                if precomputed_neighbor_indices is None:
+                    selected_full = self._query_local_structures(frame_idx=frame_idx, centers=centers)
+                else:
+                    selected_full = np.asarray(
+                        precomputed_neighbor_indices[frame_idx],
+                        dtype=np.int64,
+                    )
+                selected = np.asarray(selected_full[:, : self.rigs_num_points], dtype=np.int64)
+                local_points = np.asarray(frame_points[selected], dtype=np.float32)
+                local_points = self._to_local_coordinates_batch(
+                    frame_idx=frame_idx,
+                    points=local_points,
+                    centers=centers,
+                )
+                if self.normalize:
+                    local_points = self._normalize_point_cloud_batch(local_points).astype(np.float32, copy=False)
+
+                for start in range(0, self.center_count, self.rigs_chunk_size):
+                    stop = min(self.center_count, start + self.rigs_chunk_size)
+                    radii_chunk, edge_index_chunk, edge_distance_chunk, edge_cosine_chunk = (
+                        self._build_sparse_rigs_graph_batch(local_points[start:stop])
+                    )
+                    radii_array[frame_idx, start:stop] = radii_chunk
+                    edge_index_array[frame_idx, start:stop] = edge_index_chunk
+                    edge_distance_array[frame_idx, start:stop] = edge_distance_chunk
+                    edge_cosine_array[frame_idx, start:stop] = edge_cosine_chunk
+
+                if frame_idx == 0 or (frame_idx + 1) % 10 == 0 or (frame_idx + 1) == self.frame_count:
+                    logger.print(
+                        "[temporal-lammps] "
+                        f"Cached sparse RIGS graph for frame {frame_idx + 1}/{self.frame_count}."
+                    )
+
+            radii_array.flush()
+            edge_index_array.flush()
+            edge_distance_array.flush()
+            edge_cosine_array.flush()
+            with manifest_path.open("w", encoding="utf-8") as handle:
+                json.dump(spec, handle, indent=2)
+        finally:
+            self._release_build_lock(lock_path)
+
+        self._load_precomputed_rigs_graph()
+        logger.print(
+            "[temporal-lammps] "
+            f"Finished building precomputed sparse RIGS cache: {manifest_path}."
         )
 
     @property
@@ -1493,6 +1813,27 @@ class TemporalLAMMPSDumpDataset(Dataset):
         anchor_frame_indices = np.empty((batch_size,), dtype=np.int64)
         anchor_timesteps = np.empty((batch_size,), dtype=np.int64)
         precomputed_neighbor_indices = self._load_precomputed_neighbor_indices()
+        precomputed_rigs_graph = self._load_precomputed_rigs_graph()
+        rigs_batch = None
+        if precomputed_rigs_graph is not None:
+            rigs_batch = {
+                "radii": np.empty(
+                    (batch_size, self.sequence_length, self.rigs_num_points),
+                    dtype=np.float16,
+                ),
+                "edge_index": np.empty(
+                    (batch_size, self.sequence_length, self.rigs_num_points, self.rigs_local_k),
+                    dtype=self._rigs_edge_index_dtype(),
+                ),
+                "edge_distance": np.empty(
+                    (batch_size, self.sequence_length, self.rigs_num_points, self.rigs_local_k),
+                    dtype=np.float16,
+                ),
+                "edge_cosine": np.empty(
+                    (batch_size, self.sequence_length, self.rigs_num_points, self.rigs_local_k),
+                    dtype=np.float16,
+                ),
+            }
 
         window_slots = (index_array // self.center_count).astype(np.int64, copy=False)
         center_slots = (index_array % self.center_count).astype(np.int64, copy=False)
@@ -1543,8 +1884,25 @@ class TemporalLAMMPSDumpDataset(Dataset):
                     dtype=np.int64,
                 )
                 center_positions[batch_positions, local_frame_idx] = centers + self.box_low[frame_idx]
+                if rigs_batch is not None:
+                    rigs_batch["radii"][batch_positions, local_frame_idx] = np.asarray(
+                        precomputed_rigs_graph["radii"][frame_idx, center_slots[batch_positions]],
+                        dtype=np.float16,
+                    )
+                    rigs_batch["edge_index"][batch_positions, local_frame_idx] = np.asarray(
+                        precomputed_rigs_graph["edge_index"][frame_idx, center_slots[batch_positions]],
+                        dtype=self._rigs_edge_index_dtype(),
+                    )
+                    rigs_batch["edge_distance"][batch_positions, local_frame_idx] = np.asarray(
+                        precomputed_rigs_graph["edge_distance"][frame_idx, center_slots[batch_positions]],
+                        dtype=np.float16,
+                    )
+                    rigs_batch["edge_cosine"][batch_positions, local_frame_idx] = np.asarray(
+                        precomputed_rigs_graph["edge_cosine"][frame_idx, center_slots[batch_positions]],
+                        dtype=np.float16,
+                    )
 
-        return {
+        batch = {
             "points": torch.from_numpy(sequence_points),
             "local_atom_ids": torch.from_numpy(local_atom_ids_batch),
             "coords": torch.from_numpy(center_positions[:, 0].copy()),
@@ -1557,6 +1915,12 @@ class TemporalLAMMPSDumpDataset(Dataset):
             "anchor_timestep": torch.from_numpy(anchor_timesteps),
             "source_path": [str(self.dump_file)] * batch_size,
         }
+        if rigs_batch is not None:
+            batch["rigs_graph"] = {
+                key: torch.from_numpy(value)
+                for key, value in rigs_batch.items()
+            }
+        return batch
 
     @staticmethod
     def _resolve_position_columns(atom_columns: Sequence[str]) -> tuple[int, int, int]:

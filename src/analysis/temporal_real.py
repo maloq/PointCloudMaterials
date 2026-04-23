@@ -62,6 +62,8 @@ class TemporalRealAnalysisBundle:
     dataset: TemporalLAMMPSDumpDataset
     dataloader: torch.utils.data.DataLoader
     selection: TemporalRealAnalysisSelection
+    inference_dataset: Any
+    inference_dataloader: torch.utils.data.DataLoader
 
 
 @dataclass(frozen=True)
@@ -126,6 +128,58 @@ def resolve_temporal_real_inference_spec(
         "inputs.temporal_real.inference_mode must be one of "
         "['static', 'static_anchor', 'temporal'], "
         f"got {mode_raw!r}."
+    )
+
+
+def _build_temporal_real_inference_dataset(
+    *,
+    model_cfg: Any,
+    dump_file: Path,
+    cache_dir: Path | None,
+    sequence_length: int,
+    num_points: int,
+    radius: float,
+    frame_stride: int,
+    anchor_frame_indices: list[int],
+    anchor_source_names: list[str],
+    center_selection_seed: int,
+    normalize: bool,
+    center_neighborhoods: bool,
+    selection_method: str,
+    rebuild_cache: bool,
+    tree_cache_size: int,
+    dataset_center_kwargs: dict[str, Any],
+) -> Any:
+    model_data_kind = str(getattr(model_cfg.data, "kind", "")).strip().lower()
+    if model_data_kind != "temporal_lammps":
+        raise ValueError(
+            "Temporal real-data analysis only supports temporal checkpoints with "
+            "model_cfg.data.kind='temporal_lammps', "
+            f"got {model_data_kind!r}."
+        )
+    return TemporalLAMMPSDumpDataset(
+        dump_file=dump_file,
+        cache_dir=cache_dir,
+        sequence_length=int(sequence_length),
+        num_points=int(num_points),
+        radius=float(radius),
+        frame_stride=int(frame_stride),
+        anchor_frame_indices=[int(v) for v in anchor_frame_indices],
+        anchor_source_names=[str(v) for v in anchor_source_names],
+        center_selection_seed=int(center_selection_seed),
+        normalize=bool(normalize),
+        center_neighborhoods=bool(center_neighborhoods),
+        selection_method=str(selection_method),
+        rebuild_cache=bool(rebuild_cache),
+        tree_cache_size=int(tree_cache_size),
+        precompute_neighbor_indices=False,
+        build_lock_timeout_sec=float(
+            getattr(model_cfg.data, "build_lock_timeout_sec", 7200.0)
+        ),
+        build_lock_stale_sec=float(
+            getattr(model_cfg.data, "build_lock_stale_sec", 86400.0)
+        ),
+        **dataset_center_kwargs,
     )
 
 
@@ -327,6 +381,40 @@ def build_temporal_real_analysis_bundle(
         persistent_workers=bool(int(dataloader_num_workers) > 0),
         collate_fn=_temporal_identity_or_default_collate,
     )
+    inference_dataset = _build_temporal_real_inference_dataset(
+        model_cfg=model_cfg,
+        dump_file=dump_file,
+        cache_dir=cache_dir,
+        sequence_length=sequence_length,
+        num_points=num_points,
+        radius=float(radius),
+        frame_stride=frame_stride,
+        anchor_frame_indices=inference_frame_indices.tolist(),
+        anchor_source_names=inference_source_names,
+        center_selection_seed=int(
+            OmegaConf.select(temporal_cfg, "center_selection_seed", default=0)
+        ),
+        normalize=bool(OmegaConf.select(temporal_cfg, "normalize", default=True)),
+        center_neighborhoods=bool(
+            OmegaConf.select(temporal_cfg, "center_neighborhoods", default=True)
+        ),
+        selection_method=str(
+            OmegaConf.select(temporal_cfg, "selection_method", default="closest")
+        ),
+        rebuild_cache=bool(OmegaConf.select(temporal_cfg, "rebuild_cache", default=False)),
+        tree_cache_size=int(OmegaConf.select(temporal_cfg, "tree_cache_size", default=4)),
+        dataset_center_kwargs=dict(dataset_center_kwargs),
+    )
+    inference_dataloader = torch.utils.data.DataLoader(
+        inference_dataset,
+        batch_size=int(batch_size),
+        num_workers=int(dataloader_num_workers),
+        shuffle=False,
+        drop_last=False,
+        pin_memory=True,
+        persistent_workers=bool(int(dataloader_num_workers) > 0),
+        collate_fn=_temporal_identity_or_default_collate,
+    )
     selection = TemporalRealAnalysisSelection(
         dump_file=dump_file,
         dump_summary=dump_summary,
@@ -349,12 +437,15 @@ def build_temporal_real_analysis_bundle(
         dataset=dataset,
         dataloader=dataloader,
         selection=selection,
+        inference_dataset=inference_dataset,
+        inference_dataloader=inference_dataloader,
     )
 
 
 def build_temporal_real_single_snapshot_bundle(
     *,
     analysis_cfg: Any,
+    model_cfg: Any,
     selection: TemporalRealAnalysisSelection,
     batch_size: int,
     dataloader_num_workers: int,
@@ -405,6 +496,44 @@ def build_temporal_real_single_snapshot_bundle(
         persistent_workers=bool(int(dataloader_num_workers) > 0),
         collate_fn=_temporal_identity_or_default_collate,
     )
+    inference_dataset = _build_temporal_real_inference_dataset(
+        model_cfg=model_cfg,
+        dump_file=selection.dump_file,
+        cache_dir=selection.cache_dir,
+        sequence_length=int(selection.sequence_length),
+        num_points=int(selection.num_points),
+        radius=float(selection.radius),
+        frame_stride=int(selection.frame_stride),
+        anchor_frame_indices=[int(frame_index)],
+        anchor_source_names=[str(source_name)],
+        center_selection_seed=int(
+            OmegaConf.select(temporal_cfg, "center_selection_seed", default=0)
+        ),
+        normalize=bool(OmegaConf.select(temporal_cfg, "normalize", default=True)),
+        center_neighborhoods=bool(
+            OmegaConf.select(temporal_cfg, "center_neighborhoods", default=True)
+        ),
+        selection_method=str(
+            OmegaConf.select(temporal_cfg, "selection_method", default="closest")
+        ),
+        rebuild_cache=bool(OmegaConf.select(temporal_cfg, "rebuild_cache", default=False)),
+        tree_cache_size=int(OmegaConf.select(temporal_cfg, "tree_cache_size", default=4)),
+        dataset_center_kwargs={
+            "center_selection_mode": "regular_grid",
+            "center_grid_overlap": float(overlap),
+            "center_grid_reference_frame_index": int(frame_index),
+        },
+    )
+    inference_dataloader = torch.utils.data.DataLoader(
+        inference_dataset,
+        batch_size=int(batch_size),
+        num_workers=int(dataloader_num_workers),
+        shuffle=False,
+        drop_last=False,
+        pin_memory=True,
+        persistent_workers=bool(int(dataloader_num_workers) > 0),
+        collate_fn=_temporal_identity_or_default_collate,
+    )
     single_selection = TemporalRealAnalysisSelection(
         dump_file=selection.dump_file,
         dump_summary=dict(selection.dump_summary),
@@ -434,6 +563,8 @@ def build_temporal_real_single_snapshot_bundle(
         dataset=dataset,
         dataloader=dataloader,
         selection=single_selection,
+        inference_dataset=inference_dataset,
+        inference_dataloader=inference_dataloader,
     )
 
 

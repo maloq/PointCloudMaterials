@@ -7,5 +7,7 @@
     "workbench.panel.defaultLocation": "right",
     "terminal.integrated.defaultLocation": "editor",
     "cursorpyright.analysis.autoImportCompletions": false,
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
 
 }

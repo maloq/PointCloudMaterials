@@ -929,67 +929,6 @@ class SyntheticPointCloudDataset(Dataset):
 
         return LazyMetadataArray(atom_to_grain_idx, grain_metadata, unknown_idx)
 
-    def _build_atom_metadata(
-        self,
-        metadata: Dict[str, Any],
-        env_label: str,
-        num_atoms: int,
-    ) -> List[Dict[str, Any]]:
-        """Legacy method - kept for compatibility but deprecated."""
-        default_orientation = np.eye(3, dtype=np.float32)
-        default_quaternion = rotation_matrix_to_quaternion(default_orientation)
-        atom_meta = [{
-            "phase_id": "unknown",
-            "grain_key": (env_label, "unknown"),
-            "orientation": default_orientation,
-            "quaternion": default_quaternion,
-        } for _ in range(num_atoms)]
-
-        grain_meta: Dict[Tuple[str, str], Dict[str, Any]] = {}
-        for grain in metadata.get("grains", []):
-            grain_id = str(grain["grain_id"])
-            orientation = np.asarray(grain["orientation_matrix"], dtype=np.float32)
-            quaternion = np.asarray(
-                grain.get("orientation_quaternion"),
-                dtype=np.float32,
-            ) if grain.get("orientation_quaternion") is not None else rotation_matrix_to_quaternion(orientation)
-            grain_key = (env_label, grain_id)
-            grain_meta[grain_key] = {
-                "phase_id": grain["base_phase_id"],
-                "orientation": orientation,
-                "quaternion": quaternion,
-            }
-            for idx in grain.get("atom_indices", []):
-                if 0 <= idx < num_atoms:
-                    atom_meta[idx] = {
-                        "phase_id": grain["base_phase_id"],
-                        "grain_key": grain_key,
-                        "orientation": orientation,
-                        "quaternion": quaternion,
-                    }
-
-        for region in metadata.get("intermediate_regions", []):
-            grain_a = region.get("grain_A_id")
-            grain_b = region.get("grain_B_id")
-            grain_identifier = f"interface_{grain_a}_{grain_b}"
-            parent_identifier = str(grain_a) if grain_a is not None else str(grain_b)
-            parent_key = (env_label, parent_identifier)
-            parent_meta = grain_meta.get(parent_key, None)
-            orientation = parent_meta["orientation"] if parent_meta else default_orientation
-            quaternion = parent_meta["quaternion"] if parent_meta else default_quaternion
-            grain_key = (env_label, grain_identifier)
-            phase_id = region.get("intermediate_phase_id", "intermediate")
-            for idx in region.get("atom_indices", []):
-                if 0 <= idx < num_atoms:
-                    atom_meta[idx] = {
-                        "phase_id": phase_id,
-                        "grain_key": grain_key,
-                        "orientation": orientation,
-                        "quaternion": quaternion,
-                    }
-
-        return atom_meta
-
     @staticmethod
     def _group_class(class_name: str) -> str:
         """Group amorphous phases (but not intermediate) into one class."""

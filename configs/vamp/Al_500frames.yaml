@@ -78,6 +78,10 @@ analyze:
     total_duration_seconds: 20.0
     md_space:
       enabled: true
+      dense_snapshot_count: 60
+      dense_snapshot_static_overlap_fraction: 0.5
+      dense_batch_size: 512
+      dense_num_workers: 0
       point_size: 12.0
       alpha: 1.0
       saturation_boost: 1.18

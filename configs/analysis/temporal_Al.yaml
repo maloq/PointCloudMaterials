@@ -193,7 +193,7 @@ real_md:
     md_space:
       enabled: true
       animation_max_points: 0
-      dense_snapshot_count: 100
+      dense_snapshot_count: 60
       dense_snapshot_cache:
         enabled: true
         force_recompute: false

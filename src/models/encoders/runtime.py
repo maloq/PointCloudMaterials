@@ -44,8 +44,10 @@ def resolve_encoder_output_dim(cfg: DictConfig, *, encoder: nn.Module | None = N
     return None
 
 
-def prepare_encoder_input(encoder: nn.Module, points: torch.Tensor) -> torch.Tensor:
+def prepare_encoder_input(encoder: nn.Module, points):
     if not torch.is_tensor(points):
+        if bool(getattr(encoder, "supports_precomputed_input", False)):
+            return points
         raise TypeError(f"Encoder input must be a torch.Tensor, got {type(points)}.")
     if points.dim() != 3:
         raise ValueError(
@@ -121,4 +123,3 @@ class EncoderAdapter:
 
     def encode(self, points: torch.Tensor) -> EncoderOutput:
         return encode_point_clouds(self.encoder, points)
-

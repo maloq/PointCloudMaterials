@@ -59,12 +59,6 @@ class TemporalSSLModule(pl.LightningModule):
                 "Adjacent temporal VICReg views are currently defined around the center frame only."
             )
 
-        if bool(getattr(cfg, "vicreg_use_ri_mae_backbone", False)):
-            raise ValueError(
-                "vicreg_use_ri_mae_backbone is deprecated. "
-                "Use encoder.name='RI_MAE_Invariant'. Contrastive training now uses a fixed norms-only invariant path."
-            )
-
         self.encoder = build_encoder(cfg)
         self.encoder_io = EncoderAdapter(self.encoder)
         latent_dim = resolve_encoder_output_dim(cfg, encoder=self.encoder)

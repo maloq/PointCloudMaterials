@@ -10,6 +10,7 @@ from typing import Any
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 import numpy as np
+import torch
 from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 
@@ -19,9 +20,12 @@ from src.analysis.cluster_blender import _save_md_cluster_snapshot_raytrace_blen
 from src.analysis.cluster_rendering import _save_cluster_representatives_figure
 from src.training_methods.vamp.common import (
     TrajectoryEmbeddings,
+    build_full_trajectory_dataset,
+    build_temporal_dataloader,
     ensure_dir,
     log_progress,
     load_local_neighborhoods,
+    load_contrastive_checkpoint,
     resolve_frame_window,
 )
 from src.training_methods.vamp.config import load_vamp_config, resolve_path
@@ -367,9 +371,19 @@ def _sample_frame_offsets(frame_count: int, snapshot_count: int) -> np.ndarray:
         raise ValueError(f"frame_count must be > 0, got {frame_count}.")
     if snapshot_count <= 0:
         raise ValueError(f"snapshot_count must be > 0, got {snapshot_count}.")
-    return np.unique(
-        np.linspace(0, frame_count - 1, num=min(frame_count, snapshot_count), dtype=np.int64)
-    )
+    resolved_count = min(int(frame_count), int(snapshot_count))
+    if resolved_count == 1:
+        return np.asarray([0], dtype=np.int64)
+    raw = np.linspace(0, frame_count - 1, num=resolved_count, dtype=np.float64)
+    rounded = np.rint(raw).astype(np.int64)
+    unique = np.unique(rounded)
+    if unique.size != resolved_count:
+        raise RuntimeError(
+            "Equidistant frame selection produced duplicate frame offsets. "
+            f"frame_count={frame_count}, snapshot_count={snapshot_count}, "
+            f"raw={raw.tolist()}, rounded={rounded.tolist()}."
+        )
+    return unique.astype(np.int64, copy=False)
 
 
 def _subsample_frame_points(
@@ -423,6 +437,331 @@ def _build_temporal_md_records(
             }
         )
     return records
+
+
+def _assign_to_nearest_cluster_centers(
+    features: np.ndarray,
+    cluster_centers: np.ndarray,
+) -> np.ndarray:
+    feature_arr = np.asarray(features, dtype=np.float32)
+    center_arr = np.asarray(cluster_centers, dtype=np.float32)
+    if feature_arr.ndim != 2:
+        raise ValueError(
+            "Nearest-center assignment expects a 2D feature matrix, "
+            f"got shape={tuple(feature_arr.shape)}."
+        )
+    if center_arr.ndim != 2:
+        raise ValueError(
+            "Nearest-center assignment expects a 2D center matrix, "
+            f"got shape={tuple(center_arr.shape)}."
+        )
+    if feature_arr.shape[1] != center_arr.shape[1]:
+        raise ValueError(
+            "Feature/center dimensionality mismatch during dense VAMP cluster projection. "
+            f"features_dim={feature_arr.shape[1]}, centers_dim={center_arr.shape[1]}."
+        )
+    squared_distances = np.sum(
+        (feature_arr[:, None, :] - center_arr[None, :, :]) ** 2,
+        axis=2,
+        dtype=np.float32,
+    )
+    return np.argmin(squared_distances, axis=1).astype(np.int64, copy=False)
+
+
+def _resolve_dense_md_regular_grid_overlap(
+    temporal_md_cfg: Any,
+) -> tuple[float, float]:
+    overlap_raw = getattr(temporal_md_cfg, "dense_snapshot_regular_grid_overlap", None)
+    if overlap_raw is not None:
+        overlap = float(overlap_raw)
+        if not np.isfinite(overlap) or overlap >= 2.0:
+            raise ValueError(
+                "analyze.temporal.md_space.dense_snapshot_regular_grid_overlap must be finite "
+                f"and < 2.0, got {overlap_raw!r}."
+            )
+        return float(overlap), float(overlap - 1.0)
+
+    static_overlap_fraction_raw = getattr(
+        temporal_md_cfg,
+        "dense_snapshot_static_overlap_fraction",
+        0.5,
+    )
+    static_overlap_fraction = float(static_overlap_fraction_raw)
+    if not np.isfinite(static_overlap_fraction):
+        raise ValueError(
+            "analyze.temporal.md_space.dense_snapshot_static_overlap_fraction must be finite, "
+            f"got {static_overlap_fraction_raw!r}."
+        )
+    if static_overlap_fraction < 0.0 or static_overlap_fraction >= 1.0:
+        raise ValueError(
+            "analyze.temporal.md_space.dense_snapshot_static_overlap_fraction must be in [0, 1), "
+            f"got {static_overlap_fraction_raw!r}."
+        )
+    return float(1.0 + static_overlap_fraction), float(static_overlap_fraction)
+
+
+def _collect_dense_vamp_md_animation_records(
+    *,
+    vamp_cfg: Any,
+    base_dir: Path,
+    embeddings: TrajectoryEmbeddings,
+    temporal_md_cfg: Any,
+    window_frame_indices: np.ndarray,
+    window_timesteps: np.ndarray,
+    vamp_model: ManualVAMP,
+    cluster_centers: np.ndarray,
+    projection_dim: int,
+    scaling: str | None,
+    max_points_per_frame: int | None,
+    random_state: int,
+    dense_snapshot_count: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    resolved_snapshot_count = int(dense_snapshot_count)
+    if resolved_snapshot_count <= 0:
+        raise ValueError(
+            "dense_snapshot_count must be > 0 for dense VAMP MD-space animation, "
+            f"got {dense_snapshot_count}."
+        )
+    frame_index_arr = np.asarray(window_frame_indices, dtype=np.int64).reshape(-1)
+    timestep_arr = np.asarray(window_timesteps, dtype=np.int64).reshape(-1)
+    if frame_index_arr.shape != timestep_arr.shape:
+        raise ValueError(
+            "window_frame_indices and window_timesteps must have identical shapes for "
+            "dense VAMP MD-space animation. "
+            f"frame_indices_shape={frame_index_arr.shape}, timesteps_shape={timestep_arr.shape}."
+        )
+    if resolved_snapshot_count > frame_index_arr.size:
+        raise ValueError(
+            "Dense VAMP MD-space snapshot count exceeds the number of frames in the analysis window. "
+            f"dense_snapshot_count={resolved_snapshot_count}, window_frame_count={frame_index_arr.size}."
+        )
+
+    selected_offsets = _sample_frame_offsets(
+        frame_count=int(frame_index_arr.size),
+        snapshot_count=resolved_snapshot_count,
+    )
+    selected_frame_indices = frame_index_arr[selected_offsets]
+    selected_timesteps = timestep_arr[selected_offsets]
+    regular_grid_overlap, static_overlap_fraction = _resolve_dense_md_regular_grid_overlap(
+        temporal_md_cfg
+    )
+
+    checkpoint_path_text = resolve_path(
+        getattr(getattr(vamp_cfg, "paths", None), "checkpoint_path", None),
+        base_dir=base_dir,
+    )
+    if checkpoint_path_text is None:
+        checkpoint_path_text = embeddings.metadata.get("checkpoint_path", None)
+    if checkpoint_path_text is None or str(checkpoint_path_text).strip() == "":
+        raise ValueError(
+            "Dense VAMP MD-space animation requires a checkpoint path in either "
+            "cfg.paths.checkpoint_path or the embedding metadata."
+        )
+    dump_file_text = embeddings.metadata.get("dump_file", None)
+    if dump_file_text is None or str(dump_file_text).strip() == "":
+        dump_file_text = resolve_path(
+            getattr(getattr(vamp_cfg, "paths", None), "dump_file", None),
+            base_dir=base_dir,
+        )
+    if dump_file_text is None or str(dump_file_text).strip() == "":
+        raise ValueError(
+            "Dense VAMP MD-space animation requires dump_file in either the embedding metadata "
+            "or cfg.paths.dump_file."
+        )
+
+    radius_raw = embeddings.metadata.get("radius", None)
+    if radius_raw is None:
+        raise ValueError(
+            "Embedding metadata is missing radius, so dense VAMP MD-space animation cannot "
+            "rebuild local neighborhoods."
+        )
+    num_points_raw = embeddings.metadata.get("num_points", None)
+    if num_points_raw is None:
+        raise ValueError(
+            "Embedding metadata is missing num_points, so dense VAMP MD-space animation cannot "
+            "rebuild local neighborhoods."
+        )
+
+    dense_batch_size = int(
+        getattr(
+            temporal_md_cfg,
+            "dense_batch_size",
+            getattr(getattr(vamp_cfg, "embed", None), "batch_size", 256),
+        )
+    )
+    dense_num_workers = int(
+        getattr(
+            temporal_md_cfg,
+            "dense_num_workers",
+            getattr(getattr(vamp_cfg, "embed", None), "num_workers", 0),
+        )
+    )
+    if dense_batch_size <= 0:
+        raise ValueError(
+            f"analyze.temporal.md_space.dense_batch_size must be > 0, got {dense_batch_size}."
+        )
+    if dense_num_workers < 0:
+        raise ValueError(
+            f"analyze.temporal.md_space.dense_num_workers must be >= 0, got {dense_num_workers}."
+        )
+
+    cuda_device = int(getattr(getattr(vamp_cfg, "runtime", None), "cuda_device", 0))
+    cache_dir_raw = embeddings.metadata.get("cache_dir", None)
+    cache_dir = None if cache_dir_raw in {None, ""} else str(cache_dir_raw)
+    normalize = bool(embeddings.metadata.get("normalize", True))
+    center_neighborhoods = bool(embeddings.metadata.get("center_neighborhoods", True))
+    selection_method = str(embeddings.metadata.get("selection_method", "closest"))
+    tree_cache_size = int(embeddings.metadata.get("tree_cache_size", 4))
+    center_selection_seed = int(embeddings.metadata.get("center_selection_seed", 0))
+
+    checkpoint_model, _, device = load_contrastive_checkpoint(
+        checkpoint_path_text,
+        cuda_device=cuda_device,
+    )
+    checkpoint_model.eval()
+
+    dense_records: list[dict[str, Any]] = []
+    sample_count_by_frame: dict[str, int] = {}
+    render_count_by_frame: dict[str, int] = {}
+    for dense_idx, (frame_index, timestep) in enumerate(
+        zip(selected_frame_indices.tolist(), selected_timesteps.tolist(), strict=True),
+        start=1,
+    ):
+        log_progress(
+            "analyze_vamp",
+            (
+                f"dense MD-space frame {dense_idx}/{selected_frame_indices.size}: "
+                f"frame_index={frame_index}, timestep={timestep}, "
+                f"regular_grid_overlap={regular_grid_overlap:.3f}"
+            ),
+        )
+        dataset = build_full_trajectory_dataset(
+            dump_file=dump_file_text,
+            radius=float(radius_raw),
+            num_points=int(num_points_raw),
+            cache_dir=cache_dir,
+            normalize=normalize,
+            center_neighborhoods=center_neighborhoods,
+            selection_method=selection_method,
+            precompute_neighbor_indices=False,
+            tree_cache_size=tree_cache_size,
+            anchor_frame_indices=[int(frame_index)],
+            anchor_source_names=[str(frame_index)],
+            center_selection_mode="regular_grid",
+            center_selection_seed=center_selection_seed,
+            center_grid_overlap=float(regular_grid_overlap),
+            center_grid_reference_frame_index=int(frame_index),
+        )
+        dataloader = build_temporal_dataloader(
+            dataset,
+            batch_size=int(dense_batch_size),
+            num_workers=int(dense_num_workers),
+        )
+
+        dense_structural_batches: list[np.ndarray] = []
+        dense_center_batches: list[np.ndarray] = []
+        with torch.inference_mode():
+            for batch in dataloader:
+                points = batch["points"]
+                if not torch.is_tensor(points):
+                    points = torch.as_tensor(points)
+                if points.ndim != 4 or points.shape[1] != 1 or points.shape[-1] != 3:
+                    raise ValueError(
+                        "Dense VAMP MD-space animation expects batches shaped (B, 1, N, 3), "
+                        f"got {tuple(points.shape)} for frame_index={frame_index}."
+                    )
+                inputs = points[:, 0].to(device=device, dtype=torch.float32, non_blocking=True)
+                if hasattr(checkpoint_model, "_prepare_model_input"):
+                    inputs = checkpoint_model._prepare_model_input(inputs)
+                z_inv, _, _ = checkpoint_model(inputs)
+                if z_inv is None:
+                    raise RuntimeError(
+                        "The frozen checkpoint did not return invariant embeddings during "
+                        f"dense VAMP MD-space animation for frame_index={frame_index}."
+                    )
+                dense_structural_batches.append(
+                    z_inv.detach().cpu().numpy().astype(np.float32, copy=False)
+                )
+
+                center_positions = batch["center_positions"]
+                if not torch.is_tensor(center_positions):
+                    center_positions = torch.as_tensor(center_positions)
+                if center_positions.ndim != 3 or center_positions.shape[1] != 1 or center_positions.shape[2] != 3:
+                    raise ValueError(
+                        "Dense VAMP MD-space animation expects center_positions shaped (B, 1, 3), "
+                        f"got {tuple(center_positions.shape)} for frame_index={frame_index}."
+                    )
+                dense_center_batches.append(
+                    center_positions[:, 0].detach().cpu().numpy().astype(np.float32, copy=False)
+                )
+
+        if not dense_structural_batches:
+            raise RuntimeError(
+                "Dense VAMP MD-space animation collected zero batches for "
+                f"frame_index={frame_index}."
+            )
+        dense_structural = np.concatenate(dense_structural_batches, axis=0).astype(
+            np.float32,
+            copy=False,
+        )
+        dense_centers = np.concatenate(dense_center_batches, axis=0).astype(
+            np.float32,
+            copy=False,
+        )
+        if dense_structural.shape[0] != dense_centers.shape[0]:
+            raise RuntimeError(
+                "Dense VAMP MD-space animation produced mismatched embedding/center counts. "
+                f"frame_index={frame_index}, embeddings={dense_structural.shape[0]}, "
+                f"centers={dense_centers.shape[0]}."
+            )
+        dense_vamp = np.asarray(
+            vamp_model.transform_instantaneous(
+                dense_structural,
+                dim=int(projection_dim),
+                scaling=scaling,
+            ),
+            dtype=np.float32,
+        )
+        dense_labels = _assign_to_nearest_cluster_centers(
+            dense_vamp,
+            cluster_centers,
+        )
+        render_coords, render_labels = _subsample_frame_points(
+            dense_centers,
+            dense_labels,
+            max_points=max_points_per_frame,
+            random_state=int(random_state + dense_idx - 1),
+        )
+        frame_name = str(frame_index)
+        sample_count_by_frame[frame_name] = int(dense_labels.size)
+        render_count_by_frame[frame_name] = int(render_labels.size)
+        dense_records.append(
+            {
+                "frame_name": frame_name,
+                "frame_label": _format_frame_label(
+                    frame_index=int(frame_index),
+                    timestep=int(timestep),
+                ),
+                "coords": render_coords,
+                "labels": render_labels,
+            }
+        )
+
+    dense_summary = {
+        "frame_source": "dense_md_space_frames",
+        "dense_snapshot_count": int(selected_frame_indices.size),
+        "frame_indices": [int(v) for v in selected_frame_indices.tolist()],
+        "timesteps": [int(v) for v in selected_timesteps.tolist()],
+        "regular_grid_overlap": float(regular_grid_overlap),
+        "static_overlap_fraction": float(static_overlap_fraction),
+        "inference_batch_size": int(dense_batch_size),
+        "dataloader_num_workers": int(dense_num_workers),
+        "sample_count": int(sum(sample_count_by_frame.values())),
+        "sample_count_by_frame": sample_count_by_frame,
+        "render_sample_count": int(sum(render_count_by_frame.values())),
+        "render_count_by_frame": render_count_by_frame,
+    }
+    return dense_records, dense_summary
 
 
 def _build_temporal_embedding_records(
@@ -788,13 +1127,67 @@ def main() -> None:
         temporal_md_cfg = getattr(temporal_cfg, "md_space", None)
         if bool(getattr(temporal_md_cfg, "enabled", True)):
             md_animation_path = temporal_dir / f"md_space_clusters_diagonal_cut_k{k}.gif"
-            md_records = _build_temporal_md_records(
-                window_centers,
-                vamp_labels,
-                window_frame_indices,
-                window_timesteps,
-                max_points_per_frame=animation_max_points,
-                random_state=random_state,
+            dense_snapshot_count_raw = getattr(
+                temporal_md_cfg,
+                "dense_snapshot_count",
+                None,
+            )
+            if dense_snapshot_count_raw in {None, "", 0}:
+                md_records = _build_temporal_md_records(
+                    window_centers,
+                    vamp_labels,
+                    window_frame_indices,
+                    window_timesteps,
+                    max_points_per_frame=animation_max_points,
+                    random_state=random_state,
+                )
+                temporal_summary["md_space_frame_source"] = "tracked_embedding_frames"
+                temporal_summary["md_space_frame_count"] = int(len(md_records))
+                temporal_summary["md_space_frames"] = [
+                    {
+                        "frame_name": str(record["frame_name"]),
+                        "frame_label": str(record["frame_label"]),
+                        "sample_count": int(record["labels"].size),
+                        "render_count": int(record["labels"].size),
+                    }
+                    for record in md_records
+                ]
+            else:
+                md_records, dense_md_summary = _collect_dense_vamp_md_animation_records(
+                    vamp_cfg=cfg,
+                    base_dir=base_dir,
+                    embeddings=embeddings,
+                    temporal_md_cfg=temporal_md_cfg,
+                    window_frame_indices=window_frame_indices,
+                    window_timesteps=window_timesteps,
+                    vamp_model=model,
+                    cluster_centers=vamp_centers,
+                    projection_dim=projection_dim,
+                    scaling=scaling,
+                    max_points_per_frame=animation_max_points,
+                    random_state=random_state,
+                    dense_snapshot_count=int(dense_snapshot_count_raw),
+                )
+                temporal_summary["md_space_frame_source"] = str(
+                    dense_md_summary["frame_source"]
+                )
+                temporal_summary["md_space_frame_count"] = int(len(md_records))
+                temporal_summary["md_space_dense_sampling"] = dict(dense_md_summary)
+                temporal_summary["md_space_frames"] = [
+                    {
+                        "frame_name": str(record["frame_name"]),
+                        "frame_label": str(record["frame_label"]),
+                        "sample_count": int(
+                            dense_md_summary["sample_count_by_frame"][str(record["frame_name"])]
+                        ),
+                        "render_count": int(
+                            dense_md_summary["render_count_by_frame"][str(record["frame_name"])]
+                        ),
+                    }
+                    for record in md_records
+                ]
+            temporal_summary["md_space_render_max_points_per_frame"] = (
+                None if animation_max_points is None else int(animation_max_points)
             )
             temporal_summary["md_space_animation"] = save_temporal_spatial_cluster_animation(
                 md_records,

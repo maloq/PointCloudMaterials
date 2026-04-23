@@ -176,13 +176,27 @@ def build_full_trajectory_dataset(
     tree_cache_size: int,
     frame_start: int | None = None,
     frame_stop: int | None = None,
+    anchor_frame_indices: Sequence[int] | None = None,
+    anchor_source_names: Sequence[str] | None = None,
     center_selection_mode: str | None = None,
     center_atom_stride: int | None = None,
     max_center_atoms: int | None = None,
     center_selection_seed: int = 0,
+    center_grid_overlap: float | None = None,
+    center_grid_reference_frame_index: int | None = None,
 ) -> TemporalLAMMPSDumpDataset:
     resolved_frame_start = 0 if frame_start is None else int(frame_start)
     resolved_frame_stop = None if frame_stop is None else int(frame_stop)
+    resolved_anchor_frame_indices = (
+        None
+        if anchor_frame_indices is None
+        else [int(v) for v in anchor_frame_indices]
+    )
+    resolved_anchor_source_names = (
+        None
+        if anchor_source_names is None
+        else [str(v) for v in anchor_source_names]
+    )
 
     resolved_center_selection_mode = (
         None if center_selection_mode is None else str(center_selection_mode).strip().lower()
@@ -211,10 +225,20 @@ def build_full_trajectory_dataset(
         frame_stride=1,
         frame_start=resolved_frame_start,
         frame_stop=resolved_frame_stop,
+        anchor_frame_indices=resolved_anchor_frame_indices,
+        anchor_source_names=resolved_anchor_source_names,
         center_selection_mode=resolved_center_selection_mode,
         center_atom_stride=resolved_center_atom_stride,
         max_center_atoms=resolved_max_center_atoms,
         center_selection_seed=int(center_selection_seed),
+        center_grid_overlap=(
+            None if center_grid_overlap is None else float(center_grid_overlap)
+        ),
+        center_grid_reference_frame_index=(
+            None
+            if center_grid_reference_frame_index is None
+            else int(center_grid_reference_frame_index)
+        ),
         normalize=bool(normalize),
         center_neighborhoods=bool(center_neighborhoods),
         selection_method=str(selection_method),
