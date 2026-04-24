@@ -18,15 +18,10 @@ logger = setup_logging()
 
 
 
-def pc_normalize(pc, radius = None):
-    # centroid = np.mean(pc, axis=0)
-    # pc = pc - centroid
-    if radius:
-        pc = pc / radius
-    else:
-        m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
-        pc = pc / m
-    return pc
+def pc_normalize(pc: np.ndarray, radius: float) -> np.ndarray:
+    """Normalize a point cloud by a fixed, positive cutoff radius."""
+    assert radius > 0, f"pc_normalize requires radius > 0, got radius={radius!r}"
+    return pc / radius
 
 
 def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
@@ -70,8 +65,11 @@ def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
         qz = 0.25 * S
     quat = np.array([qw, qx, qy, qz], dtype=np.float32)
     norm = np.linalg.norm(quat)
-    if norm == 0:
-        return np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32)
+    if norm == 0.0:
+        raise ValueError(
+            "Degenerate rotation matrix produced a zero-norm quaternion. "
+            f"R={R.tolist()}."
+        )
     return quat / norm
 
 
@@ -658,8 +656,12 @@ class SyntheticPointCloudDataset(Dataset):
 
         samples = self._sample_points(points, env_radius)
         if not samples:
-            logger.print(f"No samples generated for {env_label}")
-            return
+            raise RuntimeError(
+                "SyntheticPointCloudDataset produced zero samples for an environment. "
+                f"env_label={env_label!r}, env_path={env_path}, num_atoms={int(points.shape[0])}, "
+                f"sample_type={self.sample_type!r}, radius={env_radius}, "
+                f"n_samples={self.n_samples}, num_points={self.num_points}."
+            )
 
         samples_before = len(self.samples)
         discarded_mixed_phase = 0
@@ -894,11 +896,25 @@ class SyntheticPointCloudDataset(Dataset):
             grain_a = region.get("grain_A_id")
             grain_b = region.get("grain_B_id")
             grain_identifier = f"interface_{grain_a}_{grain_b}"
+            if grain_a is None and grain_b is None:
+                raise ValueError(
+                    "Intermediate region metadata must reference at least one parent grain via "
+                    "grain_A_id or grain_B_id. "
+                    f"env_label={env_label!r}, region={region!r}."
+                )
             parent_identifier = str(grain_a) if grain_a is not None else str(grain_b)
             parent_key = (env_label, parent_identifier)
-            parent_meta = grain_meta_cache.get(parent_key, None)
-            orientation = parent_meta["orientation"] if parent_meta else default_orientation
-            quaternion = parent_meta["quaternion"] if parent_meta else default_quaternion
+            parent_meta = grain_meta_cache.get(parent_key)
+            if parent_meta is None:
+                raise KeyError(
+                    "Intermediate region references an unknown parent grain; its orientation "
+                    "cannot be resolved. "
+                    f"env_label={env_label!r}, grain_identifier={grain_identifier!r}, "
+                    f"parent_identifier={parent_identifier!r}, "
+                    f"known_grain_keys={sorted(k for _, k in grain_meta_cache.keys())}."
+                )
+            orientation = parent_meta["orientation"]
+            quaternion = parent_meta["quaternion"]
             grain_key = (env_label, grain_identifier)
             phase_id = region.get("intermediate_phase_id", "intermediate")
 

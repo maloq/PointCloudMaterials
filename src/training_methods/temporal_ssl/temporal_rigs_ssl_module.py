@@ -114,29 +114,6 @@ class TemporalRIGSSSLModule(TemporalSSLModule):
             return False
         return True
 
-    def _encode_temporal_frame_sequence_from_precomputed_graph(self, batch: dict, *, start_frame_idx: int, end_frame_idx: int) -> torch.Tensor:
-        graph_seq = batch.get("rigs_graph")
-        if not isinstance(graph_seq, dict):
-            raise KeyError("Temporal batch is missing precomputed sparse RIGS graphs for LeJEPA.")
-        expected_points = int(self.model_points if self.model_points is not None else self.sample_points)
-        self._validate_graph_point_count(
-            graph_seq,
-            expected_points=expected_points,
-            context="Temporal RIGS LeJEPA precompute path",
-        )
-        selected = {
-            key: value[:, start_frame_idx:end_frame_idx]
-            for key, value in graph_seq.items()
-        }
-        selected = self._graph_to_device(selected)
-        batch_size, num_frames = selected["radii"].shape[:2]
-        flat_graph = {
-            key: value.reshape(batch_size * num_frames, *value.shape[2:])
-            for key, value in selected.items()
-        }
-        embeddings = self._encode_rigs_input(flat_graph)
-        return embeddings.reshape(batch_size, num_frames, -1)
-
     def _compute_vicreg_loss_with_precomputed_graphs(
         self,
         *,
@@ -203,17 +180,32 @@ class TemporalRIGSSSLModule(TemporalSSLModule):
             loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
-    def forward(self, pc):
+    def forward(self, pc, include_ssl_heads: bool = False):
+        if not isinstance(include_ssl_heads, bool):
+            raise TypeError(
+                "include_ssl_heads must be a bool. It is intended only for PyTorch Lightning "
+                f"model-summary FLOP profiling, got {type(include_ssl_heads)}."
+            )
         if isinstance(pc, dict) and "rigs_graph" in pc:
             pc = pc["rigs_graph"]
         if torch.is_tensor(pc) and pc.dim() == 4:
             self._validate_temporal_points(pc)
             pc = self._center_frame(pc)
+        if torch.is_tensor(pc):
+            pc = self._prepare_model_input(pc)
+            pc = pc.to(device=self.device, dtype=self.dtype)
         encoded = self.encoder_io.encode(pc)
         z_inv_contrastive = self._contrastive_invariant_latent(
             encoded.invariant,
             encoded.equivariant,
         )
+        if include_ssl_heads:
+            return (
+                z_inv_contrastive,
+                encoded.invariant,
+                encoded.equivariant,
+                self._forward_ssl_heads_for_summary(z_inv_contrastive),
+            )
         return z_inv_contrastive, encoded.invariant, encoded.equivariant
 
     def _step(self, batch, batch_idx, stage: str):
@@ -248,6 +240,7 @@ class TemporalRIGSSSLModule(TemporalSSLModule):
             stage != "train" or self.cache_train_supervised_metrics
         )
         should_run_vicreg = self.vicreg.should_run(current_epoch=int(self.current_epoch))
+        should_run_swav = self.swav.should_run(current_epoch=int(self.current_epoch))
 
         losses = {}
         center_embeddings = None
@@ -295,40 +288,24 @@ class TemporalRIGSSSLModule(TemporalSSLModule):
             for name, value in vicreg_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
-        if self.lejepa is not None and self.lejepa.should_run(current_epoch=int(self.current_epoch)):
-            lejepa_window = self._select_lejepa_frame_window(sequence_points)
-            expected_lejepa_points = int(self._prepare_model_input(lejepa_window[:, 0]).shape[1])
-            if self._graph_matches_current_encoder_input(
-                batch,
-                expected_points=expected_lejepa_points,
-                context="Temporal RIGS LeJEPA encode",
-            ):
-                target_frame_index = self.sequence_length - 1
-                start_frame_index = target_frame_index - int(self.lejepa.context_frames)
-                lejepa_frame_embeddings = self._encode_temporal_frame_sequence_from_precomputed_graph(
-                    batch,
-                    start_frame_idx=start_frame_index,
-                    end_frame_idx=target_frame_index + 1,
-                )
-            else:
-                lejepa_frame_embeddings = self._encode_temporal_frame_sequence(lejepa_window)
-            lejepa_loss, lejepa_metrics = self.lejepa.compute_loss(
-                frame_embeddings=lejepa_frame_embeddings,
-                current_epoch=int(self.current_epoch),
-                global_step=int(self.global_step),
+        if should_run_swav:
+            swav_loss, swav_metrics = self._compute_swav_loss(
+                center_pc=pc_raw,
+                prev_pc=prev_pc,
+                next_pc=next_pc,
             )
-            if lejepa_loss is not None:
-                losses["lejepa"] = lejepa_loss
-            for name, value in lejepa_metrics.items():
+            if swav_loss is not None:
+                losses["swav"] = swav_loss
+            for name, value in swav_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
         total_loss = None
         if "vicreg" in losses:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
-        if "lejepa" in losses and self.lejepa is not None:
-            lejepa_total = self.lejepa.weight * losses["lejepa"]
-            total_loss = lejepa_total if total_loss is None else total_loss + lejepa_total
+        if "swav" in losses:
+            swav_total = self.swav.weight * losses["swav"]
+            total_loss = swav_total if total_loss is None else total_loss + swav_total
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
@@ -362,8 +339,8 @@ class TemporalRIGSSSLModule(TemporalSSLModule):
         metrics_to_log = {"loss": total_loss}
         if "vicreg" in losses:
             metrics_to_log["vicreg"] = losses["vicreg"]
-        if "lejepa" in losses:
-            metrics_to_log["lejepa"] = losses["lejepa"]
+        if "swav" in losses:
+            metrics_to_log["swav"] = losses["swav"]
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():

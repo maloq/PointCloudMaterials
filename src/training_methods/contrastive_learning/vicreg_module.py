@@ -15,6 +15,7 @@ from src.training_methods.contrastive_learning.supervised_cache import (
     reset_supervised_cache,
 )
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
+from src.utils.model_summary import make_model_summary_point_cloud, resolve_model_summary_batch_size
 from src.utils.pointcloud_ops import crop_to_num_points
 from src.utils.training_utils import get_optimizers_and_scheduler, cached_sample_count
 
@@ -35,8 +36,26 @@ class VICRegModule(pl.LightningModule):
             )
 
         self.encoder = build_encoder(cfg)
-        self.encoder_io = EncoderAdapter(self.encoder)
+        # Resolve latent dim from the uncompiled module (cheap attribute read).
         latent_dim = resolve_encoder_output_dim(cfg, encoder=self.encoder)
+        # Optional torch.compile wrap around the encoder (#8). Off by default:
+        # at RI-MAE shapes (short sequences, small head_dim) SDPA falls back
+        # to the math kernel and Inductor has little to fuse, while compile
+        # adds guard overhead and re-traces on train/val mode flips. Opt in
+        # via `compile_encoder: true` only when the encoder + config
+        # combination is known to fuse well (e.g. no gradient checkpointing).
+        self._compile_encoder = bool(getattr(cfg, "compile_encoder", False))
+        self._encoder_compile_mode = str(getattr(cfg, "encoder_compile_mode", "default"))
+        self._encoder_compile_fullgraph = bool(getattr(cfg, "encoder_compile_fullgraph", False))
+        self._encoder_compile_dynamic = bool(getattr(cfg, "encoder_compile_dynamic", False))
+        if self._compile_encoder:
+            self.encoder = torch.compile(
+                self.encoder,
+                mode=self._encoder_compile_mode,
+                fullgraph=self._encoder_compile_fullgraph,
+                dynamic=self._encoder_compile_dynamic,
+            )
+        self.encoder_io = EncoderAdapter(self.encoder)
 
         data_cfg = getattr(cfg, "data", None)
         self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
@@ -53,6 +72,22 @@ class VICRegModule(pl.LightningModule):
             raise ValueError(
                 f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
             )
+        summary_points = self.model_points if self.model_points is not None else self.sample_points
+        if summary_points <= 0:
+            if data_cfg is not None:
+                raise ValueError(
+                    "VICRegModule cannot create a PyTorch Lightning FLOP summary input because "
+                    f"data.num_points={self.sample_points!r} and data.model_points={self.model_points!r}. "
+                    "Set data.num_points or data.model_points to a positive point count."
+                )
+        else:
+            self.example_input_array = {
+                "pc": make_model_summary_point_cloud(
+                    batch_size=resolve_model_summary_batch_size(cfg),
+                    num_points=summary_points,
+                ),
+                "include_ssl_heads": True,
+            }
 
         self.vicreg = VICRegLoss.from_config(
             cfg,
@@ -64,6 +99,11 @@ class VICRegModule(pl.LightningModule):
         self._warned_cache_eq_fallback = False
         self._consecutive_nan_steps = 0
         self._max_consecutive_nan_steps = int(getattr(cfg, "max_consecutive_nan_steps", 20))
+        # Device-side NaN counter (#3): avoids a host sync on every train
+        # step. We still surface the count to Python on a cheap cadence so
+        # divergent runs are halted within O(stride) steps of the first NaN.
+        self._nonfinite_step_flag: torch.Tensor | None = None
+        self._nonfinite_check_stride = max(1, int(getattr(cfg, "nonfinite_check_stride", 8)))
 
     @property
     def vicreg_projector(self):
@@ -73,6 +113,16 @@ class VICRegModule(pl.LightningModule):
         # Contrastive training always prefers norms(eq_z) when eq_z exists and
         # otherwise falls back to the encoder invariant branch.
         return self.vicreg._invariant(z_inv_model, eq_z)
+
+    def _forward_ssl_heads_for_summary(self, features: torch.Tensor | None) -> dict[str, torch.Tensor]:
+        if self.vicreg.projector is None:
+            return {}
+        if features is None:
+            raise RuntimeError(
+                "Cannot profile VICReg FLOPs for the Lightning model summary because "
+                "the encoder did not return invariant contrastive features."
+            )
+        return {"vicreg_projected": self.vicreg(features, profile_projector=True)}
 
     def _status_print(self, message: str) -> None:
         if getattr(self, "_trainer", None) is not None:
@@ -144,12 +194,27 @@ class VICRegModule(pl.LightningModule):
             self._warned_cache_eq_fallback = True
         return self._shared_invariant(z_inv_model, None)
 
-    def forward(self, pc: torch.Tensor):
+    def forward(self, pc: torch.Tensor, include_ssl_heads: bool = False):
+        if not isinstance(include_ssl_heads, bool):
+            raise TypeError(
+                "include_ssl_heads must be a bool. It is intended only for PyTorch Lightning "
+                f"model-summary FLOP profiling, got {type(include_ssl_heads)}."
+            )
+        if torch.is_tensor(pc):
+            pc = self._prepare_model_input(pc)
+            pc = pc.to(device=self.device, dtype=self.dtype)
         encoded = self.encoder_io.encode(pc)
         z_inv_contrastive = self._contrastive_invariant_latent(
             encoded.invariant,
             encoded.equivariant,
         )
+        if include_ssl_heads:
+            return (
+                z_inv_contrastive,
+                encoded.invariant,
+                encoded.equivariant,
+                self._forward_ssl_heads_for_summary(z_inv_contrastive),
+            )
         # Forward returns both invariant branches explicitly:
         # (z_inv_contrastive, z_inv_model, eq_z).
         return z_inv_contrastive, encoded.invariant, encoded.equivariant
@@ -187,24 +252,40 @@ class VICRegModule(pl.LightningModule):
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
-        if not torch.isfinite(total_loss).item():
-            self._consecutive_nan_steps += 1
-            self._log_metric(
-                stage,
-                "loss_nonfinite",
-                1.0,
-                on_step=True,
-                on_epoch=False,
-                batch_size=batch_size,
+        # Tensor-only consecutive non-finite tracking (#3). The previous
+        # implementation called `torch.isfinite(total_loss).item()` on every
+        # micro-step which forces a CUDA->CPU sync per step. Here we keep
+        # the counter on-device and only pull it to host every
+        # `_nonfinite_check_stride` training steps. `torch.nan_to_num` is a
+        # no-op on finite inputs so it is safe to apply unconditionally.
+        if self._nonfinite_step_flag is None or self._nonfinite_step_flag.device != total_loss.device:
+            self._nonfinite_step_flag = torch.zeros(
+                (), dtype=torch.long, device=total_loss.device
             )
-            if self._consecutive_nan_steps >= self._max_consecutive_nan_steps:
+        nonfinite_step = (~torch.isfinite(total_loss)).to(dtype=torch.long)
+        self._nonfinite_step_flag = torch.where(
+            nonfinite_step.bool(),
+            self._nonfinite_step_flag + 1,
+            torch.zeros_like(self._nonfinite_step_flag),
+        )
+        self._log_metric(
+            stage,
+            "loss_nonfinite",
+            nonfinite_step.to(dtype=torch.float32),
+            on_step=True,
+            on_epoch=False,
+            batch_size=batch_size,
+        )
+        if stage == "train" and ((batch_idx + 1) % self._nonfinite_check_stride == 0):
+            observed = int(self._nonfinite_step_flag.item())
+            self._consecutive_nan_steps = observed
+            if observed >= self._max_consecutive_nan_steps:
                 raise RuntimeError(
-                    f"Training produced {self._consecutive_nan_steps} consecutive "
-                    f"non-finite losses. Halting to prevent silent divergence."
+                    f"Training produced {observed} consecutive non-finite losses "
+                    f"(checked every {self._nonfinite_check_stride} steps). "
+                    "Halting to prevent silent divergence."
                 )
-            total_loss = torch.nan_to_num(total_loss, nan=0.0, posinf=0.0, neginf=0.0)
-        else:
-            self._consecutive_nan_steps = 0
+        total_loss = torch.nan_to_num(total_loss, nan=0.0, posinf=0.0, neginf=0.0)
 
         metrics_to_log = {
             # Total weighted optimization objective.
@@ -279,8 +360,16 @@ class VICRegModule(pl.LightningModule):
         log_kwargs = dict(kwargs)
         if batch_size is not None and "batch_size" not in log_kwargs:
             log_kwargs["batch_size"] = int(batch_size)
-        if "sync_dist" not in log_kwargs and stage != "train":
-            log_kwargs["sync_dist"] = True
+        if "sync_dist" not in log_kwargs:
+            # Skip DDP all-reduce for per-step train metrics (#7): they are
+            # noisy per-rank samples and the all-reduce stalls the training
+            # loop. Epoch-reduced train metrics and validation/test metrics
+            # keep sync_dist=True so their aggregates are consistent across
+            # ranks. The previous rule `stage != "train"` also skipped the
+            # sync for `on_epoch` train metrics, which produced per-rank
+            # epoch means in DDP.
+            is_train_step_only = (stage == "train") and on_step and not on_epoch
+            log_kwargs["sync_dist"] = not is_train_step_only
         if torch.is_tensor(value):
             value = value.detach()
         self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)

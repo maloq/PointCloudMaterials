@@ -5,8 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
-import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -18,7 +16,31 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import FixedLocator, FormatStrFormatter
+
+try:
+    from plotting_common import (
+        apply_axis_formatting,
+        compute_y_limits_from_bounds,
+        compute_y_ticks,
+        extract_x_value,
+        paper_rcparams,
+        parse_finite_float,
+        save_figure,
+        slugify,
+    )
+except ModuleNotFoundError as exc:
+    if exc.name != "plotting_common":
+        raise
+    from scripts.plotting_common import (
+        apply_axis_formatting,
+        compute_y_limits_from_bounds,
+        compute_y_ticks,
+        extract_x_value,
+        paper_rcparams,
+        parse_finite_float,
+        save_figure,
+        slugify,
+    )
 
 
 DEFAULT_METRICS = [
@@ -158,33 +180,6 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def _paper_rcparams() -> dict[str, Any]:
-    return {
-        "font.family": "DejaVu Sans",
-        "figure.facecolor": "#ffffff",
-        "axes.facecolor": "#ffffff",
-        "savefig.facecolor": "#ffffff",
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "axes.linewidth": 1.1,
-        "axes.labelsize": 12,
-        "axes.titlesize": 11,
-        "axes.titleweight": "bold",
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-        "xtick.major.width": 1.0,
-        "ytick.major.width": 1.0,
-        "xtick.major.size": 4.0,
-        "ytick.major.size": 4.0,
-        "grid.linewidth": 0.8,
-        "grid.alpha": 0.32,
-        "grid.color": "#6c7a89",
-        "legend.frameon": False,
-        "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.04,
-    }
-
-
 def _load_summary(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(f"Summary file does not exist: {path}")
@@ -230,46 +225,6 @@ def _infer_x_pattern(summary: dict[str, Any]) -> str:
     return r"(\d+)(?!.*\d)"
 
 
-def _slugify(text: str) -> str:
-    out = re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
-    return out or "plot"
-
-
-def _parse_numeric_text(text: str, *, context: str) -> float:
-    stripped = text.strip()
-    if not stripped:
-        raise ValueError(f"Expected numeric text for {context}, got an empty string.")
-    try:
-        value = float(stripped)
-    except ValueError as exc:
-        raise ValueError(
-            f"Failed to parse numeric value {stripped!r} for {context}."
-        ) from exc
-    if not math.isfinite(value):
-        raise ValueError(f"Non-finite numeric value {value!r} for {context}.")
-    return value
-
-
-def _extract_x_value(result_name: str, pattern: str) -> float:
-    if not isinstance(result_name, str) or not result_name:
-        raise ValueError(
-            f"Each result requires a non-empty string 'name', got {result_name!r}."
-        )
-    try:
-        regex = re.compile(pattern)
-    except re.error as exc:
-        raise ValueError(f"Invalid --x-pattern regex {pattern!r}: {exc}") from exc
-    match = regex.search(result_name)
-    if match is None:
-        raise ValueError(
-            "Failed to extract x-axis value from result name "
-            f"{result_name!r} using pattern {pattern!r}. "
-            "Pass a different --x-pattern if the sweep value is encoded differently."
-        )
-    token = match.group(1) if match.lastindex else match.group(0)
-    return _parse_numeric_text(token, context=f"result name {result_name!r}")
-
-
 def _resolve_metric_key(
     requested: str,
     available_keys: set[str],
@@ -302,25 +257,7 @@ def _validate_metric_value(
     metric_key: str,
     result_name: str,
 ) -> float:
-    if value is None:
-        raise ValueError(
-            f"Metric {metric_key!r} is missing for result {result_name!r}."
-        )
-    if isinstance(value, bool):
-        raise TypeError(
-            f"Metric {metric_key!r} for result {result_name!r} must be numeric, got bool."
-        )
-    try:
-        numeric = float(value)
-    except (TypeError, ValueError) as exc:
-        raise TypeError(
-            f"Metric {metric_key!r} for result {result_name!r} must be numeric, got {value!r}."
-        ) from exc
-    if not math.isfinite(numeric):
-        raise ValueError(
-            f"Metric {metric_key!r} for result {result_name!r} is not finite: {numeric!r}."
-        )
-    return numeric
+    return parse_finite_float(value, context=f"metric {metric_key!r} for result {result_name!r}")
 
 
 def _validate_error_value(
@@ -332,23 +269,13 @@ def _validate_error_value(
 ) -> float:
     if value is None:
         return 0.0
-    if isinstance(value, bool):
-        raise TypeError(
-            f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
-            f"{result_name!r} must be numeric, got bool."
+    numeric = parse_finite_float(
+        value,
+        context=(
+            f"aggregate field {field_name!r} for metric {metric_key!r} "
+            f"in result {result_name!r}"
         )
-    try:
-        numeric = float(value)
-    except (TypeError, ValueError) as exc:
-        raise TypeError(
-            f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
-            f"{result_name!r} must be numeric, got {value!r}."
-        ) from exc
-    if not math.isfinite(numeric):
-        raise ValueError(
-            f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
-            f"{result_name!r} is not finite: {numeric!r}."
-        )
+    )
     if numeric < 0.0:
         raise ValueError(
             f"Aggregate field {field_name!r} for metric {metric_key!r} in result "
@@ -415,22 +342,6 @@ def _extract_grouped_metric_value(
     return mean_value, std_value, ci95_value
 
 
-def _collect_runs(
-    summary: dict[str, Any],
-    *,
-    metric_names: Sequence[str],
-    metric_scope: str,
-    x_pattern: str,
-) -> tuple[list[SweepRun], list[str]]:
-    return collect_runs(
-        summary,
-        metric_names=metric_names,
-        metric_scope=metric_scope,
-        x_pattern=x_pattern,
-        series_source="auto",
-    )
-
-
 def collect_runs(
     summary: dict[str, Any],
     *,
@@ -464,7 +375,16 @@ def collect_runs(
                 f"Result entry {idx} must be a JSON object, got {type(entry).__name__}."
             )
         result_name = entry.get("name")
-        x_value = _extract_x_value(result_name, x_pattern)
+        if not isinstance(result_name, str) or not result_name:
+            raise ValueError(
+                f"Each result requires a non-empty string 'name', got {result_name!r}."
+            )
+        x_value = extract_x_value(
+            result_name,
+            pattern=x_pattern,
+            context=f"result name {result_name!r}",
+            numeric_direct=False,
+        )
         if x_value in x_seen:
             raise ValueError(
                 f"Duplicate x-axis value {x_value} extracted from results "
@@ -525,13 +445,6 @@ def collect_runs(
     return runs, metric_key_order
 
 
-def _format_x_tick(value: float) -> str:
-    rounded = round(value)
-    if math.isclose(value, rounded, rel_tol=0.0, abs_tol=1e-9):
-        return str(int(rounded))
-    return f"{value:g}"
-
-
 def _metric_short_name(metric_key: str) -> str:
     return metric_key.rsplit("/", 1)[-1]
 
@@ -569,76 +482,23 @@ def _compute_shared_y_limits(
     *,
     error_bars: str,
 ) -> tuple[float, float]:
-    values = np.asarray(
+    lower_bounds = np.asarray(
         [
-            bound
+            run.metrics[key] - _resolve_metric_error(run, key, error_bars=error_bars)
             for run in runs
             for key in metric_keys
-            for bound in (
-                run.metrics[key] - _resolve_metric_error(run, key, error_bars=error_bars),
-                run.metrics[key] + _resolve_metric_error(run, key, error_bars=error_bars),
-            )
         ],
         dtype=np.float64,
     )
-    if values.size == 0:
-        raise ValueError("Cannot compute y-axis limits with no metric values.")
-    val_min = float(np.min(values))
-    val_max = float(np.max(values))
-    if 0.0 <= val_min and val_max <= 1.0:
-        lower = max(0.0, math.floor((val_min - 0.03) / 0.05) * 0.05)
-        upper = min(1.0, math.ceil((val_max + 0.02) / 0.05) * 0.05)
-        if upper - lower < 0.2:
-            center = 0.5 * (upper + lower)
-            half_span = 0.1
-            lower = max(0.0, center - half_span)
-            upper = min(1.0, center + half_span)
-        return lower, upper
-    span = max(val_max - val_min, 1e-6)
-    padding = 0.12 * span
-    return val_min - padding, val_max + padding
-
-
-def _compute_y_ticks(y_min: float, y_max: float) -> np.ndarray:
-    span = y_max - y_min
-    if span <= 0:
-        raise ValueError(f"Invalid y-axis limits: y_min={y_min}, y_max={y_max}.")
-    if 0.0 <= y_min and y_max <= 1.0:
-        step = 0.05 if span <= 0.3 else 0.1
-        start = math.ceil(y_min / step) * step
-        stop = math.floor(y_max / step) * step
-        ticks = np.arange(start, stop + 0.5 * step, step, dtype=np.float64)
-        if ticks.size >= 3:
-            return ticks
-    return np.linspace(y_min, y_max, num=5, dtype=np.float64)
-
-
-def _apply_axis_formatting(
-    ax: plt.Axes,
-    *,
-    x_values: np.ndarray,
-    x_label: str,
-    y_label: str | None,
-    y_limits: tuple[float, float],
-    y_ticks: np.ndarray,
-) -> None:
-    x_span = float(np.ptp(x_values))
-    x_margin = 0.04 * x_span if x_span > 0.0 else 1.0
-    ax.set_xlim(
-        float(np.min(x_values)) - x_margin,
-        float(np.max(x_values)) + x_margin,
+    upper_bounds = np.asarray(
+        [
+            run.metrics[key] + _resolve_metric_error(run, key, error_bars=error_bars)
+            for run in runs
+            for key in metric_keys
+        ],
+        dtype=np.float64,
     )
-    ax.set_ylim(*y_limits)
-    ax.xaxis.set_major_locator(FixedLocator(x_values))
-    ax.set_xticklabels([_format_x_tick(v) for v in x_values])
-    ax.yaxis.set_major_locator(FixedLocator(y_ticks))
-    ax.yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
-    ax.set_xlabel(x_label)
-    if y_label is not None:
-        ax.set_ylabel(y_label)
-    ax.grid(axis="y")
-    ax.grid(axis="x", visible=False)
-    ax.set_axisbelow(True)
+    return compute_y_limits_from_bounds(lower_bounds, upper_bounds)
 
 
 def _plot_metric_series(
@@ -692,23 +552,6 @@ def _plot_metric_series(
         ax.set_title(style.label, pad=8)
 
 
-def _save_figure(fig: plt.Figure, path_without_suffix: Path, formats: Sequence[str], dpi: int) -> list[Path]:
-    written: list[Path] = []
-    for fmt in formats:
-        normalized = fmt.lower().lstrip(".")
-        if normalized not in {"png", "pdf", "svg"}:
-            raise ValueError(
-                f"Unsupported output format {fmt!r}. Supported formats: png, pdf, svg."
-            )
-        out_path = path_without_suffix.with_suffix(f".{normalized}")
-        save_kwargs: dict[str, Any] = {}
-        if normalized == "png":
-            save_kwargs["dpi"] = int(dpi)
-        fig.savefig(out_path, **save_kwargs)
-        written.append(out_path)
-    return written
-
-
 def _plot_combined_figure(
     runs: Sequence[SweepRun],
     metric_keys: Sequence[str],
@@ -723,7 +566,7 @@ def _plot_combined_figure(
 ) -> list[Path]:
     x_values = np.asarray([run.x_value for run in runs], dtype=np.float64)
     y_limits = _compute_shared_y_limits(runs, metric_keys, error_bars=error_bars)
-    y_ticks = _compute_y_ticks(*y_limits)
+    y_ticks = compute_y_ticks(y_limits)
 
     fig, axes = plt.subplots(
         1,
@@ -752,7 +595,7 @@ def _plot_combined_figure(
             panel_label=f"({chr(ord('a') + idx)})",
             show_panel_title=show_panel_titles,
         )
-        _apply_axis_formatting(
+        apply_axis_formatting(
             ax,
             x_values=x_values,
             x_label="",
@@ -765,7 +608,7 @@ def _plot_combined_figure(
     fig.supylabel("Score", fontsize=12)
     if title:
         fig.suptitle(title, fontsize=13, fontweight="bold")
-    return _save_figure(fig, output_prefix, formats=formats, dpi=dpi)
+    return save_figure(fig, output_prefix, formats=formats, dpi=dpi)
 
 
 def _plot_individual_figures(
@@ -803,7 +646,7 @@ def _plot_individual_figures(
             metric_keys=[metric_key],
             error_bars=error_bars,
         )
-        y_ticks = _compute_y_ticks(*y_limits)
+        y_ticks = compute_y_ticks(y_limits)
         style = _metric_style(metric_key)
 
         fig, ax = plt.subplots(figsize=(4.5, 3.8), constrained_layout=True)
@@ -816,7 +659,7 @@ def _plot_individual_figures(
             panel_label=None,
             show_panel_title=show_panel_titles,
         )
-        _apply_axis_formatting(
+        apply_axis_formatting(
             ax,
             x_values=x_values,
             x_label=x_label,
@@ -824,8 +667,8 @@ def _plot_individual_figures(
             y_limits=y_limits,
             y_ticks=y_ticks,
         )
-        out_prefix = output_dir / f"{_slugify(_metric_short_name(metric_key))}_vs_{_slugify(x_label)}"
-        all_written.extend(_save_figure(fig, out_prefix, formats=formats, dpi=dpi))
+        out_prefix = output_dir / f"{slugify(_metric_short_name(metric_key))}_vs_{slugify(x_label)}"
+        all_written.extend(save_figure(fig, out_prefix, formats=formats, dpi=dpi))
         plt.close(fig)
     return all_written
 
@@ -867,10 +710,10 @@ def render_summary_plots(
         series_source=series_source,
     )
 
-    inferred_prefix = f"metrics_vs_{_slugify(resolved_x_label)}"
+    inferred_prefix = f"metrics_vs_{slugify(resolved_x_label)}"
     combined_prefix = resolved_output_dir / (prefix or inferred_prefix)
 
-    with plt.rc_context(_paper_rcparams()):
+    with plt.rc_context(paper_rcparams()):
         written_paths = _plot_combined_figure(
             runs,
             metric_keys,

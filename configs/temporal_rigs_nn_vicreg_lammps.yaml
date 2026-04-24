@@ -128,6 +128,19 @@ vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
 vicreg_radial_enabled: false
 
+swav_enabled: false
+swav_weight: 0.0
+swav_projection_dim: 128
+swav_hidden_dim: 512
+swav_num_prototypes: 3000
+swav_temperature: 0.1
+swav_epsilon: 0.05
+swav_sinkhorn_iterations: 3
+swav_start_epoch: 0
+swav_freeze_prototypes_steps: 0
+swav_view_mode: center_adjacent
+swav_view_points: ${data.model_points}
+
 augmentation:
   rotation_scale: 0.0
   noise_scale: 0.0

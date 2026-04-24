@@ -232,6 +232,22 @@ class VICRegLoss(nn.Module):
             and int(current_epoch) >= self.start_epoch
         )
 
+    def forward(self, features: torch.Tensor, *, profile_projector: bool = False) -> torch.Tensor:
+        if not profile_projector:
+            raise RuntimeError(
+                "VICRegLoss.forward is reserved for PyTorch Lightning model-summary FLOP profiling. "
+                "Use VICRegLoss.compute_loss(...) during training."
+            )
+        if self.projector is None:
+            raise RuntimeError("Cannot profile VICReg projector FLOPs because the projector is not initialized.")
+        if features.dim() != 2:
+            raise ValueError(
+                "VICReg projector FLOP profiling expects feature tensor with shape (B, D), "
+                f"got {tuple(features.shape)}."
+            )
+        projector_dtype = next(self.projector.parameters()).dtype
+        return self.projector(features.to(dtype=projector_dtype))
+
     def compute_loss(
         self,
         *,
@@ -258,30 +274,61 @@ class VICRegLoss(nn.Module):
             y_a = views["y_a"]
             y_b = views["y_b"]
 
-        enc_a = encoder(prepare_input(y_a))
-        inv_a, eq_a = split_output(enc_a)
+        # Fuse the two encoder forwards into a single concatenated pass. This
+        # halves kernel-launch overhead for the patch encoder + transformer
+        # relative to the old two-separate-forwards path. The per-view
+        # invariant transform is applied after splitting the result. See
+        # hot-path fusion note in the SSL module (#1).
+        batch_size = int(y_a.shape[0])
+        fused_input = torch.cat([y_a, y_b], dim=0)
+        enc_fused = encoder(prepare_input(fused_input))
+        inv_fused, eq_fused = split_output(enc_fused)
         if invariant_transform is None:
-            inv_a = self._invariant(inv_a, eq_a)
+            inv_fused = self._invariant(inv_fused, eq_fused)
         else:
-            inv_a = invariant_transform(inv_a, eq_a)
+            inv_fused = invariant_transform(inv_fused, eq_fused)
 
-        enc_b = encoder(prepare_input(y_b))
-        inv_b, eq_b = split_output(enc_b)
-        if invariant_transform is None:
-            inv_b = self._invariant(inv_b, eq_b)
-        else:
-            inv_b = invariant_transform(inv_b, eq_b)
+        if inv_fused is None:
+            return None, {}
+        if inv_fused.dim() != 2 or int(inv_fused.shape[0]) != 2 * batch_size:
+            raise ValueError(
+                "VICReg fused invariant features must have shape (2*B, D); "
+                f"got {tuple(inv_fused.shape)} with B={batch_size}."
+            )
+        inv_a, inv_b = inv_fused.chunk(2, dim=0)
 
-        if inv_a is None or inv_b is None:
+        return self.compute_loss_from_features(
+            z_a_feat=inv_a,
+            z_b_feat=inv_b,
+            current_epoch=current_epoch,
+        )
+
+    def compute_loss_from_features(
+        self,
+        *,
+        z_a_feat: torch.Tensor | None,
+        z_b_feat: torch.Tensor | None,
+        current_epoch: int,
+    ):
+        """Compute VICReg on already-encoded invariant features.
+
+        Used by the SSL step when the encoder forward is shared with SwAV or
+        another head (#1 encoder fusion). Skipping the encoder call here lets
+        the caller run one forward for both losses instead of two.
+        """
+        if not self.should_run(current_epoch=current_epoch):
+            return None, {}
+        if z_a_feat is None or z_b_feat is None:
             return None, {}
 
         proj_dtype = next(self.projector.parameters()).dtype
-        z_a = self.projector(inv_a.to(dtype=proj_dtype))
-        z_b = self.projector(inv_b.to(dtype=proj_dtype))
+        z_a = self.projector(z_a_feat.to(dtype=proj_dtype))
+        z_b = self.projector(z_b_feat.to(dtype=proj_dtype))
         loss, metrics = self._loss(z_a, z_b)
-        if not torch.isfinite(loss).item():
-            metrics["vicreg_nonfinite"] = pc.new_tensor(1.0)
-            loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
+        # Tensor-only nonfinite accounting (no `.item()` sync, see #3).
+        nonfinite = (~torch.isfinite(loss)).to(dtype=loss.dtype)
+        metrics["vicreg_nonfinite"] = nonfinite
+        loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
     def _resolve_neighbor_flags(self, *, device) -> tuple[bool, bool]:
@@ -347,7 +394,12 @@ class VICRegLoss(nn.Module):
         return mask
 
     def _apply_masked_occlusion(self, x: torch.Tensor, *, apply_mask: torch.Tensor) -> torch.Tensor:
-        if not bool(apply_mask.any().item()) or self.occlusion_mode == "none":
+        # Short-circuit on the cheap Python attribute first so the `.item()`
+        # sync below is only paid when occlusion is actually enabled (#3
+        # hot-path cleanup).
+        if self.occlusion_mode == "none":
+            return x
+        if not bool(apply_mask.any().item()):
             return x
 
         mode = self._resolve_occlusion_mode(device=x.device)
@@ -360,7 +412,9 @@ class VICRegLoss(nn.Module):
         return torch.where(apply_mask.view(-1, 1, 1), occluded, x)
 
     def _apply_masked_drop(self, x: torch.Tensor, *, apply_mask: torch.Tensor) -> torch.Tensor:
-        if not bool(apply_mask.any().item()) or self.drop_ratio <= 0:
+        if self.drop_ratio <= 0:
+            return x
+        if not bool(apply_mask.any().item()):
             return x
 
         bsz, num_points, _ = x.shape

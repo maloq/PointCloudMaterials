@@ -92,18 +92,6 @@ def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
     return points
 
 
-def drop_points_random(points: np.ndarray, n_points: int) -> np.ndarray:
-
-    """Drop points from point cloud to have exactly n_points."""
-    if len(points) > n_points:
-        idx = np.random.choice(len(points), n_points, replace=False)
-        return points[idx]
-    elif len(points) < n_points:
-        idx = np.random.choice(len(points), n_points, replace=True)
-        return points[idx]
-    return points
-
-
 def drop_points_farthest(points: np.ndarray, n_points: int) -> np.ndarray:
     """Adjust points to have exactly n_points.
 
@@ -169,40 +157,6 @@ def calculate_center(min_coords, stride, i, j, k, size):
     return center
 
 
-def process_sample(points, tree, center, size, n_points, sampling_method="drop_farthest"):
- 
-    radius = size
-    indices = tree.query_ball_point(center, radius)
-    if not indices:
-        return None, 0, 0
-    sample_points = points[indices]
-   
-    distances = np.linalg.norm(sample_points - center, axis=1)
-    mask = distances <= size
-    sample_points = sample_points[mask]
-    
-    if sampling_method == "fps":
-        drop_func = drop_points_fps
-    elif sampling_method == "drop_farthest":
-        drop_func = drop_points_farthest
-    else:
-        raise ValueError(f"Unknown sampling method: {sampling_method}")
-
-    if len(sample_points) > n_points:
-        dropped = len(sample_points) - n_points
-    else:
-        dropped = 0
-    added = max(n_points - len(sample_points), 0)
-    sample_points = drop_func(sample_points, n_points)
-    # Ensure the snapped center atom is always present at the origin.
-    if sample_points.size > 0:
-        dists_to_center = np.linalg.norm(sample_points - center, axis=1)
-        if not np.any(dists_to_center < 1e-8):
-            farthest_idx = int(np.argmax(dists_to_center))
-            sample_points[farthest_idx] = center
-    return sample_points, added, dropped
-
-
 def _resolve_drop_func(sampling_method: str):
     if sampling_method == "fps":
         return drop_points_fps
@@ -251,7 +205,11 @@ def generate_samples(
         ranges = [(0, int(d)) for d in dims]
 
     if any(s >= e for s, e in ranges):
-        return [], 0, 0
+        raise ValueError(
+            "generate_samples: no valid grid indices remain after edge-layer trimming. "
+            f"dims={np.asarray(dims).tolist()}, edge_drop_layers={resolved_edge_drop_layers}, "
+            f"ranges={ranges}, size={size}, stride={stride}."
+        )
 
     # Vectorized grid center computation via meshgrid
     grid_arrays = [np.arange(s, e) for s, e in ranges]
@@ -369,8 +327,11 @@ def get_regular_samples(
 
     # Ensure min_center is less than max_center along all dimensions
     if np.any(min_center >= max_center):
-        logger.print("Sampling region is too small or inverted after padding. No samples will be generated.")
-        return []
+        raise ValueError(
+            "get_regular_samples: sampling region collapsed after boundary padding. "
+            f"min_coords={min_coords.tolist()}, max_coords={max_coords.tolist()}, "
+            f"size={size}, padding={padding}. Use a smaller radius or a larger simulation box."
+        )
 
     # Grid dimensions
     dims = compute_dimensions(min_center, max_center, stride)
@@ -392,8 +353,11 @@ def get_regular_samples(
     
     # Ensure dimensions are non-negative
     if np.any(dims <= 0):
-        logger.print("Calculated dimensions for sampling grid are non-positive. No samples will be generated.")
-        return []
+        raise ValueError(
+            "get_regular_samples: sampling grid has a non-positive dimension. "
+            f"dims={dims.tolist()}, min_center={min_center.tolist()}, max_center={max_center.tolist()}, "
+            f"stride={stride}. Check radius vs. box size and overlap_fraction."
+        )
 
     samples, added_points, dropped_points = generate_samples(
         points, tree, min_center, stride, size, dims, 

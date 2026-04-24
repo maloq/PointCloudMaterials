@@ -8,7 +8,7 @@ runtime:
   cuda_device: 0
 
 paths:
-  checkpoint_path: output/2026-03-13/00-58-07/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
+  checkpoint_path: output/2026-04-17/11-08-33/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=54.ckpt
   dump_file: datasets/dump_first_10.pos
 
 outputs:

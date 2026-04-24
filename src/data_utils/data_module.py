@@ -16,11 +16,50 @@ from src.data_utils.temporal_lammps_dataset import (
 import time
 import logging
 from pathlib import Path
+from typing import Any
 
-from omegaconf import DictConfig, ListConfig, OmegaConf
+from omegaconf import DictConfig, ListConfig, MISSING, OmegaConf
 
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
+
+
+# Sentinel used by `_cfg_get` to distinguish "no default provided" (strict required) from
+# any real default value the caller might want to pass (including `None`).
+_REQUIRED = object()
+
+
+def _cfg_has(cfg: Any, key: str) -> bool:
+    """Return True if ``cfg`` defines ``key`` and the value is not the OmegaConf MISSING sentinel."""
+    if cfg is None:
+        return False
+    if isinstance(cfg, DictConfig):
+        if key not in cfg:
+            return False
+        return OmegaConf.select(cfg, key, default=MISSING) is not MISSING
+    if isinstance(cfg, dict):
+        return key in cfg
+    return hasattr(cfg, key)
+
+
+def _cfg_get(cfg: Any, key: str, *, default: Any = _REQUIRED, context: str = "data config") -> Any:
+    """Strictly fetch ``key`` from ``cfg``.
+
+    - If ``default`` is not provided, a missing key raises ``KeyError`` with ``context``
+      in the message — this is the "strict" path used for semantically important keys.
+    - If ``default`` is provided, the caller is opting into a safe fallback; the default
+      is returned when the key is absent.
+    """
+    if _cfg_has(cfg, key):
+        if isinstance(cfg, (DictConfig, dict)):
+            return cfg[key]
+        return getattr(cfg, key)
+    if default is _REQUIRED:
+        raise KeyError(
+            f"{context}: required key {key!r} is missing. "
+            "Set it explicitly in the config; unclear defaults are not allowed."
+        )
+    return default
 
 
 def _temporal_identity_or_default_collate(batch):
@@ -381,26 +420,15 @@ def _resolve_split_seed(cfg, *, default: int = 42) -> int:
     return seed
 
 
-def _seeded_random_split(dataset, lengths: list[int], *, seed: int, context: str):
-    if not hasattr(dataset, "__len__"):
-        raise TypeError(
-            f"{context}: dataset must define __len__, got {type(dataset)}"
-        )
-    split_lengths = [int(v) for v in lengths]
-    if any(v < 0 for v in split_lengths):
-        raise ValueError(
-            f"{context}: split lengths must be non-negative, got {split_lengths}"
-        )
-    total = int(sum(split_lengths))
-    n_items = int(len(dataset))
-    if total != n_items:
-        raise ValueError(
-            f"{context}: split lengths must sum to dataset length, "
-            f"got sum(lengths)={total}, len(dataset)={n_items}, lengths={split_lengths}."
-        )
+def _seeded_random_split(dataset, lengths: list[int], *, seed: int):
+    """Thin wrapper over ``torch.utils.data.random_split`` that seeds a fresh generator.
+
+    ``random_split`` itself validates that ``sum(lengths) == len(dataset)`` and raises
+    on length/type mismatch, so we don't re-validate here.
+    """
     generator = torch.Generator()
     generator.manual_seed(int(seed))
-    return random_split(dataset, split_lengths, generator=generator)
+    return random_split(dataset, [int(v) for v in lengths], generator=generator)
 
 
 def _resolve_temporal_window_start_frames(
@@ -412,6 +440,13 @@ def _resolve_temporal_window_start_frames(
     frame_stop: int | None,
     window_stride: int,
 ) -> list[int]:
+    """Compute anchor (start) frames for each temporal sampling window.
+
+    Scalar invariants (sequence_length/frame_stride/window_stride > 0, frame_start >= 0)
+    are validated at the dataset boundary in ``TemporalLAMMPSDumpDataset.__init__``; this
+    helper only validates the slice-window invariants unique to it (``frame_count`` and
+    the ``frame_stop`` vs. ``frame_start``/``frame_count`` relationships).
+    """
     frame_count = int(frame_count)
     sequence_length = int(sequence_length)
     frame_stride = int(frame_stride)
@@ -421,15 +456,9 @@ def _resolve_temporal_window_start_frames(
 
     if frame_count <= 0:
         raise ValueError(f"frame_count must be > 0, got {frame_count}")
-    if sequence_length <= 0:
-        raise ValueError(f"sequence_length must be > 0, got {sequence_length}")
-    if frame_stride <= 0:
-        raise ValueError(f"frame_stride must be > 0, got {frame_stride}")
-    if window_stride <= 0:
-        raise ValueError(f"window_stride must be > 0, got {window_stride}")
-    if frame_start < 0 or frame_start >= frame_count:
+    if frame_start >= frame_count:
         raise ValueError(
-            f"frame_start must satisfy 0 <= frame_start < frame_count, got frame_start={frame_start}, "
+            f"frame_start must be < frame_count, got frame_start={frame_start}, "
             f"frame_count={frame_count}."
         )
     if stop <= frame_start:
@@ -523,22 +552,23 @@ class RealPointCloudDataModule(pl.LightningDataModule):
 
     def _setup_real_dataset(self):
         data_cfg = self.cfg.data
+        ctx = "RealPointCloudDataModule.data"
 
-        data_sources_raw = getattr(data_cfg, "data_sources", None)
-        data_files_raw = getattr(data_cfg, "data_files", None)
-        auto_cutoff_cfg = _to_container(getattr(data_cfg, "auto_cutoff", None))
+        data_sources_raw = _cfg_get(data_cfg, "data_sources", default=None, context=ctx)
+        data_files_raw = _cfg_get(data_cfg, "data_files", default=None, context=ctx)
+        auto_cutoff_cfg = _to_container(_cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx))
         dataset_common_kwargs = dict(
-            radius=data_cfg.radius,
-            sample_type=getattr(data_cfg, "sample_type", "regular"),
-            overlap_fraction=getattr(data_cfg, "overlap_fraction", 0.0),
-            n_samples=getattr(data_cfg, "n_samples", 1000),
-            num_points=getattr(data_cfg, "num_points", 100),
+            radius=_cfg_get(data_cfg, "radius", context=ctx),
+            sample_type=_cfg_get(data_cfg, "sample_type", context=ctx),
+            overlap_fraction=_cfg_get(data_cfg, "overlap_fraction", default=0.0, context=ctx),
+            n_samples=_cfg_get(data_cfg, "n_samples", default=1000, context=ctx),
+            num_points=_cfg_get(data_cfg, "num_points", context=ctx),
             return_coords=self.return_coords,
-            drop_edge_samples=bool(getattr(data_cfg, "drop_edge_samples", True)),
-            edge_drop_layers=getattr(data_cfg, "edge_drop_layers", None),
-            pre_normalize=bool(getattr(data_cfg, "pre_normalize", True)),
-            normalize=bool(getattr(data_cfg, "normalize", True)),
-            sampling_method=getattr(data_cfg, "sampling_method", "drop_farthest"),
+            drop_edge_samples=bool(_cfg_get(data_cfg, "drop_edge_samples", default=True, context=ctx)),
+            edge_drop_layers=_cfg_get(data_cfg, "edge_drop_layers", default=None, context=ctx),
+            pre_normalize=bool(_cfg_get(data_cfg, "pre_normalize", default=True, context=ctx)),
+            normalize=bool(_cfg_get(data_cfg, "normalize", default=True, context=ctx)),
+            sampling_method=_cfg_get(data_cfg, "sampling_method", default="drop_farthest", context=ctx),
             auto_cutoff_config=auto_cutoff_cfg,
         )
 
@@ -554,7 +584,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             file_list = _to_container(data_files_raw)
             if isinstance(file_list, str):
                 file_list = [file_list]
-            data_path = getattr(data_cfg, "data_path", None)
+            data_path = _cfg_get(data_cfg, "data_path", context=ctx)
             if not data_path:
                 raise ValueError("data_path is required when using data_files (single-source mode)")
             full_dataset = PointCloudDataset(
@@ -568,7 +598,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
                 "or 'data_files' + 'data_path' (single-material)"
             )
 
-        train_ratio = getattr(data_cfg, "train_ratio", 0.8)
+        train_ratio = float(_cfg_get(data_cfg, "train_ratio", default=0.8, context=ctx))
         train_size = int(train_ratio * len(full_dataset))
         val_size = len(full_dataset) - train_size
         if train_size <= 0 or val_size <= 0:
@@ -577,7 +607,6 @@ class RealPointCloudDataModule(pl.LightningDataModule):
             full_dataset,
             [train_size, val_size],
             seed=self.split_seed,
-            context="RealPointCloudDataModule._setup_real_dataset",
         )
         return train_ds, val_ds
 
@@ -654,23 +683,22 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
 
     def _build_datasets(self):
         data_cfg = self.cfg.data
-        dump_file = getattr(data_cfg, "dump_file", None)
+        ctx = "TemporalLAMMPSDataModule.data"
+        dump_file = _cfg_get(data_cfg, "dump_file", context=ctx)
         if dump_file is None or str(dump_file).strip() == "":
             raise ValueError("Temporal LAMMPS data configuration must provide data.dump_file")
-        cache_dir = getattr(data_cfg, "cache_dir", None)
+        cache_dir = _cfg_get(data_cfg, "cache_dir", default=None, context=ctx)
 
-        sequence_length = int(getattr(data_cfg, "sequence_length", 0))
-        num_points = int(getattr(data_cfg, "num_points", 0))
-        frame_stride = int(getattr(data_cfg, "frame_stride", 1))
-        window_stride = int(getattr(data_cfg, "window_stride", 1))
-        frame_start = int(getattr(data_cfg, "frame_start", 0))
-        frame_stop = getattr(data_cfg, "frame_stop", None)
-        frame_stop = None if frame_stop is None else int(frame_stop)
+        sequence_length = int(_cfg_get(data_cfg, "sequence_length", context=ctx))
+        num_points = int(_cfg_get(data_cfg, "num_points", context=ctx))
+        frame_stride = int(_cfg_get(data_cfg, "frame_stride", default=1, context=ctx))
+        window_stride = int(_cfg_get(data_cfg, "window_stride", default=1, context=ctx))
+        frame_start = int(_cfg_get(data_cfg, "frame_start", default=0, context=ctx))
+        frame_stop_raw = _cfg_get(data_cfg, "frame_stop", default=None, context=ctx)
+        frame_stop = None if frame_stop_raw is None else int(frame_stop_raw)
 
-        if sequence_length <= 0:
-            raise ValueError(f"data.sequence_length must be > 0, got {sequence_length}")
-        if num_points <= 0:
-            raise ValueError(f"data.num_points must be > 0, got {num_points}")
+        # Scalar invariants (sequence_length>0, num_points>0, frame_start>=0, stride>0) are
+        # validated inside `TemporalLAMMPSDumpDataset.__init__` / `_resolve_temporal_window_start_frames`.
 
         scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file, cache_dir=cache_dir)
         radius = self._resolve_radius(
@@ -689,7 +717,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         )
         train_anchor_frames, val_anchor_frames = _split_temporal_window_start_frames(
             anchor_frames,
-            train_ratio=float(getattr(data_cfg, "train_ratio", 0.8)),
+            train_ratio=float(_cfg_get(data_cfg, "train_ratio", context=ctx)),
             seed=self.split_seed,
             context="TemporalLAMMPSDataModule._build_datasets",
         )
@@ -711,30 +739,51 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             window_stride=window_stride,
             frame_start=frame_start,
             frame_stop=frame_stop,
-            center_selection_mode=getattr(data_cfg, "center_selection_mode", None),
-            center_atom_ids=_to_container(getattr(data_cfg, "center_atom_ids", None)),
-            center_atom_stride=getattr(data_cfg, "center_atom_stride", None),
-            max_center_atoms=getattr(data_cfg, "max_center_atoms", None),
-            center_selection_seed=int(getattr(data_cfg, "center_selection_seed", 0)),
-            center_grid_overlap=getattr(data_cfg, "center_grid_overlap", None),
-            center_grid_reference_frame_index=getattr(data_cfg, "center_grid_reference_frame_index", None),
-            normalize=bool(getattr(data_cfg, "normalize", True)),
-            center_neighborhoods=bool(getattr(data_cfg, "center_neighborhoods", True)),
-            selection_method=str(getattr(data_cfg, "selection_method", "closest")),
+            center_selection_mode=_cfg_get(data_cfg, "center_selection_mode", default=None, context=ctx),
+            center_atom_ids=_to_container(
+                _cfg_get(data_cfg, "center_atom_ids", default=None, context=ctx)
+            ),
+            center_atom_stride=_cfg_get(data_cfg, "center_atom_stride", default=None, context=ctx),
+            max_center_atoms=_cfg_get(data_cfg, "max_center_atoms", default=None, context=ctx),
+            center_selection_seed=int(
+                _cfg_get(data_cfg, "center_selection_seed", default=0, context=ctx)
+            ),
+            center_grid_overlap=_cfg_get(data_cfg, "center_grid_overlap", default=None, context=ctx),
+            center_grid_reference_frame_index=_cfg_get(
+                data_cfg, "center_grid_reference_frame_index", default=None, context=ctx
+            ),
+            normalize=bool(_cfg_get(data_cfg, "normalize", default=True, context=ctx)),
+            center_neighborhoods=bool(
+                _cfg_get(data_cfg, "center_neighborhoods", default=True, context=ctx)
+            ),
+            selection_method=str(
+                _cfg_get(data_cfg, "selection_method", default="closest", context=ctx)
+            ),
             cache_dir=cache_dir,
-            rebuild_cache=bool(getattr(data_cfg, "rebuild_cache", False)),
-            tree_cache_size=int(getattr(data_cfg, "tree_cache_size", 4)),
-            precompute_neighbor_indices=bool(getattr(data_cfg, "precompute_neighbor_indices", False)),
-            precompute_rigs_graph=bool(getattr(data_cfg, "precompute_rigs_graph", False)),
-            rigs_num_points=getattr(
+            rebuild_cache=bool(_cfg_get(data_cfg, "rebuild_cache", default=False, context=ctx)),
+            tree_cache_size=int(_cfg_get(data_cfg, "tree_cache_size", default=4, context=ctx)),
+            precompute_neighbor_indices=bool(
+                _cfg_get(data_cfg, "precompute_neighbor_indices", default=False, context=ctx)
+            ),
+            precompute_rigs_graph=bool(
+                _cfg_get(data_cfg, "precompute_rigs_graph", default=False, context=ctx)
+            ),
+            rigs_num_points=_cfg_get(
                 data_cfg,
                 "rigs_num_points",
-                getattr(data_cfg, "model_points", num_points),
+                default=_cfg_get(data_cfg, "model_points", default=num_points, context=ctx),
+                context=ctx,
             ),
-            rigs_local_k=int(getattr(data_cfg, "rigs_local_k", encoder_local_k)),
-            rigs_chunk_size=int(getattr(data_cfg, "rigs_chunk_size", 256)),
-            build_lock_timeout_sec=float(getattr(data_cfg, "build_lock_timeout_sec", 7200.0)),
-            build_lock_stale_sec=float(getattr(data_cfg, "build_lock_stale_sec", 86400.0)),
+            rigs_local_k=int(
+                _cfg_get(data_cfg, "rigs_local_k", default=encoder_local_k, context=ctx)
+            ),
+            rigs_chunk_size=int(_cfg_get(data_cfg, "rigs_chunk_size", default=256, context=ctx)),
+            build_lock_timeout_sec=float(
+                _cfg_get(data_cfg, "build_lock_timeout_sec", default=7200.0, context=ctx)
+            ),
+            build_lock_stale_sec=float(
+                _cfg_get(data_cfg, "build_lock_stale_sec", default=86400.0, context=ctx)
+            ),
         )
 
         train_ds = TemporalLAMMPSDumpDataset(
@@ -748,13 +797,20 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         return train_ds, val_ds
 
     def _resolve_radius(self, *, dump_file, data_cfg, frame_start: int, num_points: int) -> float:
-        radius_raw = getattr(data_cfg, "radius", None)
+        ctx = "TemporalLAMMPSDataModule.data"
+        radius_raw = _cfg_get(data_cfg, "radius", default=None, context=ctx)
         auto_cutoff_cfg = PointCloudDataset._resolve_auto_cutoff_config(
-            _to_container(getattr(data_cfg, "auto_cutoff", None)),
+            _to_container(_cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)),
             default_target_points=int(num_points),
             default_radius=float(radius_raw) if radius_raw is not None else 0.0,
         )
         if auto_cutoff_cfg is not None:
+            if radius_raw is not None:
+                raise ValueError(
+                    "Temporal LAMMPS data: data.radius and data.auto_cutoff.enabled=true are "
+                    "mutually exclusive — set exactly one. "
+                    f"Got data.radius={float(radius_raw)!r} and data.auto_cutoff={dict(auto_cutoff_cfg)!r}."
+                )
             reference_frame_index = int(auto_cutoff_cfg.get("reference_frame_index", frame_start))
             estimation = estimate_lammps_dump_cutoff_radius(
                 dump_file,
@@ -771,11 +827,6 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
                 periodic=False,
             )
             radius_value = float(estimation["estimated_radius"])
-            if radius_raw is not None:
-                logger.print(
-                    "Temporal LAMMPS radius: data.auto_cutoff.enabled=true, "
-                    f"so ignoring explicit data.radius={float(radius_raw):.6f}."
-                )
             logger.print(
                 "Temporal LAMMPS radius: "
                 f"{radius_value:.6f} (source=auto_cutoff_static_style, "
@@ -1020,7 +1071,6 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             dataset,
             [train_size, val_size],
             seed=self.split_seed,
-            context="SyntheticPointCloudDataModule._build_datasets(synthetic)",
         )
 
     def _resolve_env_dirs(self, data_cfg, synth_dict):
@@ -1052,16 +1102,23 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         return resolved
 
     @staticmethod
-    def _get_param(name, data_cfg, synth_dict, *, required=False, default=None):
-        value = getattr(data_cfg, name, None)
-        if value is None and isinstance(synth_dict, dict):
-            value = synth_dict.get(name, None)
-        if value is None:
-            if default is not None:
-                return default
-            if required:
-                raise ValueError(f"Synthetic data configuration must provide '{name}'")
-        return value
+    def _get_param(name, data_cfg, synth_dict, *, required=False, default=_REQUIRED):
+        """Strictly resolve a param from ``data_cfg`` first, then from ``synth_dict``.
+
+        Missing keys either raise (when ``required`` or no ``default`` is provided) or return
+        the caller-supplied ``default``. ``None`` is treated as a legitimate value if explicitly
+        set in the config.
+        """
+        if _cfg_has(data_cfg, name):
+            return _cfg_get(data_cfg, name, context="SyntheticPointCloudDataModule.data")
+        if isinstance(synth_dict, dict) and name in synth_dict:
+            return synth_dict[name]
+        if required or default is _REQUIRED:
+            raise ValueError(
+                f"Synthetic data configuration must provide {name!r} (not found in data.* or "
+                "data.synthetic.*)."
+            )
+        return default
 
     def train_dataloader(self):
         return DataLoader(
@@ -1134,9 +1191,17 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
 
     @staticmethod
     def _class_id_to_name_map(dataset) -> dict[int, str]:
-        class_names = getattr(dataset, "class_names", None)
+        if not hasattr(dataset, "class_names"):
+            raise RuntimeError(
+                "SyntheticPointCloudDataModule requires the underlying dataset to expose "
+                f"`class_names`; got {type(dataset).__name__} which does not. "
+                "Update the dataset to publish its class-id→name mapping."
+            )
+        class_names = dataset.class_names
         if class_names is None:
-            return {}
+            raise RuntimeError(
+                f"{type(dataset).__name__}.class_names is None; expected a class-id→name mapping."
+            )
         return {int(k): str(v) for k, v in dict(class_names).items()}
 
     def _log_train_anisotropy_by_class(self, dataset, subset_indices: list[int] | None) -> None:

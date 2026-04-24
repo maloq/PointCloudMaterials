@@ -3,6 +3,9 @@ import sys
 
 import pytorch_lightning as pl
 import torch
+import torch.distributed as dist
+import torch.nn as nn
+import torch.nn.functional as F
 
 sys.path.append(os.getcwd())
 
@@ -15,9 +18,277 @@ from src.training_methods.contrastive_learning.supervised_cache import (
     reset_supervised_cache,
 )
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
-from src.training_methods.temporal_ssl.lejepa import LeJEPALoss
+from src.utils.model_summary import make_model_summary_point_cloud, resolve_model_summary_batch_size
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 from src.utils.training_utils import cached_sample_count, get_optimizers_and_scheduler
+
+
+class SwAVLoss(nn.Module):
+    """Swapped assignment prediction loss for temporal point-cloud views."""
+
+    def __init__(
+        self,
+        *,
+        enabled: bool,
+        weight: float,
+        input_dim: int | None,
+        projection_dim: int,
+        hidden_dim: int,
+        num_prototypes: int,
+        temperature: float,
+        epsilon: float,
+        sinkhorn_iterations: int,
+        start_epoch: int,
+        freeze_prototypes_steps: int,
+        view_mode: str,
+        view_points: int | None,
+    ) -> None:
+        super().__init__()
+        self.enabled = bool(enabled)
+        self.weight = float(weight)
+        self.input_dim = int(input_dim) if input_dim is not None else None
+        self.projection_dim = int(projection_dim)
+        self.hidden_dim = int(hidden_dim)
+        self.num_prototypes = int(num_prototypes)
+        self.temperature = float(temperature)
+        self.epsilon = float(epsilon)
+        self.sinkhorn_iterations = int(sinkhorn_iterations)
+        self.start_epoch = max(0, int(start_epoch))
+        self.freeze_prototypes_steps = max(0, int(freeze_prototypes_steps))
+        self.view_mode = str(view_mode).strip().lower()
+        self.view_points = int(view_points) if view_points is not None else None
+
+        if self.weight < 0.0:
+            raise ValueError(f"swav_weight must be >= 0, got {self.weight}.")
+        if self.projection_dim <= 0:
+            raise ValueError(f"swav_projection_dim must be > 0, got {self.projection_dim}.")
+        if self.hidden_dim < 0:
+            raise ValueError(f"swav_hidden_dim must be >= 0, got {self.hidden_dim}.")
+        if self.num_prototypes <= 0:
+            raise ValueError(f"swav_num_prototypes must be > 0, got {self.num_prototypes}.")
+        if self.temperature <= 0.0:
+            raise ValueError(f"swav_temperature must be > 0, got {self.temperature}.")
+        if self.epsilon <= 0.0:
+            raise ValueError(f"swav_epsilon must be > 0, got {self.epsilon}.")
+        if self.sinkhorn_iterations <= 0:
+            raise ValueError(
+                f"swav_sinkhorn_iterations must be > 0, got {self.sinkhorn_iterations}."
+            )
+        valid_view_modes = {"center_adjacent", "center_prev_next", "adjacent"}
+        if self.view_mode not in valid_view_modes:
+            raise ValueError(
+                f"swav_view_mode must be one of {sorted(valid_view_modes)}, got {self.view_mode!r}."
+            )
+        if self.view_points is not None and self.view_points <= 0:
+            raise ValueError(f"swav_view_points must be > 0 when set, got {self.view_points}.")
+
+        self.projector = None
+        self.prototypes = None
+        if self.enabled and self.weight > 0.0:
+            if self.input_dim is None:
+                raise ValueError("SwAV requires a resolved encoder latent dimension.")
+            if self.hidden_dim == 0:
+                self.projector = nn.Linear(self.input_dim, self.projection_dim)
+            else:
+                self.projector = nn.Sequential(
+                    nn.Linear(self.input_dim, self.hidden_dim),
+                    nn.BatchNorm1d(self.hidden_dim),
+                    nn.ReLU(inplace=True),
+                    nn.Linear(self.hidden_dim, self.projection_dim),
+                )
+            self.prototypes = nn.Linear(self.projection_dim, self.num_prototypes, bias=False)
+
+    @classmethod
+    def from_config(cls, cfg, *, input_dim: int | None):
+        data_cfg = getattr(cfg, "data", None)
+        view_points = getattr(cfg, "swav_view_points", None)
+        if view_points is None and data_cfg is not None:
+            view_points = getattr(data_cfg, "model_points", None)
+        if view_points is None:
+            view_points = getattr(cfg, "model_points", None)
+
+        return cls(
+            enabled=bool(getattr(cfg, "swav_enabled", False)),
+            weight=float(getattr(cfg, "swav_weight", 0.0)),
+            input_dim=input_dim,
+            projection_dim=int(getattr(cfg, "swav_projection_dim", 128)),
+            hidden_dim=int(getattr(cfg, "swav_hidden_dim", 512)),
+            num_prototypes=int(getattr(cfg, "swav_num_prototypes", 3000)),
+            temperature=float(getattr(cfg, "swav_temperature", 0.1)),
+            epsilon=float(getattr(cfg, "swav_epsilon", 0.05)),
+            sinkhorn_iterations=int(getattr(cfg, "swav_sinkhorn_iterations", 3)),
+            start_epoch=int(getattr(cfg, "swav_start_epoch", 0)),
+            freeze_prototypes_steps=int(getattr(cfg, "swav_freeze_prototypes_steps", 0)),
+            view_mode=str(getattr(cfg, "swav_view_mode", "center_adjacent")),
+            view_points=view_points,
+        )
+
+    def should_run(self, *, current_epoch: int) -> bool:
+        return bool(
+            self.enabled
+            and self.weight > 0.0
+            and self.projector is not None
+            and self.prototypes is not None
+            and int(current_epoch) >= self.start_epoch
+        )
+
+    def should_freeze_prototypes(self, *, global_step: int) -> bool:
+        return bool(
+            self.should_run(current_epoch=self.start_epoch)
+            and int(global_step) < self.freeze_prototypes_steps
+        )
+
+    def clear_prototype_gradients(self) -> None:
+        if self.prototypes is None:
+            return
+        for parameter in self.prototypes.parameters():
+            parameter.grad = None
+
+    @staticmethod
+    def _distributed_is_initialized() -> bool:
+        return dist.is_available() and dist.is_initialized()
+
+    @classmethod
+    def _distributed_sum(cls, value: torch.Tensor) -> torch.Tensor:
+        if cls._distributed_is_initialized():
+            dist.all_reduce(value, op=dist.ReduceOp.SUM)
+        return value
+
+    @classmethod
+    def _distributed_max(cls, value: torch.Tensor) -> torch.Tensor:
+        if cls._distributed_is_initialized():
+            dist.all_reduce(value, op=dist.ReduceOp.MAX)
+        return value
+
+    @torch.no_grad()
+    def normalize_prototypes(self) -> None:
+        if self.prototypes is None:
+            raise RuntimeError("Cannot normalize SwAV prototypes before they are initialized.")
+        weight = self.prototypes.weight.data
+        self.prototypes.weight.copy_(F.normalize(weight, dim=1, p=2))
+
+    def _prototype_logits(self, features: torch.Tensor) -> torch.Tensor:
+        if self.projector is None or self.prototypes is None:
+            raise RuntimeError("SwAV projector/prototypes are not initialized.")
+        projector_dtype = next(self.projector.parameters()).dtype
+        projected = self.projector(features.to(dtype=projector_dtype))
+        projected = F.normalize(projected, dim=1, p=2)
+        return self.prototypes(projected)
+
+    @torch.no_grad()
+    def _sinkhorn(self, logits: torch.Tensor) -> torch.Tensor:
+        if logits.dim() != 2:
+            raise ValueError(f"SwAV Sinkhorn expects logits with shape (B, K), got {tuple(logits.shape)}.")
+        if int(logits.shape[1]) != self.num_prototypes:
+            raise ValueError(
+                "SwAV Sinkhorn prototype dimension mismatch: "
+                f"expected K={self.num_prototypes}, got logits.shape={tuple(logits.shape)}."
+            )
+
+        scores = logits.detach().to(dtype=torch.float32) / self.epsilon
+        max_score = scores.max()
+        max_score = self._distributed_max(max_score)
+        q = torch.exp(scores - max_score).t()
+
+        # The max_score subtraction guarantees at least one entry is exp(0)=1,
+        # so sum_q > 0 strictly. We rely on the clamp_min(1e-12) in the inner
+        # loop for any row-wise degeneracy. Skipping the .item() read here is
+        # worth ~1 CPU/GPU sync per SwAV view per step (#3 hot-path cleanup).
+        sum_q = q.sum()
+        sum_q = self._distributed_sum(sum_q)
+        q = q / sum_q.clamp_min(1e-12)
+
+        # q.shape[1] is a Python int (> 0 for any non-empty batch) and the
+        # all-reduce across ranks of positive numbers is positive, so the old
+        # `.item()` sanity check is dead code under normal operation.
+        local_batch = q.new_tensor(float(q.shape[1]))
+        global_batch = self._distributed_sum(local_batch)
+        num_prototypes = q.new_tensor(float(q.shape[0]))
+
+        for _ in range(self.sinkhorn_iterations):
+            row_sums = q.sum(dim=1, keepdim=True)
+            row_sums = self._distributed_sum(row_sums)
+            q = q / row_sums.clamp_min(1e-12)
+            q = q / num_prototypes
+
+            q = q / q.sum(dim=0, keepdim=True).clamp_min(1e-12)
+            q = q / global_batch
+
+        q = q * global_batch
+        return q.t()
+
+    def compute_loss(
+        self,
+        *,
+        view_features: list[torch.Tensor],
+        current_epoch: int,
+    ):
+        if not self.should_run(current_epoch=current_epoch):
+            return None, {}
+        if len(view_features) < 2:
+            raise ValueError(f"SwAV requires at least two views, got {len(view_features)}.")
+
+        batch_size = int(view_features[0].shape[0])
+        for view_idx, features in enumerate(view_features):
+            if features.dim() != 2:
+                raise ValueError(
+                    f"SwAV view {view_idx} features must have shape (B, D), got {tuple(features.shape)}."
+                )
+            if int(features.shape[0]) != batch_size:
+                raise ValueError(
+                    "SwAV views must share a batch dimension, "
+                    f"view0_batch={batch_size}, view{view_idx}_batch={int(features.shape[0])}."
+                )
+            if self.input_dim is not None and int(features.shape[1]) != self.input_dim:
+                raise ValueError(
+                    "SwAV feature dimension mismatch: "
+                    f"expected D={self.input_dim}, got view{view_idx}.shape={tuple(features.shape)}."
+                )
+
+        self.normalize_prototypes()
+        logits_by_view = [self._prototype_logits(features) for features in view_features]
+        loss_terms = []
+        assignment_max_probs = []
+        assignment_entropies = []
+        for assign_idx, assignment_logits in enumerate(logits_by_view):
+            assignments = self._sinkhorn(assignment_logits)
+            assignment_max_probs.append(assignments.max(dim=1).values.mean())
+            assignment_entropy = -(assignments * assignments.clamp_min(1e-12).log()).sum(dim=1).mean()
+            assignment_entropies.append(assignment_entropy)
+
+            subloss_terms = []
+            for pred_idx, prediction_logits in enumerate(logits_by_view):
+                if pred_idx == assign_idx:
+                    continue
+                log_probs = F.log_softmax(prediction_logits / self.temperature, dim=1)
+                subloss_terms.append(-(assignments * log_probs).sum(dim=1).mean())
+            loss_terms.append(torch.stack(subloss_terms, dim=0).mean())
+
+        loss = torch.stack(loss_terms, dim=0).mean()
+        metrics = {
+            "swav_assignment_entropy": torch.stack(assignment_entropies, dim=0).mean(),
+            "swav_assignment_max_prob": torch.stack(assignment_max_probs, dim=0).mean(),
+        }
+        # Tensor-only nonfinite accounting avoids a per-step CPU sync; we log
+        # the flag unconditionally (0.0 when finite, 1.0 otherwise) so
+        # downstream dashboards still see the same metric name.
+        nonfinite = (~torch.isfinite(loss)).to(dtype=loss.dtype)
+        metrics["swav_nonfinite"] = nonfinite
+        loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
+        return loss, metrics
+
+    def forward(self, features: torch.Tensor, *, profile_logits: bool = False) -> torch.Tensor:
+        if not profile_logits:
+            raise RuntimeError(
+                "SwAVLoss.forward is reserved for PyTorch Lightning model-summary FLOP profiling. "
+                "Use SwAVLoss.compute_loss(...) during training."
+            )
+        if features.dim() != 2:
+            raise ValueError(
+                "SwAV logits FLOP profiling expects feature tensor with shape (B, D), "
+                f"got {tuple(features.shape)}."
+            )
+        return self._prototype_logits(features)
 
 
 class TemporalSSLModule(pl.LightningModule):
@@ -36,7 +307,6 @@ class TemporalSSLModule(pl.LightningModule):
                 "TemporalSSLModule requires data.kind='temporal_lammps', "
                 f"got {data_kind!r}."
             )
-
         self.sequence_length = int(getattr(data_cfg, "sequence_length", 0))
         if self.sequence_length < 3:
             raise ValueError(
@@ -58,10 +328,44 @@ class TemporalSSLModule(pl.LightningModule):
                 "temporal_vicreg_anchor_frame='last' requires temporal_vicreg_use_adjacent_views=false. "
                 "Adjacent temporal VICReg views are currently defined around the center frame only."
             )
+        # Fused-forward view anchor (#2). When the fused VICReg+SwAV path is
+        # active we build just two views per step and reuse them for both
+        # losses. "center" keeps the existing semantics (anchor=center,
+        # pair=random(prev, next)); "previous" drops the center view entirely
+        # and uses (anchor=prev, pair=next) for both heads, saving the
+        # center crop and trading it for a harder temporal-only contrast.
+        self.fused_views_anchor = str(
+            getattr(cfg, "fused_views_anchor", "center")
+        ).strip().lower()
+        if self.fused_views_anchor not in {"center", "previous"}:
+            raise ValueError(
+                "fused_views_anchor must be one of {'center', 'previous'}, "
+                f"got {self.fused_views_anchor!r}."
+            )
 
         self.encoder = build_encoder(cfg)
-        self.encoder_io = EncoderAdapter(self.encoder)
+        # Resolve latent dim from the uncompiled module (cheap attribute read).
         latent_dim = resolve_encoder_output_dim(cfg, encoder=self.encoder)
+        # Optional torch.compile wrap around the encoder (#8). Inductor fuses
+        # the patch-encoder Conv1d + BN + ReLU stack and the attention/MLP
+        # blocks into larger kernels and removes Python dispatch overhead.
+        # The existing `torch.compiler.is_compiling()` guard inside
+        # `_normalize_frame_vectors` handles frame-validation graph breaks.
+        # Defaults: `compile_encoder=False` so CPU smoke tests + existing
+        # runs stay bitwise identical; opt in via the config. First step is
+        # slower than usual because of compile warm-up.
+        self._compile_encoder = bool(getattr(cfg, "compile_encoder", False))
+        self._encoder_compile_mode = str(getattr(cfg, "encoder_compile_mode", "default"))
+        self._encoder_compile_fullgraph = bool(getattr(cfg, "encoder_compile_fullgraph", False))
+        self._encoder_compile_dynamic = bool(getattr(cfg, "encoder_compile_dynamic", False))
+        if self._compile_encoder:
+            self.encoder = torch.compile(
+                self.encoder,
+                mode=self._encoder_compile_mode,
+                fullgraph=self._encoder_compile_fullgraph,
+                dynamic=self._encoder_compile_dynamic,
+            )
+        self.encoder_io = EncoderAdapter(self.encoder)
 
         self.sample_points = int(getattr(data_cfg, "num_points", 0))
         model_points = getattr(data_cfg, "model_points", None)
@@ -77,14 +381,29 @@ class TemporalSSLModule(pl.LightningModule):
             raise ValueError(
                 f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
             )
+        summary_points = self.model_points if self.model_points is not None else self.sample_points
+        if summary_points <= 0:
+            raise ValueError(
+                "TemporalSSLModule cannot create a PyTorch Lightning FLOP summary input because "
+                f"data.num_points={self.sample_points!r} and data.model_points={self.model_points!r}. "
+                "Set data.num_points or data.model_points to a positive point count."
+            )
+        self.example_input_array = {
+            "pc": make_model_summary_point_cloud(
+                batch_size=resolve_model_summary_batch_size(cfg),
+                num_points=summary_points,
+                sequence_length=self.sequence_length,
+            ),
+            "include_ssl_heads": True,
+        }
 
         self.vicreg = VICRegLoss.from_config(
             cfg,
             input_dim=latent_dim,
         )
-        self.lejepa = LeJEPALoss.from_config(
+        self.swav = SwAVLoss.from_config(
             cfg,
-            sequence_length=self.sequence_length,
+            input_dim=latent_dim,
         )
 
         init_supervised_cache(self, cfg)
@@ -92,6 +411,12 @@ class TemporalSSLModule(pl.LightningModule):
         self._warned_cache_eq_fallback = False
         self._consecutive_nan_steps = 0
         self._max_consecutive_nan_steps = int(getattr(cfg, "max_consecutive_nan_steps", 20))
+        # Device-side counter used to avoid a per-step `.item()` CPU/GPU sync
+        # in the training hot path (#3). We only pull the value to CPU once
+        # every `_nonfinite_check_stride` micro-steps; the stride is small
+        # enough to still fail loud within O(stride) steps of a divergence.
+        self._nonfinite_step_flag: torch.Tensor | None = None
+        self._nonfinite_check_stride = max(1, int(getattr(cfg, "nonfinite_check_stride", 8)))
 
     @staticmethod
     def _load_checkpoint_payload(checkpoint_path: str):
@@ -294,6 +619,24 @@ class TemporalSSLModule(pl.LightningModule):
         # otherwise falls back to the encoder invariant branch.
         return self.vicreg._invariant(z_inv_model, eq_z)
 
+    def _forward_ssl_heads_for_summary(self, features: torch.Tensor | None) -> dict[str, torch.Tensor]:
+        head_outputs = {}
+        if self.vicreg.projector is not None:
+            if features is None:
+                raise RuntimeError(
+                    "Cannot profile VICReg FLOPs for the Lightning model summary because "
+                    "the encoder did not return invariant contrastive features."
+                )
+            head_outputs["vicreg_projected"] = self.vicreg(features, profile_projector=True)
+        if self.swav.projector is not None or self.swav.prototypes is not None:
+            if features is None:
+                raise RuntimeError(
+                    "Cannot profile SwAV FLOPs for the Lightning model summary because "
+                    "the encoder did not return invariant contrastive features."
+                )
+            head_outputs["swav_logits"] = self.swav(features, profile_logits=True)
+        return head_outputs
+
     def _status_print(self, message: str) -> None:
         if getattr(self, "_trainer", None) is not None:
             self.print(message)
@@ -305,39 +648,6 @@ class TemporalSSLModule(pl.LightningModule):
         if self.model_points is not None:
             out = crop_to_num_points(out, self.model_points)
         return out
-
-    def _select_lejepa_frame_window(self, sequence_points: torch.Tensor) -> torch.Tensor:
-        if self.lejepa is None:
-            raise RuntimeError("LeJEPA frame-window selection was requested, but self.lejepa is not initialized.")
-        self._validate_temporal_points(sequence_points)
-        target_frame_index = self.sequence_length - 1
-        start_frame_index = target_frame_index - int(self.lejepa.context_frames)
-        return sequence_points[:, start_frame_index : target_frame_index + 1]
-
-    def _encode_temporal_frame_sequence(self, sequence_points: torch.Tensor) -> torch.Tensor:
-        if not torch.is_tensor(sequence_points):
-            raise TypeError(f"sequence_points must be a torch.Tensor, got {type(sequence_points)}.")
-        if sequence_points.dim() != 4 or sequence_points.shape[-1] != 3:
-            raise ValueError(
-                "Expected a temporal point-cloud tensor with shape (B, T, N, 3), "
-                f"got {tuple(sequence_points.shape)}."
-            )
-
-        sequence_points = sequence_points.to(device=self.device, dtype=self.dtype, non_blocking=True)
-        batch_size, num_frames, num_points, _ = sequence_points.shape
-        flat_points = sequence_points.reshape(batch_size * num_frames, num_points, 3).contiguous()
-        flat_points = self._prepare_model_input(flat_points)
-        encoded = self.encoder_io.encode(flat_points)
-        z_inv_contrastive = self._contrastive_invariant_latent(
-            encoded.invariant,
-            encoded.equivariant,
-        )
-        if z_inv_contrastive is None:
-            raise RuntimeError(
-                "LeJEPA requires invariant encoder embeddings, but the configured encoder "
-                "did not produce a usable invariant latent."
-            )
-        return z_inv_contrastive.reshape(batch_size, num_frames, -1)
 
     def _center_frame(self, sequence_points: torch.Tensor) -> torch.Tensor:
         return sequence_points[:, self.center_frame_index]
@@ -444,6 +754,181 @@ class TemporalSSLModule(pl.LightningModule):
     def _prepare_explicit_view(self, pc: torch.Tensor, *, target_points: int | None) -> torch.Tensor:
         return crop_to_num_points(pc, target_points)
 
+    def _prepare_swav_view(self, pc: torch.Tensor) -> torch.Tensor:
+        target_points = self.swav.view_points
+        if target_points is not None:
+            return self._prepare_explicit_view(pc, target_points=target_points)
+        return self._prepare_model_input(pc)
+
+    def _build_swav_temporal_views(
+        self,
+        center_pc: torch.Tensor,
+        prev_pc: torch.Tensor,
+        next_pc: torch.Tensor,
+    ) -> list[torch.Tensor]:
+        center_view = self._prepare_swav_view(center_pc)
+        prev_view = self._prepare_swav_view(prev_pc)
+        next_view = self._prepare_swav_view(next_pc)
+
+        if self.swav.view_mode == "center_prev_next":
+            return [center_view, prev_view, next_view]
+        if self.swav.view_mode == "adjacent":
+            return [prev_view, next_view]
+        if self.swav.view_mode == "center_adjacent":
+            batch_size = int(center_pc.shape[0])
+            choose_next_mask = torch.rand((batch_size,), device=center_pc.device) < 0.5
+            adjacent_view = torch.where(
+                choose_next_mask.view(-1, 1, 1),
+                next_view,
+                prev_view,
+            )
+            return [center_view, adjacent_view]
+        raise RuntimeError(f"Unsupported SwAV temporal view mode at runtime: {self.swav.view_mode!r}.")
+
+    def _encode_swav_views(self, views: list[torch.Tensor]) -> list[torch.Tensor]:
+        if len(views) < 2:
+            raise ValueError(f"SwAV requires at least two temporal views, got {len(views)}.")
+        num_views = len(views)
+        batch_size = int(views[0].shape[0])
+        concatenated = torch.cat(views, dim=0)
+        encoded = self.encoder_io.encode(concatenated)
+        features = self._shared_invariant(encoded.invariant, encoded.equivariant)
+        if features is None:
+            raise RuntimeError(
+                "SwAV requires invariant encoder features after temporal view encoding, "
+                "but the configured encoder returned none."
+            )
+        if features.dim() != 2 or int(features.shape[0]) != batch_size * num_views:
+            raise ValueError(
+                "SwAV encoded temporal views must produce features with shape (B * V, D), "
+                f"got {tuple(features.shape)} for batch_size={batch_size}, num_views={num_views}."
+            )
+        return list(features.chunk(num_views, dim=0))
+
+    def _compute_swav_loss(
+        self,
+        *,
+        center_pc: torch.Tensor,
+        prev_pc: torch.Tensor,
+        next_pc: torch.Tensor,
+    ):
+        views = self._build_swav_temporal_views(center_pc, prev_pc, next_pc)
+        view_features = self._encode_swav_views(views)
+        return self.swav.compute_loss(
+            view_features=view_features,
+            current_epoch=int(self.current_epoch),
+        )
+
+    def _fused_contrastive_applicable(
+        self,
+        *,
+        should_run_vicreg: bool,
+        should_run_swav: bool,
+    ) -> bool:
+        """Decide whether VICReg and SwAV can share a single encoder forward.
+
+        The fused path (#1) requires:
+          - both contrastive heads are active
+          - temporal VICReg views are enabled
+          - SwAV is in a 2-view mode (``center_adjacent`` or ``adjacent``)
+          - view crop sizes match between VICReg and SwAV
+          - VICReg neighbor_view_mode is one that ``_build_vicreg_temporal_views``
+            already supports (``none`` or ``second``)
+        Any unsupported combination falls back to the original separate-forward
+        paths so the optimisation is a pure opt-in improvement for common
+        configs.
+        """
+        if not (should_run_vicreg and should_run_swav):
+            return False
+        if not self.use_temporal_vicreg_views:
+            return False
+        if self.swav.view_mode not in {"center_adjacent", "adjacent"}:
+            return False
+        if self.vicreg.view_points != self.swav.view_points:
+            return False
+        neighbor_mode = str(self.vicreg.neighbor_view_mode).lower()
+        if self.vicreg.neighbor_view and neighbor_mode not in {"none", "second"}:
+            return False
+        return True
+
+    def _build_fused_contrastive_views(
+        self,
+        center_pc: torch.Tensor,
+        prev_pc: torch.Tensor,
+        next_pc: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        """Build the two shared views consumed by VICReg and SwAV in the fused path.
+
+        When ``fused_views_anchor == "center"`` this reproduces the two views
+        built by :meth:`_build_vicreg_temporal_views` (anchor=center crop,
+        pair=random adjacent crop optionally mixed with a spatial neighbour
+        view). When ``fused_views_anchor == "previous"`` we drop the center
+        view entirely (#2) and use (prev, next) as the two views.
+        """
+        target_points = self.vicreg.view_points
+        neighbor_mode = str(self.vicreg.neighbor_view_mode).lower()
+
+        if self.fused_views_anchor == "previous":
+            # Temporal-only contrast: both views come from adjacent frames and
+            # the center crop is never encoded. SwAV's view_mode is expected
+            # to be 'adjacent' but we pass the views list explicitly so
+            # either 'adjacent' or 'center_adjacent' would consume them
+            # correctly from the caller's perspective.
+            anchor_raw = self._prepare_explicit_view(prev_pc, target_points=target_points)
+            pair_raw = self._prepare_explicit_view(next_pc, target_points=target_points)
+            anchor_view = self.vicreg.apply_view_postprocessing(
+                anchor_raw,
+                use_neighbor=False,
+                apply_occlusion=False,
+            )
+            pair_view = self.vicreg.apply_view_postprocessing(
+                pair_raw,
+                use_neighbor=False,
+                apply_occlusion=False,
+            )
+            return {"anchor": anchor_view, "pair": pair_view}
+
+        # Default anchor='center': reuse the VICReg temporal view builder.
+        vicreg_views = self._build_vicreg_temporal_views(center_pc, prev_pc, next_pc)
+        # Unused in this branch but referenced to keep linter happy.
+        del neighbor_mode
+        if vicreg_views is None:
+            raise RuntimeError(
+                "Fused contrastive path requested but _build_vicreg_temporal_views "
+                "returned None; this should not happen with "
+                "use_temporal_vicreg_views=True."
+            )
+        return {"anchor": vicreg_views["y_a"], "pair": vicreg_views["y_b"]}
+
+    def _encode_fused_contrastive_views(
+        self,
+        views: dict[str, torch.Tensor],
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Single encoder forward over ``[anchor ; pair]`` -> (anchor_feat, pair_feat)."""
+        anchor_view = views["anchor"]
+        pair_view = views["pair"]
+        batch_size = int(anchor_view.shape[0])
+        if int(pair_view.shape[0]) != batch_size:
+            raise ValueError(
+                "Fused contrastive anchor and pair views must share a batch dim; "
+                f"got anchor_shape={tuple(anchor_view.shape)}, pair_shape={tuple(pair_view.shape)}."
+            )
+        fused_input = torch.cat([anchor_view, pair_view], dim=0)
+        encoded = self.encoder_io.encode(fused_input)
+        features = self._shared_invariant(encoded.invariant, encoded.equivariant)
+        if features is None:
+            raise RuntimeError(
+                "Fused contrastive path requires invariant encoder features, "
+                "but the configured encoder returned none."
+            )
+        if features.dim() != 2 or int(features.shape[0]) != 2 * batch_size:
+            raise ValueError(
+                "Fused contrastive encoded features must have shape (2*B, D); "
+                f"got {tuple(features.shape)} for batch_size={batch_size}."
+            )
+        anchor_feat, pair_feat = features.chunk(2, dim=0)
+        return anchor_feat, pair_feat
+
     def _build_vicreg_temporal_views(
         self,
         center_pc: torch.Tensor,
@@ -523,15 +1008,30 @@ class TemporalSSLModule(pl.LightningModule):
             "y_b": mixed_second_view,
         }
 
-    def forward(self, pc: torch.Tensor):
+    def forward(self, pc: torch.Tensor, include_ssl_heads: bool = False):
+        if not isinstance(include_ssl_heads, bool):
+            raise TypeError(
+                "include_ssl_heads must be a bool. It is intended only for PyTorch Lightning "
+                f"model-summary FLOP profiling, got {type(include_ssl_heads)}."
+            )
         if torch.is_tensor(pc) and pc.dim() == 4:
             self._validate_temporal_points(pc)
             pc = self._center_frame(pc)
+        if torch.is_tensor(pc):
+            pc = self._prepare_model_input(pc)
+            pc = pc.to(device=self.device, dtype=self.dtype)
         encoded = self.encoder_io.encode(pc)
         z_inv_contrastive = self._contrastive_invariant_latent(
             encoded.invariant,
             encoded.equivariant,
         )
+        if include_ssl_heads:
+            return (
+                z_inv_contrastive,
+                encoded.invariant,
+                encoded.equivariant,
+                self._forward_ssl_heads_for_summary(z_inv_contrastive),
+            )
         return z_inv_contrastive, encoded.invariant, encoded.equivariant
 
     def _step(self, batch, batch_idx, stage: str):
@@ -557,6 +1057,7 @@ class TemporalSSLModule(pl.LightningModule):
             stage != "train" or self.cache_train_supervised_metrics
         )
         should_run_vicreg = self.vicreg.should_run(current_epoch=int(self.current_epoch))
+        should_run_swav = self.swav.should_run(current_epoch=int(self.current_epoch))
 
         losses = {}
         center_embeddings = None
@@ -570,47 +1071,75 @@ class TemporalSSLModule(pl.LightningModule):
                     stage=stage,
                 )
 
-        if should_run_vicreg:
-            vicreg_views = (
-                self._build_vicreg_temporal_views(pc_raw, prev_pc, next_pc)
-                if self.use_temporal_vicreg_views
-                else None
-            )
-            vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
-                pc=vicreg_pc_raw,
-                encoder=self.encoder,
-                prepare_input=self.encoder_io.prepare_input,
-                split_output=self.encoder_io.split_output,
+        # Fused path (#1 / #2): when both contrastive heads are active with
+        # compatible view configurations, build the two shared views once and
+        # run a single encoder forward instead of two or three separate ones.
+        use_fused = self._fused_contrastive_applicable(
+            should_run_vicreg=should_run_vicreg,
+            should_run_swav=should_run_swav,
+        )
+
+        if use_fused:
+            fused_views = self._build_fused_contrastive_views(pc_raw, prev_pc, next_pc)
+            anchor_feat, pair_feat = self._encode_fused_contrastive_views(fused_views)
+
+            vicreg_loss, vicreg_metrics = self.vicreg.compute_loss_from_features(
+                z_a_feat=anchor_feat,
+                z_b_feat=pair_feat,
                 current_epoch=int(self.current_epoch),
-                views=vicreg_views,
-                invariant_transform=self._shared_invariant,
             )
             if vicreg_loss is not None:
                 losses["vicreg"] = vicreg_loss
             for name, value in vicreg_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
-        if self.lejepa is not None and self.lejepa.should_run(current_epoch=int(self.current_epoch)):
-            lejepa_frame_embeddings = self._encode_temporal_frame_sequence(
-                self._select_lejepa_frame_window(sequence_points)
-            )
-            lejepa_loss, lejepa_metrics = self.lejepa.compute_loss(
-                frame_embeddings=lejepa_frame_embeddings,
+            swav_loss, swav_metrics = self.swav.compute_loss(
+                view_features=[anchor_feat, pair_feat],
                 current_epoch=int(self.current_epoch),
-                global_step=int(self.global_step),
             )
-            if lejepa_loss is not None:
-                losses["lejepa"] = lejepa_loss
-            for name, value in lejepa_metrics.items():
+            if swav_loss is not None:
+                losses["swav"] = swav_loss
+            for name, value in swav_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
+        else:
+            if should_run_vicreg:
+                vicreg_views = (
+                    self._build_vicreg_temporal_views(pc_raw, prev_pc, next_pc)
+                    if self.use_temporal_vicreg_views
+                    else None
+                )
+                vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
+                    pc=vicreg_pc_raw,
+                    encoder=self.encoder,
+                    prepare_input=self.encoder_io.prepare_input,
+                    split_output=self.encoder_io.split_output,
+                    current_epoch=int(self.current_epoch),
+                    views=vicreg_views,
+                    invariant_transform=self._shared_invariant,
+                )
+                if vicreg_loss is not None:
+                    losses["vicreg"] = vicreg_loss
+                for name, value in vicreg_metrics.items():
+                    self._log_metric(stage, name, value, batch_size=batch_size)
+
+            if should_run_swav:
+                swav_loss, swav_metrics = self._compute_swav_loss(
+                    center_pc=pc_raw,
+                    prev_pc=prev_pc,
+                    next_pc=next_pc,
+                )
+                if swav_loss is not None:
+                    losses["swav"] = swav_loss
+                for name, value in swav_metrics.items():
+                    self._log_metric(stage, name, value, batch_size=batch_size)
 
         total_loss = None
         if "vicreg" in losses:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
-        if "lejepa" in losses and self.lejepa is not None:
-            lejepa_total = self.lejepa.weight * losses["lejepa"]
-            total_loss = lejepa_total if total_loss is None else total_loss + lejepa_total
+        if "swav" in losses:
+            swav_total = self.swav.weight * losses["swav"]
+            total_loss = swav_total if total_loss is None else total_loss + swav_total
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
@@ -622,30 +1151,45 @@ class TemporalSSLModule(pl.LightningModule):
             parts.append(f"active_losses={list(losses.keys())}")
             self._status_print(" | ".join(parts))
 
-        if not torch.isfinite(total_loss).item():
-            self._consecutive_nan_steps += 1
-            self._log_metric(
-                stage,
-                "loss_nonfinite",
-                1.0,
-                on_step=True,
-                on_epoch=False,
-                batch_size=batch_size,
-            )
-            if self._consecutive_nan_steps >= self._max_consecutive_nan_steps:
+        # Tensor-only consecutive nonfinite tracking (#3): no per-step sync.
+        nonfinite_step = (~torch.isfinite(total_loss)).to(dtype=torch.int32)
+        if self._nonfinite_step_flag is None or self._nonfinite_step_flag.device != total_loss.device:
+            self._nonfinite_step_flag = torch.zeros((), dtype=torch.int32, device=total_loss.device)
+        self._nonfinite_step_flag = torch.where(
+            nonfinite_step > 0,
+            self._nonfinite_step_flag + 1,
+            torch.zeros_like(self._nonfinite_step_flag),
+        )
+        # Always clamp NaN/Inf so gradient accumulation does not poison the
+        # next optimizer step.
+        total_loss = torch.nan_to_num(total_loss, nan=0.0, posinf=0.0, neginf=0.0)
+        # Log a 0/1 flag instead of gating the log on a Python bool (no
+        # sync, same metric name for downstream dashboards).
+        self._log_metric(
+            stage,
+            "loss_nonfinite",
+            nonfinite_step.to(dtype=torch.float32),
+            on_step=True,
+            on_epoch=False,
+            batch_size=batch_size,
+        )
+        # Pull the counter to CPU only periodically. This still raises fast
+        # enough (within O(stride) steps) to halt a diverged run.
+        if stage == "train" and ((batch_idx + 1) % self._nonfinite_check_stride == 0):
+            observed = int(self._nonfinite_step_flag.item())
+            self._consecutive_nan_steps = observed
+            if observed >= self._max_consecutive_nan_steps:
                 raise RuntimeError(
-                    f"Training produced {self._consecutive_nan_steps} consecutive "
-                    f"non-finite losses. Halting to prevent silent divergence."
+                    f"Training produced {observed} consecutive non-finite losses "
+                    f"(checked every {self._nonfinite_check_stride} steps). "
+                    "Halting to prevent silent divergence."
                 )
-            total_loss = torch.nan_to_num(total_loss, nan=0.0, posinf=0.0, neginf=0.0)
-        else:
-            self._consecutive_nan_steps = 0
 
         metrics_to_log = {"loss": total_loss}
         if "vicreg" in losses:
             metrics_to_log["vicreg"] = losses["vicreg"]
-        if "lejepa" in losses:
-            metrics_to_log["lejepa"] = losses["lejepa"]
+        if "swav" in losses:
+            metrics_to_log["swav"] = losses["swav"]
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():
@@ -684,6 +1228,10 @@ class TemporalSSLModule(pl.LightningModule):
     def configure_optimizers(self):
         return get_optimizers_and_scheduler(self.hparams, self.parameters())
 
+    def on_after_backward(self) -> None:
+        if self.swav.should_freeze_prototypes(global_step=int(self.global_step)):
+            self.swav.clear_prototype_gradients()
+
     def _log_metric(
         self,
         stage: str,
@@ -709,7 +1257,12 @@ class TemporalSSLModule(pl.LightningModule):
         if batch_size is not None and "batch_size" not in log_kwargs:
             log_kwargs["batch_size"] = int(batch_size)
         if "sync_dist" not in log_kwargs:
-            log_kwargs["sync_dist"] = True
+            # Skip DDP all-reduce for per-step train metrics (#7): they are
+            # noisy per-rank samples anyway and the all-reduce stalls the
+            # training loop in multi-GPU runs. Epoch-reduced and validation
+            # metrics keep sync_dist=True for correct aggregation.
+            is_train_step_only = (stage == "train") and on_step and not on_epoch
+            log_kwargs["sync_dist"] = not is_train_step_only
         if torch.is_tensor(value):
             value = value.detach()
         self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
@@ -769,4 +1322,4 @@ class TemporalSSLModule(pl.LightningModule):
         log_supervised_metrics(self, stage)
 
 
-__all__ = ["TemporalSSLModule"]
+__all__ = ["SwAVLoss", "TemporalSSLModule"]

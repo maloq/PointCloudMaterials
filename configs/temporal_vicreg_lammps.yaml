@@ -58,6 +58,15 @@ encoder:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
+    # NOTE: encoder_dims=512 selects EncoderLarge whose second_conv applies
+    # BatchNorm1d(2048) over flat (B*num_group) = 49152 rows at batch_size
+    # 2048 and is the dominant activation-memory term. Dropping to 384 picks
+    # EncoderSmall (BN1024) and cuts that memory roughly in half, but both
+    # changes break loading `init_from_checkpoint_encoder_only=true` because
+    # BN running-stats are discarded and the remaining BN weight/bias have
+    # different semantics after a shape or norm change. Keep 512 while
+    # reusing the pretrained checkpoint; revisit when retraining from
+    # scratch.
     encoder_dims: 512
     trans_dim: 128
     depth: 8
@@ -68,16 +77,41 @@ encoder:
     mask_ratio: 0.6
     ema_decay: 0.996
     deterministic_fps: false
-    sorting_mode: nearest
+    # #9: drop the 24-iteration `_nearest_path_order` argmin loop. The
+    # orientation bias + positional embedding already give the transformer
+    # positional information, so the path-sort is not required for
+    # invariance and costs a per-sample kernel chain each step.
+    sorting_mode: none
+    # #9: randomly-sampled group centers during training replace the
+    # 24-iteration FPS Python loop with a single `rand().topk(...)` call.
+    # Eval still uses FPS so pretrain / downstream reproducibility is
+    # preserved. At num_points=80, num_group=24 the informativeness gap
+    # between FPS and random is small for a pretrained transformer.
+    group_sampling: random
     center_input: true
     frame_builder: triad
     frame_eps: 1e-6
+    # Opt-in activation checkpointing for the 8-layer RI transformer. Saves
+    # activation memory for the attention stack at the cost of ~30% extra
+    # compute in the backward pass of that stack only; net wall-clock win
+    # comes from the headroom it unlocks for larger batches or from the
+    # decrease in fragmentation-triggered CUDA reallocations.
+    use_gradient_checkpointing: true
 
 learning_rate: 0.003
-batch_size: 4096
+batch_size: 2048
 precision: bf16-true
 gradient_clip_val: 1.0
-accumulate_grad_batches: 4
+# #11: steps #1 (fused encoder forward) and #5 (activation checkpointing)
+# freed enough GPU memory that the effective batch does not need to be
+# backed by gradient accumulation. Dropping accum from 4 -> 1 quadruples
+# the number of optimizer updates per wall-clock second at the cost of
+# cutting the effective batch from 2048*4=8192 to 2048. Because VICReg +
+# SwAV covariance statistics tolerate batch sizes >=1024 comfortably, this
+# is expected to converge the same or faster; if you want to match the old
+# trajectory exactly, scale `learning_rate` down by sqrt(4)=2 (linear rule
+# would over-shoot here because the old run was warmup + Cosine).
+accumulate_grad_batches: 1
 auto_batch_size_search: false
 auto_batch_size_mode: power
 auto_batch_size_init_val: null
@@ -98,8 +132,20 @@ gpu: true
 devices: [0]
 ddp_find_unused_parameters: false
 log_every_n_steps: 5
-num_workers: 6
-temporal_prefetch_factor: 2
+# #10: `_build_batch_from_indices` is Python-heavy (per-window dict/list
+# unpacking with many small `np.asarray` calls) and per-worker queue depth
+# is `prefetch_factor` * 1 batch, so more workers gives a deeper pipeline
+# and hides the Python batching cost behind GPU compute. Values chosen to
+# fit comfortably on a node with >=16 CPU cores; reduce if you hit RAM or
+# fd-limit pressure (persistent_workers keeps the workers alive across
+# epochs, so the overhead is one-time).
+num_workers: 12
+temporal_prefetch_factor: 4
+
+compile_encoder: true
+encoder_compile_mode: default
+encoder_compile_fullgraph: false
+encoder_compile_dynamic: false
 temporal_train_window_shuffle_block_size: null
 temporal_train_shared_center_order: true
 scheduler_gamma: 0.5
@@ -147,6 +193,19 @@ vicreg_radial_enabled: false
 # vicreg_radial_beta2: 0.1
 # vicreg_radial_m: null
 # vicreg_radial_eps: 1e-8
+
+swav_enabled: true
+swav_weight: 0.1
+swav_projection_dim: 128
+swav_hidden_dim: 512
+swav_num_prototypes: 8
+swav_temperature: 0.1
+swav_epsilon: 0.05
+swav_sinkhorn_iterations: 3
+swav_start_epoch: 0
+swav_freeze_prototypes_steps: 0
+swav_view_mode: center_adjacent
+swav_view_points: ${data.model_points}
 
 augmentation:
   rotation_scale: 0.0

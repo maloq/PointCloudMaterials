@@ -72,7 +72,15 @@ def _knn_point(k: int, xyz: torch.Tensor, new_xyz: torch.Tensor) -> torch.Tensor
 # ---------------------------------------------------------------------------
 
 class Group(nn.Module):
-    def __init__(self, num_group: int, group_size: int, *, deterministic_fps: bool = False, sorting_mode: str = "nearest") -> None:
+    def __init__(
+        self,
+        num_group: int,
+        group_size: int,
+        *,
+        deterministic_fps: bool = False,
+        sorting_mode: str = "nearest",
+        group_sampling: str = "fps",
+    ) -> None:
         super().__init__()
         self.num_group = int(num_group)
         self.group_size = int(group_size)
@@ -80,6 +88,29 @@ class Group(nn.Module):
         self.sorting_mode = str(sorting_mode).lower()
         if self.sorting_mode not in {"nearest", "none"}:
             raise ValueError(f"Unsupported sorting_mode={sorting_mode!r}.")
+        # #9: opt-in random group-center selection during training. FPS
+        # iterates `num_group` times and dispatches many small CUDA kernels
+        # even for small `num_points` (80); `random` replaces the loop with
+        # a single vectorised `topk` of random scores. In eval mode we
+        # always fall back to FPS for reproducibility. `fps_always` keeps
+        # today's behaviour; `random` switches the training path only.
+        self.group_sampling = str(group_sampling).lower()
+        if self.group_sampling not in {"fps", "random"}:
+            raise ValueError(
+                "Group sampling mode must be one of {'fps', 'random'}, "
+                f"got {group_sampling!r}."
+            )
+
+    @staticmethod
+    def _random_group_indices(xyz: torch.Tensor, num_group: int) -> torch.Tensor:
+        bsz, n_pts, _ = xyz.shape
+        if num_group > n_pts:
+            raise ValueError(
+                f"num_group ({num_group}) cannot exceed number of points ({n_pts}) "
+                "when using random group sampling."
+            )
+        scores = torch.rand((bsz, n_pts), device=xyz.device, dtype=torch.float32)
+        return scores.topk(num_group, dim=1, largest=True, sorted=False).indices
 
     @staticmethod
     def _nearest_path_order(center: torch.Tensor) -> torch.Tensor:
@@ -104,8 +135,11 @@ class Group(nn.Module):
 
     def forward(self, xyz: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         xyz = _to_bn3(xyz)
-        fps_idx = _farthest_point_sample(xyz, self.num_group, deterministic=self.deterministic_fps)
-        center = _index_points(xyz, fps_idx)
+        if self.group_sampling == "random" and self.training:
+            center_idx = self._random_group_indices(xyz, self.num_group)
+        else:
+            center_idx = _farthest_point_sample(xyz, self.num_group, deterministic=self.deterministic_fps)
+        center = _index_points(xyz, center_idx)
         group_idx = _knn_point(self.group_size, xyz, center)
         neighborhood = _index_points(xyz, group_idx)
         neighborhood = neighborhood - center.unsqueeze(2)
@@ -219,15 +253,25 @@ class RIAttentionBlock(nn.Module):
         )
 
     def _attention(self, x: torch.Tensor, attn_bias: torch.Tensor | None) -> torch.Tensor:
+        # Fused SDPA path (#6): delegates to FlashAttention / mem-efficient
+        # attention kernels when the inputs satisfy their shape and dtype
+        # preconditions. Falls back to the math backend automatically when
+        # they do not, so we get a speedup without losing correctness on
+        # unsupported shapes (e.g. small seq_len on CPU). Dropout inside
+        # SDPA is no-op in eval mode.
         batch_size, seq_len, channels = x.shape
         qkv = self.qkv(x).reshape(batch_size, seq_len, 3, self.num_heads, self.head_dim).permute(2, 0, 3, 1, 4)
         q, k, v = qkv.unbind(dim=0)
-        attn = torch.matmul(q, k.transpose(-2, -1)) * self.scale
+        attn_mask = None
         if attn_bias is not None:
-            attn = attn + attn_bias.to(dtype=attn.dtype)
-        attn = F.softmax(attn, dim=-1)
-        attn = self.attn_drop(attn)
-        out = torch.matmul(attn, v).transpose(1, 2).reshape(batch_size, seq_len, channels)
+            attn_mask = attn_bias.to(dtype=q.dtype)
+        dropout_p = float(self.attn_drop.p) if self.training else 0.0
+        out = F.scaled_dot_product_attention(
+            q, k, v,
+            attn_mask=attn_mask,
+            dropout_p=dropout_p,
+        )
+        out = out.transpose(1, 2).reshape(batch_size, seq_len, channels)
         return self.proj_drop(self.proj(out))
 
     def forward(self, x: torch.Tensor, attn_bias: torch.Tensor | None = None) -> torch.Tensor:
@@ -237,15 +281,34 @@ class RIAttentionBlock(nn.Module):
 
 
 class RITransformer(nn.Module):
-    def __init__(self, *, embed_dim: int, num_heads: int, depth: int, mlp_ratio: float = 4.0, dropout: float = 0.0) -> None:
+    def __init__(
+        self,
+        *,
+        embed_dim: int,
+        num_heads: int,
+        depth: int,
+        mlp_ratio: float = 4.0,
+        dropout: float = 0.0,
+        use_gradient_checkpointing: bool = False,
+    ) -> None:
         super().__init__()
         self.layers = nn.ModuleList([
             RIAttentionBlock(embed_dim=embed_dim, num_heads=num_heads, mlp_ratio=mlp_ratio, dropout=dropout)
             for _ in range(int(depth))
         ])
         self.norm = nn.LayerNorm(int(embed_dim))
+        self.use_gradient_checkpointing = bool(use_gradient_checkpointing)
 
     def forward(self, x: torch.Tensor, attn_bias: torch.Tensor | None = None) -> torch.Tensor:
+        # Per-layer activation checkpointing (#5) re-runs each attention
+        # block in backward instead of holding its intermediate activations.
+        # Off by default; opt in via the encoder kwarg on memory-tight runs.
+        if self.use_gradient_checkpointing and self.training and x.requires_grad:
+            for block in self.layers:
+                x = torch.utils.checkpoint.checkpoint(
+                    block, x, attn_bias, use_reentrant=False,
+                )
+            return self.norm(x)
         for block in self.layers:
             x = block(x, attn_bias)
         return self.norm(x)
@@ -264,6 +327,8 @@ class RIMAEBackbone(nn.Module):
         ema_decay: float, mlp_ratio: float, dropout: float,
         deterministic_fps: bool, sorting_mode: str,
         frame_builder: str = "triad", frame_eps: float = 1e-6,
+        use_gradient_checkpointing: bool = False,
+        group_sampling: str = "fps",
     ) -> None:
         super().__init__()
         self.num_group = int(num_group)
@@ -275,6 +340,8 @@ class RIMAEBackbone(nn.Module):
         self.ema_decay = float(ema_decay)
         self.frame_builder = str(frame_builder).strip().lower()
         self.frame_eps = float(frame_eps)
+        self.use_gradient_checkpointing = bool(use_gradient_checkpointing)
+        self.group_sampling = str(group_sampling)
         if self.frame_builder not in {"triad", "pca"}:
             raise ValueError(
                 "RIMAEBackbone frame_builder must be one of {'triad', 'pca'}, "
@@ -283,8 +350,13 @@ class RIMAEBackbone(nn.Module):
         if self.frame_eps <= 0.0:
             raise ValueError(f"RIMAEBackbone frame_eps must be > 0, got {self.frame_eps}.")
 
-        self.group_divider = Group(num_group=self.num_group, group_size=self.group_size,
-                                   deterministic_fps=bool(deterministic_fps), sorting_mode=sorting_mode)
+        self.group_divider = Group(
+            num_group=self.num_group,
+            group_size=self.group_size,
+            deterministic_fps=bool(deterministic_fps),
+            sorting_mode=sorting_mode,
+            group_sampling=self.group_sampling,
+        )
         self.patch_encoder = EncoderSmall(self.encoder_dims) if self.encoder_dims == 384 else EncoderLarge(self.encoder_dims)
         self.input_proj = nn.Identity() if self.encoder_dims == self.trans_dim else nn.Linear(self.encoder_dims, self.trans_dim)
         self.pos_embed = PositionEmbeddingCoordsSine(n_dim=3, d_model=self.trans_dim, scale=1.0)
@@ -293,8 +365,14 @@ class RIMAEBackbone(nn.Module):
         self.orientation_mlp = nn.Sequential(nn.Linear(9, orient_hidden), nn.GELU(), nn.Linear(orient_hidden, self.num_heads))
         self.orientation_scale = nn.Parameter(torch.tensor(1.0))
 
-        self.student_encoder = RITransformer(embed_dim=self.trans_dim, num_heads=self.num_heads,
-                                             depth=int(depth), mlp_ratio=float(mlp_ratio), dropout=float(dropout))
+        self.student_encoder = RITransformer(
+            embed_dim=self.trans_dim,
+            num_heads=self.num_heads,
+            depth=int(depth),
+            mlp_ratio=float(mlp_ratio),
+            dropout=float(dropout),
+            use_gradient_checkpointing=self.use_gradient_checkpointing,
+        )
         self.teacher_patch_encoder = copy.deepcopy(self.patch_encoder)
         self.teacher_input_proj = copy.deepcopy(self.input_proj)
         self.teacher_encoder = copy.deepcopy(self.student_encoder)
@@ -354,17 +432,17 @@ class RIMAEBackbone(nn.Module):
         *,
         eps: float,
         context: str,
+        validate: bool = False,
     ) -> torch.Tensor:
         norms = torch.linalg.vector_norm(vectors, dim=-1)
-        # Loud validation is only possible in eager mode: the `.item()` reads
-        # below force a CPU sync that torch.compile cannot trace, so we skip
-        # them while Dynamo is capturing the graph. Eager-mode paths
-        # (sanity check, validation, pre-compile forwards, torch.compile
-        # disabled) still raise on degenerate / non-finite inputs. In the
-        # compiled path we rely on the clamp_min(eps) safety net below, so a
-        # genuinely degenerate norm produces a large but finite vector
-        # instead of silently propagating NaN/inf through the transformer.
-        if not torch.compiler.is_compiling():
+        # Loud validation forces a CPU sync via `.item()`, which torch.compile
+        # cannot trace and which stalls the training hot path. We only run it
+        # when explicitly requested (eval / sanity paths) and never when
+        # Dynamo is capturing the graph. The clamp_min(eps) below is the
+        # real safety net: a degenerate norm produces a large but finite
+        # vector instead of silently propagating NaN/inf through the
+        # transformer. See the contrastive SSL hot-path speedup (#3).
+        if validate and not torch.compiler.is_compiling():
             if not bool(torch.isfinite(norms).all().item()):
                 nonfinite = int((~torch.isfinite(norms)).sum().item())
                 raise RuntimeError(
@@ -420,7 +498,12 @@ class RIMAEBackbone(nn.Module):
         return basis.reshape(batch_size, num_group, 3, 3)
 
     @staticmethod
-    def _estimate_patch_frames_triad(neighborhood: torch.Tensor, *, frame_eps: float) -> torch.Tensor:
+    def _estimate_patch_frames_triad(
+        neighborhood: torch.Tensor,
+        *,
+        frame_eps: float,
+        validate: bool = False,
+    ) -> torch.Tensor:
         batch_size, num_group, group_size, _ = neighborhood.shape
         patches = neighborhood.reshape(batch_size * num_group, group_size, 3).contiguous()
         batch_idx = torch.arange(patches.shape[0], device=patches.device)
@@ -432,6 +515,7 @@ class RIMAEBackbone(nn.Module):
             axis1_raw,
             eps=frame_eps,
             context="primary RI-MAE triad axis",
+            validate=validate,
         )
         axis1 = RIMAEBackbone._apply_axis_sign_convention(patches, axis1)
 
@@ -444,6 +528,7 @@ class RIMAEBackbone(nn.Module):
             axis2_raw,
             eps=frame_eps,
             context="secondary RI-MAE triad axis",
+            validate=validate,
         )
         axis2 = RIMAEBackbone._apply_axis_sign_convention(patches, axis2)
 
@@ -452,6 +537,7 @@ class RIMAEBackbone(nn.Module):
             axis3_raw,
             eps=frame_eps,
             context="tertiary RI-MAE triad axis",
+            validate=validate,
         )
 
         axis2 = torch.cross(axis3, axis1, dim=-1)
@@ -459,6 +545,7 @@ class RIMAEBackbone(nn.Module):
             axis2,
             eps=frame_eps,
             context="re-orthogonalized secondary RI-MAE triad axis",
+            validate=validate,
         )
         axis2 = RIMAEBackbone._apply_axis_sign_convention(patches, axis2)
 
@@ -467,6 +554,7 @@ class RIMAEBackbone(nn.Module):
             axis3,
             eps=frame_eps,
             context="final tertiary RI-MAE triad axis",
+            validate=validate,
         )
         basis = torch.stack([axis1, axis2, axis3], dim=-1)
         return basis.reshape(batch_size, num_group, 3, 3)
@@ -477,10 +565,15 @@ class RIMAEBackbone(nn.Module):
         *,
         frame_builder: str = "triad",
         frame_eps: float = 1e-6,
+        validate: bool = False,
     ) -> torch.Tensor:
         resolved_builder = str(frame_builder).strip().lower()
         if resolved_builder == "triad":
-            return RIMAEBackbone._estimate_patch_frames_triad(neighborhood, frame_eps=float(frame_eps))
+            return RIMAEBackbone._estimate_patch_frames_triad(
+                neighborhood,
+                frame_eps=float(frame_eps),
+                validate=validate,
+            )
         if resolved_builder == "pca":
             return RIMAEBackbone._estimate_patch_frames_pca(neighborhood)
         raise ValueError(
@@ -533,6 +626,7 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
                 neighborhood,
                 frame_builder=self.frame_builder,
                 frame_eps=self.frame_eps,
+                validate=not self.training,
             )
         frames = frames.to(dtype=bn3_points.dtype, device=bn3_points.device)
         canonical = torch.einsum("bgsc,bgcd->bgsd", neighborhood, frames)
@@ -583,6 +677,8 @@ class RIMAEInvariantEncoder(Encoder):
         center_input: bool = True,
         frame_builder: str = "triad",
         frame_eps: float = 1e-6,
+        use_gradient_checkpointing: bool = False,
+        group_sampling: str = "fps",
     ) -> None:
         super().__init__()
         output_dim = int(2 * int(trans_dim))
@@ -611,6 +707,8 @@ class RIMAEInvariantEncoder(Encoder):
             sorting_mode=str(sorting_mode),
             frame_builder=str(frame_builder),
             frame_eps=float(frame_eps),
+            use_gradient_checkpointing=bool(use_gradient_checkpointing),
+            group_sampling=str(group_sampling),
         )
         self.encoder = RIMAEInvariantEncoderForContrastive(
             backbone,

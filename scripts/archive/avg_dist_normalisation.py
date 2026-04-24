@@ -94,7 +94,7 @@ def main() -> None:
     tot_before, tot_after = 0.0, 0.0
     for sample in tqdm(ds.samples, desc="Processing samples"):
         tot_before += mean_pairwise_distance(sample)
-        tot_after  += mean_pairwise_distance(pc_normalize(sample.copy()))
+        tot_after  += mean_pairwise_distance(pc_normalize(sample.copy(), radius))
 
     avg_before = tot_before / len(ds.samples)
     avg_after  = tot_after  / len(ds.samples)

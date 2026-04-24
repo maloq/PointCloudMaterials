@@ -87,12 +87,18 @@ class _DumpScanResult:
 _SCAN_RESULT_PROCESS_CACHE: dict[tuple[str, int, int], _DumpScanResult] = {}
 
 
-def inspect_lammps_dump_file(dump_file: str | Path) -> dict[str, Any]:
+def _resolve_dump_path(dump_file: str | Path) -> Path:
+    """Resolve a dump-file path and assert it exists as a regular file."""
     dump_path = Path(dump_file).expanduser().resolve()
-    if not dump_path.exists():
-        raise FileNotFoundError(f"LAMMPS dump file does not exist: {dump_path}")
     if not dump_path.is_file():
-        raise ValueError(f"dump_file must be a file, got: {dump_path}")
+        raise FileNotFoundError(
+            f"LAMMPS dump file missing or not a regular file: {dump_path}"
+        )
+    return dump_path
+
+
+def inspect_lammps_dump_file(dump_file: str | Path) -> dict[str, Any]:
+    dump_path = _resolve_dump_path(dump_file)
 
     scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_path)
     timestep_deltas = np.diff(scan.timesteps).astype(np.int64, copy=False)
@@ -126,21 +132,7 @@ def estimate_lammps_dump_cutoff_radius(
     boundary_margin: float | None = None,
     periodic: bool = True,
 ) -> dict[str, Any]:
-    dump_path = Path(dump_file).expanduser().resolve()
-    if not dump_path.exists():
-        raise FileNotFoundError(f"LAMMPS dump file does not exist: {dump_path}")
-    if not dump_path.is_file():
-        raise ValueError(f"dump_file must be a file, got: {dump_path}")
-    if target_points <= 0:
-        raise ValueError(f"target_points must be > 0, got {target_points}.")
-    if not (0.0 < float(quantile) <= 1.0):
-        raise ValueError(f"quantile must be in (0, 1], got {quantile}.")
-    if estimation_samples <= 0:
-        raise ValueError(f"estimation_samples must be > 0, got {estimation_samples}.")
-    if safety_factor <= 0.0:
-        raise ValueError(f"safety_factor must be > 0, got {safety_factor}.")
-    if boundary_margin is not None and float(boundary_margin) < 0.0:
-        raise ValueError(f"boundary_margin must be >= 0 when provided, got {boundary_margin}.")
+    dump_path = _resolve_dump_path(dump_file)
 
     points, box_lengths, timestep = TemporalLAMMPSDumpDataset.load_dump_frame_positions(
         dump_path,
@@ -256,11 +248,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         build_lock_stale_sec: float = 86400.0,
     ) -> None:
         super().__init__()
-        self.dump_file = Path(dump_file).expanduser().resolve()
-        if not self.dump_file.exists():
-            raise FileNotFoundError(f"LAMMPS dump file does not exist: {self.dump_file}")
-        if not self.dump_file.is_file():
-            raise ValueError(f"dump_file must be a file, got: {self.dump_file}")
+        self.dump_file = _resolve_dump_path(dump_file)
 
         self.sequence_length = int(sequence_length)
         self.num_points = int(num_points)
@@ -1069,12 +1057,16 @@ class TemporalLAMMPSDumpDataset(Dataset):
         try:
             with manifest_path.open("r", encoding="utf-8") as handle:
                 manifest = json.load(handle)
-        except Exception as exc:
-            logger.print(
-                "[temporal-lammps] "
-                f"Ignoring unreadable cache manifest at {manifest_path}: {exc}."
-            )
-            return None
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                "Temporal cache manifest is corrupt JSON and cannot be safely ignored. "
+                f"manifest_path={manifest_path}. Delete the cache directory to force a rebuild."
+            ) from exc
+        except OSError as exc:
+            raise OSError(
+                "Failed to read temporal cache manifest due to an I/O/permission error. "
+                f"manifest_path={manifest_path}."
+            ) from exc
 
         required_files = [
             resolved_cache_dir / "positions.npy",
@@ -1120,11 +1112,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         *,
         cache_dir: str | Path | None = None,
     ) -> _DumpScanResult:
-        dump_path = Path(dump_file).expanduser().resolve()
-        if not dump_path.exists():
-            raise FileNotFoundError(f"LAMMPS dump file does not exist: {dump_path}")
-        if not dump_path.is_file():
-            raise ValueError(f"dump_file must be a file, got: {dump_path}")
+        dump_path = _resolve_dump_path(dump_file)
 
         cache_key = cls._scan_cache_key(dump_path)
         cached_scan = _SCAN_RESULT_PROCESS_CACHE.get(cache_key)
@@ -1223,11 +1211,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         *,
         frame_index: int,
     ) -> tuple[np.ndarray, np.ndarray, int]:
-        dump_path = Path(dump_file).expanduser().resolve()
-        if not dump_path.exists():
-            raise FileNotFoundError(f"LAMMPS dump file does not exist: {dump_path}")
-        if not dump_path.is_file():
-            raise ValueError(f"dump_file must be a file, got: {dump_path}")
+        dump_path = _resolve_dump_path(dump_file)
         if frame_index < 0:
             raise ValueError(f"frame_index must be >= 0, got {frame_index}.")
 
@@ -1713,9 +1697,18 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
         if self.selection_method == "radius_then_closest":
             assert self.radius is not None
-            within = indices[distances <= self.radius]
-            if within.size >= self.num_points:
-                return within[: self.num_points]
+            within_mask = distances <= self.radius
+            within_count = int(within_mask.sum())
+            if within_count < self.num_points:
+                raise RuntimeError(
+                    "selection_method='radius_then_closest' found fewer atoms within the cutoff "
+                    "radius than required, so the requested local structure is ill-defined. "
+                    f"frame_idx={frame_idx}, within_radius={within_count}, required={self.num_points}, "
+                    f"radius={self.radius}, max_distance_queried={float(distances.max()):.6f}, "
+                    f"source_path={self.dump_file}. "
+                    "Increase radius, decrease num_points, or switch selection_method to 'closest'."
+                )
+            return indices[within_mask][: self.num_points]
         return indices
 
     def _query_local_structures(
@@ -1741,13 +1734,23 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
         if self.selection_method == "radius_then_closest":
             assert self.radius is not None
+            within_counts = np.sum(distances <= self.radius, axis=1)
+            shortfall_rows = np.where(within_counts < self.num_points)[0]
+            if shortfall_rows.size > 0:
+                first = int(shortfall_rows[0])
+                raise RuntimeError(
+                    "selection_method='radius_then_closest' found fewer atoms within the cutoff "
+                    "radius than required for one or more centers. "
+                    f"frame_idx={frame_idx}, shortfall_rows={shortfall_rows.size}, "
+                    f"first_row={first}, within_radius={int(within_counts[first])}, "
+                    f"required={self.num_points}, radius={self.radius}, "
+                    f"max_distance_row={float(distances[first].max()):.6f}, "
+                    f"source_path={self.dump_file}. "
+                    "Increase radius, decrease num_points, or switch selection_method to 'closest'."
+                )
             selected = np.empty_like(indices)
             for row_idx in range(indices.shape[0]):
-                within = indices[row_idx, distances[row_idx] <= self.radius]
-                if within.size >= self.num_points:
-                    selected[row_idx] = within[: self.num_points]
-                else:
-                    selected[row_idx] = indices[row_idx]
+                selected[row_idx] = indices[row_idx, distances[row_idx] <= self.radius][: self.num_points]
             return selected
         return indices
 

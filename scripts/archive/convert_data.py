@@ -62,8 +62,10 @@ def convert_directory(directory: str) -> None:
     """Convert all .pos files in a directory to .npy float32."""
     pos_files = sorted(glob.glob(os.path.join(directory, "*.pos")))
     if not pos_files:
-        print(f"  No .pos files found in {directory}")
-        return
+        raise FileNotFoundError(
+            f"convert_directory: no .pos files found in {directory}. "
+            "Point the dataset spec at the correct location or remove it from the dataset map."
+        )
     for pos_file in pos_files:
         base = os.path.splitext(pos_file)[0]
         npy_file = base + ".npy"
@@ -109,11 +111,14 @@ if __name__ == "__main__":
         "datasets/Al50Ni50/inherent_configurations": {"action": "convert_pos", "delete_exts": [".pos"]},
     }
 
-    for directory, spec in datasets.items():
-        if not os.path.isdir(directory):
-            print(f"SKIP {directory} (not found)")
-            continue
+    missing = [d for d in datasets if not os.path.isdir(d)]
+    if missing:
+        raise FileNotFoundError(
+            "convert_data: the following dataset directories are missing: "
+            f"{missing}. Fix the hardcoded `datasets` map or create the directories before running."
+        )
 
+    for directory, spec in datasets.items():
         print(f"\n=== {directory} ===")
         if spec["action"] == "convert_pos":
             convert_directory(directory)
