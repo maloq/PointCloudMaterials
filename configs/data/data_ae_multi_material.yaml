@@ -1,5 +1,5 @@
-# Multi-material real point cloud data config
-kind: real
+# Multi-material static point cloud data config
+kind: static
 radius: 7.2
 sample_type: 'regular'
 n_samples: 8000000

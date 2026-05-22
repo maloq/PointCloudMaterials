@@ -9,11 +9,11 @@ checkpoint:
 inputs:
   # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
   data_config: configs/data/data_ae_Ta_80.yaml
-  # Optional real-data frame selection. null -> use data.data_files from the checkpoint config.
-  real_data_files: null
+  # Optional static frame selection. null -> use data.data_files from the checkpoint config.
+  static_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null
-  # 0/null -> unlimited unless the code imposes a real-data fallback cap.
+  # 0/null -> unlimited unless the code imposes a static-data fallback cap.
   max_samples_total: 0
 
 cache:

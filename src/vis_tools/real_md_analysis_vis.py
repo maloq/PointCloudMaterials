@@ -550,13 +550,18 @@ def save_temporal_spatial_cluster_animation(
     view_elev: float = 24.0,
     view_azim: float = 35.0,
     diagonal_visible_depth_fraction: float = 0.10,
+    spatial_bounds: np.ndarray | None = None,
     frame_duration_ms: int = 450,
     total_duration_seconds: float | None = None,
 ) -> dict[str, Any]:
     if not frame_records:
         raise ValueError("frame_records must be a non-empty list.")
 
-    global_bounds = _resolve_global_spatial_bounds(frame_records)
+    global_bounds = (
+        _resolve_global_spatial_bounds(frame_records)
+        if spatial_bounds is None
+        else _resolve_equalized_bounds(np.asarray(spatial_bounds, dtype=np.float32))
+    )
     cluster_ids = _sorted_cluster_ids(
         np.concatenate(
             [

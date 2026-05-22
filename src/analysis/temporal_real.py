@@ -10,6 +10,7 @@ from omegaconf import OmegaConf
 from torch.utils.data._utils.collate import default_collate
 
 from src.data_utils.data_load import PointCloudDataset
+from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.temporal_lammps_dataset import (
     TemporalLAMMPSDumpDataset,
     estimate_lammps_dump_cutoff_radius,
@@ -93,6 +94,42 @@ def temporal_real_analysis_enabled(analysis_cfg: Any) -> bool:
     return bool(OmegaConf.select(analysis_cfg, "inputs.temporal_real.enabled", default=False))
 
 
+def _normalize_temporal_real_inference_mode(inference_mode: Any) -> str:
+    inference_mode_norm = str(inference_mode).strip().lower()
+    if inference_mode_norm == "static":
+        return "static_anchor"
+    if inference_mode_norm in {"static_anchor", "temporal"}:
+        return inference_mode_norm
+    raise ValueError(
+        "inputs.temporal_real.inference_mode must be one of "
+        "['static', 'static_anchor', 'temporal'], "
+        f"got {inference_mode!r}."
+    )
+
+
+def _validate_temporal_real_checkpoint_compatibility(
+    *,
+    model_cfg: Any,
+    inference_mode: Any,
+) -> None:
+    model_data_kind = normalize_data_kind(getattr(model_cfg.data, "kind", None))
+    inference_mode_norm = _normalize_temporal_real_inference_mode(inference_mode)
+    if model_data_kind == "static" and inference_mode_norm != "static_anchor":
+        raise ValueError(
+            "Temporal dump analysis with a static checkpoint "
+            "(model_cfg.data.kind='static') requires "
+            "inputs.temporal_real.inference_mode='static' or 'static_anchor'. "
+            f"Got inference_mode={inference_mode!r}."
+        )
+    if model_data_kind not in {"static", "temporal_lammps"}:
+        raise ValueError(
+            "Temporal dump analysis supports static checkpoints "
+            "with model_cfg.data.kind='static' and temporal checkpoints with "
+            "model_cfg.data.kind='temporal_lammps', "
+            f"got {getattr(model_cfg.data, 'kind', None)!r}."
+        )
+
+
 def resolve_temporal_real_inference_spec(
     analysis_cfg: Any,
     *,
@@ -108,8 +145,8 @@ def resolve_temporal_real_inference_spec(
         "inputs.temporal_real.static_frame_index",
         default=None,
     )
-    mode = str(mode_raw).strip().lower()
-    if mode in {"static", "static_anchor"}:
+    mode = _normalize_temporal_real_inference_mode(mode_raw)
+    if mode == "static_anchor":
         resolved_static_frame_index = (
             int(default_static_frame_index)
             if static_frame_index_raw is None
@@ -124,16 +161,13 @@ def resolve_temporal_real_inference_spec(
             mode="temporal",
             static_frame_index=None,
         )
-    raise ValueError(
-        "inputs.temporal_real.inference_mode must be one of "
-        "['static', 'static_anchor', 'temporal'], "
-        f"got {mode_raw!r}."
-    )
+    raise RuntimeError(f"Unsupported normalized temporal inference mode: {mode!r}.")
 
 
 def _build_temporal_real_inference_dataset(
     *,
     model_cfg: Any,
+    inference_mode: str,
     dump_file: Path,
     cache_dir: Path | None,
     sequence_length: int,
@@ -150,13 +184,10 @@ def _build_temporal_real_inference_dataset(
     tree_cache_size: int,
     dataset_center_kwargs: dict[str, Any],
 ) -> Any:
-    model_data_kind = str(getattr(model_cfg.data, "kind", "")).strip().lower()
-    if model_data_kind != "temporal_lammps":
-        raise ValueError(
-            "Temporal real-data analysis only supports temporal checkpoints with "
-            "model_cfg.data.kind='temporal_lammps', "
-            f"got {model_data_kind!r}."
-        )
+    _validate_temporal_real_checkpoint_compatibility(
+        model_cfg=model_cfg,
+        inference_mode=inference_mode,
+    )
     return TemporalLAMMPSDumpDataset(
         dump_file=dump_file,
         cache_dir=cache_dir,
@@ -196,8 +227,15 @@ def build_temporal_real_analysis_bundle(
     temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
     dump_file_raw = OmegaConf.select(temporal_cfg, "dump_file", default=None)
     if dump_file_raw is None or str(dump_file_raw).strip() == "":
-        raise ValueError("inputs.temporal_real.dump_file is required when temporal real analysis is enabled.")
+        raise ValueError("inputs.temporal_real.dump_file is required when temporal dump analysis is enabled.")
     dump_file = Path(str(dump_file_raw)).expanduser().resolve()
+    inference_mode = str(
+        OmegaConf.select(temporal_cfg, "inference_mode", default="static")
+    )
+    _validate_temporal_real_checkpoint_compatibility(
+        model_cfg=model_cfg,
+        inference_mode=inference_mode,
+    )
 
     cache_dir_raw = OmegaConf.select(temporal_cfg, "cache_dir", default=None)
     cache_dir = None if cache_dir_raw in {None, ""} else Path(str(cache_dir_raw)).expanduser().resolve()
@@ -338,7 +376,7 @@ def build_temporal_real_analysis_bundle(
             radius_estimation = None
         else:
             raise ValueError(
-                "Temporal real analysis requires an explicit normalization radius. "
+                "Temporal dump analysis requires an explicit normalization radius. "
                 "Set inputs.temporal_real.radius, model_cfg.data.radius, or enable model_cfg.data.auto_cutoff."
             )
 
@@ -383,6 +421,7 @@ def build_temporal_real_analysis_bundle(
     )
     inference_dataset = _build_temporal_real_inference_dataset(
         model_cfg=model_cfg,
+        inference_mode=inference_mode,
         dump_file=dump_file,
         cache_dir=cache_dir,
         sequence_length=sequence_length,
@@ -454,6 +493,13 @@ def build_temporal_real_single_snapshot_bundle(
     center_grid_overlap: float,
 ) -> TemporalRealAnalysisBundle:
     temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
+    inference_mode = str(
+        OmegaConf.select(temporal_cfg, "inference_mode", default="static")
+    )
+    _validate_temporal_real_checkpoint_compatibility(
+        model_cfg=model_cfg,
+        inference_mode=inference_mode,
+    )
     overlap = float(center_grid_overlap)
     if not np.isfinite(overlap) or overlap >= 2.0:
         raise ValueError(
@@ -498,6 +544,7 @@ def build_temporal_real_single_snapshot_bundle(
     )
     inference_dataset = _build_temporal_real_inference_dataset(
         model_cfg=model_cfg,
+        inference_mode=inference_mode,
         dump_file=selection.dump_file,
         cache_dir=selection.cache_dir,
         sequence_length=int(selection.sequence_length),

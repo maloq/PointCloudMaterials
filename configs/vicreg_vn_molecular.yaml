@@ -12,7 +12,7 @@ model_type: vicreg  # Self-supervised VICReg
 latent_size: 512  # Invariant embedding size consumed by VICReg.
 
 load_supervised_checkpoint: null
-init_from_checkpoint: output/2026-03-13/00-58-07/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
+init_from_checkpoint: null
 
 resume_from_checkpoint: null
 # Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
@@ -51,7 +51,7 @@ encoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 4096
+batch_size: 2048
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1
@@ -67,12 +67,12 @@ auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 60
+epochs: 120
 max_samples: 0
 check_val_every_n_epoch: 5
 
 gpu: True
-devices: [0, 1]
+devices: [0]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 4

@@ -9,6 +9,7 @@ from src.data_utils.data_load import (
     PointCloudDataset,
     SyntheticPointCloudDataset,
 )
+from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.temporal_lammps_dataset import (
     TemporalLAMMPSDumpDataset,
     estimate_lammps_dump_cutoff_radius,
@@ -511,7 +512,7 @@ def _split_temporal_window_start_frames(
     return train_frames, val_frames
 
 
-class RealPointCloudDataModule(pl.LightningDataModule):
+class StaticPointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg, *, return_coords: bool = False):
         super().__init__()
         self.cfg = cfg
@@ -526,7 +527,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
         start_time = time.time()
         initialized_now = False
         if not self._datasets_initialized:
-            self.train_dataset, self.val_dataset = self._setup_real_dataset()
+            self.train_dataset, self.val_dataset = self._setup_static_dataset()
             # Test dataset is same as val for metrics.
             self.test_dataset = self.val_dataset
 
@@ -542,7 +543,7 @@ class RealPointCloudDataModule(pl.LightningDataModule):
         elapsed_time = time.time() - start_time
         if not initialized_now:
             logger.print(
-                f"Reusing existing real dataset split for stage={stage!r} "
+                f"Reusing existing static dataset split for stage={stage!r} "
                 f"(split_seed={self.split_seed})."
             )
         logger.print(f"Train dataset size: {len(self.train_dataset)}")
@@ -550,9 +551,9 @@ class RealPointCloudDataModule(pl.LightningDataModule):
         logger.print(f"Test dataset size: {len(self.test_dataset)}")
         logger.print(f"Dataloader took {elapsed_time:.4f} seconds")
 
-    def _setup_real_dataset(self):
+    def _setup_static_dataset(self):
         data_cfg = self.cfg.data
-        ctx = "RealPointCloudDataModule.data"
+        ctx = "StaticPointCloudDataModule.data"
 
         data_sources_raw = _cfg_get(data_cfg, "data_sources", default=None, context=ctx)
         data_files_raw = _cfg_get(data_cfg, "data_files", default=None, context=ctx)
@@ -1293,17 +1294,26 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         self._phase_info_logged = True
 
 
+RealPointCloudDataModule = StaticPointCloudDataModule
+
+
 class PointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
         self.cfg = cfg
-        kind = getattr(cfg.data, "kind", "real")
+        kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
         if kind == "synthetic":
             self.impl = SyntheticPointCloudDataModule(cfg)
         elif kind == "temporal_lammps":
             self.impl = TemporalLAMMPSDataModule(cfg)
+        elif kind == "static":
+            self.impl = StaticPointCloudDataModule(cfg)
         else:
-            self.impl = RealPointCloudDataModule(cfg)
+            raise ValueError(
+                "Unsupported data.kind. Expected one of "
+                "['static', 'synthetic', 'temporal_lammps'] "
+                f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
+            )
 
     def setup(self, stage=None):
         return self.impl.setup(stage)

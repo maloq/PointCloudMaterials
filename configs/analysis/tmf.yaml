@@ -8,7 +8,7 @@ checkpoint:
 inputs:
   # Keep this null for TMF so analysis reuses the temporal_lammps checkpoint data setup.
   data_config: null
-  real_data_files: null
+  static_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null
   max_samples_total: 0

@@ -1,11 +1,11 @@
 checkpoint:
-  path: output/2026-04-17/11-08-33/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=54.ckpt
-  output_dir: outputs/temporal_Al_500frames
+  path: output/2026-05-22/15-55-24/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=49.ckpt
+  output_dir: outputs/temporal_Al_500frames_swav
   cuda_device: 0
 
 inputs:
   data_config: null
-  real_data_files: null
+  static_data_files: null
   dataloader_num_workers: 4
   inference_batch_size: 4096
   max_batches_latent: null
@@ -48,6 +48,21 @@ cache:
   force_recompute: false
   file: analysis_inference_cache.npz
 
+swav:
+  enabled: true
+  assignment_method: sinkhorn
+  sinkhorn_iterations: 20
+  batch_size: 8192
+  export_assignment_csv: true
+  max_assignment_csv_rows: 100000
+  representative_top_k: 12
+  frame_proportions: true
+  transitions: true
+  compare_to_clustering: true
+  md_outputs: true
+  md_max_points: 0
+  plots: true
+
 runtime:
   progress_every_batches: 20
   seed_base: 123
@@ -63,7 +78,7 @@ clustering:
   fit_inputs:
     enabled: true
     data_config: configs/data/data_ae_Al_80.yaml
-    real_data_files: null
+    static_data_files: null
     dataloader_num_workers: 4
     inference_batch_size: 4096
     max_batches_latent: null
@@ -192,7 +207,9 @@ real_md:
     total_duration_seconds: 20.0
     md_space:
       enabled: true
-      animation_max_points: 0
+      animation_max_points: 25000
+      inference_max_points_per_snapshot: 25000
+      inference_sample_selection: cut_surface
       dense_snapshot_count: 60
       dense_snapshot_cache:
         enabled: true
@@ -203,6 +220,7 @@ real_md:
       diagonal_visible_depth_fraction: 0.10
     umap:
       enabled: true
+      animation_frame_count: 60
       point_size: 8.0
       alpha: 0.74
       trajectory_enabled: true

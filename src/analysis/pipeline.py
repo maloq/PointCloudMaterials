@@ -21,11 +21,12 @@ import torch
 from omegaconf import DictConfig, OmegaConf, open_dict
 
 from src.data_utils.data_module import (
-    RealPointCloudDataModule,
+    StaticPointCloudDataModule,
     SyntheticPointCloudDataModule,
     TemporalLAMMPSDataModule,
     _resolve_temporal_window_start_frames,
 )
+from src.data_utils.data_kinds import is_static_data_kind, normalize_data_kind
 from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint
@@ -59,19 +60,23 @@ from .latent_vis import print_analysis_summary, run_equivariance_evaluation, run
 from .md_outputs import build_md_metrics
 from .output_layout import real_md_outputs_root, real_md_outputs_root_for_k
 from .real_md_qualitative import append_dynamic_motif_summary, run_real_md_qualitative_analysis
+from .swav_eval import run_swav_prototype_evaluation
 from .temporal_real import (
+    _temporal_identity_or_default_collate,
     build_temporal_real_analysis_bundle,
     build_temporal_real_single_snapshot_bundle,
     resolve_temporal_real_inference_spec,
     resolve_temporal_real_snapshot_subset,
     temporal_real_analysis_enabled,
 )
-from .utils import _sample_indices, _unwrap_dataset, build_real_coords_dataloader, gather_inference_batches
+from .utils import _sample_indices, _unwrap_dataset, build_static_coords_dataloader, gather_inference_batches
 
 
 # ---------------------------------------------------------------------------
 # Small helpers that stay in the orchestrator
 # ---------------------------------------------------------------------------
+
+_DIAGONAL_CUT_DIRECTION = np.asarray([1.0, 1.0, 1.0], dtype=np.float32) / np.sqrt(3.0)
 
 def _extract_class_names(dataset: Any) -> Dict[int, str] | None:
     dataset = _unwrap_dataset(dataset)
@@ -90,7 +95,7 @@ def _build_analysis_dataloader(
     inference_batch_size: int,
     dataloader_num_workers: int,
 ) -> torch.utils.data.DataLoader:
-    if str(getattr(cfg.data, "kind", "")).strip().lower() == "temporal_lammps":
+    if normalize_data_kind(getattr(cfg.data, "kind", None)) == "temporal_lammps":
         if not isinstance(dm, TemporalLAMMPSDataModule):
             raise TypeError(
                 "Temporal analysis requires a TemporalLAMMPSDataModule, "
@@ -189,7 +194,7 @@ def _build_analysis_dataloader(
             persistent_workers=bool(int(dataloader_num_workers) > 0),
         )
 
-    dl = build_real_coords_dataloader(
+    dl = build_static_coords_dataloader(
         cfg,
         dm,
         use_train_data=True,
@@ -198,7 +203,7 @@ def _build_analysis_dataloader(
         batch_size=int(inference_batch_size),
     )
     print(
-        "Real data detected: using full dataset for local-structure clustering visualization"
+        "Static data detected: using full dataset for local-structure clustering visualization"
     )
     return dl
 
@@ -248,22 +253,22 @@ def _collect_clustering_fit_cache(
         analysis_cfg,
         data_config_path_override=fit_settings.data_config_path,
     )
-    fit_kind = str(getattr(fit_cfg.data, "kind", "")).strip().lower()
-    if fit_kind not in {"real", "synthetic"}:
+    fit_kind = normalize_data_kind(getattr(fit_cfg.data, "kind", None))
+    if fit_kind not in {"static", "synthetic"}:
         raise ValueError(
-            "clustering.fit_inputs currently supports only static real/synthetic datasets. "
+            "clustering.fit_inputs currently supports only static/synthetic datasets. "
             f"Resolved fit data.kind={fit_kind!r}; provide clustering.fit_inputs.data_config "
             "for a static dataset such as configs/data/data_ae_Al_80.yaml."
         )
 
     fit_source_names: list[str] | None = None
     fit_analysis_files = None
-    if fit_kind == "real":
+    if fit_kind == "static":
         fit_analysis_files = _resolve_analysis_files(
             fit_cfg,
             fit_settings.input_settings,
         )
-        fit_source_names = _configure_real_analysis_inputs(fit_cfg, fit_analysis_files)
+        fit_source_names = _configure_static_analysis_inputs(fit_cfg, fit_analysis_files)
         print(f"Clustering-fit data_files: {fit_analysis_files}")
 
     with open_dict(fit_cfg):
@@ -275,7 +280,7 @@ def _collect_clustering_fit_cache(
     fit_is_synthetic = fit_kind == "synthetic"
     fit_dm = build_datamodule(
         fit_cfg,
-        require_coords_for_real=not fit_is_synthetic,
+        require_coords_for_static=not fit_is_synthetic,
     )
     fit_dm.setup(stage="fit")
     fit_dl = _build_analysis_dataloader(
@@ -374,6 +379,276 @@ def _concatenate_inference_caches(
     return merged
 
 
+def _select_dense_snapshot_sample_indices(
+    *,
+    sample_count: int,
+    max_samples: int | None,
+    seed: int,
+) -> np.ndarray:
+    resolved_sample_count = int(sample_count)
+    if resolved_sample_count <= 0:
+        raise ValueError(f"sample_count must be > 0, got {sample_count}.")
+    if max_samples is None or int(max_samples) >= resolved_sample_count:
+        return np.arange(resolved_sample_count, dtype=np.int64)
+    if int(max_samples) <= 0:
+        raise ValueError(f"max_samples must be > 0 when provided, got {max_samples}.")
+    rng = np.random.default_rng(int(seed))
+    selected = rng.choice(
+        resolved_sample_count,
+        size=int(max_samples),
+        replace=False,
+    )
+    return np.sort(selected.astype(np.int64, copy=False))
+
+
+def _normalize_dense_snapshot_sample_selection_mode(raw_value: Any) -> str:
+    mode = str(raw_value).strip().lower().replace("-", "_")
+    if mode in {"random", "uniform_random", "uniform_random_without_replacement"}:
+        return "uniform_random_without_replacement"
+    if mode in {"cut_surface", "diagonal_cut_surface", "diagonal_cut"}:
+        return "diagonal_cut_surface"
+    raise ValueError(
+        "Dense temporal snapshot sample selection must be one of "
+        "['uniform_random_without_replacement', 'random', 'diagonal_cut_surface', "
+        f"'cut_surface'], got {raw_value!r}."
+    )
+
+
+def _resolve_equalized_bounds_from_min_max(
+    mins: np.ndarray,
+    maxs: np.ndarray,
+) -> np.ndarray:
+    mins_arr = np.asarray(mins, dtype=np.float32).reshape(3)
+    maxs_arr = np.asarray(maxs, dtype=np.float32).reshape(3)
+    if not np.all(np.isfinite(mins_arr)) or not np.all(np.isfinite(maxs_arr)):
+        raise ValueError(
+            "Cannot resolve temporal cut-surface bounds from non-finite coordinates: "
+            f"mins={mins_arr.tolist()}, maxs={maxs_arr.tolist()}."
+        )
+    lower = np.minimum(mins_arr, maxs_arr)
+    upper = np.maximum(mins_arr, maxs_arr)
+    center = 0.5 * (lower + upper)
+    span = float(np.max(upper - lower))
+    span = max(span, 1e-6)
+    half = 0.5 * span
+    return np.stack([center - half, center + half], axis=0).astype(np.float32, copy=False)
+
+
+def _resolve_temporal_sampling_frame_slot(
+    *,
+    dataset: TemporalLAMMPSDumpDataset,
+    temporal_inference_spec: Any,
+) -> int:
+    sequence_length = int(dataset.sequence_length)
+    if sequence_length <= 0:
+        raise ValueError(
+            f"Temporal dataset sequence_length must be > 0, got {sequence_length}."
+        )
+    mode = str(temporal_inference_spec.mode).strip().lower()
+    if mode not in {"static_anchor", "temporal"}:
+        raise ValueError(
+            "Temporal dense snapshot cut-surface sampling supports temporal inference modes "
+            f"['static_anchor', 'temporal'], got {temporal_inference_spec.mode!r}."
+        )
+    frame_slot = 0
+    if mode == "static_anchor" and temporal_inference_spec.static_frame_index is not None:
+        frame_slot = int(temporal_inference_spec.static_frame_index)
+    if frame_slot < 0:
+        frame_slot += int(sequence_length)
+    if frame_slot < 0 or frame_slot >= int(sequence_length):
+        raise ValueError(
+            "Temporal dense snapshot cut-surface sampling frame index is out of range: "
+            f"mode={mode!r}, static_frame_index={temporal_inference_spec.static_frame_index!r}, "
+            f"resolved_frame_slot={frame_slot}, sequence_length={sequence_length}."
+        )
+    return int(frame_slot)
+
+
+def _temporal_dense_snapshot_center_coords_for_sampling(
+    dataset: Any,
+    *,
+    temporal_inference_spec: Any,
+    source_name: str,
+) -> np.ndarray:
+    base_dataset = _unwrap_dataset(dataset)
+    if not isinstance(base_dataset, TemporalLAMMPSDumpDataset):
+        raise TypeError(
+            "Diagonal cut-surface sampling requires a TemporalLAMMPSDumpDataset before "
+            f"subsetting, got {type(base_dataset)!r} for source_name={source_name!r}."
+        )
+    window_start_frames = np.asarray(base_dataset.window_start_frames, dtype=np.int64)
+    if window_start_frames.shape != (1,):
+        raise ValueError(
+            "Diagonal cut-surface sampling expects single-snapshot temporal datasets, "
+            f"got window_start_frames_shape={tuple(window_start_frames.shape)} "
+            f"for source_name={source_name!r}."
+        )
+    frame_slot = _resolve_temporal_sampling_frame_slot(
+        dataset=base_dataset,
+        temporal_inference_spec=temporal_inference_spec,
+    )
+    frame_index = int(window_start_frames[0]) + frame_slot * int(base_dataset.frame_stride)
+    center_atom_indices = np.asarray(base_dataset.center_atom_indices, dtype=np.int64)
+    frame_points = np.asarray(base_dataset.positions[frame_index], dtype=np.float32)
+    box_low = np.asarray(base_dataset.box_low[frame_index], dtype=np.float32).reshape(3)
+    coords = frame_points[center_atom_indices, :3] + box_low[None, :]
+    coords = np.asarray(coords, dtype=np.float32)
+    expected_count = int(len(base_dataset))
+    if coords.shape != (expected_count, 3):
+        raise RuntimeError(
+            "Resolved center-coordinate shape does not match the dense snapshot dataset. "
+            f"source_name={source_name!r}, coords_shape={tuple(coords.shape)}, "
+            f"expected=({expected_count}, 3), frame_index={frame_index}."
+        )
+    return coords
+
+
+def _resolve_dense_snapshot_cut_surface_bounds(
+    *,
+    snapshot_bundles: list[Any],
+    temporal_inference_spec: Any,
+) -> np.ndarray:
+    mins: np.ndarray | None = None
+    maxs: np.ndarray | None = None
+    for bundle in snapshot_bundles:
+        source_name = str(bundle.selection.analysis_source_names[0])
+        coords = _temporal_dense_snapshot_center_coords_for_sampling(
+            bundle.dataset,
+            temporal_inference_spec=temporal_inference_spec,
+            source_name=source_name,
+        )
+        local_mins = np.min(coords[:, :3], axis=0)
+        local_maxs = np.max(coords[:, :3], axis=0)
+        mins = local_mins if mins is None else np.minimum(mins, local_mins)
+        maxs = local_maxs if maxs is None else np.maximum(maxs, local_maxs)
+    if mins is None or maxs is None:
+        raise ValueError("Cannot resolve cut-surface bounds without snapshot bundles.")
+    return _resolve_equalized_bounds_from_min_max(mins, maxs)
+
+
+def _select_dense_snapshot_cut_surface_indices(
+    *,
+    coords: np.ndarray,
+    max_samples: int | None,
+    bounds: np.ndarray,
+    visible_depth_fraction: float,
+) -> np.ndarray:
+    coords_arr = np.asarray(coords, dtype=np.float32)
+    if coords_arr.ndim != 2 or coords_arr.shape[1] < 3:
+        raise ValueError(
+            "Cut-surface sample selection expects coords with shape (N, >=3), "
+            f"got {coords_arr.shape}."
+        )
+    sample_count = int(coords_arr.shape[0])
+    if sample_count <= 0:
+        raise ValueError("Cut-surface sample selection received zero coordinates.")
+    if max_samples is None or int(max_samples) >= sample_count:
+        return np.arange(sample_count, dtype=np.int64)
+    max_samples_int = int(max_samples)
+    if max_samples_int <= 0:
+        raise ValueError(f"max_samples must be > 0 when provided, got {max_samples}.")
+    depth = float(visible_depth_fraction)
+    if not np.isfinite(depth) or depth <= 0.0:
+        raise ValueError(
+            "Cut-surface visible depth fraction must be finite and positive, "
+            f"got {visible_depth_fraction!r}."
+        )
+    bounds_arr = np.asarray(bounds, dtype=np.float32)
+    if bounds_arr.shape != (2, 3):
+        raise ValueError(
+            f"Cut-surface bounds must have shape (2, 3), got {bounds_arr.shape}."
+        )
+    center = 0.5 * (bounds_arr[0] + bounds_arr[1])
+    span = np.maximum(bounds_arr[1] - bounds_arr[0], 1e-6)
+    normalized = (coords_arr[:, :3] - center[None, :]) / span[None, :]
+    signed = normalized @ _DIAGONAL_CUT_DIRECTION
+    distance = np.abs(signed)
+    visible_side = signed <= 0.0
+    near_cut = visible_side & (signed >= -depth)
+
+    selected_parts: list[np.ndarray] = []
+    selected_mask = np.zeros(sample_count, dtype=bool)
+
+    def _append_closest(mask: np.ndarray) -> None:
+        remaining = max_samples_int - int(np.count_nonzero(selected_mask))
+        if remaining <= 0:
+            return
+        candidates = np.flatnonzero(mask & ~selected_mask)
+        if candidates.size == 0:
+            return
+        if candidates.size > remaining:
+            order = np.lexsort((candidates, distance[candidates]))
+            candidates = candidates[order[:remaining]]
+        selected_mask[candidates] = True
+        selected_parts.append(candidates.astype(np.int64, copy=False))
+
+    _append_closest(near_cut)
+    _append_closest(visible_side)
+    _append_closest(np.ones(sample_count, dtype=bool))
+    if not selected_parts:
+        raise RuntimeError("Cut-surface sample selection did not select any points.")
+    selected = np.concatenate(selected_parts)
+    if selected.size != max_samples_int:
+        raise RuntimeError(
+            "Cut-surface sample selection returned an unexpected number of points. "
+            f"selected={selected.size}, expected={max_samples_int}, sample_count={sample_count}."
+        )
+    return np.sort(selected.astype(np.int64, copy=False))
+
+
+def _copy_inference_cache_part(
+    *,
+    merged: dict[str, np.ndarray],
+    part: dict[str, np.ndarray],
+    cursor: int,
+    total_samples: int,
+    part_samples: int,
+) -> None:
+    for key, merged_arr in merged.items():
+        part_arr = np.asarray(part[key])
+        if merged_arr.ndim > 0 and int(merged_arr.shape[0]) == int(total_samples):
+            if part_arr.shape[0] != int(part_samples):
+                raise RuntimeError(
+                    f"Cannot merge inference cache key {key!r}: expected part axis 0 "
+                    f"to have {part_samples} rows, got shape={tuple(part_arr.shape)}."
+                )
+            merged_arr[int(cursor) : int(cursor) + int(part_samples)] = part_arr
+        elif cursor == 0:
+            continue
+        elif part_arr.shape != merged_arr.shape or part_arr.dtype != merged_arr.dtype:
+            raise RuntimeError(
+                f"Non-sample inference cache key {key!r} changed between parts: "
+                f"first_shape={tuple(merged_arr.shape)}, first_dtype={merged_arr.dtype}, "
+                f"part_shape={tuple(part_arr.shape)}, part_dtype={part_arr.dtype}."
+            )
+
+
+def _initialize_merged_inference_cache(
+    *,
+    first_part: dict[str, np.ndarray],
+    total_samples: int,
+    first_part_samples: int,
+) -> dict[str, np.ndarray]:
+    merged: dict[str, np.ndarray] = {}
+    for key, value in first_part.items():
+        arr = np.asarray(value)
+        if arr.ndim > 0 and int(arr.shape[0]) == int(first_part_samples):
+            merged[key] = np.empty(
+                (int(total_samples), *arr.shape[1:]),
+                dtype=arr.dtype,
+            )
+        else:
+            merged[key] = arr.copy()
+    _copy_inference_cache_part(
+        merged=merged,
+        part=first_part,
+        cursor=0,
+        total_samples=int(total_samples),
+        part_samples=int(first_part_samples),
+    )
+    return merged
+
+
 def _resolve_temporal_snapshot_visualization_regular_grid_overlap(
     analysis_cfg: DictConfig,
 ) -> tuple[float, float]:
@@ -429,11 +704,22 @@ def _collect_temporal_dense_snapshot_cache(
     collector_mode: str,
     summary_label: str,
     cache_config_path: str,
+    max_samples_per_snapshot: int | None = None,
+    sample_selection_mode: str = "uniform_random_without_replacement",
+    cut_surface_visible_depth_fraction: float | None = None,
 ) -> tuple[dict[str, np.ndarray], Any, Any, dict[str, Any], Any]:
     if cache_file == "":
         raise ValueError(
             f"{cache_config_path}.file must be a non-empty file name."
         )
+    resolved_sample_selection_mode = _normalize_dense_snapshot_sample_selection_mode(
+        sample_selection_mode
+    )
+    resolved_cut_surface_visible_depth_fraction = (
+        None
+        if cut_surface_visible_depth_fraction is None
+        else float(cut_surface_visible_depth_fraction)
+    )
 
     regular_grid_overlap, static_overlap_fraction = (
         _resolve_temporal_snapshot_visualization_regular_grid_overlap(analysis_cfg)
@@ -466,23 +752,99 @@ def _collect_temporal_dense_snapshot_cache(
             strict=True,
         )
     ]
-    snapshot_dataset = torch.utils.data.ConcatDataset(
-        [bundle.dataset for bundle in snapshot_bundles]
-    )
-    snapshot_sample_source_names: list[str] = []
-    snapshot_sample_counts: dict[str, int] = {}
-    for bundle in snapshot_bundles:
+    cut_surface_bounds: np.ndarray | None = None
+    if (
+        max_samples_per_snapshot is not None
+        and resolved_sample_selection_mode == "diagonal_cut_surface"
+    ):
+        if resolved_cut_surface_visible_depth_fraction is None:
+            resolved_cut_surface_visible_depth_fraction = 0.10
+        if (
+            not np.isfinite(float(resolved_cut_surface_visible_depth_fraction))
+            or float(resolved_cut_surface_visible_depth_fraction) <= 0.0
+        ):
+            raise ValueError(
+                "Cut-surface sampling requires a positive finite "
+                f"visible_depth_fraction, got {cut_surface_visible_depth_fraction!r}."
+            )
+        cut_surface_bounds = _resolve_dense_snapshot_cut_surface_bounds(
+            snapshot_bundles=snapshot_bundles,
+            temporal_inference_spec=temporal_inference_spec,
+        )
+    selected_indices_by_snapshot: list[np.ndarray] = []
+    full_sample_counts: dict[str, int] = {}
+    selected_sample_counts: dict[str, int] = {}
+    for snapshot_idx, bundle in enumerate(snapshot_bundles):
         source_name = str(bundle.selection.analysis_source_names[0])
-        sample_count = int(len(bundle.inference_dataset))
-        if sample_count != int(len(bundle.dataset)):
+        full_sample_count = int(len(bundle.inference_dataset))
+        if resolved_sample_selection_mode == "diagonal_cut_surface":
+            if cut_surface_bounds is None:
+                selected_indices = _select_dense_snapshot_sample_indices(
+                    sample_count=full_sample_count,
+                    max_samples=max_samples_per_snapshot,
+                    seed=int(seed_base) + int(snapshot_idx) * 1_000_003,
+                )
+            else:
+                sampling_coords = _temporal_dense_snapshot_center_coords_for_sampling(
+                    bundle.dataset,
+                    temporal_inference_spec=temporal_inference_spec,
+                    source_name=source_name,
+                )
+                selected_indices = _select_dense_snapshot_cut_surface_indices(
+                    coords=sampling_coords,
+                    max_samples=max_samples_per_snapshot,
+                    bounds=cut_surface_bounds,
+                    visible_depth_fraction=float(
+                        resolved_cut_surface_visible_depth_fraction
+                    ),
+                )
+        else:
+            selected_indices = _select_dense_snapshot_sample_indices(
+                sample_count=full_sample_count,
+                max_samples=max_samples_per_snapshot,
+                seed=int(seed_base) + int(snapshot_idx) * 1_000_003,
+            )
+        selected_indices_by_snapshot.append(selected_indices)
+        full_sample_counts[source_name] = full_sample_count
+        selected_sample_counts[source_name] = int(selected_indices.size)
+
+    snapshot_datasets: list[Any] = []
+    snapshot_inference_datasets: list[Any] = []
+    snapshot_sample_source_names: list[str] = []
+    for bundle, selected_indices in zip(
+        snapshot_bundles,
+        selected_indices_by_snapshot,
+        strict=True,
+    ):
+        source_name = str(bundle.selection.analysis_source_names[0])
+        full_sample_count = int(len(bundle.inference_dataset))
+        if full_sample_count != int(len(bundle.dataset)):
             raise RuntimeError(
                 "Temporal dense snapshot inference dataset and visualization dataset must "
                 "have identical sample counts. "
-                f"source_name={source_name}, inference_samples={sample_count}, "
+                f"source_name={source_name}, inference_samples={full_sample_count}, "
                 f"visualization_samples={int(len(bundle.dataset))}."
             )
-        snapshot_sample_source_names.extend([source_name] * sample_count)
-        snapshot_sample_counts[source_name] = sample_count
+        if int(selected_indices.size) == full_sample_count:
+            snapshot_dataset_part = bundle.dataset
+            snapshot_inference_dataset_part = bundle.inference_dataset
+        else:
+            selected_list = [int(v) for v in selected_indices.tolist()]
+            snapshot_dataset_part = torch.utils.data.Subset(
+                bundle.dataset,
+                selected_list,
+            )
+            snapshot_inference_dataset_part = torch.utils.data.Subset(
+                bundle.inference_dataset,
+                selected_list,
+            )
+        snapshot_datasets.append(snapshot_dataset_part)
+        snapshot_inference_datasets.append(snapshot_inference_dataset_part)
+        snapshot_sample_source_names.extend(
+            [source_name] * int(selected_indices.size)
+        )
+
+    snapshot_dataset = torch.utils.data.ConcatDataset(snapshot_datasets)
     setattr(snapshot_dataset, "sample_source_names", snapshot_sample_source_names)
 
     snapshot_selection_spec = {
@@ -501,6 +863,27 @@ def _collect_temporal_dense_snapshot_cache(
             "static_overlap_fraction_equivalent": float(static_overlap_fraction),
         },
     }
+    if max_samples_per_snapshot is not None:
+        snapshot_selection_spec["sample_limit"] = {
+            "max_samples_per_snapshot": int(max_samples_per_snapshot),
+            "selection": str(resolved_sample_selection_mode),
+        }
+        if resolved_sample_selection_mode == "uniform_random_without_replacement":
+            snapshot_selection_spec["sample_limit"]["selection_seed_base"] = int(seed_base)
+        if resolved_sample_selection_mode == "diagonal_cut_surface":
+            snapshot_selection_spec["sample_limit"].update(
+                {
+                    "diagonal_visible_depth_fraction": float(
+                        resolved_cut_surface_visible_depth_fraction
+                    ),
+                    "bounds": (
+                        None
+                        if cut_surface_bounds is None
+                        else cut_surface_bounds.astype(float).tolist()
+                    ),
+                    "ranking": "visible_side_nearest_to_diagonal_cut_plane",
+                }
+            )
     snapshot_cache_spec = _build_inference_cache_spec(
         checkpoint_path=checkpoint_path,
         cfg=model_cfg_for_module,
@@ -540,18 +923,44 @@ def _collect_temporal_dense_snapshot_cache(
                 cuda_device=int(cuda_device),
                 cfg=model_cfg_for_module,
             )
-        snapshot_cache_parts: list[dict[str, np.ndarray]] = []
-        for snapshot_idx, bundle in enumerate(snapshot_bundles):
+        expected_total_samples = int(
+            sum(int(v) for v in selected_sample_counts.values())
+        )
+        snapshot_cache = None
+        cache_cursor = 0
+        for snapshot_idx, (bundle, inference_dataset) in enumerate(
+            zip(snapshot_bundles, snapshot_inference_datasets, strict=True)
+        ):
             source_name = str(bundle.selection.analysis_source_names[0])
+            selected_sample_count = int(selected_sample_counts[source_name])
+            full_sample_count = int(full_sample_counts[source_name])
+            cap_suffix = (
+                ""
+                if selected_sample_count == full_sample_count
+                else (
+                    f", selected_samples={selected_sample_count}/{full_sample_count}, "
+                    f"selection={resolved_sample_selection_mode}"
+                )
+            )
             print(
                 f"{summary_label} inference: "
-                f"snapshot={source_name}, samples={len(bundle.inference_dataset)}, "
+                f"snapshot={source_name}, samples={selected_sample_count}{cap_suffix}, "
                 f"regular_grid_overlap={regular_grid_overlap:.3f} "
                 f"(static_overlap_fraction={static_overlap_fraction:.3f})."
             )
+            inference_dataloader = torch.utils.data.DataLoader(
+                inference_dataset,
+                batch_size=int(inference_batch_size),
+                num_workers=int(dataloader_num_workers),
+                shuffle=False,
+                drop_last=False,
+                pin_memory=True,
+                persistent_workers=False,
+                collate_fn=_temporal_identity_or_default_collate,
+            )
             part_cache = gather_inference_batches(
                 model,
-                bundle.inference_dataloader,
+                inference_dataloader,
                 f"cuda:{int(cuda_device)}" if torch.cuda.is_available() else "cpu",
                 max_batches=None,
                 max_samples_total=None,
@@ -562,17 +971,38 @@ def _collect_temporal_dense_snapshot_cache(
                 temporal_sequence_mode=str(temporal_inference_spec.mode),
                 temporal_static_frame_index=temporal_inference_spec.static_frame_index,
             )
+            del inference_dataloader
             _validate_inference_cache_arrays(part_cache)
             part_sample_count = int(len(part_cache["inv_latents"]))
-            expected_sample_count = int(len(bundle.inference_dataset))
-            if part_sample_count != expected_sample_count:
+            if part_sample_count != selected_sample_count:
                 raise RuntimeError(
                     f"{summary_label} inference collected an unexpected number of samples. "
                     f"snapshot={source_name}, collected={part_sample_count}, "
-                    f"expected={expected_sample_count}."
+                    f"expected={selected_sample_count}."
                 )
-            snapshot_cache_parts.append(part_cache)
-        snapshot_cache = _concatenate_inference_caches(snapshot_cache_parts)
+            if snapshot_cache is None:
+                snapshot_cache = _initialize_merged_inference_cache(
+                    first_part=part_cache,
+                    total_samples=expected_total_samples,
+                    first_part_samples=part_sample_count,
+                )
+            else:
+                _copy_inference_cache_part(
+                    merged=snapshot_cache,
+                    part=part_cache,
+                    cursor=int(cache_cursor),
+                    total_samples=expected_total_samples,
+                    part_samples=part_sample_count,
+                )
+            cache_cursor += part_sample_count
+            del part_cache
+        if snapshot_cache is None:
+            raise RuntimeError(f"{summary_label} did not collect any inference batches.")
+        if int(cache_cursor) != expected_total_samples:
+            raise RuntimeError(
+                f"{summary_label} merged cache sample count mismatch: "
+                f"merged={cache_cursor}, expected={expected_total_samples}."
+            )
         if cache_enabled:
             _save_inference_cache(
                 out_dir=out_dir,
@@ -584,7 +1014,7 @@ def _collect_temporal_dense_snapshot_cache(
             print(f"{cache_log_prefix} Saved inference cache: {snapshot_cache_npz}")
 
     _validate_inference_cache_arrays(snapshot_cache)
-    expected_total_samples = int(sum(int(len(bundle.dataset)) for bundle in snapshot_bundles))
+    expected_total_samples = int(sum(int(len(ds)) for ds in snapshot_datasets))
     actual_total_samples = int(len(snapshot_cache["inv_latents"]))
     if actual_total_samples != expected_total_samples:
         raise RuntimeError(
@@ -612,8 +1042,28 @@ def _collect_temporal_dense_snapshot_cache(
         "source_names": [str(v) for v in resolved_source_names],
         "sample_count_by_snapshot": {
             str(source_name): int(count)
-            for source_name, count in snapshot_sample_counts.items()
+            for source_name, count in selected_sample_counts.items()
         },
+        "full_sample_count_by_snapshot": {
+            str(source_name): int(count)
+            for source_name, count in full_sample_counts.items()
+        },
+        "max_samples_per_snapshot": (
+            None
+            if max_samples_per_snapshot is None
+            else int(max_samples_per_snapshot)
+        ),
+        "inference_sample_selection": str(resolved_sample_selection_mode),
+        "cut_surface_visible_depth_fraction": (
+            None
+            if resolved_cut_surface_visible_depth_fraction is None
+            else float(resolved_cut_surface_visible_depth_fraction)
+        ),
+        "cut_surface_bounds": (
+            None
+            if cut_surface_bounds is None
+            else cut_surface_bounds.astype(float).tolist()
+        ),
     }
     return snapshot_cache, snapshot_dataset, snapshot_layout, summary, model
 
@@ -679,6 +1129,57 @@ def _collect_temporal_snapshot_visualization_cache(
     )
 
 
+def _resolve_temporal_md_space_inference_max_samples(
+    analysis_cfg: DictConfig,
+) -> int | None:
+    raw_value = OmegaConf.select(
+        analysis_cfg,
+        "real_md.temporal.md_space.inference_max_points_per_snapshot",
+        default=None,
+    )
+    if raw_value is None:
+        raw_value = OmegaConf.select(
+            analysis_cfg,
+            "real_md.temporal.md_space.animation_max_points",
+            default=OmegaConf.select(
+                analysis_cfg,
+                "real_md.temporal.animation_max_points",
+                default=None,
+            ),
+        )
+    return _positive_int_or_none(raw_value)
+
+
+def _resolve_temporal_md_space_inference_sample_selection(
+    analysis_cfg: DictConfig,
+) -> str:
+    return _normalize_dense_snapshot_sample_selection_mode(
+        OmegaConf.select(
+            analysis_cfg,
+            "real_md.temporal.md_space.inference_sample_selection",
+            default="cut_surface",
+        )
+    )
+
+
+def _resolve_temporal_md_space_diagonal_visible_depth_fraction(
+    analysis_cfg: DictConfig,
+) -> float:
+    value = float(
+        OmegaConf.select(
+            analysis_cfg,
+            "real_md.temporal.md_space.diagonal_visible_depth_fraction",
+            default=0.10,
+        )
+    )
+    if not np.isfinite(value) or value <= 0.0:
+        raise ValueError(
+            "real_md.temporal.md_space.diagonal_visible_depth_fraction must be "
+            f"positive and finite, got {value!r}."
+        )
+    return float(value)
+
+
 def _collect_temporal_md_space_animation_cache(
     *,
     analysis_cfg: DictConfig,
@@ -732,6 +1233,17 @@ def _collect_temporal_md_space_animation_cache(
             default="temporal_md_space_dense_inference_cache.npz",
         )
     ).strip()
+    max_samples_per_snapshot = _resolve_temporal_md_space_inference_max_samples(
+        analysis_cfg
+    )
+    sample_selection_mode = _resolve_temporal_md_space_inference_sample_selection(
+        analysis_cfg
+    )
+    cut_surface_visible_depth_fraction = (
+        _resolve_temporal_md_space_diagonal_visible_depth_fraction(analysis_cfg)
+        if sample_selection_mode == "diagonal_cut_surface"
+        else None
+    )
     return _collect_temporal_dense_snapshot_cache(
         analysis_cfg=analysis_cfg,
         temporal_selection=temporal_selection,
@@ -754,16 +1266,19 @@ def _collect_temporal_md_space_animation_cache(
         collector_mode="temporal_md_space_animation",
         summary_label="Temporal MD-space animation",
         cache_config_path="real_md.temporal.md_space.dense_snapshot_cache",
+        max_samples_per_snapshot=max_samples_per_snapshot,
+        sample_selection_mode=sample_selection_mode,
+        cut_surface_visible_depth_fraction=cut_surface_visible_depth_fraction,
     )
 
 
-def _configure_real_analysis_inputs(
+def _configure_static_analysis_inputs(
     cfg: DictConfig,
     analysis_files: list[str],
 ) -> list[str]:
-    if getattr(cfg.data, "kind", None) != "real":
+    if not is_static_data_kind(getattr(cfg.data, "kind", None)):
         raise ValueError(
-            "_configure_real_analysis_inputs can only be used for real datasets, "
+            "_configure_static_analysis_inputs can only be used for static datasets, "
             f"got kind={getattr(cfg.data, 'kind', None)!r}."
         )
     normalized_files = [str(v) for v in analysis_files]
@@ -860,19 +1375,29 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
 def build_datamodule(
     cfg: DictConfig,
     *,
-    require_coords_for_real: bool = False,
+    require_coords_for_static: bool = False,
+    require_coords_for_real: bool | None = None,
 ):
     """Instantiate the matching datamodule."""
     if getattr(cfg, "data", None) is None:
         raise ValueError("Config missing data section")
-    if getattr(cfg.data, "kind", None) == "synthetic":
+    if require_coords_for_real is not None:
+        require_coords_for_static = bool(require_coords_for_real)
+    data_kind = normalize_data_kind(getattr(cfg.data, "kind", None))
+    if data_kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
-    elif getattr(cfg.data, "kind", None) == "temporal_lammps":
+    elif data_kind == "temporal_lammps":
         dm = TemporalLAMMPSDataModule(cfg)
-    else:
-        dm = RealPointCloudDataModule(
+    elif data_kind == "static":
+        dm = StaticPointCloudDataModule(
             cfg,
-            return_coords=bool(require_coords_for_real),
+            return_coords=bool(require_coords_for_static),
+        )
+    else:
+        raise ValueError(
+            "Unsupported data.kind. Expected one of "
+            "['static', 'synthetic', 'temporal_lammps'] "
+            f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
         )
     return dm
 
@@ -927,7 +1452,7 @@ def run_post_training_analysis(
     temporal_real_mode = temporal_real_analysis_enabled(analysis_cfg)
     analysis_files = None if temporal_real_mode else _resolve_analysis_files(cfg, input_settings)
     if analysis_files is not None:
-        analysis_source_names = _configure_real_analysis_inputs(cfg, analysis_files)
+        analysis_source_names = _configure_static_analysis_inputs(cfg, analysis_files)
         print(f"Analysis data_files: {analysis_files}")
         if analysis_source_names and len(analysis_source_names) > 1:
             print(f"Per-snapshot analysis sources: {analysis_source_names}")
@@ -999,7 +1524,7 @@ def run_post_training_analysis(
         analysis_settings=analysis_settings,
         figure_settings=figure_settings,
     )
-    is_synthetic = getattr(cfg.data, "kind", None) == "synthetic"
+    is_synthetic = normalize_data_kind(getattr(cfg.data, "kind", None)) == "synthetic"
     analysis_inference_batch_size = _resolve_analysis_inference_batch_size(cfg, input_settings)
     print(
         "Analysis inference batch size: "
@@ -1011,9 +1536,9 @@ def run_post_training_analysis(
     all_metrics: Dict[str, Any] = {}
     dm = None
     if temporal_real_mode:
-        _step("Building temporal-real analysis dataset")
+        _step("Building temporal dump analysis dataset")
         default_temporal_static_frame_index = 0
-        if str(getattr(cfg.data, "kind", "")).strip().lower() == "temporal_lammps":
+        if normalize_data_kind(getattr(cfg.data, "kind", None)) == "temporal_lammps":
             default_temporal_static_frame_index = int(getattr(cfg.data, "sequence_length", 1)) // 2
         configured_static_frame_index = OmegaConf.select(
             analysis_cfg,
@@ -1030,7 +1555,7 @@ def run_post_training_analysis(
             and default_temporal_static_frame_index != 0
         ):
             print(
-                "Temporal real-data analysis: inputs.temporal_real.static_frame_index was not set; "
+                "Temporal dump analysis: inputs.temporal_real.static_frame_index was not set; "
                 f"defaulting to the temporal center frame index {default_temporal_static_frame_index} "
                 "to match temporal_lammps checkpoint training."
             )
@@ -1049,7 +1574,7 @@ def run_post_training_analysis(
         }
         class_names = None
         print(
-            "Temporal real-data analysis enabled: "
+            "Temporal dump analysis enabled: "
             f"inference_snapshots={len(temporal_bundle.selection.inference_source_names)}, "
             f"analysis_snapshots={len(temporal_bundle.selection.analysis_source_names)}, "
             f"center_count={len(getattr(temporal_bundle.dataset, '_center_atom_indices', []))}, "
@@ -1059,7 +1584,7 @@ def run_post_training_analysis(
         _step("Building datamodule")
         dm = build_datamodule(
             cfg,
-            require_coords_for_real=not is_synthetic,
+            require_coords_for_static=not is_synthetic,
         )
         dm.setup(stage="fit")
         dl = _build_analysis_dataloader(
@@ -1077,7 +1602,7 @@ def run_post_training_analysis(
         max_samples_total = None
         if input_settings.max_samples_total is not None:
             print(
-                "[analysis] inputs.max_samples_total is ignored for temporal real-data analysis; "
+                "[analysis] inputs.max_samples_total is ignored for temporal dump analysis; "
                 "the temporal inference snapshot selection already defines the full inference set."
             )
     else:
@@ -1247,9 +1772,9 @@ def run_post_training_analysis(
         all_metrics["clustering_fit_inputs"] = {
             "enabled": True,
             "data_config": analysis_settings.cluster_fit.data_config_path,
-            "data_kind": str(getattr(fit_cfg.data, "kind", "")),
-            "real_data_files_requested": analysis_settings.cluster_fit.input_settings.real_data_files,
-            "real_data_files_resolved": [
+            "data_kind": normalize_data_kind(getattr(fit_cfg.data, "kind", None)),
+            "static_data_files_requested": analysis_settings.cluster_fit.input_settings.static_data_files,
+            "static_data_files_resolved": [
                 str(v)
                 for v in list(getattr(fit_cfg.data, "data_files", []) or [])
             ],
@@ -1308,6 +1833,7 @@ def run_post_training_analysis(
     temporal_md_space_animation_dataset = None
     temporal_md_space_animation_layout = None
     temporal_md_space_animation_source_names: list[str] | None = None
+    temporal_md_space_animation_spatial_bounds: np.ndarray | None = None
     temporal_md_space_animation_reuse_main_cache = bool(
         temporal_bundle is not None
         and OmegaConf.select(
@@ -1364,6 +1890,14 @@ def run_post_training_analysis(
             ) = md_animation_cache_result
             temporal_md_space_animation_source_names = list(
                 temporal_md_space_animation_summary["source_names"]
+            )
+            cut_surface_bounds_raw = temporal_md_space_animation_summary.get(
+                "cut_surface_bounds"
+            )
+            temporal_md_space_animation_spatial_bounds = (
+                None
+                if cut_surface_bounds_raw is None
+                else np.asarray(cut_surface_bounds_raw, dtype=np.float32)
             )
             all_metrics["temporal_md_space_animation_sampling"] = dict(
                 temporal_md_space_animation_summary
@@ -1522,6 +2056,7 @@ def run_post_training_analysis(
         if temporal_snapshot_visualization_cache is None
         else "dense_selected_frames"
     )
+    temporal_md_animation_spatial_bounds_for_outputs = None
     if temporal_md_space_animation_cache is not None:
         _step("Projecting cluster labels onto dense MD-space animation frames")
         md_animation_fit_latents = (
@@ -1564,6 +2099,11 @@ def run_post_training_analysis(
             dtype=np.float32,
         )
         temporal_md_animation_frame_source = "dense_md_space_frames"
+        temporal_md_animation_spatial_bounds_for_outputs = (
+            temporal_md_space_animation_spatial_bounds
+        )
+        for cache_key in ("inv_latents", "eq_latents", "phases", "instance_ids"):
+            temporal_md_space_animation_cache.pop(cache_key, None)
 
     def _resolve_visible_cluster_sets_for_k(
         labels_for_k: np.ndarray,
@@ -1780,6 +2320,18 @@ def run_post_training_analysis(
         else snapshot_cluster_labels_by_k_for_outputs
     )
     figure_output_cluster_labels = figure_output_labels_by_k[int(primary_k)]
+
+    swav_prototype_metrics = run_swav_prototype_evaluation(
+        model=model,
+        cache=cache,
+        out_dir=out_dir,
+        analysis_cfg=analysis_cfg,
+        cluster_labels_by_k=cluster_labels_by_k,
+        frame_groups=snapshot_source_groups,
+        step=_step,
+    )
+    if swav_prototype_metrics:
+        all_metrics["swav_prototypes"] = swav_prototype_metrics
 
     # ── Shared representative render cache ─────────────────────────────
     real_md_enabled = bool(OmegaConf.select(analysis_cfg, "real_md.enabled", default=True))
@@ -2011,6 +2563,9 @@ def run_post_training_analysis(
                     temporal_md_animation_cluster_labels_by_k_for_outputs
                 ),
                 temporal_md_animation_frame_source=temporal_md_animation_frame_source,
+                temporal_md_animation_spatial_bounds=(
+                    temporal_md_animation_spatial_bounds_for_outputs
+                ),
                 temporal_projection_fit_indices=temporal_projection_fit_indices,
                 point_scale=float(point_scale),
                 random_state=int(clustering_random_state),

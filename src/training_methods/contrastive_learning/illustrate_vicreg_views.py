@@ -28,6 +28,7 @@ import yaml
 
 sys.path.append(os.getcwd())
 
+from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.synthetic.visualization import (
     _build_local_coordination_edges,
     _compute_radial_colormap_colors,
@@ -343,7 +344,7 @@ def _resolve_source_spec(
     if not isinstance(data_cfg, dict):
         raise ValueError(f"Config data section must be a dict, got {type(data_cfg)!r}.")
 
-    kind = str(data_cfg.get("kind", "")).strip().lower()
+    kind = normalize_data_kind(data_cfg.get("kind", ""))
     if kind == "synthetic":
         env_dir = Path(str(data_cfg.get("data_path", "")))
         if not env_dir.exists():
@@ -367,10 +368,10 @@ def _resolve_source_spec(
             "radius_details": None,
         }
 
-    if kind == "real":
+    if kind == "static":
         data_sources = data_cfg.get("data_sources", None)
         if not data_sources:
-            raise ValueError("Real-data config must define data.data_sources.")
+            raise ValueError("Static data config must define data.data_sources.")
         if source_index < 0 or source_index >= len(data_sources):
             raise IndexError(
                 f"source_index={source_index} is out of range for {len(data_sources)} data sources."
@@ -405,7 +406,8 @@ def _resolve_source_spec(
 
     raise ValueError(
         "Unsupported data kind for VICReg illustration. "
-        f"Expected 'synthetic' or 'real', got {kind!r}."
+        f"Expected 'synthetic' or 'static' ('real' is accepted as a legacy alias), "
+        f"got {data_cfg.get('kind', '')!r}."
     )
 
 
@@ -1151,7 +1153,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Output PNG path. Defaults to output/vicreg_view_illustrations/<config>_<source>.png",
     )
-    parser.add_argument("--source-index", type=int, default=0, help="Real-data source index.")
+    parser.add_argument("--source-index", type=int, default=0, help="Static-data source index.")
     parser.add_argument("--file-index", type=int, default=0, help="File index within the selected source.")
     parser.add_argument(
         "--target-points",

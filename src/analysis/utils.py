@@ -241,7 +241,7 @@ def _try_reuse_full_pointcloud_dataset(dm: Any) -> PointCloudDataset | None:
     return train_base
 
 
-def build_real_coords_dataloader(
+def build_static_coords_dataloader(
     cfg: DictConfig,
     dm: Any,
     use_train_data: bool,
@@ -300,7 +300,7 @@ def build_real_coords_dataloader(
             data_path = getattr(data_cfg, "data_path", None)
             if not data_path:
                 raise ValueError(
-                    "data_path is required when using data_files in build_real_coords_dataloader."
+                    "data_path is required when using data_files in build_static_coords_dataloader."
                 )
             full_dataset = PointCloudDataset(
                 root=data_path,
@@ -309,7 +309,7 @@ def build_real_coords_dataloader(
             )
         else:
             raise ValueError(
-                "No real-data inputs configured. Provide either cfg.data.data_sources "
+                "No static-data inputs configured. Provide either cfg.data.data_sources "
                 "or cfg.data.data_files + cfg.data.data_path."
             )
 
@@ -329,6 +329,9 @@ def build_real_coords_dataloader(
         pin_memory=True,
         persistent_workers=cfg.num_workers > 0,
     )
+
+
+build_real_coords_dataloader = build_static_coords_dataloader
 
 
 def gather_inference_batches(
@@ -593,6 +596,7 @@ __all__ = [
     "_default_cluster_count",
     "_sample_indices",
     "_unwrap_dataset",
+    "build_static_coords_dataloader",
     "build_real_coords_dataloader",
     "cap_cluster_labels",
     "evaluate_latent_equivariance",

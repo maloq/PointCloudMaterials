@@ -133,7 +133,7 @@ swav_hidden_dim: 512
 swav_num_prototypes: 3000
 swav_temperature: 0.1
 swav_epsilon: 0.05
-swav_sinkhorn_iterations: 3
+swav_sinkhorn_iterations: 20
 swav_start_epoch: 0
 swav_freeze_prototypes_steps: 0
 swav_view_mode: center_adjacent

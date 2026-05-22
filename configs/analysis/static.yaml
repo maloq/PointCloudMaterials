@@ -1,18 +1,18 @@
 checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
-  path: output/2026-04-16/16-19-29/TEMPORAL_VICREG_l256_N160_M80_RI_MAE_Invariant-epoch=14.ckpt
+  path: output/2026-05-19/00-21-51/VICREG_SWAV_l512_K6_N160_M80_RI_MAE_Invariant-epoch=59.ckpt
   # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/temporal_Al_6frames
+  output_dir: outputs/temporal_Al_6frames_Swav
   cuda_device: 0
 
 inputs:
   # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
   data_config: configs/data/data_ae_Al_80.yaml
-  # Optional real-data frame selection. null -> use data.data_files from the checkpoint config.
-  real_data_files: null
+  # Optional static frame selection. null -> use data.data_files from the checkpoint config.
+  static_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null
-  # 0/null -> unlimited unless the code imposes a real-data fallback cap.
+  # 0/null -> unlimited unless the code imposes a static-data fallback cap.
   max_samples_total: 0
 
 cache:
@@ -20,13 +20,30 @@ cache:
   force_recompute: false
   file: analysis_inference_cache.npz
 
+swav:
+  enabled: true
+  assignment_method: sinkhorn
+  sinkhorn_iterations: 20
+  batch_size: 8192
+  export_assignment_csv: true
+  # 0/null -> write all rows; positive value caps only the human-readable CSV.
+  # The compressed NPZ always stores all logits/probabilities/labels.
+  max_assignment_csv_rows: 100000
+  representative_top_k: 12
+  frame_proportions: true
+  transitions: true
+  compare_to_clustering: true
+  md_outputs: true
+  md_max_points: 0
+  plots: true
+
 runtime:
   progress_every_batches: 20
   seed_base: 123
 
 clustering:
   # Unified selected clustering k used by figure_set and real_md outputs.
-  primary_k: 8
+  primary_k: 6
   # null -> run clustering-dependent analyses only for primary_k.
   # Set a list such as [5, 6, 7, 8] to additionally run clustering-dependent analyses for each key.
   k_values: null

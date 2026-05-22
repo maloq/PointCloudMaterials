@@ -1,6 +1,6 @@
 import os
-# Hack to fix multi-GPU training on server (NCCL P2P hang)
-os.environ["NCCL_P2P_DISABLE"] = "1"
+# Hack to fix multi-GPU training on server (NCCL P2P hang) only on node52
+# os.environ["NCCL_P2P_DISABLE"] = "0"
 
 import math
 import sys
@@ -21,10 +21,11 @@ import wandb
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.data_utils.data_module import (
-    RealPointCloudDataModule,
+    StaticPointCloudDataModule,
     SyntheticPointCloudDataModule,
     TemporalLAMMPSDataModule,
 )
+from src.data_utils.data_kinds import normalize_data_kind
 torch.set_float32_matmul_precision('high')
 
 logger = setup_logging()
@@ -577,12 +578,20 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     datamodule_class = getattr(model_class, "data_module_class", None)
     if datamodule_class is not None:
         dm = datamodule_class(cfg)
-    elif cfg.data.kind == "synthetic":
-        dm = SyntheticPointCloudDataModule(cfg)
-    elif cfg.data.kind == "temporal_lammps":
-        dm = TemporalLAMMPSDataModule(cfg)
     else:
-        dm = RealPointCloudDataModule(cfg)
+        data_kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
+        if data_kind == "synthetic":
+            dm = SyntheticPointCloudDataModule(cfg)
+        elif data_kind == "temporal_lammps":
+            dm = TemporalLAMMPSDataModule(cfg)
+        elif data_kind == "static":
+            dm = StaticPointCloudDataModule(cfg)
+        else:
+            raise ValueError(
+                "Unsupported data.kind. Expected one of "
+                "['static', 'synthetic', 'temporal_lammps'] "
+                f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
+            )
     model = model_class(cfg)
 
     checkpoint_monitor = str(getattr(cfg, "checkpoint_monitor", "val/loss"))

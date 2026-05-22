@@ -1,5 +1,5 @@
 # Autoencoder
-kind: real
+kind: static
 radius: 6.5
 sample_type: 'regular'
 n_samples: 8000000

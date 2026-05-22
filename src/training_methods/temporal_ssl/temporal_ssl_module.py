@@ -116,7 +116,7 @@ class SwAVLoss(nn.Module):
             num_prototypes=int(getattr(cfg, "swav_num_prototypes", 3000)),
             temperature=float(getattr(cfg, "swav_temperature", 0.1)),
             epsilon=float(getattr(cfg, "swav_epsilon", 0.05)),
-            sinkhorn_iterations=int(getattr(cfg, "swav_sinkhorn_iterations", 3)),
+            sinkhorn_iterations=int(getattr(cfg, "swav_sinkhorn_iterations", 20)),
             start_epoch=int(getattr(cfg, "swav_start_epoch", 0)),
             freeze_prototypes_steps=int(getattr(cfg, "swav_freeze_prototypes_steps", 0)),
             view_mode=str(getattr(cfg, "swav_view_mode", "center_adjacent")),
@@ -176,7 +176,7 @@ class SwAVLoss(nn.Module):
         return self.prototypes(projected)
 
     @torch.no_grad()
-    def _sinkhorn(self, logits: torch.Tensor) -> torch.Tensor:
+    def _sinkhorn(self, logits: torch.Tensor, *, iterations: int | None = None) -> torch.Tensor:
         if logits.dim() != 2:
             raise ValueError(f"SwAV Sinkhorn expects logits with shape (B, K), got {tuple(logits.shape)}.")
         if int(logits.shape[1]) != self.num_prototypes:
@@ -184,6 +184,9 @@ class SwAVLoss(nn.Module):
                 "SwAV Sinkhorn prototype dimension mismatch: "
                 f"expected K={self.num_prototypes}, got logits.shape={tuple(logits.shape)}."
             )
+        sinkhorn_iterations = self.sinkhorn_iterations if iterations is None else int(iterations)
+        if sinkhorn_iterations <= 0:
+            raise ValueError(f"SwAV Sinkhorn iterations must be > 0, got {sinkhorn_iterations}.")
 
         scores = logits.detach().to(dtype=torch.float32) / self.epsilon
         max_score = scores.max()
@@ -205,7 +208,7 @@ class SwAVLoss(nn.Module):
         global_batch = self._distributed_sum(local_batch)
         num_prototypes = q.new_tensor(float(q.shape[0]))
 
-        for _ in range(self.sinkhorn_iterations):
+        for _ in range(sinkhorn_iterations):
             row_sums = q.sum(dim=1, keepdim=True)
             row_sums = self._distributed_sum(row_sums)
             q = q / row_sums.clamp_min(1e-12)
@@ -250,11 +253,13 @@ class SwAVLoss(nn.Module):
         loss_terms = []
         assignment_max_probs = []
         assignment_entropies = []
+        assignment_prototype_masses = []
         for assign_idx, assignment_logits in enumerate(logits_by_view):
             assignments = self._sinkhorn(assignment_logits)
             assignment_max_probs.append(assignments.max(dim=1).values.mean())
             assignment_entropy = -(assignments * assignments.clamp_min(1e-12).log()).sum(dim=1).mean()
             assignment_entropies.append(assignment_entropy)
+            assignment_prototype_masses.append(assignments.sum(dim=0) / float(batch_size))
 
             subloss_terms = []
             for pred_idx, prediction_logits in enumerate(logits_by_view):
@@ -269,6 +274,9 @@ class SwAVLoss(nn.Module):
             "swav_assignment_entropy": torch.stack(assignment_entropies, dim=0).mean(),
             "swav_assignment_max_prob": torch.stack(assignment_max_probs, dim=0).mean(),
         }
+        prototype_mass = torch.stack(assignment_prototype_masses, dim=0).mean(dim=0)
+        metrics["swav_prototype_mass_min"] = prototype_mass.min()
+        metrics["swav_prototype_mass_max"] = prototype_mass.max()
         # Tensor-only nonfinite accounting avoids a per-step CPU sync; we log
         # the flag unconditionally (0.0 when finite, 1.0 otherwise) so
         # downstream dashboards still see the same metric name.

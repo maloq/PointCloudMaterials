@@ -14,6 +14,7 @@ from src.training_methods.contrastive_learning.supervised_cache import (
     log_supervised_metrics,
     reset_supervised_cache,
 )
+from src.training_methods.contrastive_learning.swav import SwAVLoss
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 from src.utils.model_summary import make_model_summary_point_cloud, resolve_model_summary_batch_size
 from src.utils.pointcloud_ops import crop_to_num_points
@@ -93,6 +94,10 @@ class VICRegModule(pl.LightningModule):
             cfg,
             input_dim=latent_dim,
         )
+        self.swav = SwAVLoss.from_config(
+            cfg,
+            input_dim=latent_dim,
+        )
 
         init_supervised_cache(self, cfg)
         self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
@@ -115,14 +120,22 @@ class VICRegModule(pl.LightningModule):
         return self.vicreg._invariant(z_inv_model, eq_z)
 
     def _forward_ssl_heads_for_summary(self, features: torch.Tensor | None) -> dict[str, torch.Tensor]:
-        if self.vicreg.projector is None:
-            return {}
-        if features is None:
-            raise RuntimeError(
-                "Cannot profile VICReg FLOPs for the Lightning model summary because "
-                "the encoder did not return invariant contrastive features."
-            )
-        return {"vicreg_projected": self.vicreg(features, profile_projector=True)}
+        head_outputs = {}
+        if self.vicreg.projector is not None:
+            if features is None:
+                raise RuntimeError(
+                    "Cannot profile VICReg FLOPs for the Lightning model summary because "
+                    "the encoder did not return invariant contrastive features."
+                )
+            head_outputs["vicreg_projected"] = self.vicreg(features, profile_projector=True)
+        if self.swav.projector is not None or self.swav.prototypes is not None:
+            if features is None:
+                raise RuntimeError(
+                    "Cannot profile SwAV FLOPs for the Lightning model summary because "
+                    "the encoder did not return invariant contrastive features."
+                )
+            head_outputs["swav_logits"] = self.swav(features, profile_logits=True)
+        return head_outputs
 
     def _status_print(self, message: str) -> None:
         if getattr(self, "_trainer", None) is not None:
@@ -194,6 +207,60 @@ class VICRegModule(pl.LightningModule):
             self._warned_cache_eq_fallback = True
         return self._shared_invariant(z_inv_model, None)
 
+    def _build_contrastive_view_pair(
+        self,
+        pc: torch.Tensor,
+        *,
+        view_points: int | None,
+    ) -> dict[str, torch.Tensor]:
+        use_neighbor_a, use_neighbor_b = self.vicreg._resolve_neighbor_flags(device=pc.device)
+        apply_occlusion_a, apply_occlusion_b = self.vicreg._resolve_pair_occlusion_flags(
+            use_neighbor_a=use_neighbor_a,
+            use_neighbor_b=use_neighbor_b,
+            device=pc.device,
+        )
+        return {
+            "y_a": self.vicreg._augment(
+                pc,
+                use_neighbor=use_neighbor_a,
+                apply_occlusion=apply_occlusion_a,
+                view_points=view_points,
+            ),
+            "y_b": self.vicreg._augment(
+                pc,
+                use_neighbor=use_neighbor_b,
+                apply_occlusion=apply_occlusion_b,
+                view_points=view_points,
+            ),
+        }
+
+    def _encode_contrastive_view_pair(
+        self,
+        views: dict[str, torch.Tensor],
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        y_a = views["y_a"]
+        y_b = views["y_b"]
+        batch_size = int(y_a.shape[0])
+        if int(y_b.shape[0]) != batch_size:
+            raise ValueError(
+                "Contrastive view pair must share a batch dimension; "
+                f"got y_a.shape={tuple(y_a.shape)}, y_b.shape={tuple(y_b.shape)}."
+            )
+        fused_input = torch.cat([y_a, y_b], dim=0)
+        encoded = self.encoder_io.encode(fused_input)
+        features = self._shared_invariant(encoded.invariant, encoded.equivariant)
+        if features is None:
+            raise RuntimeError(
+                "Contrastive objectives require invariant encoder features after view encoding, "
+                "but the configured encoder returned none."
+            )
+        if features.dim() != 2 or int(features.shape[0]) != 2 * batch_size:
+            raise ValueError(
+                "Contrastive encoded features must have shape (2*B, D); "
+                f"got {tuple(features.shape)} for batch_size={batch_size}."
+            )
+        return features.chunk(2, dim=0)
+
     def forward(self, pc: torch.Tensor, include_ssl_heads: bool = False):
         if not isinstance(include_ssl_heads, bool):
             raise TypeError(
@@ -231,24 +298,73 @@ class VICRegModule(pl.LightningModule):
         )
 
         losses = {}
+        should_run_vicreg = self.vicreg.should_run(current_epoch=int(self.current_epoch))
+        should_run_swav = self.swav.should_run(current_epoch=int(self.current_epoch))
 
-        vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
-            pc=pc_raw,
-            encoder=self.encoder,
-            prepare_input=self.encoder_io.prepare_input,
-            split_output=self.encoder_io.split_output,
-            current_epoch=int(self.current_epoch),
-            invariant_transform=self._shared_invariant,
-        )
-        if vicreg_loss is not None:
-            losses["vicreg"] = vicreg_loss
-        for name, value in vicreg_metrics.items():
-            self._log_metric(stage, name, value, batch_size=batch_size)
+        if should_run_vicreg and should_run_swav and self.vicreg.view_points == self.swav.view_points:
+            contrastive_views = self._build_contrastive_view_pair(
+                pc_raw,
+                view_points=self.vicreg.view_points,
+            )
+            z_a_feat, z_b_feat = self._encode_contrastive_view_pair(contrastive_views)
+
+            vicreg_loss, vicreg_metrics = self.vicreg.compute_loss_from_features(
+                z_a_feat=z_a_feat,
+                z_b_feat=z_b_feat,
+                current_epoch=int(self.current_epoch),
+            )
+            if vicreg_loss is not None:
+                losses["vicreg"] = vicreg_loss
+            for name, value in vicreg_metrics.items():
+                self._log_metric(stage, name, value, batch_size=batch_size)
+
+            swav_loss, swav_metrics = self.swav.compute_loss(
+                view_features=[z_a_feat, z_b_feat],
+                current_epoch=int(self.current_epoch),
+            )
+            if swav_loss is not None:
+                losses["swav"] = swav_loss
+            for name, value in swav_metrics.items():
+                self._log_metric(stage, name, value, batch_size=batch_size)
+        else:
+            if should_run_vicreg:
+                vicreg_views = self._build_contrastive_view_pair(
+                    pc_raw,
+                    view_points=self.vicreg.view_points,
+                )
+                z_a_feat, z_b_feat = self._encode_contrastive_view_pair(vicreg_views)
+                vicreg_loss, vicreg_metrics = self.vicreg.compute_loss_from_features(
+                    z_a_feat=z_a_feat,
+                    z_b_feat=z_b_feat,
+                    current_epoch=int(self.current_epoch),
+                )
+                if vicreg_loss is not None:
+                    losses["vicreg"] = vicreg_loss
+                for name, value in vicreg_metrics.items():
+                    self._log_metric(stage, name, value, batch_size=batch_size)
+
+            if should_run_swav:
+                swav_views = self._build_contrastive_view_pair(
+                    pc_raw,
+                    view_points=self.swav.view_points,
+                )
+                z_a_feat, z_b_feat = self._encode_contrastive_view_pair(swav_views)
+                swav_loss, swav_metrics = self.swav.compute_loss(
+                    view_features=[z_a_feat, z_b_feat],
+                    current_epoch=int(self.current_epoch),
+                )
+                if swav_loss is not None:
+                    losses["swav"] = swav_loss
+                for name, value in swav_metrics.items():
+                    self._log_metric(stage, name, value, batch_size=batch_size)
 
         total_loss = None
         if "vicreg" in losses:
             vicreg_total = self.vicreg.weight * losses["vicreg"]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
+        if "swav" in losses:
+            swav_total = self.swav.weight * losses["swav"]
+            total_loss = swav_total if total_loss is None else total_loss + swav_total
         if total_loss is None:
             total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
 
@@ -294,6 +410,9 @@ class VICRegModule(pl.LightningModule):
         if "vicreg" in losses:
             # Unweighted VICReg objective term.
             metrics_to_log["vicreg"] = losses["vicreg"]
+        if "swav" in losses:
+            # Unweighted SwAV objective term.
+            metrics_to_log["swav"] = losses["swav"]
 
         prog_bar_keys = {"loss"}
         for name, value in metrics_to_log.items():
@@ -341,6 +460,10 @@ class VICRegModule(pl.LightningModule):
 
     def configure_optimizers(self):
         return get_optimizers_and_scheduler(self.hparams, self.parameters())
+
+    def on_after_backward(self) -> None:
+        if self.swav.should_freeze_prototypes(global_step=int(self.global_step)):
+            self.swav.clear_prototype_gradients()
 
     def _log_metric(
         self,

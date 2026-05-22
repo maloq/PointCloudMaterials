@@ -52,29 +52,51 @@ data:
     safety_factor: 1.02
     boundary_margin: 7.2
 
+# encoder:
+#   name: RI_MAE_Invariant
+#   kwargs:
+#     latent_size: ${latent_size}
+#     num_group: 24
+#     group_size: 12
+
+#     # scratch.
+#     encoder_dims: 512
+#     trans_dim: 128
+#     depth: 8
+#     predictor_depth: 4
+#     num_heads: 8
+#     mlp_ratio: 4.0
+#     dropout: 0.0
+#     mask_ratio: 0.6
+#     ema_decay: 0.996
+#     deterministic_fps: false
+#     sorting_mode: none
+#     group_sampling: random
+#     center_input: true
+#     frame_builder: triad
+#     frame_eps: 1e-6
+#     use_gradient_checkpointing: true
+
 encoder:
-  name: RI_MAE_Invariant
+  name: MACE_Backbone
   kwargs:
     latent_size: ${latent_size}
-    num_group: 24
-    group_size: 12
-    encoder_dims: 384
-    trans_dim: 128
-    depth: 8
-    predictor_depth: 4
-    num_heads: 8
-    mlp_ratio: 4.0
-    dropout: 0.0
-    mask_ratio: 0.6
-    ema_decay: 0.996
-    deterministic_fps: false
-    sorting_mode: none
-    group_sampling: random
-    center_input: true
-    frame_builder: triad
-    frame_eps: 1e-6
-    use_gradient_checkpointing: false
+    r_max: 1.0
+    num_interactions: 2
+    max_ell: 2
+    num_features: 32
+    correlation: 3
+    num_bessel: 8
+    num_polynomial_cutoff: 6
+    radial_type: bessel
+    radial_MLP: [64, 64, 64]
+    avg_num_neighbors: 16.0
+    max_neighbors: 16
+    pool: mean
+    num_types: 1
+    include_parity_odd_scalars: false
 
+    
 learning_rate: 0.003
 batch_size: 2048
 precision: bf16-true
@@ -92,12 +114,12 @@ auto_batch_size_strict: false
 
 enable_swa: false
 swa_epoch_start: 1000
-epochs: 60
+epochs: 120
 max_samples: 0
 check_val_every_n_epoch: 5
 
 gpu: true
-devices: [0,1]
+devices: [0]
 ddp_find_unused_parameters: false
 log_every_n_steps: 5
 # #10: `_build_batch_from_indices` is Python-heavy (per-window dict/list

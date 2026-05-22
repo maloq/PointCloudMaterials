@@ -12,7 +12,8 @@ from omegaconf import DictConfig
 
 sys.path.append(os.getcwd())
 
-from src.data_utils.data_module import RealPointCloudDataModule, SyntheticPointCloudDataModule
+from src.data_utils.data_kinds import normalize_data_kind
+from src.data_utils.data_module import StaticPointCloudDataModule, SyntheticPointCloudDataModule
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 
@@ -88,10 +89,12 @@ def build_datamodule(
     """Instantiate and setup the matching datamodule."""
     if getattr(cfg, "data", None) is None:
         raise ValueError("Config missing required 'data' section.")
+    data_kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
     if data_files_override:
-        if getattr(cfg.data, "kind", None) != "real":
+        if data_kind != "static":
             raise ValueError(
-                "data_files_override can only be used for real datasets (cfg.data.kind == 'real')."
+                "data_files_override can only be used for static datasets "
+                "(cfg.data.kind == 'static'; 'real' is accepted as a legacy alias)."
             )
         cfg.data.data_files = [str(v) for v in data_files_override]
 
@@ -107,10 +110,15 @@ def build_datamodule(
             raise ValueError(f"batch_size must be >= 1, got {batch_size}.")
         cfg.batch_size = batch_size
 
-    if getattr(cfg.data, "kind", None) == "synthetic":
+    if data_kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
+    elif data_kind == "static":
+        dm = StaticPointCloudDataModule(cfg)
     else:
-        dm = RealPointCloudDataModule(cfg)
+        raise ValueError(
+            "Evaluation supports cfg.data.kind in ['static', 'synthetic'] "
+            f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
+        )
     dm.setup(stage="test")
     return dm
 
@@ -295,7 +303,7 @@ def _parse_args() -> argparse.Namespace:
         "--data_file",
         action="append",
         default=None,
-        help="Override cfg.data.data_files for real datasets. Repeat for multiple files.",
+        help="Override cfg.data.data_files for static datasets. Repeat for multiple files.",
     )
     parser.add_argument(
         "--num_workers",

@@ -7,6 +7,7 @@ from typing import Any
 import numpy as np
 from omegaconf import DictConfig, OmegaConf
 
+from src.data_utils.data_kinds import is_static_data_kind
 from src.utils.model_utils import resolve_config_path
 
 
@@ -36,11 +37,15 @@ class RunSettings:
 
 @dataclass(frozen=True)
 class InputSettings:
-    real_data_files: list[str] | None
+    static_data_files: list[str] | None
     dataloader_num_workers: int
     inference_batch_size: int | None
     max_batches_latent: int | None
     max_samples_total: int | None
+
+    @property
+    def real_data_files(self) -> list[str] | None:
+        return self.static_data_files
 
 
 @dataclass(frozen=True)
@@ -229,6 +234,29 @@ def _as_list_of_str(value: Any) -> list[str] | None:
     if isinstance(value, str):
         return [value]
     return [str(v) for v in list(value)]
+
+
+def _resolve_static_data_files_setting(
+    *,
+    static_value: Any,
+    legacy_real_value: Any,
+    static_field_name: str,
+    legacy_field_name: str,
+    default: list[str] | None = None,
+) -> list[str] | None:
+    static_files = _as_list_of_str(static_value)
+    legacy_files = _as_list_of_str(legacy_real_value)
+    if static_files is not None and legacy_files is not None and static_files != legacy_files:
+        raise ValueError(
+            f"Set either {static_field_name} or legacy {legacy_field_name}, not both "
+            f"with different values. Got {static_field_name}={static_files} and "
+            f"{legacy_field_name}={legacy_files}."
+        )
+    if static_files is not None:
+        return static_files
+    if legacy_files is not None:
+        return legacy_files
+    return default
 
 
 def _to_plain(value: Any) -> Any:
@@ -437,8 +465,19 @@ def _resolve_run_settings(
 
 def _resolve_input_settings(analysis_cfg: DictConfig) -> InputSettings:
     return InputSettings(
-        real_data_files=_as_list_of_str(
-            OmegaConf.select(analysis_cfg, "inputs.real_data_files", default=None)
+        static_data_files=_resolve_static_data_files_setting(
+            static_value=OmegaConf.select(
+                analysis_cfg,
+                "inputs.static_data_files",
+                default=None,
+            ),
+            legacy_real_value=OmegaConf.select(
+                analysis_cfg,
+                "inputs.real_data_files",
+                default=None,
+            ),
+            static_field_name="inputs.static_data_files",
+            legacy_field_name="inputs.real_data_files",
         ),
         dataloader_num_workers=int(
             OmegaConf.select(analysis_cfg, "inputs.dataloader_num_workers", default=4)
@@ -468,7 +507,7 @@ def _resolve_clustering_fit_settings(
             "clustering.fit_inputs.temporal_real is not supported. "
             "Provide a static/synthetic fit dataset through "
             "clustering.fit_inputs.data_config and optional "
-            "clustering.fit_inputs.real_data_files."
+            "clustering.fit_inputs.static_data_files."
         )
 
     parent_inputs = _resolve_input_settings(analysis_cfg)
@@ -490,12 +529,20 @@ def _resolve_clustering_fit_settings(
             None if data_config_path is None else str(data_config_path).strip() or None
         ),
         input_settings=InputSettings(
-            real_data_files=_as_list_of_str(
-                _cfg_select(
+            static_data_files=_resolve_static_data_files_setting(
+                static_value=_cfg_select(
+                    fit_cfg,
+                    "static_data_files",
+                    default=None,
+                ),
+                legacy_real_value=_cfg_select(
                     fit_cfg,
                     "real_data_files",
-                    default=parent_inputs.real_data_files,
-                )
+                    default=None,
+                ),
+                static_field_name="clustering.fit_inputs.static_data_files",
+                legacy_field_name="clustering.fit_inputs.real_data_files",
+                default=parent_inputs.static_data_files,
             ),
             dataloader_num_workers=int(
                 _cfg_select(
@@ -536,15 +583,15 @@ def _resolve_analysis_files(
     model_cfg: DictConfig,
     input_settings: InputSettings,
 ) -> list[str] | None:
-    if model_cfg.data.kind != "real":
+    if not is_static_data_kind(model_cfg.data.kind):
         return None
-    if input_settings.real_data_files:
-        return input_settings.real_data_files
+    if input_settings.static_data_files:
+        return input_settings.static_data_files
     data_files = _as_list_of_str(OmegaConf.select(model_cfg, "data.data_files", default=None))
     if not data_files:
         raise ValueError(
             "Cannot resolve analysis data files: data.data_files is missing or empty, "
-            "and inputs.real_data_files was not provided in the analysis config."
+            "and inputs.static_data_files was not provided in the analysis config."
         )
     return data_files
 
@@ -989,7 +1036,7 @@ def _print_resolved_analysis_settings(
         print(
             "Clustering fit-transfer settings: "
             f"data_config={analysis_settings.cluster_fit.data_config_path}, "
-            f"real_data_files={analysis_settings.cluster_fit.input_settings.real_data_files}, "
+            f"static_data_files={analysis_settings.cluster_fit.input_settings.static_data_files}, "
             f"cache_enabled={analysis_settings.cluster_fit.cache_enabled}, "
             f"cache_file={analysis_settings.cluster_fit.cache_file}"
         )

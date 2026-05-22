@@ -6,6 +6,8 @@ from typing import Any
 import numpy as np
 from omegaconf import DictConfig
 
+from src.data_utils.data_kinds import normalize_data_kind
+
 
 def _as_list_of_str(value: Any) -> list[str] | None:
     if value is None:
@@ -64,7 +66,7 @@ def _normalize_data_sources_for_cache(value: Any) -> list[dict[str, Any]]:
                     ),
                 }
             )
-        # Real-data format: name / data_path / data_files
+        # Static-data format: name / data_path / data_files
         else:
             files = _as_list_of_str(entry_dict.get("data_files"))
             normalized.append(
@@ -94,7 +96,7 @@ def _build_inference_cache_spec(
         "version": 3,
         "checkpoint_path": str(Path(checkpoint_path).resolve()),
         "model_type": str(getattr(cfg, "model_type", "")),
-        "data_kind": str(getattr(cfg.data, "kind", "unknown")),
+        "data_kind": normalize_data_kind(getattr(cfg.data, "kind", None), default="unknown"),
         "data_path": str(getattr(cfg.data, "data_path", "")),
         "data_files": _as_list_of_str(getattr(cfg.data, "data_files", None)) or [],
         "data_sources": _normalize_data_sources_for_cache(
@@ -196,6 +198,11 @@ def _normalize_spec_for_compatibility(spec: Any) -> Any:
     normalized = dict(spec)
     normalized.pop("version", None)
     normalized.pop("dynamic_motif", None)
+    if "data_kind" in normalized:
+        normalized["data_kind"] = normalize_data_kind(
+            normalized.get("data_kind"),
+            default="unknown",
+        )
     return normalized
 
 

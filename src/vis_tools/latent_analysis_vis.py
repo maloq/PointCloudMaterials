@@ -1300,7 +1300,9 @@ def compute_hdbscan_labels(
     return labels_full
 
 
-def _set_equal_axes_3d(ax, coords: np.ndarray) -> None:
+def _equal_axes_3d_limits(
+    coords: np.ndarray,
+) -> tuple[tuple[float, float], tuple[float, float], tuple[float, float]]:
     mins = np.min(coords, axis=0)
     maxs = np.max(coords, axis=0)
     center = 0.5 * (mins + maxs)
@@ -1308,9 +1310,18 @@ def _set_equal_axes_3d(ax, coords: np.ndarray) -> None:
     if not np.isfinite(span) or span <= 0.0:
         span = 1.0
     half = 0.5 * span
-    ax.set_xlim(center[0] - half, center[0] + half)
-    ax.set_ylim(center[1] - half, center[1] + half)
-    ax.set_zlim(center[2] - half, center[2] + half)
+    return (
+        (float(center[0] - half), float(center[0] + half)),
+        (float(center[1] - half), float(center[1] + half)),
+        (float(center[2] - half), float(center[2] + half)),
+    )
+
+
+def _set_equal_axes_3d(ax, coords: np.ndarray) -> None:
+    xlim, ylim, zlim = _equal_axes_3d_limits(coords)
+    ax.set_xlim(*xlim)
+    ax.set_ylim(*ylim)
+    ax.set_zlim(*zlim)
     if hasattr(ax, "set_box_aspect"):
         ax.set_box_aspect((1.0, 1.0, 1.0))
 
@@ -1711,38 +1722,51 @@ def save_pca_visualization(
     _log_saved_figure(pca_out)
 
     if pca_coords.shape[1] >= 3:
-        fig = plt.figure(figsize=(10, 8), dpi=150)
-        ax = fig.add_subplot(111, projection="3d")
-
-        if gt_labels is not None:
-            for i, label in enumerate(unique_labels):
-                mask = gt_labels == label
-                label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
-                ax.scatter(
-                    pca_coords[mask, 0],
-                    pca_coords[mask, 1],
-                    pca_coords[mask, 2],
-                    c=[colors[i]],
-                    s=6,
-                    alpha=0.5,
-                    label=label_text,
-                )
-            if len(unique_labels) <= 15:
-                ax.legend(fontsize=7, markerscale=1.5)
-        else:
+        fig = plt.figure(figsize=(16, 8), dpi=150)
+        pca_coords_3d = pca_coords[:, :3]
+        xlim, ylim, zlim = _equal_axes_3d_limits(pca_coords_3d)
+        z_shadow = np.full(pca_coords_3d.shape[0], zlim[0], dtype=pca_coords_3d.dtype)
+        pc3_label = f"PC3 score ({pca.explained_variance_ratio_[2]*100:.1f}%)"
+        axes_3d = []
+        sc = None
+        views = (
+            ("view 1", 22.0, -55.0),
+            ("view 2", 22.0, 35.0),
+        )
+        for plot_idx, (view_name, elev, azim) in enumerate(views, start=1):
+            ax = fig.add_subplot(1, 2, plot_idx, projection="3d")
+            axes_3d.append(ax)
             ax.scatter(
-                pca_coords[:, 0],
-                pca_coords[:, 1],
-                pca_coords[:, 2],
-                s=6,
-                alpha=0.5,
-                c="#3498db",
+                pca_coords_3d[:, 0],
+                pca_coords_3d[:, 1],
+                z_shadow,
+                c="0.2",
+                s=4,
+                alpha=0.08,
+                depthshade=False,
             )
+            sc = ax.scatter(
+                pca_coords_3d[:, 0],
+                pca_coords_3d[:, 1],
+                pca_coords_3d[:, 2],
+                c=pca_coords_3d[:, 2],
+                cmap="viridis",
+                s=6,
+                alpha=0.65,
+                depthshade=False,
+            )
+            ax.set_xlim(*xlim)
+            ax.set_ylim(*ylim)
+            ax.set_zlim(*zlim)
+            if hasattr(ax, "set_box_aspect"):
+                ax.set_box_aspect((1.0, 1.0, 1.0))
+            ax.view_init(elev=elev, azim=azim)
+            ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)")
+            ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)")
+            ax.set_zlabel(f"PC3 ({pca.explained_variance_ratio_[2]*100:.1f}%)")
+            ax.set_title(f"3D PCA Projection ({view_name})")
 
-        ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)")
-        ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)")
-        ax.set_zlabel(f"PC3 ({pca.explained_variance_ratio_[2]*100:.1f}%)")
-        ax.set_title("3D PCA Projection")
+        fig.colorbar(sc, ax=axes_3d, shrink=0.72, pad=0.06, label=pc3_label)
 
         plt.tight_layout()
         pca_3d_out = out_dir / "latent_pca_3d.png"

@@ -1,5 +1,5 @@
 import os
-# Hack to fix multi-GPU training on this server (NCCL P2P hang)
+# Hack to fix multi-GPU training on this server (NCCL P2P hang) only node52
 # os.environ["NCCL_P2P_DISABLE"] = "1"
 
 import sys
@@ -78,7 +78,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 
 @hydra.main(version_base=None,
             config_path=os.path.join(os.getcwd(), 'configs'),
-            config_name='vicreg_vn_molecular_multi.yaml')
+            config_name='vicreg_vn_molecular_swav.yaml')
 def main(cfg: DictConfig):
     train(cfg)
 

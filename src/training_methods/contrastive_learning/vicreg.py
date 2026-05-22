@@ -12,6 +12,9 @@ from src.training_methods.contrastive_learning.invariant_utils import NormInvari
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 
 
+_VIEW_POINTS_UNSET = object()
+
+
 class VICRegLoss(nn.Module):
     def __init__(
         self,
@@ -352,7 +355,14 @@ class VICRegLoss(nn.Module):
             return use_a, use_b
         return True, True
 
-    def _augment(self, pc: torch.Tensor, *, use_neighbor: bool, apply_occlusion: bool) -> torch.Tensor:
+    def _augment(
+        self,
+        pc: torch.Tensor,
+        *,
+        use_neighbor: bool,
+        apply_occlusion: bool,
+        view_points=_VIEW_POINTS_UNSET,
+    ) -> torch.Tensor:
         x = pc
         if use_neighbor:
             x = shift_to_neighbor(
@@ -364,6 +374,7 @@ class VICRegLoss(nn.Module):
             x,
             use_neighbor=use_neighbor,
             apply_occlusion=apply_occlusion,
+            view_points=view_points,
         )
 
     @staticmethod
@@ -432,6 +443,7 @@ class VICRegLoss(nn.Module):
         *,
         use_neighbor: bool | torch.Tensor,
         apply_occlusion: bool | torch.Tensor | None = None,
+        view_points=_VIEW_POINTS_UNSET,
     ) -> torch.Tensor:
         if x.dim() != 3 or x.shape[-1] != 3:
             raise ValueError(
@@ -467,8 +479,9 @@ class VICRegLoss(nn.Module):
                 name="apply_occlusion",
             )
 
-        if self.view_points is not None:
-            x = crop_to_num_points(x, self.view_points)
+        target_view_points = self.view_points if view_points is _VIEW_POINTS_UNSET else view_points
+        if target_view_points is not None:
+            x = crop_to_num_points(x, int(target_view_points))
         x = self._apply_rotation(x)
         x = self._apply_strain(x)
         x = self._apply_masked_occlusion(x, apply_mask=apply_occlusion_mask)

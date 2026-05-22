@@ -16,6 +16,7 @@ from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+from src.data_utils.data_kinds import normalize_data_kind
 from .cluster_profiles import (
     _ALL_PROFILE_PROPERTIES,
     _compute_sample_properties,
@@ -148,6 +149,53 @@ def _build_frame_slices(
             )
         )
     return frames
+
+
+def _select_evenly_spaced_frames(
+    frames: list[FrameSlice],
+    *,
+    max_frame_count: int | None,
+    field_name: str,
+) -> list[FrameSlice]:
+    if not frames:
+        raise ValueError(f"{field_name} cannot select from an empty frame list.")
+    if max_frame_count is None:
+        return list(frames)
+    resolved_count = int(max_frame_count)
+    if resolved_count <= 0:
+        raise ValueError(f"{field_name} must be > 0 when provided, got {max_frame_count}.")
+    if resolved_count >= len(frames):
+        return list(frames)
+    if resolved_count == 1:
+        return [frames[0]]
+    positions = np.rint(
+        np.linspace(0, len(frames) - 1, num=resolved_count)
+    ).astype(int)
+    positions = np.unique(np.clip(positions, 0, len(frames) - 1))
+    if positions.size != resolved_count:
+        raise RuntimeError(
+            "Even frame subsampling produced duplicate positions. "
+            f"field={field_name}, frame_count={len(frames)}, "
+            f"requested={resolved_count}, positions={positions.tolist()}."
+        )
+    return [frames[int(pos)] for pos in positions.tolist()]
+
+
+def _resolve_umap_animation_frame_count(temporal_umap_cfg: Any) -> int | None:
+    raw_value = getattr(temporal_umap_cfg, "animation_frame_count", None)
+    if raw_value is None:
+        raw_value = getattr(temporal_umap_cfg, "frame_count", None)
+    if raw_value is None:
+        return None
+    value = int(raw_value)
+    if value == -1:
+        return None
+    if value <= 0:
+        raise ValueError(
+            "real_md.temporal.umap.animation_frame_count must be -1 to use all "
+            f"frames, or a positive frame cap; got {raw_value!r}."
+        )
+    return value
 
 
 def _normalize_cluster_id_list(value: Any, *, field_name: str) -> list[int]:
@@ -1393,6 +1441,7 @@ def run_real_md_qualitative_analysis(
     temporal_md_animation_coords: np.ndarray | None = None,
     temporal_md_animation_cluster_labels_by_k: dict[int, np.ndarray] | None = None,
     temporal_md_animation_frame_source: str | None = None,
+    temporal_md_animation_spatial_bounds: np.ndarray | None = None,
     temporal_projection_fit_indices: np.ndarray | None = None,
     point_scale: float,
     random_state: int,
@@ -1400,12 +1449,12 @@ def run_real_md_qualitative_analysis(
     selected_k_override: int | None = None,
     output_root_dir: Path | None = None,
 ) -> dict[str, Any]:
-    data_kind = getattr(model_cfg.data, "kind", None)
-    if data_kind not in {"real", "temporal_lammps"}:
+    data_kind = normalize_data_kind(getattr(model_cfg.data, "kind", None))
+    if data_kind not in {"static", "temporal_lammps"}:
         raise ValueError(
             "run_real_md_qualitative_analysis only supports model_cfg.data.kind in "
-            "['real', 'temporal_lammps'], "
-            f"got {data_kind!r}."
+            "['static', 'temporal_lammps'] ('real' is accepted as a legacy alias), "
+            f"got {getattr(model_cfg.data, 'kind', None)!r}."
         )
     if not frame_groups:
         raise ValueError("Real-MD qualitative analysis requires at least one frame group.")
@@ -2037,6 +2086,7 @@ def run_real_md_qualitative_analysis(
                             "diagonal_visible_depth_fraction",
                             0.10,
                         ),
+                        "spatial_bounds": temporal_md_animation_spatial_bounds,
                         "frame_duration_ms": int(frame_duration_ms),
                         "total_duration_seconds": total_duration_seconds,
                     },
@@ -2123,10 +2173,45 @@ def run_real_md_qualitative_analysis(
                     "Temporal UMAP animation requires a fitted transformable projection, "
                     "but no fitted projection state was available."
                 )
+            umap_animation_frame_limit = _resolve_umap_animation_frame_count(
+                temporal_umap_cfg
+            )
+            umap_animation_frames = _select_evenly_spaced_frames(
+                temporal_frames,
+                max_frame_count=umap_animation_frame_limit,
+                field_name="real_md.temporal.umap.animation_frame_count",
+            )
+            if len(umap_animation_frames) < len(temporal_frames):
+                print(
+                    "[analysis][real_md] Temporal UMAP animation frame cap: "
+                    f"{len(umap_animation_frames)}/{len(temporal_frames)} frames."
+                )
+            temporal_summary["umap_animation_frame_count"] = int(
+                len(umap_animation_frames)
+            )
+            temporal_summary["umap_animation_full_frame_count"] = int(
+                len(temporal_frames)
+            )
+            temporal_summary["umap_animation_frame_limit"] = (
+                None
+                if umap_animation_frame_limit is None
+                else int(umap_animation_frame_limit)
+            )
+            temporal_summary["umap_frames"] = [
+                {
+                    "frame_name": str(frame.source_name),
+                    "frame_label": str(frame.label),
+                    "sample_count": int(frame.indices.size),
+                    "render_count": int(
+                        temporal_animation_indices[str(frame.source_name)].size
+                    ),
+                }
+                for frame in umap_animation_frames
+            ]
             all_animation_indices = np.concatenate(
                 [
                     temporal_animation_indices[str(frame.source_name)]
-                    for frame in temporal_frames
+                    for frame in umap_animation_frames
                 ]
             ).astype(int, copy=False)
             if all_animation_indices.size == 0:
@@ -2141,7 +2226,7 @@ def run_real_md_qualitative_analysis(
             )
             temporal_embedding_records: list[dict[str, Any]] = []
             cursor = 0
-            for frame in temporal_frames:
+            for frame in umap_animation_frames:
                 frame_indices = temporal_animation_indices[str(frame.source_name)]
                 next_cursor = cursor + int(frame_indices.size)
                 temporal_embedding_records.append(
@@ -2168,9 +2253,9 @@ def run_real_md_qualitative_analysis(
                         "cluster_display_map": cluster_display_map,
                         "point_size": _cfg_float(temporal_umap_cfg, "point_size", 8.0),
                         "alpha": _cfg_float(temporal_umap_cfg, "alpha", 0.74),
-                            "frame_duration_ms": int(frame_duration_ms),
-                            "total_duration_seconds": total_duration_seconds,
-                            "title": f"{projection_method.upper()} cluster evolution",
+                        "frame_duration_ms": int(frame_duration_ms),
+                        "total_duration_seconds": total_duration_seconds,
+                        "title": f"{projection_method.upper()} cluster evolution",
                     },
                 )
             )
@@ -2182,7 +2267,7 @@ def run_real_md_qualitative_analysis(
                     else int(trajectory_max_points_raw)
                 )
                 trajectory_indices_by_frame, trajectory_instance_ids = _select_temporal_trajectory_sample_indices(
-                    temporal_frames,
+                    umap_animation_frames,
                     labels,
                     instance_ids_arr,
                     max_points=trajectory_max_points,
@@ -2191,7 +2276,7 @@ def run_real_md_qualitative_analysis(
                 trajectory_concat = np.concatenate(
                     [
                         trajectory_indices_by_frame[str(frame.source_name)]
-                        for frame in temporal_frames
+                        for frame in umap_animation_frames
                     ]
                 ).astype(int, copy=False)
                 trajectory_embedding = _transform_projection_features(
@@ -2202,7 +2287,7 @@ def run_real_md_qualitative_analysis(
                 )
                 temporal_trajectory_records: list[dict[str, Any]] = []
                 cursor = 0
-                for frame in temporal_frames:
+                for frame in umap_animation_frames:
                     frame_indices = trajectory_indices_by_frame[str(frame.source_name)]
                     next_cursor = cursor + int(frame_indices.size)
                     temporal_trajectory_records.append(
