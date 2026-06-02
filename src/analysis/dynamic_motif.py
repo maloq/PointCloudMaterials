@@ -111,37 +111,17 @@ def resolve_motif_assignments(
         raise ValueError("Dynamic motif analysis requires at least one cached sample.")
 
     stable_probs = None
-    stable_ids: np.ndarray | None = None
+    if "stable_probs" in cache:
+        stable_probs = np.asarray(cache["stable_probs"], dtype=np.float32)
+
+    stable_ids = None
     if "stable_ids" in cache:
         stable_ids = np.asarray(cache["stable_ids"], dtype=np.int64).reshape(-1)
-    elif "stable_probs" in cache:
-        stable_probs = np.asarray(cache["stable_probs"], dtype=np.float32)
-        if stable_probs.ndim != 2 or stable_probs.shape[0] != int(num_samples):
-            raise ValueError(
-                "cache['stable_probs'] must have shape (N, K), "
-                f"got {tuple(stable_probs.shape)} for N={num_samples}."
-            )
-        stable_ids = stable_probs.argmax(axis=1).astype(np.int64, copy=False)
     elif cluster_labels_fallback is not None:
         stable_ids = np.asarray(cluster_labels_fallback, dtype=np.int64).reshape(-1)
-    else:
-        raise ValueError(
-            "Could not resolve stable motif assignments. "
-            "Cache is missing 'stable_ids'/'stable_probs' and no fallback cluster labels were provided."
-        )
 
-    if stable_ids.shape[0] != int(num_samples):
-        raise ValueError(
-            "Resolved stable motif assignments must align to the sample count. "
-            f"num_samples={num_samples}, stable_ids.shape={tuple(stable_ids.shape)}."
-        )
-    if stable_probs is None and "stable_probs" in cache:
+    if "stable_probs" in cache and stable_probs is None:
         stable_probs = np.asarray(cache["stable_probs"], dtype=np.float32)
-    if stable_probs is not None and (stable_probs.ndim != 2 or stable_probs.shape[0] != int(num_samples)):
-        raise ValueError(
-            "cache['stable_probs'] must have shape (N, K), "
-            f"got {tuple(stable_probs.shape)} for N={num_samples}."
-        )
     if stable_probs is not None:
         stable_confidence = stable_probs.max(axis=1).astype(np.float32, copy=False)
         stable_k = int(stable_probs.shape[1])
@@ -155,11 +135,6 @@ def resolve_motif_assignments(
         bridge_ids = np.asarray(cache["bridge_ids"], dtype=np.int64).reshape(-1)
     elif "bridge_probs" in cache:
         bridge_probs = np.asarray(cache["bridge_probs"], dtype=np.float32)
-        if bridge_probs.ndim != 2 or bridge_probs.shape[0] != int(num_samples):
-            raise ValueError(
-                "cache['bridge_probs'] must have shape (N, K_bridge), "
-                f"got {tuple(bridge_probs.shape)} for N={num_samples}."
-            )
         bridge_ids = bridge_probs.argmax(axis=1).astype(np.int64, copy=False)
     if bridge_probs is None and "bridge_probs" in cache:
         bridge_probs = np.asarray(cache["bridge_probs"], dtype=np.float32)
@@ -217,11 +192,6 @@ def _build_sample_assignments_dataframe(
         if "sample_index" in cache
         else np.arange(num_samples, dtype=np.int64)
     )
-    if sample_index.shape[0] != int(num_samples):
-        raise ValueError(
-            "cache['sample_index'] must align to the sample count. "
-            f"num_samples={num_samples}, sample_index.shape={tuple(sample_index.shape)}."
-        )
     resolved_family = np.where(bundle.bridge_active, "bridge", "stable")
     resolved_motif_id = np.where(
         bundle.bridge_active,
@@ -308,25 +278,9 @@ def _path_relative_to(base_dir: Path, path: Path | None) -> str | None:
 
 
 def _equidistant_selection_indices(*, num_items: int, num_selected: int) -> np.ndarray:
-    if num_items <= 0:
-        raise ValueError(f"num_items must be > 0, got {num_items}.")
-    if num_selected <= 0:
-        raise ValueError(f"num_selected must be > 0, got {num_selected}.")
-    if num_selected > num_items:
-        raise ValueError(
-            f"num_selected ({num_selected}) cannot exceed num_items ({num_items})."
-        )
-    if num_selected == 1:
-        return np.asarray([0], dtype=np.int64)
     raw = np.linspace(0, num_items - 1, num=num_selected, dtype=np.float64)
     rounded = np.rint(raw).astype(np.int64)
     unique = np.unique(rounded)
-    if unique.size != num_selected:
-        raise RuntimeError(
-            "Equidistant selection produced duplicate indices. "
-            f"num_items={num_items}, num_selected={num_selected}, raw={raw.tolist()}, "
-            f"rounded={rounded.tolist()}."
-        )
     return unique.astype(np.int64, copy=False)
 
 
@@ -342,49 +296,18 @@ def _remove_existing_transition_snapshot_flow_artifacts(transitions_dir: Path) -
             path.unlink()
 
 
-def _resolve_transition_snapshot_anchors(
+def _build_snapshot_flow_anchors(
     sample_df: pd.DataFrame,
     *,
     num_flow_charts: int,
 ) -> list[dict[str, Any]]:
-    if int(num_flow_charts) <= 0:
-        raise ValueError(
-            "num_flow_charts must be > 0 for snapshot transition flows, "
-            f"got {num_flow_charts}."
-        )
-    required = {"frame_index", "timestep"}
-    missing = sorted(required.difference(sample_df.columns))
-    if missing:
-        raise KeyError(
-            "Transition snapshot anchors require sample_df columns "
-            f"{sorted(required)}, missing {missing}."
-        )
-
+    required = {"frame_index", "time_value"}
     frame_table = (
-        sample_df.loc[:, ["frame_index", "timestep"]]
-        .drop_duplicates()
-        .sort_values(["frame_index", "timestep"])
-        .reset_index(drop=True)
+        sample_df[["frame_index", "time_value"]]
+        .groupby("frame_index", as_index=False)
+        .mean()
+        .sort_values("frame_index")
     )
-    duplicate_frame_counts = frame_table["frame_index"].value_counts()
-    conflicting_frames = sorted(
-        int(frame_index)
-        for frame_index, count in duplicate_frame_counts.items()
-        if int(count) > 1
-    )
-    if conflicting_frames:
-        raise ValueError(
-            "Transition snapshot flow anchors found multiple timestep values for the same frame index. "
-            f"Conflicting frame indices: {conflicting_frames[:10]}."
-        )
-
-    anchor_count = int(num_flow_charts) + 1
-    if frame_table.shape[0] < anchor_count:
-        raise ValueError(
-            "Not enough unique frames to render the requested number of transition snapshot flows. "
-            f"unique_frames={int(frame_table.shape[0])}, requested_flows={int(num_flow_charts)}, "
-            f"required_anchor_frames={anchor_count}."
-        )
 
     anchor_positions = _equidistant_selection_indices(
         num_items=int(frame_table.shape[0]),
@@ -394,70 +317,35 @@ def _resolve_transition_snapshot_anchors(
     return [
         {
             "frame_index": int(row.frame_index),
-            "timestep": None if pd.isna(row.timestep) else int(row.timestep),
+            "timestep": None if pd.isna(row.time_value) else int(row.time_value),
             "label": _format_transition_snapshot_label(
                 frame_index=int(row.frame_index),
-                timestep=None if pd.isna(row.timestep) else int(row.timestep),
+                timestep=None if pd.isna(row.time_value) else int(row.time_value),
             ),
         }
         for row in anchors.itertuples(index=False)
     ]
 
 
-def _build_transition_snapshot_counts(
+def _build_snapshot_transition_flow_counts(
     sample_df: pd.DataFrame,
     *,
     frame_index_from: int,
     frame_index_to: int,
-) -> pd.DataFrame:
-    required = {
-        "source_path",
-        "center_atom_id",
-        "frame_index",
-        "resolved_family",
-        "resolved_motif_id",
-        "resolved_state_label",
-    }
-    missing = sorted(required.difference(sample_df.columns))
-    if missing:
-        raise KeyError(
-            "Transition snapshot flow counts require sample_df columns "
-            f"{sorted(required)}, missing {missing}."
-        )
-
-    pair_columns = [
-        "source_path",
-        "center_atom_id",
-        "resolved_family",
-        "resolved_motif_id",
-        "resolved_state_label",
-    ]
-    left = sample_df.loc[
-        sample_df["frame_index"] == int(frame_index_from),
-        pair_columns,
+) -> tuple[np.ndarray, list[int], list[int]]:
+    left = sample_df[sample_df["frame_index"] == int(frame_index_from)][
+        ["instance_id", "stable_id"]
     ].copy()
-    right = sample_df.loc[
-        sample_df["frame_index"] == int(frame_index_to),
-        pair_columns,
+    right = sample_df[sample_df["frame_index"] == int(frame_index_to)][
+        ["instance_id", "stable_id"]
     ].copy()
-    if left.empty or right.empty:
-        raise ValueError(
-            "Transition snapshot flow pair is missing one of the requested anchor frames. "
-            f"frame_index_from={int(frame_index_from)}, left_rows={int(left.shape[0])}, "
-            f"frame_index_to={int(frame_index_to)}, right_rows={int(right.shape[0])}."
-        )
-
-    merged = left.merge(
+    merged = pd.merge(
+        left,
         right,
-        on=["source_path", "center_atom_id"],
+        on="instance_id",
         how="inner",
         suffixes=("_from", "_to"),
     )
-    if merged.empty:
-        raise ValueError(
-            "Transition snapshot flow pair has no overlapping tracked centers between anchor frames. "
-            f"frame_index_from={int(frame_index_from)}, frame_index_to={int(frame_index_to)}."
-        )
 
     counts = (
         merged.groupby(

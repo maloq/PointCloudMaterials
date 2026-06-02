@@ -41,30 +41,6 @@ class SwAVLoss(nn.Module):
         self.view_mode = str(view_mode).strip().lower()
         self.view_points = int(view_points) if view_points is not None else None
 
-        if self.weight < 0.0:
-            raise ValueError(f"swav_weight must be >= 0, got {self.weight}.")
-        if self.projection_dim <= 0:
-            raise ValueError(f"swav_projection_dim must be > 0, got {self.projection_dim}.")
-        if self.hidden_dim < 0:
-            raise ValueError(f"swav_hidden_dim must be >= 0, got {self.hidden_dim}.")
-        if self.num_prototypes <= 0:
-            raise ValueError(f"swav_num_prototypes must be > 0, got {self.num_prototypes}.")
-        if self.temperature <= 0.0:
-            raise ValueError(f"swav_temperature must be > 0, got {self.temperature}.")
-        if self.epsilon <= 0.0:
-            raise ValueError(f"swav_epsilon must be > 0, got {self.epsilon}.")
-        if self.sinkhorn_iterations <= 0:
-            raise ValueError(
-                f"swav_sinkhorn_iterations must be > 0, got {self.sinkhorn_iterations}."
-            )
-        valid_view_modes = {"center_adjacent", "center_prev_next", "adjacent"}
-        if self.view_mode not in valid_view_modes:
-            raise ValueError(
-                f"swav_view_mode must be one of {sorted(valid_view_modes)}, got {self.view_mode!r}."
-            )
-        if self.view_points is not None and self.view_points <= 0:
-            raise ValueError(f"swav_view_points must be > 0 when set, got {self.view_points}.")
-
         self.projector = None
         self.prototypes = None
         if self.enabled and self.weight > 0.0:
@@ -162,16 +138,7 @@ class SwAVLoss(nn.Module):
 
     @torch.no_grad()
     def _sinkhorn(self, logits: torch.Tensor, *, iterations: int | None = None) -> torch.Tensor:
-        if logits.dim() != 2:
-            raise ValueError(f"SwAV Sinkhorn expects logits with shape (B, K), got {tuple(logits.shape)}.")
-        if int(logits.shape[1]) != self.num_prototypes:
-            raise ValueError(
-                "SwAV Sinkhorn prototype dimension mismatch: "
-                f"expected K={self.num_prototypes}, got logits.shape={tuple(logits.shape)}."
-            )
         sinkhorn_iterations = self.sinkhorn_iterations if iterations is None else int(iterations)
-        if sinkhorn_iterations <= 0:
-            raise ValueError(f"SwAV Sinkhorn iterations must be > 0, got {sinkhorn_iterations}.")
 
         scores = logits.detach().to(dtype=torch.float32) / self.epsilon
         max_score = scores.max()
@@ -206,25 +173,8 @@ class SwAVLoss(nn.Module):
     ):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
-        if len(view_features) < 2:
-            raise ValueError(f"SwAV requires at least two views, got {len(view_features)}.")
 
         batch_size = int(view_features[0].shape[0])
-        for view_idx, features in enumerate(view_features):
-            if features.dim() != 2:
-                raise ValueError(
-                    f"SwAV view {view_idx} features must have shape (B, D), got {tuple(features.shape)}."
-                )
-            if int(features.shape[0]) != batch_size:
-                raise ValueError(
-                    "SwAV views must share a batch dimension, "
-                    f"view0_batch={batch_size}, view{view_idx}_batch={int(features.shape[0])}."
-                )
-            if self.input_dim is not None and int(features.shape[1]) != self.input_dim:
-                raise ValueError(
-                    "SwAV feature dimension mismatch: "
-                    f"expected D={self.input_dim}, got view{view_idx}.shape={tuple(features.shape)}."
-                )
 
         self.normalize_prototypes()
         logits_by_view = [self._prototype_logits(features) for features in view_features]
@@ -261,16 +211,6 @@ class SwAVLoss(nn.Module):
         return loss, metrics
 
     def forward(self, features: torch.Tensor, *, profile_logits: bool = False) -> torch.Tensor:
-        if not profile_logits:
-            raise RuntimeError(
-                "SwAVLoss.forward is reserved for PyTorch Lightning model-summary FLOP profiling. "
-                "Use SwAVLoss.compute_loss(...) during training."
-            )
-        if features.dim() != 2:
-            raise ValueError(
-                "SwAV logits FLOP profiling expects feature tensor with shape (B, D), "
-                f"got {tuple(features.shape)}."
-            )
         return self._prototype_logits(features)
 
 

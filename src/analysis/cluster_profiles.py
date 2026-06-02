@@ -81,16 +81,7 @@ def _safe_xyz(points: np.ndarray) -> np.ndarray:
 
 
 def _extract_points_from_item(item: Any) -> torch.Tensor:
-    if isinstance(item, dict):
-        if "points" not in item:
-            raise KeyError("Batch dict is missing required key 'points'")
-        points = item["points"]
-    elif torch.is_tensor(item):
-        points = item
-    elif isinstance(item, (tuple, list)) and len(item) > 0:
-        points = item[0]
-    else:
-        raise TypeError(f"Unsupported sample type: {type(item)!r}")
+    points = item["points"]
     if not torch.is_tensor(points):
         points = torch.as_tensor(points)
     return points

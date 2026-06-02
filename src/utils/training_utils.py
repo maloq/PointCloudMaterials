@@ -232,20 +232,13 @@ def unpack_batch(batch) -> Tuple[torch.Tensor, Dict[str, Any]]:
     Returns:
         Tuple of (point_clouds, meta_dict)
     """
-    if isinstance(batch, dict):
-        pc = batch["points"]
-        meta = {
-            "class_id": batch.get("class_id"),
-            "instance_id": batch.get("instance_id"),
-            "rotation": batch.get("rotation"),
-        }
-        return pc, meta
-    
-    if not isinstance(batch, (tuple, list)):
-        return batch, {}
-
-    # Fallback for legacy tuple format
-    return batch[0], {}
+    pc = batch["points"]
+    meta = {
+        "class_id": batch.get("class_id"),
+        "instance_id": batch.get("instance_id"),
+        "rotation": batch.get("rotation"),
+    }
+    return pc, meta
 
 
 # ============================================================================

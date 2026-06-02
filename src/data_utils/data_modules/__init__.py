@@ -1,9 +1,7 @@
-from src.data_utils.data_modules import (
-    PointCloudDataModule,
-    RealPointCloudDataModule,
-    StaticPointCloudDataModule,
-    SynthPointCloudDataModule,
-    SyntheticPointCloudDataModule,
+from src.data_utils.data_modules.registry import PointCloudDataModule
+from src.data_utils.data_modules.static import RealPointCloudDataModule, StaticPointCloudDataModule
+from src.data_utils.data_modules.synthetic import SynthPointCloudDataModule, SyntheticPointCloudDataModule
+from src.data_utils.data_modules.temporal_lammps import (
     TemporalLAMMPSDataModule,
     TemporalPointCloudDataModule,
 )

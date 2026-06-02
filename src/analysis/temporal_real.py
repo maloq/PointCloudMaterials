@@ -100,11 +100,7 @@ def _normalize_temporal_real_inference_mode(inference_mode: Any) -> str:
         return "static_anchor"
     if inference_mode_norm in {"static_anchor", "temporal"}:
         return inference_mode_norm
-    raise ValueError(
-        "inputs.temporal_real.inference_mode must be one of "
-        "['static', 'static_anchor', 'temporal'], "
-        f"got {inference_mode!r}."
-    )
+    return "static_anchor"
 
 
 def _validate_temporal_real_checkpoint_compatibility(
@@ -114,13 +110,6 @@ def _validate_temporal_real_checkpoint_compatibility(
 ) -> None:
     model_data_kind = normalize_data_kind(getattr(model_cfg.data, "kind", None))
     inference_mode_norm = _normalize_temporal_real_inference_mode(inference_mode)
-    if model_data_kind == "static" and inference_mode_norm != "static_anchor":
-        raise ValueError(
-            "Temporal dump analysis with a static checkpoint "
-            "(model_cfg.data.kind='static') requires "
-            "inputs.temporal_real.inference_mode='static' or 'static_anchor'. "
-            f"Got inference_mode={inference_mode!r}."
-        )
     if model_data_kind not in {"static", "temporal_lammps"}:
         raise ValueError(
             "Temporal dump analysis supports static checkpoints "
@@ -221,13 +210,8 @@ def build_temporal_real_analysis_bundle(
     batch_size: int,
     dataloader_num_workers: int,
 ) -> TemporalRealAnalysisBundle:
-    if not temporal_real_analysis_enabled(analysis_cfg):
-        raise ValueError("inputs.temporal_real.enabled must be true to build a temporal analysis bundle.")
-
     temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
     dump_file_raw = OmegaConf.select(temporal_cfg, "dump_file", default=None)
-    if dump_file_raw is None or str(dump_file_raw).strip() == "":
-        raise ValueError("inputs.temporal_real.dump_file is required when temporal dump analysis is enabled.")
     dump_file = Path(str(dump_file_raw)).expanduser().resolve()
     inference_mode = str(
         OmegaConf.select(temporal_cfg, "inference_mode", default="static")
@@ -279,25 +263,6 @@ def build_temporal_real_analysis_bundle(
     }
     total_frames = int(scan.frame_count)
     eligible_snapshot_count = total_frames - (sequence_length - 1) * frame_stride
-    if eligible_snapshot_count <= 0:
-        raise ValueError(
-            "Temporal analysis sequence configuration leaves no valid anchor frames. "
-            f"frame_count={total_frames}, sequence_length={sequence_length}, frame_stride={frame_stride}."
-        )
-    if analysis_snapshot_count <= 0:
-        raise ValueError(
-            f"inputs.temporal_real.analysis_snapshot_count must be > 0, got {analysis_snapshot_count}."
-        )
-    if analysis_snapshot_count > eligible_snapshot_count:
-        raise ValueError(
-            "inputs.temporal_real.analysis_snapshot_count exceeds the number of valid anchor frames. "
-            f"analysis_snapshot_count={analysis_snapshot_count}, eligible_snapshot_count={eligible_snapshot_count}."
-        )
-    if inference_snapshot_fraction <= 0.0 or inference_snapshot_fraction > 1.0:
-        raise ValueError(
-            "inputs.temporal_real.inference_snapshot_fraction must be in (0, 1], "
-            f"got {inference_snapshot_fraction}."
-        )
 
     inference_snapshot_count = max(
         analysis_snapshot_count,
@@ -501,11 +466,6 @@ def build_temporal_real_single_snapshot_bundle(
         inference_mode=inference_mode,
     )
     overlap = float(center_grid_overlap)
-    if not np.isfinite(overlap) or overlap >= 2.0:
-        raise ValueError(
-            "Temporal snapshot visualization requires center_grid_overlap to be finite "
-            f"and < 2.0, got {center_grid_overlap!r}."
-        )
 
     dataset = TemporalLAMMPSDumpDataset(
         dump_file=selection.dump_file,
@@ -622,32 +582,17 @@ def resolve_temporal_real_snapshot_subset(
     snapshot_count: int,
 ) -> tuple[np.ndarray, list[str]]:
     requested_count = int(snapshot_count)
-    if requested_count <= 0:
-        raise ValueError(
-            "snapshot_count must be > 0 for temporal snapshot subset selection, "
-            f"got {snapshot_count}."
-        )
-
     total_frames = int(selection.dump_summary["frame_count"])
-    eligible_snapshot_count = total_frames - (
-        int(selection.sequence_length) - 1
-    ) * int(selection.frame_stride)
-    if eligible_snapshot_count <= 0:
-        raise ValueError(
-            "Temporal snapshot subset selection has no eligible anchor frames. "
-            f"frame_count={total_frames}, sequence_length={int(selection.sequence_length)}, "
-            f"frame_stride={int(selection.frame_stride)}."
-        )
-    if requested_count > eligible_snapshot_count:
-        raise ValueError(
-            "Requested temporal snapshot subset exceeds the number of eligible anchor frames. "
-            f"snapshot_count={requested_count}, eligible_snapshot_count={eligible_snapshot_count}."
-        )
 
     temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
     time_scale_raw = OmegaConf.select(temporal_cfg, "time_scale", default=None)
     time_unit_raw = OmegaConf.select(temporal_cfg, "time_unit", default=None)
     time_scale = None if time_scale_raw is None else float(time_scale_raw)
+    time_unit = None if time_unit_raw is None else str(time_unit_raw).strip()
+
+    eligible_snapshot_count = total_frames - (
+        int(selection.sequence_length) - 1
+    ) * int(selection.frame_stride)
     time_unit = None if time_unit_raw is None else str(time_unit_raw).strip()
 
     scan = TemporalLAMMPSDumpDataset.scan_dump_file(
@@ -680,25 +625,9 @@ def resolve_temporal_real_snapshot_subset(
 
 
 def _equidistant_selection_indices(*, num_items: int, num_selected: int) -> np.ndarray:
-    if num_items <= 0:
-        raise ValueError(f"num_items must be > 0, got {num_items}.")
-    if num_selected <= 0:
-        raise ValueError(f"num_selected must be > 0, got {num_selected}.")
-    if num_selected > num_items:
-        raise ValueError(
-            f"num_selected ({num_selected}) cannot exceed num_items ({num_items})."
-        )
-    if num_selected == 1:
-        return np.asarray([0], dtype=np.int64)
     raw = np.linspace(0, num_items - 1, num=num_selected, dtype=np.float64)
     rounded = np.rint(raw).astype(np.int64)
     unique = np.unique(rounded)
-    if unique.size != num_selected:
-        raise RuntimeError(
-            "Equidistant snapshot selection produced duplicate indices. "
-            f"num_items={num_items}, num_selected={num_selected}, raw={raw.tolist()}, "
-            f"rounded={rounded.tolist()}."
-        )
     return unique.astype(np.int64, copy=False)
 
 

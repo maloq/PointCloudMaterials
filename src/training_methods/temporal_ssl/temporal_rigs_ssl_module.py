@@ -4,7 +4,6 @@ import torch
 
 from src.training_methods.temporal_ssl.temporal_ssl_module import TemporalSSLModule
 from src.utils.pointcloud_ops import shift_to_neighbor
-from src.utils.training_utils import cached_sample_count
 
 
 class TemporalRIGSSSLModule(TemporalSSLModule):
@@ -236,9 +235,7 @@ class TemporalRIGSSSLModule(TemporalSSLModule):
         ):
             center_encoder_input = self._graph_frame(batch, self.center_frame_index)
 
-        should_cache_stage = stage in self._supervised_cache and (
-            stage != "train" or self.cache_train_supervised_metrics
-        )
+        should_cache_stage = self._should_cache_supervised_stage(stage)
         should_run_vicreg = self.vicreg.should_run(current_epoch=int(self.current_epoch))
         should_run_swav = self.swav.should_run(current_epoch=int(self.current_epoch))
 
@@ -299,73 +296,20 @@ class TemporalRIGSSSLModule(TemporalSSLModule):
             for name, value in swav_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
-        total_loss = None
-        if "vicreg" in losses:
-            vicreg_total = self.vicreg.weight * losses["vicreg"]
-            total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
-        if "swav" in losses:
-            swav_total = self.swav.weight * losses["swav"]
-            total_loss = swav_total if total_loss is None else total_loss + swav_total
-        if total_loss is None:
-            total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
-
-        if stage != "train" and batch_idx == 0:
-            parts = [f"[{stage}-diag] epoch={self.current_epoch} batch_idx=0"]
-            for k, v in losses.items():
-                parts.append(f"{k}={v.item():.6f}")
-            parts.append(f"total={total_loss.item():.6f}")
-            parts.append(f"active_losses={list(losses.keys())}")
-            self._status_print(" | ".join(parts))
-
-        if not torch.isfinite(total_loss).item():
-            self._consecutive_nan_steps += 1
-            self._log_metric(
-                stage,
-                "loss_nonfinite",
-                1.0,
-                on_step=True,
-                on_epoch=False,
-                batch_size=batch_size,
-            )
-            if self._consecutive_nan_steps >= self._max_consecutive_nan_steps:
-                raise RuntimeError(
-                    f"Training produced {self._consecutive_nan_steps} consecutive "
-                    f"non-finite losses. Halting to prevent silent divergence."
-                )
-            total_loss = torch.nan_to_num(total_loss, nan=0.0, posinf=0.0, neginf=0.0)
-        else:
-            self._consecutive_nan_steps = 0
-
-        metrics_to_log = {"loss": total_loss}
-        if "vicreg" in losses:
-            metrics_to_log["vicreg"] = losses["vicreg"]
-        if "swav" in losses:
-            metrics_to_log["swav"] = losses["swav"]
-
-        prog_bar_keys = {"loss"}
-        for name, value in metrics_to_log.items():
-            self._log_metric(
-                stage,
-                name,
-                value,
-                prog_bar=(name in prog_bar_keys),
-                batch_size=batch_size,
-            )
-
         if should_cache_stage:
-            limit = self._cache_limit_for_stage(stage)
-            cache = self._supervised_cache.get(stage)
-            already_cached = cached_sample_count(cache) if cache is not None else 0
-            if limit is None or already_cached < limit:
-                if center_embeddings is not None:
-                    self._cache_supervised_batch(
-                        stage,
-                        center_embeddings,
-                        meta,
-                        encoder_features=center_embeddings,
-                    )
+            self._cache_supervised_embeddings_if_needed(
+                stage=stage,
+                meta=meta,
+                embeddings=center_embeddings,
+            )
 
-        return total_loss
+        return self._finish_ssl_step(
+            stage=stage,
+            batch_idx=batch_idx,
+            batch_size=batch_size,
+            losses=losses,
+            print_first_eval_batch=True,
+        )
 
 
 __all__ = ["TemporalRIGSSSLModule"]

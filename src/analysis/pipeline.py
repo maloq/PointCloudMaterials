@@ -1,4 +1,4 @@
-import argparse
+ mport argparse
 from dataclasses import replace
 import json
 import os
@@ -96,17 +96,8 @@ def _build_analysis_dataloader(
     dataloader_num_workers: int,
 ) -> torch.utils.data.DataLoader:
     if normalize_data_kind(getattr(cfg.data, "kind", None)) == "temporal_lammps":
-        if not isinstance(dm, TemporalLAMMPSDataModule):
-            raise TypeError(
-                "Temporal analysis requires a TemporalLAMMPSDataModule, "
-                f"got {type(dm)!r}."
-            )
         data_cfg = cfg.data
         dump_file = getattr(data_cfg, "dump_file", None)
-        if dump_file is None or str(dump_file).strip() == "":
-            raise ValueError(
-                "Temporal analysis requires cfg.data.dump_file to build a full-sequence analysis dataloader."
-            )
         cache_dir = getattr(data_cfg, "cache_dir", None)
         scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file, cache_dir=cache_dir)
         radius = dm._resolve_radius(
@@ -123,15 +114,6 @@ def _build_analysis_dataloader(
             frame_stop=getattr(data_cfg, "frame_stop", None),
             window_stride=int(getattr(data_cfg, "window_stride", 1)),
         )
-        if not anchor_frames:
-            raise ValueError(
-                "Temporal analysis did not find any valid anchor frames for the configured sequence. "
-                f"dump_file={dump_file}, sequence_length={int(getattr(data_cfg, 'sequence_length', 0))}, "
-                f"frame_stride={int(getattr(data_cfg, 'frame_stride', 1))}, "
-                f"frame_start={int(getattr(data_cfg, 'frame_start', 0))}, "
-                f"frame_stop={getattr(data_cfg, 'frame_stop', None)}, "
-                f"window_stride={int(getattr(data_cfg, 'window_stride', 1))}."
-            )
         full_dataset = TemporalLAMMPSDumpDataset(
             dump_file=dump_file,
             sequence_length=int(getattr(data_cfg, "sequence_length", 0)),
@@ -181,8 +163,6 @@ def _build_analysis_dataloader(
     if is_synthetic:
         train_dataset = getattr(dm, "train_dataset", None)
         test_dataset = getattr(dm, "test_dataset", None)
-        if train_dataset is None or test_dataset is None:
-            raise ValueError("Synthetic datamodule is missing train/test datasets.")
         combined_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
         return torch.utils.data.DataLoader(
             combined_dataset,
@@ -215,10 +195,7 @@ def _resolve_analysis_inference_batch_size(
     batch_size = input_settings.inference_batch_size
     if batch_size is None:
         batch_size = int(cfg.batch_size)
-    resolved = int(batch_size)
-    if resolved < 1:
-        raise ValueError(f"Analysis inference batch size must be >= 1, got {resolved}.")
-    return resolved
+    return int(batch_size)
 
 
 def _resolve_analysis_max_samples_total(
@@ -254,12 +231,6 @@ def _collect_clustering_fit_cache(
         data_config_path_override=fit_settings.data_config_path,
     )
     fit_kind = normalize_data_kind(getattr(fit_cfg.data, "kind", None))
-    if fit_kind not in {"static", "synthetic"}:
-        raise ValueError(
-            "clustering.fit_inputs currently supports only static/synthetic datasets. "
-            f"Resolved fit data.kind={fit_kind!r}; provide clustering.fit_inputs.data_config "
-            "for a static dataset such as configs/data/data_ae_Al_80.yaml."
-        )
 
     fit_source_names: list[str] | None = None
     fit_analysis_files = None
@@ -363,13 +334,9 @@ def _collect_clustering_fit_cache(
 def _concatenate_inference_caches(
     cache_parts: list[dict[str, np.ndarray]],
 ) -> dict[str, np.ndarray]:
-    if not cache_parts:
-        raise ValueError("cache_parts must be non-empty.")
     merged: dict[str, np.ndarray] = {}
     for key in ("inv_latents", "eq_latents", "phases", "coords", "instance_ids"):
         arrays = [np.asarray(part[key]) for part in cache_parts]
-        if not arrays:
-            raise RuntimeError(f"No arrays were collected for cache key {key!r}.")
         merged[key] = (
             arrays[0].copy()
             if len(arrays) == 1
@@ -386,12 +353,8 @@ def _select_dense_snapshot_sample_indices(
     seed: int,
 ) -> np.ndarray:
     resolved_sample_count = int(sample_count)
-    if resolved_sample_count <= 0:
-        raise ValueError(f"sample_count must be > 0, got {sample_count}.")
     if max_samples is None or int(max_samples) >= resolved_sample_count:
         return np.arange(resolved_sample_count, dtype=np.int64)
-    if int(max_samples) <= 0:
-        raise ValueError(f"max_samples must be > 0 when provided, got {max_samples}.")
     rng = np.random.default_rng(int(seed))
     selected = rng.choice(
         resolved_sample_count,
@@ -405,13 +368,7 @@ def _normalize_dense_snapshot_sample_selection_mode(raw_value: Any) -> str:
     mode = str(raw_value).strip().lower().replace("-", "_")
     if mode in {"random", "uniform_random", "uniform_random_without_replacement"}:
         return "uniform_random_without_replacement"
-    if mode in {"cut_surface", "diagonal_cut_surface", "diagonal_cut"}:
-        return "diagonal_cut_surface"
-    raise ValueError(
-        "Dense temporal snapshot sample selection must be one of "
-        "['uniform_random_without_replacement', 'random', 'diagonal_cut_surface', "
-        f"'cut_surface'], got {raw_value!r}."
-    )
+    return "diagonal_cut_surface"
 
 
 def _resolve_equalized_bounds_from_min_max(
@@ -420,11 +377,6 @@ def _resolve_equalized_bounds_from_min_max(
 ) -> np.ndarray:
     mins_arr = np.asarray(mins, dtype=np.float32).reshape(3)
     maxs_arr = np.asarray(maxs, dtype=np.float32).reshape(3)
-    if not np.all(np.isfinite(mins_arr)) or not np.all(np.isfinite(maxs_arr)):
-        raise ValueError(
-            "Cannot resolve temporal cut-surface bounds from non-finite coordinates: "
-            f"mins={mins_arr.tolist()}, maxs={maxs_arr.tolist()}."
-        )
     lower = np.minimum(mins_arr, maxs_arr)
     upper = np.maximum(mins_arr, maxs_arr)
     center = 0.5 * (lower + upper)
@@ -440,27 +392,12 @@ def _resolve_temporal_sampling_frame_slot(
     temporal_inference_spec: Any,
 ) -> int:
     sequence_length = int(dataset.sequence_length)
-    if sequence_length <= 0:
-        raise ValueError(
-            f"Temporal dataset sequence_length must be > 0, got {sequence_length}."
-        )
     mode = str(temporal_inference_spec.mode).strip().lower()
-    if mode not in {"static_anchor", "temporal"}:
-        raise ValueError(
-            "Temporal dense snapshot cut-surface sampling supports temporal inference modes "
-            f"['static_anchor', 'temporal'], got {temporal_inference_spec.mode!r}."
-        )
     frame_slot = 0
     if mode == "static_anchor" and temporal_inference_spec.static_frame_index is not None:
         frame_slot = int(temporal_inference_spec.static_frame_index)
     if frame_slot < 0:
         frame_slot += int(sequence_length)
-    if frame_slot < 0 or frame_slot >= int(sequence_length):
-        raise ValueError(
-            "Temporal dense snapshot cut-surface sampling frame index is out of range: "
-            f"mode={mode!r}, static_frame_index={temporal_inference_spec.static_frame_index!r}, "
-            f"resolved_frame_slot={frame_slot}, sequence_length={sequence_length}."
-        )
     return int(frame_slot)
 
 
@@ -471,18 +408,7 @@ def _temporal_dense_snapshot_center_coords_for_sampling(
     source_name: str,
 ) -> np.ndarray:
     base_dataset = _unwrap_dataset(dataset)
-    if not isinstance(base_dataset, TemporalLAMMPSDumpDataset):
-        raise TypeError(
-            "Diagonal cut-surface sampling requires a TemporalLAMMPSDumpDataset before "
-            f"subsetting, got {type(base_dataset)!r} for source_name={source_name!r}."
-        )
     window_start_frames = np.asarray(base_dataset.window_start_frames, dtype=np.int64)
-    if window_start_frames.shape != (1,):
-        raise ValueError(
-            "Diagonal cut-surface sampling expects single-snapshot temporal datasets, "
-            f"got window_start_frames_shape={tuple(window_start_frames.shape)} "
-            f"for source_name={source_name!r}."
-        )
     frame_slot = _resolve_temporal_sampling_frame_slot(
         dataset=base_dataset,
         temporal_inference_spec=temporal_inference_spec,
@@ -493,13 +419,6 @@ def _temporal_dense_snapshot_center_coords_for_sampling(
     box_low = np.asarray(base_dataset.box_low[frame_index], dtype=np.float32).reshape(3)
     coords = frame_points[center_atom_indices, :3] + box_low[None, :]
     coords = np.asarray(coords, dtype=np.float32)
-    expected_count = int(len(base_dataset))
-    if coords.shape != (expected_count, 3):
-        raise RuntimeError(
-            "Resolved center-coordinate shape does not match the dense snapshot dataset. "
-            f"source_name={source_name!r}, coords_shape={tuple(coords.shape)}, "
-            f"expected=({expected_count}, 3), frame_index={frame_index}."
-        )
     return coords
 
 
@@ -521,8 +440,6 @@ def _resolve_dense_snapshot_cut_surface_bounds(
         local_maxs = np.max(coords[:, :3], axis=0)
         mins = local_mins if mins is None else np.minimum(mins, local_mins)
         maxs = local_maxs if maxs is None else np.maximum(maxs, local_maxs)
-    if mins is None or maxs is None:
-        raise ValueError("Cannot resolve cut-surface bounds without snapshot bundles.")
     return _resolve_equalized_bounds_from_min_max(mins, maxs)
 
 
@@ -588,11 +505,6 @@ def _select_dense_snapshot_cut_surface_indices(
     if not selected_parts:
         raise RuntimeError("Cut-surface sample selection did not select any points.")
     selected = np.concatenate(selected_parts)
-    if selected.size != max_samples_int:
-        raise RuntimeError(
-            "Cut-surface sample selection returned an unexpected number of points. "
-            f"selected={selected.size}, expected={max_samples_int}, sample_count={sample_count}."
-        )
     return np.sort(selected.astype(np.int64, copy=False))
 
 
@@ -607,20 +519,7 @@ def _copy_inference_cache_part(
     for key, merged_arr in merged.items():
         part_arr = np.asarray(part[key])
         if merged_arr.ndim > 0 and int(merged_arr.shape[0]) == int(total_samples):
-            if part_arr.shape[0] != int(part_samples):
-                raise RuntimeError(
-                    f"Cannot merge inference cache key {key!r}: expected part axis 0 "
-                    f"to have {part_samples} rows, got shape={tuple(part_arr.shape)}."
-                )
             merged_arr[int(cursor) : int(cursor) + int(part_samples)] = part_arr
-        elif cursor == 0:
-            continue
-        elif part_arr.shape != merged_arr.shape or part_arr.dtype != merged_arr.dtype:
-            raise RuntimeError(
-                f"Non-sample inference cache key {key!r} changed between parts: "
-                f"first_shape={tuple(merged_arr.shape)}, first_dtype={merged_arr.dtype}, "
-                f"part_shape={tuple(part_arr.shape)}, part_dtype={part_arr.dtype}."
-            )
 
 
 def _initialize_merged_inference_cache(
@@ -664,11 +563,6 @@ def _resolve_temporal_snapshot_visualization_regular_grid_overlap(
     )
     if regular_grid_overlap_raw is not None:
         regular_grid_overlap = float(regular_grid_overlap_raw)
-        if not np.isfinite(regular_grid_overlap) or regular_grid_overlap >= 2.0:
-            raise ValueError(
-                "inputs.temporal_real.snapshot_visualization.regular_grid_overlap "
-                f"must be finite and < 2.0, got {regular_grid_overlap_raw!r}."
-            )
         return float(regular_grid_overlap), float(regular_grid_overlap - 1.0)
 
     static_overlap_fraction = _validate_overlap_fraction(

@@ -1,88 +1,42 @@
 import os
-# Hack to fix multi-GPU training on this server (NCCL P2P hang) only node52
-# os.environ["NCCL_P2P_DISABLE"] = "1"
-
 import sys
-import traceback
+
 import hydra
 import torch
-from omegaconf import DictConfig, ListConfig
-from pytorch_lightning.utilities.rank_zero import rank_zero_only
+from omegaconf import DictConfig
 
 sys.path.append(os.getcwd())
-from src.utils.logging_config import setup_logging
-from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
-from src.training_methods.trainer import train_model
 
-torch.set_float32_matmul_precision('high')
-logger = setup_logging()
+from src.training_methods.train_entrypoint import (  # noqa: E402
+    run_post_training_analysis_safe,
+    train as train_registered_method,
+)
 
 
-@rank_zero_only
-def run_post_training_analysis_safe(
-    checkpoint_path: str,
-    output_dir: str,
-    cuda_device: int = 0,
-):
-    """Run post-training analysis with error handling."""
-    try:
-        from src.analysis.pipeline import (
-            run_post_training_analysis,
-        )
-        logger.print("\n" + "=" * 60)
-        logger.print("Starting contrastive analysis...")
-        logger.print("=" * 60)
-
-        run_post_training_analysis(
-            checkpoint_path=checkpoint_path,
-            output_dir=output_dir,
-            cuda_device=cuda_device,
-        )
-
-        logger.print("Post-training analysis completed successfully!")
-    except Exception as e:
-        logger.print(f"\nWarning: Post-training analysis failed with error: {e}")
-        logger.print("Training completed successfully, but analysis could not be run.")
-        traceback.print_exc()
+torch.set_float32_matmul_precision("high")
 
 
 def train(cfg: DictConfig, run_analysis: bool = True):
-    """Contrastive self-supervised training."""
-    run_test = bool(getattr(cfg, "run_test_after_training", True))
-    trainer, model, dm, checkpoint_callbacks = train_model(
+    return train_registered_method(
         cfg,
-        VICRegModule,
-        run_test=run_test,
+        method_name="contrastive",
+        run_analysis=run_analysis,
     )
 
-    run_analysis = bool(getattr(cfg, "run_post_training_analysis", run_analysis))
 
-    if run_analysis:
-        best_ckpt = checkpoint_callbacks[0].best_model_path if checkpoint_callbacks else ""
-        if best_ckpt and os.path.exists(best_ckpt):
-            output_dir = os.path.join(os.path.dirname(best_ckpt), "analysis")
-
-            if isinstance(cfg.devices, ListConfig):
-                cuda_device = list(cfg.devices)[0] if cfg.devices else 0
-            elif isinstance(cfg.devices, (list, tuple)):
-                cuda_device = cfg.devices[0] if cfg.devices else 0
-            else:
-                cuda_device = 0
-
-            run_post_training_analysis_safe(best_ckpt, output_dir, cuda_device)
-        else:
-            logger.print("Warning: No best checkpoint found, skipping post-training analysis")
-
-    return trainer, model, dm, checkpoint_callbacks
-
-
-@hydra.main(version_base=None,
-            config_path=os.path.join(os.getcwd(), 'configs'),
-            config_name='vicreg_vn_molecular_swav.yaml')
+@hydra.main(
+    version_base=None,
+    config_path=os.path.join(os.getcwd(), "configs"),
+    config_name="vicreg_vn_molecular.yaml",
+)
 def main(cfg: DictConfig):
     train(cfg)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     if not any(arg.startswith("hydra.run.dir=") for arg in sys.argv):
-        sys.argv.append('hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}')
+        sys.argv.append("hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}")
     main()
+
+
+__all__ = ["main", "run_post_training_analysis_safe", "train"]

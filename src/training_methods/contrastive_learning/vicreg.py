@@ -81,10 +81,7 @@ class VICRegLoss(nn.Module):
         self.occlusion_slab_frac = float(occlusion_slab_frac)
         self.occlusion_cone_deg = float(occlusion_cone_deg)
         self.occlusion_prob = float(occlusion_prob)
-        if not (0.0 <= self.occlusion_prob <= 1.0):
-            raise ValueError(
-                f"vicreg_occlusion_prob must be in [0, 1], got {self.occlusion_prob}"
-            )
+
         self.std_eps = float(std_eps)
         self.std_target = float(std_target)
         self.radial_enabled = bool(radial_enabled)
@@ -104,10 +101,7 @@ class VICRegLoss(nn.Module):
 
         self.projector = None
         needs_projector = self.enabled and self.weight > 0
-        if projector_input_dim is None:
-            if needs_projector:
-                raise ValueError("VICReg requires latent_size to set projector input dim")
-        elif needs_projector:
+        if projector_input_dim is not None and needs_projector:
             self.projector = nn.Sequential(
                 nn.Linear(projector_input_dim, self.embed_dim, bias=False),
                 nn.BatchNorm1d(self.embed_dim),
@@ -236,18 +230,6 @@ class VICRegLoss(nn.Module):
         )
 
     def forward(self, features: torch.Tensor, *, profile_projector: bool = False) -> torch.Tensor:
-        if not profile_projector:
-            raise RuntimeError(
-                "VICRegLoss.forward is reserved for PyTorch Lightning model-summary FLOP profiling. "
-                "Use VICRegLoss.compute_loss(...) during training."
-            )
-        if self.projector is None:
-            raise RuntimeError("Cannot profile VICReg projector FLOPs because the projector is not initialized.")
-        if features.dim() != 2:
-            raise ValueError(
-                "VICReg projector FLOP profiling expects feature tensor with shape (B, D), "
-                f"got {tuple(features.shape)}."
-            )
         projector_dtype = next(self.projector.parameters()).dtype
         return self.projector(features.to(dtype=projector_dtype))
 
@@ -293,11 +275,6 @@ class VICRegLoss(nn.Module):
 
         if inv_fused is None:
             return None, {}
-        if inv_fused.dim() != 2 or int(inv_fused.shape[0]) != 2 * batch_size:
-            raise ValueError(
-                "VICReg fused invariant features must have shape (2*B, D); "
-                f"got {tuple(inv_fused.shape)} with B={batch_size}."
-            )
         inv_a, inv_b = inv_fused.chunk(2, dim=0)
 
         return self.compute_loss_from_features(
@@ -378,28 +355,13 @@ class VICRegLoss(nn.Module):
         )
 
     @staticmethod
-    def _expand_batch_mask(
-        value: bool | torch.Tensor,
-        *,
-        batch_size: int,
-        device,
-        name: str,
-    ) -> torch.Tensor:
+    def _expand_batch_mask(value: bool | torch.Tensor, *, batch_size: int, device) -> torch.Tensor:
         if isinstance(value, bool):
             return torch.full((batch_size,), value, dtype=torch.bool, device=device)
-        if not torch.is_tensor(value):
-            raise TypeError(f"{name} must be a bool or a torch.Tensor, got {type(value)}.")
-
         mask = value.to(device=device)
         if mask.dim() == 0:
             return torch.full((batch_size,), bool(mask.item()), dtype=torch.bool, device=device)
-
         mask = mask.reshape(-1)
-        if mask.shape[0] != batch_size:
-            raise ValueError(
-                f"{name} must have shape ({batch_size},) when passed per sample, "
-                f"got {tuple(mask.shape)}."
-            )
         if mask.dtype != torch.bool:
             mask = mask != 0
         return mask
@@ -445,25 +407,13 @@ class VICRegLoss(nn.Module):
         apply_occlusion: bool | torch.Tensor | None = None,
         view_points=_VIEW_POINTS_UNSET,
     ) -> torch.Tensor:
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(
-                "apply_view_postprocessing expects a point cloud with shape (B, N, 3), "
-                f"got {tuple(x.shape)}."
-            )
-
         bsz = int(x.shape[0])
         use_neighbor_mask = self._expand_batch_mask(
-            use_neighbor,
-            batch_size=bsz,
-            device=x.device,
-            name="use_neighbor",
+            use_neighbor, batch_size=bsz, device=x.device
         )
         if apply_occlusion is None:
             apply_occlusion_mask = self._expand_batch_mask(
-                self._should_occlude(False),
-                batch_size=bsz,
-                device=x.device,
-                name="apply_occlusion",
+                self._should_occlude(False), batch_size=bsz, device=x.device
             )
             if self.occlusion_view == "first":
                 apply_occlusion_mask = ~use_neighbor_mask
@@ -473,10 +423,7 @@ class VICRegLoss(nn.Module):
                 apply_occlusion_mask = torch.ones((bsz,), dtype=torch.bool, device=x.device)
         else:
             apply_occlusion_mask = self._expand_batch_mask(
-                apply_occlusion,
-                batch_size=bsz,
-                device=x.device,
-                name="apply_occlusion",
+                apply_occlusion, batch_size=bsz, device=x.device
             )
 
         target_view_points = self.view_points if view_points is _VIEW_POINTS_UNSET else view_points

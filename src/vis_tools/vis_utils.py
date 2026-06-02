@@ -92,14 +92,17 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
     
     print("Grouping samples by class...")
     for idx in range(len(dataset)):
-        # dataset[idx] returns (pc, label, class_name)
-        # Optimization: use per-sample class names directly when the dataset exposes them.
-        if hasattr(dataset, 'class_names'):
-            class_name = dataset.class_names[idx]
+        sample = dataset[idx]
+        if "class_name" in sample:
+            class_name = sample["class_name"]
+        elif "class_id" in sample:
+            class_id = int(torch.as_tensor(sample["class_id"]).item())
+            class_names = getattr(dataset, "class_names", None)
+            class_name = class_names.get(class_id, str(class_id)) if hasattr(class_names, "get") else str(class_id)
         elif hasattr(dataset, 'metadata'):
             class_name = dataset.metadata.iloc[idx]['class']
         else:
-            _, _, class_name = dataset[idx]
+            class_name = "unlabeled"
             
         if class_name not in class_indices:
             class_indices[class_name] = []
@@ -118,7 +121,7 @@ def visualize_reconstructions(model, datamodule, save_dir, num_instances=10):
         
         for i, idx in enumerate(selected_indices):
             batch = dataset[idx]
-            pc = batch[0]  # (N, 3)
+            pc = batch["points"]  # (N, 3)
             
             # Prepare batch for model
             pc_batch = pc.unsqueeze(0).to(device)  # (1, N, 3)

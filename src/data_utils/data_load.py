@@ -503,11 +503,10 @@ class PointCloudDataset(Dataset):
         if not self.pre_normalize and self.normalize:
             point_set = pc_normalize(point_set, float(self.sample_radii[index])).astype(np.float32)
         point_set_tensor = torch.tensor(point_set, dtype=torch.float32)
-        
+        sample = {"points": point_set_tensor}
         if self.return_coords:
-            return point_set_tensor, self.coords[index]
-        else:
-            return point_set_tensor
+            sample["coords"] = torch.tensor(self.coords[index], dtype=torch.float32)
+        return sample
 
  
 class SyntheticPointCloudDataset(Dataset):
@@ -1151,9 +1150,8 @@ if __name__ == '__main__':
                          num_points=200)
     
     loader = torch.utils.data.DataLoader(data, batch_size=12, shuffle=True)
-    for i, (point, label) in enumerate(loader):
-        print(point.shape)
-        print(label.shape)
+    for i, batch in enumerate(loader):
+        print(batch["points"].shape)
         if i > 3:
             break
         

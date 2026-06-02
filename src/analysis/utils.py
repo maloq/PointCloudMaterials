@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import Any, Dict, Protocol, Tuple, runtime_checkable
 
 import numpy as np
@@ -51,23 +50,6 @@ def cap_cluster_labels(
     return capped
 
 
-def _looks_like_coords(value: Any) -> bool:
-    if value is None:
-        return False
-    if torch.is_tensor(value):
-        if value.ndim == 1 and value.shape[0] == 3:
-            return True
-        if value.ndim == 2 and value.shape[1] == 3:
-            return True
-        return False
-    if isinstance(value, np.ndarray):
-        if value.ndim == 1 and value.shape[0] == 3:
-            return True
-        if value.ndim == 2 and value.shape[1] == 3:
-            return True
-    return False
-
-
 def _extract_pc_phase_coords(
     batch: Any,
 ) -> Tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None, torch.Tensor | None]:
@@ -75,39 +57,10 @@ def _extract_pc_phase_coords(
 
     Returns (pc, phase, coords, instance_id).
     """
-    instance_id = None
-    if isinstance(batch, dict):
-        pc = batch["points"]
-        phase = batch.get("class_id", None)
-        coords = batch.get("coords", None)
-        instance_id = batch.get("instance_id", None)
-    elif isinstance(batch, (tuple, list)):
-        pc = batch[0]
-        phase = None
-        coords = None
-        if len(batch) > 1:
-            second = batch[1]
-            if _looks_like_coords(second):
-                coords = second
-                warnings.warn(
-                    "Batch element [1] interpreted as coords based on shape heuristic "
-                    f"(shape={tuple(second.shape) if hasattr(second, 'shape') else '?'}). "
-                    "Use a dict batch with explicit 'points'/'class_id'/'coords' keys "
-                    "to avoid ambiguity.",
-                    stacklevel=2,
-                )
-            else:
-                phase = second
-        if len(batch) > 2:
-            third = batch[2]
-            if coords is None and _looks_like_coords(third):
-                coords = third
-            elif phase is None:
-                phase = third
-    else:
-        pc = batch
-        phase = None
-        coords = None
+    pc = batch["points"]
+    phase = batch.get("class_id", None)
+    coords = batch.get("coords", None)
+    instance_id = batch.get("instance_id", None)
     if phase is not None and not torch.is_tensor(phase):
         phase = torch.as_tensor(phase)
     if coords is not None and not torch.is_tensor(coords):
@@ -187,8 +140,6 @@ def _prepare_coords_batch_for_model(
     temporal_static_frame_index: int | None = 0,
 ) -> torch.Tensor | None:
     if str(temporal_sequence_mode).strip().lower() != "static_anchor":
-        return coords
-    if not isinstance(batch, dict):
         return coords
     center_positions = batch.get("center_positions", None)
     if center_positions is None:

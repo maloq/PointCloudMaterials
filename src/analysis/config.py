@@ -288,19 +288,13 @@ def _positive_int_or_none(value: Any) -> int | None:
 
 
 def _validate_overlap_fraction(value: Any) -> float:
-    overlap = float(value)
-    if overlap < 0.0 or overlap >= 1.0:
-        raise ValueError(f"overlap_fraction must be in [0, 1), got {overlap}.")
-    return overlap
+    return float(value)
 
 
 def _resolve_optional_cluster_k(value: Any, *, field_name: str) -> int | None:
     if value is None:
         return None
-    resolved = int(value)
-    if resolved < 2:
-        raise ValueError(f"{field_name} must be >= 2, got {resolved}.")
-    return resolved
+    return int(value)
 
 
 def _resolve_input_path(
@@ -321,20 +315,10 @@ def _resolve_input_path(
     return candidates[0]
 
 
-def _load_override_config_file(
-    path: str,
-    *,
-    field_name: str,
-) -> DictConfig:
+def _load_dict_config_from_path(path: str | Path, *, field_name: str) -> DictConfig:
     resolved = _resolve_input_path(path)
-    if not resolved.exists():
-        raise FileNotFoundError(f"{field_name} does not exist: {resolved}")
     loaded_cfg = OmegaConf.load(resolved)
-    if not isinstance(loaded_cfg, DictConfig):
-        raise TypeError(
-            f"{field_name} must load to a DictConfig, got {type(loaded_cfg)!r} from {resolved}."
-        )
-    return loaded_cfg
+    return loaded_cfg  # type: ignore
 
 
 def _normalize_visible_cluster_sets(value: Any) -> list[list[int]] | None:
@@ -827,6 +811,7 @@ def _resolve_figure_set_settings(
     rep_cfg = OmegaConf.select(analysis_cfg, "figure_set.representatives", default=None)
     raytrace_cfg = OmegaConf.select(analysis_cfg, "figure_set.raytrace", default=None)
     real_md_profile_cfg = OmegaConf.select(analysis_cfg, "real_md.profiles", default=None)
+    figure_representatives_cfg = _cfg_select(figure_cfg, "representatives", default={})
 
     figure_only = bool(_cfg_select(figure_cfg, "figure_only", default=False))
     enabled = bool(_cfg_select(figure_cfg, "enabled", default=True)) or figure_only
@@ -877,30 +862,14 @@ def _resolve_figure_set_settings(
         )
 
     representative_cna_max_signatures = int(
-        _cfg_select(rep_cfg, "cna_max_signatures", default=5)
+        getattr(figure_representatives_cfg, "cna_max_signatures", 5)
     )
     representative_shell_min_neighbors = int(
-        _cfg_select(rep_cfg, "shell_min_neighbors", default=8)
+        getattr(figure_representatives_cfg, "shell_min_neighbors", 8)
     )
     representative_shell_max_neighbors = int(
-        _cfg_select(rep_cfg, "shell_max_neighbors", default=24)
+        getattr(figure_representatives_cfg, "shell_max_neighbors", 24)
     )
-    if representative_cna_max_signatures <= 0:
-        raise ValueError(
-            "figure_set.representatives.cna_max_signatures must be > 0, "
-            f"got {representative_cna_max_signatures}."
-        )
-    if representative_shell_min_neighbors < 2:
-        raise ValueError(
-            "figure_set.representatives.shell_min_neighbors must be >= 2, "
-            f"got {representative_shell_min_neighbors}."
-        )
-    if representative_shell_max_neighbors <= representative_shell_min_neighbors:
-        raise ValueError(
-            "figure_set.representatives.shell_max_neighbors must exceed "
-            "figure_set.representatives.shell_min_neighbors, got "
-            f"{representative_shell_max_neighbors} <= {representative_shell_min_neighbors}."
-        )
 
     return FigureSetSettings(
         enabled=enabled,

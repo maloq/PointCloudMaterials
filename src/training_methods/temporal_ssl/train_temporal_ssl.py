@@ -7,20 +7,14 @@ from omegaconf import DictConfig
 
 sys.path.append(os.getcwd())
 
-from src.training_methods.temporal_ssl.temporal_ssl_module import TemporalSSLModule
-from src.training_methods.trainer import train_model
+from src.training_methods.train_entrypoint import train as train_registered_method  # noqa: E402
 
 
 torch.set_float32_matmul_precision("high")
 
 
 def train(cfg: DictConfig):
-    run_test = bool(getattr(cfg, "run_test_after_training", True))
-    return train_model(
-        cfg,
-        TemporalSSLModule,
-        run_test=run_test,
-    )
+    return train_registered_method(cfg, method_name="temporal_ssl", run_analysis=False)
 
 
 @hydra.main(
@@ -36,3 +30,6 @@ if __name__ == "__main__":
     if not any(arg.startswith("hydra.run.dir=") for arg in sys.argv):
         sys.argv.append("hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}")
     main()
+
+
+__all__ = ["main", "train"]

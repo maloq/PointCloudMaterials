@@ -169,17 +169,7 @@ def _sample_indices_stratified(
 
 
 def _extract_points_from_sample(sample: Any) -> np.ndarray:
-    if isinstance(sample, dict):
-        if "points" not in sample:
-            raise KeyError("Dataset sample dict is missing required key 'points'.")
-        points = sample["points"]
-    elif torch.is_tensor(sample):
-        points = sample
-    elif isinstance(sample, (tuple, list)) and len(sample) > 0:
-        points = sample[0]
-    else:
-        raise TypeError(f"Unsupported dataset sample type: {type(sample)!r}.")
-
+    points = sample["points"]
     if not torch.is_tensor(points):
         points = torch.as_tensor(points)
     pts = points.detach().cpu().numpy()

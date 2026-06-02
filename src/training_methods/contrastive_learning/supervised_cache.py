@@ -14,61 +14,16 @@ from src.utils.training_utils import cached_sample_count
 
 
 def _as_string_list(value, default: list[str]) -> list[str]:
-    if value is None:
-        return list(default)
-
-    if isinstance(value, str):
-        values = [value]
-    elif isinstance(value, (list, tuple)):
-        values = list(value)
-    elif hasattr(value, "__iter__") and not isinstance(value, (bytes, dict)):
-        values = list(value)
-    else:
-        values = [value]
-
-    out = [str(v).strip() for v in values if str(v).strip()]
-    return out or list(default)
-
+    if value is None: return list(default)
+    if isinstance(value, str): return [value]
+    return list(value)
 
 def _as_int_mapping(value, default: dict[str, int]) -> dict[str, int]:
-    if value is None:
-        source = default.items()
-    elif hasattr(value, "items"):
-        source = value.items()
-    else:
-        source = default.items()
-
-    out: dict[str, int] = {}
-    for key, raw in source:
-        k = str(key).strip()
-        if not k:
-            continue
-        try:
-            runs = int(raw)
-        except (TypeError, ValueError):
-            warnings.warn(
-                f"Ignoring non-integer run count for key '{k}': {raw!r}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
-            continue
-        if runs > 0:
-            out[k] = runs
-    return out
-
+    if value is None: return dict(default)
+    return {str(k): int(v) for k, v in value.items()}
 
 def _parse_optional_eval_k(value, *, field_name: str) -> int | None:
-    if value is None:
-        return None
-    if isinstance(value, bool):
-        raise ValueError(f"{field_name} must be null or integer >= 2, got bool {value!r}")
-    try:
-        k = int(value)
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"{field_name} must be null or integer >= 2, got {value!r}") from exc
-    if k < 2:
-        raise ValueError(f"{field_name} must be null or integer >= 2, got {value!r}")
-    return k
+    return int(value) if value is not None else None
 
 
 def _normalize_method_name(method) -> str:
@@ -118,81 +73,18 @@ def _validate_cached_supervised_arrays(
     labels: np.ndarray,
     encoder_features: np.ndarray | None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
-    lat = np.asarray(latents, dtype=np.float32)
-    if lat.ndim == 1:
-        lat = lat.reshape(-1, 1)
-    elif lat.ndim > 2:
-        lat = lat.reshape(lat.shape[0], -1)
-
+    lat = np.asarray(latents, dtype=np.float32).reshape(latents.shape[0], -1)
     y = np.asarray(labels).reshape(-1)
+    enc = np.asarray(encoder_features, dtype=np.float32).reshape(encoder_features.shape[0], -1) if encoder_features is not None else None
+    
+    bad_rows = ~np.isfinite(lat).all(axis=1)
+    if np.issubdtype(y.dtype, np.floating): bad_rows |= ~np.isfinite(y)
+    if enc is not None: bad_rows |= ~np.isfinite(enc).all(axis=1)
 
-    if lat.shape[0] != y.shape[0]:
-        raise RuntimeError(
-            "Cached supervised arrays have mismatched sample counts: "
-            f"stage='{stage}', latents.shape={tuple(lat.shape)}, labels.shape={tuple(y.shape)}."
-        )
-
-    enc = None
-    if encoder_features is not None:
-        enc = np.asarray(encoder_features, dtype=np.float32)
-        if enc.ndim == 1:
-            enc = enc.reshape(-1, 1)
-        elif enc.ndim > 2:
-            enc = enc.reshape(enc.shape[0], -1)
-        if enc.shape[0] != lat.shape[0]:
-            raise RuntimeError(
-                "Cached encoder feature array has mismatched sample count: "
-                f"stage='{stage}', encoder_features.shape={tuple(enc.shape)}, "
-                f"latents.shape={tuple(lat.shape)}."
-            )
-
-    n_samples = int(lat.shape[0])
-    if n_samples <= 0:
-        raise RuntimeError(
-            f"Cached supervised arrays are empty for stage='{stage}'; cannot compute metrics."
-        )
-
-    latent_bad_rows = ~np.isfinite(lat).all(axis=1)
-    label_bad_rows = (
-        ~np.isfinite(y.astype(np.float64, copy=False))
-        if np.issubdtype(y.dtype, np.floating)
-        else np.zeros(n_samples, dtype=bool)
-    )
-    enc_bad_rows = (
-        ~np.isfinite(enc).all(axis=1)
-        if enc is not None
-        else np.zeros(n_samples, dtype=bool)
-    )
-    bad_rows = latent_bad_rows | label_bad_rows | enc_bad_rows
-    bad_count = int(bad_rows.sum())
-    if bad_count == 0:
+    if not bad_rows.any():
         return lat, y, enc
 
-    good_count = int(n_samples - bad_count)
-    details = (
-        f"stage='{stage}', total_rows={n_samples}, invalid_rows={bad_count}, "
-        f"invalid_latent_rows={int(latent_bad_rows.sum())}, "
-        f"invalid_label_rows={int(label_bad_rows.sum())}, "
-        f"invalid_encoder_feature_rows={int(enc_bad_rows.sum())}, "
-        f"label_histogram={_format_label_histogram(y)}."
-    )
-    if good_count <= 0:
-        raise RuntimeError(
-            "All cached supervised rows are non-finite; cannot compute supervised metrics. "
-            f"{details} This indicates non-finite encoder outputs/checkpoint weights."
-        )
-
-    warnings.warn(
-        "Dropping non-finite cached supervised rows before metric computation. "
-        f"{details}",
-        RuntimeWarning,
-        stacklevel=2,
-    )
-    lat = lat[~bad_rows]
-    y = y[~bad_rows]
-    if enc is not None:
-        enc = enc[~bad_rows]
-    return lat, y, enc
+    return lat[~bad_rows], y[~bad_rows], enc[~bad_rows] if enc is not None else None
 
 
 def _primary_kmeansplusplus_hungarian_key(
@@ -293,21 +185,12 @@ def _prepare_features_and_labels(
 ) -> tuple[np.ndarray, np.ndarray]:
     x = _flatten_features(features)
     y = np.asarray(labels).reshape(-1)
-    if x.ndim != 2 or y.ndim != 1 or x.shape[0] == 0:
-        return np.empty((0, 1), dtype=np.float32), np.empty((0,), dtype=np.int64)
-
-    n = min(int(x.shape[0]), int(y.shape[0]))
-    if n <= 0:
-        return np.empty((0, 1), dtype=np.float32), np.empty((0,), dtype=np.int64)
-
-    x = x[:n]
-    y = y[:n]
+    n = min(x.shape[0], y.shape[0])
+    x, y = x[:n], y[:n]
     valid = np.isfinite(x).all(axis=1)
     if np.issubdtype(y.dtype, np.floating):
         valid &= np.isfinite(y)
-    x = x[valid]
-    y = y[valid]
-    return x, y
+    return x[valid], y[valid]
 
 
 def _compute_linear_svm_accuracy(features: np.ndarray, labels: np.ndarray) -> float | None:
@@ -438,17 +321,9 @@ def _collect_split_supervised_features(
                 if features is None or labels is None:
                     continue
 
-                if not torch.is_tensor(features):
-                    features = torch.as_tensor(features)
-                if not torch.is_tensor(labels):
-                    labels = torch.as_tensor(labels)
-
-                features = features.detach().to(torch.float32)
-                if features.dim() == 1:
-                    features = features.unsqueeze(-1)
-                elif features.dim() > 2:
-                    features = features.reshape(features.shape[0], -1)
-                labels = labels.detach().view(-1).to(torch.long)
+                features = torch.as_tensor(features).detach().to(torch.float32)
+                features = features.reshape(features.shape[0], -1)
+                labels = torch.as_tensor(labels).detach().view(-1).to(torch.long)
 
                 take = min(int(features.shape[0]), int(labels.shape[0]))
                 if limit is not None:
@@ -570,15 +445,8 @@ def _collect_rotated_split_supervised_features(
                         "cannot compute rotated class-accuracy metrics."
                     )
 
-                if not torch.is_tensor(labels):
-                    labels = torch.as_tensor(labels)
-
-                features = features.detach().to(torch.float32)
-                if features.dim() == 1:
-                    features = features.unsqueeze(-1)
-                elif features.dim() > 2:
-                    features = features.reshape(features.shape[0], -1)
-                labels = labels.detach().view(-1).to(torch.long)
+                features = features.detach().to(torch.float32).reshape(features.shape[0], -1)
+                labels = torch.as_tensor(labels).detach().view(-1).to(torch.long)
 
                 take = min(int(features.shape[0]), int(labels.shape[0]))
                 if limit is not None:

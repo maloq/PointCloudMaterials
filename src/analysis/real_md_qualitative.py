@@ -1450,14 +1450,6 @@ def run_real_md_qualitative_analysis(
     output_root_dir: Path | None = None,
 ) -> dict[str, Any]:
     data_kind = normalize_data_kind(getattr(model_cfg.data, "kind", None))
-    if data_kind not in {"static", "temporal_lammps"}:
-        raise ValueError(
-            "run_real_md_qualitative_analysis only supports model_cfg.data.kind in "
-            "['static', 'temporal_lammps'] ('real' is accepted as a legacy alias), "
-            f"got {getattr(model_cfg.data, 'kind', None)!r}."
-        )
-    if not frame_groups:
-        raise ValueError("Real-MD qualitative analysis requires at least one frame group.")
 
     clustering_cfg = getattr(analysis_cfg, "clustering", None)
     tsne_cfg = getattr(analysis_cfg, "tsne", None)
@@ -1487,16 +1479,6 @@ def run_real_md_qualitative_analysis(
             f"Requested k={selected_k}, available={sorted(cluster_labels_by_k.keys())}."
         )
     labels = np.asarray(cluster_labels_by_k[int(selected_k)], dtype=int)
-    if labels.shape[0] != len(latents):
-        raise ValueError(
-            "cluster labels and latents length mismatch: "
-            f"labels={labels.shape[0]}, latents={len(latents)}."
-        )
-    if coords.shape[0] != len(latents):
-        raise ValueError(
-            "coords and latents length mismatch: "
-            f"coords={coords.shape[0]}, latents={len(latents)}."
-        )
     if instance_ids is not None:
         instance_ids_arr = np.asarray(instance_ids).reshape(-1)
         if instance_ids_arr.size == 0:
@@ -1514,9 +1496,6 @@ def run_real_md_qualitative_analysis(
             )
     else:
         instance_ids_arr = None
-    if dataset is None:
-        raise ValueError("A dataset object is required to render representative local environments.")
-
     out_root = real_md_outputs_root(out_dir) if output_root_dir is None else Path(output_root_dir)
     out_root.mkdir(parents=True, exist_ok=True)
     frames = _build_frame_slices(
@@ -1811,17 +1790,6 @@ def run_real_md_qualitative_analysis(
     temporal_fit_indices = None
     if temporal_projection_fit_indices is not None and projection_method in {"umap", "pca"}:
         temporal_fit_indices = np.asarray(temporal_projection_fit_indices, dtype=int).reshape(-1)
-        if temporal_fit_indices.size == 0:
-            raise ValueError(
-                "temporal_projection_fit_indices resolved to an empty array, "
-                "but temporal projection fitting was requested."
-            )
-        if np.any(temporal_fit_indices < 0) or np.any(temporal_fit_indices >= len(latents)):
-            raise IndexError(
-                "temporal_projection_fit_indices contains out-of-range sample indices. "
-                f"min={int(np.min(temporal_fit_indices))}, max={int(np.max(temporal_fit_indices))}, "
-                f"num_samples={len(latents)}."
-            )
         temporal_fit_indices = np.unique(temporal_fit_indices.astype(int, copy=False))
         fit_features, projection_feature_prep, projection_prep_info = _prepare_projection_features(
             np.asarray(latents, dtype=np.float32)[temporal_fit_indices],
