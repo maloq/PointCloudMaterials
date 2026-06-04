@@ -14,11 +14,15 @@ from .cluster_figures import (
     _build_cluster_color_map,
 )
 from src.vis_tools.latent_analysis_vis import (
+    FittedClusteringModel,
+    _compute_internal_clustering_metrics,
     _normalize_clustering_method_name,
     _prepare_clustering_features,
     compute_hdbscan_labels,
     compute_kmeans_labels,
     compute_transfer_kmeans_labels,
+    fit_clustering_model,
+    predict_clustering_model,
 )
 
 
@@ -169,6 +173,201 @@ def _build_clustering_state(
             metrics["ari_with_gt"] = float(adjusted_rand_score(phases, gt_labels))
             metrics["nmi_with_gt"] = float(normalized_mutual_info_score(phases, gt_labels))
 
+    return metrics, configured_k_values, cluster_labels_by_k, cluster_methods_by_k
+
+
+def _clustering_feature_prep_from_info(info: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: info[key]
+        for key in (
+            "input_dim",
+            "output_dim",
+            "l2_normalize",
+            "standardize",
+            "pca_components",
+            "pca_explained_variance",
+        )
+        if key in info
+    }
+
+
+def _build_clustering_metrics_summary(
+    *,
+    requested_k_values: list[int],
+    configured_k_values: list[int],
+    cluster_method: str,
+    random_state: int,
+    cluster_methods_by_k: Dict[int, str],
+    cluster_info_by_k: Dict[int, dict[str, Any]],
+    feature_prep: dict[str, Any] | None,
+) -> dict[str, Any]:
+    primary_k = int(configured_k_values[0])
+    requested_method_normalized = _normalize_clustering_method_name(cluster_method)
+    metrics: dict[str, Any] = {
+        "cluster_method_requested": str(cluster_method).lower(),
+        "cluster_method_resolved": str(requested_method_normalized),
+        "random_state": int(random_state),
+        "k_values_requested": [int(k) for k in requested_k_values],
+        "k_values_used": [int(k) for k in configured_k_values],
+        "primary_k": int(primary_k),
+        "labels_k_method": str(cluster_methods_by_k[int(primary_k)]),
+        "labels_method_by_k": {
+            int(k): str(cluster_methods_by_k[int(k)])
+            for k in configured_k_values
+        },
+        "cluster_fit_info_by_k": {
+            int(k): dict(cluster_info_by_k[int(k)])
+            for k in configured_k_values
+        },
+    }
+    if feature_prep:
+        metrics["cluster_feature_prep"] = feature_prep
+    return metrics
+
+
+def fit_reusable_clustering_models(
+    fit_latents: np.ndarray,
+    phases: np.ndarray,
+    *,
+    requested_k_values: list[int],
+    cluster_method: str,
+    random_state: int,
+    l2_normalize: bool,
+    standardize: bool,
+    pca_variance: float | None,
+    pca_max_components: int,
+) -> tuple[
+    dict[str, Any],
+    list[int],
+    Dict[int, np.ndarray],
+    Dict[int, str],
+    Dict[int, FittedClusteringModel],
+]:
+    configured_k_values = _resolve_cluster_k_values(
+        requested_k_values,
+        n_samples=len(fit_latents),
+    )
+    cluster_labels_by_k: Dict[int, np.ndarray] = {}
+    cluster_methods_by_k: Dict[int, str] = {}
+    cluster_info_by_k: Dict[int, dict[str, Any]] = {}
+    fitted_models_by_k: Dict[int, FittedClusteringModel] = {}
+    feature_prep: dict[str, Any] | None = None
+
+    for k_value in configured_k_values:
+        fitted_model, labels_k, info_k = fit_clustering_model(
+            fit_latents,
+            int(k_value),
+            random_state=int(random_state),
+            method=cluster_method,
+            l2_normalize=l2_normalize,
+            standardize=standardize,
+            pca_variance=pca_variance,
+            pca_max_components=pca_max_components,
+        )
+        cluster_labels_by_k[int(k_value)] = labels_k
+        cluster_methods_by_k[int(k_value)] = str(info_k.get("method", "kmeans"))
+        cluster_info_by_k[int(k_value)] = dict(info_k)
+        fitted_models_by_k[int(k_value)] = fitted_model
+        if feature_prep is None:
+            feature_prep = _clustering_feature_prep_from_info(info_k)
+
+    metrics = _build_clustering_metrics_summary(
+        requested_k_values=requested_k_values,
+        configured_k_values=configured_k_values,
+        cluster_method=cluster_method,
+        random_state=random_state,
+        cluster_methods_by_k=cluster_methods_by_k,
+        cluster_info_by_k=cluster_info_by_k,
+        feature_prep=feature_prep,
+    )
+    if phases.size == len(fit_latents):
+        unique_phases = np.unique(phases)
+        if unique_phases.size > 1:
+            from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+
+            gt_k = max(2, min(int(unique_phases.size), len(fit_latents)))
+            gt_labels = cluster_labels_by_k.get(int(gt_k))
+            if gt_labels is not None:
+                metrics["ari_with_gt"] = float(adjusted_rand_score(phases, gt_labels))
+                metrics["nmi_with_gt"] = float(normalized_mutual_info_score(phases, gt_labels))
+    return (
+        metrics,
+        configured_k_values,
+        cluster_labels_by_k,
+        cluster_methods_by_k,
+        fitted_models_by_k,
+    )
+
+
+def predict_clustering_state_from_models(
+    latents: np.ndarray,
+    phases: np.ndarray,
+    *,
+    fitted_models_by_k: Dict[int, FittedClusteringModel],
+    requested_k_values: list[int],
+    cluster_method: str,
+    random_state: int,
+) -> tuple[dict[str, Any], list[int], Dict[int, np.ndarray], Dict[int, str]]:
+    configured_k_values = _resolve_cluster_k_values(
+        requested_k_values,
+        n_samples=len(latents),
+    )
+    missing = [int(k) for k in configured_k_values if int(k) not in fitted_models_by_k]
+    if missing:
+        raise KeyError(
+            "Reusable clustering model set is missing requested k values. "
+            f"missing={missing}, available={sorted(int(k) for k in fitted_models_by_k)}."
+        )
+
+    cluster_labels_by_k: Dict[int, np.ndarray] = {}
+    cluster_methods_by_k: Dict[int, str] = {}
+    cluster_info_by_k: Dict[int, dict[str, Any]] = {}
+    feature_prep: dict[str, Any] | None = None
+
+    for k_value in configured_k_values:
+        fitted_model = fitted_models_by_k[int(k_value)]
+        labels_k, target_features = predict_clustering_model(
+            latents,
+            fitted_model,
+            return_features=True,
+        )
+        target_metrics = _compute_internal_clustering_metrics(
+            target_features,
+            labels_k,
+            random_state=int(random_state),
+        )
+        fit_info = dict(fitted_model.fit_info)
+        info_k = {
+            **fit_info,
+            **target_metrics,
+            "target_sample_count": int(len(latents)),
+            "reused_fitted_model": True,
+        }
+        cluster_labels_by_k[int(k_value)] = labels_k
+        cluster_methods_by_k[int(k_value)] = str(fitted_model.method)
+        cluster_info_by_k[int(k_value)] = info_k
+        if feature_prep is None:
+            feature_prep = _clustering_feature_prep_from_info(fit_info)
+
+    metrics = _build_clustering_metrics_summary(
+        requested_k_values=requested_k_values,
+        configured_k_values=configured_k_values,
+        cluster_method=cluster_method,
+        random_state=random_state,
+        cluster_methods_by_k=cluster_methods_by_k,
+        cluster_info_by_k=cluster_info_by_k,
+        feature_prep=feature_prep,
+    )
+    if phases.size == len(latents):
+        unique_phases = np.unique(phases)
+        if unique_phases.size > 1:
+            from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+
+            gt_k = max(2, min(int(unique_phases.size), len(latents)))
+            gt_labels = cluster_labels_by_k.get(int(gt_k))
+            if gt_labels is not None:
+                metrics["ari_with_gt"] = float(adjusted_rand_score(phases, gt_labels))
+                metrics["nmi_with_gt"] = float(normalized_mutual_info_score(phases, gt_labels))
     return metrics, configured_k_values, cluster_labels_by_k, cluster_methods_by_k
 
 

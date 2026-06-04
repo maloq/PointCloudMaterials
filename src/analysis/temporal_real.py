@@ -65,6 +65,7 @@ class TemporalRealAnalysisBundle:
     selection: TemporalRealAnalysisSelection
     inference_dataset: Any
     inference_dataloader: torch.utils.data.DataLoader
+    collection_inference_spec: TemporalRealInferenceSpec
 
 
 @dataclass(frozen=True)
@@ -88,6 +89,26 @@ def _temporal_identity_or_default_collate(batch: Any) -> Any:
     if isinstance(batch, dict):
         return batch
     return default_collate(batch)
+
+
+def _temporal_real_dataloader_kwargs(
+    *,
+    batch_size: int,
+    dataloader_num_workers: int,
+) -> dict[str, Any]:
+    num_workers = int(dataloader_num_workers)
+    kwargs: dict[str, Any] = {
+        "batch_size": int(batch_size),
+        "num_workers": num_workers,
+        "shuffle": False,
+        "drop_last": False,
+        "pin_memory": torch.cuda.is_available(),
+        "persistent_workers": bool(num_workers > 0),
+        "collate_fn": _temporal_identity_or_default_collate,
+    }
+    if num_workers > 0:
+        kwargs["prefetch_factor"] = 4
+    return kwargs
 
 
 def temporal_real_analysis_enabled(analysis_cfg: Any) -> bool:
@@ -153,10 +174,27 @@ def resolve_temporal_real_inference_spec(
     raise RuntimeError(f"Unsupported normalized temporal inference mode: {mode!r}.")
 
 
+def _resolve_temporal_static_frame_slot(
+    *,
+    sequence_length: int,
+    static_frame_index: int | None,
+) -> int:
+    frame_slot = 0 if static_frame_index is None else int(static_frame_index)
+    if frame_slot < 0:
+        frame_slot += int(sequence_length)
+    if frame_slot < 0 or frame_slot >= int(sequence_length):
+        raise ValueError(
+            "inputs.temporal_real.static_frame_index is out of range for "
+            f"sequence_length={sequence_length}. "
+            f"Got {static_frame_index!r}, resolved_index={frame_slot}."
+        )
+    return int(frame_slot)
+
+
 def _build_temporal_real_inference_dataset(
     *,
     model_cfg: Any,
-    inference_mode: str,
+    temporal_inference_spec: TemporalRealInferenceSpec,
     dump_file: Path,
     cache_dir: Path | None,
     sequence_length: int,
@@ -172,19 +210,49 @@ def _build_temporal_real_inference_dataset(
     rebuild_cache: bool,
     tree_cache_size: int,
     dataset_center_kwargs: dict[str, Any],
-) -> Any:
+) -> tuple[Any, TemporalRealInferenceSpec]:
     _validate_temporal_real_checkpoint_compatibility(
         model_cfg=model_cfg,
-        inference_mode=inference_mode,
+        inference_mode=temporal_inference_spec.mode,
     )
+    dataset_sequence_length = int(sequence_length)
+    dataset_frame_stride = int(frame_stride)
+    dataset_anchor_frame_indices = [int(v) for v in anchor_frame_indices]
+    resolved_center_kwargs = dict(dataset_center_kwargs)
+    collection_inference_spec = temporal_inference_spec
+
+    if str(temporal_inference_spec.mode).strip().lower() == "static_anchor":
+        static_frame_slot = _resolve_temporal_static_frame_slot(
+            sequence_length=int(sequence_length),
+            static_frame_index=temporal_inference_spec.static_frame_index,
+        )
+        frame_offset = int(static_frame_slot) * int(frame_stride)
+        dataset_anchor_frame_indices = [
+            int(frame_idx) + int(frame_offset) for frame_idx in dataset_anchor_frame_indices
+        ]
+        dataset_sequence_length = 1
+        dataset_frame_stride = 1
+        collection_inference_spec = TemporalRealInferenceSpec(
+            mode="static_anchor",
+            static_frame_index=0,
+        )
+        if (
+            resolved_center_kwargs.get("center_selection_mode") == "regular_grid"
+            and resolved_center_kwargs.get("center_grid_reference_frame_index") is None
+            and anchor_frame_indices
+        ):
+            resolved_center_kwargs["center_grid_reference_frame_index"] = int(
+                anchor_frame_indices[0]
+            )
+
     return TemporalLAMMPSDumpDataset(
         dump_file=dump_file,
         cache_dir=cache_dir,
-        sequence_length=int(sequence_length),
+        sequence_length=int(dataset_sequence_length),
         num_points=int(num_points),
         radius=float(radius),
-        frame_stride=int(frame_stride),
-        anchor_frame_indices=[int(v) for v in anchor_frame_indices],
+        frame_stride=int(dataset_frame_stride),
+        anchor_frame_indices=dataset_anchor_frame_indices,
         anchor_source_names=[str(v) for v in anchor_source_names],
         center_selection_seed=int(center_selection_seed),
         normalize=bool(normalize),
@@ -199,8 +267,8 @@ def _build_temporal_real_inference_dataset(
         build_lock_stale_sec=float(
             getattr(model_cfg.data, "build_lock_stale_sec", 86400.0)
         ),
-        **dataset_center_kwargs,
-    )
+        **resolved_center_kwargs,
+    ), collection_inference_spec
 
 
 def build_temporal_real_analysis_bundle(
@@ -209,6 +277,7 @@ def build_temporal_real_analysis_bundle(
     model_cfg: Any,
     batch_size: int,
     dataloader_num_workers: int,
+    temporal_inference_spec: TemporalRealInferenceSpec | None = None,
 ) -> TemporalRealAnalysisBundle:
     temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
     dump_file_raw = OmegaConf.select(temporal_cfg, "dump_file", default=None)
@@ -220,6 +289,11 @@ def build_temporal_real_analysis_bundle(
         model_cfg=model_cfg,
         inference_mode=inference_mode,
     )
+    if temporal_inference_spec is None:
+        temporal_inference_spec = resolve_temporal_real_inference_spec(
+            analysis_cfg,
+            default_static_frame_index=0,
+        )
 
     cache_dir_raw = OmegaConf.select(temporal_cfg, "cache_dir", default=None)
     cache_dir = None if cache_dir_raw in {None, ""} else Path(str(cache_dir_raw)).expanduser().resolve()
@@ -376,17 +450,14 @@ def build_temporal_real_analysis_bundle(
     )
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=int(batch_size),
-        num_workers=int(dataloader_num_workers),
-        shuffle=False,
-        drop_last=False,
-        pin_memory=True,
-        persistent_workers=bool(int(dataloader_num_workers) > 0),
-        collate_fn=_temporal_identity_or_default_collate,
+        **_temporal_real_dataloader_kwargs(
+            batch_size=int(batch_size),
+            dataloader_num_workers=int(dataloader_num_workers),
+        ),
     )
-    inference_dataset = _build_temporal_real_inference_dataset(
+    inference_dataset, collection_inference_spec = _build_temporal_real_inference_dataset(
         model_cfg=model_cfg,
-        inference_mode=inference_mode,
+        temporal_inference_spec=temporal_inference_spec,
         dump_file=dump_file,
         cache_dir=cache_dir,
         sequence_length=sequence_length,
@@ -411,13 +482,10 @@ def build_temporal_real_analysis_bundle(
     )
     inference_dataloader = torch.utils.data.DataLoader(
         inference_dataset,
-        batch_size=int(batch_size),
-        num_workers=int(dataloader_num_workers),
-        shuffle=False,
-        drop_last=False,
-        pin_memory=True,
-        persistent_workers=bool(int(dataloader_num_workers) > 0),
-        collate_fn=_temporal_identity_or_default_collate,
+        **_temporal_real_dataloader_kwargs(
+            batch_size=int(batch_size),
+            dataloader_num_workers=int(dataloader_num_workers),
+        ),
     )
     selection = TemporalRealAnalysisSelection(
         dump_file=dump_file,
@@ -443,6 +511,7 @@ def build_temporal_real_analysis_bundle(
         selection=selection,
         inference_dataset=inference_dataset,
         inference_dataloader=inference_dataloader,
+        collection_inference_spec=collection_inference_spec,
     )
 
 
@@ -456,6 +525,7 @@ def build_temporal_real_single_snapshot_bundle(
     frame_index: int,
     source_name: str,
     center_grid_overlap: float,
+    temporal_inference_spec: TemporalRealInferenceSpec | None = None,
 ) -> TemporalRealAnalysisBundle:
     temporal_cfg = OmegaConf.select(analysis_cfg, "inputs.temporal_real", default=None)
     inference_mode = str(
@@ -465,6 +535,11 @@ def build_temporal_real_single_snapshot_bundle(
         model_cfg=model_cfg,
         inference_mode=inference_mode,
     )
+    if temporal_inference_spec is None:
+        temporal_inference_spec = resolve_temporal_real_inference_spec(
+            analysis_cfg,
+            default_static_frame_index=0,
+        )
     overlap = float(center_grid_overlap)
 
     dataset = TemporalLAMMPSDumpDataset(
@@ -494,17 +569,14 @@ def build_temporal_real_single_snapshot_bundle(
     )
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=int(batch_size),
-        num_workers=int(dataloader_num_workers),
-        shuffle=False,
-        drop_last=False,
-        pin_memory=True,
-        persistent_workers=bool(int(dataloader_num_workers) > 0),
-        collate_fn=_temporal_identity_or_default_collate,
+        **_temporal_real_dataloader_kwargs(
+            batch_size=int(batch_size),
+            dataloader_num_workers=int(dataloader_num_workers),
+        ),
     )
-    inference_dataset = _build_temporal_real_inference_dataset(
+    inference_dataset, collection_inference_spec = _build_temporal_real_inference_dataset(
         model_cfg=model_cfg,
-        inference_mode=inference_mode,
+        temporal_inference_spec=temporal_inference_spec,
         dump_file=selection.dump_file,
         cache_dir=selection.cache_dir,
         sequence_length=int(selection.sequence_length),
@@ -533,13 +605,10 @@ def build_temporal_real_single_snapshot_bundle(
     )
     inference_dataloader = torch.utils.data.DataLoader(
         inference_dataset,
-        batch_size=int(batch_size),
-        num_workers=int(dataloader_num_workers),
-        shuffle=False,
-        drop_last=False,
-        pin_memory=True,
-        persistent_workers=bool(int(dataloader_num_workers) > 0),
-        collate_fn=_temporal_identity_or_default_collate,
+        **_temporal_real_dataloader_kwargs(
+            batch_size=int(batch_size),
+            dataloader_num_workers=int(dataloader_num_workers),
+        ),
     )
     single_selection = TemporalRealAnalysisSelection(
         dump_file=selection.dump_file,
@@ -572,6 +641,7 @@ def build_temporal_real_single_snapshot_bundle(
         selection=single_selection,
         inference_dataset=inference_dataset,
         inference_dataloader=inference_dataloader,
+        collection_inference_spec=collection_inference_spec,
     )
 
 

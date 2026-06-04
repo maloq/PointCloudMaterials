@@ -304,81 +304,88 @@ def gather_inference_batches(
     max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
     every = max(1, int(progress_every_batches))
 
-    with torch.inference_mode():
-        for batch_idx, batch in enumerate(dataloader):
-            if max_batches is not None and batch_idx >= max_batches:
-                break
-            pc, phase, coords, instance_id = _extract_pc_phase_coords(batch)
-            pc = _prepare_pointcloud_batch_for_model(
-                pc,
-                temporal_sequence_mode=temporal_sequence_mode,
-                temporal_static_frame_index=temporal_static_frame_index,
-            )
-            coords = _prepare_coords_batch_for_model(
-                batch,
-                coords,
-                temporal_sequence_mode=temporal_sequence_mode,
-                temporal_static_frame_index=temporal_static_frame_index,
-            )
-            pc = pc.to(device)
-            if hasattr(model, "_prepare_model_input"):
-                pc = model._prepare_model_input(pc)
-
-            if seed_base is None:
-                z_inv_contrastive, _, eq_z = model(pc)
-            else:
-                z_inv_contrastive, _, eq_z = _seeded_forward(model, pc, seed_base + batch_idx)
-            if z_inv_contrastive is None:
-                continue
-
-            z_cpu = z_inv_contrastive.detach().cpu()
-            take = z_cpu.shape[0]
-            if max_samples is not None:
-                remaining = max_samples - collected
-                if remaining <= 0:
+    rng_state = None if seed_base is None else _seed_inference_rng_once(seed_base, device)
+    try:
+        with torch.inference_mode():
+            for batch_idx, batch in enumerate(dataloader):
+                if max_batches is not None and batch_idx >= max_batches:
                     break
-                take = min(take, remaining)
-
-            if take <= 0:
-                break
-
-            inv_latents.append(z_cpu[:take])
-            if collect_coords:
-                if coords is None:
-                    raise RuntimeError(
-                        "gather_inference_batches(..., collect_coords=True) received a batch "
-                        f"without coordinates at batch_idx={batch_idx}. "
-                        f"Batch type: {type(batch)!r}."
-                    )
-                coords_t = coords.detach().cpu()
-                if coords_t.ndim == 1:
-                    coords_t = coords_t.unsqueeze(0)
-                if coords_t.ndim != 2 or coords_t.shape[1] != 3:
-                    raise ValueError(
-                        "Expected center coordinates with shape [batch, 3] when "
-                        f"collect_coords=True, got shape={tuple(coords_t.shape)} "
-                        f"at batch_idx={batch_idx}."
-                    )
-                coords_list.append(coords_t[:take])
-            if eq_z is not None:
-                eq_latents.append(eq_z.detach().cpu()[:take])
-            if phase is not None:
-                phases.append(phase.detach().view(-1).cpu()[:take])
-            if instance_id is not None:
-                instance_ids.append(instance_id.detach().view(-1).cpu()[:take])
-
-            collected += int(take)
-            if verbose and ((batch_idx + 1) % every == 0 or take != z_cpu.shape[0]):
-                print(
-                    f"[analysis][collect] batch={batch_idx + 1} "
-                    f"samples={collected}"
-                    + (f"/{max_samples}" if max_samples is not None else "")
+                pc, phase, coords, instance_id = _extract_pc_phase_coords(batch)
+                pc = _prepare_pointcloud_batch_for_model(
+                    pc,
+                    temporal_sequence_mode=temporal_sequence_mode,
+                    temporal_static_frame_index=temporal_static_frame_index,
                 )
+                coords = _prepare_coords_batch_for_model(
+                    batch,
+                    coords,
+                    temporal_sequence_mode=temporal_sequence_mode,
+                    temporal_static_frame_index=temporal_static_frame_index,
+                )
+                pc = pc.to(device, non_blocking=True)
 
-            if max_samples is not None and collected >= max_samples:
-                if verbose:
-                    print(f"[analysis][collect] reached sample cap: {collected}")
-                break
+                z_inv_contrastive, _, eq_z = model(pc)
+                if z_inv_contrastive is None:
+                    raise RuntimeError(
+                        "Analysis inference requires the model forward pass to return an "
+                        "invariant latent as its first output, but got None. "
+                        f"batch_idx={batch_idx}, input_shape={tuple(pc.shape)}, "
+                        f"model_type={type(model)!r}."
+                    )
+
+                batch_size = int(z_inv_contrastive.shape[0])
+                take = batch_size
+                if max_samples is not None:
+                    remaining = max_samples - collected
+                    if remaining <= 0:
+                        break
+                    take = min(take, remaining)
+
+                if take <= 0:
+                    break
+
+                inv_latents.append(
+                    z_inv_contrastive.detach()[:take].to("cpu", non_blocking=True)
+                )
+                if collect_coords:
+                    if coords is None:
+                        raise RuntimeError(
+                            "gather_inference_batches(..., collect_coords=True) received a batch "
+                            f"without coordinates at batch_idx={batch_idx}. "
+                            f"Batch type: {type(batch)!r}."
+                        )
+                    coords_t = coords.detach().cpu()
+                    if coords_t.ndim == 1:
+                        coords_t = coords_t.unsqueeze(0)
+                    if coords_t.ndim != 2 or coords_t.shape[1] != 3:
+                        raise ValueError(
+                            "Expected center coordinates with shape [batch, 3] when "
+                            f"collect_coords=True, got shape={tuple(coords_t.shape)} "
+                            f"at batch_idx={batch_idx}."
+                        )
+                    coords_list.append(coords_t[:take])
+                if eq_z is not None:
+                    eq_latents.append(eq_z.detach()[:take].to("cpu", non_blocking=True))
+                if phase is not None:
+                    phases.append(phase.detach().view(-1).cpu()[:take])
+                if instance_id is not None:
+                    instance_ids.append(instance_id.detach().view(-1).cpu()[:take])
+
+                collected += int(take)
+                if verbose and ((batch_idx + 1) % every == 0 or take != batch_size):
+                    print(
+                        f"[analysis][collect] batch={batch_idx + 1} "
+                        f"samples={collected}"
+                        + (f"/{max_samples}" if max_samples is not None else "")
+                    )
+
+                if max_samples is not None and collected >= max_samples:
+                    if verbose:
+                        print(f"[analysis][collect] reached sample cap: {collected}")
+                    break
+    finally:
+        if rng_state is not None:
+            _restore_inference_rng(rng_state)
 
     def _cat(tensors):
         return torch.cat(tensors, dim=0).numpy() if tensors else np.empty((0,))
@@ -410,19 +417,69 @@ def _default_cluster_count(num_samples: int, fallback: int = 4) -> int:
     return max(2, min(fallback, num_samples // 2))
 
 
+def _seed_inference_rng_once(
+    seed: int,
+    device: str | torch.device,
+) -> tuple[torch.Tensor, torch.device | None, torch.Tensor | None]:
+    """Seed RNG once for a whole inference pass, preserving caller RNG state."""
+    cpu_state = torch.get_rng_state()
+    cuda_device = _resolve_cuda_rng_device(device)
+    cuda_state = (
+        torch.cuda.get_rng_state(device=cuda_device)
+        if cuda_device is not None
+        else None
+    )
+    torch.random.default_generator.manual_seed(int(seed))
+    if cuda_device is not None:
+        with torch.cuda.device(cuda_device):
+            torch.cuda.manual_seed(int(seed))
+    return cpu_state, cuda_device, cuda_state
+
+
+def _restore_inference_rng(
+    rng_state: tuple[torch.Tensor, torch.device | None, torch.Tensor | None],
+) -> None:
+    cpu_state, cuda_device, cuda_state = rng_state
+    torch.set_rng_state(cpu_state)
+    if cuda_device is not None and cuda_state is not None:
+        torch.cuda.set_rng_state(cuda_state, device=cuda_device)
+
+
+def _resolve_cuda_rng_device(device: str | torch.device) -> torch.device | None:
+    resolved = torch.device(device)
+    if resolved.type != "cuda":
+        return None
+    if not torch.cuda.is_available():
+        raise RuntimeError(
+            f"Cannot seed CUDA inference RNG for device={device!r}: CUDA is not available."
+        )
+    device_index = torch.cuda.current_device() if resolved.index is None else int(resolved.index)
+    return torch.device(f"cuda:{device_index}")
+
+
 def _seeded_forward(model: AnalyzableModel, pc: torch.Tensor, seed: int):
     """Run forward pass with fixed random seed while preserving global RNG state."""
     cpu_state = torch.get_rng_state()
-    cuda_states = torch.cuda.get_rng_state_all() if pc.is_cuda else None
-    torch.manual_seed(seed)
+    cuda_device = (
+        _resolve_cuda_rng_device(torch.device(f"cuda:{pc.get_device()}"))
+        if pc.is_cuda
+        else None
+    )
+    cuda_state = (
+        torch.cuda.get_rng_state(device=cuda_device)
+        if cuda_device is not None
+        else None
+    )
+    torch.random.default_generator.manual_seed(int(seed))
     if pc.is_cuda:
-        torch.cuda.manual_seed_all(seed)
+        with torch.cuda.device(cuda_device):
+            torch.cuda.manual_seed(int(seed))
     try:
         return model(pc)
     finally:
         torch.set_rng_state(cpu_state)
-        if cuda_states is not None:
-            torch.cuda.set_rng_state_all(cuda_states)
+        if cuda_state is not None:
+            torch.cuda.set_rng_state(cuda_state, device=cuda_device)
 
 
 def evaluate_latent_equivariance(
@@ -451,9 +508,7 @@ def evaluate_latent_equivariance(
                 temporal_sequence_mode=temporal_sequence_mode,
                 temporal_static_frame_index=temporal_static_frame_index,
             )
-            pc = pc.to(device)
-            if hasattr(model, "_prepare_model_input"):
-                pc = model._prepare_model_input(pc)
+            pc = pc.to(device, non_blocking=True)
             batch_size = pc.shape[0]
 
             rots = torch.stack(

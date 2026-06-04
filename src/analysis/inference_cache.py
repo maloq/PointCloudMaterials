@@ -114,6 +114,7 @@ def _build_inference_cache_spec(
         "max_batches_latent": None if max_batches_latent is None else int(max_batches_latent),
         "max_samples_total": None if max_samples_total is None else int(max_samples_total),
         "seed_base": int(seed_base),
+        "rng_strategy": "seed_once_per_collection_v1",
         "collect_coords": True,
         "collector_mode": str(collector_mode),
         "temporal_real_selection": temporal_real_selection,

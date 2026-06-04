@@ -37,6 +37,9 @@ def run_pca_and_latent_stats(
     *,
     class_names: Dict[int, str] | None,
     step: Callable[[str], None],
+    pca_max_samples: int | None = None,
+    latent_stats_max_samples: int | None = None,
+    latent_stats_correlation_max_samples: int | None = None,
 ) -> dict[str, Any]:
     """Compute PCA visualization and latent statistics."""
     metrics: dict[str, Any] = {}
@@ -46,7 +49,7 @@ def run_pca_and_latent_stats(
         cache["inv_latents"],
         cache["phases"],
         out_dir,
-        max_samples=None,
+        max_samples=pca_max_samples,
         class_names=class_names,
     )
     metrics["pca"] = pca_stats
@@ -58,6 +61,8 @@ def run_pca_and_latent_stats(
         cache["phases"],
         out_dir,
         class_names=class_names,
+        max_samples=latent_stats_max_samples,
+        correlation_max_samples=latent_stats_correlation_max_samples,
     )
     metrics["latent_stats"] = latent_stats
 

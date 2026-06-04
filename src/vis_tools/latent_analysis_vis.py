@@ -1590,6 +1590,7 @@ def save_md_space_clusters_plot(
     cluster_color_map: dict[int, str] | None = None,
     max_points: int | None = None,
     title: str | None = None,
+    legend_title: str = "cluster",
 ) -> None:
     if coords.size == 0 or len(coords) < 2:
         return
@@ -1636,7 +1637,7 @@ def save_md_space_clusters_plot(
     )
     _set_equal_axes_3d(ax, coords_plot)
     if len(unique_labels) <= 15:
-        ax.legend(title="cluster", fontsize=7, markerscale=1.5)
+        ax.legend(title=legend_title, fontsize=7, markerscale=1.5)
 
     plt.tight_layout()
     fig.savefig(out_file)
@@ -1676,6 +1677,9 @@ def save_pca_visualization(
         "explained_variance_ratio": pca.explained_variance_ratio_.tolist(),
         "cumulative_variance_ratio": np.cumsum(pca.explained_variance_ratio_).tolist(),
         "n_components_95_var": int(np.searchsorted(np.cumsum(pca.explained_variance_ratio_), 0.95) + 1),
+        "n_samples_total": int(len(inv_latents)),
+        "n_samples_used": int(len(latents)),
+        "max_samples": None if max_samples is None else int(max_samples),
     }
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 6), dpi=150)
@@ -1783,6 +1787,8 @@ def save_latent_statistics(
     phases: np.ndarray,
     out_dir: Path,
     class_names: Dict[int, str] | None = None,
+    max_samples: int | None = None,
+    correlation_max_samples: int | None = None,
 ) -> Dict[str, Any]:
     """Compute and visualize detailed latent space statistics."""
     if inv_latents.size == 0:
@@ -1791,35 +1797,66 @@ def save_latent_statistics(
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    inv_latents_total = np.asarray(inv_latents)
+    total_samples = int(len(inv_latents_total))
+    sample_idx = None
+    if max_samples is not None and total_samples > int(max_samples):
+        sample_idx = np.random.default_rng(0).choice(
+            total_samples,
+            size=int(max_samples),
+            replace=False,
+        )
+        inv_latents_sample = inv_latents_total[sample_idx]
+    else:
+        inv_latents_sample = inv_latents_total
+
+    phases_total = np.asarray(phases)
+    phases_sample = (
+        phases_total[sample_idx]
+        if sample_idx is not None and phases_total.size == total_samples
+        else phases_total
+    )
+    eq_latents_total = np.asarray(eq_latents)
+    eq_latents_sample = (
+        eq_latents_total[sample_idx]
+        if sample_idx is not None and eq_latents_total.shape[0:1] == (total_samples,)
+        else eq_latents_total
+    )
+
     stats: Dict[str, Any] = {}
-    has_phases = phases.size == len(inv_latents)
-    has_eq_latents = eq_latents.size > 0
+    has_phases = phases_sample.size == len(inv_latents_sample)
+    has_eq_latents = eq_latents_sample.size > 0
 
     stats["inv_latent"] = {
-        "mean": float(np.mean(inv_latents)),
-        "std": float(np.std(inv_latents)),
-        "min": float(np.min(inv_latents)),
-        "max": float(np.max(inv_latents)),
-        "dim": int(inv_latents.shape[1]) if inv_latents.ndim > 1 else 1,
-        "n_samples": int(len(inv_latents)),
+        "mean": float(np.mean(inv_latents_sample)),
+        "std": float(np.std(inv_latents_sample)),
+        "min": float(np.min(inv_latents_sample)),
+        "max": float(np.max(inv_latents_sample)),
+        "dim": int(inv_latents_sample.shape[1]) if inv_latents_sample.ndim > 1 else 1,
+        "n_samples": int(len(inv_latents_sample)),
+        "n_samples_total": int(total_samples),
+        "max_samples": None if max_samples is None else int(max_samples),
+        "correlation_max_samples": (
+            None if correlation_max_samples is None else int(correlation_max_samples)
+        ),
     }
 
-    dim_means = np.mean(inv_latents, axis=0)
-    dim_stds = np.std(inv_latents, axis=0)
+    dim_means = np.mean(inv_latents_sample, axis=0)
+    dim_stds = np.std(inv_latents_sample, axis=0)
     stats["inv_latent"]["dim_mean_range"] = [float(dim_means.min()), float(dim_means.max())]
     stats["inv_latent"]["dim_std_range"] = [float(dim_stds.min()), float(dim_stds.max())]
 
-    norms = np.linalg.norm(inv_latents, axis=1)
+    norms = np.linalg.norm(inv_latents_sample, axis=1)
     stats["inv_latent"]["norm_mean"] = float(np.mean(norms))
     stats["inv_latent"]["norm_std"] = float(np.std(norms))
 
     fig, axes = plt.subplots(2, 3, figsize=(15, 10), dpi=150)
 
     if has_phases:
-        unique_labels = np.unique(phases)
+        unique_labels = np.unique(phases_sample)
         colors = _tab10_colors(len(unique_labels))
         for i, label in enumerate(unique_labels):
-            mask = phases == label
+            mask = phases_sample == label
             label_text = class_names.get(int(label), f"Phase {int(label)}") if class_names else f"Phase {int(label)}"
             axes[0, 0].hist(norms[mask], bins=50, alpha=0.5, label=label_text, color=colors[i])
         if len(unique_labels) <= 10:
@@ -1845,8 +1882,19 @@ def save_latent_statistics(
     axes[0, 2].set_ylabel("Activity (|mean| + std)")
     axes[0, 2].set_title(f"Top {top_dims} Active Dimensions")
 
-    if inv_latents.shape[1] > 1:
-        corr_matrix = np.corrcoef(inv_latents.T)
+    if inv_latents_sample.shape[1] > 1:
+        corr_latents = inv_latents_sample
+        if (
+            correlation_max_samples is not None
+            and len(corr_latents) > int(correlation_max_samples)
+        ):
+            corr_idx = np.random.default_rng(1).choice(
+                len(corr_latents),
+                size=int(correlation_max_samples),
+                replace=False,
+            )
+            corr_latents = corr_latents[corr_idx]
+        corr_matrix = np.corrcoef(corr_latents.T)
         n_show = min(20, corr_matrix.shape[0])
         sns.heatmap(
             corr_matrix[:n_show, :n_show],
@@ -1858,7 +1906,9 @@ def save_latent_statistics(
             square=True,
             cbar_kws={"shrink": 0.5},
         )
-        axes[1, 0].set_title(f"Dimension Correlation (first {n_show} dims)")
+        axes[1, 0].set_title(
+            f"Dimension Correlation (first {n_show} dims, n={len(corr_latents)})"
+        )
     else:
         axes[1, 0].text(0.5, 0.5, "Single dimension", ha="center", va="center")
         axes[1, 0].set_title("Correlation Matrix")
@@ -1867,7 +1917,7 @@ def save_latent_statistics(
         class_means = []
         class_stds = []
         for label in unique_labels:
-            mask = phases == label
+            mask = phases_sample == label
             class_means.append(np.mean(norms[mask]))
             class_stds.append(np.std(norms[mask]))
 
@@ -1894,8 +1944,11 @@ def save_latent_statistics(
         axes[1, 1].text(0.5, 0.5, "No class labels available", ha="center", va="center")
         axes[1, 1].set_title("Per-Class Statistics")
 
-    if has_eq_latents and eq_latents.shape[0] == inv_latents.shape[0]:
-        eq_norms = np.linalg.norm(eq_latents.reshape(eq_latents.shape[0], -1), axis=1)
+    if has_eq_latents and eq_latents_sample.shape[0] == inv_latents_sample.shape[0]:
+        eq_norms = np.linalg.norm(
+            eq_latents_sample.reshape(eq_latents_sample.shape[0], -1),
+            axis=1,
+        )
         axes[1, 2].scatter(norms, eq_norms, alpha=0.3, s=5, c="#9b59b6")
         axes[1, 2].set_xlabel("Invariant Latent Norm")
         axes[1, 2].set_ylabel("Equivariant Latent Norm")

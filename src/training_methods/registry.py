@@ -30,8 +30,6 @@ _MODEL_TYPE_ALIASES = {
     "contrastive": "contrastive",
     "temporal_vicreg": "temporal_ssl",
     "temporal_ssl": "temporal_ssl",
-    "temporal_rigs_vicreg": "temporal_rigs_ssl",
-    "temporal_rigs_ssl": "temporal_rigs_ssl",
 }
 
 
@@ -107,16 +105,6 @@ register_training_method(
         default_config="temporal_vicreg_lammps.yaml",
     )
 )
-register_training_method(
-    TrainingMethodSpec(
-        name="temporal_rigs_ssl",
-        module_path="src.training_methods.temporal_ssl.temporal_rigs_ssl_module",
-        class_name="TemporalRIGSSSLModule",
-        default_config="temporal_rigs_vicreg_lammps.yaml",
-    )
-)
-
-
 __all__ = [
     "TrainingMethodSpec",
     "available_training_methods",

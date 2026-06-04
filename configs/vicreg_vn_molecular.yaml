@@ -6,13 +6,13 @@ defaults:
   - _self_
 project_name: pointnet
 experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
-wandb_mode: offline
+wandb_mode: online
 
 model_type: vicreg  # Self-supervised VICReg
 latent_size: 512  # Invariant embedding size consumed by VICReg.
 
 load_supervised_checkpoint: null
-init_from_checkpoint: null
+init_from_checkpoint: output/2026-06-03/11-39-25/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=84.ckpt
 
 resume_from_checkpoint: null
 # Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
@@ -24,7 +24,7 @@ encoder:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
-    encoder_dims: 512
+    encoder_dims: 384
     trans_dim: 256
     depth: 8
     predictor_depth: 4
@@ -34,9 +34,13 @@ encoder:
     mask_ratio: 0.6
     ema_decay: 0.996
     deterministic_fps: false
-    sorting_mode: nearest
+    sorting_mode: none
     center_input: true
-    
+    group_sampling: random
+
+compile_encoder: True
+encoder_compile_mode: reduce-overhead
+
 # encoder:
 #   name: REVNET_InvariantFast
 #   kwargs:
@@ -51,7 +55,7 @@ encoder:
 
 # Training parameters
 learning_rate: 0.003
-batch_size: 2048
+batch_size: 4096
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1

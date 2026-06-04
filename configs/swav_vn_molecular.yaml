@@ -1,0 +1,35 @@
+defaults:
+  - vicreg_vn_molecular
+  - _self_
+
+experiment_name: SWAV_l${latent_size}_K${swav_num_prototypes}_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+# Keep model_type=vicreg so the existing static SSL trainer routes through
+# VICRegModule; the VICReg objective itself is disabled below.
+model_type: vicreg
+
+# VICReg objective disabled.
+vicreg_enabled: false
+vicreg_weight: 0.0
+
+# Static SwAV still uses VICRegModule's two-view sampler. Keep the SwAV-only
+# views centered on the same atom and make them stochastic with light point
+# dropout/jitter, instead of inheriting VICReg's hard center-vs-neighbor view.
+vicreg_neighbor_view: false
+vicreg_neighbor_view_mode: none
+vicreg_drop_ratio: 0.1
+vicreg_occlusion_mode: none
+
+# SwAV (self-supervised prototype assignment)
+swav_enabled: true
+swav_weight: 1.0
+swav_projection_dim: 128
+swav_hidden_dim: 512
+swav_num_prototypes: 7
+swav_temperature: 0.1
+swav_epsilon: 0.05
+swav_sinkhorn_iterations: 12
+swav_start_epoch: 0
+swav_freeze_prototypes_steps: 0
+swav_view_mode: center_adjacent
+swav_view_points: ${data.model_points}

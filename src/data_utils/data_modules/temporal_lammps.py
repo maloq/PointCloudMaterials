@@ -100,15 +100,6 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             seed=self.split_seed,
             context="TemporalLAMMPSDataModule._build_datasets",
         )
-        encoder_cfg = getattr(self.cfg, "encoder", None)
-        encoder_kwargs = getattr(encoder_cfg, "kwargs", None) if encoder_cfg is not None else None
-        if encoder_kwargs is None:
-            encoder_local_k = 16
-        elif hasattr(encoder_kwargs, "get"):
-            encoder_local_k = int(encoder_kwargs.get("local_k", 16))
-        else:
-            encoder_local_k = int(getattr(encoder_kwargs, "local_k", 16))
-
         common_kwargs = dict(
             dump_file=dump_file,
             sequence_length=sequence_length,
@@ -144,19 +135,6 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             precompute_neighbor_indices=bool(
                 _cfg_get(data_cfg, "precompute_neighbor_indices", default=False, context=ctx)
             ),
-            precompute_rigs_graph=bool(
-                _cfg_get(data_cfg, "precompute_rigs_graph", default=False, context=ctx)
-            ),
-            rigs_num_points=_cfg_get(
-                data_cfg,
-                "rigs_num_points",
-                default=_cfg_get(data_cfg, "model_points", default=num_points, context=ctx),
-                context=ctx,
-            ),
-            rigs_local_k=int(
-                _cfg_get(data_cfg, "rigs_local_k", default=encoder_local_k, context=ctx)
-            ),
-            rigs_chunk_size=int(_cfg_get(data_cfg, "rigs_chunk_size", default=256, context=ctx)),
             build_lock_timeout_sec=float(
                 _cfg_get(data_cfg, "build_lock_timeout_sec", default=7200.0, context=ctx)
             ),

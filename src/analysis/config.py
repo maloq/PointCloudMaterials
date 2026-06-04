@@ -1114,7 +1114,7 @@ def build_runtime_model_config(
         else OmegaConf.select(analysis_cfg, "inputs.data_config", default=None)
     )
     if data_config_path is not None:
-        data_cfg = _load_override_config_file(
+        data_cfg = _load_dict_config_from_path(
             str(data_config_path),
             field_name=(
                 "inputs.data_config"

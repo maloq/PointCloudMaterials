@@ -1,6 +1,6 @@
 checkpoint:
-  path: output/2026-05-22/15-55-24/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=49.ckpt
-  output_dir: outputs/temporal_Al_500frames_swav
+  path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
+  output_dir: outputs/temporal_Al_500frames_swav_single
   cuda_device: 0
 
 inputs:
@@ -68,7 +68,7 @@ runtime:
   seed_base: 123
 
 clustering:
-  primary_k: 8
+  primary_k: 7
   k_values: null
   method: spherical_kmeans
   l2_normalize: true
@@ -111,6 +111,13 @@ tsne:
   max_samples: 200000
   n_iter: 1000
   paper_enabled: true
+
+pca:
+  max_samples: 200000
+
+latent_stats:
+  max_samples: 200000
+  correlation_max_samples: 50000
 
 figure_set:
   enabled: true

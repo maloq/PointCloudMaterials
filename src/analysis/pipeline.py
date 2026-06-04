@@ -1,4 +1,5 @@
- mport argparse
+import argparse
+import bisect
 from dataclasses import replace
 import json
 import os
@@ -34,10 +35,10 @@ from src.utils.model_utils import load_model_from_checkpoint
 from .cluster_profiles import resolve_point_scale
 from .cluster_rendering import _build_cluster_representative_render_cache
 from .clustering import (
-    _build_clustering_state,
     _run_optional_hdbscan_analysis,
     build_clustering_method_comparison,
-    prepare_clustering_features,
+    fit_reusable_clustering_models,
+    predict_clustering_state_from_models,
 )
 from .config import (
     DEFAULT_ANALYSIS_CONFIG_PATH, _positive_int_or_none, _print_resolved_analysis_settings,
@@ -77,6 +78,140 @@ from .utils import _sample_indices, _unwrap_dataset, build_static_coords_dataloa
 # ---------------------------------------------------------------------------
 
 _DIAGONAL_CUT_DIRECTION = np.asarray([1.0, 1.0, 1.0], dtype=np.float32) / np.sqrt(3.0)
+
+
+def _analysis_prefetch_factor(num_workers: int) -> int | None:
+    if int(num_workers) <= 0:
+        return None
+    return 4
+
+
+def _analysis_dataloader_kwargs(
+    *,
+    batch_size: int,
+    dataloader_num_workers: int,
+    collate_fn: Any | None = None,
+) -> dict[str, Any]:
+    num_workers = int(dataloader_num_workers)
+    kwargs: dict[str, Any] = {
+        "batch_size": int(batch_size),
+        "num_workers": num_workers,
+        "shuffle": False,
+        "drop_last": False,
+        "pin_memory": torch.cuda.is_available(),
+        "persistent_workers": bool(num_workers > 0),
+    }
+    prefetch_factor = _analysis_prefetch_factor(num_workers)
+    if prefetch_factor is not None:
+        kwargs["prefetch_factor"] = int(prefetch_factor)
+    if collate_fn is not None:
+        kwargs["collate_fn"] = collate_fn
+    return kwargs
+
+
+def _fetch_batched_dataset_items(dataset: Any, indices: list[int]) -> Any:
+    if not indices:
+        raise ValueError("Cannot fetch an empty batched dataset slice.")
+    if hasattr(dataset, "__getitems__"):
+        batch = dataset.__getitems__([int(v) for v in indices])
+        if not isinstance(batch, list):
+            return batch
+        return _temporal_identity_or_default_collate(batch)
+    return _temporal_identity_or_default_collate(
+        [dataset[int(index)] for index in indices]
+    )
+
+
+def _concat_batched_values(values: list[Any], *, key_path: str) -> Any:
+    if not values:
+        raise ValueError(f"Cannot concatenate zero batched values at {key_path}.")
+    first = values[0]
+    if torch.is_tensor(first):
+        return torch.cat(values, dim=0)
+    if isinstance(first, np.ndarray):
+        return np.concatenate(values, axis=0)
+    if isinstance(first, list):
+        merged: list[Any] = []
+        for value in values:
+            if not isinstance(value, list):
+                raise TypeError(
+                    f"Inconsistent batched value types at {key_path}: "
+                    f"expected list, got {type(value)!r}."
+                )
+            merged.extend(value)
+        return merged
+    if isinstance(first, tuple):
+        return tuple(
+            _concat_batched_values(
+                [value[item_idx] for value in values],
+                key_path=f"{key_path}[{item_idx}]",
+            )
+            for item_idx in range(len(first))
+        )
+    if isinstance(first, dict):
+        keys = list(first.keys())
+        for value in values[1:]:
+            if not isinstance(value, dict) or list(value.keys()) != keys:
+                raise TypeError(
+                    f"Inconsistent batched dict structure at {key_path}: "
+                    f"first_keys={keys}, value_type={type(value)!r}, "
+                    f"value_keys={list(value.keys()) if isinstance(value, dict) else None}."
+                )
+        return {
+            key: _concat_batched_values(
+                [value[key] for value in values],
+                key_path=f"{key_path}.{key}",
+            )
+            for key in keys
+        }
+    raise TypeError(
+        f"Unsupported batched value type at {key_path}: {type(first)!r}."
+    )
+
+
+class _BatchedConcatDataset(torch.utils.data.ConcatDataset):
+    """ConcatDataset variant that preserves child datasets' batched __getitems__."""
+
+    def __getitems__(self, indices: list[int]) -> Any:
+        if not indices:
+            raise ValueError("Cannot fetch an empty batch from _BatchedConcatDataset.")
+        batches: list[Any] = []
+        current_dataset_idx: int | None = None
+        current_local_indices: list[int] = []
+
+        def _flush_current_run() -> None:
+            if current_dataset_idx is None:
+                return
+            batches.append(
+                _fetch_batched_dataset_items(
+                    self.datasets[int(current_dataset_idx)],
+                    current_local_indices,
+                )
+            )
+
+        for raw_idx in indices:
+            idx = int(raw_idx)
+            if idx < 0:
+                idx += len(self)
+            if idx < 0 or idx >= len(self):
+                raise IndexError(
+                    f"_BatchedConcatDataset index {raw_idx} is out of range for len={len(self)}."
+                )
+            dataset_idx = bisect.bisect_right(self.cumulative_sizes, idx)
+            sample_idx = (
+                idx
+                if dataset_idx == 0
+                else idx - int(self.cumulative_sizes[dataset_idx - 1])
+            )
+            if current_dataset_idx is not None and dataset_idx != current_dataset_idx:
+                _flush_current_run()
+                current_local_indices = []
+            current_dataset_idx = int(dataset_idx)
+            current_local_indices.append(int(sample_idx))
+
+        _flush_current_run()
+        return _concat_batched_values(batches, key_path="batch")
+
 
 def _extract_class_names(dataset: Any) -> Dict[int, str] | None:
     dataset = _unwrap_dataset(dataset)
@@ -166,12 +301,10 @@ def _build_analysis_dataloader(
         combined_dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
         return torch.utils.data.DataLoader(
             combined_dataset,
-            batch_size=int(inference_batch_size),
-            num_workers=int(dataloader_num_workers),
-            shuffle=False,
-            drop_last=False,
-            pin_memory=True,
-            persistent_workers=bool(int(dataloader_num_workers) > 0),
+            **_analysis_dataloader_kwargs(
+                batch_size=int(inference_batch_size),
+                dataloader_num_workers=int(dataloader_num_workers),
+            ),
         )
 
     dl = build_static_coords_dataloader(
@@ -508,46 +641,6 @@ def _select_dense_snapshot_cut_surface_indices(
     return np.sort(selected.astype(np.int64, copy=False))
 
 
-def _copy_inference_cache_part(
-    *,
-    merged: dict[str, np.ndarray],
-    part: dict[str, np.ndarray],
-    cursor: int,
-    total_samples: int,
-    part_samples: int,
-) -> None:
-    for key, merged_arr in merged.items():
-        part_arr = np.asarray(part[key])
-        if merged_arr.ndim > 0 and int(merged_arr.shape[0]) == int(total_samples):
-            merged_arr[int(cursor) : int(cursor) + int(part_samples)] = part_arr
-
-
-def _initialize_merged_inference_cache(
-    *,
-    first_part: dict[str, np.ndarray],
-    total_samples: int,
-    first_part_samples: int,
-) -> dict[str, np.ndarray]:
-    merged: dict[str, np.ndarray] = {}
-    for key, value in first_part.items():
-        arr = np.asarray(value)
-        if arr.ndim > 0 and int(arr.shape[0]) == int(first_part_samples):
-            merged[key] = np.empty(
-                (int(total_samples), *arr.shape[1:]),
-                dtype=arr.dtype,
-            )
-        else:
-            merged[key] = arr.copy()
-    _copy_inference_cache_part(
-        merged=merged,
-        part=first_part,
-        cursor=0,
-        total_samples=int(total_samples),
-        part_samples=int(first_part_samples),
-    )
-    return merged
-
-
 def _resolve_temporal_snapshot_visualization_regular_grid_overlap(
     analysis_cfg: DictConfig,
 ) -> tuple[float, float]:
@@ -639,6 +732,7 @@ def _collect_temporal_dense_snapshot_cache(
             frame_index=int(frame_index),
             source_name=str(source_name),
             center_grid_overlap=float(regular_grid_overlap),
+            temporal_inference_spec=temporal_inference_spec,
         )
         for frame_index, source_name in zip(
             resolved_frame_indices,
@@ -778,6 +872,11 @@ def _collect_temporal_dense_snapshot_cache(
                     "ranking": "visible_side_nearest_to_diagonal_cut_plane",
                 }
             )
+    snapshot_selection_spec["inference_loader"] = {
+        "batching": "batched_concat_v1",
+        "prefetch_factor": _analysis_prefetch_factor(int(dataloader_num_workers)),
+        "seed_sequence": "global_batch_index",
+    }
     snapshot_cache_spec = _build_inference_cache_spec(
         checkpoint_path=checkpoint_path,
         cfg=model_cfg_for_module,
@@ -820,11 +919,7 @@ def _collect_temporal_dense_snapshot_cache(
         expected_total_samples = int(
             sum(int(v) for v in selected_sample_counts.values())
         )
-        snapshot_cache = None
-        cache_cursor = 0
-        for snapshot_idx, (bundle, inference_dataset) in enumerate(
-            zip(snapshot_bundles, snapshot_inference_datasets, strict=True)
-        ):
+        for bundle in snapshot_bundles:
             source_name = str(bundle.selection.analysis_source_names[0])
             selected_sample_count = int(selected_sample_counts[source_name])
             full_sample_count = int(full_sample_counts[source_name])
@@ -842,60 +937,42 @@ def _collect_temporal_dense_snapshot_cache(
                 f"regular_grid_overlap={regular_grid_overlap:.3f} "
                 f"(static_overlap_fraction={static_overlap_fraction:.3f})."
             )
-            inference_dataloader = torch.utils.data.DataLoader(
-                inference_dataset,
+        combined_inference_dataset = _BatchedConcatDataset(snapshot_inference_datasets)
+        if int(len(combined_inference_dataset)) != expected_total_samples:
+            raise RuntimeError(
+                f"{summary_label} combined inference dataset sample count mismatch: "
+                f"dataset={int(len(combined_inference_dataset))}, expected={expected_total_samples}."
+            )
+        inference_dataloader = torch.utils.data.DataLoader(
+            combined_inference_dataset,
+            **_analysis_dataloader_kwargs(
                 batch_size=int(inference_batch_size),
-                num_workers=int(dataloader_num_workers),
-                shuffle=False,
-                drop_last=False,
-                pin_memory=True,
-                persistent_workers=False,
+                dataloader_num_workers=int(dataloader_num_workers),
                 collate_fn=_temporal_identity_or_default_collate,
-            )
-            part_cache = gather_inference_batches(
-                model,
-                inference_dataloader,
-                f"cuda:{int(cuda_device)}" if torch.cuda.is_available() else "cpu",
-                max_batches=None,
-                max_samples_total=None,
-                collect_coords=True,
-                seed_base=int(seed_base) + int(snapshot_idx) * 1_000_000,
-                progress_every_batches=int(progress_every_batches),
-                verbose=True,
-                temporal_sequence_mode=str(temporal_inference_spec.mode),
-                temporal_static_frame_index=temporal_inference_spec.static_frame_index,
-            )
-            del inference_dataloader
-            _validate_inference_cache_arrays(part_cache)
-            part_sample_count = int(len(part_cache["inv_latents"]))
-            if part_sample_count != selected_sample_count:
-                raise RuntimeError(
-                    f"{summary_label} inference collected an unexpected number of samples. "
-                    f"snapshot={source_name}, collected={part_sample_count}, "
-                    f"expected={selected_sample_count}."
-                )
-            if snapshot_cache is None:
-                snapshot_cache = _initialize_merged_inference_cache(
-                    first_part=part_cache,
-                    total_samples=expected_total_samples,
-                    first_part_samples=part_sample_count,
-                )
-            else:
-                _copy_inference_cache_part(
-                    merged=snapshot_cache,
-                    part=part_cache,
-                    cursor=int(cache_cursor),
-                    total_samples=expected_total_samples,
-                    part_samples=part_sample_count,
-                )
-            cache_cursor += part_sample_count
-            del part_cache
-        if snapshot_cache is None:
-            raise RuntimeError(f"{summary_label} did not collect any inference batches.")
-        if int(cache_cursor) != expected_total_samples:
+            ),
+        )
+        snapshot_cache = gather_inference_batches(
+            model,
+            inference_dataloader,
+            f"cuda:{int(cuda_device)}" if torch.cuda.is_available() else "cpu",
+            max_batches=None,
+            max_samples_total=None,
+            collect_coords=True,
+            seed_base=int(seed_base),
+            progress_every_batches=int(progress_every_batches),
+            verbose=True,
+            temporal_sequence_mode=str(snapshot_bundles[0].collection_inference_spec.mode),
+            temporal_static_frame_index=(
+                snapshot_bundles[0].collection_inference_spec.static_frame_index
+            ),
+        )
+        del inference_dataloader
+        _validate_inference_cache_arrays(snapshot_cache)
+        if int(len(snapshot_cache["inv_latents"])) != expected_total_samples:
             raise RuntimeError(
                 f"{summary_label} merged cache sample count mismatch: "
-                f"merged={cache_cursor}, expected={expected_total_samples}."
+                f"merged={int(len(snapshot_cache['inv_latents']))}, "
+                f"expected={expected_total_samples}."
             )
         if cache_enabled:
             _save_inference_cache(
@@ -1247,12 +1324,6 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
         from src.training_methods.temporal_ssl.temporal_ssl_module import TemporalSSLModule
 
         return TemporalSSLModule
-    if model_type == "temporal_rigs_vicreg":
-        from src.training_methods.temporal_ssl.temporal_rigs_ssl_module import (
-            TemporalRIGSSSLModule,
-        )
-
-        return TemporalRIGSSSLModule
     if model_type == "temporal_motif_field":
         from src.training_methods.temporal_motif_field.temporal_motif_field_module import (
             TemporalMotifFieldModule,
@@ -1261,8 +1332,8 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
         return TemporalMotifFieldModule
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
-        f"Expected one of ['vicreg', 'temporal_vicreg', 'temporal_lejepa', 'temporal_rigs_vicreg', "
-        f"'temporal_motif_field'], got {model_type!r}."
+        f"Expected one of ['vicreg', 'temporal_vicreg', 'temporal_lejepa', 'temporal_motif_field'], "
+        f"got {model_type!r}."
     )
 
 
@@ -1458,6 +1529,7 @@ def run_post_training_analysis(
             model_cfg=cfg,
             batch_size=int(analysis_inference_batch_size),
             dataloader_num_workers=int(input_settings.dataloader_num_workers),
+            temporal_inference_spec=temporal_inference_spec,
         )
         dl = temporal_bundle.inference_dataloader
         analysis_source_names = list(temporal_bundle.selection.analysis_source_names)
@@ -1609,10 +1681,14 @@ def run_post_training_analysis(
                 progress_every_batches=analysis_settings.progress_every_batches,
                 verbose=True,
                 temporal_sequence_mode=(
-                    "static_anchor" if temporal_inference_spec is None else temporal_inference_spec.mode
+                    "static_anchor"
+                    if temporal_bundle is None
+                    else temporal_bundle.collection_inference_spec.mode
                 ),
                 temporal_static_frame_index=(
-                    0 if temporal_inference_spec is None else temporal_inference_spec.static_frame_index
+                    0
+                    if temporal_bundle is None
+                    else temporal_bundle.collection_inference_spec.static_frame_index
                 ),
             )
         _validate_inference_cache_arrays(cache)
@@ -1808,22 +1884,48 @@ def run_post_training_analysis(
         f"enabled={figure_settings.profile_point_scale_enabled}, point_scale={point_scale:.6g}"
     )
 
-    # ── Clustering feature preparation ─────────────────────────────────
-    _step("Preparing clustering features")
-    clustering_features, clustering_feature_prep = prepare_clustering_features(
-        cache["inv_latents"],
-        random_state=int(clustering_random_state),
+    # ── Reusable clustering model fit ──────────────────────────────────
+    clustering_requested_k_values = list(analysis_settings.cluster_k_values)
+    clustering_fit_reference_latents = (
+        np.asarray(cache["inv_latents"], dtype=np.float32)
+        if fit_latents_for_clustering is None
+        else np.asarray(fit_latents_for_clustering, dtype=np.float32)
+    )
+    clustering_fit_reference_phases = (
+        np.asarray(cache["phases"], dtype=int)
+        if fit_cache is None
+        else np.asarray(fit_cache["phases"], dtype=int)
+    )
+    _step("Fitting reusable clustering models")
+    (
+        clustering_fit_metrics,
+        clustering_fit_configured_k_values,
+        clustering_fit_labels_by_k,
+        clustering_fit_methods_by_k,
+        clustering_models_by_k,
+    ) = fit_reusable_clustering_models(
+        clustering_fit_reference_latents,
+        clustering_fit_reference_phases,
+        requested_k_values=clustering_requested_k_values,
+        cluster_method=analysis_settings.cluster_method,
+        random_state=clustering_random_state,
         l2_normalize=analysis_settings.cluster_l2_normalize,
         standardize=analysis_settings.cluster_standardize,
         pca_variance=analysis_settings.cluster_pca_var,
         pca_max_components=analysis_settings.cluster_pca_max_components,
     )
-    clustering_features_for_fixed_k = (
-        None if fit_latents_for_clustering is not None else clustering_features
+    clustering_fit_metrics["reusable_models_fitted"] = True
+    clustering_fit_metrics["fit_reference_source"] = (
+        "main_inference_cache"
+        if fit_latents_for_clustering is None
+        else "clustering_fit_reference_cache"
     )
-    clustering_feature_prep_for_fixed_k = (
-        None if fit_latents_for_clustering is not None else clustering_feature_prep
-    )
+    all_metrics["clustering_model_fit"] = clustering_fit_metrics
+    clustering_features = None
+    clustering_feature_prep = None
+    clustering_features_for_fixed_k = None
+    clustering_feature_prep_for_fixed_k = None
+
     dataset_obj = (
         temporal_bundle.dataset
         if temporal_bundle is not None
@@ -1896,32 +1998,20 @@ def run_post_training_analysis(
             pca_max_components=analysis_settings.cluster_pca_max_components,
         )
 
-    clustering_requested_k_values = list(analysis_settings.cluster_k_values)
     if temporal_snapshot_visualization_cache is not None:
         _step("Projecting cluster labels onto dense temporal snapshots")
-        snapshot_fit_latents = (
-            np.asarray(cache["inv_latents"], dtype=np.float32)
-            if fit_latents_for_clustering is None
-            else np.asarray(fit_latents_for_clustering, dtype=np.float32)
-        )
         (
             snapshot_clustering_metrics,
             _,
             snapshot_cluster_labels_by_k_for_outputs,
             _,
-        ) = _build_clustering_state(
+        ) = predict_clustering_state_from_models(
             snapshot_latents_for_outputs,
             np.asarray(temporal_snapshot_visualization_cache["phases"], dtype=int),
-            fit_latents=snapshot_fit_latents,
+            fitted_models_by_k=clustering_models_by_k,
             requested_k_values=clustering_requested_k_values,
             cluster_method=analysis_settings.cluster_method,
             random_state=clustering_random_state,
-            l2_normalize=analysis_settings.cluster_l2_normalize,
-            standardize=analysis_settings.cluster_standardize,
-            pca_variance=analysis_settings.cluster_pca_var,
-            pca_max_components=analysis_settings.cluster_pca_max_components,
-            prepared_features=None,
-            prep_info=None,
         )
         all_metrics.setdefault("temporal_snapshot_visualization", {}).update(
             {
@@ -1953,29 +2043,18 @@ def run_post_training_analysis(
     temporal_md_animation_spatial_bounds_for_outputs = None
     if temporal_md_space_animation_cache is not None:
         _step("Projecting cluster labels onto dense MD-space animation frames")
-        md_animation_fit_latents = (
-            np.asarray(cache["inv_latents"], dtype=np.float32)
-            if fit_latents_for_clustering is None
-            else np.asarray(fit_latents_for_clustering, dtype=np.float32)
-        )
         (
             md_animation_clustering_metrics,
             _,
             temporal_md_animation_cluster_labels_by_k_for_outputs,
             _,
-        ) = _build_clustering_state(
+        ) = predict_clustering_state_from_models(
             np.asarray(temporal_md_space_animation_cache["inv_latents"], dtype=np.float32),
             np.asarray(temporal_md_space_animation_cache["phases"], dtype=int),
-            fit_latents=md_animation_fit_latents,
+            fitted_models_by_k=clustering_models_by_k,
             requested_k_values=clustering_requested_k_values,
             cluster_method=analysis_settings.cluster_method,
             random_state=clustering_random_state,
-            l2_normalize=analysis_settings.cluster_l2_normalize,
-            standardize=analysis_settings.cluster_standardize,
-            pca_variance=analysis_settings.cluster_pca_var,
-            pca_max_components=analysis_settings.cluster_pca_max_components,
-            prepared_features=None,
-            prep_info=None,
         )
         all_metrics.setdefault("temporal_md_space_animation_sampling", {}).update(
             {
@@ -2042,20 +2121,24 @@ def run_post_training_analysis(
 
     # ── Figure-only early return ───────────────────────────────────────
     if figure_settings.figure_only:
-        clustering_metrics, configured_k_values, cluster_labels_by_k, _ = _build_clustering_state(
-            cache["inv_latents"],
-            cache["phases"],
-            fit_latents=fit_latents_for_clustering,
-            requested_k_values=list(analysis_settings.cluster_k_values),
-            cluster_method=analysis_settings.cluster_method,
-            random_state=clustering_random_state,
-            l2_normalize=analysis_settings.cluster_l2_normalize,
-            standardize=analysis_settings.cluster_standardize,
-            pca_variance=analysis_settings.cluster_pca_var,
-            pca_max_components=analysis_settings.cluster_pca_max_components,
-            prepared_features=clustering_features_for_fixed_k,
-            prep_info=clustering_feature_prep_for_fixed_k,
-        )
+        if fit_latents_for_clustering is None:
+            clustering_metrics = dict(clustering_fit_metrics)
+            configured_k_values = list(clustering_fit_configured_k_values)
+            cluster_labels_by_k = dict(clustering_fit_labels_by_k)
+        else:
+            (
+                clustering_metrics,
+                configured_k_values,
+                cluster_labels_by_k,
+                _,
+            ) = predict_clustering_state_from_models(
+                cache["inv_latents"],
+                cache["phases"],
+                fitted_models_by_k=clustering_models_by_k,
+                requested_k_values=list(analysis_settings.cluster_k_values),
+                cluster_method=analysis_settings.cluster_method,
+                random_state=clustering_random_state,
+            )
         all_metrics["clustering"] = clustering_metrics
         figure_output_labels_by_k = (
             cluster_labels_by_k
@@ -2124,25 +2207,51 @@ def run_post_training_analysis(
             out_dir,
             class_names=class_names,
             step=_step,
+            pca_max_samples=_positive_int_or_none(
+                OmegaConf.select(
+                    analysis_cfg,
+                    "pca.max_samples",
+                    default=analysis_settings.tsne_max_samples,
+                )
+            ),
+            latent_stats_max_samples=_positive_int_or_none(
+                OmegaConf.select(
+                    analysis_cfg,
+                    "latent_stats.max_samples",
+                    default=analysis_settings.tsne_max_samples,
+                )
+            ),
+            latent_stats_correlation_max_samples=_positive_int_or_none(
+                OmegaConf.select(
+                    analysis_cfg,
+                    "latent_stats.correlation_max_samples",
+                    default=50000,
+                )
+            ),
         )
     )
 
     # ── Clustering ─────────────────────────────────────────────────────
     _step("Computing clustering labels")
-    clustering_metrics, configured_k_values, cluster_labels_by_k, cluster_methods_by_k = _build_clustering_state(
-        cache["inv_latents"],
-        cache["phases"],
-        fit_latents=fit_latents_for_clustering,
-        requested_k_values=clustering_requested_k_values,
-        cluster_method=analysis_settings.cluster_method,
-        random_state=clustering_random_state,
-        l2_normalize=analysis_settings.cluster_l2_normalize,
-        standardize=analysis_settings.cluster_standardize,
-        pca_variance=analysis_settings.cluster_pca_var,
-        pca_max_components=analysis_settings.cluster_pca_max_components,
-        prepared_features=clustering_features_for_fixed_k,
-        prep_info=clustering_feature_prep_for_fixed_k,
-    )
+    if fit_latents_for_clustering is None:
+        clustering_metrics = dict(clustering_fit_metrics)
+        configured_k_values = list(clustering_fit_configured_k_values)
+        cluster_labels_by_k = dict(clustering_fit_labels_by_k)
+        cluster_methods_by_k = dict(clustering_fit_methods_by_k)
+    else:
+        (
+            clustering_metrics,
+            configured_k_values,
+            cluster_labels_by_k,
+            cluster_methods_by_k,
+        ) = predict_clustering_state_from_models(
+            cache["inv_latents"],
+            cache["phases"],
+            fitted_models_by_k=clustering_models_by_k,
+            requested_k_values=clustering_requested_k_values,
+            cluster_method=analysis_settings.cluster_method,
+            random_state=clustering_random_state,
+        )
     all_metrics["clustering"] = clustering_metrics
     if temporal_md_space_animation_enabled and temporal_md_space_animation_reuse_main_cache:
         dense_snapshot_count = int(
@@ -2215,13 +2324,34 @@ def run_post_training_analysis(
     )
     figure_output_cluster_labels = figure_output_labels_by_k[int(primary_k)]
 
+    # ── Shared cluster color maps ──────────────────────────────────────
+    _step("Building shared cluster color maps")
+    shared_cluster_color_maps_by_k = {
+        int(k_val_inner): build_shared_cluster_color_map(
+            cluster_labels_by_k[int(k_val_inner)],
+            cluster_color_assignment=figure_settings.cluster_color_assignment,
+        )
+        for k_val_inner in configured_k_values
+    }
+    shared_cluster_color_map = shared_cluster_color_maps_by_k[int(primary_k)]
+
     swav_prototype_metrics = run_swav_prototype_evaluation(
         model=model,
         cache=cache,
         out_dir=out_dir,
         analysis_cfg=analysis_cfg,
         cluster_labels_by_k=cluster_labels_by_k,
+        cluster_color_maps_by_k=shared_cluster_color_maps_by_k,
+        primary_k=int(primary_k),
         frame_groups=snapshot_source_groups,
+        proportion_frame_groups=(
+            None if temporal_bundle is None else snapshot_layout_inference.source_groups
+        ),
+        figure_settings=figure_settings,
+        figure_set_run_kwargs=_build_figure_set_run_kwargs(figure_settings),
+        figure_dataloader=dl,
+        figure_snapshot_layout=snapshot_layout_for_outputs,
+        figure_analysis_source_names=snapshot_analysis_source_names_for_outputs,
         step=_step,
     )
     if swav_prototype_metrics:
@@ -2318,17 +2448,6 @@ def run_post_training_analysis(
         all_metrics["cluster_figure_sets_by_snapshot"] = primary_snapshot_figure_sets
     if len(cluster_figure_sets_by_k) > 1:
         all_metrics["cluster_figure_sets_by_k"] = cluster_figure_sets_by_k
-
-    # ── Shared cluster color maps ──────────────────────────────────────
-    _step("Building shared cluster color maps")
-    shared_cluster_color_maps_by_k = {
-        int(k_val_inner): build_shared_cluster_color_map(
-            cluster_labels_by_k[int(k_val_inner)],
-            cluster_color_assignment=figure_settings.cluster_color_assignment,
-        )
-        for k_val_inner in configured_k_values
-    }
-    shared_cluster_color_map = shared_cluster_color_maps_by_k[int(primary_k)]
 
     # ── t-SNE ──────────────────────────────────────────────────────────
     tsne_metrics = run_tsne_visualizations(
@@ -2510,10 +2629,14 @@ def run_post_training_analysis(
             analysis_cfg=analysis_cfg,
             step=_step,
             temporal_sequence_mode=(
-                "static_anchor" if temporal_inference_spec is None else temporal_inference_spec.mode
+                "static_anchor"
+                if temporal_bundle is None
+                else temporal_bundle.collection_inference_spec.mode
             ),
             temporal_static_frame_index=(
-                0 if temporal_inference_spec is None else temporal_inference_spec.static_frame_index
+                0
+                if temporal_bundle is None
+                else temporal_bundle.collection_inference_spec.static_frame_index
             ),
         )
     )

@@ -1,6 +1,6 @@
 checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
-  path: output/2026-05-19/00-21-51/VICREG_SWAV_l512_K6_N160_M80_RI_MAE_Invariant-epoch=59.ckpt
+  path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
   # null -> <checkpoint_dir>/analysis
   output_dir: outputs/temporal_Al_6frames_Swav
   cuda_device: 0
@@ -43,7 +43,7 @@ runtime:
 
 clustering:
   # Unified selected clustering k used by figure_set and real_md outputs.
-  primary_k: 6
+  primary_k: 7
   # null -> run clustering-dependent analyses only for primary_k.
   # Set a list such as [5, 6, 7, 8] to additionally run clustering-dependent analyses for each key.
   k_values: null

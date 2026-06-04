@@ -439,9 +439,9 @@ class RIMAEBackbone(nn.Module):
         # cannot trace and which stalls the training hot path. We only run it
         # when explicitly requested (eval / sanity paths) and never when
         # Dynamo is capturing the graph. The clamp_min(eps) below is the
-        # real safety net: a degenerate norm produces a large but finite
-        # vector instead of silently propagating NaN/inf through the
-        # transformer. See the contrastive SSL hot-path speedup (#3).
+        # real safety net for non-validated training paths. Callers that know
+        # how to handle degenerate geometry should replace those vectors before
+        # normalizing; otherwise validation raises loudly below.
         if validate and not torch.compiler.is_compiling():
             if not bool(torch.isfinite(norms).all().item()):
                 nonfinite = int((~torch.isfinite(norms)).sum().item())
@@ -459,6 +459,42 @@ class RIMAEBackbone(nn.Module):
                     f"dtype={vectors.dtype}, device={vectors.device}."
                 )
         return vectors / norms.clamp_min(eps).unsqueeze(-1)
+
+    @staticmethod
+    def _canonical_axis_like(vectors: torch.Tensor, axis_index: int) -> torch.Tensor:
+        if vectors.dim() != 2 or vectors.shape[-1] != 3:
+            raise ValueError(
+                "vectors must have shape (B, 3) when building a canonical axis, "
+                f"got {tuple(vectors.shape)}."
+            )
+        axis = torch.zeros_like(vectors)
+        axis[:, int(axis_index)] = 1.0
+        return axis
+
+    @staticmethod
+    def _orthogonal_axis_fallback(axis: torch.Tensor, *, eps: float) -> torch.Tensor:
+        if axis.dim() != 2 or axis.shape[-1] != 3:
+            raise ValueError(
+                "axis must have shape (B, 3) when building an orthogonal fallback, "
+                f"got {tuple(axis.shape)}."
+            )
+        axis_abs = axis.abs()
+        basis_index = axis_abs.argmin(dim=-1)
+        basis = torch.eye(3, dtype=axis.dtype, device=axis.device)[basis_index]
+        fallback = basis - (basis * axis).sum(dim=-1, keepdim=True) * axis
+        fallback_norm = torch.linalg.vector_norm(fallback, dim=-1, keepdim=True)
+        return fallback / fallback_norm.clamp_min(float(eps))
+
+    @staticmethod
+    def _replace_degenerate_frame_vectors(
+        vectors: torch.Tensor,
+        fallback: torch.Tensor,
+        *,
+        eps: float,
+    ) -> torch.Tensor:
+        norms = torch.linalg.vector_norm(vectors, dim=-1, keepdim=True)
+        use_fallback = norms <= float(eps)
+        return torch.where(use_fallback, fallback, vectors)
 
     @staticmethod
     def _apply_axis_sign_convention(patches: torch.Tensor, axis: torch.Tensor) -> torch.Tensor:
@@ -511,6 +547,11 @@ class RIMAEBackbone(nn.Module):
         radial_sq = torch.einsum("bpc,bpc->bp", patches, patches)
         primary_idx = radial_sq.argmax(dim=1)
         axis1_raw = patches[batch_idx, primary_idx]
+        axis1_raw = RIMAEBackbone._replace_degenerate_frame_vectors(
+            axis1_raw,
+            RIMAEBackbone._canonical_axis_like(axis1_raw, axis_index=0),
+            eps=frame_eps,
+        )
         axis1 = RIMAEBackbone._normalize_frame_vectors(
             axis1_raw,
             eps=frame_eps,
@@ -524,6 +565,11 @@ class RIMAEBackbone(nn.Module):
         residual_sq = torch.einsum("bpc,bpc->bp", residual, residual)
         secondary_idx = residual_sq.argmax(dim=1)
         axis2_raw = residual[batch_idx, secondary_idx]
+        axis2_raw = RIMAEBackbone._replace_degenerate_frame_vectors(
+            axis2_raw,
+            RIMAEBackbone._orthogonal_axis_fallback(axis1, eps=frame_eps),
+            eps=frame_eps,
+        )
         axis2 = RIMAEBackbone._normalize_frame_vectors(
             axis2_raw,
             eps=frame_eps,
