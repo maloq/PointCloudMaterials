@@ -8,9 +8,7 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def _log_saved_figure(path: Path | str) -> None:
-    print(f"[analysis][savefig] {Path(path).resolve()}")
+from .output_layout import log_saved_figure as _log_saved_figure
 
 
 def _normalize_image_rgba(image: np.ndarray, *, path: Path) -> np.ndarray:

@@ -15,10 +15,7 @@ import numpy as np
 
 from .cluster_colors import _boost_saturation
 from .cluster_geometry import _estimate_ball_radius_world
-
-
-def _log_saved_figure(path: Path | str) -> None:
-    print(f"[analysis][savefig] {Path(path).resolve()}")
+from .output_layout import log_saved_figure as _log_saved_figure
 
 
 def _run_blender_render(
@@ -352,11 +349,13 @@ def _save_md_cluster_snapshot_raytrace_blender(
                 cprefs = addon.preferences
 
                 gpu_backend = None
+                backend_errors = []
                 backend_candidates = ["OPTIX", "CUDA", "HIP", "ONEAPI", "METAL", "OPENCL"]
                 for backend in backend_candidates:
                     try:
                         cprefs.compute_device_type = backend
-                    except Exception:
+                    except Exception as exc:
+                        backend_errors.append(f"{backend}: {type(exc).__name__}: {exc}")
                         continue
                     cprefs.get_devices()
                     if any(getattr(dev, "type", "CPU") != "CPU" for dev in cprefs.devices):
@@ -374,7 +373,8 @@ def _save_md_cluster_snapshot_raytrace_blender(
                         gpu_count += 1
                 if gpu_count <= 0:
                     raise RuntimeError(
-                        "use_gpu=True was requested but no GPU Cycles device is available."
+                        "use_gpu=True was requested but no GPU Cycles device is available. "
+                        f"Tried backends={backend_candidates}, backend_errors={backend_errors}."
                     )
                 scene.cycles.device = "GPU"
                 print(

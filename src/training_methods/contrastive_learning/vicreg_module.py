@@ -5,7 +5,7 @@ from src.training_methods.base_ssl_module import BaseSSLModule
 
 class VICRegModule(BaseSSLModule):
     """
-    Self-supervised VICReg training.
+    Self-supervised contrastive training with VICReg/VISReg/SwAV heads.
     """
 
     def __init__(self, cfg):
@@ -112,7 +112,7 @@ class VICRegModule(BaseSSLModule):
 
         if run_vicreg:
             process_head(
-                "vicreg",
+                self.vicreg.metric_prefix,
                 lambda a, b: self.vicreg.compute_loss_from_features(z_a_feat=a, z_b_feat=b, current_epoch=int(self.current_epoch)),
                 self.vicreg.view_points,
                 shared_features

@@ -1,12 +1,15 @@
 import hashlib
 import json
 from pathlib import Path
+import threading
 from typing import Any
+import zipfile
 
 import numpy as np
 from omegaconf import DictConfig
 
 from src.data_utils.data_kinds import normalize_data_kind
+from .output_layout import write_json
 
 
 def _as_list_of_str(value: Any) -> list[str] | None:
@@ -93,7 +96,16 @@ def _build_inference_cache_spec(
     collector_mode: str = "generic",
 ) -> dict[str, Any]:
     return {
-        "version": 3,
+        "version": 6,
+        "collector_contract": {
+            "latent_array": "model_forward_output_0_z_inv_contrastive",
+            "sample_order": "dataloader_order_preallocated_v3",
+            "encoder_group_sampling": "deterministic_fps_for_analysis_v1",
+            "temporal_input": "static_anchor_or_full_sequence_v1",
+            "coords": "center_positions_for_static_anchor_v1",
+            "temporal_anchor_metadata": "anchor_frame_indices_per_sample_v1",
+            "cpu_transfer": "blocking_cpu_copy_for_numpy_cache_v2",
+        },
         "checkpoint_path": str(Path(checkpoint_path).resolve()),
         "model_type": str(getattr(cfg, "model_type", "")),
         "data_kind": normalize_data_kind(getattr(cfg.data, "kind", None), default="unknown"),
@@ -145,6 +157,7 @@ def _validate_inference_cache_arrays(cache: dict[str, np.ndarray]) -> None:
             f"got shape={tuple(inv_latents.shape)}."
         )
     num_samples = int(inv_latents.shape[0])
+    _validate_invariant_latent_values(inv_latents)
 
     coords = np.asarray(cache["coords"])
     if coords.ndim != 2 or coords.shape[1] != 3:
@@ -193,11 +206,46 @@ def _validate_inference_cache_arrays(cache: dict[str, np.ndarray]) -> None:
             )
 
 
+def _validate_invariant_latent_values(inv_latents: np.ndarray) -> None:
+    arr = np.asarray(inv_latents)
+    chunk_size = 65536
+    zero_rows = 0
+    first_zero_row: int | None = None
+    first_nonfinite_row: int | None = None
+    for start in range(0, int(arr.shape[0]), chunk_size):
+        end = min(start + chunk_size, int(arr.shape[0]))
+        chunk = np.asarray(arr[start:end], dtype=np.float32)
+        finite_rows = np.isfinite(chunk).all(axis=1)
+        if not np.all(finite_rows):
+            bad = int(np.flatnonzero(~finite_rows)[0])
+            first_nonfinite_row = start + bad
+            break
+        norms = np.linalg.norm(chunk.reshape(chunk.shape[0], -1), axis=1)
+        zero_mask = norms <= 1.0e-8
+        if np.any(zero_mask):
+            zero_rows += int(np.count_nonzero(zero_mask))
+            if first_zero_row is None:
+                first_zero_row = start + int(np.flatnonzero(zero_mask)[0])
+
+    if first_nonfinite_row is not None:
+        raise ValueError(
+            "Inference cache 'inv_latents' contains non-finite values. "
+            f"first_bad_row={first_nonfinite_row}, shape={tuple(arr.shape)}. "
+            "Delete the cache and rerun inference."
+        )
+    if zero_rows > 0:
+        raise ValueError(
+            "Inference cache 'inv_latents' contains zero-norm rows. "
+            f"zero_rows={zero_rows}, first_zero_row={first_zero_row}, "
+            f"shape={tuple(arr.shape)}. This usually means the cache was written "
+            "from an incomplete async GPU-to-CPU transfer; delete the cache and rerun inference."
+        )
+
+
 def _normalize_spec_for_compatibility(spec: Any) -> Any:
     if not isinstance(spec, dict):
         return spec
     normalized = dict(spec)
-    normalized.pop("version", None)
     normalized.pop("dynamic_motif", None)
     if "data_kind" in normalized:
         normalized["data_kind"] = normalize_data_kind(
@@ -236,8 +284,14 @@ def _load_inference_cache(
                 f"expected sha256={expected_hash}, found sha256={cached_hash}"
             )
 
-    with np.load(npz_path) as data:
-        cache = {key: np.asarray(data[key]) for key in data.files}
+    try:
+        with np.load(npz_path) as data:
+            cache = {key: np.asarray(data[key]) for key in data.files}
+    except (EOFError, OSError, ValueError, zipfile.BadZipFile) as exc:
+        return None, (
+            f"cache file is unreadable and will be recomputed: {npz_path}. "
+            f"{type(exc).__name__}: {exc}"
+        )
     try:
         _validate_inference_cache_arrays(cache)
     except ValueError as exc:
@@ -260,11 +314,36 @@ def _save_inference_cache(
     _validate_inference_cache_arrays(cache)
     npz_path, meta_path = _inference_cache_paths(out_dir, cache_filename)
     out_dir.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(npz_path, **{key: np.asarray(value) for key, value in cache.items()})
+    tmp_npz_path = npz_path.with_suffix(npz_path.suffix + ".tmp.npz")
+    tmp_meta_path = meta_path.with_suffix(meta_path.suffix + ".tmp")
+    # First-run analysis is dominated by inference and large cache writes; compression
+    # saves disk but costs substantial CPU time for latents/coords that are read locally.
+    _save_npz_with_progress(
+        tmp_npz_path,
+        {key: np.asarray(value) for key, value in cache.items()},
+    )
     meta = {
         "spec": spec,
         "spec_sha256": _inference_cache_spec_hash(spec),
         "num_samples": int(cache["inv_latents"].shape[0]) if cache["inv_latents"].ndim >= 1 else 0,
+        "storage": "npz_uncompressed",
     }
-    with meta_path.open("w") as handle:
-        json.dump(meta, handle, indent=2)
+    write_json(tmp_meta_path, meta)
+    tmp_npz_path.replace(npz_path)
+    tmp_meta_path.replace(meta_path)
+
+
+def _save_npz_with_progress(path: Path, arrays: dict[str, np.ndarray]) -> None:
+    stop_event = threading.Event()
+
+    def _heartbeat() -> None:
+        while not stop_event.wait(30.0):
+            print(f"[analysis][cache] Still writing {path.name}...", flush=True)
+
+    heartbeat = threading.Thread(target=_heartbeat, daemon=True)
+    heartbeat.start()
+    try:
+        np.savez(path, **arrays)
+    finally:
+        stop_event.set()
+        heartbeat.join(timeout=1.0)

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig, OmegaConf, open_dict
 
 from src.data_utils.data_kinds import is_static_data_kind
 from src.utils.model_utils import resolve_config_path
@@ -265,10 +265,18 @@ def _to_plain(value: Any) -> Any:
     return value
 
 
-def _cfg_select(cfg: Any, key: str, *, default: Any = None) -> Any:
+def _cfg_select(cfg: Any, key: str, default: Any = None) -> Any:
     if cfg is None:
         return default
     return OmegaConf.select(cfg, key, default=default)
+
+
+def _cfg_bool(cfg: Any, key: str, default: bool) -> bool:
+    return bool(_cfg_select(cfg, key, default=default))
+
+
+def _cfg_int(cfg: Any, key: str, default: int) -> int:
+    return int(_cfg_select(cfg, key, default=default))
 
 
 def _as_list_of_int(value: Any, *, field_name: str = "value") -> list[int] | None:
@@ -1129,4 +1137,14 @@ def build_runtime_model_config(
                 "Merged runtime model config must be a DictConfig, "
                 f"got {type(model_cfg)!r}."
             )
+    _apply_analysis_inference_overrides(model_cfg)
     return model_cfg
+
+
+def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
+    encoder_kwargs = OmegaConf.select(model_cfg, "encoder.kwargs", default=None)
+    if encoder_kwargs is None:
+        return
+    if "deterministic_fps" in encoder_kwargs:
+        with open_dict(model_cfg):
+            model_cfg.encoder.kwargs.deterministic_fps = True

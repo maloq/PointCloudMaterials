@@ -54,7 +54,7 @@ data:
 
 encoder:
   name: RI_MAE_Invariant
-  kwargs:
+  kwargsinu:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12

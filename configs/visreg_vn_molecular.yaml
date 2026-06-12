@@ -1,0 +1,26 @@
+defaults:
+  - vicreg_vn_molecular
+  - _self_
+
+experiment_name: VISREG_l${latent_size}_K${visreg_num_projections}_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+model_type: visreg
+init_from_checkpoint: null
+resume_from_checkpoint: null
+
+# VISReg reuses the existing contrastive view sampler/projector path, but
+# switches the objective from VICReg covariance regularization to the paper's
+# center + scale + sliced-Wasserstein shape regularization.
+vicreg_enabled: true
+vicreg_weight: 1.0
+vicreg_objective: visreg
+
+# VISReg full loss:
+#   (1 - visreg_lambda) * prediction + visreg_lambda * regularization
+# The regularization is scale + shape + center with separate ablation weights.
+visreg_lambda: 0.9
+visreg_num_projections: 4096
+visreg_scale_coeff: 1.0
+visreg_shape_coeff: 1.0
+visreg_center_coeff: 1.0
+visreg_std_eps: 1e-6

@@ -28,16 +28,6 @@ _ALL_PROFILE_PROPERTIES: list[tuple[str, str]] = (
 )
 
 
-def _json_default(value: Any):
-    if isinstance(value, (np.integer,)):
-        return int(value)
-    if isinstance(value, (np.floating,)):
-        return float(value)
-    if isinstance(value, np.ndarray):
-        return value.tolist()
-    raise TypeError(f"Object of type {type(value)!r} is not JSON serializable")
-
-
 def resolve_point_scale(cfg: Any) -> float:
     data_cfg = getattr(cfg, "data", None)
     if data_cfg is None:
@@ -165,20 +155,30 @@ def _compute_bond_angles(points: np.ndarray, cutoff: float) -> np.ndarray:
     return np.asarray(angles, dtype=np.float32)
 
 
+def _axis_aligned_volume(points: np.ndarray) -> float:
+    span = (
+        np.ptp(points, axis=0)
+        if len(points) > 0
+        else np.zeros((3,), dtype=np.float32)
+    )
+    return float(np.prod(np.maximum(span, 1e-6)))
+
+
 def _compute_convex_volume(points: np.ndarray) -> float:
     n = len(points)
     if n < 4:
-        span = np.ptp(points, axis=0) if n > 0 else np.zeros((3,), dtype=np.float32)
-        return float(np.prod(np.maximum(span, 1e-6)))
+        return _axis_aligned_volume(points)
     try:
         hull = ConvexHull(points)
         volume = float(hull.volume)
         if np.isfinite(volume) and volume > 0.0:
             return volume
-    except (QhullError, ValueError):
-        pass
-    span = np.ptp(points, axis=0)
-    return float(np.prod(np.maximum(span, 1e-6)))
+    except (QhullError, ValueError) as exc:
+        if n == 0:
+            raise RuntimeError(
+                "Convex volume fallback received zero points after the n>=4 guard."
+            ) from exc
+    return _axis_aligned_volume(points)
 
 
 def _compute_rdf_peak(points: np.ndarray, nn_mean: float) -> tuple[float | None, float | None]:

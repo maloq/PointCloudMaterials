@@ -25,6 +25,9 @@ class SwAVLoss(nn.Module):
         freeze_prototypes_steps: int,
         view_mode: str,
         view_points: int | None,
+        prior_type: str,
+        prior_exponent: float,
+        prior_probs,
     ) -> None:
         super().__init__()
         self.enabled = bool(enabled)
@@ -40,6 +43,31 @@ class SwAVLoss(nn.Module):
         self.freeze_prototypes_steps = max(0, int(freeze_prototypes_steps))
         self.view_mode = str(view_mode).strip().lower()
         self.view_points = int(view_points) if view_points is not None else None
+        self.prior_type = str(prior_type).strip().lower()
+        self.prior_exponent = float(prior_exponent)
+
+        if self.num_prototypes <= 0:
+            raise ValueError(f"swav_num_prototypes must be > 0, got {self.num_prototypes}.")
+        if self.prior_type not in {"uniform", "powerlaw", "custom"}:
+            raise ValueError(
+                "swav_prior_type must be one of ['uniform', 'powerlaw', 'custom'], "
+                f"got {prior_type!r}."
+            )
+        if self.prior_type == "powerlaw" and self.prior_exponent <= 0.0:
+            raise ValueError(
+                "swav_prior_exponent must be > 0 for swav_prior_type='powerlaw', "
+                f"got {self.prior_exponent}."
+            )
+
+        explicit_prior = self._build_explicit_prior(prior_probs)
+        if explicit_prior.numel() > 0 and self.prior_type != "custom":
+            raise ValueError(
+                "swav_prior_probs was provided, so swav_prior_type must be 'custom' "
+                f"or omitted; got {self.prior_type!r}."
+            )
+        if explicit_prior.numel() == 0 and self.prior_type == "custom":
+            raise ValueError("swav_prior_type='custom' requires swav_prior_probs.")
+        self.register_buffer("_explicit_prior", explicit_prior, persistent=True)
 
         self.projector = None
         self.prototypes = None
@@ -67,6 +95,12 @@ class SwAVLoss(nn.Module):
             view_points = getattr(data_cfg, "num_points", None)
         if view_points is None:
             view_points = getattr(cfg, "model_points", None)
+        prior_probs = getattr(cfg, "swav_prior_probs", None)
+        raw_prior_type = getattr(cfg, "swav_prior_type", None)
+        if raw_prior_type is None:
+            prior_type = "custom" if prior_probs is not None else "uniform"
+        else:
+            prior_type = str(raw_prior_type)
 
         return cls(
             enabled=bool(getattr(cfg, "swav_enabled", False)),
@@ -82,6 +116,9 @@ class SwAVLoss(nn.Module):
             freeze_prototypes_steps=int(getattr(cfg, "swav_freeze_prototypes_steps", 0)),
             view_mode=str(getattr(cfg, "swav_view_mode", "center_adjacent")),
             view_points=view_points,
+            prior_type=prior_type,
+            prior_exponent=float(getattr(cfg, "swav_prior_exponent", 1.0)),
+            prior_probs=prior_probs,
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -121,6 +158,45 @@ class SwAVLoss(nn.Module):
             dist.all_reduce(value, op=dist.ReduceOp.MAX)
         return value
 
+    def _build_explicit_prior(self, prior_probs) -> torch.Tensor:
+        if prior_probs is None:
+            return torch.empty(0, dtype=torch.float32)
+        prior = torch.as_tensor(list(prior_probs), dtype=torch.float32)
+        if prior.numel() != self.num_prototypes:
+            raise ValueError(
+                "swav_prior_probs length must match swav_num_prototypes: "
+                f"got {prior.numel()} values for {self.num_prototypes} prototypes."
+            )
+        if not torch.isfinite(prior).all():
+            raise ValueError(f"swav_prior_probs must be finite, got {prior.tolist()}.")
+        if (prior <= 0.0).any():
+            raise ValueError(f"swav_prior_probs must be strictly positive, got {prior.tolist()}.")
+        prior_sum = prior.sum()
+        if prior_sum <= 0.0:
+            raise ValueError(f"swav_prior_probs must have positive sum, got {prior.tolist()}.")
+        return prior / prior_sum
+
+    def _assignment_prior(self, *, device, dtype) -> torch.Tensor:
+        if self._explicit_prior.numel() > 0:
+            return self._explicit_prior.to(device=device, dtype=dtype)
+        if self.prior_type == "uniform":
+            return torch.full(
+                (self.num_prototypes,),
+                1.0 / float(self.num_prototypes),
+                device=device,
+                dtype=dtype,
+            )
+        if self.prior_type == "powerlaw":
+            ranks = torch.arange(
+                1,
+                self.num_prototypes + 1,
+                device=device,
+                dtype=dtype,
+            )
+            prior = ranks.pow(-self.prior_exponent)
+            return prior / prior.sum().clamp_min(1e-12)
+        raise RuntimeError(f"Unsupported SwAV prior type at runtime: {self.prior_type!r}.")
+
     @torch.no_grad()
     def normalize_prototypes(self) -> None:
         if self.prototypes is None:
@@ -151,19 +227,26 @@ class SwAVLoss(nn.Module):
 
         local_batch = q.new_tensor(float(q.shape[1]))
         global_batch = self._distributed_sum(local_batch)
-        num_prototypes = q.new_tensor(float(q.shape[0]))
+        prototype_prior = self._assignment_prior(device=q.device, dtype=q.dtype).view(-1, 1)
 
         for _ in range(sinkhorn_iterations):
             row_sums = q.sum(dim=1, keepdim=True)
             row_sums = self._distributed_sum(row_sums)
             q = q / row_sums.clamp_min(1e-12)
-            q = q / num_prototypes
+            q = q * prototype_prior
 
             q = q / q.sum(dim=0, keepdim=True).clamp_min(1e-12)
             q = q / global_batch
 
         q = q * global_batch
         return q.t()
+
+    def _global_assignment_mass(self, assignments: torch.Tensor) -> torch.Tensor:
+        local_mass = assignments.sum(dim=0)
+        global_mass = self._distributed_sum(local_mass)
+        local_batch = assignments.new_tensor(float(assignments.shape[0]))
+        global_batch = self._distributed_sum(local_batch)
+        return global_mass / global_batch.clamp_min(1e-12)
 
     def compute_loss(
         self,
@@ -173,8 +256,6 @@ class SwAVLoss(nn.Module):
     ):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
-
-        batch_size = int(view_features[0].shape[0])
 
         self.normalize_prototypes()
         logits_by_view = [self._prototype_logits(features) for features in view_features]
@@ -187,7 +268,7 @@ class SwAVLoss(nn.Module):
             assignment_max_probs.append(assignments.max(dim=1).values.mean())
             assignment_entropy = -(assignments * assignments.clamp_min(1e-12).log()).sum(dim=1).mean()
             assignment_entropies.append(assignment_entropy)
-            assignment_prototype_masses.append(assignments.sum(dim=0) / float(batch_size))
+            assignment_prototype_masses.append(self._global_assignment_mass(assignments))
 
             subloss_terms = []
             for pred_idx, prediction_logits in enumerate(logits_by_view):
@@ -203,8 +284,19 @@ class SwAVLoss(nn.Module):
             "swav_assignment_max_prob": torch.stack(assignment_max_probs, dim=0).mean(),
         }
         prototype_mass = torch.stack(assignment_prototype_masses, dim=0).mean(dim=0)
+        prototype_prior = self._assignment_prior(
+            device=prototype_mass.device,
+            dtype=prototype_mass.dtype,
+        )
+        prototype_prior_kl = (
+            prototype_mass
+            * (prototype_mass.clamp_min(1e-12).log() - prototype_prior.clamp_min(1e-12).log())
+        ).sum()
         metrics["swav_prototype_mass_min"] = prototype_mass.min()
         metrics["swav_prototype_mass_max"] = prototype_mass.max()
+        metrics["swav_prior_target_min"] = prototype_prior.min()
+        metrics["swav_prior_target_max"] = prototype_prior.max()
+        metrics["swav_prior_kl"] = prototype_prior_kl
         nonfinite = (~torch.isfinite(loss)).to(dtype=loss.dtype)
         metrics["swav_nonfinite"] = nonfinite
         loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)

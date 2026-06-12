@@ -17,6 +17,7 @@ from .cluster_figures import (
 from .output_layout import (
     snapshot_figure_set_dir,
     snapshot_outputs_root,
+    write_json,
 )
 
 
@@ -780,6 +781,8 @@ def write_figure_only_metrics(
         merged_metrics["clustering"] = existing_clustering
     else:
         merged_metrics["clustering"] = all_metrics["clustering"]
+    if "clustering_model_fit" in all_metrics:
+        merged_metrics["clustering_model_fit"] = all_metrics["clustering_model_fit"]
     merged_metrics["inference_cache"] = all_metrics["inference_cache"]
     if "cluster_figure_set" in all_metrics:
         merged_metrics["cluster_figure_set"] = all_metrics["cluster_figure_set"]
@@ -791,8 +794,7 @@ def write_figure_only_metrics(
         ]
     if "cluster_figure_sets_by_k" in all_metrics:
         merged_metrics["cluster_figure_sets_by_k"] = all_metrics["cluster_figure_sets_by_k"]
-    with metrics_path.open("w") as handle:
-        json.dump(merged_metrics, handle, indent=2)
+    write_json(metrics_path, merged_metrics)
     return merged_metrics
 
 

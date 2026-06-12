@@ -31,10 +31,7 @@ from .representative_structures import (
     analyze_cluster_representatives,
     materialize_cluster_representative_analysis_summary,
 )
-
-
-def _log_saved_figure(path: Path | str) -> None:
-    print(f"[analysis][savefig] {Path(path).resolve()}")
+from .output_layout import log_saved_figure as _log_saved_figure
 
 
 def _ensure_connected_edges(

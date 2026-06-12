@@ -191,6 +191,50 @@ def _clustering_feature_prep_from_info(info: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def clustering_fit_quality_rejection_reasons(
+    metrics: dict[str, Any],
+    *,
+    primary_k: int,
+    pca_explained_variance_min: float = 0.5,
+    mean_cosine_min: float = 0.6,
+    silhouette_cosine_min: float = 0.15,
+) -> list[str]:
+    """Return reasons an external clustering fit is too weak to transfer."""
+    info_by_k = metrics.get("cluster_fit_info_by_k")
+    if not isinstance(info_by_k, dict):
+        return ["missing cluster_fit_info_by_k in clustering fit metrics"]
+
+    k = int(primary_k)
+    info = info_by_k.get(k)
+    if info is None:
+        info = info_by_k.get(str(k))
+    if not isinstance(info, dict):
+        return [f"missing clustering fit info for primary_k={k}"]
+
+    reasons: list[str] = []
+
+    def _add_if_below(metric_name: str, minimum: float) -> None:
+        raw_value = info.get(metric_name)
+        if raw_value is None:
+            return
+        try:
+            value = float(raw_value)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "Clustering fit metric is not numeric. "
+                f"metric={metric_name!r}, value={raw_value!r}, primary_k={k}."
+            ) from exc
+        if not np.isfinite(value):
+            reasons.append(f"{metric_name} is not finite ({value!r})")
+        elif value < float(minimum):
+            reasons.append(f"{metric_name}={value:.4g} < {minimum:.4g}")
+
+    _add_if_below("pca_explained_variance", pca_explained_variance_min)
+    _add_if_below("mean_assigned_cosine_similarity", mean_cosine_min)
+    _add_if_below("silhouette_cosine", silhouette_cosine_min)
+    return reasons
+
+
 def _build_clustering_metrics_summary(
     *,
     requested_k_values: list[int],

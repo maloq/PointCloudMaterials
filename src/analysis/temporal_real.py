@@ -209,6 +209,7 @@ def _build_temporal_real_inference_dataset(
     selection_method: str,
     rebuild_cache: bool,
     tree_cache_size: int,
+    precompute_neighbor_indices: bool,
     dataset_center_kwargs: dict[str, Any],
 ) -> tuple[Any, TemporalRealInferenceSpec]:
     _validate_temporal_real_checkpoint_compatibility(
@@ -260,7 +261,7 @@ def _build_temporal_real_inference_dataset(
         selection_method=str(selection_method),
         rebuild_cache=bool(rebuild_cache),
         tree_cache_size=int(tree_cache_size),
-        precompute_neighbor_indices=False,
+        precompute_neighbor_indices=bool(precompute_neighbor_indices),
         build_lock_timeout_sec=float(
             getattr(model_cfg.data, "build_lock_timeout_sec", 7200.0)
         ),
@@ -297,6 +298,9 @@ def build_temporal_real_analysis_bundle(
 
     cache_dir_raw = OmegaConf.select(temporal_cfg, "cache_dir", default=None)
     cache_dir = None if cache_dir_raw in {None, ""} else Path(str(cache_dir_raw)).expanduser().resolve()
+    precompute_neighbor_indices = bool(
+        OmegaConf.select(temporal_cfg, "precompute_neighbor_indices", default=False)
+    )
 
     sequence_length = int(OmegaConf.select(temporal_cfg, "sequence_length", default=4))
     frame_stride = int(OmegaConf.select(temporal_cfg, "frame_stride", default=1))
@@ -318,7 +322,7 @@ def build_temporal_real_analysis_bundle(
         if num_points_raw is None
         else int(num_points_raw)
     )
-    scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file)
+    scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file, cache_dir=cache_dir)
     timestep_deltas = np.diff(scan.timesteps).astype(np.int64, copy=False)
     dump_summary = {
         "source_path": str(dump_file),
@@ -446,6 +450,7 @@ def build_temporal_real_analysis_bundle(
         ),
         rebuild_cache=bool(OmegaConf.select(temporal_cfg, "rebuild_cache", default=False)),
         tree_cache_size=int(OmegaConf.select(temporal_cfg, "tree_cache_size", default=4)),
+        precompute_neighbor_indices=bool(precompute_neighbor_indices),
         **dataset_center_kwargs,
     )
     dataloader = torch.utils.data.DataLoader(
@@ -478,6 +483,7 @@ def build_temporal_real_analysis_bundle(
         ),
         rebuild_cache=bool(OmegaConf.select(temporal_cfg, "rebuild_cache", default=False)),
         tree_cache_size=int(OmegaConf.select(temporal_cfg, "tree_cache_size", default=4)),
+        precompute_neighbor_indices=bool(precompute_neighbor_indices),
         dataset_center_kwargs=dict(dataset_center_kwargs),
     )
     inference_dataloader = torch.utils.data.DataLoader(
@@ -541,6 +547,13 @@ def build_temporal_real_single_snapshot_bundle(
             default_static_frame_index=0,
         )
     overlap = float(center_grid_overlap)
+    precompute_neighbor_indices = bool(
+        OmegaConf.select(
+            temporal_cfg,
+            "precompute_single_snapshot_neighbor_indices",
+            default=False,
+        )
+    )
 
     dataset = TemporalLAMMPSDumpDataset(
         dump_file=selection.dump_file,
@@ -566,6 +579,7 @@ def build_temporal_real_single_snapshot_bundle(
         ),
         rebuild_cache=bool(OmegaConf.select(temporal_cfg, "rebuild_cache", default=False)),
         tree_cache_size=int(OmegaConf.select(temporal_cfg, "tree_cache_size", default=4)),
+        precompute_neighbor_indices=bool(precompute_neighbor_indices),
     )
     dataloader = torch.utils.data.DataLoader(
         dataset,
@@ -597,6 +611,7 @@ def build_temporal_real_single_snapshot_bundle(
         ),
         rebuild_cache=bool(OmegaConf.select(temporal_cfg, "rebuild_cache", default=False)),
         tree_cache_size=int(OmegaConf.select(temporal_cfg, "tree_cache_size", default=4)),
+        precompute_neighbor_indices=bool(precompute_neighbor_indices),
         dataset_center_kwargs={
             "center_selection_mode": "regular_grid",
             "center_grid_overlap": float(overlap),

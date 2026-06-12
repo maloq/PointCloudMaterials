@@ -13,6 +13,7 @@ from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 
 
 _VIEW_POINTS_UNSET = object()
+_SUPPORTED_OBJECTIVES = {"vicreg", "visreg"}
 
 
 class VICRegLoss(nn.Module):
@@ -48,6 +49,13 @@ class VICRegLoss(nn.Module):
         std_eps: float,
         std_target: float,
         input_dim,
+        objective: str = "vicreg",
+        visreg_lambda: float = 0.9,
+        visreg_num_projections: int = 4096,
+        visreg_scale_coeff: float = 1.0,
+        visreg_shape_coeff: float = 1.0,
+        visreg_center_coeff: float = 1.0,
+        visreg_std_eps: float = 1e-6,
         radial_enabled: bool = False,
         radial_beta1: float = 1.0,
         radial_beta2: float = 0.1,
@@ -57,6 +65,13 @@ class VICRegLoss(nn.Module):
         super().__init__()
         self.enabled = bool(enabled)
         self.weight = float(weight)
+        self.objective = str(objective).strip().lower()
+        if self.objective not in _SUPPORTED_OBJECTIVES:
+            raise ValueError(
+                "vicreg_objective must be one of "
+                f"{sorted(_SUPPORTED_OBJECTIVES)}, got {objective!r}."
+            )
+        self.metric_prefix = self.objective
         self.sim_coeff = float(sim_coeff)
         self.std_coeff = float(std_coeff)
         self.cov_coeff = float(cov_coeff)
@@ -89,6 +104,45 @@ class VICRegLoss(nn.Module):
         self.radial_beta2 = float(radial_beta2)
         self.radial_m = int(radial_m) if radial_m is not None and int(radial_m) > 0 else None
         self.radial_eps = max(float(radial_eps), 1e-12)
+        if self.objective == "visreg" and self.radial_enabled:
+            raise ValueError(
+                "vicreg_radial_enabled is incompatible with vicreg_objective='visreg'. "
+                "VISReg replaces covariance with center/scale/shape regularization; "
+                "disable radial regularization for a faithful VISReg objective."
+            )
+
+        self.visreg_lambda = float(visreg_lambda)
+        self.visreg_num_projections = int(visreg_num_projections)
+        self.visreg_scale_coeff = float(visreg_scale_coeff)
+        self.visreg_shape_coeff = float(visreg_shape_coeff)
+        self.visreg_center_coeff = float(visreg_center_coeff)
+        self.visreg_std_eps = float(visreg_std_eps)
+        if self.objective == "visreg":
+            if not (0.0 <= self.visreg_lambda <= 1.0):
+                raise ValueError(
+                    "visreg_lambda must be in [0, 1] for "
+                    "(1-lambda) * prediction + lambda * regularization, "
+                    f"got {self.visreg_lambda}."
+                )
+            if self.visreg_num_projections <= 0:
+                raise ValueError(
+                    "visreg_num_projections must be > 0, "
+                    f"got {self.visreg_num_projections}."
+                )
+            if self.visreg_std_eps <= 0.0:
+                raise ValueError(
+                    "visreg_std_eps must be > 0 to avoid division by zero "
+                    f"during collapsed embeddings, got {self.visreg_std_eps}."
+                )
+            for name, value in (
+                ("visreg_scale_coeff", self.visreg_scale_coeff),
+                ("visreg_shape_coeff", self.visreg_shape_coeff),
+                ("visreg_center_coeff", self.visreg_center_coeff),
+            ):
+                if value < 0.0:
+                    raise ValueError(f"{name} must be >= 0 for VISReg, got {value}.")
+        self._visreg_cached_target_n = -1
+        self._visreg_cached_target = None
 
         self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
@@ -129,6 +183,13 @@ class VICRegLoss(nn.Module):
             radial_m = int(radial_m)
             if radial_m <= 0:
                 radial_m = None
+        raw_objective = getattr(cfg, "vicreg_objective", None)
+        if raw_objective is None:
+            raw_objective = getattr(cfg, "contrastive_objective", None)
+        if raw_objective is None:
+            model_type = str(getattr(cfg, "model_type", "")).strip().lower()
+            raw_objective = "visreg" if model_type == "visreg" else "vicreg"
+        objective = str(raw_objective).strip().lower()
         enabled = bool(getattr(cfg, "vicreg_enabled", False))
         weight = float(getattr(cfg, "vicreg_weight", 0.0))
         sim_coeff = float(getattr(cfg, "vicreg_sim_coeff", 25.0))
@@ -161,6 +222,12 @@ class VICRegLoss(nn.Module):
         radial_beta1 = float(getattr(cfg, "vicreg_radial_beta1", 1.0))
         radial_beta2 = float(getattr(cfg, "vicreg_radial_beta2", 0.1))
         radial_eps = float(getattr(cfg, "vicreg_radial_eps", 1e-8))
+        visreg_lambda = float(getattr(cfg, "visreg_lambda", 0.9))
+        visreg_num_projections = int(getattr(cfg, "visreg_num_projections", 4096))
+        visreg_scale_coeff = float(getattr(cfg, "visreg_scale_coeff", 1.0))
+        visreg_shape_coeff = float(getattr(cfg, "visreg_shape_coeff", 1.0))
+        visreg_center_coeff = float(getattr(cfg, "visreg_center_coeff", 1.0))
+        visreg_std_eps = float(getattr(cfg, "visreg_std_eps", 1e-6))
 
         warn_common_view_sampler_ignored_fields(
             cfg,
@@ -214,6 +281,13 @@ class VICRegLoss(nn.Module):
             std_eps=std_eps,
             std_target=std_target,
             input_dim=input_dim,
+            objective=objective,
+            visreg_lambda=visreg_lambda,
+            visreg_num_projections=visreg_num_projections,
+            visreg_scale_coeff=visreg_scale_coeff,
+            visreg_shape_coeff=visreg_shape_coeff,
+            visreg_center_coeff=visreg_center_coeff,
+            visreg_std_eps=visreg_std_eps,
             radial_enabled=radial_enabled,
             radial_beta1=radial_beta1,
             radial_beta2=radial_beta2,
@@ -307,7 +381,7 @@ class VICRegLoss(nn.Module):
         loss, metrics = self._loss(z_a, z_b)
         # Tensor-only nonfinite accounting (no `.item()` sync, see #3).
         nonfinite = (~torch.isfinite(loss)).to(dtype=loss.dtype)
-        metrics["vicreg_nonfinite"] = nonfinite
+        metrics[f"{self.metric_prefix}_nonfinite"] = nonfinite
         loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
@@ -706,13 +780,75 @@ class VICRegLoss(nn.Module):
 
         return ce - ent, ce, ent
 
-    def _loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
-        if z_a.dtype != torch.float32:
-            z_a = z_a.float()
-        if z_b.dtype != torch.float32:
-            z_b = z_b.float()
-        z_a = self._gather_all(z_a)
-        z_b = self._gather_all(z_b)
+    def _visreg_gaussian_quantiles(self, n: int, *, device, dtype) -> torch.Tensor:
+        if n <= 0:
+            raise ValueError(f"VISReg requires a non-empty batch, got batch size {n}.")
+        if self._visreg_cached_target_n != int(n) or self._visreg_cached_target is None:
+            q = torch.arange(1, int(n) + 1, device=device, dtype=torch.float32)
+            q = q / float(int(n) + 1)
+            self._visreg_cached_target = torch.erfinv(2.0 * q - 1.0).mul_(math.sqrt(2.0))
+            self._visreg_cached_target_n = int(n)
+        return self._visreg_cached_target.to(device=device, dtype=dtype)
+
+    def _visreg_regularization_loss(self, z_views: torch.Tensor) -> tuple[torch.Tensor, dict]:
+        num_views, n, d = z_views.shape
+        if num_views <= 0:
+            raise ValueError("VISReg requires at least one view.")
+        if n <= 0:
+            raise ValueError("VISReg requires a non-empty batch.")
+
+        mu = z_views.mean(dim=1, keepdim=True)
+        center_loss = mu.pow(2).mean()
+
+        z_centered = z_views - mu
+        std = z_centered.norm(dim=1).div(math.sqrt(float(n))) + self.visreg_std_eps
+        scale_loss = (std - 1.0).pow(2).mean()
+
+        z_norm = z_centered / std.detach().unsqueeze(1)
+        slices = F.normalize(
+            torch.randn(
+                d,
+                self.visreg_num_projections,
+                device=z_views.device,
+                dtype=z_views.dtype,
+            ),
+            dim=0,
+        )
+        p_sorted = torch.matmul(z_norm, slices).sort(dim=1).values
+        target = self._visreg_gaussian_quantiles(
+            n,
+            device=z_views.device,
+            dtype=z_views.dtype,
+        ).view(1, n, 1)
+        shape_loss = (p_sorted - target).pow(2).mean()
+
+        reg_loss = (
+            self.visreg_scale_coeff * scale_loss
+            + self.visreg_shape_coeff * shape_loss
+            + self.visreg_center_coeff * center_loss
+        )
+        metrics = {
+            "visreg_reg": reg_loss,
+            "visreg_scale": scale_loss,
+            "visreg_shape": shape_loss,
+            "visreg_center": center_loss,
+        }
+        return reg_loss, metrics
+
+    def _visreg_loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
+        z_views = torch.stack((z_a, z_b), dim=0)
+        global_mean = z_views.mean(dim=0, keepdim=True)
+        pred_loss = (z_views - global_mean).pow(2).mean()
+        reg_loss, metrics = self._visreg_regularization_loss(z_views)
+        loss = (1.0 - self.visreg_lambda) * pred_loss + self.visreg_lambda * reg_loss
+        metrics = {
+            "visreg_pred": pred_loss,
+            **metrics,
+            "visreg_lambda": z_a.new_tensor(self.visreg_lambda),
+        }
+        return loss, metrics
+
+    def _vicreg_loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
         n, _ = z_a.shape
         if n < 2:
             zero = z_a.new_tensor(0.0)
@@ -728,15 +864,30 @@ class VICRegLoss(nn.Module):
         metrics = {"vicreg_sim": sim_loss, "vicreg_std": std_loss, "vicreg_cov": cov_loss}
 
         if self.radial_enabled:
-            radial_a, ce_a, ent_a = self._radial_gaussianization_loss(z_a)
-            radial_b, ce_b, ent_b = self._radial_gaussianization_loss(z_b)
+            radial_a, _, _ = self._radial_gaussianization_loss(z_a)
+            radial_b, _, _ = self._radial_gaussianization_loss(z_b)
             radial_loss = 0.5 * (radial_a + radial_b)
-            radial_ce = 0.5 * (ce_a + ce_b)
-            radial_ent = 0.5 * (ent_a + ent_b)
             loss = loss + radial_loss
             metrics["vicreg_radial"] = radial_loss
 
         return loss, metrics
+
+    def _loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
+        if z_a.dtype != torch.float32:
+            z_a = z_a.float()
+        if z_b.dtype != torch.float32:
+            z_b = z_b.float()
+        z_a = self._gather_all(z_a)
+        z_b = self._gather_all(z_b)
+        if z_a.shape != z_b.shape:
+            raise ValueError(
+                "Contrastive view embeddings must have identical shapes before "
+                f"{self.objective.upper()} loss; got z_a={tuple(z_a.shape)}, "
+                f"z_b={tuple(z_b.shape)}."
+            )
+        if self.objective == "visreg":
+            return self._visreg_loss(z_a, z_b)
+        return self._vicreg_loss(z_a, z_b)
 
     def _invariant(self, inv_z, eq_z):
         if self.invariant_head is None:

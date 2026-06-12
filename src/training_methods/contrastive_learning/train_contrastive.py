@@ -27,7 +27,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="vicreg_vn_molecular.yaml",
+    config_name="vicreg_vn_molecular_swav_powerlaw_prior.yaml",
 )
 def main(cfg: DictConfig):
     train(cfg)

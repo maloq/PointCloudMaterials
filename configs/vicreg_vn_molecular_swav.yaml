@@ -9,7 +9,7 @@ swav_enabled: true
 swav_weight: 1.0
 swav_projection_dim: 128
 swav_hidden_dim: 512
-swav_num_prototypes: 7
+swav_num_prototypes: 16
 swav_temperature: 0.1
 swav_epsilon: 0.05
 swav_sinkhorn_iterations: 12

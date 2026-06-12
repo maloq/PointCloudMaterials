@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-import json
 import warnings
 from collections import Counter
 from pathlib import Path
@@ -12,6 +11,7 @@ from typing import Any
 import numpy as np
 
 from src.baselines.descriptor_baselines import CNADescriptorBaseline, infer_center_shell
+from .output_layout import write_json
 
 
 def _format_cna_signature(signature: str) -> str:
@@ -537,7 +537,7 @@ def materialize_cluster_representative_analysis_summary(
         "cna_signature_vocab": [str(v) for v in cna_signature_vocab],
         "representatives": [dict(record) for record in representatives],
     }
-    json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    write_json(json_path, payload)
     _write_structure_analysis_csv(
         csv_path,
         representative_records=payload["representatives"],

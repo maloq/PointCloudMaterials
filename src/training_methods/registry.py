@@ -27,6 +27,7 @@ class TrainingMethodSpec:
 _METHODS: dict[str, TrainingMethodSpec] = {}
 _MODEL_TYPE_ALIASES = {
     "vicreg": "contrastive",
+    "visreg": "contrastive",
     "contrastive": "contrastive",
     "temporal_vicreg": "temporal_ssl",
     "temporal_ssl": "temporal_ssl",

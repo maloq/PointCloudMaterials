@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import csv
 from dataclasses import replace
-import json
 import math
 from pathlib import Path
 from typing import Any
@@ -24,25 +23,9 @@ from src.vis_tools.md_cluster_plot import save_interactive_md_plot
 
 from .cluster_colors import _build_cluster_color_map
 from .cluster_geometry import _compute_cluster_representative_indices
+from .config import _cfg_bool, _cfg_int, _cfg_select
 from .figure_sets import render_cluster_figure_outputs
-
-
-def _cfg_bool(cfg: Any, key: str, default: bool) -> bool:
-    if cfg is None:
-        return bool(default)
-    return bool(OmegaConf.select(cfg, key, default=default))
-
-
-def _cfg_int(cfg: Any, key: str, default: int) -> int:
-    if cfg is None:
-        return int(default)
-    return int(OmegaConf.select(cfg, key, default=default))
-
-
-def _cfg_select(cfg: Any, key: str, default: Any) -> Any:
-    if cfg is None:
-        return default
-    return OmegaConf.select(cfg, key, default=default)
+from .output_layout import write_json
 
 
 def _swav_is_available(model: Any) -> bool:
@@ -1697,8 +1680,7 @@ def run_swav_prototype_evaluation(
         "prototype_figure_set": prototype_figure_set,
     }
     summary_path = out_root / "swav_prototype_summary.json"
-    with summary_path.open("w") as handle:
-        json.dump(summary, handle, indent=2)
+    write_json(summary_path, summary)
     summary["summary_json"] = str(summary_path)
     return summary
 

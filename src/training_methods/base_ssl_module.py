@@ -123,10 +123,13 @@ class BaseSSLModule(pl.LightningModule):
         if self.vicreg.projector is not None:
             if features is None:
                 raise RuntimeError(
-                    "Cannot profile VICReg FLOPs for the Lightning model summary because "
+                    "Cannot profile contrastive FLOPs for the Lightning model summary because "
                     "the encoder did not return invariant contrastive features."
                 )
-            head_outputs["vicreg_projected"] = self.vicreg(features, profile_projector=True)
+            head_outputs[f"{self.vicreg.metric_prefix}_projected"] = self.vicreg(
+                features,
+                profile_projector=True,
+            )
         if self.swav.projector is not None or self.swav.prototypes is not None:
             if features is None:
                 raise RuntimeError(
@@ -216,8 +219,9 @@ class BaseSSLModule(pl.LightningModule):
 
     def _weighted_total_loss(self, losses: dict[str, torch.Tensor]) -> torch.Tensor:
         total_loss = None
-        if "vicreg" in losses:
-            vicreg_total = self.vicreg.weight * losses["vicreg"]
+        contrastive_key = getattr(self.vicreg, "metric_prefix", "vicreg")
+        if contrastive_key in losses:
+            vicreg_total = self.vicreg.weight * losses[contrastive_key]
             total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
         if "swav" in losses:
             swav_total = self.swav.weight * losses["swav"]

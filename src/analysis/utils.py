@@ -75,6 +75,15 @@ def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None
     return pc, phase
 
 
+def _extract_optional_flat_tensor(batch: Any, key: str) -> torch.Tensor | None:
+    value = batch.get(key, None)
+    if value is None:
+        return None
+    if not torch.is_tensor(value):
+        value = torch.as_tensor(value)
+    return value.detach().view(-1).cpu()
+
+
 def _prepare_pointcloud_batch_for_model(
     pc: torch.Tensor,
     *,
@@ -285,6 +294,55 @@ def build_static_coords_dataloader(
 build_real_coords_dataloader = build_static_coords_dataloader
 
 
+def _torch_dtype_to_numpy_dtype(dtype: torch.dtype) -> np.dtype:
+    dtype_map = {
+        torch.float64: np.dtype(np.float64),
+        torch.float32: np.dtype(np.float32),
+        torch.float16: np.dtype(np.float16),
+        torch.bfloat16: np.dtype(np.float32),
+        torch.int64: np.dtype(np.int64),
+        torch.int32: np.dtype(np.int32),
+        torch.int16: np.dtype(np.int16),
+        torch.int8: np.dtype(np.int8),
+        torch.uint8: np.dtype(np.uint8),
+        torch.bool: np.dtype(np.bool_),
+    }
+    if dtype not in dtype_map:
+        raise TypeError(f"Unsupported tensor dtype for inference cache storage: {dtype!r}.")
+    return dtype_map[dtype]
+
+
+def _tensor_slice_to_numpy_for_storage(tensor: torch.Tensor, take: int) -> np.ndarray:
+    # The returned NumPy view is consumed immediately by cache writers.  This
+    # must be a blocking CPU copy; otherwise a preallocated NumPy cache can read
+    # from the tensor before an async CUDA transfer has completed.
+    tensor_cpu = tensor.detach()[:take].to("cpu", non_blocking=False).contiguous()
+    if tensor_cpu.dtype == torch.bfloat16:
+        tensor_cpu = tensor_cpu.to(torch.float32)
+    return tensor_cpu.numpy()
+
+
+def _expected_inference_sample_count(
+    *,
+    dataloader: torch.utils.data.DataLoader,
+    max_batches: int | None,
+    max_samples: int | None,
+) -> int | None:
+    dataset = getattr(dataloader, "dataset", None)
+    dataset_len = None if dataset is None else int(len(dataset))
+    if max_batches is None:
+        if dataset_len is None:
+            return None
+        return dataset_len if max_samples is None else min(dataset_len, int(max_samples))
+    batch_size = getattr(dataloader, "batch_size", None)
+    if batch_size is None:
+        return None if max_samples is None else int(max_samples)
+    batch_cap = int(max_batches) * int(batch_size)
+    if dataset_len is not None:
+        batch_cap = min(batch_cap, dataset_len)
+    return batch_cap if max_samples is None else min(batch_cap, int(max_samples))
+
+
 def gather_inference_batches(
     model: AnalyzableModel,
     dataloader: torch.utils.data.DataLoader,
@@ -300,9 +358,37 @@ def gather_inference_batches(
 ) -> Dict[str, np.ndarray]:
     """Collect inputs and latents from batches."""
     inv_latents, eq_latents, phases, coords_list, instance_ids = [], [], [], [], []
+    anchor_frame_indices = []
     collected = 0
     max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
     every = max(1, int(progress_every_batches))
+    expected_total_samples = _expected_inference_sample_count(
+        dataloader=dataloader,
+        max_batches=max_batches,
+        max_samples=max_samples,
+    )
+    use_preallocated_arrays = expected_total_samples is not None
+    preallocated: dict[str, np.ndarray] | None = None
+
+    def _copy_tensor_to_numpy(
+        *,
+        key: str,
+        tensor: torch.Tensor,
+        take: int,
+    ) -> None:
+        if preallocated is None:
+            raise RuntimeError(
+                "Internal error: preallocated inference arrays are not initialized."
+            )
+        arr = preallocated[key]
+        end = collected + int(take)
+        if end > int(arr.shape[0]):
+            raise RuntimeError(
+                "Preallocated inference cache is too small. "
+                f"key={key}, requested_end={end}, capacity={int(arr.shape[0])}, "
+                f"expected_total_samples={expected_total_samples}."
+            )
+        arr[collected:end] = _tensor_slice_to_numpy_for_storage(tensor, take)
 
     rng_state = None if seed_base is None else _seed_inference_rng_once(seed_base, device)
     try:
@@ -311,6 +397,7 @@ def gather_inference_batches(
                 if max_batches is not None and batch_idx >= max_batches:
                     break
                 pc, phase, coords, instance_id = _extract_pc_phase_coords(batch)
+                anchor_frame_index = _extract_optional_flat_tensor(batch, "anchor_frame_index")
                 pc = _prepare_pointcloud_batch_for_model(
                     pc,
                     temporal_sequence_mode=temporal_sequence_mode,
@@ -344,9 +431,30 @@ def gather_inference_batches(
                 if take <= 0:
                     break
 
-                inv_latents.append(
-                    z_inv_contrastive.detach()[:take].to("cpu", non_blocking=True)
-                )
+                if use_preallocated_arrays and preallocated is None:
+                    preallocated = {
+                        "inv_latents": np.empty(
+                            (
+                                int(expected_total_samples),
+                                *tuple(z_inv_contrastive.shape[1:]),
+                            ),
+                            dtype=_torch_dtype_to_numpy_dtype(z_inv_contrastive.dtype),
+                        )
+                    }
+                    if eq_z is not None:
+                        preallocated["eq_latents"] = np.empty(
+                            (int(expected_total_samples), *tuple(eq_z.shape[1:])),
+                            dtype=_torch_dtype_to_numpy_dtype(eq_z.dtype),
+                        )
+
+                if preallocated is None:
+                    inv_latents.append(z_inv_contrastive.detach()[:take].cpu())
+                else:
+                    _copy_tensor_to_numpy(
+                        key="inv_latents",
+                        tensor=z_inv_contrastive,
+                        take=take,
+                    )
                 if collect_coords:
                     if coords is None:
                         raise RuntimeError(
@@ -363,13 +471,93 @@ def gather_inference_batches(
                             f"collect_coords=True, got shape={tuple(coords_t.shape)} "
                             f"at batch_idx={batch_idx}."
                         )
-                    coords_list.append(coords_t[:take])
+                    if preallocated is None:
+                        coords_list.append(coords_t[:take])
+                    else:
+                        if "coords" not in preallocated:
+                            preallocated["coords"] = np.empty(
+                                (int(expected_total_samples), 3),
+                                dtype=_torch_dtype_to_numpy_dtype(coords_t.dtype),
+                            )
+                        end = collected + int(take)
+                        preallocated["coords"][collected:end] = (
+                            _tensor_slice_to_numpy_for_storage(coords_t, take)
+                        )
                 if eq_z is not None:
-                    eq_latents.append(eq_z.detach()[:take].to("cpu", non_blocking=True))
+                    if preallocated is None:
+                        eq_latents.append(eq_z.detach()[:take].cpu())
+                    else:
+                        if "eq_latents" not in preallocated:
+                            preallocated["eq_latents"] = np.empty(
+                                (int(expected_total_samples), *tuple(eq_z.shape[1:])),
+                                dtype=_torch_dtype_to_numpy_dtype(eq_z.dtype),
+                            )
+                        _copy_tensor_to_numpy(
+                            key="eq_latents",
+                            tensor=eq_z,
+                            take=take,
+                        )
+                elif preallocated is not None and "eq_latents" in preallocated:
+                    raise RuntimeError(
+                        "Model returned equivariant latents for an earlier inference batch "
+                        f"but returned None at batch_idx={batch_idx}."
+                    )
                 if phase is not None:
-                    phases.append(phase.detach().view(-1).cpu()[:take])
+                    phase_t = phase.detach().view(-1).cpu()
+                    if preallocated is None:
+                        phases.append(phase_t[:take])
+                    else:
+                        if "phases" not in preallocated:
+                            preallocated["phases"] = np.empty(
+                                (int(expected_total_samples),),
+                                dtype=_torch_dtype_to_numpy_dtype(phase_t.dtype),
+                            )
+                        end = collected + int(take)
+                        preallocated["phases"][collected:end] = (
+                            _tensor_slice_to_numpy_for_storage(phase_t, take)
+                        )
+                elif preallocated is not None and "phases" in preallocated:
+                    raise RuntimeError(
+                        "Inference batches provided class_id for an earlier batch "
+                        f"but omitted it at batch_idx={batch_idx}."
+                    )
                 if instance_id is not None:
-                    instance_ids.append(instance_id.detach().view(-1).cpu()[:take])
+                    instance_id_t = instance_id.detach().view(-1).cpu()
+                    if preallocated is None:
+                        instance_ids.append(instance_id_t[:take])
+                    else:
+                        if "instance_ids" not in preallocated:
+                            preallocated["instance_ids"] = np.empty(
+                                (int(expected_total_samples),),
+                                dtype=_torch_dtype_to_numpy_dtype(instance_id_t.dtype),
+                            )
+                        end = collected + int(take)
+                        preallocated["instance_ids"][collected:end] = (
+                            _tensor_slice_to_numpy_for_storage(instance_id_t, take)
+                        )
+                elif preallocated is not None and "instance_ids" in preallocated:
+                    raise RuntimeError(
+                        "Inference batches provided instance_id for an earlier batch "
+                        f"but omitted it at batch_idx={batch_idx}."
+                    )
+                if anchor_frame_index is not None:
+                    if preallocated is None:
+                        anchor_frame_indices.append(anchor_frame_index[:take])
+                    else:
+                        if "anchor_frame_indices" not in preallocated:
+                            preallocated["anchor_frame_indices"] = np.empty(
+                                (int(expected_total_samples),),
+                                dtype=_torch_dtype_to_numpy_dtype(anchor_frame_index.dtype),
+                            )
+                        end = collected + int(take)
+                        preallocated["anchor_frame_indices"][collected:end] = (
+                            _tensor_slice_to_numpy_for_storage(anchor_frame_index, take)
+                        )
+                elif preallocated is not None and "anchor_frame_indices" in preallocated:
+                    raise RuntimeError(
+                        "Inference batches provided anchor_frame_index for an earlier batch "
+                        f"but omitted it at batch_idx={batch_idx}."
+                    )
 
                 collected += int(take)
                 if verbose and ((batch_idx + 1) % every == 0 or take != batch_size):
@@ -395,12 +583,38 @@ def gather_inference_batches(
             return np.empty((0, 3), dtype=np.float32)
         return torch.cat(tensors, dim=0).numpy()
 
+    if preallocated is not None:
+        return {
+            "inv_latents": preallocated["inv_latents"][:collected],
+            "eq_latents": preallocated.get(
+                "eq_latents",
+                np.empty((0,), dtype=np.float32),
+            )[:collected if "eq_latents" in preallocated else 0],
+            "phases": preallocated.get(
+                "phases",
+                np.empty((0,), dtype=np.int64),
+            )[:collected if "phases" in preallocated else 0],
+            "coords": preallocated.get(
+                "coords",
+                np.empty((0, 3), dtype=np.float32),
+            )[:collected if "coords" in preallocated else 0],
+            "instance_ids": preallocated.get(
+                "instance_ids",
+                np.empty((0,), dtype=np.int64),
+            )[:collected if "instance_ids" in preallocated else 0],
+            "anchor_frame_indices": preallocated.get(
+                "anchor_frame_indices",
+                np.empty((0,), dtype=np.int64),
+            )[:collected if "anchor_frame_indices" in preallocated else 0],
+        }
+
     return {
         "inv_latents": _cat(inv_latents),
         "eq_latents": _cat(eq_latents),
         "phases": _cat(phases),
         "coords": _cat_coords(coords_list),
         "instance_ids": _cat(instance_ids),
+        "anchor_frame_indices": _cat(anchor_frame_indices),
     }
 
 

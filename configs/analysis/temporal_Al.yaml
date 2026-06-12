@@ -1,6 +1,6 @@
 checkpoint:
-  path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
-  output_dir: outputs/temporal_Al_500frames_swav_single
+  path: output/2026-06-11/23-02-29/VICREG_SWAV_POWERLAW_a0.5_l512_K16_N160_M80_RI_MAE_Invariant-epoch=119.ckpt
+  output_dir: outputs/temporal_Al_500frames_swav_multi_power
   cuda_device: 0
 
 inputs:
@@ -32,6 +32,8 @@ inputs:
     selection_method: closest
     rebuild_cache: false
     tree_cache_size: 4
+    precompute_neighbor_indices: true
+    precompute_single_snapshot_neighbor_indices: false
     time_scale: 1000.0
     time_unit: ps
     snapshot_visualization:
@@ -75,8 +77,9 @@ clustering:
   standardize: true
   pca_variance: 0.98
   pca_max_components: 32
+  temporal_fit_max_samples: 300000
   fit_inputs:
-    enabled: true
+    enabled: false
     data_config: configs/data/data_ae_Al_80.yaml
     static_data_files: null
     dataloader_num_workers: 4

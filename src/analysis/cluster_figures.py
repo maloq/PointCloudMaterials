@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import json
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +31,7 @@ from .cluster_rendering import (
 from .cluster_blender import (
     _save_md_cluster_snapshot_raytrace_blender,
 )
+from .output_layout import write_json
 
 # Re-export public symbols used by predict_and_visualize.py
 __all__ = [
@@ -153,10 +153,7 @@ def _save_fixed_k_cluster_figure_set(
             for cluster_id in cluster_ids
         },
     }
-    color_assignment_path.write_text(
-        json.dumps(color_assignment_payload, indent=2),
-        encoding="utf-8",
-    )
+    write_json(color_assignment_path, color_assignment_payload)
     raytrace_projection_norm = str(raytrace_render_projection).strip().lower()
     if raytrace_projection_norm not in {"orthographic", "ortho", "perspective", "persp"}:
         raytrace_projection_norm = "perspective"

@@ -1,6 +1,31 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
+from typing import Any
+
+import numpy as np
+
+
+def json_default(value: Any) -> Any:
+    if isinstance(value, (np.integer,)):
+        return int(value)
+    if isinstance(value, (np.floating,)):
+        return float(value)
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, Path):
+        return str(value)
+    raise TypeError(f"Object of type {type(value)!r} is not JSON serializable")
+
+
+def write_json(path: Path | str, payload: Any, *, indent: int = 2) -> None:
+    with Path(path).open("w", encoding="utf-8") as handle:
+        json.dump(payload, handle, indent=int(indent), default=json_default)
+
+
+def log_saved_figure(path: Path | str) -> None:
+    print(f"[analysis][savefig] {Path(path).resolve()}")
 
 
 def snapshot_outputs_root(out_dir: Path | str) -> Path:

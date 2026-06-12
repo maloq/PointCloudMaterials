@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
-import json
 import multiprocessing as mp
 import os
 import re
@@ -20,7 +19,6 @@ from src.data_utils.data_kinds import normalize_data_kind
 from .cluster_profiles import (
     _ALL_PROFILE_PROPERTIES,
     _compute_sample_properties,
-    _json_default,
     _load_point_cloud_from_dataset,
 )
 from .cluster_geometry import _sample_indices_stratified
@@ -28,7 +26,7 @@ from .cluster_rendering import (
     _save_cluster_representatives_figure,
 )
 from .cluster_figures import _build_cluster_color_map
-from .output_layout import real_md_outputs_root
+from .output_layout import real_md_outputs_root, write_json
 from src.vis_tools.real_md_analysis_vis import (
     save_cna_signature_time_series,
     save_cluster_proportion_plots,
@@ -2457,8 +2455,7 @@ def run_real_md_qualitative_analysis(
         }
 
     summary_json = out_root / "summary.json"
-    with summary_json.open("w", encoding="utf-8") as handle:
-        json.dump(summary, handle, indent=2, default=_json_default)
+    write_json(summary_json, summary)
     summary["summary_json"] = str(summary_json)
 
     summary_markdown = out_root / "README.md"
@@ -2470,8 +2467,7 @@ def run_real_md_qualitative_analysis(
         summary=summary,
     )
     summary["summary_markdown"] = str(summary_markdown)
-    with summary_json.open("w", encoding="utf-8") as handle:
-        json.dump(summary, handle, indent=2, default=_json_default)
+    write_json(summary_json, summary)
     return summary
 
 

@@ -79,7 +79,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         model_type = str(getattr(self.cfg, "model_type", "")).lower()
         disable_dataset_aug_for_ssl = bool(getattr(self.cfg, "disable_dataset_augmentation_for_ssl", True))
         uses_ssl_views = (
-            model_type == "vicreg"
+            model_type in {"vicreg", "visreg"}
             or bool(getattr(self.cfg, "vicreg_enabled", False))
         )
         if uses_ssl_views and disable_dataset_aug_for_ssl:

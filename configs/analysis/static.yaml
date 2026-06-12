@@ -1,8 +1,9 @@
 checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
-  path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
+  # path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
+  path: output/2026-06-11/12-53-23/VICREG_SWAV_POWERLAW_a0.5_l512_K7_N160_M80_RI_MAE_Invariant-epoch=44.ckpt
   # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/temporal_Al_6frames_Swav
+  output_dir: outputs/temporal_Al_6frames_Swav_Multi
   cuda_device: 0
 
 inputs:
