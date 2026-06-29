@@ -2,6 +2,35 @@ import torch
 from typing import Optional
 
 
+def _crop_to_num_points_indices(
+    points: torch.Tensor,
+    num_points: Optional[int],
+    *,
+    mode: str,
+) -> Optional[torch.Tensor]:
+    if num_points is None:
+        return None
+    num_points = int(num_points)
+    if num_points <= 0:
+        return None
+    if points.dim() != 3 or points.size(-1) != 3:
+        raise ValueError(f"points must have shape (B, N, 3), got {tuple(points.shape)}")
+    bsz, n_pts, _ = points.shape
+    if num_points == n_pts:
+        return torch.arange(n_pts, device=points.device, dtype=torch.long).unsqueeze(0).expand(bsz, -1)
+    if num_points > n_pts:
+        raise ValueError(f"num_points ({num_points}) cannot exceed input points ({n_pts})")
+    mode_norm = str(mode).strip().lower()
+    if mode_norm in {"nearest", "nearest_origin", "center"}:
+        dist2 = (points.float() ** 2).sum(dim=-1)
+        return dist2.topk(k=num_points, dim=1, largest=False).indices
+    if mode_norm in {"random", "uniform"}:
+        # Random subset without replacement per sample.
+        rand = torch.rand((bsz, n_pts), device=points.device)
+        return rand.topk(k=num_points, dim=1, largest=False).indices
+    raise ValueError(f"Unsupported crop mode {mode!r}")
+
+
 def crop_to_num_points(
     points: torch.Tensor,
     num_points: Optional[int],
@@ -9,30 +38,27 @@ def crop_to_num_points(
     mode: str = "nearest_origin",
 ) -> torch.Tensor:
     """Select a fixed-size subset of points."""
-    if num_points is None:
+    idx = _crop_to_num_points_indices(points, num_points, mode=mode)
+    if idx is None:
         return points
-    num_points = int(num_points)
-    if num_points <= 0:
-        return points
+    return points.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
+
+
+def crop_to_num_points_with_indices(
+    points: torch.Tensor,
+    num_points: Optional[int],
+    *,
+    mode: str = "nearest_origin",
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Select a fixed-size subset of points and return original point indices."""
     if points.dim() != 3 or points.size(-1) != 3:
         raise ValueError(f"points must have shape (B, N, 3), got {tuple(points.shape)}")
     bsz, n_pts, _ = points.shape
-    if num_points == n_pts:
-        return points
-    if num_points > n_pts:
-        raise ValueError(f"num_points ({num_points}) cannot exceed input points ({n_pts})")
-    mode_norm = str(mode).strip().lower()
-    if mode_norm in {"nearest", "nearest_origin", "center"}:
-        dist2 = (points.float() ** 2).sum(dim=-1)
-        idx = dist2.topk(k=num_points, dim=1, largest=False).indices
-    elif mode_norm in {"random", "uniform"}:
-        # Random subset without replacement per sample.
-        rand = torch.rand((bsz, n_pts), device=points.device)
-        idx = rand.topk(k=num_points, dim=1, largest=False).indices
-    else:
-        raise ValueError(f"Unsupported crop mode {mode!r}")
-    idx = idx.unsqueeze(-1).expand(-1, -1, 3)
-    return points.gather(1, idx)
+    idx = _crop_to_num_points_indices(points, num_points, mode=mode)
+    if idx is None:
+        idx = torch.arange(n_pts, device=points.device, dtype=torch.long).unsqueeze(0).expand(bsz, -1)
+        return points, idx
+    return points.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3)), idx
 
 
 def shift_to_neighbor(
@@ -45,16 +71,33 @@ def shift_to_neighbor(
     """Shift point cloud so a random near-origin point becomes the new center.
 
     By default this samples uniformly from the `neighbor_k` closest non-origin
-    points. When `max_relative_distance` is set (>0), the candidate pool is
-    expanded to also include points whose origin distance is within
-    `max_relative_distance * object_size`, where object_size is the per-sample
-    bounding-box diagonal.
+    points; set `neighbor_k <= 0` to sample from all non-origin points. When
+    `max_relative_distance` is set (>0), the candidate pool is expanded to also
+    include points whose origin distance is within `max_relative_distance *
+    object_size`, where object_size is the per-sample bounding-box diagonal.
     """
+    shifted, _ = shift_to_neighbor_with_indices(
+        points,
+        neighbor_k=neighbor_k,
+        max_relative_distance=max_relative_distance,
+        eps=eps,
+    )
+    return shifted
+
+
+def shift_to_neighbor_with_indices(
+    points: torch.Tensor,
+    *,
+    neighbor_k: int = 8,
+    max_relative_distance: Optional[float] = None,
+    eps: float = 1e-12,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Shift point cloud and return the selected raw point index per sample."""
     if points.dim() != 3 or points.size(-1) != 3:
         raise ValueError(f"points must have shape (B, N, 3), got {tuple(points.shape)}")
     bsz, n_pts, _ = points.shape
     if n_pts <= 1:
-        return points
+        return points, torch.zeros((bsz,), dtype=torch.long, device=points.device)
     k = int(neighbor_k) if neighbor_k is not None else 0
     if k <= 0:
         k = max(n_pts - 1, 1)
@@ -84,8 +127,12 @@ def shift_to_neighbor(
     batch_idx = torch.arange(bsz, device=points.device)
     offsets = points[batch_idx, neighbor_idx]
     if not torch.isfinite(offsets).all():
-        offsets = torch.where(torch.isfinite(offsets), offsets, torch.zeros_like(offsets))
-    return points - offsets.unsqueeze(1)
+        raise RuntimeError(
+            "shift_to_neighbor selected non-finite neighbor offsets. "
+            f"points_shape={tuple(points.shape)}, neighbor_k={neighbor_k}, "
+            f"max_relative_distance={max_relative_distance}."
+        )
+    return points - offsets.unsqueeze(1), neighbor_idx
 
 
 def normalize_unit_range(

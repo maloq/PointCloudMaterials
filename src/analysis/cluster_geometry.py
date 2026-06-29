@@ -541,14 +541,18 @@ def _orient_points_for_crystal_view(
 def _compute_cluster_representative_indices(
     latents: np.ndarray,
     cluster_labels: np.ndarray,
+    selection_features: np.ndarray | None = None,
 ) -> dict[int, int]:
-    lat = np.asarray(latents, dtype=np.float32)
+    lat = np.asarray(
+        latents if selection_features is None else selection_features,
+        dtype=np.float32,
+    )
     labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
     if lat.ndim != 2:
         lat = np.reshape(lat, (lat.shape[0], -1))
     if labels.size != lat.shape[0]:
         raise ValueError(
-            "latents and cluster_labels length mismatch: "
+            "representative selection features and cluster_labels length mismatch: "
             f"{lat.shape[0]} vs {labels.size}."
         )
     representatives: dict[int, int] = {}

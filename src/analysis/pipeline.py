@@ -25,9 +25,10 @@ from .cluster_rendering import _build_cluster_representative_render_cache
 from .clustering import (
     _run_optional_hdbscan_analysis,
     build_clustering_method_comparison,
-    clustering_fit_quality_rejection_reasons,
+    compute_clustering_assignment_margins,
     fit_reusable_clustering_models,
     predict_clustering_state_from_models,
+    representative_features_from_clustering_model,
 )
 from .config import (
     DEFAULT_ANALYSIS_CONFIG_PATH, _positive_int_or_none, _print_resolved_analysis_settings,
@@ -221,6 +222,13 @@ def run_post_training_analysis(
     print(f"Analysis dataloader workers: {input_settings.dataloader_num_workers}")
     analysis_settings = _resolve_analysis_settings(analysis_cfg, cfg)
     hdbscan_settings = analysis_settings.hdbscan
+    if temporal_real_mode and analysis_settings.cluster_fit is not None:
+        raise ValueError(
+            "Temporal dump analysis does not use clustering.fit_inputs. "
+            "Clustering is fit from inputs.temporal_real.dump_file through the "
+            "main temporal inference cache. Delete clustering.fit_inputs and control the "
+            "temporal fit subset with clustering.temporal_fit_max_samples."
+        )
     if analysis_settings.cluster_fit is not None and hdbscan_settings.enabled:
         raise ValueError(
             "clustering.fit_inputs is not compatible with clustering.hdbscan.enabled yet. "
@@ -476,11 +484,12 @@ def run_post_training_analysis(
         or np.asarray(fit_cache["phases"]).shape[0] != int(len(fit_cache["inv_latents"]))
         else np.asarray(fit_cache["phases"], dtype=int)
     )
-    fit_reference_source = (
-        "main_inference_cache"
-        if fit_latents_for_clustering is None
-        else "clustering_fit_reference_cache"
-    )
+    if temporal_bundle is not None:
+        fit_reference_source = "main_temporal_inference_cache"
+    elif fit_latents_for_clustering is None:
+        fit_reference_source = "main_inference_cache"
+    else:
+        fit_reference_source = "clustering_fit_reference_cache"
 
     def _use_temporal_stratified_main_fit() -> None:
         nonlocal fit_latents_for_clustering, fit_phases_for_clustering, fit_reference_source
@@ -493,7 +502,28 @@ def run_post_training_analysis(
                 default=300000,
             )
         )
+        anchor_frames_all = np.asarray(cache["anchor_frame_indices"], dtype=np.int64)
+
+        def _record_temporal_fit_reference(anchor_frames: np.ndarray, sample_count: int) -> None:
+            all_metrics["clustering_fit_reference"] = {
+                "source": str(fit_reference_source),
+                "data_source": "inputs.temporal_real.dump_file",
+                "dump_file": str(temporal_bundle.selection.dump_file),
+                "sample_count": int(sample_count),
+                "total_sample_count": int(n_samples),
+                "max_samples": None if max_fit_samples <= 0 else int(max_fit_samples),
+                "unique_anchor_frames": int(np.unique(anchor_frames).size),
+                "fit_on_all_main_temporal_samples": bool(int(sample_count) >= int(n_samples)),
+                "stratified_by_anchor_frame": bool(int(sample_count) < int(n_samples)),
+            }
+            print(
+                "[analysis][clustering] Temporal clustering fit source: "
+                f"{fit_reference_source} with {int(sample_count)}/{int(n_samples)} samples "
+                f"from {temporal_bundle.selection.dump_file}."
+            )
+
         if max_fit_samples <= 0:
+            _record_temporal_fit_reference(anchor_frames_all, int(n_samples))
             return
         fit_indices = _temporal_stratified_fit_indices(
             cache,
@@ -501,6 +531,7 @@ def run_post_training_analysis(
             random_state=int(clustering_random_state),
         )
         if int(fit_indices.shape[0]) >= int(n_samples):
+            _record_temporal_fit_reference(anchor_frames_all, int(n_samples))
             return
         fit_latents_for_clustering = np.asarray(
             cache["inv_latents"],
@@ -514,13 +545,7 @@ def run_post_training_analysis(
         )
         fit_reference_source = "temporal_stratified_main_inference_cache"
         anchor_frames = np.asarray(cache["anchor_frame_indices"], dtype=np.int64)[fit_indices]
-        all_metrics["clustering_fit_reference"] = {
-            "source": fit_reference_source,
-            "sample_count": int(fit_indices.shape[0]),
-            "total_sample_count": int(n_samples),
-            "max_samples": int(max_fit_samples),
-            "unique_anchor_frames": int(np.unique(anchor_frames).size),
-        }
+        _record_temporal_fit_reference(anchor_frames, int(fit_indices.shape[0]))
 
     _use_temporal_stratified_main_fit()
     coords = cache["coords"]
@@ -575,54 +600,6 @@ def run_post_training_analysis(
         clustering_fit_reference_latents,
         clustering_fit_reference_phases,
     )
-    used_external_cluster_fit = fit_cache is not None
-    if used_external_cluster_fit and temporal_bundle is not None:
-        rejection_reasons = clustering_fit_quality_rejection_reasons(
-            clustering_fit_metrics,
-            primary_k=int(clustering_requested_k_values[0]),
-        )
-        if rejection_reasons:
-            print(
-                "[analysis][clustering] External clustering fit is too weak "
-                "for this temporal checkpoint; refitting on the main temporal "
-                "inference cache. Reasons: "
-                + "; ".join(rejection_reasons)
-            )
-            all_metrics["clustering_fit_inputs"] = {
-                **dict(all_metrics.get("clustering_fit_inputs") or {}),
-                "rejected_for_transfer": True,
-                "rejection_reasons": list(rejection_reasons),
-                "replacement_fit_reference_source": "main_inference_cache",
-            }
-            fit_latents_for_clustering = None
-            fit_phases_for_clustering = None
-            fit_cache = None
-            fit_reference_source = "main_inference_cache"
-            _use_temporal_stratified_main_fit()
-            clustering_fit_reference_latents = np.asarray(
-                cache["inv_latents"] if fit_latents_for_clustering is None else fit_latents_for_clustering,
-                dtype=np.float32,
-            )
-            clustering_fit_reference_phases = (
-                np.asarray(cache["phases"], dtype=int)
-                if fit_phases_for_clustering is None
-                else np.asarray(fit_phases_for_clustering, dtype=int)
-            )
-            _step("Refitting reusable clustering models on main inference cache")
-            (
-                clustering_fit_metrics,
-                clustering_fit_configured_k_values,
-                clustering_fit_labels_by_k,
-                clustering_fit_methods_by_k,
-                clustering_models_by_k,
-            ) = _fit_cluster_reference(
-                clustering_fit_reference_latents,
-                clustering_fit_reference_phases,
-            )
-            clustering_fit_metrics["external_fit_rejected"] = True
-            clustering_fit_metrics["external_fit_rejection_reasons"] = list(
-                rejection_reasons
-            )
     clustering_fit_metrics["reusable_models_fitted"] = True
     clustering_fit_metrics["fit_reference_source"] = str(fit_reference_source)
     all_metrics["clustering_model_fit"] = clustering_fit_metrics
@@ -853,6 +830,32 @@ def run_post_training_analysis(
                 resolved_visible_sets.append(present_cluster_ids)
         return resolved_visible_sets or None
 
+    representative_selection_cache: dict[tuple[str, int], tuple[np.ndarray, dict[str, Any]]] = {}
+
+    def _representative_selection_for(
+        latents_for_selection: np.ndarray,
+        labels_by_k: dict[int, np.ndarray],
+        k_value: int,
+        *,
+        source_name: str,
+    ) -> tuple[np.ndarray, dict[str, Any]]:
+        cache_key = (str(source_name), int(k_value))
+        cached = representative_selection_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        features, info = representative_features_from_clustering_model(
+            latents_for_selection,
+            fitted_model=clustering_models_by_k[int(k_value)],
+            expected_labels=labels_by_k[int(k_value)],
+        )
+        info = {
+            **dict(info),
+            "source": str(source_name),
+            "k": int(k_value),
+        }
+        representative_selection_cache[cache_key] = (features, info)
+        return features, info
+
     # ── Figure-only early return ───────────────────────────────────────
     if figure_settings.figure_only:
         if fit_latents_for_clustering is None:
@@ -892,6 +895,14 @@ def run_post_training_analysis(
                     context=f"figure_only k={int(k_value)}",
                 ),
             )
+            representative_selection_features_for_k, representative_selection_info_for_k = (
+                _representative_selection_for(
+                    snapshot_latents_for_outputs,
+                    figure_output_labels_by_k,
+                    int(k_value),
+                    source_name="figure_output_cache",
+                )
+            )
             cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
                 out_dir=out_dir,
                 dataloader=dl,
@@ -904,6 +915,8 @@ def run_post_training_analysis(
                 snapshot_layout=snapshot_layout_for_outputs,
                 analysis_source_names=snapshot_analysis_source_names_for_outputs,
                 step=_step,
+                representative_selection_features=representative_selection_features_for_k,
+                representative_selection_info=representative_selection_info_for_k,
             )
             cluster_figure_sets_by_k[str(int(k_value))] = {
                 "cluster_figure_set": cluster_figure_set,
@@ -1109,6 +1122,14 @@ def run_post_training_analysis(
         == int(figure_settings.representative_points)
     ):
         _step("Preparing shared representative structures")
+        representative_selection_features, representative_selection_info = (
+            _representative_selection_for(
+                cache["inv_latents"],
+                cluster_labels_by_k,
+                int(figure_settings.k),
+                source_name="main_inference_cache",
+            )
+        )
         shared_representative_render_cache = _build_cluster_representative_render_cache(
             dataset_obj,
             np.asarray(cache["inv_latents"], dtype=np.float32),
@@ -1133,6 +1154,8 @@ def run_post_training_analysis(
             representative_shell_max_neighbors=int(
                 figure_settings.representative_shell_max_neighbors
             ),
+            selection_features=representative_selection_features,
+            selection_info=representative_selection_info,
         )
 
     # ── Figure set rendering ───────────────────────────────────────────
@@ -1155,6 +1178,18 @@ def run_post_training_analysis(
                 if int(k_value) == int(primary_k)
                 else None
             )
+            representative_selection_features_for_k = None
+            representative_selection_info_for_k = None
+            if representative_render_cache_for_k is None:
+                (
+                    representative_selection_features_for_k,
+                    representative_selection_info_for_k,
+                ) = _representative_selection_for(
+                    snapshot_latents_for_outputs,
+                    figure_output_labels_by_k,
+                    int(k_value),
+                    source_name="figure_output_cache",
+                )
             cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
                 out_dir=out_dir,
                 dataloader=dl,
@@ -1168,6 +1203,8 @@ def run_post_training_analysis(
                 analysis_source_names=snapshot_analysis_source_names_for_outputs,
                 step=_step,
                 representative_render_cache=representative_render_cache_for_k,
+                representative_selection_features=representative_selection_features_for_k,
+                representative_selection_info=representative_selection_info_for_k,
             )
             cluster_figure_sets_by_k[str(int(k_value))] = {
                 "cluster_figure_set": cluster_figure_set,
@@ -1239,6 +1276,30 @@ def run_post_training_analysis(
         hdbscan_result=hdbscan_result,
     )
 
+    cluster_assignment_margin_cache: dict[int, dict[str, Any]] = {}
+
+    def _cluster_assignment_margins_for_k(k_value: int) -> dict[str, Any]:
+        k_int = int(k_value)
+        cached = cluster_assignment_margin_cache.get(k_int)
+        if cached is not None:
+            return cached
+        margin_chunk_size = int(
+            OmegaConf.select(
+                analysis_cfg,
+                "real_md.temporal.flicker.margin_chunk_size",
+                default=200_000,
+            )
+        )
+        _step(f"Computing cluster assignment margins for k={k_int}")
+        margins = compute_clustering_assignment_margins(
+            np.asarray(cache["inv_latents"], dtype=np.float32),
+            fitted_model=clustering_models_by_k[k_int],
+            expected_labels=np.asarray(cluster_labels_by_k[k_int], dtype=int),
+            chunk_size=int(margin_chunk_size),
+        )
+        cluster_assignment_margin_cache[k_int] = margins
+        return margins
+
     # ── Real-MD qualitative analysis ───────────────────────────────────
     primary_real_md_summary = None
     if not is_synthetic and real_md_enabled:
@@ -1271,6 +1332,35 @@ def run_post_training_analysis(
                 if int(k_value) == int(primary_k)
                 else None
             )
+            real_md_representative_selection_features = None
+            real_md_representative_selection_info = None
+            if real_md_profiles_enabled and representative_render_cache_for_k is None:
+                (
+                    real_md_representative_selection_features,
+                    real_md_representative_selection_info,
+                ) = _representative_selection_for(
+                    cache["inv_latents"],
+                    cluster_labels_by_k,
+                    int(k_value),
+                    source_name="main_inference_cache",
+                )
+            flicker_metrics_enabled = bool(
+                OmegaConf.select(
+                    analysis_cfg,
+                    "real_md.temporal.flicker.enabled",
+                    default=True,
+                )
+            )
+            real_md_assignment_margins_by_k = None
+            instance_ids_for_real_md = np.asarray(cache["instance_ids"])
+            if (
+                flicker_metrics_enabled
+                and instance_ids_for_real_md.reshape(-1).shape[0]
+                == np.asarray(cache["inv_latents"]).shape[0]
+            ):
+                real_md_assignment_margins_by_k = {
+                    int(k_value): _cluster_assignment_margins_for_k(int(k_value))
+                }
             real_md_summary = run_real_md_qualitative_analysis(
                 out_dir=out_dir,
                 model_cfg=cfg,
@@ -1317,6 +1407,9 @@ def run_post_training_analysis(
                 point_scale=float(point_scale),
                 random_state=int(clustering_random_state),
                 representative_render_cache=representative_render_cache_for_k,
+                representative_selection_features=real_md_representative_selection_features,
+                representative_selection_info=real_md_representative_selection_info,
+                cluster_assignment_margins_by_k=real_md_assignment_margins_by_k,
                 selected_k_override=int(k_value),
                 output_root_dir=real_md_output_root,
             )

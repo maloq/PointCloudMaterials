@@ -9,11 +9,16 @@ from src.training_methods.contrastive_learning.config_warnings import (
     warn_fixed_invariant_fields,
 )
 from src.training_methods.contrastive_learning.invariant_utils import NormInvariantHead
-from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
+from src.utils.pointcloud_ops import (
+    crop_to_num_points,
+    crop_to_num_points_with_indices,
+    shift_to_neighbor,
+    shift_to_neighbor_with_indices,
+)
 
 
 _VIEW_POINTS_UNSET = object()
-_SUPPORTED_OBJECTIVES = {"vicreg", "visreg"}
+_SUPPORTED_OBJECTIVES = {"vicreg", "visreg", "overlap_vicreg"}
 
 
 class VICRegLoss(nn.Module):
@@ -61,6 +66,7 @@ class VICRegLoss(nn.Module):
         radial_beta2: float = 0.1,
         radial_m: int | None = None,
         radial_eps: float = 1e-8,
+        overlap_hidden_dim: int | None = None,
     ) -> None:
         super().__init__()
         self.enabled = bool(enabled)
@@ -143,6 +149,23 @@ class VICRegLoss(nn.Module):
                     raise ValueError(f"{name} must be >= 0 for VISReg, got {value}.")
         self._visreg_cached_target_n = -1
         self._visreg_cached_target = None
+        self.overlap_hidden_dim = int(overlap_hidden_dim) if overlap_hidden_dim is not None else self.embed_dim
+        if self.objective == "overlap_vicreg":
+            if self.view_points is None or self.view_points <= 0:
+                raise ValueError(
+                    "vicreg_objective='overlap_vicreg' requires a positive vicreg_view_points "
+                    "or data.model_points value so overlap counts can be normalized."
+                )
+            if not self.neighbor_view:
+                raise ValueError(
+                    "vicreg_objective='overlap_vicreg' requires vicreg_neighbor_view=true "
+                    "because the target is defined between a center view and a neighbor-shifted view."
+                )
+            if self.overlap_hidden_dim <= 0:
+                raise ValueError(
+                    "vicreg_overlap_hidden_dim must be positive for overlap_vicreg, "
+                    f"got {self.overlap_hidden_dim}."
+                )
 
         self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
@@ -164,6 +187,18 @@ class VICRegLoss(nn.Module):
                 nn.BatchNorm1d(self.embed_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(self.embed_dim, self.embed_dim, bias=False),
+            )
+        self.overlap_predictor = None
+        if self.objective == "overlap_vicreg" and needs_projector:
+            if self.projector is None:
+                raise ValueError(
+                    "overlap_vicreg requires a projector, but the encoder output dimension "
+                    "could not be resolved from the config."
+                )
+            self.overlap_predictor = nn.Sequential(
+                nn.Linear(3 * self.embed_dim, self.overlap_hidden_dim),
+                nn.ReLU(inplace=True),
+                nn.Linear(self.overlap_hidden_dim, 1),
             )
 
     @classmethod
@@ -228,6 +263,9 @@ class VICRegLoss(nn.Module):
         visreg_shape_coeff = float(getattr(cfg, "visreg_shape_coeff", 1.0))
         visreg_center_coeff = float(getattr(cfg, "visreg_center_coeff", 1.0))
         visreg_std_eps = float(getattr(cfg, "visreg_std_eps", 1e-6))
+        overlap_hidden_dim = getattr(cfg, "vicreg_overlap_hidden_dim", None)
+        if overlap_hidden_dim is not None:
+            overlap_hidden_dim = int(overlap_hidden_dim)
 
         warn_common_view_sampler_ignored_fields(
             cfg,
@@ -293,6 +331,7 @@ class VICRegLoss(nn.Module):
             radial_beta2=radial_beta2,
             radial_m=radial_m,
             radial_eps=radial_eps,
+            overlap_hidden_dim=overlap_hidden_dim,
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -302,6 +341,10 @@ class VICRegLoss(nn.Module):
             and self.projector is not None
             and int(current_epoch) >= self.start_epoch
         )
+
+    @property
+    def requires_overlap_target(self) -> bool:
+        return self.objective == "overlap_vicreg"
 
     def forward(self, features: torch.Tensor, *, profile_projector: bool = False) -> torch.Tensor:
         projector_dtype = next(self.projector.parameters()).dtype
@@ -321,14 +364,19 @@ class VICRegLoss(nn.Module):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
         if views is None:
-            use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
-            apply_occlusion_a, apply_occlusion_b = self._resolve_pair_occlusion_flags(
-                use_neighbor_a=use_neighbor_a,
-                use_neighbor_b=use_neighbor_b,
-                device=pc.device,
-            )
-            y_a = self._augment(pc, use_neighbor=use_neighbor_a, apply_occlusion=apply_occlusion_a)
-            y_b = self._augment(pc, use_neighbor=use_neighbor_b, apply_occlusion=apply_occlusion_b)
+            if self.requires_overlap_target:
+                views = self.build_overlap_view_pair(pc, view_points=self.view_points)
+                y_a = views["y_a"]
+                y_b = views["y_b"]
+            else:
+                use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
+                apply_occlusion_a, apply_occlusion_b = self._resolve_pair_occlusion_flags(
+                    use_neighbor_a=use_neighbor_a,
+                    use_neighbor_b=use_neighbor_b,
+                    device=pc.device,
+                )
+                y_a = self._augment(pc, use_neighbor=use_neighbor_a, apply_occlusion=apply_occlusion_a)
+                y_b = self._augment(pc, use_neighbor=use_neighbor_b, apply_occlusion=apply_occlusion_b)
         else:
             y_a = views["y_a"]
             y_b = views["y_b"]
@@ -355,6 +403,7 @@ class VICRegLoss(nn.Module):
             z_a_feat=inv_a,
             z_b_feat=inv_b,
             current_epoch=current_epoch,
+            overlap_target=None if views is None else views.get("overlap_target"),
         )
 
     def compute_loss_from_features(
@@ -363,6 +412,7 @@ class VICRegLoss(nn.Module):
         z_a_feat: torch.Tensor | None,
         z_b_feat: torch.Tensor | None,
         current_epoch: int,
+        overlap_target: torch.Tensor | None = None,
     ):
         """Compute VICReg on already-encoded invariant features.
 
@@ -378,12 +428,69 @@ class VICRegLoss(nn.Module):
         proj_dtype = next(self.projector.parameters()).dtype
         z_a = self.projector(z_a_feat.to(dtype=proj_dtype))
         z_b = self.projector(z_b_feat.to(dtype=proj_dtype))
-        loss, metrics = self._loss(z_a, z_b)
+        loss, metrics = self._loss(z_a, z_b, overlap_target=overlap_target)
         # Tensor-only nonfinite accounting (no `.item()` sync, see #3).
         nonfinite = (~torch.isfinite(loss)).to(dtype=loss.dtype)
         metrics[f"{self.metric_prefix}_nonfinite"] = nonfinite
         loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
+
+    @staticmethod
+    def _count_index_overlap(idx_a: torch.Tensor, idx_b: torch.Tensor) -> torch.Tensor:
+        if idx_a.dim() != 2 or idx_b.dim() != 2:
+            raise ValueError(
+                "Overlap target expects crop indices with shape (B, K). "
+                f"Got idx_a={tuple(idx_a.shape)}, idx_b={tuple(idx_b.shape)}."
+            )
+        if idx_a.shape[0] != idx_b.shape[0]:
+            raise ValueError(
+                "Overlap target crop-index batch mismatch: "
+                f"idx_a={tuple(idx_a.shape)}, idx_b={tuple(idx_b.shape)}."
+            )
+        matches = idx_a.unsqueeze(2) == idx_b.unsqueeze(1)
+        return matches.any(dim=2).sum(dim=1).to(dtype=torch.float32)
+
+    def build_overlap_view_pair(
+        self,
+        pc: torch.Tensor,
+        *,
+        view_points: int | None,
+    ) -> dict[str, torch.Tensor]:
+        if view_points is None:
+            view_points = self.view_points
+        if view_points is None or int(view_points) <= 0:
+            raise ValueError(
+                "Overlap view construction requires a positive view point count. "
+                f"Got view_points={view_points!r}, self.view_points={self.view_points!r}."
+            )
+        view_points = int(view_points)
+        if pc.dim() != 3 or pc.shape[-1] != 3:
+            raise ValueError(f"Overlap view construction expects pc with shape (B, N, 3), got {tuple(pc.shape)}.")
+        if pc.shape[1] < 2 * view_points:
+            raise ValueError(
+                "Overlap view construction needs enough raw points to permit zero-overlap "
+                "pairs before cropping. Set data.num_points >= 2 * model_points. "
+                f"Got raw_points={pc.shape[1]}, view_points={view_points}, "
+                f"required_minimum={2 * view_points}."
+            )
+
+        y_a, idx_a = crop_to_num_points_with_indices(pc, view_points)
+        shifted, neighbor_idx = shift_to_neighbor_with_indices(
+            pc,
+            neighbor_k=self.neighbor_k,
+            max_relative_distance=self.neighbor_max_relative_distance,
+        )
+        y_b, idx_b = crop_to_num_points_with_indices(shifted, view_points)
+        overlap_target = self._count_index_overlap(idx_a, idx_b).to(device=pc.device)
+        return {
+            "y_a": y_a,
+            "y_b": y_b,
+            "overlap_target": overlap_target,
+            "overlap_fraction_target": overlap_target / float(view_points),
+            "overlap_idx_a": idx_a,
+            "overlap_idx_b": idx_b,
+            "neighbor_idx": neighbor_idx,
+        }
 
     def _resolve_neighbor_flags(self, *, device) -> tuple[bool, bool]:
         if not self.neighbor_view:
@@ -872,13 +979,84 @@ class VICRegLoss(nn.Module):
 
         return loss, metrics
 
-    def _loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
+    def _overlap_vicreg_loss(
+        self,
+        z_a: torch.Tensor,
+        z_b: torch.Tensor,
+        overlap_target: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict]:
+        if self.overlap_predictor is None:
+            raise RuntimeError("overlap_vicreg requires overlap_predictor, but it is not initialized.")
+        if overlap_target.dim() != 1 or overlap_target.shape[0] != z_a.shape[0]:
+            raise ValueError(
+                "overlap_vicreg target must have shape (B,) aligned with embeddings. "
+                f"Got overlap_target={tuple(overlap_target.shape)}, z_a={tuple(z_a.shape)}."
+            )
+
+        n, _ = z_a.shape
+        pair_features = torch.cat(
+            [
+                z_a + z_b,
+                (z_a - z_b).abs(),
+                z_a * z_b,
+            ],
+            dim=-1,
+        )
+        predictor_dtype = next(self.overlap_predictor.parameters()).dtype
+        pred_logits = self.overlap_predictor(pair_features.to(dtype=predictor_dtype)).squeeze(-1).float()
+        pred_fraction = torch.sigmoid(pred_logits)
+        target_fraction = (overlap_target / float(self.view_points)).clamp(0.0, 1.0)
+        pred_loss = F.mse_loss(pred_fraction, target_fraction)
+
+        if n < 2:
+            std_loss = z_a.new_tensor(0.0)
+            cov_loss = z_a.new_tensor(0.0)
+        else:
+            std_loss = 0.5 * (self._variance_loss(z_a) + self._variance_loss(z_b))
+            cov_loss = 0.5 * (self._covariance_loss(z_a) + self._covariance_loss(z_b))
+        loss = self.sim_coeff * pred_loss + self.std_coeff * std_loss + self.cov_coeff * cov_loss
+
+        pred_count = pred_fraction * float(self.view_points)
+        count_error = pred_count - overlap_target
+        metrics = {
+            "overlap_vicreg_pred": pred_loss,
+            "overlap_vicreg_std": std_loss,
+            "overlap_vicreg_cov": cov_loss,
+            "overlap_target_count_mean": overlap_target.mean(),
+            "overlap_target_count_min": overlap_target.min(),
+            "overlap_target_count_max": overlap_target.max(),
+            "overlap_pred_count_mean": pred_count.mean(),
+            "overlap_pred_count_mae": count_error.abs().mean(),
+            "overlap_pred_count_rmse": count_error.pow(2).mean().sqrt(),
+        }
+
+        if self.radial_enabled:
+            radial_a, _, _ = self._radial_gaussianization_loss(z_a)
+            radial_b, _, _ = self._radial_gaussianization_loss(z_b)
+            radial_loss = 0.5 * (radial_a + radial_b)
+            loss = loss + radial_loss
+            metrics["overlap_vicreg_radial"] = radial_loss
+
+        return loss, metrics
+
+    def _loss(
+        self,
+        z_a: torch.Tensor,
+        z_b: torch.Tensor,
+        *,
+        overlap_target: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, dict]:
         if z_a.dtype != torch.float32:
             z_a = z_a.float()
         if z_b.dtype != torch.float32:
             z_b = z_b.float()
         z_a = self._gather_all(z_a)
         z_b = self._gather_all(z_b)
+        gathered_overlap_target = None
+        if overlap_target is not None:
+            gathered_overlap_target = self._gather_all(
+                overlap_target.detach().to(device=z_a.device, dtype=torch.float32).reshape(-1)
+            )
         if z_a.shape != z_b.shape:
             raise ValueError(
                 "Contrastive view embeddings must have identical shapes before "
@@ -887,6 +1065,13 @@ class VICRegLoss(nn.Module):
             )
         if self.objective == "visreg":
             return self._visreg_loss(z_a, z_b)
+        if self.objective == "overlap_vicreg":
+            if gathered_overlap_target is None:
+                raise ValueError(
+                    "overlap_vicreg requires overlap_target from the view sampler, "
+                    "but compute_loss_from_features received None."
+                )
+            return self._overlap_vicreg_loss(z_a, z_b, gathered_overlap_target)
         return self._vicreg_loss(z_a, z_b)
 
     def _invariant(self, inv_z, eq_z):

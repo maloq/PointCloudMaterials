@@ -1,6 +1,6 @@
 checkpoint:
-  path: output/2026-06-11/23-02-29/VICREG_SWAV_POWERLAW_a0.5_l512_K16_N160_M80_RI_MAE_Invariant-epoch=119.ckpt
-  output_dir: outputs/temporal_Al_500frames_swav_multi_power
+  path: output/2026-06-25/17-03-39/VISREG_l512_K4096_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
+  output_dir: outputs/temporal_Al_500frames_multi_visreg
   cuda_device: 0
 
 inputs:
@@ -51,7 +51,7 @@ cache:
   file: analysis_inference_cache.npz
 
 swav:
-  enabled: true
+  enabled: false
   assignment_method: sinkhorn
   sinkhorn_iterations: 20
   batch_size: 8192
@@ -75,21 +75,11 @@ clustering:
   method: spherical_kmeans
   l2_normalize: true
   standardize: true
-  pca_variance: 0.98
-  pca_max_components: 32
-  temporal_fit_max_samples: 300000
-  fit_inputs:
-    enabled: false
-    data_config: configs/data/data_ae_Al_80.yaml
-    static_data_files: null
-    dataloader_num_workers: 4
-    inference_batch_size: 4096
-    max_batches_latent: null
-    max_samples_total: 0
-    cache:
-      enabled: true
-      force_recompute: false
-      file: clustering_fit_inference_cache.npz
+  pca_variance: 0.99
+  pca_max_components: 64
+  # Temporal analysis fits clustering on inputs.temporal_real.dump_file via the
+  # main temporal inference cache. This cap only controls the fit subset size.
+  temporal_fit_max_samples: 600000
   hdbscan:
     enabled: false
     fit_fraction: 0.25

@@ -29,6 +29,8 @@ _MODEL_TYPE_ALIASES = {
     "vicreg": "contrastive",
     "visreg": "contrastive",
     "contrastive": "contrastive",
+    "vicreg_masked_latent": "vicreg_masked_latent",
+    "vicreg_mlp": "vicreg_masked_latent",
     "temporal_vicreg": "temporal_ssl",
     "temporal_ssl": "temporal_ssl",
 }
@@ -95,6 +97,15 @@ register_training_method(
         module_path="src.training_methods.contrastive_learning.vicreg_module",
         class_name="VICRegModule",
         default_config="vicreg_vn_molecular.yaml",
+        run_post_training_analysis=True,
+    )
+)
+register_training_method(
+    TrainingMethodSpec(
+        name="vicreg_masked_latent",
+        module_path="src.training_methods.contrastive_learning.masked_latent_vicreg_module",
+        class_name="VICRegMaskedLatentModule",
+        default_config="vicreg_masked_latent.yaml",
         run_post_training_analysis=True,
     )
 )

@@ -19,7 +19,7 @@ torch.set_float32_matmul_precision("high")
 def train(cfg: DictConfig, run_analysis: bool = True):
     return train_registered_method(
         cfg,
-        method_name=getattr(cfg, "training_method", None),
+        method_name="vicreg_masked_latent",
         run_analysis=run_analysis,
     )
 
@@ -27,7 +27,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="vicreg_vn_molecular.yaml",
+    config_name="vicreg_masked_latent.yaml",
 )
 def main(cfg: DictConfig):
     train(cfg)

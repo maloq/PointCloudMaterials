@@ -2,14 +2,14 @@ defaults:
   - vicreg_vn_molecular
   - _self_
 
-experiment_name: VICREG_SWAV_l${latent_size}_K${swav_num_prototypes}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: VICREG_SWAVp_l${latent_size}_K${swav_num_prototypes}_N${data.num_points}_M${data.model_points}_${encoder.name}
 
 # SwAV (self-supervised prototype assignment)
 swav_enabled: true
 swav_weight: 1.0
 swav_projection_dim: 128
 swav_hidden_dim: 512
-swav_num_prototypes: 16
+swav_num_prototypes: 32
 swav_temperature: 0.1
 swav_epsilon: 0.05
 swav_sinkhorn_iterations: 12
@@ -17,3 +17,15 @@ swav_start_epoch: 0
 swav_freeze_prototypes_steps: 0
 swav_view_mode: center_adjacent
 swav_view_points: ${data.model_points}
+
+# Power-law prototype prior for SwAV assignments.
+# With K=7 and exponent=0.5, expected prototype masses are roughly:
+# [0.249, 0.176, 0.144, 0.125, 0.111, 0.102, 0.094].
+swav_prior_type: powerlaw
+swav_prior_exponent: 0.5
+swav_sinkhorn_iterations: 50
+
+# Keep VICReg's invariance strong, but soften its uniform-volume pressure so
+# the explicit non-uniform SwAV prior can shape prototype occupancy.
+vicreg_std_coeff: 5.0
+vicreg_cov_coeff: 0.1

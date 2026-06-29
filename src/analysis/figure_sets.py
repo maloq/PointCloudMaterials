@@ -616,6 +616,8 @@ def render_cluster_figure_outputs(
     analysis_source_names: list[str] | None,
     step: Callable[[str], None],
     representative_render_cache: dict[str, Any] | None = None,
+    representative_selection_features: np.ndarray | None = None,
+    representative_selection_info: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
     visible_cluster_sets_unset = object()
 
@@ -629,6 +631,7 @@ def render_cluster_figure_outputs(
         cluster_color_assignment_override: dict[int, int | str] | None = None,
         visible_cluster_sets_override: Any = visible_cluster_sets_unset,
         representative_render_cache_override: dict[str, Any] | None = None,
+        representative_selection_features_override: np.ndarray | None = None,
         include_all_cluster_panels_override: bool | None = None,
     ) -> dict[str, Any]:
         step("Generating fixed-k cluster figure set")
@@ -650,6 +653,11 @@ def render_cluster_figure_outputs(
             run_kwargs["visible_cluster_sets"] = visible_cluster_sets_override
         if representative_render_cache_override is not None:
             run_kwargs["representative_render_cache"] = representative_render_cache_override
+        if representative_selection_features_override is not None:
+            run_kwargs["representative_selection_features"] = (
+                representative_selection_features_override
+            )
+            run_kwargs["representative_selection_info"] = representative_selection_info
         if include_all_cluster_panels_override is not None:
             run_kwargs["include_all_cluster_panels"] = bool(include_all_cluster_panels_override)
         with _temporary_disable_dataset_aug(dataloader):
@@ -666,6 +674,7 @@ def render_cluster_figure_outputs(
         return _run_figure_set(
             labels_for_k,
             representative_render_cache_override=representative_render_cache,
+            representative_selection_features_override=representative_selection_features,
         ), None
 
     if dataset_obj is None:
@@ -747,6 +756,11 @@ def render_cluster_figure_outputs(
             coords_override=coords[indices],
             cluster_color_assignment_override=global_color_map,
             visible_cluster_sets_override=snapshot_visible_sets,
+            representative_selection_features_override=(
+                None
+                if representative_selection_features is None
+                else representative_selection_features[indices]
+            ),
             include_all_cluster_panels_override=True,
         )
         snapshot_summary["snapshots"].append(
@@ -829,10 +843,6 @@ def print_figure_set_summary(
                 print(f"  - ..._{tag}_k{k_fig}[_view*]_raytrace.png")
                 print(f"  - ..._{tag}_k{k_fig}_raytrace_gallery.png")
         print(f"  - cluster_figure_set_k{k_fig}/04_cluster_representatives_k{k_fig}*.png")
-        print(
-            "  - cluster_figure_set_k"
-            f"{k_fig}/08_cluster_representatives_spatial_neighbors_paper_k{k_fig}.png"
-        )
         rep_analysis = fs.get("panel_representatives_structure_analysis")
         if isinstance(rep_analysis, dict):
             print(

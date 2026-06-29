@@ -1,0 +1,34 @@
+defaults:
+  - vicreg_vn_molecular
+  - _self_
+
+model_type: vicreg
+training_method: contrastive
+experiment_name: OVERLAP_VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+# Keep model crops at 80 points, but sample a larger raw neighborhood so the
+# center crop and neighbor-shifted crop can have zero shared raw points.
+data:
+  num_points: 240
+  auto_cutoff:
+    target_points: ${data.num_points}
+
+# VICReg-style overlap regression:
+# - the std/cov regularizers are unchanged
+# - the similarity term is replaced by prediction of the raw point overlap count
+#   between a center crop and a neighbor-shifted crop
+vicreg_objective: overlap_vicreg
+vicreg_overlap_hidden_dim: ${vicreg_embed_dim}
+
+# Only neighbor-shift augmentation is used for this objective. neighbor_k <= 0
+# means sample the shifted center uniformly from all non-origin raw points,
+# allowing distant views and potentially zero-overlap crops.
+vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: second
+vicreg_neighbor_k: 0
+vicreg_neighbor_max_relative_distance: 0.0
+vicreg_jitter_std: 0.0
+vicreg_drop_ratio: 0.0
+vicreg_rotation_mode: none
+vicreg_strain_std: 0.0
+vicreg_occlusion_mode: none

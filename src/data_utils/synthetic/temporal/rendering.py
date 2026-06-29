@@ -137,6 +137,12 @@ class FrameRenderer:
             1.20 * self._site_spacing,
             size=(self.phase_site_count, 2),
         ).astype(np.float32)
+        (
+            self._defect_normals,
+            self._defect_slip_directions,
+            self._defect_plane_offsets,
+            self._defect_plane_widths,
+        ) = self._build_defect_field()
         self._ownership_warp_modes = self._build_static_warp_modes(n_modes=4, amplitude_scale=0.16)
         self._flow_modes = self._build_dynamic_warp_modes(n_modes=5, amplitude_scale=0.09)
         self._phase_dwell_total, self._phase_dwell_remaining = self._build_phase_progress_cache()
@@ -497,6 +503,30 @@ class FrameRenderer:
             "amplitudes": amplitudes,
         }
 
+    def _build_defect_field(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        normals = np.vstack(
+            [random_unit_vector(self._renderer_rng) for _ in range(self.phase_site_count)]
+        ).astype(np.float32)
+        trial_dirs = np.vstack(
+            [random_unit_vector(self._renderer_rng) for _ in range(self.phase_site_count)]
+        ).astype(np.float32)
+        slip_dirs = trial_dirs - np.sum(trial_dirs * normals, axis=1, keepdims=True) * normals
+        slip_dirs = _normalize_vectors(
+            slip_dirs,
+            fallback_axes=np.arange(self.phase_site_count, dtype=np.int32) + 503,
+        )
+        plane_offsets = self._renderer_rng.uniform(
+            -0.42 * self._site_spacing,
+            0.42 * self._site_spacing,
+            size=self.phase_site_count,
+        ).astype(np.float32)
+        plane_widths = self._renderer_rng.uniform(
+            0.20 * self.avg_nn_distance,
+            0.55 * self.avg_nn_distance,
+            size=self.phase_site_count,
+        ).astype(np.float32)
+        return normals, slip_dirs, plane_offsets, plane_widths
+
     def _warp_points_static(self, points: np.ndarray) -> np.ndarray:
         phase = (2.0 * np.pi / self.box_size) * (points @ self._ownership_warp_modes["wavevectors"].T)
         phase += self._ownership_warp_modes["phases"][None, :]
@@ -734,6 +764,7 @@ class FrameRenderer:
         rotations = quaternion_to_rotation_matrix_batch(quats)
         strains = self.latent.phase_strain[frame_index, site_ids]
         thermals = self.latent.phase_thermal_jitter[frame_index, site_ids]
+        defects = self.latent.phase_defect_amplitude[frame_index, site_ids]
 
         all_indices = np.concatenate([idx for _, idx in group_sites])
         all_current = self.current_atoms[all_indices]
@@ -746,6 +777,17 @@ class FrameRenderer:
             strains=strains[per_atom_local_site_ids],
             recipe=recipe,
         )
+        per_atom_defect = np.repeat(defects, atoms_per_site).astype(np.float32)
+        if np.any(per_atom_defect > 0.0):
+            strength_scale = 1.0 if template_kind == "defective_crystal" else 0.30
+            all_targets = self._apply_crystal_defect_field(
+                positions=all_current,
+                targets=all_targets,
+                atom_indices=all_indices,
+                site_ids=per_atom_site_ids,
+                defect_amplitude=per_atom_defect,
+                strength_scale=strength_scale,
+            )
 
         # Vectorized step clamping and noise for ALL atoms across ALL sites in this group
         # Compute per-atom thermal from per-site thermal
@@ -799,6 +841,7 @@ class FrameRenderer:
         rotations = quaternion_to_rotation_matrix_batch(quats)
         strains = self.latent.phase_strain[frame_index, site_ids]
         thermals = self.latent.phase_thermal_jitter[frame_index, site_ids]
+        defects = self.latent.phase_defect_amplitude[frame_index, site_ids]
 
         all_current = self.current_atoms[all_indices]
         all_base = self.base_atoms[all_indices]
@@ -838,6 +881,16 @@ class FrameRenderer:
 
         # Vectorized blend: target = liquid + alpha * (structured - liquid)
         blended_target = all_liquid_target + per_atom_alpha[:, None] * (all_targets - all_liquid_target)
+        per_atom_defect = np.repeat(defects, atoms_per_site).astype(np.float32)
+        if np.any(per_atom_defect > 0.0):
+            transition_band = per_atom_alpha * (1.0 - per_atom_alpha)
+            blended_target += (
+                transition_band[:, None]
+                * per_atom_defect[:, None]
+                * 0.18
+                * self.avg_nn_distance
+                * self._atom_reference_directions[all_indices]
+            ).astype(np.float32)
 
         # Vectorized step clamping
         base_step = 0.22 * self.avg_nn_distance  # precursor base
@@ -952,6 +1005,16 @@ class FrameRenderer:
         )
         solid_alpha = np.clip(per_atom_solid_fractions * solid_alpha, 0.0, 1.0)
         all_targets = all_liquid_target + solid_alpha[:, None] * (all_structured_targets - all_liquid_target)
+        per_atom_defect = np.repeat(defects, atoms_per_site).astype(np.float32)
+        if np.any(per_atom_defect > 0.0):
+            interface_band = solid_alpha * (1.0 - solid_alpha)
+            all_targets += (
+                interface_band[:, None]
+                * per_atom_defect[:, None]
+                * 0.24
+                * self.avg_nn_distance
+                * self._atom_reference_directions[all_indices]
+            ).astype(np.float32)
 
         # Vectorized step clamping + noise
         base_step = 0.22 * self.avg_nn_distance  # interface base
@@ -1449,6 +1512,46 @@ class FrameRenderer:
         else:
             prefactor = 0.06
         return float(min(0.08 * self.avg_nn_distance, prefactor * thermal * self.avg_nn_distance))
+
+    def _apply_crystal_defect_field(
+        self,
+        *,
+        positions: np.ndarray,
+        targets: np.ndarray,
+        atom_indices: np.ndarray,
+        site_ids: np.ndarray,
+        defect_amplitude: np.ndarray,
+        strength_scale: float,
+    ) -> np.ndarray:
+        centers = self.phase_centers[site_ids]
+        normals = self._defect_normals[site_ids]
+        slip_dirs = self._defect_slip_directions[site_ids]
+        offsets = self._defect_plane_offsets[site_ids]
+        widths = self._defect_plane_widths[site_ids]
+        signed_distance = np.einsum(
+            "ij,ij->i",
+            positions - centers,
+            normals,
+            optimize=True,
+        ) - offsets
+        width_safe = np.maximum(widths, 1e-5)
+        fault_step = 0.5 * (1.0 + np.tanh(signed_distance / width_safe))
+        fault_band = np.exp(-0.5 * (signed_distance / (2.2 * width_safe)) ** 2).astype(np.float32)
+        slip = (
+            strength_scale
+            * 0.34
+            * self.avg_nn_distance
+            * defect_amplitude
+            * fault_step.astype(np.float32)
+        )[:, None] * slip_dirs
+        core_disorder = (
+            strength_scale
+            * 0.16
+            * self.avg_nn_distance
+            * defect_amplitude
+            * fault_band
+        )[:, None] * self._atom_reference_directions[atom_indices]
+        return (targets + slip + core_disorder).astype(np.float32)
 
     def _find_close_pairs_cell_list(self, points: np.ndarray) -> np.ndarray:
         if not _NUMBA_AVAILABLE:

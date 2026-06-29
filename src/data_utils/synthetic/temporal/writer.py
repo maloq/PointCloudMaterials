@@ -70,6 +70,21 @@ class TemporalDatasetWriter:
         dump_temporal_config(self.config, self.output_dir / "config_snapshot.yaml")
         with (self.output_dir / "transition_graph.json").open("w", encoding="utf-8") as handle:
             json.dump(self.graph.serializable(), handle, indent=2)
+        label_schema = {
+            "state_id_to_name": {str(idx): name for idx, name in enumerate(self.graph.state_names)},
+            "state_name_to_id": {name: idx for idx, name in enumerate(self.graph.state_names)},
+            "atom_label_arrays": {
+                "state_ids": "Per-frame per-atom true latent state label. Not derived from PTM, CNA, q4, or q6.",
+                "site_ids": "Per-frame per-atom latent phase-region assignment used by the renderer.",
+                "grain_ids": "Per-frame per-atom true latent grain id; -1 means no crystal grain.",
+            },
+            "site_label_arrays": {
+                "latent/site_latent_trajectories.npz": "Tracked neighborhood true labels and nuisance variables.",
+                "latent/phase_latent_trajectories.npz": "Full phase-field true labels and nuisance variables.",
+            },
+        }
+        with (self.output_dir / "label_schema.json").open("w", encoding="utf-8") as handle:
+            json.dump(label_schema, handle, indent=2)
         np.savez_compressed(
             self.output_dir / "site_layout.npz",
             centers=layout.centers,
@@ -233,6 +248,7 @@ class TemporalDatasetWriter:
             "frame_metadata_path": (
                 str(self.frame_metadata_path) if self.frame_storage == "single_chunk_npz" else None
             ),
+            "label_schema_path": str(self.output_dir / "label_schema.json"),
             "site_latent_path": str(self.latent_dir / "site_latent_trajectories.npz"),
             "phase_latent_path": str(self.latent_dir / "phase_latent_trajectories.npz"),
             "state_names": self.graph.state_names,

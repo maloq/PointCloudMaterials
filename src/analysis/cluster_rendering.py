@@ -113,30 +113,6 @@ def _compute_structure_half_span(points: np.ndarray) -> float:
     return 0.5 * span
 
 
-def _set_equal_axes_3d_with_half_span(
-    ax: Any,
-    coords: np.ndarray,
-    *,
-    half_span: float,
-) -> None:
-    pts = np.asarray(coords, dtype=np.float32)
-    if pts.ndim != 2 or pts.shape[1] < 3:
-        raise ValueError(f"coords must have shape (N, >=3), got {pts.shape}.")
-    pts = pts[:, :3]
-    half = float(half_span)
-    if not np.isfinite(half) or half <= 0.0:
-        raise ValueError(f"half_span must be positive and finite, got {half_span}.")
-
-    mins = np.min(pts, axis=0)
-    maxs = np.max(pts, axis=0)
-    center = 0.5 * (mins + maxs)
-    ax.set_xlim(center[0] - half, center[0] + half)
-    ax.set_ylim(center[1] - half, center[1] + half)
-    ax.set_zlim(center[2] - half, center[2] + half)
-    if hasattr(ax, "set_box_aspect"):
-        ax.set_box_aspect((1.0, 1.0, 1.0))
-
-
 def _save_md_cluster_snapshot(
     coords: np.ndarray,
     cluster_labels: np.ndarray,
@@ -366,8 +342,14 @@ def _prepare_cluster_representative_structures(
     *,
     point_scale: float,
     target_points: int,
+    selection_features: np.ndarray | None = None,
+    selection_info: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    reps = _compute_cluster_representative_indices(latents, cluster_labels)
+    reps = _compute_cluster_representative_indices(
+        latents,
+        cluster_labels,
+        selection_features=selection_features,
+    )
     prepared: list[dict[str, Any]] = []
     for cluster_id in sorted(reps.keys()):
         sample_idx = int(reps[cluster_id])
@@ -392,6 +374,7 @@ def _prepare_cluster_representative_structures(
                 "base_color": str(color_map.get(cluster_id, "#777777")),
                 "centered_points": np.asarray(centered, dtype=np.float32),
                 "local_points": np.asarray(local, dtype=np.float32),
+                "selection_info": {} if selection_info is None else dict(selection_info),
             }
         )
     if not prepared:
@@ -413,6 +396,8 @@ def _build_cluster_representative_render_cache(
     representative_center_atom_tolerance: float,
     representative_shell_min_neighbors: int,
     representative_shell_max_neighbors: int,
+    selection_features: np.ndarray | None = None,
+    selection_info: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     prepared_records = _prepare_cluster_representative_structures(
         dataset,
@@ -421,6 +406,8 @@ def _build_cluster_representative_render_cache(
         color_map,
         point_scale=float(point_scale),
         target_points=int(target_points),
+        selection_features=selection_features,
+        selection_info=selection_info,
     )
     structure_analysis_summary = _build_cluster_representative_analysis_summary(
         prepared_records,
@@ -434,6 +421,7 @@ def _build_cluster_representative_render_cache(
     return {
         "prepared_records": prepared_records,
         "structure_analysis_summary": structure_analysis_summary,
+        "selection_info": {} if selection_info is None else dict(selection_info),
     }
 
 
@@ -510,8 +498,7 @@ def _render_cluster_representatives_variant(
             method=str(orientation_method),
         )
         base_color = str(prepared["base_color"])
-        # Keep representative coloring consistent with the paper single-column
-        # variant (08_cluster_representatives_spatial_neighbors_paper_k*).
+        # Keep representative coloring consistent across representative variants.
         point_colors = _compute_center_to_edge_colors(local_oriented, base_color)
         edges, edge_info = _build_local_coordination_edges(
             local_oriented,
@@ -648,179 +635,6 @@ def _build_knn_representative_edges(
     }
 
 
-def _render_spatial_neighbors_paper_figure(
-    prepared_records: list[dict[str, Any]],
-    out_file: Path,
-    *,
-    knn_k: int,
-    view_elev: float = 22.0,
-    view_azim: float = 38.0,
-    projection: str = "ortho",
-) -> dict[str, Any]:
-    """Paper-quality single-column figure of spatial-neighbor cluster representatives.
-
-    Style mirrors ``figure_local_base_paper.png`` from the synthetic generator:
-    DPI 300, point_size 48, edge_linewidth 0.94, shared display half-span,
-    coordination-shell mutual bonds, row labels colored by cluster, no axis chrome.
-    """
-    proj_norm = str(projection).strip().lower()
-    n_clusters = len(prepared_records)
-    min_shell_neighbors = max(2, int(knn_k) - 2)
-    max_shell_neighbors = max(5, int(knn_k) + 1)
-    # Match synthetic local_base_paper panel styling.
-    point_size = 48.0
-    point_linewidth = 0.26
-    edge_alpha = 0.60
-    edge_linewidth = 0.94
-
-    # -- compute shared display half-span (like _compute_paper_display_half_span) --
-    all_half_spans: list[float] = []
-    oriented_cache: list[
-        tuple[np.ndarray, np.ndarray, list[tuple[int, int]], dict[str, Any], dict[str, Any]]
-    ] = []
-    for prepared in prepared_records:
-        oriented_points, orientation_info = _orient_points_for_crystal_view(
-            prepared["local_points"],
-            method="pca",
-        )
-        base_color = str(prepared["base_color"])
-        point_colors = _compute_center_to_edge_colors(
-            oriented_points,
-            base_color,
-        )
-        edges, edge_info = _build_local_coordination_edges(
-            oriented_points,
-            min_shell_neighbors=int(min_shell_neighbors),
-            max_shell_neighbors=int(max_shell_neighbors),
-            shell_gap_ratio=1.22,
-            edge_mode="coordination_shell_mutual",
-        )
-        edges = _ensure_connected_edges(oriented_points, edges)
-        edge_info = dict(edge_info)
-        edge_info["edge_mode"] = "coordination_shell_mutual_connected"
-        edge_info["requested_knn_k"] = int(knn_k)
-        edge_info["min_shell_neighbors"] = int(min_shell_neighbors)
-        edge_info["max_shell_neighbors"] = int(max_shell_neighbors)
-        half_span = _compute_structure_half_span(oriented_points)
-        all_half_spans.append(half_span)
-        oriented_cache.append((oriented_points, point_colors, edges, edge_info, orientation_info))
-
-    display_half_span = float(max(all_half_spans) * 0.94) if all_half_spans else 1.0
-
-    # -- build figure: one column, one row per cluster --
-    panel_height = 7.85 / 4.0
-    fig_width = 6.35 / 2.0
-    fig_height = panel_height * n_clusters
-    fig = plt.figure(figsize=(fig_width, fig_height), dpi=300, facecolor="white")
-
-    # Manual axes placement following local_base_paper proportions.
-    top = 0.922
-    bottom = 0.040
-    left_ax = 0.160
-    ax_width = 0.790
-    row_gap = -0.014
-    total_h = top - bottom - row_gap * max(0, n_clusters - 1)
-    ax_height = total_h / max(1, n_clusters)
-
-    summary_records: list[dict[str, Any]] = []
-    for pos, prepared in enumerate(prepared_records):
-        oriented_points, point_colors, edges, edge_info, orientation_info = oriented_cache[pos]
-        base_color = str(prepared["base_color"])
-
-        y0 = top - (pos + 1) * ax_height - pos * row_gap
-        ax = fig.add_axes([left_ax, y0, ax_width, ax_height], projection="3d")
-        ax.set_facecolor("white")
-        if hasattr(ax, "set_proj_type"):
-            ax.set_proj_type(proj_norm)
-        ax.view_init(elev=float(view_elev), azim=float(view_azim))
-
-        # Draw with paper style parameters
-        _draw_edges(
-            ax,
-            oriented_points,
-            edges,
-            point_colors=point_colors,
-            edge_alpha=float(edge_alpha),
-            edge_linewidth=float(edge_linewidth),
-        )
-        ax.scatter(
-            oriented_points[:, 0],
-            oriented_points[:, 1],
-            oriented_points[:, 2],
-            c=point_colors,
-            s=float(point_size),
-            alpha=0.97,
-            edgecolors="#222222",
-            linewidths=float(point_linewidth),
-            depthshade=False,
-        )
-
-        # Shared display bounds
-        _set_equal_axes_3d_with_half_span(
-            ax,
-            oriented_points,
-            half_span=float(display_half_span),
-        )
-
-        # Clean axis chrome
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_zticks([])
-        ax.grid(False)
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-        ax.set_zlabel("")
-        for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
-            if hasattr(axis, "pane"):
-                axis.pane.fill = False
-                axis.pane.set_edgecolor((1.0, 1.0, 1.0, 1.0))
-            if hasattr(axis, "line"):
-                axis.line.set_color((1.0, 1.0, 1.0, 1.0))
-
-        # Row label (like paper variant)
-        label_color = _cluster_label_color(base_color, darken_factor=0.68)
-        bbox = ax.get_position()
-        y_center = 0.5 * (bbox.y0 + bbox.y1)
-        fig.text(
-            left_ax - 0.028,
-            y_center,
-            f"C{pos + 1}",
-            ha="right",
-            va="center",
-            fontsize=9,
-            fontweight="bold",
-            color=label_color,
-        )
-
-        summary_records.append(
-            {
-                "panel_label": f"C{pos + 1}",
-                "cluster_id": int(prepared["cluster_id"]),
-                "sample_index": int(prepared["sample_index"]),
-                "num_points_plotted": int(oriented_points.shape[0]),
-                "orientation": orientation_info,
-                "edge_info": edge_info,
-            }
-        )
-
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
-    _log_saved_figure(out_file)
-    return {
-        "variant_name": "spatial_neighbors_paper",
-        "out_file": str(out_file),
-        "orientation_method": "pca",
-        "connection_mode": "coordination_shell_mutual_connected",
-        "view_elev": float(view_elev),
-        "view_azim": float(view_azim),
-        "projection": str(proj_norm),
-        "display_half_span": float(display_half_span),
-        "representatives": summary_records,
-    }
-
-
 def _render_knn_edge_representatives_figure(
     prepared_records: list[dict[str, Any]],
     out_file: Path,
@@ -947,6 +761,8 @@ def _save_cluster_representatives_figure(
     representative_shell_min_neighbors: int = 8,
     representative_shell_max_neighbors: int = 24,
     representative_render_cache: dict[str, Any] | None = None,
+    selection_features: np.ndarray | None = None,
+    selection_info: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     proj_norm = str(projection).strip().lower()
     method_norm = str(orientation_method).strip().lower()
@@ -968,6 +784,8 @@ def _save_cluster_representatives_figure(
             color_map,
             point_scale=float(point_scale),
             target_points=int(target_points),
+            selection_features=selection_features,
+            selection_info=selection_info,
         )
         structure_analysis_summary = analyze_cluster_representatives(
             prepared_records,
@@ -980,6 +798,7 @@ def _save_cluster_representatives_figure(
             shell_min_neighbors=int(representative_shell_min_neighbors),
             shell_max_neighbors=int(representative_shell_max_neighbors),
         )
+        representative_selection_summary = {} if selection_info is None else dict(selection_info)
     else:
         cached_prepared_records = representative_render_cache.get("prepared_records")
         if not isinstance(cached_prepared_records, list) or not cached_prepared_records:
@@ -1017,6 +836,10 @@ def _save_cluster_representatives_figure(
             )
         else:
             structure_analysis_summary = None
+        cached_selection_info = representative_render_cache.get("selection_info")
+        representative_selection_summary = (
+            {} if cached_selection_info is None else dict(cached_selection_info)
+        )
     analysis_by_cluster_id: dict[int, dict[str, Any]] = {}
     if structure_analysis_summary is not None:
         analysis_by_cluster_id = {
@@ -1044,17 +867,11 @@ def _save_cluster_representatives_figure(
         )
         _attach_structure_analysis_to_summary(variant_summary, analysis_by_cluster_id)
         variant_summaries.append(variant_summary)
-    spatial_neighbors_paper_summary = _render_spatial_neighbors_paper_figure(
-        prepared_records,
-        out_file.with_name(
-            f"08_cluster_representatives_spatial_neighbors_paper_k{k_token}.png"
-        ),
-        knn_k=int(knn_k),
-        view_elev=float(view_elev),
-        view_azim=float(view_azim),
-        projection=str(proj_norm),
+    stale_spatial_neighbors_paper_path = out_file.with_name(
+        f"08_cluster_representatives_spatial_neighbors_paper_k{k_token}.png"
     )
-    _attach_structure_analysis_to_summary(spatial_neighbors_paper_summary, analysis_by_cluster_id)
+    if stale_spatial_neighbors_paper_path.exists():
+        stale_spatial_neighbors_paper_path.unlink()
     knn_edges_summary = _render_knn_edge_representatives_figure(
         prepared_records,
         out_file.with_name(
@@ -1071,8 +888,8 @@ def _save_cluster_representatives_figure(
     primary_summary["primary_variant_name"] = str(variant_summaries[0]["variant_name"])
     primary_summary["projection"] = str(proj_norm)
     primary_summary["structure_analysis"] = structure_analysis_summary
+    primary_summary["representative_selection"] = representative_selection_summary
     primary_summary["pca_two_shell_figures"] = {
-        "spatial_neighbors_paper": spatial_neighbors_paper_summary,
         "knn_edges": knn_edges_summary,
     }
     return primary_summary

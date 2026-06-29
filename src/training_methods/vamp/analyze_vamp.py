@@ -1450,9 +1450,7 @@ def main() -> None:
         "representatives": {
             "root_dir": str(representatives_dir),
             "shared_style": representative_style_summary,
-            "primary_figure": str(
-                representative_style_summary["pca_two_shell_figures"]["spatial_neighbors_paper"]["out_file"]
-            ),
+            "primary_figure": str(representative_style_summary["out_file"]),
             "edge_connected_figure": str(
                 representative_style_summary["pca_two_shell_figures"]["knn_edges"]["out_file"]
             ),

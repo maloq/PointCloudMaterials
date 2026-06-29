@@ -95,6 +95,8 @@ def _save_fixed_k_cluster_figure_set(
     raytrace_parallel_views: bool = False,
     raytrace_parallel_max_workers: int | None = None,
     representative_render_cache: dict[str, Any] | None = None,
+    representative_selection_features: np.ndarray | None = None,
+    representative_selection_info: dict[str, Any] | None = None,
     include_all_cluster_panels: bool = True,
 ) -> dict[str, Any]:
     out_dir = Path(out_dir)
@@ -203,6 +205,8 @@ def _save_fixed_k_cluster_figure_set(
         representative_shell_min_neighbors=int(representative_shell_min_neighbors),
         representative_shell_max_neighbors=int(representative_shell_max_neighbors),
         representative_render_cache=representative_render_cache,
+        selection_features=representative_selection_features,
+        selection_info=representative_selection_info,
     )
 
     raytrace_pending_jobs: list[dict[str, Any]] = []

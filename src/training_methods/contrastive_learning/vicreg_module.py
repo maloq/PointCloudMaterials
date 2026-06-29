@@ -30,6 +30,8 @@ class VICRegModule(BaseSSLModule):
         *,
         view_points: int | None,
     ) -> dict[str, torch.Tensor]:
+        if self.vicreg.requires_overlap_target:
+            return self.vicreg.build_overlap_view_pair(pc, view_points=view_points)
         use_neighbor_a, use_neighbor_b = self.vicreg._resolve_neighbor_flags(device=pc.device)
         apply_occlusion_a, apply_occlusion_b = self.vicreg._resolve_pair_occlusion_flags(
             use_neighbor_a=use_neighbor_a,
@@ -92,38 +94,47 @@ class VICRegModule(BaseSSLModule):
 
         run_vicreg = self.vicreg.should_run(current_epoch=int(self.current_epoch))
         run_swav = self.swav.should_run(current_epoch=int(self.current_epoch))
-        shared_views = run_vicreg and run_swav and self.vicreg.view_points == self.swav.view_points
+        can_share_views = run_vicreg and run_swav and self.vicreg.view_points == self.swav.view_points
 
-        def process_head(head_name, compute_fn, view_points, shared_features=None):
+        def process_head(head_name, compute_fn, view_points, shared_features=None, view_pair=None):
+            views = view_pair
             if shared_features:
                 z_a, z_b = shared_features
             else:
                 views = self._build_contrastive_view_pair(pc_raw, view_points=view_points)
                 z_a, z_b = self._encode_contrastive_view_pair(views)
-            loss, metrics = compute_fn(z_a, z_b)
+            loss, metrics = compute_fn(z_a, z_b, views)
             if loss is not None: losses[head_name] = loss
             for k, v in metrics.items(): self._log_metric(stage, k, v, batch_size=batch_size)
             return z_a, z_b
 
         shared_features = None
-        if shared_views:
-            views = self._build_contrastive_view_pair(pc_raw, view_points=self.vicreg.view_points)
-            shared_features = self._encode_contrastive_view_pair(views)
+        shared_view_pair = None
+        if can_share_views:
+            shared_view_pair = self._build_contrastive_view_pair(pc_raw, view_points=self.vicreg.view_points)
+            shared_features = self._encode_contrastive_view_pair(shared_view_pair)
 
         if run_vicreg:
             process_head(
                 self.vicreg.metric_prefix,
-                lambda a, b: self.vicreg.compute_loss_from_features(z_a_feat=a, z_b_feat=b, current_epoch=int(self.current_epoch)),
+                lambda a, b, views: self.vicreg.compute_loss_from_features(
+                    z_a_feat=a,
+                    z_b_feat=b,
+                    current_epoch=int(self.current_epoch),
+                    overlap_target=None if views is None else views.get("overlap_target"),
+                ),
                 self.vicreg.view_points,
-                shared_features
+                shared_features,
+                shared_view_pair,
             )
 
         if run_swav:
             process_head(
                 "swav",
-                lambda a, b: self.swav.compute_loss(view_features=[a, b], current_epoch=int(self.current_epoch)),
+                lambda a, b, views: self.swav.compute_loss(view_features=[a, b], current_epoch=int(self.current_epoch)),
                 self.swav.view_points,
-                shared_features
+                shared_features,
+                shared_view_pair,
             )
 
         if self._should_cache_supervised_stage(stage):

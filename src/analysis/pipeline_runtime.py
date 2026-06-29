@@ -490,6 +490,12 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
     if model_type in {"vicreg", "visreg"}:
         return VICRegModule
+    if model_type in {"vicreg_masked_latent", "vicreg_mlp"}:
+        from src.training_methods.contrastive_learning.masked_latent_vicreg_module import (
+            VICRegMaskedLatentModule,
+        )
+
+        return VICRegMaskedLatentModule
     if model_type in {"temporal_vicreg", "temporal_lejepa"}:
         from src.training_methods.temporal_ssl.temporal_ssl_module import TemporalSSLModule
 
@@ -502,7 +508,8 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
         return TemporalMotifFieldModule
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
-        f"Expected one of ['vicreg', 'visreg', 'temporal_vicreg', 'temporal_lejepa', 'temporal_motif_field'], "
+        "Expected one of ['vicreg', 'visreg', 'vicreg_masked_latent', 'vicreg_mlp', "
+        "'temporal_vicreg', 'temporal_lejepa', 'temporal_motif_field'], "
         f"got {model_type!r}."
     )
 

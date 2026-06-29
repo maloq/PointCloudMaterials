@@ -1,22 +1,20 @@
 \documentclass[runningheads]{llncs}
 \usepackage[T1]{fontenc}
 
-% N.B.: do not change anything above this line. If you require additional packages, please load them directly after this line.
 \usepackage{nomencl}
 \usepackage{mwe}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage[misc]{ifsym}
 \usepackage{amsmath, amssymb}
-\usepackage[dvipsnames]{xcolor}  
+\usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption, wrapfig}
 \usepackage{multirow}
 \usepackage{hyperref}
-\usepackage{subfig}   
+\hypersetup{hidelinks}
 \usepackage{svg}
-\usepackage{ulem}
+\usepackage[normalem]{ulem}
 \newcommand{\corr}{(\Letter)}
-% N.B.: you may delete the preceding line. It is used to display an example image in this template.
 
 \begin{document}
 
@@ -24,9 +22,6 @@
 
 \titlerunning{Unsupervised Clustering of Local Atomic Environments}
 
-
-%N.B.: Author information (both in the \author{} and \authorrunning{} command) should only be present in the Camera-Ready Version of your paper. The version that you initially submit for review, ought to be double-blind. So, when initially submitting your paper, use:
-%\author{Author information scrubbed for double-blind reviewing}
 \author{Vsevolod Morozov\inst{1,2} \and
 Emilie Devijver\inst{1} \and
 Charlotte Laclau\inst{3} \and
@@ -47,77 +42,55 @@ LTCI, Télécom Paris, Institut Polytechnique de Paris, Palaiseau, France
 \email{charlotte.laclau@telecom-paris.fr, paul.krzakala@telecom-paris.fr}
 }
 
-\maketitle              % typeset the header of the contribution
+\maketitle
 
 \begin{abstract}
 Identifying local structures in 3D point clouds remains challenging for unsupervised methods, particularly in scientific settings such as molecular dynamics simulations of crystallization, where meaningful motifs correspond to subtle geometric arrangements of atoms. While recent advances in point-cloud representation learning focus primarily on object-level shape understanding, they are less suited to capturing fine-grained local geometric patterns under rotational symmetry.
   We propose a self-supervised framework for learning rotation-aware representations of atomic neighborhoods and clustering them into local structural motifs. Our method combines a rotation-equivariant encoder with a VICReg objective and a spatially consistent view construction that encourages smooth representations across overlapping neighborhoods. On both synthetic benchmarks and large-scale molecular dynamics simulations, the learned embeddings organize local environments into coherent and interpretable clusters that reveal spatially structured transitions between disordered and ordered atomic configurations. These results demonstrate the potential of self-supervised geometric learning for uncovering physically meaningful structure in large scientific point clouds.
-\keywords{Point clouds \and Self supervised learning\and Atomic structure}
+\keywords{Point clouds \and Self-supervised learning \and Atomic structure}
 \end{abstract}
-
 
 \section{Introduction}
 \label{sec:intro}
 
-Understanding local geometric structure in 3D point clouds is central to many problems, including fine-grained part segmentation \cite{Qi2017PointNet}, scene analysis \cite{thomas2019kpconv}, and atomic structure identification \cite{schnet2017nips}. 
-While recent advances have addressed object-level recognition, semantic segmentation, or shape reconstruction, the fully unsupervised discovery of multiple local structural motifs within a single point cloud remains largely unexplored \cite{becker2022nucleation,beckerPRE, kyvala2025defects}. 
-This gap is particularly striking in atomic-scale and discrete-particle simulations, where the combinatorial diversity of local atomic structures and the complexity of atomic neighborhoods challenge traditional approaches. 
+Understanding local geometric structure in 3D point clouds is central to many problems, including fine-grained part segmentation \cite{Qi2017PointNet}, scene analysis \cite{thomas2019kpconv}, and atomic structure identification \cite{schnet2017nips}.
+While recent advances have addressed object-level recognition, semantic segmentation, or shape reconstruction, the fully unsupervised discovery of multiple local structural motifs within a single point cloud remains largely unexplored \cite{becker2022nucleation,becker2022atomic,kyvala2025defects}.
+This gap is particularly striking in atomic-scale and discrete-particle simulations, where the combinatorial diversity of local atomic structures and the complexity of atomic neighborhoods challenge traditional approaches.
 Automatically identifying these motifs is crucial for exploring structure-property relationships in systems like high-entropy alloys or metallic glasses, where traditional descriptors fail.
 
 \begin{figure}[t]
     \centering
-    %\includegraphics[width=\textwidth, trim = 0 14cm 0 6cm, clip=TRUE]{image/Liquid Aluminium.pdf}
+
     \includegraphics[width=\textwidth]{image/fig-1.png}
-    %%%% link to CANVA
-    %% https://www.canva.com/design/DAHC1daMNKQ/ywXH1m0gFaU13qV095rgLQ/edit?utm_content=DAHC1daMNKQ&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
-    \caption{\textbf{Homogeneous crystal nucleation in aluminium: the early stage of the phase transition from liquid to crystalline states.} (Left) typical local atomic structure of the Liquid, characterized by disordered atomic arrangements.
-(Middle) The snapshots illustrate the emergence of nuclei formed by perfect and defective crystalline local structural motifs during the homogeneous nucleation process. 
-The structural identification captures well-defined crystalline nuclei out of the liquid (red atoms) with their defects, orientation, and morphologies.
-(Right) local structure in a perfect crystalline arrangement. 
+
+    \caption{\textbf{Homogeneous crystal nucleation in aluminium: early stages of the phase transition from liquid to crystalline states.} (Left) Typical local atomic structure of the liquid, characterized by disordered atomic arrangements.
+(Middle) The snapshots illustrate the emergence of nuclei formed by perfect and defective crystalline local structural motifs during the homogeneous nucleation process.
+The structural identification captures well-defined crystalline nuclei within the liquid (red atoms), including their defects, orientations, and morphologies.
+(Right) Local structure in a perfect crystalline arrangement.
 This transition highlights the complexity of the phenomenon, motivating the need for robust unsupervised geometric analysis in molecular dynamics.}
-    %{Local atomic motifs in the crystallization of Aluminum. (a–b) Visualization of atomic neighborhoods in a periodic simulation box, highlighting distinct local environments. (a) shows the full system, while (b) focuses on crystal-like motifs. 
-    %(d)  Representative local atomic clusters ($C_1–C_6$), automatically identified by unsupervised clustering of learned embeddings.  These motifs range from ordered (e.g., crystal-like) to disordered (e.g., liquid-like) configurations, capturing the diversity of atomic environments without relying on predefined descriptors. The clusters reveal structural transitions critical for understanding crystallization pathways and phase behavior in materials.}
+
     \label{fig:process}
 \end{figure}
 
-The challenge goes beyond mere identification: in molecular dynamics simulations, classifying the structure of the complete simulation box is not relevant to capture the phase transformations, \textit{e.g.} crystal nucleation. 
-The objective is rather to cluster local atomic environments into motifs ranging from perfectly ordered, crystal-like configurations to disordered, liquid-like arrangements (see Figure \ref{fig:process}), the latter being basically unknown\textit{ a priori}. 
-In this way, the subtle changes of the local structures in the transient configurations, holding critical information about the mechanisms that drive phase transformations such as nucleation or glass formation, can be monitored. 
+The challenge goes beyond mere identification: in molecular dynamics simulations, classifying the structure of the complete simulation box is not sufficient for capturing phase transformations, \textit{e.g.} crystal nucleation.
+The objective is rather to cluster local atomic environments into motifs ranging from perfectly ordered, crystal-like configurations to disordered, liquid-like arrangements (see Figure \ref{fig:process}), with the latter largely unknown \textit{a priori}.
+In this way, subtle changes in local structures in transient configurations can be monitored, revealing critical information about the mechanisms that drive phase transformations such as nucleation or glass formation.
 Capturing these nuances thus demands representations that not only respect geometric symmetries (e.g., SO(3) equivariance) but also vary smoothly with local deformations, a requirement that existing methods struggle to meet in an unsupervised setting.
- %Capturing such intermediate configurations requires representations that vary smoothly with local geometry.
 
-Learning such representations raises two main challenges. First, atomic neighborhoods are defined up to arbitrary global rotations, so representations must handle SO(3) symmetry appropriately. 
-Standard invariant pipelines, by construction, discard orientation information early in the processing chain, potentially erasing geometrically meaningful information that is critical for distinguishing subtle structural variants. 
-By contrast, equivariant architectures preserve structured features that transform predictably under rotation. 
-Although this simplification may suffice for tasks such as object classification, it is not enough to analyze local atomic environments, where relative orientation often encodes physically relevant information. 
+Learning such representations raises two main challenges. First, atomic neighborhoods are defined up to arbitrary global rotations, so representations must handle SO(3) symmetry appropriately.
+Standard invariant pipelines, by construction, discard orientation information early in the processing chain, potentially erasing geometrically meaningful information that is critical for distinguishing subtle structural variants.
+By contrast, equivariant architectures preserve structured features that transform predictably under rotation.
+Although this simplification may suffice for tasks such as object classification, it is not enough to analyze local atomic environments, where relative orientation often encodes physically relevant information.
 Enforcing equivariance aligns with the data’s symmetry and preserves meaningful directional information during training. Here, a rotation-equivariant Vector Neurons (VN) encoder is used to capture these nuances, deriving invariant embeddings from its equivariant features for clustering to retain structure.
-Second, the problem is intrinsically local but also highly overlapping and spatially continuous: each atom’s neighborhood yields a dense collection of sub-clouds sharing many points. 
-Since crystallization develops spatially, nearby neighborhoods correspond to gradually evolving local structures, and their embeddings should reflect this continuity. 
-Most self-supervised frameworks treat these neighborhoods as independent samples, ignoring their spatial relationships and the gradual evolution of local structures, despite the fact that, in reality, nearby atoms often belong to the same evolving structural motif. 
-This oversight produces embeddings that are either overly rigid (failing to capture smooth evolution) or unstable (collapsing to degenerate solutions).  
+Second, the problem is intrinsically local but also highly overlapping and spatially continuous: each atom’s neighborhood yields a dense collection of sub-clouds sharing many points.
+Since crystallization develops spatially, nearby neighborhoods correspond to gradually evolving local structures, and their embeddings should reflect this continuity.
+Most self-supervised frameworks treat these neighborhoods as independent samples, ignoring their spatial relationships and the gradual evolution of local structures, despite the fact that, in reality, nearby atoms often belong to the same evolving structural motif.
+This oversight produces embeddings that are either overly rigid (failing to capture smooth evolution) or unstable (collapsing to degenerate solutions).
 To address this, we adapt a self-supervised strategy from VICReg to an equivariant framework, processing two spatial sub-samplings of each neighborhood through a shared equivariant encoder. Invariant embeddings, derived from these features, are clustered with K-Means without introducing any clustering-specific objective. The result is a latent space where local atomic environments form spatially smooth clusters, faithfully reflecting physical continuity.
 
-The resulting pipeline provides a fully deep, unsupervised alternative to the hand-crafted, descriptor-based pipelines traditionally used for motif discovery in atomistic point clouds~\cite{steinhardt1983bond,lechner2008accurate,bartok2013representing,becker2022nucleation}. For example, in simulations of aluminium crystallization, our embeddings reveal a smooth transition from liquid-like to FCC-like environments, with intermediate states corresponding to pre-nucleation clusters that are invisible to traditional descriptors (see Section~\ref{sec:results_md}). This continuity is critical for understanding mechanisms like homogeneous nucleation or polymorphic phase competition. 
-Our main contributions are: (i) formulating local motif discovery in atomistic point clouds as a fully unsupervised representation learning problem under global SO(3) symmetry with overlapping neighborhoods; (ii) combining a rotation-equivariant VN encoder~\cite{Deng2021VN} with a spatially-aware view sampling strategy within the VICReg framework~\cite{bardes2022vicreg}. This yields stable invariant embeddings that are both discriminative and spatially smooth, without relying on clustering-specific losses;
-(iii) demonstrating that simple K-Means clustering of the learned embeddings captures ordered, disordered, and intermediate local structures and reveals spatial transition patterns during crystallization; (iv) introduce a synthetic polycrystal benchmark dataset to evaluate local geometric sensitivity in label-scarce settings.
-%We are interested in \emph{motif discovery} in atomic MD simulations of crystallization: given a trajectory, extract many local neighborhoods and cluster them into physically meaningful classes (e.g., crystalline motifs, defects, liquid-like environments), while remaining robust to arbitrary global rotations.
-
-%\paragraph{Unsupervised learning with orientation awareness.}
-%In many atomistic systems, orientation carries physically meaningful information (e.g., grain orientations, misorientations, and interfacial structure) and can evolve over time.
-%However, standard invariant pipelines either discard orientation entirely or recover it via heuristic canonicalization.
-%Our goal is an unsupervised, rotation-equivariant representation that simultaneously (i) produces a rotation-invariant embedding for clustering and (ii) preserves an equivariant latent that transforms predictably under global rotations.
-
-%\paragraph{Positioning relative to existing 3D representation learning.}
-
-%In this draft we focus on the Barlow Twins objective applied to rotation-invariant embeddings derived from a rotation-equivariant encoder(In this statment we no longer need equivariance?)
-
-
-%\paragraph{Key challenges.}
-%\begin{enumerate}
-%\item \textbf{Equivariant/invariant representation for motif discovery.} Learn rotation-equivariant features and derive invariant embeddings that reflect structural differences.
-%\item \textbf{Clusterability.} Ensure $z_{\mathrm{inv}}$ forms clusters aligned with true underlying motifs.
-%\item \textbf{Symmetry robustness.} Work reliably for both isotropic/high-symmetry neighborhoods (orientation ill-posed) and anisotropic neighborhoods (easy).
-%\end{enumerate}
+The resulting pipeline provides a fully learned, unsupervised alternative to the hand-crafted, descriptor-based pipelines traditionally used for motif discovery in atomistic point clouds~\cite{steinhardt1983bond,lechner2008accurate,bartok2013representing,becker2022nucleation}. For example, in simulations of aluminium crystallization, our embeddings reveal a smooth transition from liquid-like to FCC-like environments, with intermediate states corresponding to pre-nucleation clusters that are invisible to traditional descriptors (see Section~\ref{sec:results_md}). This continuity is critical for understanding mechanisms like homogeneous nucleation or polymorphic phase competition.
+Our main contributions are: (i) formulating local motif discovery in atomistic point clouds as a fully unsupervised representation learning problem under global SO(3) symmetry with overlapping neighborhoods; (ii) combining a rotation-equivariant VN encoder~\cite{Deng2021VN} with a spatially-aware view sampling strategy within the VICReg framework~\cite{bardes2022vicreg}, yielding stable invariant embeddings that are both discriminative and spatially smooth without relying on clustering-specific losses;
+(iii) demonstrating that simple K-Means clustering of the learned embeddings captures ordered, disordered, and intermediate local structures and reveals spatial transition patterns during crystallization; (iv) introducing a synthetic polycrystal benchmark dataset to evaluate local geometric sensitivity in label-scarce settings.
 
 \section{Related Work}
 
@@ -127,7 +100,7 @@ Our work lies at the intersection of self-supervised learning for 3D point cloud
 Self-supervised learning (SSL) has become a standard paradigm for learning representations without manual annotations. In computer vision, contrastive methods such as SimCLR~\cite{chen2020simclr} learn invariances by maximizing agreement between augmented views, while non-contrastive objectives such as Barlow Twins~\cite{zbontar2021barlow} and VICReg~\cite{bardes2022vicreg} combine view consistency with redundancy reduction and variance preservation. For 3D point clouds, PointContrast~\cite{xie2020pointcontrast} applies contrastive pre-training to large-scale 3D scenes, while Point-BERT~\cite{yu2022pointbert}, Point-MAE~\cite{pang2022pointmae}, PointM2AE~\cite{pointM2AE}, and PointGPT~\cite{chenPointGPT} adapt masked modeling or autoregressive pre-training to point sets. More recently, rotation-robust variants such as RI-MAE~\cite{Su2024RIMAERM} incorporate rotational invariance into self-supervised point cloud learning. These approaches primarily focus on object-level representation learning for supervised tasks. In contrast, our goal is to directly organize local neighborhoods into clusterable embeddings.
 
 \paragraph{SO(3)-equivariant architectures for geometric learning.}
-Rotational symmetry is central to 3D learning, inspiring extensive work on equivariant neural networks. Tensor Field Networks, SE(3)-Transformers, and related architectures enforce consistent feature transformation under rigid motions. Vector Neurons (VN) offer a lightweight, practical alternative for point clouds by using 3D vector features. Equivariance has also been paired with self-supervision, as in ConDor, which learns canonical poses for shapes. While effective when a stable reference frame exists, these methods can struggle with highly symmetric or locally isotropic neighborhoods, common in atomistic data. %Rotational symmetry is a central challenge in 3D learning, motivating a large body of work on equivariant neural networks. Tensor Field Networks~\cite{thomas2018tfn}, SE(3)-Transformers~\cite{fuchs2020se3transformer}, and related architectures explicitly constrain intermediate features to transform consistently under rigid motions. Vector Neurons (VN)~\cite{Deng2021VN} provide a lightweight and practical alternative for point clouds by representing hidden features as 3D vectors. Equivariance has also been combined with self-supervision. For example, ConDor~\cite{sajnani2022condor} learns canonical poses for shapes. Such canonicalization approaches work well when a stable reference frame exists, but they can become ambiguous for highly symmetric or locally isotropic neighborhoods, which frequently occur in atomistic data.% Our setting therefore differs in two ways: we aim to learn invariant embeddings for clustering while preserving equivariant intermediate features, and we focus on dense collections of overlapping local neighborhoods rather than isolated global shapes.
+Rotational symmetry is central to 3D learning, inspiring extensive work on equivariant neural networks. Tensor Field Networks~\cite{thomas2018tfn}, SE(3)-Transformers~\cite{fuchs2020se3transformer}, and related architectures enforce consistent feature transformation under rigid motions. Vector Neurons (VN)~\cite{Deng2021VN} offer a lightweight, practical alternative for point clouds by using 3D vector features. Equivariance has also been paired with self-supervision, as in ConDor~\cite{sajnani2022condor}, which learns canonical poses for shapes. While effective when a stable reference frame exists, these methods can struggle with highly symmetric or locally isotropic neighborhoods, common in atomistic data.
 
 \paragraph{Local representation learning in atomistic systems.}
 In atomistic simulations, local structure has traditionally been characterized using hand-crafted descriptors such as Steinhardt bond-order parameters~\cite{steinhardt1983bond}, averaged bond-order parameters~\cite{lechner2008accurate}, and SOAP-like representations~\cite{bartok2013representing}. While highly successful for materials analysis, these descriptors require a priori choices about which geometric features to encode. However, more recent work explores the unsupervised discovery of local atomic environments directly from simulation data. Existing approaches combine structural descriptors with clustering or manifold learning techniques to identify representative local environments and defects~\cite{zeni2021gold,becker2022atomic,becker2022nucleation,roncoroni2023representative,kyvala2025defects}. Other work investigates large-scale pre-training of geometric graph networks to learn transferable atomistic representations, primarily for transfer or zero-shot analysis rather than clustering of local motifs~\cite{pengmei2025pretraining}.
@@ -155,58 +128,36 @@ The resulting clusters are visualized using t-SNE, demonstrating the method’s 
   \label{fig:barlowtwins-scheme}
 \end{figure}
 
-
 \subsection{Problem Statement and Neighborhood Construction}
 
-\paragraph{Setup.}% Given a molecular dynamics (MD) trajectory (or 3D shape dataset) containing $M$ atomic configurations, we extract local neighborhoods $\{X^{(m)}\}_{m=1}^M$ and aim to learn two complementary representations: (i) a rotation-equivariant latent $z_{\mathrm{eq}}$ that rotates with the input, and (ii) a rotation-invariant embedding $z_{\mathrm{inv}}$ that remains unchanged under rotations. 
+\paragraph{Setup.}
 Given an atomic configuration represented as a point cloud, we aim to discover recurring local geometric motifs without supervision. Rather than operating on entire configurations, our approach focuses on local atomic neighborhoods, which capture the structural environments around individual atoms.
 
 Formally, let $X=\{x_i \in \mathbb{R}^3\}_{i=1}^{N_0}$ denote a local neighborhood extracted from a configuration.
-Our goal is to learn two complementary representations: (i) a rotation-equivariant latent $ z_{\text{eq}}$ that transforms predictability under rotations, and (ii) a rotation-invariant embedding $z_{\text{inv}}$ suitable for clustering. 
+Our goal is to learn two complementary representations: (i) a rotation-equivariant latent $ z_{\text{eq}}$ that transforms predictably under rotations, and (ii) a rotation-invariant embedding $z_{\text{inv}}$ suitable for clustering.
 
 We therefore learn an encoder $h_\theta$, parameterized by $\theta$
 $$
-(z_{\text{inv}}, z_{\text{eq}}) = h_\theta(X), \quad \text{s.t.} \quad z_{\text{eq}}(RX) = R \, z_{\text{eq}}(X), \quad 
+(z_{\text{inv}}, z_{\text{eq}}) = h_\theta(X), \quad \text{s.t.} \quad z_{\text{eq}}(RX) = R \, z_{\text{eq}}(X), \quad
 z_{\text{inv}}(RX) = z_{\text{inv}}(X)$$
-for any rotation $R \in \text{SO}(3)$. Enforcing equivariance in $z_{\text{eq}}$ acts as a geometric inductive bias that preserves directional information during representation learning~\cite{wang2024ssl}, rather than collapsing it prematurely into rotation invariant scalars. The invariant embedding $z_{\text{inv}}$ is subsequently derived from $z_{\text{eq}}$ through invariant operations described in Section \ref{subsec:encoder}. %yielding rotation-agnostic descriptors suitable for clustering while retaining the geometric richness of the equivariant representation.
-
-%Our approach operates on \textit{local} atomic neighborhoods rather than global configurations, as structural motifs (e.g., crystalline defects or transient clusters) are inherently local phenomena. %This choice also enables scalable training on large systems by sampling neighborhoods independently.
+for any rotation $R \in \text{SO}(3)$. Enforcing equivariance in $z_{\text{eq}}$ acts as a geometric inductive bias that preserves directional information during representation learning~\cite{wang2024ssl}, rather than collapsing it prematurely into rotation-invariant scalars. The invariant embedding $z_{\text{inv}}$ is subsequently derived from $z_{\text{eq}}$ through invariant operations described in Section \ref{subsec:encoder}.
 
 \paragraph{Atomic neighborhood construction.}
-For each atom, we collect all atoms within a cutoff radius $r_c$. If more than $N_0$ atoms fall within this radius, we retain the $N_0$ closest ones. This defines a point cloud $X=\{x_i\in\mathbb{R}^3\}_{i=1}^{N_0}$. 
-Each neighborhood is centered on its central atom, and coordinates are normalized by $r_c$, keeping magnitudes typically below one. 
+For each atom, we collect all atoms within a cutoff radius $r_c$. If more than $N_0$ atoms fall within this radius, we retain the $N_0$ closest ones. This defines a point cloud $X=\{x_i\in\mathbb{R}^3\}_{i=1}^{N_0}$.
+Each neighborhood is centered on its central atom, and coordinates are normalized by $r_c$, keeping magnitudes typically below one.
 This procedure yields a dense set of overlapping neighborhoods across the configuration.
-
-%During self-supervised training, each view further subsamples a fixed number of points $N$ \emph{from the same underlying $N_0$ neighborhood} after applying the view augmentations.
-%This ensures fixed tensor sizes per batch while still exposing the encoder to different stochastic samplings of the same local environment.
-%For single-species systems, atomic positions are the only input features.
-
-%We center each neighborhood on its central atom and normalize all coordinates by $r_c$, ensuring that typical coordinate magnitudes are $\le 1$. For single-species systems (e.g., monatomic liquids or pure metals), atomic positions are the only 
-%input features; no atom types or additional properties are required.
-
-
-%We select central atoms as those closest to nodes of a regular cubic grid (for roughly uniform spatial sampling).
-%For each selected central atom, we collect all atoms within cutoff radius $r_c$ and retain exactly $N$ points by dropping the furthest points until $|X|=N$.
-%Each neighborhood is a point cloud
-%\[
-%X = \{x_i \in \mathbb{R}^3\}_{i=1}^N.
-%\]
-%We center on the central atom and normalize by $r_c$ (so typical coordinate magnitudes are $\le 1$).
-%We consider single-species systems, so coordinates are the only input features.
 
 \subsection{Equivariant Encoder and Invariant Embeddings}
 \label{subsec:encoder}
 
-%\todo[author=Charlotte, inline]{precise which VN architecture we use (VN-PointNet if I remember)}
-
-To capture the geometric structure of atomic neighborhoods while respecting rotational symmetry, we employ a rotation-equivariant neural encoder based on Vector Neurons (VN)~\cite{Deng2021VN}. VN networks represent intermediate features as 3D vectors and ensure that these features transform consistently under rotations of the input. Given a neighborhood $X$, the encoder produces a set of equivariant vector features $z_{\mathrm{eq}} = f_\theta(X)$, where each feature channel corresponds to a vector in $\mathbb{R}^3$. 
+To capture the geometric structure of atomic neighborhoods while respecting rotational symmetry, we employ a rotation-equivariant neural encoder based on Vector Neurons (VN)~\cite{Deng2021VN}. VN networks represent intermediate features as 3D vectors and ensure that these features transform consistently under rotations of the input. Given a neighborhood $X$, the encoder produces a set of equivariant vector features $z_{\mathrm{eq}} = f_\theta(X)$, where each feature channel corresponds to a vector in $\mathbb{R}^3$.
 Depending on the backbone configuration, these features can be either global, $
 z_{\mathrm{eq}} \in \mathbb{R}^{B \times C \times 3},
 $
 or per-point,
 $
 z_{\mathrm{eq}} \in \mathbb{R}^{B \times N_{\text{model}} \times C \times 3},
-$ where $B$ denotes the batch size, $C$ the number of feature channels, and $N$ the number of points provided to the encoder for each neighborhood.
+$ where $B$ denotes the batch size, $C$ the number of feature channels, and $N_{\text{model}}$ the number of points provided to the encoder for each neighborhood.
 
 \paragraph{Invariant feature construction.}
 To obtain rotation-invariant descriptors suitable for clustering, we derive an invariant embedding from the equivariant features.
@@ -225,12 +176,12 @@ which is then normalized to produce the invariant embedding $z_{\mathrm{inv}}=\m
 The encoder is trained in a self-supervised manner using the VICReg objective~\cite{bardes2022vicreg}.
 Given an input neighborhood $X$, we generate two views
 $$
-X^{(a)}=\mathcal{T}(X;\omega_a), \qquad 
+X^{(a)}=\mathcal{T}(X;\omega_a), \qquad
 X^{(b)}=\mathcal{T}(X;\omega_b),
 $$
 where $\mathcal{T}$ denotes a stochastic view generator and $\omega_a$, $\omega_b$ are independent random draws. The two views are processed by a shared encoder $h_\theta$ to obtain invariant embeddings, i.e.,
 $
-z^{(a)}_{\mathrm{inv}} = h_\theta(X^{(a)})$ and 
+z^{(a)}_{\mathrm{inv}} = h_\theta(X^{(a)})$ and
 $
 z^{(b)}_{\mathrm{inv}} = h_\theta(X^{(b)}).
 $
@@ -254,7 +205,7 @@ $\mathcal{L}_{\mathrm{inv}}$ encourages agreement between embeddings of the two 
 
 \paragraph{View construction.}
 
-The view operator $\mathcal{T}$ generates views of a neighborhood through spatial resampling. 
+The view operator $\mathcal{T}$ generates views of a neighborhood through spatial resampling.
 Starting from a neighborhood centered on an atom $c$, we randomly choose to keep the original center or to shift the center to one of its neighboring atoms. Let $c'$ denote the selected center. The new neighborhood is then defined by selecting the $N_{\text{model}}$ atoms closest to $c'$:
 $$
 X' =
@@ -264,84 +215,56 @@ X' =
 \big), \quad x_i\in X.
 $$
 
-In practice, we first sample $N$ points from the $N_0$ points of the neighborhood and then retain the $N_{\text{model}}$ closest points after the potential center shift. For most experiments we use $N=160$ and $N_{\text{model}}=80$. This neighbor-centered resampling produces pairs of views corresponding to slightly shifted local environments. Since neighboring atoms share many nearby points, the resulting views strongly overlap while exhibiting small geometric variations. As a consequence, nearby neighborhoods tend to produce nearby embeddings, promoting spatial smoothness in the learned representation. 
+In practice, we first sample $N_{\mathrm{sample}}$ points from the $N_0$ points of the neighborhood and then retain the $N_{\text{model}}$ closest points after the potential center shift. For the main experiments, we use $N_{\mathrm{sample}}=128$ and $N_{\text{model}}=80$. This neighbor-centered resampling produces pairs of views corresponding to slightly shifted local environments. Since neighboring atoms share many nearby points, the resulting views strongly overlap while exhibiting small geometric variations. As a consequence, nearby neighborhoods tend to produce nearby embeddings, promoting spatial smoothness in the learned representation.
 
 In addition to center-shift resampling, we optionally apply small geometric perturbations (e.g., coordinate jitter or random point removal) that increase view diversity while preserving the identity of the local atomic motif.
 
 \subsection{Clustering Protocol}
-Clustering has been widely studied and many approaches have been developed for a variety of circumstances. We focus on the standard clustering algorithm K-Means, but 
+Clustering has been widely studied and many approaches have been developed for a variety of circumstances. We focus on the standard clustering algorithm K-Means, but
 other clustering algorithms can be used. For a fixed number of clusters $k$, the $k$-means algorithm
-takes a set of vectors as input, in our case the normalized invariant embeddings $z_{\mathrm{inv}}$, and clusters them into $k$ distinct groups based on a geometric criterion. This  jointly learns a centroid matrix $C$ and the cluster
+takes a set of vectors as input, in our case the normalized invariant embeddings $z_{\mathrm{inv}}$, and clusters them into $k$ distinct groups based on a geometric criterion. This jointly learns a centroid matrix $C$ and the cluster
 assignments $(c_n)_{n=1,\ldots,N}$ of each local structure:
 $$ \min_C \frac1N \sum_{n=1}^N \min_{c_n \in\{0,1\}^k} \| z_{\text{inv}}^{(n)} - C c_n\|_2^2 \text{ such that } c_n^T \mathbf{1}_k = 1.$$
 
- When labels are available, we report Accuracy/ NMI / ARI on the resulting assignments, and when no ground truth is given, we interpret the clusters as homogeneous groups. 
+When labels are available, we report ACC, NMI, and ARI on the resulting assignments; when no ground truth is available, we interpret the clusters as homogeneous groups.
 
-\section{Experiments over synthetic polycrystal benchmark}
+\section{Experiments on the Synthetic Polycrystal Benchmark}
 \label{sec:experiments}
 
-We compare our method to the state-of-the-art methods on a novel synthetic polycrystal benchmark that will be released upon acceptance.%, and complementary comparison on  ModelNet40 are provided in Appendix. 
-
-%\subsection{Experimental design and evaluation}
-%\label{sec:exp_design}
-
-
-% \paragraph{Goal.}
-% Our primary objective is \emph{unsupervised discovery} of recurring local motifs in dense 3D neighborhoods.
-% In the target setting (molecular dynamics), labels are not available and the number of motifs is unknown a priori.
-% Therefore, we evaluate representations mainly by their \emph{clusterability} in embedding space rather than by supervised transfer.
-
-% \paragraph{Clustering protocol and metrics.}
-% Unless stated otherwise, we run K-Means on frozen invariant embeddings $z_{\mathrm{inv}}$ with \texttt{K-Means++} initialization.
-% When ground-truth classes are available (synthetic polycrystal and ModelNet40), we report:
-% (i) clustering accuracy (ACC) computed via Hungarian matching between cluster IDs and class labels,
-% and (ii) NMI and ARI.
-% For benchmark reporting, we set $K$ to the known number of classes ($K{=}4$ for the synthetic polycrystal, $K{=}40$ for ModelNet40).
-% For real MD data, where no labels are available, we report qualitative analyses and spatial visualizations of the resulting clusters.
-
-
-
-% \paragraph{Canonical vs.\ randomized pose.}
-% For pose-robustness evaluation, we report performance in a canonical test pose and in an SO(3)-randomized test pose.
-% For the randomized setting, each test sample is evaluated under 5 independent random rotations (fixed seed), and we report the mean.
+We compare our method to state-of-the-art baselines on a novel synthetic polycrystal benchmark that will be released upon acceptance.
 
 \subsection{Synthetic polycrystal benchmark}
 \label{sec:synth_dataset}
 
 Quantitative evaluation of motif discovery in molecular dynamics (MD) is hindered by the lack of ground-truth labels and the need to capture rotation-invariant local geometric cues, a task for which standard self-supervised learning (SSL) methods are ill-suited.
-Unlike object-level benchmarks, where classes differ by coarse topology, MD data consists of metrically similar point clouds distinguished solely by angular correlations in neighbor shells. To address this gap, we introduce a controlled polycrystal benchmark that isolates three key challenges: 
+Unlike object-level benchmarks, where classes differ by coarse topology, MD data consists of metrically similar point clouds distinguished solely by angular correlations in neighbor shells. To address this gap, we introduce a controlled polycrystal benchmark that isolates three key challenges:
 \begin{itemize}
     \item[(i)] \emph{Known ground-truth motifs}: a cubic simulation box is tessellated into $G=16$ Voronoi grains, each randomly assigned one of four phases (three ordered, BCC/FCC/HCP, and one disordered, amorphous). All phases share a nearest-neighbor distance of $2.49$~\AA\ and iron-like densities.
-    \item[(ii)] \emph{Decoupling motif identity from orientation}: crystalline grains are created by tiling unit cells with random rotations $R\sim\mathrm{SO}(3)$, while the amorphous phase is refined to match realistic short-range order (coordination $\approx 11$). 
-    \item[(iii)] \emph{Realistic disorder}: to replicate ambiguous neighborhoods near grain boundaries, we introduce thermal displacements (Debye model at $T=325$~K, calibrated to iron); localized rotation bubbles (rigid micro-rotations of $\approx 12^\circ$ in $7$~\AA -radius spheres); point vacancies ($0.8\%$ dropout + relaxation) and density bubbles (local atom depletion/concentration). 
+    \item[(ii)] \emph{Decoupling motif identity from orientation}: crystalline grains are created by tiling unit cells with random rotations $R\sim\mathrm{SO}(3)$, while the amorphous phase is refined to match realistic short-range order (coordination $\approx 11$).
+    \item[(iii)] \emph{Realistic disorder}: to replicate ambiguous neighborhoods near grain boundaries, we introduce thermal displacements (Debye model at $T=325$~K, calibrated to iron); localized rotation bubbles (rigid micro-rotations of $\approx 12^\circ$ in spheres of radius $7$~\AA); point vacancies ($0.8\%$ dropout + relaxation) and density bubbles (local atom depletion/concentration).
 \end{itemize}
 \begin{figure}[t]
     \centering
-    % \includegraphics[width=0.35\linewidth, trim = 0 15cm 18cm 26.5cm, clip=TRUE]{image/geneData2.pdf}
-    % \hspace{1.5cm} 
-    % \includegraphics[width=0.25\linewidth, trim = 24.5cm 15cm 0cm 26.5cm, clip=TRUE]{image/geneData2.pdf}
-    %\includegraphics[width=0.86\textwidth, trim = 4cm 33cm 3cm 12cm, clip=TRUE]{image/fig3bis.pdf}
+
     \includegraphics[width=0.9\textwidth]{image/fig3-.png}
-    %%% link to CANVA
-    %%% https://www.canva.com/design/DAHC_lv7Pa4/w6O-QzkxsFB5RpUYLD5twQ/edit?utm_content=DAHC_lv7Pa4&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
-    \caption{\textbf{Synthetic polycrystal benchmark}. 
-(Left) Representative 80-point local environments for the four classes: FCC (face-centered cubic), BCC (body-centered cubic), HCP (hexagonal close-packed), and amorphous, shown in distinct colors. For each class, the upper example is the pure structure and the lower example is a deformed version. 
+
+    \caption{\textbf{Synthetic polycrystal benchmark}.
+(Left) Representative 80-point local environments for the four classes: FCC (face-centered cubic), BCC (body-centered cubic), HCP (hexagonal close-packed), and amorphous, shown in distinct colors. For each class, the upper example is the pure structure and the lower example is a deformed version.
 (Right) Synthetic polycrystal simulation box colored by class (diagonal cut through the full box).}
     \label{fig:genData}
 \end{figure}
-We sample local neighborhoods as point clouds using a grid with spacing $\Delta=2 r_{\text{cut}}(1-K_{\text{overlap}})$
-centering each on an atom and normalizing coordinates by $r_\mathrm{cut}$. After excluding centers near the box boundary to avoid edge artifacts, we retain the $N_0=128$ nearest atoms per center.
+We sample local neighborhoods as point clouds using a grid with spacing $\Delta=2 r_{\text{cut}}(1-K_{\text{overlap}})$, centering each neighborhood on an atom and normalizing coordinates by $r_\mathrm{cut}$. After excluding centers near the box boundary to avoid edge artifacts, we retain the $N_0=128$ nearest atoms per center.
 Neighborhoods are further filtered to include only those with atoms from a single grain, yielding a clean 4-class benchmark (BCC/FCC/HCP/amorphous) focused on motif identity.
 
-With $50{,}653$ neighborhoods, this benchmark reveals the limitations of existing SSL methods, which rely on global pose cues and establishes a rigorous framework to evaluate local geometric sensitivity in label-scarce MD. It is illustrated in Figure \ref{fig:genData}.
+With $50{,}653$ neighborhoods, this benchmark reveals the limitations of existing SSL methods that rely on global pose cues, and it establishes a rigorous framework to evaluate local geometric sensitivity in label-scarce MD. It is illustrated in Figure \ref{fig:genData}.
 
 \subsection{Implementation details}
 \label{sec:impl_details}
 
-We use a VN-RevNet encoder to extract equivariant features from local neighborhoods. Invariant embeddings are obtained by taking the norms of the equivariant vector channels, producing representations of dimension $L=240$.
-During self-supervised training, each sample generates two augmented views, including volume-preserving strain, occlusion, coordinate jitter, and neighbor-centered re-centering on one of the $k=6$ nearest atoms. Each view is subsampled to $N=80$ points. The model is trained with VICReg~\cite{bardes2022vicreg}. At inference time, the projector is discarded and clustering is performed on frozen invariant embeddings $z_{\mathrm{inv}}$ using K-Means with \texttt{K-Means++}. %For labeled datasets we report ACC (Hungarian matching), NMI, and ARI.
+We use a VN-RevNet encoder~\cite{Ni2026RevNet} to extract equivariant features from local neighborhoods. Invariant embeddings are obtained by taking the norms of the equivariant vector channels, producing representations of dimension $L=240$.
+During self-supervised training, each sample generates two augmented views, including volume-preserving strain, occlusion, coordinate jitter, and neighbor-centered re-centering on one of the $k=6$ nearest atoms. Each view contains $N_{\mathrm{model}}=80$ points. The model is trained with VICReg~\cite{bardes2022vicreg}. At inference time, the projector is discarded and clustering is performed on frozen invariant embeddings $z_{\mathrm{inv}}$ using K-Means with \texttt{K-Means++} initialization.
 
-We compare against classical descriptors used as fixed representations and clustered by \mbox{$k$-means}, namely Steinhardt, CNA, and SOAP. We also compare against self-supervised point-cloud baselines including PointGPT~\cite{chenPointGPT}, Point-M2AE \cite{pointM2AE},  PointContrast~\cite{xie2020pointcontrast}, and RI-MAE~\cite{Su2024RIMAERM}. All learned baselines are reimplemented in a shared PyTorch Lightning training and evaluation pipeline and trained on the balanced synthetic polycrystalline benchmark using the same data split, normalization, model-selection criterion, and SO(3) robustness protocol. We retain the best run for each method after a targeted tuning pass. Because self-supervised pretraining losses are not directly comparable across methods, we report only clustering-quality metrics. Full baseline architecture, training, and tuning details are provided in the Appendix.
+We compare against classical descriptors used as fixed representations and clustered by K-Means, namely Steinhardt, CNA, and SOAP. We also compare against self-supervised point-cloud baselines including PointGPT~\cite{chenPointGPT}, Point-M2AE~\cite{pointM2AE},  PointContrast~\cite{xie2020pointcontrast}, and RI-MAE~\cite{Su2024RIMAERM}. All learned baselines are reimplemented in a shared PyTorch Lightning training and evaluation pipeline and trained on the balanced synthetic polycrystalline benchmark using the same data split, normalization, model-selection criterion, and SO(3) robustness protocol. We retain the best run for each method after a targeted tuning pass. Because self-supervised pretraining losses are not directly comparable across methods, we report only clustering-quality metrics. Full baseline architecture, training, and tuning details are provided in the supplementary material.
 
 \paragraph{Code availability.}
 The code for our method and experiments is available at
@@ -364,14 +287,14 @@ CNA & \err{0.68}{.006} & \err{0.50}{.008} & \err{0.43}{.008} & \err{0.68}{.006} 
 SOAP & \err{0.92}{.004} & \err{0.77}{.009} & \err{0.79}{.007} & \err{0.92}{.004} & \err{0.77}{.009} & \err{0.79}{.007} \\
 \midrule
 PointGPT \cite{chenPointGPT} & \err{0.35}{.04} & \err{0.10}{.04} & \err{0.09}{.03} & \err{0.28}{.04} & \err{0.08}{.03} & \err{0.05}{.02} \\
-Point-M2AE \cite{pointM2AE} & \err{0.46}{.03} & \err{0.25}{.04} & \err{0.18}{.03} & \err{0.47}{.04} & \err{0.23}{.04} & \err{0.17}{.03} \\
+Point-M2AE~\cite{pointM2AE} & \err{0.46}{.03} & \err{0.25}{.04} & \err{0.18}{.03} & \err{0.47}{.04} & \err{0.23}{.04} & \err{0.17}{.03} \\
 PointContrast \cite{xie2020pointcontrast} & \err{0.85}{.02} & \err{0.71}{.06} & \err{0.69}{.06} & \err{0.85}{.02} & \err{0.71}{.06} & \err{0.70}{.06} \\
 RI-MAE \cite{Su2024RIMAERM} & \err{0.80}{.03} & \err{0.58}{.05} & \err{0.34}{.05} & \err{0.80}{.03} & \err{0.58}{.05} & \err{0.34}{.05} \\
 Ours & \textbf{\err{0.95}{.03}} & \textbf{\err{0.84}{.08}} & \textbf{\err{0.88}{.08}} & \textbf{\err{0.95}{.04}} & \textbf{\err{0.84}{.09}} & \textbf{\err{0.88}{.08}} \\
 \bottomrule
 \end{tabular}
 }
-\caption{\textbf{Vision task: unsupervised classification on synthetic polycrystal benchmark.}
+\caption{\textbf{Unsupervised classification on the synthetic polycrystal benchmark.}
 Clustering quality of classical physically motivated baselines, self-supervised point-cloud baselines, and our rotation-invariant embeddings. Clustering is performed with K-Means ($K=4$) and Hungarian matching for ACC. Reported results correspond to means $\pm{\text{std}}$ computed on 5 runs. Canonical: default dataset orientation. SO(3)-randomized: each test shape is rotated by a random $R\!\sim\!\mathrm{SO}(3)$.}
 \label{tab:vision_polycrystal_unsup}
 \end{table*}
@@ -379,20 +302,15 @@ Clustering quality of classical physically motivated baselines, self-supervised 
 \subsection{Results on the synthetic polycrystal benchmark}
 \label{sec:results_synth}
 
-%We compare to self-supervised point-cloud baselines including PointGPT~\cite{chenPointGPT}, PointM2AE~\cite{pointM2AE}, PointContrast~\cite{xie2020pointcontrast}, and RI-MAE~\cite{Su2024RIMAERM}.
-%All baselines are retrained on our synthetic neighborhood dataset. We adapt the augmentation hyperparameters of each baseline to maximize its performance on the synthetic benchmark, while keeping the neighborhood construction and evaluation protocol identical across methods. Details of hyperparameters are provided in Appendix \ref{app:hyperparameters}. 
-
-Table~\ref{tab:vision_polycrystal_unsup} reports clustering results on the synthetic polycrystal benchmark. Our method outperforms all baselines by a significant margin across all metrics (ACC/NMI/ARI), indicating that the representation learned by our approach is meaningful for the clustering task. While only RI-MAE is explicitly rotation-invariant, several other methods perform similarly in the canonical and SO(3)-randomized settings because training-time rotation augmentation already provides some robustness. However, having an equivariant scheme by design is desired in our context.% \cite{wang2024ssl}. 
+Table~\ref{tab:vision_polycrystal_unsup} reports clustering results on the synthetic polycrystal benchmark. Our method outperforms all baselines by a clear margin across all metrics (ACC/NMI/ARI), indicating that the representation learned by our approach is meaningful for the clustering task. While only RI-MAE is explicitly rotation-invariant, several other methods perform similarly in the canonical and SO(3)-randomized settings because training-time rotation augmentation already provides some robustness. However, an equivariant design is preferable in our context.
 
 \subsection{Ablation study on the synthetic polycrystal benchmark}
 We now present the ablation study over the encoder, the proposed views, the number of sampled points, the invariant embedding dimension, and the self-supervised loss.
 
-
-\paragraph{Encoder} For the encoder, we compare VN-RevNet with competitive architectures, including PointNet~\cite{Qi2017PointNet} and DGCNN~\cite{wang2019dgcnn}, along with their VN variants (VN-PointNet and VN-DGCNN). %Finally, EGNN~\cite{satorras2021egnn} is an E(n)-equivariant message-passing network.
+\paragraph{Encoder.} For the encoder, we compare VN-RevNet with competitive architectures, including PointNet~\cite{Qi2017PointNet} and DGCNN~\cite{wang2019dgcnn}, along with their VN variants (VN-PointNet and VN-DGCNN).
 \begin{table*}[t]
 \caption{\textbf{Encoder ablation on the synthetic polycrystal dataset.}
-All encoders are trained with the same self-supervised protocol and evaluated by clustering frozen invariant embeddings with 
-($K=4$). Reported results correspond to means $\pm{\text{std}}$ computed on 5 runs.
+All encoders are trained with the same self-supervised protocol and evaluated by clustering frozen invariant embeddings with $K=4$. Reported results correspond to means $\pm{\text{std}}$ computed on 5 runs.
 }
 \label{tab:ablation_encoder_synth}
 \centering
@@ -418,16 +336,16 @@ VN-RevNet   & \textbf{\err{0.95}{0.03}} & \textbf{\err{0.84}{0.08}} & \textbf{\e
 \bottomrule
 \end{tabular}
 \end{table*}
-The results are summarized in Table~\ref{tab:ablation_encoder_synth}. 
-As expected, PointNet and DGCNN are rotation-variant when operating directly on coordinates, leading to a clear performance drop under SO(3)-randomized evaluation. DGCNN remains competitive in the canonical setting thanks to EdgeConv capturing local geometric patterns, but without explicit rotation constraints, it does not generalize across arbitrary global rotations. 
-Overall, VN architectures provide the most robust representations across both canonical and randomized poses, with VN-RevNet being the most efficient.
+The results are summarized in Table~\ref{tab:ablation_encoder_synth}.
+As expected, PointNet and DGCNN are rotation-variant when operating directly on coordinates, leading to a clear performance drop under SO(3)-randomized evaluation. DGCNN remains competitive in the canonical setting thanks to EdgeConv capturing local geometric patterns, but without explicit rotation constraints, it does not generalize across arbitrary global rotations.
+Overall, VN architectures provide the most robust representations across both canonical and randomized poses, with VN-RevNet being the most effective.
 
-\noindent\textit{Views} We study the role of view construction with a leave-one-out ablation (Fig.~\ref{fig:ablation_views_points}a). Removing the neighbor view causes the largest performance drop, highlighting its importance for learning consistent representations across overlapping neighborhoods. In contrast, removing strain or jitter has a more moderate effect.
+\noindent\textit{Views.} We study the role of view construction with a leave-one-out ablation (Fig.~\ref{fig:ablation_views_points}a). Removing the neighbor view causes the largest performance drop, highlighting its importance for learning consistent representations across overlapping neighborhoods. In contrast, removing strain or jitter has a more moderate effect.
 
-\noindent\textit{Evolution with respect to number of points}
-We study how performance varies with the number of points $N$, ranging from $24$ to $160$. 
-To preserve the neighborhood structure, we keep the ratio $N/N_0$ fixed at $0.625$, scaling $N_0$ accordingly (Figure~\ref{fig:accVSnbpoints}). Very small values of $N$ provide insufficient geometric information, while performance improves steadily beyond $N=80$. 
-We therefore select $N=80$ as a trade-off between performance and spatial resolution.
+\noindent\textit{Evolution with respect to the number of points.}
+We study how performance varies with the number of model input points $N_{\mathrm{model}}$, ranging from $24$ to $160$.
+To preserve the neighborhood structure, we keep the ratio $N_{\mathrm{model}}/N_0$ fixed at $0.625$, scaling $N_0$ accordingly (Figure~\ref{fig:accVSnbpoints}). Very small values of $N_{\mathrm{model}}$ provide insufficient geometric information, while performance improves steadily beyond $N_{\mathrm{model}}=80$.
+We therefore select $N_{\mathrm{model}}=80$ as a trade-off between performance and spatial resolution.
 
 \begin{figure*}[t]
 \centering
@@ -465,7 +383,7 @@ No strain             & 0.93{\scriptsize$\pm$0.02} & 0.83{\scriptsize$\pm$0.05} 
 
 \caption{\textbf{Ablation of view construction and neighborhood size.}
 (a) Leave-one-out ablation of the VICReg view augmentations (mean $\pm{\text{std}}$ computed on 5 runs).
-(b) Clustering accuracy as a function of the number of sampled points $N$ used in the views.}% Performance increases with $N$ before saturating around $N=80$.}
+(b) Clustering accuracy as a function of the number of sampled points $N_{\mathrm{model}}$ used in the views.}
 \label{fig:ablation_views_points}
 \end{figure*}
 
@@ -505,76 +423,54 @@ We also compare three self-supervised redundancy-reduction objectives. W-MSE per
 whitening may be too restrictive for dense collections of overlapping atomic
 neighborhoods, where correlated feature dimensions can still be useful for
 capturing local geometric motifs. Barlow Twins and VICReg produce more
-clusterable representations, with VICReg giving the best overall performance and was less sensitive to hyperparameter tuning in our experiments.
+clusterable representations, with VICReg giving the best overall performance and being less sensitive to hyperparameter tuning in our experiments.
 
 \section{Real Molecular Dynamics Experiments}
 \label{sec:results_md}
-
-\iffalse
-\begin{figure}[t]
-    \centering
-    \begin{subfigure}[t]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{image/09_cluster_representatives_knn_edges_k6.png}
-    \caption{}\label{fig:centroids}
-    \end{subfigure}        
-    \hfill
-    \begin{subfigure}[t]{0.5\textwidth}
-         \includesvg[width=\textwidth]{image/latent_tsne_clusters_k6}
-         \caption{}\label{fig:tsne}
-    \end{subfigure}
-    \caption{\textbf{Cluster representatives and latent-space organization on the real MD dataset.}
-    (a) Representative neighborhoods for the six discovered clusters, selected as samples nearest to the cluster centers in the learned embedding space.
-    (b) Two-dimensional t-SNE projection of the invariant embeddings $z_{\mathrm{inv}}$, colored by K-Means cluster assignment. The latent space organizes local environments into well-structured groups ranging from disordered to ordered motifs.}
-    \label{fig:latent_space}
-\end{figure}
-\fi
-
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.85\textwidth]{image/all_real_3-compressed.pdf}
     \caption{\textbf{Latent-space organization and temporal evolution of the discovered clusters during crystallization on the real MD dataset.}
     \emph{Top left}: representative neighborhoods for the six discovered clusters, selected as samples nearest to the cluster centers in the learned embedding space.
-    \emph{Right}: t-SNE projection of the invariant embeddings $z_{\mathrm{inv}}$, colored by K-Means cluster assignment. % The latent space organizes local environments into well-structured groups ranging from disordered to ordered motifs.
-    \emph{Bottom left}: fraction of neighborhoods assigned to each cluster over time. %The disordered cluster $C_6$ dominates the early supercooled liquid, while the ordered cluster $C_1$ becomes dominant at late times. Clusters $C_2$--$C_5$ appear mainly during nucleation and growth and persist as intermediate or interfacial environments.
+    \emph{Right}: t-SNE projection of the invariant embeddings $z_{\mathrm{inv}}$, colored by K-Means cluster assignment.
+    \emph{Bottom left}: fraction of neighborhoods assigned to each cluster over time.
     }
     \label{fig:cluster_proportions}
 \end{figure}
 
-\subsubsection{Experimental setup}
-Our method is applied to the homogeneous nucleation pathway of aluminium studied in a recent work~\cite{becker2022nucleation}, generated by large-scale molecular dynamics simulations with \textsc{lammps} using an embedded atom model (EAM) potential. 
-The simulation contains $10^6$ atoms in a fully periodic box. A liquid configuration above the melting point is rapidly quenched below the melting point in the undercooled regime, and homogeneous nucleation is then monitored at $T=650$~K near the nose of the time-temperature-transformation curve \cite{becker2022nucleation,jakse2023machine}. The selected simulation output consists solely of atomic coordinates at six various times from 166 %, 170, 174, 175, 177, and 
-to 240 picoseconds, spanning the transition from supercooled liquid to a fully crystallized polycrystal. Additional details are provided in the Appendix. 
+\subsubsection{Experimental setup.}
+Our method is applied to the homogeneous nucleation pathway of aluminium studied in a recent work~\cite{becker2022nucleation}, generated by large-scale molecular dynamics simulations with \textsc{lammps} using an embedded atom model (EAM) potential.
+The simulation contains $10^6$ atoms in a fully periodic box. A liquid configuration above the melting point is rapidly quenched below the melting point in the undercooled regime, and homogeneous nucleation is then monitored at $T=650$~K near the nose of the time-temperature-transformation curve \cite{becker2022nucleation,jakse2023machine}. The selected simulation output consists solely of atomic coordinates at six time points: 166, 170, 174, 175, 177, and 240~ps, spanning the transition from a supercooled liquid to a fully crystallized polycrystal. Additional details are provided in the supplementary material.
 
 Local neighborhoods are extracted with cutoff radius
 $r_\mathrm{cut}=7.2$~\AA\ using grid-based sampling with overlap parameter
 $K_\mathrm{overlap}=0.1$. Central atoms are chosen near the nodes of a cubic
 grid with spacing
 $\Delta = 2r_\mathrm{cut}(1-K_\mathrm{overlap})$. For each selected center,
-atoms within $r_\mathrm{cut}$ are collected and truncated to $N=128$ points;
+atoms within $r_\mathrm{cut}$ are collected and truncated to $N_0=128$ points;
 during training, each view further subsamples $N_{\mathrm{model}}=80$ points.
 Across the six snapshots, this procedure yields $1{,}738{,}803$ local
 neighborhoods. Thus, the real-MD experiment evaluates the method in a
 large-scale unlabeled regime where local structures are sampled densely across
 liquid, interfacial, defective, and crystalline regions.
 
-\subsubsection{Latent space and unsupervised clustering}
+\subsubsection{Latent space and unsupervised clustering.}
 
-Clustering of the real MD neighborhoods is performed with K-Means using $K=6$ to obtain a sufficient diversity of local structures involved in the formation of crystalline nuclei. This K-Means is trained on local structures sampled from all six simulation boxes mentioned above, reflecting the expectation that the trajectory contains not only liquid-like and crystal-like environments but also intermediate structures associated with nucleation fronts and defects. Importantly, clustering is performed purely in the learned embedding space,
+Clustering of the real MD neighborhoods is performed with K-Means using $K=6$ to obtain a sufficient diversity of local structures involved in the formation of crystalline nuclei. The K-Means model is fitted on local structures sampled from all six simulation boxes mentioned above, reflecting the expectation that the trajectory contains not only liquid-like and crystal-like environments but also intermediate structures associated with nucleation fronts and defects. Importantly, clustering is performed purely in the learned embedding space,
 without relying on handcrafted structural descriptors such as bond-order parameters~\cite{steinhardt1983bond}, common neighbor
 analysis (CNA)~\cite{honeycutt1987molecular}, or polyhedral template matching (PTM)~\cite{larsen2016robust}.
 
-Figure~\ref{fig:cluster_proportions} presents a t-SNE projection of the invariant embeddings, with representative neighborhoods near cluster centers. The latent space clearly separates disordered, ordered, and intermediate motifs into distinct groups. While we do not enforce direct alignment with the clusters in~\cite{becker2022nucleation}, we use it as a physical reference. The study shows that aluminium crystallization follows a one-step pathway: embryos form in low-five-fold-symmetry liquid regions, growing with fcc ordering and often featuring patchy morphology and stacking faults.
-%Figure~\ref{fig:cluster_proportions} shows a two-dimensional t-SNE projection of the invariant embeddings together with representative neighborhoods near the cluster centers. The latent space organizes local environments into several distinct groups rather than a single continuum, separating disordered, ordered, and intermediate motifs in a geometrically meaningful way. Rather than enforcing a direct correspondence with the cluster identities reported in~\cite{becker2022nucleation}, we use that study as a physical reference for the trajectory. The authors report that aluminium crystallization follows a one-step pathway where embryos emerge from low-five-fold-symmetry liquid regions and grow with fcc ordering, often exhibiting patchy morphology and stacking faults. % This provides a useful framework for interpreting the unsupervised clusters discovered here.
+Figure~\ref{fig:cluster_proportions} presents a t-SNE projection of the invariant embeddings, with representative neighborhoods near cluster centers. The latent space clearly separates disordered, ordered, and intermediate motifs into distinct groups. While we do not enforce direct alignment with the clusters in~\cite{becker2022nucleation}, we use it as a physical reference. That study shows that aluminium crystallization follows a one-step pathway: embryos form in low-five-fold-symmetry liquid regions, growing with FCC ordering and often featuring patchy morphology and stacking faults.
 
-\subsubsection{Interpretation of the discovered clusters}
+\subsubsection{Interpretation of the discovered clusters.}
 Cluster $C_6$ corresponds to the most disordered, liquid-like environment and dominates the early snapshots.
 At the opposite end, cluster $C_1$ contains the most ordered crystalline neighborhoods and becomes the dominant motif in the final state.
 The remaining clusters $C_2$--$C_5$ occupy intermediate positions both in latent space and in the simulation box and can be interpreted as partially ordered, defective, or interfacial structures.
 
 Among these intermediate motifs, $C_5$ appears early during nucleation and forms extended shells around the growing crystalline regions before remaining in the final polycrystal.
 This behavior is consistent with a near-crystalline interfacial motif, i.e.\ a distorted close-packed environment surrounding the ordered crystal core during growth and later persisting at grain boundaries.
-The weakly populated clusters $C_2$--$C_4$ are located on crystal surfaces, internal defective regions, and boundary-like structures; following the reference analysis of~\cite{beckerPRE}, they are plausibly associated with defective closed-packed motifs, including stacking-fault-rich or otherwise distorted crystalline environments.
+The weakly populated clusters $C_2$--$C_4$ are located on crystal surfaces, internal defective regions, and boundary-like structures; following the reference analysis of~\cite{becker2022atomic}, they are plausibly associated with defective close-packed motifs, including stacking-fault-rich or otherwise distorted crystalline environments.
 We keep this interpretation deliberately cautious, since the clusters are discovered without supervision and are not constrained to match a predefined structural taxonomy.
 
 This interpretation is supported by the temporal evolution of the cluster populations shown in Figure~\ref{fig:cluster_proportions}.
@@ -597,34 +493,24 @@ This behavior is consistent with clusters encoding interfaces, stacking-faulted 
     \label{fig:evolution}
 \end{figure}
 
-\subsubsection{Spatial evolution during crystallization}
-The spatial distribution of the clusters is shown in Figure~\ref{fig:evolution}. 
-Early frames are dominated by the liquid-like background ($C_6$). 
-As crystallization begins, compact regions of ordered and partially ordered environments emerge within this background, corresponding to crystalline nuclei and their surrounding transition layers. 
-These regions grow, impinge, and progressively fill the simulation box. 
-The second row removes the dominant liquid-like background and highlights only the ordered and intermediate clusters, which makes the nucleation-and-growth process clearer. 
-Early frames show compact precrystalline islands dominated by $C_5$, while a crystalline core ($C_1$) develops inside these regions as growth proceeds. 
-At later times, ordered domains expand and eventually impinge, producing a final polycrystal in which $C_1$ occupies grain interiors and the intermediate clusters are enriched at interfaces between the liquid and the nuclei (see the interpretation of clusters above).
-This spatial organization is consistent with the physical picture reported for the same aluminium trajectory in~\cite{becker2022nucleation}, where nucleation proceeds through direct fcc ordering followed by growth of patchy nuclei containing stacking faults and interfacial distortions. 
-Notably, this interpretation emerges without temporal supervision or handcrafted descriptors: neighborhoods are embedded independently from their geometry, yet the resulting clusters organize into spatially coherent motifs that evolve smoothly during crystallization. 
-Based on this proof of concept, a refinement of the structural description of the liquid to treat its heterogeneity is planned in a subsequent work.
+\subsubsection{Spatial evolution during crystallization.}
+The spatial distribution of the clusters is shown in Figure~\ref{fig:evolution}.
+Early frames are dominated by the liquid-like background ($C_6$).
+As crystallization begins, compact regions of ordered and partially ordered environments emerge within this background, corresponding to crystalline nuclei and their surrounding transition layers.
+These regions grow, impinge, and progressively fill the simulation box.
+The second row removes the dominant liquid-like background and highlights only the ordered and intermediate clusters, which makes the nucleation-and-growth process clearer.
+Early frames show compact precrystalline islands dominated by $C_5$, while a crystalline core ($C_1$) develops inside these regions as growth proceeds.
+At later times, ordered domains expand and eventually impinge, producing a final polycrystal in which $C_1$ occupies grain interiors and the intermediate clusters are enriched at liquid--nucleus interfaces during growth and at grain boundaries in the final polycrystal (see the interpretation of clusters above).
+This spatial organization is consistent with the physical picture reported for the same aluminium trajectory in~\cite{becker2022nucleation}, where nucleation proceeds through direct FCC ordering followed by growth of patchy nuclei containing stacking faults and interfacial distortions.
+Notably, this interpretation emerges without temporal supervision or handcrafted descriptors: neighborhoods are embedded independently from their geometry, yet the resulting clusters organize into spatially coherent motifs that evolve smoothly during crystallization.
+Based on this proof of concept, a refinement of the structural description of the liquid to account for its heterogeneity is planned in a subsequent work.
 
 \section{Conclusion}
-We presented a self-supervised method for clustering local atomic environments in 3D point clouds. By combining a rotation-equivariant encoder, invariant embeddings derived from equivariant features, and a VICReg objective on overlapping neighborhoods, the method learns symmetry-aware representations that remain directly clusterable. On a synthetic polycrystal benchmark, the learned embeddings outperform recent self-supervised point-cloud baselines as well as classical structural descriptors for unsupervised motif discovery. Applied to molecular dynamics simulations of aluminium crystallization, the method recovers spatially coherent clusters corresponding to liquid-like, ordered, and intermediate environments and reveals their evolution during nucleation and growth without labels or handcrafted order parameters. Finally, to assess generalization beyond the evaluation benchmark, we also perform a real-to-synthetic transfer experiment in which the encoder is pretrained on real MD trajectories and evaluated directly on the synthetic polycrystal dataset. Full details and results are provided in the Appendix.
+We presented a self-supervised method for clustering local atomic environments in 3D point clouds. By combining a rotation-equivariant encoder, invariant embeddings derived from equivariant features, and a VICReg objective on overlapping neighborhoods, the method learns symmetry-aware representations that remain directly clusterable. On a synthetic polycrystal benchmark, the learned embeddings outperform recent self-supervised point-cloud baselines as well as classical structural descriptors for unsupervised motif discovery. Applied to molecular dynamics simulations of aluminium crystallization, the method recovers spatially coherent clusters corresponding to liquid-like, ordered, and intermediate environments and reveals their evolution during nucleation and growth without labels or handcrafted order parameters. Finally, to assess generalization beyond the evaluation benchmark, we also perform a real-to-synthetic transfer experiment in which the encoder is pretrained on real MD trajectories and evaluated directly on the synthetic polycrystal dataset. Full details and results are provided in the supplementary material.
 
 These results illustrate the potential of self-supervised geometric learning for large scientific point clouds, where local structure is subtle and difficult to capture with fixed descriptors. Future work will extend the approach to multi-species systems, incorporate temporal information during training, and further connect learned motifs with physical observables.
 
-
-%\section*{Acknowledgements}
-%Please insert your acknowledgments here.
-
-% ---- Bibliography ----
-%
-% BibTeX users should specify bibliography style 'splncs04'.
-% References will then be sorted and formatted in the correct style.
-%
 \bibliographystyle{splncs04}
 \bibliography{references}
-
 
 \end{document}

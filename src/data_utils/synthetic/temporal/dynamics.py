@@ -325,6 +325,9 @@ def simulate_latent_trajectories(
             rng=rng,
             lower=0.0,
         )
+        if frame_idx > 0 and config.nuisance.transition_thermal_spike > 0.0:
+            changed_mask = current_state != previous_state
+            current_thermal[changed_mask] += float(config.nuisance.transition_thermal_spike)
 
         # --- Vectorized AR(1) defect update ---
         current_defect = _update_ar1_scalars_batch(
@@ -1155,7 +1158,13 @@ def _sample_transitions_batch(
             if _G >= 0:
                 trans_prob[mask_I, _G] = grain_collision_prob[mask_I] * edge_weight_matrix[_I, _G]
             if _C >= 0:
-                trans_prob[mask_I, _C] = crystal_prob[mask_I] * edge_weight_matrix[_I, _C]
+                if _D >= 0:
+                    defect_fraction = np.clip(0.16 + 0.24 * gb_frac + 0.12 * liquid_like_frac, 0.0, 0.55)
+                    defective_prob = crystal_prob * defect_fraction
+                    trans_prob[mask_I, _D] = defective_prob[mask_I] * edge_weight_matrix[_I, _D]
+                    trans_prob[mask_I, _C] = (crystal_prob - defective_prob)[mask_I] * edge_weight_matrix[_I, _C]
+                else:
+                    trans_prob[mask_I, _C] = crystal_prob[mask_I] * edge_weight_matrix[_I, _C]
             if _P >= 0:
                 trans_prob[mask_I, _P] = retreat_to_p[mask_I] * edge_weight_matrix[_I, _P]
             if _L >= 0:
@@ -1167,6 +1176,9 @@ def _sample_transitions_batch(
         if np.any(mask_C):
             c_to_i = np.where(liquid_like_frac > 0.55, 0.006 * liquid_like_frac, 0.0)
             trans_prob[mask_C, _I] = c_to_i[mask_C] * edge_weight_matrix[_C, _I]
+            if _D >= 0:
+                c_to_d = 0.004 * np.clip(interface_frac + gb_frac, 0.0, 1.0)
+                trans_prob[mask_C, _D] = c_to_d[mask_C] * edge_weight_matrix[_C, _D]
 
     # G sites → C (rare)
     if _G >= 0 and _C >= 0:

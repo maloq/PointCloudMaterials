@@ -92,6 +92,7 @@ class NuisanceConfig:
     strain_drift_scale: float = 0.01
     thermal_relaxation: float = 0.85
     thermal_noise_scale: float = 0.02
+    transition_thermal_spike: float = 0.0
     defect_relaxation: float = 0.85
     defect_noise_scale: float = 0.02
 

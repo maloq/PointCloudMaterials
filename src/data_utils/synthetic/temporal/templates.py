@@ -148,17 +148,16 @@ class TemplateLibrary:
 
     def _liquid_recipe(self, state: StateConfig) -> dict[str, Any]:
         min_pair_distance = float(state.template_params.get("min_pair_distance", 0.82 * self.avg_nn_distance))
-        liquid_method = str(state.template_params.get("liquid_method", "simple"))
-        liquid_config = {
-            "method": liquid_method,
-            "target_coordination": float(state.template_params.get("target_coordination", 12.0)),
-            "rdf_iterations": int(state.template_params.get("rdf_iterations", 200)),
-            "rdf_tolerance": float(state.template_params.get("rdf_tolerance", 0.08)),
-        }
         return {
             "phase_type": "liquid_metal",
             "min_pair_dist": min_pair_distance,
-            "liquid_config": liquid_config,
+            "liquid_config": self._liquid_config(
+                state,
+                default_method="simple",
+                default_coordination=12.0,
+                default_iterations=200,
+                default_tolerance=0.08,
+            ),
         }
 
     def _precursor_recipe(self, state: StateConfig, *, interface_like: bool) -> dict[str, Any]:
@@ -173,38 +172,36 @@ class TemplateLibrary:
             default_radius = 1.8 * self.avg_nn_distance
         embedded_probability = float(state.template_params.get("embedded_probability", default_embed))
         embedded_radius = float(state.template_params.get("embedded_radius", default_radius))
-        liquid_method = str(state.template_params.get("liquid_method", "simple"))
-        liquid_config = {
-            "method": liquid_method,
-            "target_coordination": float(state.template_params.get("target_coordination", 11.2)),
-            "rdf_iterations": int(state.template_params.get("rdf_iterations", 150)),
-            "rdf_tolerance": float(state.template_params.get("rdf_tolerance", 0.10)),
-        }
         return {
             "phase_type": "amorphous_mixed",
             "min_pair_dist": min_pair_distance,
             "embedded_crystal": f"crystal_{structure}",
             "embedded_probability": embedded_probability,
             "embedded_radius": embedded_radius,
-            "liquid_config": liquid_config,
+            "liquid_config": self._liquid_config(
+                state,
+                default_method="simple",
+                default_coordination=11.2,
+                default_iterations=150,
+                default_tolerance=0.10,
+            ),
         }
 
     def _interface_recipe(self, state: StateConfig) -> dict[str, Any]:
         structure = state.crystal_structure or self.default_crystal_structure
         min_pair_distance = float(state.template_params.get("min_pair_distance", 0.82 * self.avg_nn_distance))
-        liquid_method = str(state.template_params.get("liquid_method", "simple"))
-        liquid_config = {
-            "method": liquid_method,
-            "target_coordination": float(state.template_params.get("target_coordination", 11.6)),
-            "rdf_iterations": int(state.template_params.get("rdf_iterations", 180)),
-            "rdf_tolerance": float(state.template_params.get("rdf_tolerance", 0.09)),
-        }
         return {
             "phase_type": "surface_interface",
             "liquid_recipe": {
                 "phase_type": "liquid_metal",
                 "min_pair_dist": min_pair_distance,
-                "liquid_config": liquid_config,
+                "liquid_config": self._liquid_config(
+                    state,
+                    default_method="simple",
+                    default_coordination=11.6,
+                    default_iterations=180,
+                    default_tolerance=0.09,
+                ),
             },
             "solid_recipe": self._crystal_recipe_for_state(
                 StateConfig(
@@ -234,3 +231,38 @@ class TemplateLibrary:
             "boundary_width": float(state.template_params.get("boundary_width", 1.4 * self.avg_nn_distance)),
             "plane_jitter": float(state.template_params.get("plane_jitter", 0.18 * self.avg_nn_distance)),
         }
+
+    def _liquid_config(
+        self,
+        state: StateConfig,
+        *,
+        default_method: str,
+        default_coordination: float,
+        default_iterations: int,
+        default_tolerance: float,
+    ) -> dict[str, Any]:
+        params = state.template_params
+        config: dict[str, Any] = {
+            "method": str(params.get("liquid_method", default_method)),
+            "target_coordination": float(params.get("target_coordination", default_coordination)),
+            "rdf_iterations": int(params.get("rdf_iterations", default_iterations)),
+            "rdf_tolerance": float(params.get("rdf_tolerance", default_tolerance)),
+        }
+        optional_fields = {
+            "target_rdf_file": str,
+            "quench_temperature": float,
+            "quench_steps": int,
+            "icosahedral_fraction": float,
+            "first_peak_position": float,
+            "first_peak_height": float,
+            "second_peak_position": float,
+            "use_frank_kasper": bool,
+            "mro_cluster_fraction": float,
+            "mro_cluster_radius": float,
+            "mro_radial_jitter": float,
+            "mro_tetra_fraction": float,
+        }
+        for key, caster in optional_fields.items():
+            if key in params:
+                config[key] = caster(params[key])
+        return config

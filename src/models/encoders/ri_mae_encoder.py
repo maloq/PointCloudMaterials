@@ -80,6 +80,7 @@ class Group(nn.Module):
         deterministic_fps: bool = False,
         sorting_mode: str = "nearest",
         group_sampling: str = "fps",
+        grouping_mode: str = "knn",
     ) -> None:
         super().__init__()
         self.num_group = int(num_group)
@@ -99,6 +100,12 @@ class Group(nn.Module):
             raise ValueError(
                 "Group sampling mode must be one of {'fps', 'random'}, "
                 f"got {group_sampling!r}."
+            )
+        self.grouping_mode = str(grouping_mode).lower()
+        if self.grouping_mode not in {"knn", "partition"}:
+            raise ValueError(
+                "Grouping mode must be one of {'knn', 'partition'}, "
+                f"got {grouping_mode!r}."
             )
 
     @staticmethod
@@ -133,21 +140,72 @@ class Group(nn.Module):
             visited[batch_idx, nxt] = True
         return order
 
-    def forward(self, xyz: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    def _partition_group_indices(
+        self,
+        xyz: torch.Tensor,
+        center_idx: torch.Tensor,
+        center: torch.Tensor,
+    ) -> torch.Tensor:
+        bsz, n_pts, _ = xyz.shape
+        num_group = int(center_idx.shape[1])
+        group_size = int(self.group_size)
+        if group_size <= 0:
+            raise ValueError(f"group_size must be positive for partition grouping, got {group_size}.")
+        required_points = num_group * group_size
+        if required_points > n_pts:
+            raise ValueError(
+                "Non-overlapping RI-MAE partition grouping requires "
+                "num_group * group_size <= number of input points. "
+                f"Got num_group={num_group}, group_size={group_size}, "
+                f"required_points={required_points}, input_points={n_pts}."
+            )
+
+        group_idx = torch.empty(
+            (bsz, num_group, group_size),
+            dtype=torch.long,
+            device=xyz.device,
+        )
+
+        used = torch.zeros((bsz, n_pts), dtype=torch.bool, device=xyz.device)
+        dist = torch.cdist(center.to(torch.float32), xyz.to(torch.float32))
+        for group_id in range(num_group):
+            preferred_idx = center_idx[:, group_id]
+            preferred_used = used.gather(dim=1, index=preferred_idx.unsqueeze(1)).squeeze(1)
+            masked_dist = dist[:, group_id, :].masked_fill(used, float("inf"))
+            nearest_unused = masked_dist.argmin(dim=1)
+            first_idx = torch.where(preferred_used, nearest_unused, preferred_idx)
+            group_idx[:, group_id, 0] = first_idx
+            used.scatter_(dim=1, index=first_idx.unsqueeze(1), value=True)
+        if group_size == 1:
+            return group_idx
+
+        for slot in range(1, group_size):
+            for group_id in range(num_group):
+                masked_dist = dist[:, group_id, :].masked_fill(used, float("inf"))
+                next_idx = masked_dist.argmin(dim=1)
+                group_idx[:, group_id, slot] = next_idx
+                used.scatter_(dim=1, index=next_idx.unsqueeze(1), value=True)
+        return group_idx
+
+    def forward(self, xyz: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         xyz = _to_bn3(xyz)
         if self.group_sampling == "random" and self.training:
             center_idx = self._random_group_indices(xyz, self.num_group)
         else:
             center_idx = _farthest_point_sample(xyz, self.num_group, deterministic=self.deterministic_fps)
         center = _index_points(xyz, center_idx)
-        group_idx = _knn_point(self.group_size, xyz, center)
+        if self.grouping_mode == "partition":
+            group_idx = self._partition_group_indices(xyz, center_idx, center)
+        else:
+            group_idx = _knn_point(self.group_size, xyz, center)
         neighborhood = _index_points(xyz, group_idx)
         neighborhood = neighborhood - center.unsqueeze(2)
         if self.sorting_mode == "nearest":
             order = self._nearest_path_order(center)
             neighborhood = neighborhood.gather(1, order.unsqueeze(-1).unsqueeze(-1).expand(-1, -1, self.group_size, 3))
             center = center.gather(1, order.unsqueeze(-1).expand(-1, -1, 3))
-        return neighborhood.contiguous(), center.contiguous()
+            group_idx = group_idx.gather(1, order.unsqueeze(-1).expand(-1, -1, self.group_size))
+        return neighborhood.contiguous(), center.contiguous(), group_idx.contiguous()
 
 
 class EncoderLarge(nn.Module):
@@ -329,6 +387,7 @@ class RIMAEBackbone(nn.Module):
         frame_builder: str = "triad", frame_eps: float = 1e-6,
         use_gradient_checkpointing: bool = False,
         group_sampling: str = "fps",
+        grouping_mode: str = "knn",
     ) -> None:
         super().__init__()
         self.num_group = int(num_group)
@@ -342,6 +401,7 @@ class RIMAEBackbone(nn.Module):
         self.frame_eps = float(frame_eps)
         self.use_gradient_checkpointing = bool(use_gradient_checkpointing)
         self.group_sampling = str(group_sampling)
+        self.grouping_mode = str(grouping_mode)
         if self.frame_builder not in {"triad", "pca"}:
             raise ValueError(
                 "RIMAEBackbone frame_builder must be one of {'triad', 'pca'}, "
@@ -356,6 +416,7 @@ class RIMAEBackbone(nn.Module):
             deterministic_fps=bool(deterministic_fps),
             sorting_mode=sorting_mode,
             group_sampling=self.group_sampling,
+            grouping_mode=self.grouping_mode,
         )
         self.patch_encoder = EncoderSmall(self.encoder_dims) if self.encoder_dims == 384 else EncoderLarge(self.encoder_dims)
         self.input_proj = nn.Identity() if self.encoder_dims == self.trans_dim else nn.Linear(self.encoder_dims, self.trans_dim)
@@ -654,6 +715,9 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
         self.frame_eps = float(getattr(backbone, "frame_eps", 1e-6))
         self.center_input = bool(center_input)
         self.output_dim = int(output_dim)
+        self.token_dim = int(getattr(backbone, "trans_dim"))
+        self.token_num_heads = int(getattr(backbone, "num_heads"))
+        self.num_tokens = int(getattr(backbone, "num_group"))
 
     def _build_orientation_bias(self, frames: torch.Tensor) -> torch.Tensor:
         rel = torch.matmul(frames.unsqueeze(2).transpose(-1, -2), frames.unsqueeze(1))
@@ -662,11 +726,69 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
         bias = bias - bias.mean(dim=-1, keepdim=True)
         return bias * self.orientation_scale.to(dtype=bias.dtype)
 
-    def forward(self, points: torch.Tensor):
+    @staticmethod
+    def _gather_token_axis(x: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
+        if x.dim() < 2:
+            raise ValueError(
+                "Token gather expects a tensor with a batch and token dimension, "
+                f"got shape={tuple(x.shape)}."
+            )
+        if idx.dim() != 2:
+            raise ValueError(
+                "Token indices must have shape (B, K), "
+                f"got idx.shape={tuple(idx.shape)}."
+            )
+        if x.shape[0] != idx.shape[0]:
+            raise ValueError(
+                "Token gather batch mismatch: "
+                f"x.shape={tuple(x.shape)}, idx.shape={tuple(idx.shape)}."
+            )
+        gather_idx = idx.reshape(idx.shape[0], idx.shape[1], *([1] * (x.dim() - 2)))
+        gather_idx = gather_idx.expand(-1, -1, *x.shape[2:])
+        return x.gather(dim=1, index=gather_idx)
+
+    @staticmethod
+    def _gather_attention_bias(
+        attn_bias: torch.Tensor,
+        *,
+        query_idx: torch.Tensor,
+        key_idx: torch.Tensor,
+    ) -> torch.Tensor:
+        if attn_bias.dim() != 4:
+            raise ValueError(
+                "Attention bias must have shape (B, H, T, T), "
+                f"got {tuple(attn_bias.shape)}."
+            )
+        if query_idx.shape[0] != attn_bias.shape[0] or key_idx.shape[0] != attn_bias.shape[0]:
+            raise ValueError(
+                "Attention-bias gather batch mismatch: "
+                f"attn_bias.shape={tuple(attn_bias.shape)}, "
+                f"query_idx.shape={tuple(query_idx.shape)}, key_idx.shape={tuple(key_idx.shape)}."
+            )
+        batch_size, num_heads, _, token_count = attn_bias.shape
+        query_count = int(query_idx.shape[1])
+        key_count = int(key_idx.shape[1])
+        query_gather = query_idx[:, None, :, None].expand(batch_size, num_heads, query_count, token_count)
+        gathered = attn_bias.gather(dim=2, index=query_gather)
+        key_gather = key_idx[:, None, None, :].expand(batch_size, num_heads, query_count, key_count)
+        return gathered.gather(dim=3, index=key_gather)
+
+    @staticmethod
+    def pool_token_features(tokens: torch.Tensor) -> torch.Tensor:
+        if tokens.dim() != 3:
+            raise ValueError(
+                "RI-MAE token pooling expects tokens with shape (B, T, C), "
+                f"got {tuple(tokens.shape)}."
+            )
+        max_features = tokens.max(dim=1).values
+        mean_features = tokens.mean(dim=1)
+        return torch.cat([max_features, mean_features], dim=-1)
+
+    def prepare_token_geometry(self, points: torch.Tensor) -> dict[str, torch.Tensor]:
         bn3_points = _to_bn3(points)
         if self.center_input:
             bn3_points = bn3_points - bn3_points.mean(dim=1, keepdim=True)
-        neighborhood, center = self.group_divider(bn3_points)
+        neighborhood, center, group_idx = self.group_divider(bn3_points)
         with torch.no_grad():
             frames = RIMAEBackbone._estimate_patch_frames(
                 neighborhood,
@@ -675,16 +797,131 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
                 validate=not self.training,
             )
         frames = frames.to(dtype=bn3_points.dtype, device=bn3_points.device)
-        canonical = torch.einsum("bgsc,bgcd->bgsd", neighborhood, frames)
-        patch_tokens = self.input_proj(self.patch_encoder(canonical))
+        return {
+            "neighborhood": neighborhood,
+            "token_positions": center,
+            "group_indices": group_idx,
+            "frames": frames,
+        }
+
+    def prepare_token_position_inputs_from_geometry(
+        self,
+        geometry: dict[str, torch.Tensor],
+    ) -> dict[str, torch.Tensor]:
+        required = ("token_positions", "frames")
+        missing = [name for name in required if name not in geometry]
+        if missing:
+            raise KeyError(f"RI-MAE token geometry is missing required field(s): {missing}.")
+
+        center = geometry["token_positions"]
+        frames = geometry["frames"]
         ri_pos = torch.einsum("bgc,bgcd->bgd", center, frames)
         pos_tokens = self.pos_embed(ri_pos)
-        encoder_input = patch_tokens + pos_tokens
-        attn_bias_full = self._build_orientation_bias(frames).to(dtype=encoder_input.dtype)
-        tokens = self.student_encoder(encoder_input, attn_bias_full)
-        max_features = tokens.max(dim=1).values
-        mean_features = tokens.mean(dim=1)
-        features = torch.cat([max_features, mean_features], dim=-1)
+        attn_bias_full = self._build_orientation_bias(frames).to(dtype=pos_tokens.dtype)
+        return {
+            "pos_tokens": pos_tokens,
+            "token_positions": center,
+            "ri_positions": ri_pos,
+            "frames": frames,
+            "attn_bias": attn_bias_full,
+        }
+
+    def prepare_token_inputs_from_geometry(self, geometry: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
+        if "neighborhood" not in geometry:
+            raise KeyError("RI-MAE token geometry is missing required field: 'neighborhood'.")
+        position_inputs = self.prepare_token_position_inputs_from_geometry(geometry)
+        neighborhood = geometry["neighborhood"]
+        frames = geometry["frames"]
+        canonical = torch.einsum("bgsc,bgcd->bgsd", neighborhood, frames)
+        patch_tokens = self.input_proj(self.patch_encoder(canonical))
+        encoder_input = patch_tokens + position_inputs["pos_tokens"]
+        return {
+            **position_inputs,
+            "encoder_input": encoder_input,
+            "patch_tokens": patch_tokens,
+            "attn_bias": position_inputs["attn_bias"].to(dtype=encoder_input.dtype),
+        }
+
+    def prepare_token_inputs(self, points: torch.Tensor) -> dict[str, torch.Tensor]:
+        return self.prepare_token_inputs_from_geometry(self.prepare_token_geometry(points))
+
+    def forward_tokens_from_geometry(self, geometry: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
+        prepared = self.prepare_token_inputs_from_geometry(geometry)
+        tokens = self.student_encoder(prepared["encoder_input"], prepared["attn_bias"])
+        return {
+            **prepared,
+            "tokens": tokens,
+            "features": self.pool_token_features(tokens),
+        }
+
+    def forward_tokens(self, points: torch.Tensor) -> dict[str, torch.Tensor]:
+        return self.forward_tokens_from_geometry(self.prepare_token_geometry(points))
+
+    def forward_visible_tokens_from_geometry(
+        self,
+        geometry: dict[str, torch.Tensor],
+        *,
+        visible_idx: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        if "token_positions" not in geometry:
+            raise KeyError("RI-MAE token geometry is missing required field: 'token_positions'.")
+        token_count = int(geometry["token_positions"].shape[1])
+        if visible_idx.dtype != torch.long:
+            raise TypeError(
+                "visible_idx must be torch.long token indices for RI-MAE visible-token encoding, "
+                f"got dtype={visible_idx.dtype}."
+            )
+        if visible_idx.dim() != 2 or visible_idx.shape[0] != geometry["token_positions"].shape[0]:
+            raise ValueError(
+                "visible_idx must have shape (B, K) with the same batch size as points. "
+                f"token_positions.shape={tuple(geometry['token_positions'].shape)}, "
+                f"visible_idx.shape={tuple(visible_idx.shape)}."
+            )
+        if int(visible_idx.numel()) == 0:
+            raise ValueError("RI-MAE visible-token encoding requires at least one visible token.")
+        if bool(((visible_idx < 0) | (visible_idx >= token_count)).any().item()):
+            raise ValueError(
+                "visible_idx contains out-of-range token positions. "
+                f"token_count={token_count}, min={int(visible_idx.min().item())}, "
+                f"max={int(visible_idx.max().item())}."
+            )
+
+        full_position_inputs = self.prepare_token_position_inputs_from_geometry(geometry)
+        visible_geometry = {
+            "neighborhood": self._gather_token_axis(geometry["neighborhood"], visible_idx),
+            "token_positions": self._gather_token_axis(geometry["token_positions"], visible_idx),
+            "frames": self._gather_token_axis(geometry["frames"], visible_idx),
+        }
+        if "group_indices" in geometry:
+            visible_geometry["group_indices"] = self._gather_token_axis(geometry["group_indices"], visible_idx)
+        visible_inputs = self.prepare_token_inputs_from_geometry(visible_geometry)
+        context_tokens = self.student_encoder(
+            visible_inputs["encoder_input"],
+            visible_inputs["attn_bias"],
+        )
+        return {
+            **full_position_inputs,
+            "context_tokens": context_tokens,
+            "visible_idx": visible_idx,
+            "visible_pos_tokens": visible_inputs["pos_tokens"],
+            "visible_attn_bias": visible_inputs["attn_bias"],
+            "features": self.pool_token_features(context_tokens),
+        }
+
+    def forward_visible_tokens(
+        self,
+        points: torch.Tensor,
+        *,
+        visible_idx: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        return self.forward_visible_tokens_from_geometry(
+            self.prepare_token_geometry(points),
+            visible_idx=visible_idx,
+        )
+
+    def forward(self, points: torch.Tensor):
+        token_output = self.forward_tokens(points)
+        features = token_output["features"]
         return features, features, None
 
 
@@ -725,6 +962,7 @@ class RIMAEInvariantEncoder(Encoder):
         frame_eps: float = 1e-6,
         use_gradient_checkpointing: bool = False,
         group_sampling: str = "fps",
+        grouping_mode: str = "knn",
     ) -> None:
         super().__init__()
         output_dim = int(2 * int(trans_dim))
@@ -737,6 +975,7 @@ class RIMAEInvariantEncoder(Encoder):
 
         self.latent_size = output_dim
         self.invariant_dim = output_dim
+        self.supports_token_latents = True
         backbone = RIMAEBackbone(
             num_group=int(num_group),
             group_size=int(group_size),
@@ -755,12 +994,42 @@ class RIMAEInvariantEncoder(Encoder):
             frame_eps=float(frame_eps),
             use_gradient_checkpointing=bool(use_gradient_checkpointing),
             group_sampling=str(group_sampling),
+            grouping_mode=str(grouping_mode),
         )
         self.encoder = RIMAEInvariantEncoderForContrastive(
             backbone,
             center_input=bool(center_input),
             output_dim=output_dim,
         )
+        self.token_dim = self.encoder.token_dim
+        self.token_num_heads = self.encoder.token_num_heads
+        self.num_tokens = self.encoder.num_tokens
 
     def forward(self, x):
         return self.encoder(x)
+
+    def forward_tokens(self, x):
+        return self.encoder.forward_tokens(x)
+
+    def forward_visible_tokens(self, x, *, visible_idx: torch.Tensor):
+        return self.encoder.forward_visible_tokens(x, visible_idx=visible_idx)
+
+    def prepare_token_geometry(self, x):
+        return self.encoder.prepare_token_geometry(x)
+
+    def forward_tokens_from_geometry(self, geometry: dict[str, torch.Tensor]):
+        return self.encoder.forward_tokens_from_geometry(geometry)
+
+    def forward_visible_tokens_from_geometry(
+        self,
+        geometry: dict[str, torch.Tensor],
+        *,
+        visible_idx: torch.Tensor,
+    ):
+        return self.encoder.forward_visible_tokens_from_geometry(
+            geometry,
+            visible_idx=visible_idx,
+        )
+
+    def pool_token_features(self, tokens: torch.Tensor) -> torch.Tensor:
+        return self.encoder.pool_token_features(tokens)

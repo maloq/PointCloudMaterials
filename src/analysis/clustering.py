@@ -16,6 +16,7 @@ from .cluster_figures import (
 from src.vis_tools.latent_analysis_vis import (
     FittedClusteringModel,
     _compute_internal_clustering_metrics,
+    _l2_normalize_rows_strict,
     _normalize_clustering_method_name,
     _prepare_clustering_features,
     compute_hdbscan_labels,
@@ -23,6 +24,7 @@ from src.vis_tools.latent_analysis_vis import (
     compute_transfer_kmeans_labels,
     fit_clustering_model,
     predict_clustering_model,
+    transform_clustering_features,
 )
 
 
@@ -413,6 +415,178 @@ def predict_clustering_state_from_models(
                 metrics["ari_with_gt"] = float(adjusted_rand_score(phases, gt_labels))
                 metrics["nmi_with_gt"] = float(normalized_mutual_info_score(phases, gt_labels))
     return metrics, configured_k_values, cluster_labels_by_k, cluster_methods_by_k
+
+
+def compute_clustering_assignment_margins(
+    latents: np.ndarray,
+    *,
+    fitted_model: FittedClusteringModel,
+    expected_labels: np.ndarray,
+    chunk_size: int = 200_000,
+) -> dict[str, Any]:
+    latents_arr = np.asarray(latents, dtype=np.float32)
+    if latents_arr.ndim != 2:
+        latents_arr = np.reshape(latents_arr, (latents_arr.shape[0], -1))
+    expected = np.asarray(expected_labels, dtype=int).reshape(-1)
+    if expected.shape[0] != latents_arr.shape[0]:
+        raise ValueError(
+            "Cluster assignment margin labels must match latent rows: "
+            f"labels={expected.shape[0]}, latents={latents_arr.shape[0]}."
+        )
+    if int(chunk_size) <= 0:
+        raise ValueError(f"chunk_size must be positive, got {chunk_size}.")
+
+    n_samples = int(latents_arr.shape[0])
+    n_clusters = int(fitted_model.n_clusters)
+    if n_clusters < 2:
+        raise ValueError(
+            "Cluster assignment margins require at least two clusters, "
+            f"got n_clusters={n_clusters}."
+        )
+    raw_to_canonical = np.arange(n_clusters, dtype=np.int64)
+    seen_new: set[int] = set()
+    for old_label, new_label in fitted_model.label_remap.items():
+        old = int(old_label)
+        new = int(new_label)
+        if old < 0 or old >= n_clusters or new < 0 or new >= n_clusters:
+            raise ValueError(
+                "Fitted clustering label_remap contains an out-of-range label: "
+                f"old={old}, new={new}, n_clusters={n_clusters}."
+            )
+        if new in seen_new:
+            raise ValueError(
+                "Fitted clustering label_remap maps multiple raw labels to the "
+                f"same canonical label {new}."
+            )
+        seen_new.add(new)
+        raw_to_canonical[old] = new
+    if len(set(int(v) for v in raw_to_canonical.tolist())) != n_clusters:
+        raise ValueError(
+            "Fitted clustering label_remap does not define a one-to-one raw-to-canonical mapping. "
+            f"raw_to_canonical={raw_to_canonical.tolist()}."
+        )
+
+    if str(fitted_model.method) == "kmeans":
+        if fitted_model.sklearn_model is None:
+            raise RuntimeError("Fitted k-means model is missing the sklearn model state.")
+        centers = np.asarray(fitted_model.sklearn_model.cluster_centers_, dtype=np.float32)
+        score_name = "negative_squared_euclidean_distance"
+    elif str(fitted_model.method) == "spherical_kmeans":
+        if fitted_model.spherical_centers is None:
+            raise RuntimeError("Fitted spherical k-means model is missing the spherical centers.")
+        centers = np.asarray(fitted_model.spherical_centers, dtype=np.float32)
+        score_name = "cosine_similarity"
+    else:
+        raise ValueError(
+            f"Unsupported fitted clustering method {fitted_model.method!r} for assignment margins."
+        )
+    if centers.ndim != 2 or centers.shape[0] != n_clusters:
+        raise ValueError(
+            "Fitted clustering centers have an invalid shape for assignment margins: "
+            f"centers={tuple(centers.shape)}, n_clusters={n_clusters}."
+        )
+
+    assigned_score = np.empty(n_samples, dtype=np.float32)
+    runner_up_score = np.empty(n_samples, dtype=np.float32)
+    runner_up_cluster = np.empty(n_samples, dtype=np.int64)
+    margin = np.empty(n_samples, dtype=np.float32)
+
+    for start in range(0, n_samples, int(chunk_size)):
+        stop = min(start + int(chunk_size), n_samples)
+        features = transform_clustering_features(
+            latents_arr[start:stop],
+            transform=fitted_model.feature_transform,
+        )
+        if str(fitted_model.method) == "spherical_kmeans":
+            features_for_scores = _l2_normalize_rows_strict(
+                features,
+                context="Spherical k-means assignment margin features",
+            )
+            raw_scores = features_for_scores @ centers.T
+        else:
+            feature_norm2 = np.sum(features * features, axis=1, keepdims=True)
+            center_norm2 = np.sum(centers * centers, axis=1, keepdims=True).T
+            raw_scores = -(feature_norm2 + center_norm2 - 2.0 * (features @ centers.T))
+        canonical_scores = np.empty_like(raw_scores, dtype=np.float32)
+        canonical_scores[:, raw_to_canonical] = raw_scores
+        order = np.argsort(canonical_scores, axis=1)
+        top1 = np.asarray(order[:, -1], dtype=np.int64)
+        top2 = np.asarray(order[:, -2], dtype=np.int64)
+        chunk_expected = expected[start:stop]
+        if not np.array_equal(top1, chunk_expected):
+            mismatch = np.flatnonzero(top1 != chunk_expected)
+            first_local = int(mismatch[0])
+            first_global = int(start + first_local)
+            raise RuntimeError(
+                "Cluster assignment margin labels do not match the fitted model prediction. "
+                f"first_mismatch={first_global}, predicted={int(top1[first_local])}, "
+                f"expected={int(chunk_expected[first_local])}, "
+                f"mismatch_count_in_chunk={int(mismatch.size)}, chunk_start={start}, chunk_stop={stop}."
+            )
+        rows = np.arange(stop - start)
+        assigned = np.asarray(canonical_scores[rows, top1], dtype=np.float32)
+        runner_up = np.asarray(canonical_scores[rows, top2], dtype=np.float32)
+        assigned_score[start:stop] = assigned
+        runner_up_score[start:stop] = runner_up
+        runner_up_cluster[start:stop] = top2
+        margin[start:stop] = assigned - runner_up
+
+    return {
+        "score_name": str(score_name),
+        "higher_is_better": True,
+        "assigned_score": assigned_score,
+        "runner_up_score": runner_up_score,
+        "runner_up_cluster": runner_up_cluster,
+        "margin": margin,
+    }
+
+
+def representative_features_from_clustering_model(
+    latents: np.ndarray,
+    *,
+    fitted_model: FittedClusteringModel,
+    expected_labels: np.ndarray,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    predicted_labels, features = predict_clustering_model(
+        latents,
+        fitted_model,
+        return_features=True,
+    )
+    predicted_labels = np.asarray(predicted_labels, dtype=int).reshape(-1)
+    expected = np.asarray(expected_labels, dtype=int).reshape(-1)
+    if predicted_labels.shape != expected.shape:
+        raise ValueError(
+            "Representative feature validation found a label-shape mismatch: "
+            f"predicted={tuple(predicted_labels.shape)}, expected={tuple(expected.shape)}."
+        )
+    if not np.array_equal(predicted_labels, expected):
+        mismatch = np.flatnonzero(predicted_labels != expected)
+        first = int(mismatch[0])
+        raise RuntimeError(
+            "Representative feature labels do not match the clustering labels used for outputs. "
+            f"first_mismatch={first}, predicted={int(predicted_labels[first])}, "
+            f"expected={int(expected[first])}, mismatch_count={int(mismatch.size)}."
+        )
+
+    selection_features = np.asarray(features, dtype=np.float32)
+    selection_space = "transformed_clustering_features"
+    if str(fitted_model.method) == "spherical_kmeans":
+        norms = np.linalg.norm(selection_features, axis=1, keepdims=True)
+        zero_mask = np.asarray(norms <= 1.0e-8).reshape(-1)
+        if np.any(zero_mask):
+            first_zero = int(np.flatnonzero(zero_mask)[0])
+            raise ValueError(
+                "Cannot build spherical-kmeans representative features from zero-norm rows. "
+                f"first_zero_row={first_zero}, shape={tuple(selection_features.shape)}."
+            )
+        selection_features = selection_features / norms
+        selection_space = "unit_transformed_clustering_features"
+
+    return selection_features.astype(np.float32, copy=False), {
+        "selection_space": str(selection_space),
+        "clustering_method": str(fitted_model.method),
+        "feature_dim": int(selection_features.shape[1]),
+    }
 
 
 def build_clustering_method_comparison(

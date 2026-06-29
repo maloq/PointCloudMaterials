@@ -131,7 +131,6 @@ Main figure outputs:
 Representative outputs:
 
 - `analysis/representatives/04_cluster_representatives_k*.png`
-- `analysis/representatives/08_cluster_representatives_spatial_neighbors_paper_k*.png`
 - `analysis/representatives/09_cluster_representatives_knn_edges_k*.png`
 
 Saved analysis artifacts:
