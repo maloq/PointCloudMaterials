@@ -257,14 +257,6 @@ class BaseSSLModule(pl.LightningModule):
             self._nonfinite_step_flag + 1,
             torch.zeros_like(self._nonfinite_step_flag),
         )
-        self._log_metric(
-            stage,
-            "loss_nonfinite",
-            nonfinite_step.to(dtype=torch.float32),
-            on_step=True,
-            on_epoch=False,
-            batch_size=batch_size,
-        )
         if stage == "train" and ((batch_idx + 1) % self._nonfinite_check_stride == 0):
             observed = int(self._nonfinite_step_flag.item())
             self._consecutive_nan_steps = observed

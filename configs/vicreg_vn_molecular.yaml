@@ -55,7 +55,7 @@ encoder_compile_mode: reduce-overhead
 
 # Training parameters
 learning_rate: 0.005
-batch_size: 4096
+batch_size: 6096
 precision: bf16-true
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1

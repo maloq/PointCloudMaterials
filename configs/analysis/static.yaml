@@ -2,9 +2,9 @@ checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
   # path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
   # path: output/2026-06-16/18-46-58/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=789.ckpt
-  path: output/2026-06-25/17-03-39/VISREG_l512_K4096_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
+  path: output/2026-06-29/15-13-23/OVERLAP_VICREG_l512_N240_M80_RI_MAE_Invariant-epoch=459.ckpt
 
-  output_dir: outputs/static_Al_6frames_multi_visreg
+  output_dir: outputs/static_Al_6frames_multi_overlap
   cuda_device: 0
 
 inputs:

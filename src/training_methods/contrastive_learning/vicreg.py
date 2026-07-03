@@ -21,6 +21,24 @@ _VIEW_POINTS_UNSET = object()
 _SUPPORTED_OBJECTIVES = {"vicreg", "visreg", "overlap_vicreg"}
 
 
+class EvalBatchStatsBatchNorm1d(nn.BatchNorm1d):
+    """BatchNorm1d that uses current batch stats in eval without updating buffers."""
+
+    def forward(self, input: torch.Tensor) -> torch.Tensor:
+        if self.training:
+            return super().forward(input)
+        return F.batch_norm(
+            input,
+            None,
+            None,
+            self.weight,
+            self.bias,
+            True,
+            0.0,
+            self.eps,
+        )
+
+
 class VICRegLoss(nn.Module):
     def __init__(
         self,
@@ -67,6 +85,8 @@ class VICRegLoss(nn.Module):
         radial_m: int | None = None,
         radial_eps: float = 1e-8,
         overlap_hidden_dim: int | None = None,
+        overlap_coeff: float | None = None,
+        projector_bn_eval_batch_stats: bool = False,
     ) -> None:
         super().__init__()
         self.enabled = bool(enabled)
@@ -77,7 +97,7 @@ class VICRegLoss(nn.Module):
                 "vicreg_objective must be one of "
                 f"{sorted(_SUPPORTED_OBJECTIVES)}, got {objective!r}."
             )
-        self.metric_prefix = self.objective
+        self.metric_prefix = "vicreg" if self.objective == "overlap_vicreg" else self.objective
         self.sim_coeff = float(sim_coeff)
         self.std_coeff = float(std_coeff)
         self.cov_coeff = float(cov_coeff)
@@ -102,6 +122,7 @@ class VICRegLoss(nn.Module):
         self.occlusion_slab_frac = float(occlusion_slab_frac)
         self.occlusion_cone_deg = float(occlusion_cone_deg)
         self.occlusion_prob = float(occlusion_prob)
+        self.projector_bn_eval_batch_stats = bool(projector_bn_eval_batch_stats)
 
         self.std_eps = float(std_eps)
         self.std_target = float(std_target)
@@ -150,6 +171,7 @@ class VICRegLoss(nn.Module):
         self._visreg_cached_target_n = -1
         self._visreg_cached_target = None
         self.overlap_hidden_dim = int(overlap_hidden_dim) if overlap_hidden_dim is not None else self.embed_dim
+        self.overlap_coeff = self.sim_coeff if overlap_coeff is None else float(overlap_coeff)
         if self.objective == "overlap_vicreg":
             if self.view_points is None or self.view_points <= 0:
                 raise ValueError(
@@ -166,6 +188,11 @@ class VICRegLoss(nn.Module):
                     "vicreg_overlap_hidden_dim must be positive for overlap_vicreg, "
                     f"got {self.overlap_hidden_dim}."
                 )
+            if self.overlap_coeff < 0.0:
+                raise ValueError(
+                    "vicreg_overlap_coeff must be non-negative for overlap_vicreg, "
+                    f"got {self.overlap_coeff}."
+                )
 
         self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
@@ -179,12 +206,17 @@ class VICRegLoss(nn.Module):
         self.projector = None
         needs_projector = self.enabled and self.weight > 0
         if projector_input_dim is not None and needs_projector:
+            projector_bn_cls = (
+                EvalBatchStatsBatchNorm1d
+                if self.projector_bn_eval_batch_stats
+                else nn.BatchNorm1d
+            )
             self.projector = nn.Sequential(
                 nn.Linear(projector_input_dim, self.embed_dim, bias=False),
-                nn.BatchNorm1d(self.embed_dim),
+                projector_bn_cls(self.embed_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(self.embed_dim, self.embed_dim, bias=False),
-                nn.BatchNorm1d(self.embed_dim),
+                projector_bn_cls(self.embed_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(self.embed_dim, self.embed_dim, bias=False),
             )
@@ -266,6 +298,12 @@ class VICRegLoss(nn.Module):
         overlap_hidden_dim = getattr(cfg, "vicreg_overlap_hidden_dim", None)
         if overlap_hidden_dim is not None:
             overlap_hidden_dim = int(overlap_hidden_dim)
+        overlap_coeff = getattr(cfg, "vicreg_overlap_coeff", None)
+        if overlap_coeff is not None:
+            overlap_coeff = float(overlap_coeff)
+        projector_bn_eval_batch_stats = bool(
+            getattr(cfg, "vicreg_projector_bn_eval_batch_stats", False)
+        )
 
         warn_common_view_sampler_ignored_fields(
             cfg,
@@ -332,6 +370,8 @@ class VICRegLoss(nn.Module):
             radial_m=radial_m,
             radial_eps=radial_eps,
             overlap_hidden_dim=overlap_hidden_dim,
+            overlap_coeff=overlap_coeff,
+            projector_bn_eval_batch_stats=projector_bn_eval_batch_stats,
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -429,9 +469,6 @@ class VICRegLoss(nn.Module):
         z_a = self.projector(z_a_feat.to(dtype=proj_dtype))
         z_b = self.projector(z_b_feat.to(dtype=proj_dtype))
         loss, metrics = self._loss(z_a, z_b, overlap_target=overlap_target)
-        # Tensor-only nonfinite accounting (no `.item()` sync, see #3).
-        nonfinite = (~torch.isfinite(loss)).to(dtype=loss.dtype)
-        metrics[f"{self.metric_prefix}_nonfinite"] = nonfinite
         loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
@@ -993,7 +1030,7 @@ class VICRegLoss(nn.Module):
                 f"Got overlap_target={tuple(overlap_target.shape)}, z_a={tuple(z_a.shape)}."
             )
 
-        n, _ = z_a.shape
+        vicreg_loss, metrics = self._vicreg_loss(z_a, z_b)
         pair_features = torch.cat(
             [
                 z_a + z_b,
@@ -1005,37 +1042,36 @@ class VICRegLoss(nn.Module):
         predictor_dtype = next(self.overlap_predictor.parameters()).dtype
         pred_logits = self.overlap_predictor(pair_features.to(dtype=predictor_dtype)).squeeze(-1).float()
         pred_fraction = torch.sigmoid(pred_logits)
-        target_fraction = (overlap_target / float(self.view_points)).clamp(0.0, 1.0)
-        pred_loss = F.mse_loss(pred_fraction, target_fraction)
-
-        if n < 2:
-            std_loss = z_a.new_tensor(0.0)
-            cov_loss = z_a.new_tensor(0.0)
-        else:
-            std_loss = 0.5 * (self._variance_loss(z_a) + self._variance_loss(z_b))
-            cov_loss = 0.5 * (self._covariance_loss(z_a) + self._covariance_loss(z_b))
-        loss = self.sim_coeff * pred_loss + self.std_coeff * std_loss + self.cov_coeff * cov_loss
 
         pred_count = pred_fraction * float(self.view_points)
         count_error = pred_count - overlap_target
+        baseline_count = overlap_target.mean()
+        baseline_error = baseline_count - overlap_target
+        pred_count_mse = count_error.pow(2).mean()
+        baseline_count_mse = baseline_error.pow(2).mean()
+        metric_eps = z_a.new_tensor(1e-8)
+        # Normalize by the batch-mean baseline so constant overlap guessing has
+        # loss ~= 1 and only useful target variation drives it toward 0.
+        pred_loss = pred_count_mse / baseline_count_mse.clamp_min(metric_eps)
+        overlap_loss = self.overlap_coeff * pred_loss
+        loss = vicreg_loss + overlap_loss
+        pred_centered = pred_count - pred_count.mean()
+        target_centered = overlap_target - baseline_count
+        pred_centered_std = pred_centered.pow(2).mean().sqrt()
+        target_centered_std = target_centered.pow(2).mean().sqrt()
+        pred_count_corr = (pred_centered * target_centered).mean() / (
+            pred_centered_std * target_centered_std
+        ).clamp_min(metric_eps)
         metrics = {
-            "overlap_vicreg_pred": pred_loss,
-            "overlap_vicreg_std": std_loss,
-            "overlap_vicreg_cov": cov_loss,
+            **metrics,
+            "vicreg_base": vicreg_loss,
+            "overlap_pred": pred_loss,
+            "overlap_aux": overlap_loss,
             "overlap_target_count_mean": overlap_target.mean(),
-            "overlap_target_count_min": overlap_target.min(),
-            "overlap_target_count_max": overlap_target.max(),
             "overlap_pred_count_mean": pred_count.mean(),
-            "overlap_pred_count_mae": count_error.abs().mean(),
-            "overlap_pred_count_rmse": count_error.pow(2).mean().sqrt(),
+            "overlap_pred_count_r2": 1.0 - pred_count_mse / baseline_count_mse.clamp_min(metric_eps),
+            "overlap_pred_count_corr": pred_count_corr,
         }
-
-        if self.radial_enabled:
-            radial_a, _, _ = self._radial_gaussianization_loss(z_a)
-            radial_b, _, _ = self._radial_gaussianization_loss(z_b)
-            radial_loss = 0.5 * (radial_a + radial_b)
-            loss = loss + radial_loss
-            metrics["overlap_vicreg_radial"] = radial_loss
 
         return loss, metrics
 

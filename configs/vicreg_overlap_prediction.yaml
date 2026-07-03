@@ -4,28 +4,25 @@ defaults:
 
 model_type: vicreg
 training_method: contrastive
-experiment_name: OVERLAP_VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: VICREG_OVERLAP_AUX_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 
-# Keep model crops at 80 points, but sample a larger raw neighborhood so the
-# center crop and neighbor-shifted crop can have zero shared raw points.
-data:
-  num_points: 240
-  auto_cutoff:
-    target_points: ${data.num_points}
-
-# VICReg-style overlap regression:
-# - the std/cov regularizers are unchanged
-# - the similarity term is replaced by prediction of the raw point overlap count
-#   between a center crop and a neighbor-shifted crop
+# VICReg with auxiliary overlap regression:
+# - the normal VICReg sim/std/cov objective stays active
+# - a small auxiliary head predicts the raw point overlap count between the
+#   center crop and the neighbor-shifted crop
 vicreg_objective: overlap_vicreg
 vicreg_overlap_hidden_dim: ${vicreg_embed_dim}
+vicreg_overlap_coeff: 5.0
+# Validation loss should measure the same batch-normalized projector space as training.
+# Running-stat BN made val/vicreg_cov jump by orders of magnitude in the 2026-07-02 run.
+vicreg_projector_bn_eval_batch_stats: true
 
-# Only neighbor-shift augmentation is used for this objective. neighbor_k <= 0
-# means sample the shifted center uniformly from all non-origin raw points,
-# allowing distant views and potentially zero-overlap crops.
+# Keep the positive pair close to the original VICReg setup. Using
+# neighbor_k <= 0 makes the shifted center uniformly random within the raw
+# neighborhood and turns the VICReg invariance term into a too-distant positive.
 vicreg_neighbor_view: true
 vicreg_neighbor_view_mode: second
-vicreg_neighbor_k: 0
+vicreg_neighbor_k: 8
 vicreg_neighbor_max_relative_distance: 0.0
 vicreg_jitter_std: 0.0
 vicreg_drop_ratio: 0.0
