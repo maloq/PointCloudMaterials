@@ -3,14 +3,25 @@ import re
 
 import numpy as np
 import torch
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import adjusted_rand_score, silhouette_score
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, normalize
 from sklearn.svm import LinearSVC, SVC
 from torch.utils.data import DataLoader
 
 from src.utils.evaluation_metrics import compute_cluster_metrics, compute_embedding_quality_metrics
 from src.utils.training_utils import cached_sample_count
+
+try:
+    import wandb
+except ImportError as exc:
+    wandb = None
+    _WANDB_IMPORT_ERROR = exc
+else:
+    _WANDB_IMPORT_ERROR = None
 
 
 def _as_string_list(value, default: list[str]) -> list[str]:
@@ -70,21 +81,37 @@ def _format_label_histogram(labels: np.ndarray, *, max_entries: int = 10) -> str
 def _validate_cached_supervised_arrays(
     stage: str,
     latents: np.ndarray,
-    labels: np.ndarray,
+    labels: np.ndarray | None,
     encoder_features: np.ndarray | None,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
+) -> tuple[np.ndarray, np.ndarray | None, np.ndarray | None]:
     lat = np.asarray(latents, dtype=np.float32).reshape(latents.shape[0], -1)
-    y = np.asarray(labels).reshape(-1)
+    y = None if labels is None else np.asarray(labels).reshape(-1)
     enc = np.asarray(encoder_features, dtype=np.float32).reshape(encoder_features.shape[0], -1) if encoder_features is not None else None
+
+    if y is not None and y.shape[0] != lat.shape[0]:
+        raise RuntimeError(
+            "Cached metric arrays have mismatched latent/label rows: "
+            f"stage='{stage}', latents={lat.shape[0]}, labels={y.shape[0]}."
+        )
+    if enc is not None and enc.shape[0] != lat.shape[0]:
+        raise RuntimeError(
+            "Cached metric arrays have mismatched latent/encoder rows: "
+            f"stage='{stage}', latents={lat.shape[0]}, encoder_features={enc.shape[0]}."
+        )
     
     bad_rows = ~np.isfinite(lat).all(axis=1)
-    if np.issubdtype(y.dtype, np.floating): bad_rows |= ~np.isfinite(y)
+    if y is not None and np.issubdtype(y.dtype, np.floating):
+        bad_rows |= ~np.isfinite(y)
     if enc is not None: bad_rows |= ~np.isfinite(enc).all(axis=1)
 
     if not bad_rows.any():
         return lat, y, enc
 
-    return lat[~bad_rows], y[~bad_rows], enc[~bad_rows] if enc is not None else None
+    return (
+        lat[~bad_rows],
+        y[~bad_rows] if y is not None else None,
+        enc[~bad_rows] if enc is not None else None,
+    )
 
 
 def _primary_kmeansplusplus_hungarian_key(
@@ -253,6 +280,347 @@ def _compute_linear_svm_train_to_test_accuracy(
     if pred.shape[0] == 0:
         return None
     return float(np.mean(pred == y_test))
+
+
+def _sample_probe_rows(
+    latents: np.ndarray,
+    *,
+    max_samples: int,
+    seed: int,
+) -> np.ndarray:
+    if max_samples <= 0 or int(latents.shape[0]) <= max_samples:
+        return latents
+    rng = np.random.default_rng(int(seed))
+    indices = np.sort(rng.choice(int(latents.shape[0]), size=max_samples, replace=False))
+    return latents[indices]
+
+
+def _resolve_probe_k(module, stage: str, labels: np.ndarray | None) -> int:
+    configured = getattr(module, "probe_k", None)
+    if configured is not None:
+        k = int(configured)
+    else:
+        if labels is None:
+            raise ValueError(
+                "Probe metrics for unlabeled data need an explicit cluster count. "
+                f"stage='{stage}' has no cached class_id labels. Set probe_k to the "
+                "number of KMeans clusters to probe, or set enable_probe_metrics=false."
+            )
+        stage_l = str(stage).lower()
+        if stage_l in {"val", "test"}:
+            inferred = _resolve_hungarian_eval_k(module, stage_l, labels)
+        else:
+            inferred = _infer_label_cluster_count(labels)
+        if inferred is None:
+            raise ValueError(
+                "Probe cluster count could not be inferred from "
+                f"stage='{stage}' labels. Set probe_k explicitly."
+            )
+        k = int(inferred)
+
+    if k < 2:
+        raise ValueError(f"probe_k must be >= 2, got {k} for stage='{stage}'.")
+    return k
+
+
+def _probe_cluster_entropy(assignments: np.ndarray, *, k: int) -> float:
+    counts = np.bincount(np.asarray(assignments, dtype=np.int64), minlength=int(k)).astype(np.float64)
+    total = float(counts.sum())
+    if total <= 0.0:
+        raise RuntimeError("KMeans probe produced zero assigned samples.")
+    probs = counts[counts > 0.0] / total
+    entropy = -float(np.sum(probs * np.log(probs)))
+    return entropy / float(np.log(int(k)))
+
+
+def _probe_center_separation_ratio(
+    features: np.ndarray,
+    centers: np.ndarray,
+    assignments: np.ndarray,
+    *,
+    eps: float,
+) -> float:
+    if centers.shape[0] < 2:
+        return 0.0
+    center_diffs = centers[:, None, :] - centers[None, :, :]
+    center_dist = np.sqrt(np.sum(center_diffs * center_diffs, axis=-1))
+    upper = center_dist[np.triu_indices(int(centers.shape[0]), k=1)]
+    mean_inter_center = float(upper.mean()) if upper.size > 0 else 0.0
+    assigned_centers = centers[np.asarray(assignments, dtype=np.int64)]
+    within_radius = float(np.linalg.norm(features - assigned_centers, axis=1).mean())
+    if mean_inter_center <= eps and within_radius <= eps:
+        return 0.0
+    return mean_inter_center / max(within_radius, eps)
+
+
+def _resolve_probe_best_k_range(
+    module,
+    *,
+    fixed_k: int,
+    sample_count: int,
+    stage: str,
+) -> tuple[int, int]:
+    min_k = int(getattr(module, "probe_best_k_min", 2))
+    configured_max = getattr(module, "probe_best_k_max", None)
+    if configured_max is None:
+        max_k = min(max(int(fixed_k), 12), 32, int(sample_count) - 1)
+    else:
+        max_k = int(configured_max)
+    max_k = min(max_k, int(sample_count) - 1)
+    if max_k < min_k:
+        raise ValueError(
+            "Probe best-k range is empty: "
+            f"stage='{stage}', probe_best_k_min={min_k}, "
+            f"probe_best_k_max={configured_max}, effective_max={max_k}, "
+            f"samples={int(sample_count)}."
+        )
+    return min_k, max_k
+
+
+def _compute_probe_best_num_clusters(
+    features: np.ndarray,
+    *,
+    min_k: int,
+    max_k: int,
+    silhouette_samples: int,
+    kmeans_n_init: int,
+    seed: int,
+    eps: float,
+    stage: str,
+) -> tuple[float, list[tuple[int, float]]]:
+    best_k = int(min_k)
+    best_score = -float("inf")
+    silhouette_by_k: list[tuple[int, float]] = []
+    sample_size = min(int(silhouette_samples), int(features.shape[0]))
+    for candidate_k in range(int(min_k), int(max_k) + 1):
+        model = KMeans(
+            n_clusters=candidate_k,
+            init="k-means++",
+            n_init=kmeans_n_init,
+            random_state=seed + candidate_k,
+        )
+        assignments = model.fit_predict(features)
+        if assignments.shape[0] != features.shape[0]:
+            raise RuntimeError(
+                "KMeans best-k probe returned an unexpected assignment count: "
+                f"stage='{stage}', k={candidate_k}, expected={features.shape[0]}, "
+                f"got={assignments.shape[0]}."
+            )
+        unique_assignments = np.unique(assignments)
+        if unique_assignments.size < 2 or unique_assignments.size >= features.shape[0]:
+            score = -1.0
+        else:
+            score = float(
+                silhouette_score(
+                    features,
+                    assignments,
+                    metric="euclidean",
+                    sample_size=sample_size,
+                    random_state=seed + candidate_k,
+                )
+            )
+        if not np.isfinite(score):
+            raise RuntimeError(
+                "KMeans best-k probe produced a non-finite silhouette score: "
+                f"stage='{stage}', k={candidate_k}, score={score!r}."
+            )
+        silhouette_by_k.append((int(candidate_k), score))
+        if score > best_score + eps:
+            best_score = score
+            best_k = int(candidate_k)
+    return float(best_k), silhouette_by_k
+
+
+def _compute_probe_metrics(
+    module,
+    latents: np.ndarray,
+    labels: np.ndarray | None,
+    stage: str,
+) -> tuple[dict[str, float], list[tuple[int, float]]]:
+    x = np.asarray(latents, dtype=np.float32).reshape(latents.shape[0], -1)
+    if x.shape[0] < 3:
+        raise ValueError(
+            f"Need at least 3 cached samples for probe metrics, got {x.shape[0]} "
+            f"for stage='{stage}'."
+        )
+    if x.shape[1] < 1:
+        raise ValueError(f"Probe metrics received zero-dimensional latents for stage='{stage}'.")
+
+    seed = int(getattr(module, "probe_seed", getattr(module, "cluster_acc_seed", 0)))
+    max_samples = int(getattr(module, "probe_max_samples", 8192) or 0)
+    x = _sample_probe_rows(x, max_samples=max_samples, seed=seed)
+    if not np.isfinite(x).all():
+        raise RuntimeError(
+            "Probe metrics received non-finite latents after cache validation: "
+            f"stage='{stage}', shape={tuple(x.shape)}."
+        )
+
+    k = _resolve_probe_k(module, stage, labels)
+    if int(x.shape[0]) <= k:
+        raise ValueError(
+            f"Need more cached probe samples than clusters, got samples={int(x.shape[0])}, "
+            f"probe_k={k}, stage='{stage}'. Increase cache/probe sample limits."
+        )
+
+    target_variance = 0.95
+    pca_max_components = int(getattr(module, "probe_pca_max_components", 64))
+    silhouette_samples = int(getattr(module, "probe_silhouette_samples", 5000))
+    kmeans_seed_count = int(getattr(module, "probe_kmeans_seed_count", 3))
+    kmeans_n_init = int(getattr(module, "probe_kmeans_n_init", 5))
+    eps = float(getattr(module, "probe_eps", 1e-12))
+
+    x_scaled = StandardScaler().fit_transform(x)
+    if not np.isfinite(x_scaled).all():
+        raise RuntimeError(
+            "Probe StandardScaler produced non-finite values: "
+            f"stage='{stage}', input_shape={tuple(x.shape)}."
+        )
+
+    rank = min(int(x_scaled.shape[0]) - 1, int(x_scaled.shape[1]))
+    if rank < 1:
+        raise ValueError(
+            f"PCA probe rank must be >= 1, got rank={rank}, stage='{stage}', "
+            f"shape={tuple(x_scaled.shape)}."
+        )
+
+    if float(np.var(x_scaled, dtype=np.float64)) <= eps:
+        return {
+            "pca_components_95": 0.0,
+            "kmeans_inertia_norm": 0.0,
+            "silhouette_sampled": 0.0,
+            "kmeans_seed_ari": 0.0,
+            "cluster_entropy": 0.0,
+            "center_separation_ratio": 0.0,
+            "best_num_clusters": 1.0,
+        }, [(1, 0.0)]
+
+    pca = PCA(n_components=rank, svd_solver="full", random_state=seed)
+    projected = pca.fit_transform(x_scaled).astype(np.float32, copy=False)
+    explained = np.nan_to_num(
+        np.asarray(pca.explained_variance_ratio_, dtype=np.float64),
+        nan=0.0,
+        posinf=0.0,
+        neginf=0.0,
+    )
+    if explained.size == 0 or float(explained.sum()) <= eps:
+        components_95 = 0
+    else:
+        cumulative = np.cumsum(explained)
+        components_95 = int(np.searchsorted(cumulative, target_variance, side="left") + 1)
+        components_95 = min(components_95, int(explained.size))
+
+    pca_dims = min(pca_max_components, int(projected.shape[1]))
+    features = normalize(projected[:, :pca_dims], norm="l2", axis=1)
+    if not np.isfinite(features).all():
+        raise RuntimeError(
+            "Probe PCA/L2 normalization produced non-finite values: "
+            f"stage='{stage}', projected_shape={tuple(projected.shape)}, pca_dims={pca_dims}."
+        )
+    feature_norms = np.linalg.norm(features, axis=1)
+    if float(feature_norms.max()) <= eps:
+        return {
+            "pca_components_95": float(components_95),
+            "kmeans_inertia_norm": 0.0,
+            "silhouette_sampled": 0.0,
+            "kmeans_seed_ari": 0.0,
+            "cluster_entropy": 0.0,
+            "center_separation_ratio": 0.0,
+            "best_num_clusters": 1.0,
+        }, [(1, 0.0)]
+
+    best_k_min, best_k_max = _resolve_probe_best_k_range(
+        module,
+        fixed_k=k,
+        sample_count=int(features.shape[0]),
+        stage=stage,
+    )
+    best_num_clusters, silhouette_by_k = _compute_probe_best_num_clusters(
+        features,
+        min_k=best_k_min,
+        max_k=best_k_max,
+        silhouette_samples=silhouette_samples,
+        kmeans_n_init=kmeans_n_init,
+        seed=seed,
+        eps=eps,
+        stage=stage,
+    )
+
+    models = []
+    assignments_by_seed = []
+    for run_idx in range(kmeans_seed_count):
+        run_seed = seed + run_idx
+        model = KMeans(
+            n_clusters=k,
+            init="k-means++",
+            n_init=kmeans_n_init,
+            random_state=run_seed,
+        )
+        assignments = model.fit_predict(features)
+        if assignments.shape[0] != features.shape[0]:
+            raise RuntimeError(
+                "KMeans probe returned an unexpected assignment count: "
+                f"stage='{stage}', expected={features.shape[0]}, got={assignments.shape[0]}."
+            )
+        models.append(model)
+        assignments_by_seed.append(assignments)
+
+    primary_model = models[0]
+    primary_assignments = assignments_by_seed[0]
+    unique_primary = np.unique(primary_assignments)
+    inertia_norm = float(primary_model.inertia_ / float(features.shape[0]))
+    entropy = _probe_cluster_entropy(primary_assignments, k=k)
+    separation_ratio = _probe_center_separation_ratio(
+        features,
+        np.asarray(primary_model.cluster_centers_, dtype=np.float32),
+        primary_assignments,
+        eps=eps,
+    )
+
+    if unique_primary.size < 2 or unique_primary.size >= features.shape[0]:
+        silhouette = 0.0
+    else:
+        sample_size = min(int(silhouette_samples), int(features.shape[0]))
+        silhouette = float(
+            silhouette_score(
+                features,
+                primary_assignments,
+                metric="euclidean",
+                sample_size=sample_size,
+                random_state=seed,
+            )
+        )
+
+    pairwise_ari = []
+    degenerate_seed = False
+    for i in range(len(assignments_by_seed)):
+        if np.unique(assignments_by_seed[i]).size < 2:
+            degenerate_seed = True
+        for j in range(i + 1, len(assignments_by_seed)):
+            pairwise_ari.append(
+                adjusted_rand_score(assignments_by_seed[i], assignments_by_seed[j])
+            )
+    if not pairwise_ari:
+        raise RuntimeError(
+            "KMeans seed stability probe needs at least two KMeans runs. "
+            f"Got probe_kmeans_seed_count={kmeans_seed_count}."
+        )
+    seed_ari = 0.0 if degenerate_seed else float(np.mean(pairwise_ari))
+
+    metrics = {
+        "pca_components_95": float(components_95),
+        "kmeans_inertia_norm": inertia_norm,
+        "silhouette_sampled": silhouette,
+        "kmeans_seed_ari": seed_ari,
+        "cluster_entropy": entropy,
+        "center_separation_ratio": separation_ratio,
+        "best_num_clusters": best_num_clusters,
+    }
+    for name, value in metrics.items():
+        if not np.isfinite(float(value)):
+            raise RuntimeError(
+                f"Probe metric '{name}' is non-finite for stage='{stage}': {value!r}."
+            )
+    return metrics, silhouette_by_k
 
 
 def _build_supervised_eval_loader(module, split: str) -> DataLoader | None:
@@ -759,6 +1127,7 @@ def _resolve_hungarian_eval_k(module, stage: str, labels: np.ndarray) -> int | N
 def init_supervised_cache(module, cfg) -> None:
     module.enable_supervised_metrics = bool(getattr(cfg, "enable_supervised_metrics", True))
     module.enable_embedding_metrics = bool(getattr(cfg, "enable_embedding_metrics", False))
+    module.enable_probe_metrics = bool(getattr(cfg, "enable_probe_metrics", True))
     module._supervised_cache = {
         "train": {"latents": [], "encoder_features": [], "class_id": []},
         "val": {"latents": [], "encoder_features": [], "class_id": []},
@@ -779,6 +1148,49 @@ def init_supervised_cache(module, cfg) -> None:
     )
     module.train_split_svm_c = float(getattr(cfg, "train_split_svm_c", 0.018))
     module.enable_svm_accuracy = bool(getattr(cfg, "enable_svm_accuracy", True))
+    module.probe_k = _parse_optional_eval_k(
+        getattr(cfg, "probe_k", None),
+        field_name="probe_k",
+    )
+    module.probe_max_samples = int(getattr(cfg, "probe_max_samples", 8192) or 0)
+    module.probe_pca_max_components = int(getattr(cfg, "probe_pca_max_components", 64))
+    module.probe_silhouette_samples = int(getattr(cfg, "probe_silhouette_samples", 5000))
+    module.probe_kmeans_seed_count = int(getattr(cfg, "probe_kmeans_seed_count", 3))
+    module.probe_kmeans_n_init = int(getattr(cfg, "probe_kmeans_n_init", 5))
+    module.probe_seed = int(getattr(cfg, "probe_seed", getattr(cfg, "cluster_acc_seed", 0)))
+    module.probe_eps = float(getattr(cfg, "probe_eps", 1e-12))
+    module.probe_best_k_min = int(getattr(cfg, "probe_best_k_min", 2))
+    module.probe_best_k_max = _parse_optional_eval_k(
+        getattr(cfg, "probe_best_k_max", None),
+        field_name="probe_best_k_max",
+    )
+    if module.probe_k is not None and int(module.probe_k) < 2:
+        raise ValueError(f"probe_k must be >= 2, got {module.probe_k}.")
+    if module.probe_max_samples < 0:
+        raise ValueError(f"probe_max_samples must be >= 0, got {module.probe_max_samples}.")
+    if module.probe_pca_max_components < 1:
+        raise ValueError(
+            f"probe_pca_max_components must be >= 1, got {module.probe_pca_max_components}."
+        )
+    if module.probe_silhouette_samples < 2:
+        raise ValueError(
+            f"probe_silhouette_samples must be >= 2, got {module.probe_silhouette_samples}."
+        )
+    if module.probe_kmeans_seed_count < 2:
+        raise ValueError(
+            f"probe_kmeans_seed_count must be >= 2, got {module.probe_kmeans_seed_count}."
+        )
+    if module.probe_kmeans_n_init < 1:
+        raise ValueError(f"probe_kmeans_n_init must be >= 1, got {module.probe_kmeans_n_init}.")
+    if module.probe_eps <= 0.0:
+        raise ValueError(f"probe_eps must be > 0, got {module.probe_eps}.")
+    if module.probe_best_k_min < 2:
+        raise ValueError(f"probe_best_k_min must be >= 2, got {module.probe_best_k_min}.")
+    if module.probe_best_k_max is not None and module.probe_best_k_max < module.probe_best_k_min:
+        raise ValueError(
+            "probe_best_k_max must be >= probe_best_k_min when set. "
+            f"Got min={module.probe_best_k_min}, max={module.probe_best_k_max}."
+        )
     (
         module.val_cluster_acc_methods,
         module.val_cluster_acc_runs,
@@ -833,7 +1245,9 @@ def cache_supervised_batch(
     meta: dict,
     encoder_features: torch.Tensor | None = None,
 ) -> None:
-    if not bool(getattr(module, "enable_supervised_metrics", True)):
+    wants_supervised_metrics = bool(getattr(module, "enable_supervised_metrics", True))
+    wants_probe_metrics = bool(getattr(module, "enable_probe_metrics", True))
+    if not (wants_supervised_metrics or wants_probe_metrics):
         return
 
     cache = module._supervised_cache.get(stage)
@@ -857,12 +1271,13 @@ def cache_supervised_batch(
         return
 
     class_id = meta.get("class_id")
-    if class_id is None:
+    if class_id is None and not wants_probe_metrics:
         return
-    if not torch.is_tensor(class_id):
-        class_id = torch.as_tensor(class_id)
-    class_id = class_id.detach().view(-1)
-    effective_batch = min(effective_batch, class_id.shape[0])
+    if class_id is not None:
+        if not torch.is_tensor(class_id):
+            class_id = torch.as_tensor(class_id)
+        class_id = class_id.detach().view(-1)
+        effective_batch = min(effective_batch, class_id.shape[0])
     if encoder_features is not None:
         if not torch.is_tensor(encoder_features):
             encoder_features = torch.as_tensor(encoder_features)
@@ -896,11 +1311,100 @@ def cache_supervised_batch(
                 f"nonfinite_values={nonfinite}/{enc_chunk.numel()}."
             )
         cache["encoder_features"].append(enc_chunk.cpu())
-    cache["class_id"].append(class_id[:effective_batch].cpu())
+    if class_id is not None:
+        cache["class_id"].append(class_id[:effective_batch].cpu())
+
+
+def _iter_module_loggers(module) -> list:
+    trainer = getattr(module, "trainer", None)
+    if trainer is not None:
+        loggers = getattr(trainer, "loggers", None)
+        if loggers is not None:
+            return list(loggers)
+        logger = getattr(trainer, "logger", None)
+        if logger is not None:
+            return [logger]
+    logger = getattr(module, "logger", None)
+    if logger is None:
+        return []
+    if isinstance(logger, (list, tuple)):
+        return list(logger)
+    return [logger]
+
+
+def _wandb_experiments(module) -> list:
+    experiments = []
+    for logger in _iter_module_loggers(module):
+        if logger.__class__.__name__ != "WandbLogger":
+            continue
+        experiment = getattr(logger, "experiment", None)
+        if experiment is None or not hasattr(experiment, "log"):
+            raise RuntimeError(
+                "Found a WandbLogger, but it has no usable experiment.log method. "
+                f"logger_type={type(logger)!r}, experiment_type={type(experiment)!r}."
+            )
+        experiments.append(experiment)
+    return experiments
+
+
+def _log_probe_silhouette_histogram(
+    module,
+    stage: str,
+    silhouette_by_k: list[tuple[int, float]],
+) -> None:
+    trainer = getattr(module, "trainer", None)
+    if trainer is not None and not bool(getattr(trainer, "is_global_zero", True)):
+        return
+    experiments = _wandb_experiments(module)
+    if not experiments:
+        return
+    if wandb is None:
+        raise RuntimeError(
+            "Cannot log probe silhouette histogram to W&B because wandb could not be imported."
+        ) from _WANDB_IMPORT_ERROR
+    if not silhouette_by_k:
+        raise ValueError(f"Probe silhouette histogram has no values for stage='{stage}'.")
+
+    rows = []
+    for num_clusters, silhouette_score_value in silhouette_by_k:
+        num_clusters_int = int(num_clusters)
+        silhouette_float = float(silhouette_score_value)
+        if num_clusters_int < 1:
+            raise ValueError(
+                "Probe silhouette histogram received an invalid cluster count: "
+                f"stage='{stage}', num_clusters={num_clusters_int}."
+            )
+        if not np.isfinite(silhouette_float):
+            raise ValueError(
+                "Probe silhouette histogram received a non-finite score: "
+                f"stage='{stage}', num_clusters={num_clusters_int}, "
+                f"silhouette_score={silhouette_score_value!r}."
+            )
+        rows.append([num_clusters_int, silhouette_float])
+
+    table = wandb.Table(
+        columns=["num_clusters", "silhouette_score"],
+        data=rows,
+    )
+    chart = wandb.plot.bar(
+        table,
+        "num_clusters",
+        "silhouette_score",
+        title=f"{stage}/probe silhouette by number of clusters",
+    )
+    payload = {f"{stage}/probe/silhouette_by_num_clusters": chart}
+    global_step = getattr(module, "global_step", None)
+    for experiment in experiments:
+        if global_step is None:
+            experiment.log(payload)
+        else:
+            experiment.log(payload, step=int(global_step))
 
 
 def log_supervised_metrics(module, stage: str) -> None:
-    if not bool(getattr(module, "enable_supervised_metrics", True)):
+    wants_supervised_metrics = bool(getattr(module, "enable_supervised_metrics", True))
+    wants_probe_metrics = bool(getattr(module, "enable_probe_metrics", True))
+    if not (wants_supervised_metrics or wants_probe_metrics):
         cache = module._supervised_cache.get(stage)
         if cache is not None:
             for key in cache:
@@ -911,13 +1415,13 @@ def log_supervised_metrics(module, stage: str) -> None:
     if cache is None:
         return
 
-    if not cache["latents"] or not cache["class_id"]:
+    if not cache["latents"]:
         for key in cache:
             cache[key].clear()
         return
 
     latents = torch.cat(cache["latents"], dim=0).numpy()
-    labels = torch.cat(cache["class_id"], dim=0).numpy()
+    labels = torch.cat(cache["class_id"], dim=0).numpy() if cache["class_id"] else None
     encoder_features = None
     if cache.get("encoder_features"):
         encoder_features = torch.cat(cache["encoder_features"], dim=0).numpy()
@@ -942,106 +1446,127 @@ def log_supervised_metrics(module, stage: str) -> None:
             cache[key].clear()
         return
 
-    if stage_l == "val":
-        acc_methods = _ensure_kmeans_plus_plus_method(
-            list(getattr(module, "val_cluster_acc_methods", []))
-        )
-        acc_runs = int(getattr(module, "val_cluster_acc_runs", 1))
-        acc_runs_by_method = getattr(module, "val_cluster_acc_runs_by_method", {})
-    elif stage_l == "test":
-        acc_methods = _ensure_kmeans_plus_plus_method(
-            list(getattr(module, "test_cluster_acc_methods", ["kmeans++"]))
-        )
-        acc_runs = int(getattr(module, "test_cluster_acc_runs", 1))
-        acc_runs_by_method = getattr(module, "test_cluster_acc_runs_by_method", {})
-    else:
-        acc_methods = []
-        acc_runs = 1
-        acc_runs_by_method = {}
+    if wants_supervised_metrics and labels is not None:
+        if stage_l == "val":
+            acc_methods = _ensure_kmeans_plus_plus_method(
+                list(getattr(module, "val_cluster_acc_methods", []))
+            )
+            acc_runs = int(getattr(module, "val_cluster_acc_runs", 1))
+            acc_runs_by_method = getattr(module, "val_cluster_acc_runs_by_method", {})
+        elif stage_l == "test":
+            acc_methods = _ensure_kmeans_plus_plus_method(
+                list(getattr(module, "test_cluster_acc_methods", ["kmeans++"]))
+            )
+            acc_runs = int(getattr(module, "test_cluster_acc_runs", 1))
+            acc_runs_by_method = getattr(module, "test_cluster_acc_runs_by_method", {})
+        else:
+            acc_methods = []
+            acc_runs = 1
+            acc_runs_by_method = {}
 
-    hungarian_eval_k = _resolve_hungarian_eval_k(module, stage_l, labels)
-    if stage_l in {"val", "test"} and hungarian_eval_k is not None:
-        if int(latents.shape[0]) < int(hungarian_eval_k):
-            raise RuntimeError(
-                "Insufficient finite samples for Hungarian ACC evaluation: "
-                f"stage='{stage_l}', samples={int(latents.shape[0])}, "
-                f"hungarian_eval_k={int(hungarian_eval_k)}. "
-                "Increase supervised cache limits or inspect non-finite latent rows."
+        hungarian_eval_k = _resolve_hungarian_eval_k(module, stage_l, labels)
+        if stage_l in {"val", "test"} and hungarian_eval_k is not None:
+            if int(latents.shape[0]) < int(hungarian_eval_k):
+                raise RuntimeError(
+                    "Insufficient finite samples for Hungarian ACC evaluation: "
+                    f"stage='{stage_l}', samples={int(latents.shape[0])}, "
+                    f"hungarian_eval_k={int(hungarian_eval_k)}. "
+                    "Increase supervised cache limits or inspect non-finite latent rows."
+                )
+        metrics = compute_cluster_metrics(
+            latents,
+            labels,
+            stage,
+            hungarian_eval_k=hungarian_eval_k,
+            acc_eval_methods=acc_methods,
+            acc_eval_runs=max(1, acc_runs),
+            acc_eval_runs_by_method=acc_runs_by_method,
+            acc_random_seed=int(getattr(module, "cluster_acc_seed", 0)),
+        ) or {}
+        if stage_l == "test" and hungarian_eval_k is not None:
+            canonical_acc_key = _primary_kmeansplusplus_hungarian_key(metrics, hungarian_eval_k)
+            if canonical_acc_key is None:
+                raise RuntimeError(
+                    "Canonical test metrics are missing kmeans++ Hungarian ACC after clustering evaluation. "
+                    f"stage='test', samples={int(latents.shape[0])}, latent_dim={int(latents.shape[1])}, "
+                    f"unique_labels={int(np.unique(labels).size)}, "
+                    f"label_histogram={_format_label_histogram(labels)}, "
+                    f"hungarian_eval_k={int(hungarian_eval_k)}, "
+                    f"acc_methods={list(acc_methods)}, acc_runs={max(1, int(acc_runs))}, "
+                    f"acc_runs_by_method={acc_runs_by_method}, "
+                    f"available_keys={sorted(metrics.keys())}. "
+                    "This usually indicates clustering failures in all ACC runs."
+                )
+            canonical_acc = _to_finite_float(metrics.get(canonical_acc_key))
+            if canonical_acc is None:
+                raise RuntimeError(
+                    f"Canonical test metric '{canonical_acc_key}' is not finite: "
+                    f"{metrics.get(canonical_acc_key)!r}."
+                )
+            metrics["ACC_KMEANS_PLUSPLUS_HUNGARIAN_CANONICAL"] = canonical_acc
+            canonical_nmi = _to_finite_float(metrics.get("NMI"))
+            canonical_ari = _to_finite_float(metrics.get("ARI"))
+            metrics.update(
+                _compute_rotated_test_accuracy_metrics(
+                    module,
+                    canonical_acc=canonical_acc,
+                    canonical_nmi=canonical_nmi,
+                    canonical_ari=canonical_ari,
+                    canonical_hungarian_eval_k=int(hungarian_eval_k),
+                )
             )
-    metrics = compute_cluster_metrics(
-        latents,
-        labels,
-        stage,
-        hungarian_eval_k=hungarian_eval_k,
-        acc_eval_methods=acc_methods,
-        acc_eval_runs=max(1, acc_runs),
-        acc_eval_runs_by_method=acc_runs_by_method,
-        acc_random_seed=int(getattr(module, "cluster_acc_seed", 0)),
-    ) or {}
-    if stage_l == "test" and hungarian_eval_k is not None:
-        canonical_acc_key = _primary_kmeansplusplus_hungarian_key(metrics, hungarian_eval_k)
-        if canonical_acc_key is None:
-            raise RuntimeError(
-                "Canonical test metrics are missing kmeans++ Hungarian ACC after clustering evaluation. "
-                f"stage='test', samples={int(latents.shape[0])}, latent_dim={int(latents.shape[1])}, "
-                f"unique_labels={int(np.unique(labels).size)}, "
-                f"label_histogram={_format_label_histogram(labels)}, "
-                f"hungarian_eval_k={int(hungarian_eval_k)}, "
-                f"acc_methods={list(acc_methods)}, acc_runs={max(1, int(acc_runs))}, "
-                f"acc_runs_by_method={acc_runs_by_method}, "
-                f"available_keys={sorted(metrics.keys())}. "
-                "This usually indicates clustering failures in all ACC runs."
-            )
-        canonical_acc = _to_finite_float(metrics.get(canonical_acc_key))
-        if canonical_acc is None:
-            raise RuntimeError(
-                f"Canonical test metric '{canonical_acc_key}' is not finite: "
-                f"{metrics.get(canonical_acc_key)!r}."
-            )
-        metrics["ACC_KMEANS_PLUSPLUS_HUNGARIAN_CANONICAL"] = canonical_acc
-        canonical_nmi = _to_finite_float(metrics.get("NMI"))
-        canonical_ari = _to_finite_float(metrics.get("ARI"))
-        metrics.update(
-            _compute_rotated_test_accuracy_metrics(
-                module,
-                canonical_acc=canonical_acc,
-                canonical_nmi=canonical_nmi,
-                canonical_ari=canonical_ari,
-                canonical_hungarian_eval_k=int(hungarian_eval_k),
-            )
+        metrics = _stabilize_class_metric_keys(
+            metrics,
+            hungarian_eval_k=hungarian_eval_k if stage_l in {"val", "test"} else None,
         )
-    metrics = _stabilize_class_metric_keys(
-        metrics,
-        hungarian_eval_k=hungarian_eval_k if stage_l in {"val", "test"} else None,
-    )
-    if bool(getattr(module, "enable_svm_accuracy", True)):
-        if stage_l in {"val", "test"} and encoder_features is not None:
-            svm_acc = _compute_linear_svm_accuracy(encoder_features, labels)
-            if svm_acc is not None:
-                metrics["ENCODER_LINEAR_SVM_ACCURACY"] = svm_acc
-        if stage_l == "test":
-            svm_eval_features = encoder_features if encoder_features is not None else latents
-            train_to_test_svm = _compute_train_to_test_svm_accuracy(
-                module,
-                svm_eval_features,
-                labels,
-            )
-            if train_to_test_svm is not None:
-                metrics["ENCODER_LINEAR_SVM_TRAIN_TO_TEST_ACCURACY"] = train_to_test_svm
-    if metrics:
-        # class/* metrics: clustering/classification quality against class_id labels.
-        for name, value in metrics.items():
+        if bool(getattr(module, "enable_svm_accuracy", True)):
+            if stage_l in {"val", "test"} and encoder_features is not None:
+                svm_acc = _compute_linear_svm_accuracy(encoder_features, labels)
+                if svm_acc is not None:
+                    metrics["ENCODER_LINEAR_SVM_ACCURACY"] = svm_acc
+            if stage_l == "test":
+                svm_eval_features = encoder_features if encoder_features is not None else latents
+                train_to_test_svm = _compute_train_to_test_svm_accuracy(
+                    module,
+                    svm_eval_features,
+                    labels,
+                )
+                if train_to_test_svm is not None:
+                    metrics["ENCODER_LINEAR_SVM_TRAIN_TO_TEST_ACCURACY"] = train_to_test_svm
+        if metrics:
+            # class/* metrics: clustering/classification quality against class_id labels.
+            for name, value in metrics.items():
+                module._log_metric(
+                    stage,
+                    f"class/{name.lower()}",
+                    value,
+                    prog_bar=False,
+                    on_step=False,
+                    on_epoch=True,
+                    sync_dist=True,
+                )
+
+    if wants_probe_metrics:
+        probe_metrics, probe_silhouette_by_k = _compute_probe_metrics(module, latents, labels, stage_l)
+        for name, value in probe_metrics.items():
             module._log_metric(
                 stage,
-                f"class/{name.lower()}",
+                f"probe/{name}",
                 value,
                 prog_bar=False,
                 on_step=False,
                 on_epoch=True,
                 sync_dist=True,
             )
+        _log_probe_silhouette_histogram(module, stage_l, probe_silhouette_by_k)
 
     if bool(getattr(module, "enable_embedding_metrics", False)):
+        if labels is None:
+            raise ValueError(
+                "enable_embedding_metrics=true requires class_id labels, but no labels "
+                f"were cached for stage='{stage_l}'. Disable enable_embedding_metrics "
+                "for unlabeled data."
+            )
         emb_metrics = compute_embedding_quality_metrics(latents, labels, include_expensive=(stage == "test"))
         for name, value in emb_metrics.items():
             module._log_metric(
@@ -1060,9 +1585,9 @@ def log_supervised_metrics(module, stage: str) -> None:
 
 def _gather_latents_labels_ddp(
     latents: np.ndarray,
-    labels: np.ndarray,
+    labels: np.ndarray | None,
     encoder_features: np.ndarray | None = None,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
+) -> tuple[np.ndarray, np.ndarray | None, np.ndarray | None]:
     """Gather cached latent/label arrays across DDP ranks for global metrics."""
     if not (torch.distributed.is_available() and torch.distributed.is_initialized()):
         return latents, labels, encoder_features
@@ -1073,7 +1598,7 @@ def _gather_latents_labels_ddp(
 
     payload = {
         "latents": np.asarray(latents, dtype=np.float32),
-        "labels": np.asarray(labels, dtype=np.int64),
+        "labels": None if labels is None else np.asarray(labels, dtype=np.int64),
     }
     if encoder_features is not None:
         payload["encoder_features"] = np.asarray(encoder_features, dtype=np.float32)
@@ -1083,29 +1608,51 @@ def _gather_latents_labels_ddp(
     latents_parts: list[np.ndarray] = []
     encoder_parts: list[np.ndarray] = []
     labels_parts: list[np.ndarray] = []
-    for item in gathered:
+    labels_expected = labels is not None
+    for rank_idx, item in enumerate(gathered):
         if not item:
             continue
         part_lat = np.asarray(item.get("latents", []), dtype=np.float32)
-        part_lab = np.asarray(item.get("labels", []), dtype=np.int64)
-        part_enc = np.asarray(item.get("encoder_features", []), dtype=np.float32)
-        if part_lat.ndim != 2 or part_lab.ndim != 1 or part_lat.shape[0] == 0:
+        if part_lat.ndim != 2 or part_lat.shape[0] == 0:
             continue
-        n = min(part_lat.shape[0], part_lab.shape[0])
-        if part_enc.ndim == 2 and part_enc.shape[0] > 0:
-            n = min(n, part_enc.shape[0])
-        if n <= 0:
-            continue
-        latents_parts.append(part_lat[:n])
-        labels_parts.append(part_lab[:n])
-        if part_enc.ndim == 2 and part_enc.shape[0] >= n:
-            encoder_parts.append(part_enc[:n])
+
+        raw_labels = item.get("labels", None)
+        if labels_expected:
+            if raw_labels is None:
+                raise RuntimeError(
+                    "DDP metric cache label availability mismatch: local rank has "
+                    f"class_id labels but gathered rank {rank_idx} does not."
+                )
+            part_lab = np.asarray(raw_labels, dtype=np.int64)
+            if part_lab.ndim != 1 or part_lab.shape[0] != part_lat.shape[0]:
+                raise RuntimeError(
+                    "DDP metric cache gathered mismatched latent/label rows: "
+                    f"rank={rank_idx}, latents={part_lat.shape}, labels={part_lab.shape}."
+                )
+            labels_parts.append(part_lab)
+        elif raw_labels is not None and np.asarray(raw_labels).size > 0:
+            raise RuntimeError(
+                "DDP metric cache label availability mismatch: local rank has no "
+                f"class_id labels but gathered rank {rank_idx} does."
+            )
+
+        raw_encoder = item.get("encoder_features", None)
+        if raw_encoder is not None:
+            part_enc = np.asarray(raw_encoder, dtype=np.float32)
+            if part_enc.size > 0:
+                if part_enc.ndim != 2 or part_enc.shape[0] != part_lat.shape[0]:
+                    raise RuntimeError(
+                        "DDP metric cache gathered mismatched latent/encoder rows: "
+                        f"rank={rank_idx}, latents={part_lat.shape}, encoder_features={part_enc.shape}."
+                    )
+                encoder_parts.append(part_enc)
+        latents_parts.append(part_lat)
 
     if not latents_parts:
         return latents, labels, encoder_features
 
     gathered_latents = np.concatenate(latents_parts, axis=0)
-    gathered_labels = np.concatenate(labels_parts, axis=0)
+    gathered_labels = np.concatenate(labels_parts, axis=0) if labels_expected else None
     if len(encoder_parts) == len(latents_parts):
         gathered_enc = np.concatenate(encoder_parts, axis=0)
     else:

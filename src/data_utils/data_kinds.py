@@ -15,4 +15,4 @@ def normalize_data_kind(kind: Any, *, default: str | None = None) -> str:
 
 
 def is_static_data_kind(kind: Any) -> bool:
-    return normalize_data_kind(kind) == "static"
+    return normalize_data_kind(kind) in {"static", "line_static"}

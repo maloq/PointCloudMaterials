@@ -21,6 +21,8 @@ import wandb
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
 from src.data_utils.data_module import (
+    LineLAMMPSDataModule,
+    LineStaticDataModule,
     StaticPointCloudDataModule,
     SyntheticPointCloudDataModule,
     TemporalLAMMPSDataModule,
@@ -63,7 +65,8 @@ def _suppress_known_framework_warnings(cfg: DictConfig) -> None:
     else:
         num_devices = 1
 
-    if str(getattr(cfg, "model_type", "")).strip().lower() == "temporal_motif_field":
+    model_type = str(getattr(cfg, "model_type", "")).strip().lower()
+    if model_type in {"temporal_motif_field", "line_jepa"}:
         warnings.filterwarnings(
             "ignore",
             message=(
@@ -74,6 +77,7 @@ def _suppress_known_framework_warnings(cfg: DictConfig) -> None:
             category=UserWarning,
             module=r"pytorch_lightning\.loops\.fit_loop",
         )
+    if model_type == "temporal_motif_field":
         if bool(getattr(cfg, "gpu", False)) and num_devices > 1:
             warnings.filterwarnings(
                 "ignore",
@@ -582,6 +586,10 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         data_kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
         if data_kind == "synthetic":
             dm = SyntheticPointCloudDataModule(cfg)
+        elif data_kind == "line_static":
+            dm = LineStaticDataModule(cfg)
+        elif data_kind == "line_lammps":
+            dm = LineLAMMPSDataModule(cfg)
         elif data_kind == "temporal_lammps":
             dm = TemporalLAMMPSDataModule(cfg)
         elif data_kind == "static":
@@ -589,7 +597,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         else:
             raise ValueError(
                 "Unsupported data.kind. Expected one of "
-                "['static', 'synthetic', 'temporal_lammps'] "
+                "['static', 'synthetic', 'temporal_lammps', 'line_lammps', 'line_static'] "
                 f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
             )
     model = model_class(cfg)

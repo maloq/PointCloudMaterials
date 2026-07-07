@@ -1,6 +1,8 @@
 import pytorch_lightning as pl
 
 from src.data_utils.data_kinds import normalize_data_kind
+from src.data_utils.data_modules.line_lammps import LineLAMMPSDataModule
+from src.data_utils.data_modules.line_static import LineStaticDataModule
 from src.data_utils.data_modules.static import StaticPointCloudDataModule
 from src.data_utils.data_modules.synthetic import SyntheticPointCloudDataModule
 from src.data_utils.data_modules.temporal_lammps import TemporalLAMMPSDataModule
@@ -13,6 +15,10 @@ class PointCloudDataModule(pl.LightningDataModule):
         kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
         if kind == "synthetic":
             self.impl = SyntheticPointCloudDataModule(cfg)
+        elif kind == "line_static":
+            self.impl = LineStaticDataModule(cfg)
+        elif kind == "line_lammps":
+            self.impl = LineLAMMPSDataModule(cfg)
         elif kind == "temporal_lammps":
             self.impl = TemporalLAMMPSDataModule(cfg)
         elif kind == "static":
@@ -20,7 +26,7 @@ class PointCloudDataModule(pl.LightningDataModule):
         else:
             raise ValueError(
                 "Unsupported data.kind. Expected one of "
-                "['static', 'synthetic', 'temporal_lammps'] "
+                "['static', 'synthetic', 'temporal_lammps', 'line_lammps', 'line_static'] "
                 f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
             )
 

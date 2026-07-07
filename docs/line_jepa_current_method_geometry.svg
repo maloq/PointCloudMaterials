@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#ea580c"/>
+    </marker>
+    <style>
+      .title { font: 700 30px Arial, sans-serif; fill: #111827; }
+      .subtitle { font: 16px Arial, sans-serif; fill: #374151; }
+      .label { font: 700 15px Arial, sans-serif; fill: #111827; }
+      .small { font: 13px Arial, sans-serif; fill: #374151; }
+      .tiny { font: 12px Arial, sans-serif; fill: #4b5563; }
+      .atom { fill: #d1d5db; stroke: #9ca3af; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="720" fill="#ffffff"/>
+  <text x="60" y="56" class="title">Current Line-JEPA Sampling Geometry</text>
+  <text x="60" y="84" class="subtitle">One random 3D line through an anchor atom, shown as a 2D projection. R is the local-neighborhood radius.</text>
+
+  <rect x="54" y="115" width="1092" height="470" rx="8" fill="#f8fafc" stroke="#d1d5db"/>
+
+  <ellipse cx="600" cy="350" rx="510" ry="190" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8 8"/>
+  <text x="102" y="154" class="small">KDTree candidate pool: 8192 nearest atoms around the anchor</text>
+
+  <g opacity="0.82">
+    <circle class="atom" cx="148" cy="300" r="4"/><circle class="atom" cx="180" cy="386" r="4"/><circle class="atom" cx="220" cy="250" r="4"/>
+    <circle class="atom" cx="268" cy="462" r="4"/><circle class="atom" cx="312" cy="208" r="4"/><circle class="atom" cx="338" cy="404" r="4"/>
+    <circle class="atom" cx="414" cy="260" r="4"/><circle class="atom" cx="456" cy="458" r="4"/><circle class="atom" cx="500" cy="212" r="4"/>
+    <circle class="atom" cx="535" cy="486" r="4"/><circle class="atom" cx="566" cy="260" r="4"/><circle class="atom" cx="632" cy="464" r="4"/>
+    <circle class="atom" cx="676" cy="238" r="4"/><circle class="atom" cx="724" cy="490" r="4"/><circle class="atom" cx="760" cy="268" r="4"/>
+    <circle class="atom" cx="808" cy="432" r="4"/><circle class="atom" cx="852" cy="222" r="4"/><circle class="atom" cx="910" cy="380" r="4"/>
+    <circle class="atom" cx="960" cy="285" r="4"/><circle class="atom" cx="1015" cy="438" r="4"/><circle class="atom" cx="1060" cy="330" r="4"/>
+  </g>
+
+  <line x1="116" y1="350" x2="1084" y2="350" stroke="#111827" stroke-width="3"/>
+  <text x="1050" y="333" class="small">sampled line axis</text>
+
+  <circle cx="600" cy="350" r="225" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="7 7"/>
+  <circle cx="600" cy="350" r="90" fill="#fed7aa" opacity="0.22" stroke="#ea580c" stroke-width="2" stroke-dasharray="3 6"/>
+  <text x="628" y="185" class="small" fill="#9a3412">anchor-local SwAV region</text>
+  <text x="628" y="204" class="tiny">0 &lt; distance &lt; 1.0R</text>
+  <text x="628" y="223" class="tiny">selection: closest, near-line</text>
+
+  <circle cx="360" cy="350" r="90" fill="#dbeafe" opacity="0.55" stroke="#2563eb" stroke-width="3"/>
+  <circle cx="840" cy="350" r="90" fill="#dbeafe" opacity="0.55" stroke="#2563eb" stroke-width="3"/>
+  <circle cx="600" cy="350" r="90" fill="#dcfce7" opacity="0.62" stroke="#16a34a" stroke-width="3"/>
+
+  <circle cx="360" cy="350" r="8" fill="#2563eb"/>
+  <circle cx="600" cy="350" r="10" fill="#16a34a"/>
+  <circle cx="840" cy="350" r="8" fill="#2563eb"/>
+
+  <circle cx="548" cy="333" r="45" fill="#ffedd5" opacity="0.72" stroke="#ea580c" stroke-width="3"/>
+  <circle cx="548" cy="333" r="7" fill="#ea580c"/>
+  <circle cx="665" cy="370" r="45" fill="#ffedd5" opacity="0.72" stroke="#ea580c" stroke-width="3"/>
+  <circle cx="665" cy="370" r="7" fill="#ea580c"/>
+
+  <line x1="600" y1="470" x2="600" y2="560" stroke="#16a34a" stroke-width="3" marker-end="url(#arrow-blue)"/>
+  <text x="535" y="583" class="label">anchor center</text>
+  <text x="481" y="604" class="small">middle line atom; one of three prediction targets</text>
+
+  <line x1="360" y1="455" x2="300" y2="560" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow-blue)"/>
+  <line x1="840" y1="455" x2="900" y2="560" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow-blue)"/>
+  <text x="227" y="583" class="label">prediction context</text>
+  <text x="190" y="604" class="small">all-mask prediction: each line center can be target</text>
+  <text x="828" y="583" class="label">prediction context</text>
+  <text x="785" y="604" class="small">local structures are stretched along the line</text>
+
+  <line x1="548" y1="282" x2="392" y2="178" stroke="#ea580c" stroke-width="3" marker-end="url(#arrow-orange)"/>
+  <line x1="665" y1="310" x2="815" y2="178" stroke="#ea580c" stroke-width="3" marker-end="url(#arrow-orange)"/>
+  <text x="263" y="168" class="label">anchor-local SwAV views</text>
+  <text x="243" y="190" class="small">additional online views inside anchor local structure</text>
+  <text x="243" y="211" class="small">their features are pulled together</text>
+
+  <line x1="600" y1="350" x2="825" y2="350" stroke="#ea580c" stroke-width="2" stroke-dasharray="5 5"/>
+  <text x="652" y="340" class="tiny">2.5R context boundary</text>
+  <line x1="600" y1="350" x2="690" y2="350" stroke="#ea580c" stroke-width="2" stroke-dasharray="2 4"/>
+  <text x="626" y="385" class="tiny">1.0R anchor-local radius</text>
+
+  <rect x="72" y="620" width="1056" height="56" rx="8" fill="#ffffff" stroke="#d1d5db"/>
+  <text x="92" y="645" class="label">Important separation</text>
+  <text x="92" y="666" class="small">Blue line centers train all three prediction masks. Orange anchor-local views train SwAV, with small jitter and scale augmentation.</text>
+</svg>

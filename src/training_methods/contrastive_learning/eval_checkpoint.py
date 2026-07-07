@@ -14,21 +14,11 @@ sys.path.append(os.getcwd())
 
 from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.data_module import StaticPointCloudDataModule, SyntheticPointCloudDataModule
-from src.training_methods.contrastive_learning.masked_latent_vicreg_module import (
-    VICRegMaskedLatentModule,
-)
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 
 
 torch.set_float32_matmul_precision("high")
-
-
-def _resolve_eval_module(cfg: DictConfig):
-    model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
-    if model_type in {"vicreg_masked_latent", "vicreg_mlp"}:
-        return VICRegMaskedLatentModule
-    return VICRegModule
 
 
 def _resolve_checkpoint_path(path: str) -> str:
@@ -66,7 +56,7 @@ def load_vicreg_model(
         checkpoint_path,
         cfg,
         device=device,
-        module=_resolve_eval_module(cfg),
+        module=VICRegModule,
     )
     model.to(device).eval()
     return model, cfg, device

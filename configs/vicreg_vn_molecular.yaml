@@ -90,6 +90,14 @@ warmup_start_factor: 0.01
 decay_rate: 0.04
 enable_embedding_metrics: false
 enable_svm_accuracy: false
+enable_probe_metrics: true
+probe_k: 6
+probe_max_samples: 8192
+probe_pca_max_components: 64
+probe_silhouette_samples: 5000
+probe_kmeans_seed_count: 3
+probe_kmeans_n_init: 5
+probe_seed: 0
 
 # IDEC clustering (disabled by default; enable after pretraining)
 idec_enabled: False

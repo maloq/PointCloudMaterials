@@ -60,6 +60,7 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
         data_sources_raw = _cfg_get(data_cfg, "data_sources", default=None, context=ctx)
         data_files_raw = _cfg_get(data_cfg, "data_files", default=None, context=ctx)
         auto_cutoff_cfg = _to_container(_cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx))
+        sample_cache_cfg = _to_container(_cfg_get(data_cfg, "sample_cache", default=None, context=ctx))
         dataset_common_kwargs = dict(
             radius=_cfg_get(data_cfg, "radius", context=ctx),
             sample_type=_cfg_get(data_cfg, "sample_type", context=ctx),
@@ -73,6 +74,7 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
             normalize=bool(_cfg_get(data_cfg, "normalize", default=True, context=ctx)),
             sampling_method=_cfg_get(data_cfg, "sampling_method", default="drop_farthest", context=ctx),
             auto_cutoff_config=auto_cutoff_cfg,
+            sample_cache_config=sample_cache_cfg,
         )
 
         if data_sources_raw is not None:

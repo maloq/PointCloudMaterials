@@ -14,7 +14,7 @@ dr: 0.01
 # Each data_source (material folder) gets its own radius so local neighborhoods
 # contain a comparable number of atoms before downsampling to num_points.
 auto_cutoff:
-  enabled: true
+  enabled: false
   target_points: 160
   quantile: 0.995
   estimation_samples_per_file: 4000
@@ -22,9 +22,16 @@ auto_cutoff:
   safety_factor: 1.02
   boundary_margin: 7.2
 
+sample_cache:
+  enabled: true
+  cache_dir: 'datasets/cache/data_ae_multi_material_ready_samples'
+  rebuild: false
+
 # Multiple data sources: each entry has a path and list of .npy files
 data_sources:
-  - data_path: 'datasets/Al/inherent_configurations_off'
+  - name: 'Al'
+    data_path: 'datasets/Al/inherent_configurations_off'
+    radius: 9.192189
     data_files:
       - '166ps.npy'
       - '170ps.npy'
@@ -32,7 +39,9 @@ data_sources:
       - '175ps.npy'
       - '177ps.npy'
       - '240ps.npy'
-  - data_path: 'datasets/Mg/inherent_configurations'
+  - name: 'Mg'
+    data_path: 'datasets/Mg/inherent_configurations'
+    radius: 10.169428
     data_files:
       - '940ps.npy'
       - '960ps.npy'
@@ -40,14 +49,19 @@ data_sources:
       - '990ps.npy'
       - '1000ps.npy'
       - '1500ps.npy'
-  - data_path: 'datasets/Ta/inherent_configurations'
+  - name: 'Ta'
+    data_path: 'datasets/Ta/inherent_configurations'
+    radius: 9.388275
+    max_samples: 246537
     data_files:
       - '2.7ns.npy'
       - '2.8ns.npy'
       - '2.9ns.npy'
       - '3.0ns.npy'
       - '3.60ns.npy'
-  - data_path: 'datasets/Zr/inherent_configurations'
+  - name: 'Zr'
+    data_path: 'datasets/Zr/inherent_configurations'
+    radius: 10.415006
     data_files:
       - '160ps.npy'
       - '200ps.npy'
@@ -55,7 +69,9 @@ data_sources:
       - '280ps.npy'
       - '310ps.npy'
       - '1560ps.npy'
-  - data_path: 'datasets/Al50Ni50/inherent_configurations'
+  - name: 'Al50Ni50'
+    data_path: 'datasets/Al50Ni50/inherent_configurations'
+    radius: 8.221465
     data_files:
       - '0.3ns.npy'
       - '0.5ns.npy'

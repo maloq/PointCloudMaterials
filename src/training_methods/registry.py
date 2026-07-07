@@ -29,10 +29,9 @@ _MODEL_TYPE_ALIASES = {
     "vicreg": "contrastive",
     "visreg": "contrastive",
     "contrastive": "contrastive",
-    "vicreg_masked_latent": "vicreg_masked_latent",
-    "vicreg_mlp": "vicreg_masked_latent",
     "temporal_vicreg": "temporal_ssl",
     "temporal_ssl": "temporal_ssl",
+    "line_jepa": "line_jepa",
 }
 
 
@@ -102,19 +101,18 @@ register_training_method(
 )
 register_training_method(
     TrainingMethodSpec(
-        name="vicreg_masked_latent",
-        module_path="src.training_methods.contrastive_learning.masked_latent_vicreg_module",
-        class_name="VICRegMaskedLatentModule",
-        default_config="vicreg_masked_latent.yaml",
-        run_post_training_analysis=True,
-    )
-)
-register_training_method(
-    TrainingMethodSpec(
         name="temporal_ssl",
         module_path="src.training_methods.temporal_ssl.temporal_ssl_module",
         class_name="TemporalSSLModule",
         default_config="temporal_vicreg_lammps.yaml",
+    )
+)
+register_training_method(
+    TrainingMethodSpec(
+        name="line_jepa",
+        module_path="src.training_methods.line_jepa.line_jepa_module",
+        class_name="LineJEPAModule",
+        default_config="line_jepa_static_Al6_pure.yaml",
     )
 )
 __all__ = [

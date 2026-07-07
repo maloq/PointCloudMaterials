@@ -1,11 +1,21 @@
-from .vicreg_module import VICRegModule
-from .masked_latent_vicreg_module import VICRegMaskedLatentModule
-from .vicreg import VICRegLoss
-from .swav import SwAVLoss
-
 __all__ = [
     "VICRegModule",
-    "VICRegMaskedLatentModule",
     "VICRegLoss",
     "SwAVLoss",
 ]
+
+
+def __getattr__(name):
+    if name == "VICRegModule":
+        from .vicreg_module import VICRegModule
+
+        return VICRegModule
+    if name == "VICRegLoss":
+        from .vicreg import VICRegLoss
+
+        return VICRegLoss
+    if name == "SwAVLoss":
+        from .swav import SwAVLoss
+
+        return SwAVLoss
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -260,12 +260,10 @@ class SwAVLoss(nn.Module):
         self.normalize_prototypes()
         logits_by_view = [self._prototype_logits(features) for features in view_features]
         loss_terms = []
-        assignment_max_probs = []
         assignment_entropies = []
         assignment_prototype_masses = []
         for assign_idx, assignment_logits in enumerate(logits_by_view):
             assignments = self._sinkhorn(assignment_logits)
-            assignment_max_probs.append(assignments.max(dim=1).values.mean())
             assignment_entropy = -(assignments * assignments.clamp_min(1e-12).log()).sum(dim=1).mean()
             assignment_entropies.append(assignment_entropy)
             assignment_prototype_masses.append(self._global_assignment_mass(assignments))
@@ -281,7 +279,6 @@ class SwAVLoss(nn.Module):
         loss = torch.stack(loss_terms, dim=0).mean()
         metrics = {
             "swav_assignment_entropy": torch.stack(assignment_entropies, dim=0).mean(),
-            "swav_assignment_max_prob": torch.stack(assignment_max_probs, dim=0).mean(),
         }
         prototype_mass = torch.stack(assignment_prototype_masses, dim=0).mean(dim=0)
         prototype_prior = self._assignment_prior(
@@ -294,12 +291,15 @@ class SwAVLoss(nn.Module):
         ).sum()
         metrics["swav_prototype_mass_min"] = prototype_mass.min()
         metrics["swav_prototype_mass_max"] = prototype_mass.max()
-        metrics["swav_prior_target_min"] = prototype_prior.min()
-        metrics["swav_prior_target_max"] = prototype_prior.max()
         metrics["swav_prior_kl"] = prototype_prior_kl
-        nonfinite = (~torch.isfinite(loss)).to(dtype=loss.dtype)
-        metrics["swav_nonfinite"] = nonfinite
-        loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
+        if not torch.isfinite(loss).item():
+            raise RuntimeError(
+                "SwAV loss became non-finite. "
+                f"view_shapes={[tuple(features.shape) for features in view_features]}, "
+                f"logit_shapes={[tuple(logits.shape) for logits in logits_by_view]}, "
+                f"temperature={self.temperature}, epsilon={self.epsilon}, "
+                f"sinkhorn_iterations={self.sinkhorn_iterations}."
+            )
         return loss, metrics
 
     def forward(self, features: torch.Tensor, *, profile_logits: bool = False) -> torch.Tensor:

@@ -53,7 +53,10 @@ def _build_analysis_dataloader(
     inference_batch_size: int,
     dataloader_num_workers: int,
 ) -> torch.utils.data.DataLoader:
-    if normalize_data_kind(getattr(cfg.data, "kind", None)) == "temporal_lammps":
+    if normalize_data_kind(getattr(cfg.data, "kind", None)) in {
+        "temporal_lammps",
+        "line_lammps",
+    }:
         data_cfg = cfg.data
         dump_file = getattr(data_cfg, "dump_file", None)
         cache_dir = getattr(data_cfg, "cache_dir", None)
@@ -490,12 +493,6 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
     if model_type in {"vicreg", "visreg"}:
         return VICRegModule
-    if model_type in {"vicreg_masked_latent", "vicreg_mlp"}:
-        from src.training_methods.contrastive_learning.masked_latent_vicreg_module import (
-            VICRegMaskedLatentModule,
-        )
-
-        return VICRegMaskedLatentModule
     if model_type in {"temporal_vicreg", "temporal_lejepa"}:
         from src.training_methods.temporal_ssl.temporal_ssl_module import TemporalSSLModule
 
@@ -506,10 +503,14 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
         )
 
         return TemporalMotifFieldModule
+    if model_type == "line_jepa":
+        from src.training_methods.line_jepa.line_jepa_module import LineJEPAModule
+
+        return LineJEPAModule
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
-        "Expected one of ['vicreg', 'visreg', 'vicreg_masked_latent', 'vicreg_mlp', "
-        "'temporal_vicreg', 'temporal_lejepa', 'temporal_motif_field'], "
+        "Expected one of ['vicreg', 'visreg', 'temporal_vicreg', "
+        "'temporal_lejepa', 'temporal_motif_field', 'line_jepa'], "
         f"got {model_type!r}."
     )
 
@@ -528,9 +529,9 @@ def build_datamodule(
     data_kind = normalize_data_kind(getattr(cfg.data, "kind", None))
     if data_kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
-    elif data_kind == "temporal_lammps":
+    elif data_kind in {"temporal_lammps", "line_lammps"}:
         dm = TemporalLAMMPSDataModule(cfg)
-    elif data_kind == "static":
+    elif data_kind in {"static", "line_static"}:
         dm = StaticPointCloudDataModule(
             cfg,
             return_coords=bool(require_coords_for_static),
@@ -538,7 +539,7 @@ def build_datamodule(
     else:
         raise ValueError(
             "Unsupported data.kind. Expected one of "
-            "['static', 'synthetic', 'temporal_lammps'] "
+            "['static', 'synthetic', 'temporal_lammps', 'line_static', 'line_lammps'] "
             f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
         )
     return dm

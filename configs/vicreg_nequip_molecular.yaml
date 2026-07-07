@@ -57,7 +57,7 @@ max_samples: 0
 check_val_every_n_epoch: 5
 
 gpu: True
-devices: [0, 1]
+devices: [0]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 4
