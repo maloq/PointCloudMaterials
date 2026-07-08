@@ -23,7 +23,6 @@ except ImportError as exc:
 else:
     _WANDB_IMPORT_ERROR = None
 
-
 def _as_string_list(value, default: list[str]) -> list[str]:
     if value is None: return list(default)
     if isinstance(value, str): return [value]
@@ -1347,25 +1346,19 @@ def _wandb_experiments(module) -> list:
     return experiments
 
 
-def _log_probe_silhouette_histogram(
-    module,
+def _probe_silhouette_histogram(
+    *,
     stage: str,
     silhouette_by_k: list[tuple[int, float]],
-) -> None:
-    trainer = getattr(module, "trainer", None)
-    if trainer is not None and not bool(getattr(trainer, "is_global_zero", True)):
-        return
-    experiments = _wandb_experiments(module)
-    if not experiments:
-        return
+):
     if wandb is None:
         raise RuntimeError(
-            "Cannot log probe silhouette histogram to W&B because wandb could not be imported."
+            "Cannot log probe silhouette histogram because wandb could not be imported."
         ) from _WANDB_IMPORT_ERROR
     if not silhouette_by_k:
         raise ValueError(f"Probe silhouette histogram has no values for stage='{stage}'.")
 
-    rows = []
+    silhouette_by_num_clusters: dict[int, float] = {}
     for num_clusters, silhouette_score_value in silhouette_by_k:
         num_clusters_int = int(num_clusters)
         silhouette_float = float(silhouette_score_value)
@@ -1380,25 +1373,48 @@ def _log_probe_silhouette_histogram(
                 f"stage='{stage}', num_clusters={num_clusters_int}, "
                 f"silhouette_score={silhouette_score_value!r}."
             )
-        rows.append([num_clusters_int, silhouette_float])
+        if num_clusters_int in silhouette_by_num_clusters:
+            raise ValueError(
+                "Probe silhouette histogram received duplicate cluster counts: "
+                f"stage='{stage}', num_clusters={num_clusters_int}."
+            )
+        silhouette_by_num_clusters[num_clusters_int] = silhouette_float
 
-    table = wandb.Table(
-        columns=["num_clusters", "silhouette_score"],
-        data=rows,
+    max_num_clusters = max(silhouette_by_num_clusters)
+    histogram_values = np.zeros(max_num_clusters, dtype=np.float64)
+    for num_clusters, silhouette_float in silhouette_by_num_clusters.items():
+        histogram_values[num_clusters - 1] = silhouette_float
+    bin_edges = np.arange(0.5, max_num_clusters + 1.5, dtype=np.float64)
+
+    return wandb.Histogram(
+        np_histogram=(histogram_values, bin_edges),
     )
-    chart = wandb.plot.bar(
-        table,
-        "num_clusters",
-        "silhouette_score",
-        title=f"{stage}/probe silhouette by number of clusters",
-    )
-    payload = {f"{stage}/probe/silhouette_by_num_clusters": chart}
+
+
+def _log_probe_silhouette_histogram(
+    module,
+    stage: str,
+    silhouette_by_k: list[tuple[int, float]],
+) -> None:
+    trainer = getattr(module, "trainer", None)
+    if trainer is not None and not bool(getattr(trainer, "is_global_zero", True)):
+        return
+    experiments = _wandb_experiments(module)
+    if not experiments:
+        return
+
     global_step = getattr(module, "global_step", None)
+    global_step_int = int(global_step) if global_step is not None else 0
+    histogram = _probe_silhouette_histogram(stage=stage, silhouette_by_k=silhouette_by_k)
+    payload = {
+        f"{stage}/probe/silhouette_by_num_clusters": histogram,
+        f"{stage}_probe_silhouette_by_num_clusters": histogram,
+    }
     for experiment in experiments:
         if global_step is None:
             experiment.log(payload)
         else:
-            experiment.log(payload, step=int(global_step))
+            experiment.log(payload, step=global_step_int)
 
 
 def log_supervised_metrics(module, stage: str) -> None:

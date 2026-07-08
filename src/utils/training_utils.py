@@ -129,9 +129,10 @@ def get_optimizers_and_scheduler(hparams, parameters):
             milestones=[warmup_epochs],
         )
 
+    lr_monitor_name = "trainer/lr-AdamW"
     if step_interval_scheduler:
-        return [optimizer], [{"scheduler": scheduler, "interval": "step"}]
-    return [optimizer], [scheduler] 
+        return [optimizer], [{"scheduler": scheduler, "interval": "step", "name": lr_monitor_name}]
+    return [optimizer], [{"scheduler": scheduler, "name": lr_monitor_name}]
     
 # ============================================================================
 # Tensor Conversion Utilities

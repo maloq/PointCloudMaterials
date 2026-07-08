@@ -144,21 +144,6 @@ class LineLAMMPSDataModule(pl.LightningDataModule):
             line_min_separation_radius_factor=float(
                 _cfg_get(data_cfg, "line_min_separation_radius_factor", default=0.0, context=ctx)
             ),
-            line_anchor_views_enabled=bool(
-                _cfg_get(data_cfg, "line_anchor_views_enabled", default=False, context=ctx)
-            ),
-            line_anchor_view_min_radius_factor=float(
-                _cfg_get(data_cfg, "line_anchor_view_min_radius_factor", default=0.0, context=ctx)
-            ),
-            line_anchor_view_max_radius_factor=_cfg_get(
-                data_cfg,
-                "line_anchor_view_max_radius_factor",
-                default=None,
-                context=ctx,
-            ),
-            line_anchor_view_selection=str(
-                _cfg_get(data_cfg, "line_anchor_view_selection", default="closest", context=ctx)
-            ),
             line_seed=int(_cfg_get(data_cfg, "line_seed", default=0, context=ctx)),
             exact_line_diagnostic_samples=int(
                 _cfg_get(data_cfg, "exact_line_diagnostic_samples", default=0, context=ctx)

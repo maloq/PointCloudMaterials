@@ -327,6 +327,18 @@ class BaseSSLModule(pl.LightningModule):
             log_kwargs["sync_dist"] = not is_train_step_only
         if torch.is_tensor(value):
             value = value.detach()
+
+        if name == "loss":
+            callback_kwargs = dict(log_kwargs)
+            callback_kwargs["logger"] = False
+            self.log(f"{stage}/loss", value, on_step=on_step, on_epoch=on_epoch, **callback_kwargs)
+
+            logger_kwargs = dict(log_kwargs)
+            logger_kwargs["prog_bar"] = False
+            logger_kwargs["logger"] = True
+            self.log(f"loss/{stage}", value, on_step=on_step, on_epoch=on_epoch, **logger_kwargs)
+            return
+
         self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
 
     def _handle_epoch_boundary(self, stage: str, is_start: bool):

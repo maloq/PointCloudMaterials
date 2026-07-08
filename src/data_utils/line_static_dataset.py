@@ -48,10 +48,6 @@ class LineStaticPointCloudDataset(Dataset):
         edge_drop_layers: int | None = None,
         line_selection_method: str = "closest",
         line_min_separation_radius_factor: float = 0.0,
-        line_anchor_views_enabled: bool = False,
-        line_anchor_view_min_radius_factor: float = 0.0,
-        line_anchor_view_max_radius_factor: float | None = None,
-        line_anchor_view_selection: str = "closest",
         line_seed: int = 0,
         deterministic_lines: bool = False,
         auto_cutoff_config: dict[str, Any] | None = None,
@@ -68,14 +64,6 @@ class LineStaticPointCloudDataset(Dataset):
         self.edge_drop_layers = None if edge_drop_layers is None else int(edge_drop_layers)
         self.line_selection_method = str(line_selection_method).strip().lower()
         self.line_min_separation_radius_factor = float(line_min_separation_radius_factor)
-        self.line_anchor_views_enabled = bool(line_anchor_views_enabled)
-        self.line_anchor_view_min_radius_factor = float(line_anchor_view_min_radius_factor)
-        self.line_anchor_view_max_radius_factor = (
-            self.line_min_separation_radius_factor
-            if line_anchor_view_max_radius_factor is None
-            else float(line_anchor_view_max_radius_factor)
-        )
-        self.line_anchor_view_selection = str(line_anchor_view_selection).strip().lower()
         self.line_seed = int(line_seed)
         self.deterministic_lines = bool(deterministic_lines)
         self._worker_rngs: dict[int, np.random.Generator] = {}
@@ -102,35 +90,6 @@ class LineStaticPointCloudDataset(Dataset):
             raise ValueError(
                 "line_min_separation_radius_factor must be >= 0. "
                 f"Got {self.line_min_separation_radius_factor}."
-            )
-        if self.line_anchor_views_enabled and self.line_min_separation_radius_factor <= 0.0:
-            raise ValueError(
-                "line_anchor_views_enabled requires line_min_separation_radius_factor > 0 "
-                "so near-anchor views are bounded inside the excluded prediction-context radius."
-            )
-        if self.line_anchor_view_min_radius_factor < 0.0:
-            raise ValueError(
-                "line_anchor_view_min_radius_factor must be >= 0. "
-                f"Got {self.line_anchor_view_min_radius_factor}."
-            )
-        if self.line_anchor_views_enabled and self.line_anchor_view_max_radius_factor <= 0.0:
-            raise ValueError(
-                "line_anchor_view_max_radius_factor must be > 0. "
-                f"Got {self.line_anchor_view_max_radius_factor}."
-            )
-        if self.line_anchor_views_enabled and (
-            self.line_anchor_view_min_radius_factor >= self.line_anchor_view_max_radius_factor
-        ):
-            raise ValueError(
-                "line_anchor_view_min_radius_factor must be smaller than "
-                "line_anchor_view_max_radius_factor when anchor views are enabled. "
-                f"Got min={self.line_anchor_view_min_radius_factor}, "
-                f"max={self.line_anchor_view_max_radius_factor}."
-            )
-        if self.line_anchor_view_selection not in {"closest", "outer"}:
-            raise ValueError(
-                "line_anchor_view_selection must be 'closest' or 'outer', "
-                f"got {line_anchor_view_selection!r}."
             )
         if self.line_selection_method not in {"closest", "radius_then_closest"}:
             raise ValueError(
@@ -320,171 +279,230 @@ class LineStaticPointCloudDataset(Dataset):
         np.ndarray,
         np.ndarray,
         np.ndarray,
-        np.ndarray | None,
-        np.ndarray | None,
-        np.ndarray | None,
     ]:
         candidate_points = np.asarray(source.points[candidate_indices], dtype=np.float32)
         delta = candidate_points - anchor_positions[:, None, :]
-        line_t = np.sum(delta * directions[:, None, :], axis=-1)
-        dist2 = np.sum(delta * delta, axis=-1)
+        line_t = np.einsum("bkc,bc->bk", delta, directions, optimize=True)
+        dist2 = np.einsum("bkc,bkc->bk", delta, delta, optimize=True)
         perp2 = np.maximum(dist2 - line_t * line_t, 0.0)
 
-        selected_indices = np.empty((candidate_indices.shape[0], self.line_atoms), dtype=np.int64)
-        selected_t = np.empty((candidate_indices.shape[0], self.line_atoms), dtype=np.float32)
-        selected_perp = np.empty((candidate_indices.shape[0], self.line_atoms), dtype=np.float32)
-        anchor_view_indices = (
-            np.empty((candidate_indices.shape[0], 2), dtype=np.int64)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_t = (
-            np.empty((candidate_indices.shape[0], 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_perp = (
-            np.empty((candidate_indices.shape[0], 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        for row_idx in range(candidate_indices.shape[0]):
-            if self.line_min_separation_radius_factor > 0.0:
-                closest_slots = self._select_separated_line_slots(
-                    source=source,
-                    row_idx=row_idx,
-                    candidate_indices=candidate_indices,
-                    candidate_points=candidate_points,
-                    anchor_indices=anchor_indices,
-                    line_t=line_t,
-                    perp2=perp2,
-                )
-            else:
-                closest_slots = np.argpartition(perp2[row_idx], self.line_atoms - 1)[: self.line_atoms]
-            order = np.argsort(line_t[row_idx, closest_slots], kind="mergesort")
-            ordered_slots = closest_slots[order]
-            selected_indices[row_idx] = candidate_indices[row_idx, ordered_slots]
-            selected_t[row_idx] = line_t[row_idx, ordered_slots].astype(np.float32, copy=False)
-            selected_perp[row_idx] = np.sqrt(perp2[row_idx, ordered_slots]).astype(np.float32, copy=False)
-            if self.line_anchor_views_enabled:
-                anchor_slots = self._select_anchor_view_slots(
-                    source=source,
-                    row_idx=row_idx,
-                    candidate_indices=candidate_indices,
-                    anchor_indices=anchor_indices,
-                    dist2=dist2,
-                    line_t=line_t,
-                    perp2=perp2,
-                )
-                if anchor_view_indices is None or anchor_view_t is None or anchor_view_perp is None:
-                    raise RuntimeError("Static line anchor-view arrays were not initialized.")
-                anchor_view_indices[row_idx] = candidate_indices[row_idx, anchor_slots]
-                anchor_view_t[row_idx] = line_t[row_idx, anchor_slots].astype(np.float32, copy=False)
-                anchor_view_perp[row_idx] = np.sqrt(perp2[row_idx, anchor_slots]).astype(
-                    np.float32,
-                    copy=False,
-                )
-        return (
-            selected_indices,
-            selected_t,
-            selected_perp,
-            anchor_view_indices,
-            anchor_view_t,
-            anchor_view_perp,
-        )
+        if self.line_min_separation_radius_factor > 0.0:
+            return self._select_separated_line_vectorized(
+                source=source,
+                candidate_indices=candidate_indices,
+                anchor_indices=anchor_indices,
+                delta=delta,
+                line_t=line_t,
+                dist2=dist2,
+                perp2=perp2,
+            )
+        if self.line_min_separation_radius_factor <= 0.0:
+            closest_slots = np.argpartition(
+                perp2,
+                self.line_atoms - 1,
+                axis=1,
+            )[:, : self.line_atoms]
+            order = np.argsort(
+                np.take_along_axis(line_t, closest_slots, axis=1),
+                axis=1,
+                kind="mergesort",
+            )
+            return self._gather_line_selection(
+                candidate_indices=candidate_indices,
+                line_t=line_t,
+                perp2=perp2,
+                selected_slots=np.take_along_axis(closest_slots, order, axis=1),
+            )
 
-    def _select_anchor_view_slots(
+    @staticmethod
+    def _gather_line_selection(
+        *,
+        candidate_indices: np.ndarray,
+        line_t: np.ndarray,
+        perp2: np.ndarray,
+        selected_slots: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        selected_indices = np.take_along_axis(candidate_indices, selected_slots, axis=1)
+        selected_t = np.take_along_axis(line_t, selected_slots, axis=1).astype(np.float32, copy=False)
+        selected_perp = np.sqrt(
+            np.take_along_axis(perp2, selected_slots, axis=1)
+        ).astype(np.float32, copy=False)
+        return selected_indices, selected_t, selected_perp
+
+    def _select_separated_line_vectorized(
         self,
         *,
         source: _LineStaticSource,
-        row_idx: int,
         candidate_indices: np.ndarray,
         anchor_indices: np.ndarray,
-        dist2: np.ndarray,
+        delta: np.ndarray,
         line_t: np.ndarray,
+        dist2: np.ndarray,
         perp2: np.ndarray,
-    ) -> np.ndarray:
-        max_distance = float(source.radius) * self.line_anchor_view_max_radius_factor
-        max_dist2 = max_distance * max_distance
-        min_distance = float(source.radius) * self.line_anchor_view_min_radius_factor
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        min_distance = float(source.radius) * self.line_min_separation_radius_factor
         min_dist2 = min_distance * min_distance
-        anchor_index = int(anchor_indices[row_idx])
-        negative = self._select_anchor_view_side(
-            source=source,
-            row_idx=row_idx,
-            side_name="negative",
-            candidate_indices=candidate_indices,
-            anchor_index=anchor_index,
-            dist2=dist2,
-            line_t=line_t,
-            perp2=perp2,
-            min_dist2=min_dist2,
-            max_dist2=max_dist2,
-            side_mask=line_t[row_idx] < 0.0,
-        )
-        positive = self._select_anchor_view_side(
-            source=source,
-            row_idx=row_idx,
-            side_name="positive",
-            candidate_indices=candidate_indices,
-            anchor_index=anchor_index,
-            dist2=dist2,
-            line_t=line_t,
-            perp2=perp2,
-            min_dist2=min_dist2,
-            max_dist2=max_dist2,
-            side_mask=line_t[row_idx] > 0.0,
-        )
-        return np.asarray([negative, positive], dtype=np.int64)
 
-    def _select_anchor_view_side(
+        anchor_matches = candidate_indices == anchor_indices[:, None]
+        anchor_match_counts = anchor_matches.sum(axis=1)
+        bad_anchor_rows = np.flatnonzero(anchor_match_counts != 1)
+        if bad_anchor_rows.size > 0:
+            first = int(bad_anchor_rows[0])
+            raise RuntimeError(
+                "Static separated line selection expected the anchor atom to appear exactly once "
+                "in the candidate pool. "
+                f"source={source.path}, row_idx={first}, matches={int(anchor_match_counts[first])}, "
+                f"anchor_index={int(anchor_indices[first])}, "
+                f"line_candidate_atoms={self.line_candidate_atoms}."
+            )
+
+        anchor_slots = np.argmax(anchor_matches, axis=1).astype(np.int64, copy=False)
+        side_count = self.line_atoms // 2
+        negative_slots_list = self._select_separated_side_vectorized(
+            source=source,
+            side_name="negative",
+            base_allowed=(line_t < 0.0) & (dist2 >= min_dist2),
+            existing_selected_deltas=[],
+            required=side_count,
+            delta=delta,
+            dist2=dist2,
+            line_t=line_t,
+            perp2=perp2,
+            min_distance=min_distance,
+            min_dist2=min_dist2,
+        )
+        row_indices = np.arange(candidate_indices.shape[0])
+        negative_deltas = [
+            delta[row_indices, negative_slots]
+            for negative_slots in negative_slots_list
+        ]
+        positive_slots_list = self._select_separated_side_vectorized(
+            source=source,
+            side_name="positive",
+            base_allowed=(line_t > 0.0) & (dist2 >= min_dist2),
+            existing_selected_deltas=negative_deltas,
+            required=side_count,
+            delta=delta,
+            dist2=dist2,
+            line_t=line_t,
+            perp2=perp2,
+            min_distance=min_distance,
+            min_dist2=min_dist2,
+        )
+
+        selected_slots = np.stack(
+            negative_slots_list + [anchor_slots] + positive_slots_list,
+            axis=1,
+        )
+        selected_order = np.argsort(
+            np.take_along_axis(line_t, selected_slots, axis=1),
+            axis=1,
+            kind="mergesort",
+        )
+        return self._gather_line_selection(
+            candidate_indices=candidate_indices,
+            line_t=line_t,
+            perp2=perp2,
+            selected_slots=np.take_along_axis(selected_slots, selected_order, axis=1),
+        )
+
+    def _select_separated_side_vectorized(
         self,
         *,
         source: _LineStaticSource,
-        row_idx: int,
         side_name: str,
-        candidate_indices: np.ndarray,
-        anchor_index: int,
+        base_allowed: np.ndarray,
+        existing_selected_deltas: list[np.ndarray],
+        required: int,
+        delta: np.ndarray,
         dist2: np.ndarray,
         line_t: np.ndarray,
         perp2: np.ndarray,
+        min_distance: float,
         min_dist2: float,
-        max_dist2: float,
-        side_mask: np.ndarray,
-    ) -> int:
-        allowed = (
-            side_mask
-            & (candidate_indices[row_idx] != int(anchor_index))
-            & (dist2[row_idx] >= float(min_dist2))
-            & (dist2[row_idx] < float(max_dist2))
-        )
-        side_slots = np.flatnonzero(allowed)
-        if side_slots.size == 0:
-            raise RuntimeError(
-                "Static anchor-view line selection could not find a near-line atom "
-                f"on the {side_name} side of the target. source={source.path}, row_idx={row_idx}, "
-                f"line_candidate_atoms={self.line_candidate_atoms}, "
-                f"min_center_distance={float(min_dist2) ** 0.5:.6f}, "
-                f"max_center_distance={float(max_dist2) ** 0.5:.6f}, source_radius={source.radius:.6f}. "
-                "Increase data.line_candidate_atoms, reduce data.line_anchor_view_min_radius_factor, "
-                "or increase data.line_anchor_view_max_radius_factor."
+    ) -> list[np.ndarray]:
+        allowed = np.array(base_allowed, dtype=bool, copy=True)
+        for selected_delta in existing_selected_deltas:
+            allowed &= self._candidate_separation_mask(
+                delta=delta,
+                dist2=dist2,
+                selected_delta=selected_delta,
+                min_dist2=min_dist2,
             )
-        if self.line_anchor_view_selection == "closest":
-            ordered = side_slots[
-                np.lexsort((np.abs(line_t[row_idx, side_slots]), perp2[row_idx, side_slots]))
-            ]
-        elif self.line_anchor_view_selection == "outer":
-            line_ordered = side_slots[np.argsort(perp2[row_idx, side_slots], kind="mergesort")]
-            line_pool = line_ordered[: min(64, line_ordered.size)]
-            ordered = line_pool[
-                np.lexsort((perp2[row_idx, line_pool], -dist2[row_idx, line_pool]))
-            ]
-        else:
-            raise RuntimeError(
-                "Unsupported line_anchor_view_selection at runtime: "
-                f"{self.line_anchor_view_selection!r}."
+
+        selected_slots_list: list[np.ndarray] = []
+        row_indices = np.arange(delta.shape[0])
+        for selected_count in range(int(required)):
+            selected_slots = self._select_best_separated_candidate(
+                source=source,
+                side_name=side_name,
+                allowed=allowed,
+                line_t=line_t,
+                perp2=perp2,
+                min_distance=min_distance,
+                required=int(required),
+                selected_count=selected_count,
             )
-        return int(ordered[0])
+            selected_slots_list.append(selected_slots)
+            selected_delta = delta[row_indices, selected_slots]
+            allowed &= self._candidate_separation_mask(
+                delta=delta,
+                dist2=dist2,
+                selected_delta=selected_delta,
+                min_dist2=min_dist2,
+            )
+        return selected_slots_list
+
+    @staticmethod
+    def _candidate_separation_mask(
+        *,
+        delta: np.ndarray,
+        dist2: np.ndarray,
+        selected_delta: np.ndarray,
+        min_dist2: float,
+    ) -> np.ndarray:
+        selected_dist2 = np.einsum("bc,bc->b", selected_delta, selected_delta, optimize=True)
+        candidate_selected_dot = np.einsum("bkc,bc->bk", delta, selected_delta, optimize=True)
+        candidate_selected_dist2 = dist2 + selected_dist2[:, None] - 2.0 * candidate_selected_dot
+        return candidate_selected_dist2 >= float(min_dist2)
+
+    def _select_best_separated_candidate(
+        self,
+        *,
+        source: _LineStaticSource,
+        side_name: str,
+        allowed: np.ndarray,
+        line_t: np.ndarray,
+        perp2: np.ndarray,
+        min_distance: float,
+        required: int,
+        selected_count: int,
+    ) -> np.ndarray:
+        masked_perp2 = np.where(allowed, perp2, np.inf)
+        selected_slots = np.argmin(masked_perp2, axis=1).astype(np.int64, copy=False)
+        row_indices = np.arange(masked_perp2.shape[0])
+        selected_perp2 = masked_perp2[row_indices, selected_slots]
+        missing_rows = np.flatnonzero(~np.isfinite(selected_perp2))
+        if missing_rows.size > 0:
+            first = int(missing_rows[0])
+            raise RuntimeError(
+                "Static separated line selection could not place enough non-overlapping centers "
+                f"on the {side_name} side of the target. source={source.path}, row_idx={first}, "
+                f"required_side_centers={int(required)}, selected_side_centers={int(selected_count)}, "
+                f"line_atoms={self.line_atoms}, line_candidate_atoms={self.line_candidate_atoms}, "
+                f"min_center_distance={min_distance:.6f}, source_radius={source.radius:.6f}. "
+                "Increase data.line_candidate_atoms or reduce data.line_min_separation_radius_factor."
+            )
+
+        tie_mask = allowed & (perp2 == selected_perp2[:, None])
+        tie_counts = tie_mask.sum(axis=1)
+        tie_rows = np.flatnonzero(tie_counts > 1)
+        for row_raw in tie_rows.tolist():
+            row = int(row_raw)
+            tied_slots = np.flatnonzero(tie_mask[row])
+            best_tie = np.argmin(np.abs(line_t[row, tied_slots]))
+            selected_slots[row] = int(tied_slots[int(best_tie)])
+        return selected_slots
 
     def _select_separated_line_slots(
         self,
@@ -633,26 +651,6 @@ class LineStaticPointCloudDataset(Dataset):
         line_t = np.empty((batch_size, self.line_atoms), dtype=np.float32)
         line_perp = np.empty((batch_size, self.line_atoms), dtype=np.float32)
         line_directions = np.empty((batch_size, 3), dtype=np.float32)
-        anchor_view_points = (
-            np.empty((batch_size, 2, self.num_points, 3), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_atom_ids = (
-            np.empty((batch_size, 2), dtype=np.int64)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_t = (
-            np.empty((batch_size, 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_perp = (
-            np.empty((batch_size, 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
         target_atom_ids = np.empty((batch_size,), dtype=np.int64)
         anchor_atom_ids = np.empty((batch_size,), dtype=np.int64)
         coords = np.empty((batch_size, 3), dtype=np.float32)
@@ -706,9 +704,6 @@ class LineStaticPointCloudDataset(Dataset):
                 selected,
                 selected_t,
                 selected_perp,
-                selected_anchor_views,
-                selected_anchor_view_t,
-                selected_anchor_view_perp,
             ) = self._select_line_atoms_from_candidates(
                 source=source,
                 anchor_positions=anchors,
@@ -740,53 +735,6 @@ class LineStaticPointCloudDataset(Dataset):
             target_atom_ids[batch_positions] = target_indices
             anchor_atom_ids[batch_positions] = anchor_indices
             coords[batch_positions] = source.points[target_indices]
-
-            if self.line_anchor_views_enabled:
-                if (
-                    selected_anchor_views is None
-                    or selected_anchor_view_t is None
-                    or selected_anchor_view_perp is None
-                    or anchor_view_points is None
-                    or anchor_view_atom_ids is None
-                    or anchor_view_t is None
-                    or anchor_view_perp is None
-                ):
-                    raise RuntimeError("Static line anchor-view arrays were not initialized.")
-                anchor_view_centers = np.asarray(
-                    source.points[selected_anchor_views.reshape(-1)],
-                    dtype=np.float32,
-                )
-                anchor_view_local_indices, _ = self._query_local_structures(
-                    source=source,
-                    centers=anchor_view_centers,
-                )
-                anchor_view_local_points = np.asarray(
-                    source.points[anchor_view_local_indices],
-                    dtype=np.float32,
-                )
-                if self.center_neighborhoods:
-                    anchor_view_local_points = (
-                        anchor_view_local_points - anchor_view_centers[:, None, :]
-                    )
-                if self.normalize:
-                    anchor_view_local_points = (
-                        anchor_view_local_points / float(source.radius)
-                    ).astype(np.float32, copy=False)
-                    selected_anchor_view_t = (
-                        selected_anchor_view_t / float(source.radius)
-                    ).astype(np.float32, copy=False)
-                    selected_anchor_view_perp = (
-                        selected_anchor_view_perp / float(source.radius)
-                    ).astype(np.float32, copy=False)
-                anchor_view_points[batch_positions] = anchor_view_local_points.reshape(
-                    len(batch_positions),
-                    2,
-                    self.num_points,
-                    3,
-                )
-                anchor_view_atom_ids[batch_positions] = selected_anchor_views
-                anchor_view_t[batch_positions] = selected_anchor_view_t
-                anchor_view_perp[batch_positions] = selected_anchor_view_perp
             for pos in batch_positions.tolist():
                 source_names[pos] = source.name
                 source_paths[pos] = source.path
@@ -808,22 +756,6 @@ class LineStaticPointCloudDataset(Dataset):
             "source_name": [str(value) for value in source_names],
             "source_path": [str(value) for value in source_paths],
         }
-        if self.line_anchor_views_enabled:
-            if (
-                anchor_view_points is None
-                or anchor_view_atom_ids is None
-                or anchor_view_t is None
-                or anchor_view_perp is None
-            ):
-                raise RuntimeError("Static line anchor-view result arrays were not initialized.")
-            result.update(
-                {
-                    "line_anchor_view_points": torch.from_numpy(anchor_view_points),
-                    "line_anchor_view_atom_ids": torch.from_numpy(anchor_view_atom_ids),
-                    "line_anchor_view_t": torch.from_numpy(anchor_view_t),
-                    "line_anchor_view_perp": torch.from_numpy(anchor_view_perp),
-                }
-            )
         return result
 
 

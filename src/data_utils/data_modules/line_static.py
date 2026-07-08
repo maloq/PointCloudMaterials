@@ -121,21 +121,6 @@ class LineStaticDataModule(pl.LightningDataModule):
             line_min_separation_radius_factor=float(
                 _cfg_get(data_cfg, "line_min_separation_radius_factor", default=0.0, context=ctx)
             ),
-            line_anchor_views_enabled=bool(
-                _cfg_get(data_cfg, "line_anchor_views_enabled", default=False, context=ctx)
-            ),
-            line_anchor_view_min_radius_factor=float(
-                _cfg_get(data_cfg, "line_anchor_view_min_radius_factor", default=0.0, context=ctx)
-            ),
-            line_anchor_view_max_radius_factor=_cfg_get(
-                data_cfg,
-                "line_anchor_view_max_radius_factor",
-                default=None,
-                context=ctx,
-            ),
-            line_anchor_view_selection=str(
-                _cfg_get(data_cfg, "line_anchor_view_selection", default="closest", context=ctx)
-            ),
             line_samples_per_file=line_samples_per_file,
             normalize=bool(_cfg_get(data_cfg, "normalize", default=True, context=ctx)),
             center_neighborhoods=bool(

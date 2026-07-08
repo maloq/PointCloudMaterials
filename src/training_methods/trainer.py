@@ -444,7 +444,9 @@ def init_wandb(cfg: DictConfig, run_dir):
     os.environ['WANDB_DIR'] = 'output/wandb'
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
-    wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
+    wandb_run = wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
+    wandb_run.define_metric("trainer/global_step", hidden=True)
+    wandb_run.define_metric("*", step_metric="trainer/global_step", step_sync=True)
     return WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
                        project=cfg.project_name,
                        name=cfg.experiment_name,

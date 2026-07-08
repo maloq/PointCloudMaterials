@@ -2,7 +2,7 @@ defaults:
   - _self_
 
 project_name: pointnet
-experiment_name: LINE_JEPA_PURE_STATIC_AL_ALLMASK_SWAV_l${latent_size}_K${swav_num_prototypes}_L${data.line_atoms}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: LINE_JEPA_PURE_STATIC_MULTI_ENDPOINTS_PRED5_TARGETSIM_l${latent_size}_L${data.line_atoms}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
 model_type: line_jepa
@@ -28,13 +28,9 @@ data:
   dr: 0.01
   train_ratio: 0.8
   line_samples_per_file: 100000
-  line_atoms: 3
-  line_candidate_atoms: 8192
+  line_atoms: 5
+  line_candidate_atoms: 2048
   line_min_separation_radius_factor: 1.5
-  line_anchor_views_enabled: true
-  line_anchor_view_min_radius_factor: 0.0
-  line_anchor_view_max_radius_factor: 1.0
-  line_anchor_view_selection: closest
   line_seed: 0
   center_neighborhoods: true
   line_selection_method: closest
@@ -56,6 +52,37 @@ data:
         - 175ps.npy
         - 177ps.npy
         - 240ps.npy
+    - data_path: datasets/Mg/inherent_configurations
+      data_files:
+        - 940ps.npy
+        - 960ps.npy
+        - 980ps.npy
+        - 990ps.npy
+        - 1000ps.npy
+        - 1500ps.npy
+    - data_path: datasets/Ta/inherent_configurations
+      data_files:
+        - 2.7ns.npy
+        - 2.8ns.npy
+        - 2.9ns.npy
+        - 3.0ns.npy
+        - 3.60ns.npy
+    - data_path: datasets/Zr/inherent_configurations
+      data_files:
+        - 160ps.npy
+        - 200ps.npy
+        - 240ps.npy
+        - 280ps.npy
+        - 310ps.npy
+        - 1560ps.npy
+    - data_path: datasets/Al50Ni50/inherent_configurations
+      data_files:
+        - 0.3ns.npy
+        - 0.5ns.npy
+        - 0.7ns.npy
+        - 0.9ns.npy
+        - 2ns.npy
+        - 5ns.npy
 
 encoder:
   name: RI_MAE_Invariant
@@ -78,40 +105,33 @@ encoder:
     center_input: true
     use_gradient_checkpointing: false
 
-line_jepa_enabled: true
 line_jepa_weight: 1.0
-line_jepa_prediction_coeff: 1.0
-line_jepa_anchor_view_sim_coeff: 0.0
+line_jepa_prediction_coeff: 5.0
+line_jepa_target_view_sim_coeff: 25.0
 line_jepa_sigreg_coeff: 0.0
-line_jepa_regularize_online_target: true
-line_jepa_regularizer_projector_enabled: true
 line_jepa_regularizer_projector_dim: 96
 line_jepa_regularizer_projector_hidden_dim: 96
-line_jepa_regularizer_projector_bn_eval_batch_stats: true
-line_jepa_std_coeff: 5.0
-line_jepa_cov_coeff: 0.1
+line_jepa_std_coeff: 25.0
+line_jepa_cov_coeff: 1.0
 line_jepa_std_eps: 0.0001
 line_jepa_std_target: 1.0
 line_jepa_target_encoder: online
-line_jepa_target_ema_decay: 0.999
 line_jepa_start_epoch: 0
-line_jepa_prediction_positions: all
+line_jepa_prediction_positions: endpoints
 line_jepa_prediction_target: residual
 line_jepa_prediction_loss: smooth_l1
-line_jepa_prediction_hard_weighting_enabled: true
 line_jepa_prediction_hard_top_fraction: 0.35
-line_jepa_prediction_hard_weight_low: 0.2
-line_jepa_prediction_hard_weight_high: 2.0
-line_jepa_prediction_hard_weight_normalize_mean: true
+line_jepa_prediction_hard_weight_low: 1.0
+line_jepa_prediction_hard_weight_high: 1.0
 line_jepa_view_jitter_std: 0.01
 line_jepa_view_scale_range: 0.02
 line_jepa_sigreg_num_slices: 256
 line_jepa_sigreg_integration_min: -5.0
 line_jepa_sigreg_integration_max: 5.0
 line_jepa_sigreg_integration_points: 17
-line_jepa_predictor_hidden_dim: 64
-line_jepa_predictor_depth: 2
-line_jepa_predictor_heads: 4
+line_jepa_predictor_hidden_dim: 136
+line_jepa_predictor_depth: 3
+line_jepa_predictor_heads: 8
 line_jepa_predictor_mlp_ratio: 4.0
 line_jepa_predictor_dropout: 0.0
 
@@ -127,19 +147,6 @@ vicreg_rotation_mode: none
 vicreg_strain_std: 0.0
 vicreg_occlusion_mode: none
 vicreg_radial_enabled: false
-
-swav_enabled: true
-swav_weight: 1.0
-swav_projection_dim: 128
-swav_hidden_dim: 512
-swav_num_prototypes: 32
-swav_temperature: 0.1
-swav_epsilon: 0.05
-swav_sinkhorn_iterations: 12
-swav_start_epoch: 0
-swav_freeze_prototypes_steps: 0
-swav_view_mode: anchor_local
-swav_view_points: ${data.model_points}
 
 learning_rate: 0.001
 batch_size: 3000

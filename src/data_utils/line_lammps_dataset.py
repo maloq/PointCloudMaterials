@@ -26,10 +26,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         line_atoms: int,
         line_candidate_atoms: int,
         line_min_separation_radius_factor: float = 0.0,
-        line_anchor_views_enabled: bool = False,
-        line_anchor_view_min_radius_factor: float = 0.0,
-        line_anchor_view_max_radius_factor: float | None = None,
-        line_anchor_view_selection: str = "closest",
         line_seed: int = 0,
         deterministic_lines: bool = False,
         exact_line_diagnostic_samples: int = 0,
@@ -38,14 +34,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         self.line_atoms = int(line_atoms)
         self.line_candidate_atoms = int(line_candidate_atoms)
         self.line_min_separation_radius_factor = float(line_min_separation_radius_factor)
-        self.line_anchor_views_enabled = bool(line_anchor_views_enabled)
-        self.line_anchor_view_min_radius_factor = float(line_anchor_view_min_radius_factor)
-        self.line_anchor_view_max_radius_factor = (
-            self.line_min_separation_radius_factor
-            if line_anchor_view_max_radius_factor is None
-            else float(line_anchor_view_max_radius_factor)
-        )
-        self.line_anchor_view_selection = str(line_anchor_view_selection).strip().lower()
         self.line_seed = int(line_seed)
         self.deterministic_lines = bool(deterministic_lines)
         self.exact_line_diagnostic_samples = int(exact_line_diagnostic_samples)
@@ -66,36 +54,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
                 "line_min_separation_radius_factor must be >= 0. "
                 f"Got {self.line_min_separation_radius_factor}."
             )
-        if self.line_anchor_views_enabled and self.line_min_separation_radius_factor <= 0.0:
-            raise ValueError(
-                "line_anchor_views_enabled requires line_min_separation_radius_factor > 0 "
-                "so near-anchor views are bounded inside the excluded prediction-context radius."
-            )
-        if self.line_anchor_view_min_radius_factor < 0.0:
-            raise ValueError(
-                "line_anchor_view_min_radius_factor must be >= 0. "
-                f"Got {self.line_anchor_view_min_radius_factor}."
-            )
-        if self.line_anchor_views_enabled and self.line_anchor_view_max_radius_factor <= 0.0:
-            raise ValueError(
-                "line_anchor_view_max_radius_factor must be > 0. "
-                f"Got {self.line_anchor_view_max_radius_factor}."
-            )
-        if self.line_anchor_views_enabled and (
-            self.line_anchor_view_min_radius_factor >= self.line_anchor_view_max_radius_factor
-        ):
-            raise ValueError(
-                "line_anchor_view_min_radius_factor must be smaller than "
-                "line_anchor_view_max_radius_factor when anchor views are enabled. "
-                f"Got min={self.line_anchor_view_min_radius_factor}, "
-                f"max={self.line_anchor_view_max_radius_factor}."
-            )
-        if self.line_anchor_view_selection not in {"closest", "outer"}:
-            raise ValueError(
-                "line_anchor_view_selection must be 'closest' or 'outer', "
-                f"got {line_anchor_view_selection!r}."
-            )
-
         super().__init__(*args, sequence_length=1, precompute_neighbor_indices=False, **kwargs)
         if self.line_candidate_atoms > self.num_atoms:
             raise ValueError(
@@ -173,9 +131,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         np.ndarray,
         np.ndarray,
         np.ndarray,
-        np.ndarray | None,
-        np.ndarray | None,
-        np.ndarray | None,
     ]:
         candidate_points = np.asarray(frame_points[candidate_indices], dtype=np.float32)
         delta = candidate_points - anchor_positions[:, None, :]
@@ -188,21 +143,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         selected_indices = np.empty((candidate_indices.shape[0], self.line_atoms), dtype=np.int64)
         selected_t = np.empty((candidate_indices.shape[0], self.line_atoms), dtype=np.float32)
         selected_perp = np.empty((candidate_indices.shape[0], self.line_atoms), dtype=np.float32)
-        anchor_view_indices = (
-            np.empty((candidate_indices.shape[0], 2), dtype=np.int64)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_t = (
-            np.empty((candidate_indices.shape[0], 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_perp = (
-            np.empty((candidate_indices.shape[0], 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
         for row_idx in range(candidate_indices.shape[0]):
             if self.line_min_separation_radius_factor > 0.0:
                 closest_slots = self._select_separated_line_slots(
@@ -222,126 +162,11 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
             selected_indices[row_idx] = candidate_indices[row_idx, ordered_slots]
             selected_t[row_idx] = line_t[row_idx, ordered_slots].astype(np.float32, copy=False)
             selected_perp[row_idx] = np.sqrt(perp2[row_idx, ordered_slots]).astype(np.float32, copy=False)
-            if self.line_anchor_views_enabled:
-                anchor_slots = self._select_anchor_view_slots(
-                    frame_idx_info=frame_idx_info,
-                    row_idx=row_idx,
-                    candidate_indices=candidate_indices,
-                    anchor_indices=anchor_indices,
-                    dist2=dist2,
-                    line_t=line_t,
-                    perp2=perp2,
-                )
-                if anchor_view_indices is None or anchor_view_t is None or anchor_view_perp is None:
-                    raise RuntimeError("LAMMPS line anchor-view arrays were not initialized.")
-                anchor_view_indices[row_idx] = candidate_indices[row_idx, anchor_slots]
-                anchor_view_t[row_idx] = line_t[row_idx, anchor_slots].astype(np.float32, copy=False)
-                anchor_view_perp[row_idx] = np.sqrt(perp2[row_idx, anchor_slots]).astype(
-                    np.float32,
-                    copy=False,
-                )
         return (
             selected_indices,
             selected_t,
             selected_perp,
-            anchor_view_indices,
-            anchor_view_t,
-            anchor_view_perp,
         )
-
-    def _select_anchor_view_slots(
-        self,
-        *,
-        frame_idx_info: str,
-        row_idx: int,
-        candidate_indices: np.ndarray,
-        anchor_indices: np.ndarray,
-        dist2: np.ndarray,
-        line_t: np.ndarray,
-        perp2: np.ndarray,
-    ) -> np.ndarray:
-        max_distance = float(self.radius) * self.line_anchor_view_max_radius_factor
-        max_dist2 = max_distance * max_distance
-        min_distance = float(self.radius) * self.line_anchor_view_min_radius_factor
-        min_dist2 = min_distance * min_distance
-        anchor_index = int(anchor_indices[row_idx])
-        negative = self._select_anchor_view_side(
-            frame_idx_info=frame_idx_info,
-            row_idx=row_idx,
-            side_name="negative",
-            candidate_indices=candidate_indices,
-            anchor_index=anchor_index,
-            dist2=dist2,
-            line_t=line_t,
-            perp2=perp2,
-            min_dist2=min_dist2,
-            max_dist2=max_dist2,
-            side_mask=line_t[row_idx] < 0.0,
-        )
-        positive = self._select_anchor_view_side(
-            frame_idx_info=frame_idx_info,
-            row_idx=row_idx,
-            side_name="positive",
-            candidate_indices=candidate_indices,
-            anchor_index=anchor_index,
-            dist2=dist2,
-            line_t=line_t,
-            perp2=perp2,
-            min_dist2=min_dist2,
-            max_dist2=max_dist2,
-            side_mask=line_t[row_idx] > 0.0,
-        )
-        return np.asarray([negative, positive], dtype=np.int64)
-
-    def _select_anchor_view_side(
-        self,
-        *,
-        frame_idx_info: str,
-        row_idx: int,
-        side_name: str,
-        candidate_indices: np.ndarray,
-        anchor_index: int,
-        dist2: np.ndarray,
-        line_t: np.ndarray,
-        perp2: np.ndarray,
-        min_dist2: float,
-        max_dist2: float,
-        side_mask: np.ndarray,
-    ) -> int:
-        allowed = (
-            side_mask
-            & (candidate_indices[row_idx] != int(anchor_index))
-            & (dist2[row_idx] >= float(min_dist2))
-            & (dist2[row_idx] < float(max_dist2))
-        )
-        side_slots = np.flatnonzero(allowed)
-        if side_slots.size == 0:
-            raise RuntimeError(
-                "LAMMPS anchor-view line selection could not find a near-line atom "
-                f"on the {side_name} side of the target. frame={frame_idx_info}, row_idx={row_idx}, "
-                f"line_candidate_atoms={self.line_candidate_atoms}, "
-                f"min_center_distance={float(min_dist2) ** 0.5:.6f}, "
-                f"max_center_distance={float(max_dist2) ** 0.5:.6f}, radius={float(self.radius):.6f}, "
-                f"source_path={self.dump_file}. Increase data.line_candidate_atoms or "
-                "reduce data.line_anchor_view_min_radius_factor, or increase "
-                "data.line_anchor_view_max_radius_factor."
-            )
-        if self.line_anchor_view_selection == "closest":
-            ordered = side_slots[
-                np.lexsort((np.abs(line_t[row_idx, side_slots]), perp2[row_idx, side_slots]))
-            ]
-        elif self.line_anchor_view_selection == "outer":
-            line_ordered = side_slots[np.argsort(perp2[row_idx, side_slots], kind="mergesort")]
-            line_pool = line_ordered[: min(64, line_ordered.size)]
-            ordered = line_pool[
-                np.lexsort((perp2[row_idx, line_pool], -dist2[row_idx, line_pool]))
-            ]
-        else:
-            raise RuntimeError(
-                "Unsupported line_anchor_view_selection at runtime: "
-                f"{self.line_anchor_view_selection!r}."
-            )
-        return int(ordered[0])
 
     def _select_separated_line_slots(
         self,
@@ -461,26 +286,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         line_t = np.empty((batch_size, self.line_atoms), dtype=np.float32)
         line_perp = np.empty((batch_size, self.line_atoms), dtype=np.float32)
         line_directions = np.empty((batch_size, 3), dtype=np.float32)
-        anchor_view_points = (
-            np.empty((batch_size, 2, self.num_points, 3), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_atom_ids = (
-            np.empty((batch_size, 2), dtype=np.int64)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_t = (
-            np.empty((batch_size, 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
-        anchor_view_perp = (
-            np.empty((batch_size, 2), dtype=np.float32)
-            if self.line_anchor_views_enabled
-            else None
-        )
         target_atom_ids = np.empty((batch_size,), dtype=np.int64)
         anchor_atom_ids = np.empty((batch_size,), dtype=np.int64)
         frame_indices_batch = np.empty((batch_size,), dtype=np.int64)
@@ -538,9 +343,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
                 selected,
                 selected_t,
                 selected_perp,
-                selected_anchor_views,
-                selected_anchor_view_t,
-                selected_anchor_view_perp,
             ) = self._select_line_atoms_from_candidates(
                 frame_points=frame_points,
                 box_lengths=box_lengths,
@@ -577,57 +379,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
             target_positions[batch_positions] = frame_points[target_slot_atoms] + self.box_low[frame_idx]
             anchor_positions_batch[batch_positions] = anchors + self.box_low[frame_idx]
 
-            if self.line_anchor_views_enabled:
-                if (
-                    selected_anchor_views is None
-                    or selected_anchor_view_t is None
-                    or selected_anchor_view_perp is None
-                    or anchor_view_points is None
-                    or anchor_view_atom_ids is None
-                    or anchor_view_t is None
-                    or anchor_view_perp is None
-                ):
-                    raise RuntimeError("LAMMPS line anchor-view arrays were not initialized.")
-                anchor_view_centers = np.asarray(
-                    frame_points[selected_anchor_views.reshape(-1)],
-                    dtype=np.float32,
-                )
-                anchor_view_local_indices = self._query_local_structures(
-                    frame_idx=frame_idx,
-                    centers=anchor_view_centers,
-                )
-                anchor_view_local_points = np.asarray(
-                    frame_points[anchor_view_local_indices],
-                    dtype=np.float32,
-                )
-                anchor_view_local_points = self._to_local_coordinates_batch(
-                    frame_idx=frame_idx,
-                    points=anchor_view_local_points,
-                    centers=anchor_view_centers,
-                )
-                if self.normalize:
-                    anchor_view_local_points = self._normalize_point_cloud_batch(
-                        anchor_view_local_points
-                    ).astype(np.float32, copy=False)
-                    selected_anchor_view_t = (
-                        selected_anchor_view_t / float(self.radius)
-                    ).astype(np.float32, copy=False)
-                    selected_anchor_view_perp = (
-                        selected_anchor_view_perp / float(self.radius)
-                    ).astype(np.float32, copy=False)
-                anchor_view_points[batch_positions] = anchor_view_local_points.reshape(
-                    len(batch_positions),
-                    2,
-                    self.num_points,
-                    3,
-                )
-                anchor_view_atom_ids[batch_positions] = np.asarray(
-                    self.atom_ids[selected_anchor_views],
-                    dtype=np.int64,
-                )
-                anchor_view_t[batch_positions] = selected_anchor_view_t
-                anchor_view_perp[batch_positions] = selected_anchor_view_perp
-
         result = {
             "points": torch.from_numpy(line_points),
             "line_atom_ids": torch.from_numpy(line_atom_ids),
@@ -644,22 +395,6 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
             "anchor_positions": torch.from_numpy(anchor_positions_batch),
             "source_path": [str(self.dump_file)] * batch_size,
         }
-        if self.line_anchor_views_enabled:
-            if (
-                anchor_view_points is None
-                or anchor_view_atom_ids is None
-                or anchor_view_t is None
-                or anchor_view_perp is None
-            ):
-                raise RuntimeError("LAMMPS line anchor-view result arrays were not initialized.")
-            result.update(
-                {
-                    "line_anchor_view_points": torch.from_numpy(anchor_view_points),
-                    "line_anchor_view_atom_ids": torch.from_numpy(anchor_view_atom_ids),
-                    "line_anchor_view_t": torch.from_numpy(anchor_view_t),
-                    "line_anchor_view_perp": torch.from_numpy(anchor_view_perp),
-                }
-            )
         return result
 
     def _run_exact_line_diagnostic(self, sample_count: int) -> None:
@@ -675,7 +410,7 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         candidates = np.asarray(candidates, dtype=np.int64)
         if candidates.ndim == 1:
             candidates = candidates.reshape(1, -1)
-        approx, _, _, _, _, _ = self._select_line_atoms_from_candidates(
+        approx, _, _ = self._select_line_atoms_from_candidates(
             frame_points=frame_points,
             box_lengths=box_lengths,
             anchor_positions=anchors,
@@ -688,7 +423,7 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         all_indices = np.arange(self.num_atoms, dtype=np.int64).reshape(1, -1)
         exact_rows = []
         for row_idx in range(len(anchors)):
-            exact_row, _, _, _, _, _ = self._select_line_atoms_from_candidates(
+            exact_row, _, _ = self._select_line_atoms_from_candidates(
                 frame_points=frame_points,
                 box_lengths=box_lengths,
                 anchor_positions=anchors[row_idx : row_idx + 1],

@@ -104,7 +104,6 @@ encoder:
     center_input: true
     use_gradient_checkpointing: false
 
-line_jepa_enabled: true
 line_jepa_weight: 0.2
 line_jepa_prediction_coeff: 1.0
 line_jepa_sigreg_coeff: 0.02

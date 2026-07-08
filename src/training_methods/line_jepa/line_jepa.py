@@ -18,7 +18,6 @@ class LineJEPALoss(nn.Module):
     def __init__(
         self,
         *,
-        enabled: bool,
         weight: float,
         prediction_coeff: float,
         sigreg_coeff: float,
@@ -34,7 +33,6 @@ class LineJEPALoss(nn.Module):
         integration_points: int,
     ) -> None:
         super().__init__()
-        self.enabled = bool(enabled)
         self.weight = float(weight)
         self.prediction_coeff = float(prediction_coeff)
         self.sigreg_coeff = float(sigreg_coeff)
@@ -49,8 +47,8 @@ class LineJEPALoss(nn.Module):
         self.integration_max = float(integration_max)
         self.integration_points = int(integration_points)
 
-        if self.weight < 0.0:
-            raise ValueError(f"line_jepa_weight must be >= 0, got {self.weight}.")
+        if self.weight <= 0.0:
+            raise ValueError(f"line_jepa_weight must be > 0 for Line-JEPA, got {self.weight}.")
         if self.prediction_coeff < 0.0:
             raise ValueError(f"line_jepa_prediction_coeff must be >= 0, got {self.prediction_coeff}.")
         if self.sigreg_coeff < 0.0:
@@ -84,7 +82,6 @@ class LineJEPALoss(nn.Module):
     @classmethod
     def from_config(cls, cfg):
         return cls(
-            enabled=bool(getattr(cfg, "line_jepa_enabled", True)),
             weight=float(getattr(cfg, "line_jepa_weight", 1.0)),
             prediction_coeff=float(getattr(cfg, "line_jepa_prediction_coeff", 1.0)),
             sigreg_coeff=float(getattr(cfg, "line_jepa_sigreg_coeff", 0.05)),
@@ -101,17 +98,13 @@ class LineJEPALoss(nn.Module):
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
-        return bool(
-            self.enabled
-            and self.weight > 0.0
-            and int(current_epoch) >= self.start_epoch
-        )
+        return int(current_epoch) >= self.start_epoch
 
     def compute_loss(
         self,
         *,
-        prediction: torch.Tensor,
-        target: torch.Tensor,
+        prediction: torch.Tensor | None,
+        target: torch.Tensor | None,
         regularized_embeddings: dict[str, torch.Tensor] | list[torch.Tensor],
         current_epoch: int,
         global_step: int,
@@ -119,8 +112,8 @@ class LineJEPALoss(nn.Module):
     ) -> tuple[torch.Tensor | None, dict[str, torch.Tensor]]:
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
-        self._validate_prediction_inputs(prediction=prediction, target=target)
         embedding_items = self._regularized_embedding_items(regularized_embeddings)
+        device = self._loss_device(prediction=prediction, embedding_items=embedding_items)
         needs_regularized_embeddings = (
             self.sigreg_coeff > 0.0
             or self.std_coeff > 0.0
@@ -132,37 +125,54 @@ class LineJEPALoss(nn.Module):
                 "line_jepa_sigreg_coeff, line_jepa_std_coeff, or line_jepa_cov_coeff is positive."
             )
 
-        pred = prediction.float()
-        target_detached = target.detach().float()
-        prediction_loss = self._prediction_loss(
-            prediction=pred,
-            target=target_detached,
-            prediction_weights=prediction_weights,
-        )
+        prediction_active = self.prediction_coeff > 0.0
+        if prediction_active:
+            if prediction is None or target is None:
+                raise ValueError(
+                    "LineJEPALoss requires prediction and target tensors when "
+                    f"line_jepa_prediction_coeff={self.prediction_coeff}."
+                )
+            self._validate_prediction_inputs(prediction=prediction, target=target)
+            pred = prediction.float()
+            target_detached = target.detach().float()
+            prediction_loss = self._prediction_loss(
+                prediction=pred,
+                target=target_detached,
+                prediction_weights=prediction_weights,
+            )
+        else:
+            if prediction_weights is not None:
+                raise ValueError(
+                    "LineJEPALoss received prediction_weights while "
+                    "line_jepa_prediction_coeff is 0. Disable hard prediction weighting."
+                )
+            prediction_loss = torch.zeros((), device=device, dtype=torch.float32)
 
-        sigreg, _ = self._mean_named_regularizer(
-            embedding_items,
+        pooled_embeddings = (
+            self._pooled_regularizer_embeddings(embedding_items)
+            if needs_regularized_embeddings
+            else None
+        )
+        sigreg = self._pooled_regularizer(
+            pooled_embeddings,
             coeff=self.sigreg_coeff,
-            metric_name="line_jepa_sigreg",
             regularizer=lambda embeddings: self._sigreg(
                 embeddings,
                 global_step=int(global_step),
             ),
-            device=prediction.device,
+            device=device,
         )
-        std_loss, _ = self._mean_named_regularizer(
-            embedding_items,
+        std_loss = self._pooled_regularizer(
+            pooled_embeddings,
             coeff=self.std_coeff,
-            metric_name="line_jepa_std",
             regularizer=self._variance_loss,
-            device=prediction.device,
+            device=device,
         )
-        cov_loss, _ = self._mean_named_regularizer(
-            embedding_items,
+        cov_loss = self._pooled_regularizer(
+            pooled_embeddings,
             coeff=self.cov_coeff,
-            metric_name="line_jepa_cov",
             regularizer=self._covariance_loss,
-            device=prediction.device,
+            device=device,
         )
         unweighted = (
             self.prediction_coeff * prediction_loss
@@ -172,7 +182,9 @@ class LineJEPALoss(nn.Module):
         )
         loss = self.weight * unweighted
 
-        metrics = {"line_jepa_pred": prediction_loss}
+        metrics = {}
+        if prediction_active:
+            metrics["line_jepa_pred"] = prediction_loss
         if self.sigreg_coeff > 0.0:
             metrics["line_jepa_sigreg"] = sigreg
         if self.std_coeff > 0.0:
@@ -192,6 +204,18 @@ class LineJEPALoss(nn.Module):
         return loss, metrics
 
     @staticmethod
+    def _loss_device(
+        *,
+        prediction: torch.Tensor | None,
+        embedding_items: list[tuple[str, torch.Tensor]],
+    ):
+        if prediction is not None:
+            return prediction.device
+        if embedding_items:
+            return embedding_items[0][1].device
+        return torch.device("cpu")
+
+    @staticmethod
     def _regularized_embedding_items(
         regularized_embeddings: dict[str, torch.Tensor] | list[torch.Tensor],
     ) -> list[tuple[str, torch.Tensor]]:
@@ -202,22 +226,46 @@ class LineJEPALoss(nn.Module):
             for index, value in enumerate(regularized_embeddings)
         ]
 
-    def _mean_named_regularizer(
-        self,
+    @staticmethod
+    def _pooled_regularizer_embeddings(
         embedding_items: list[tuple[str, torch.Tensor]],
+    ) -> torch.Tensor:
+        if not embedding_items:
+            raise ValueError("Line-JEPA regularizer pool received no embedding tensors.")
+        feature_dim = None
+        tensors = []
+        for name, embeddings in embedding_items:
+            if embeddings.dim() != 2:
+                raise ValueError(
+                    "Line-JEPA regularizer pool expects every embedding tensor to have shape (B, D). "
+                    f"Got name={name!r}, shape={tuple(embeddings.shape)}."
+                )
+            if int(embeddings.shape[0]) == 0:
+                raise ValueError(f"Line-JEPA regularizer pool received empty tensor name={name!r}.")
+            current_dim = int(embeddings.shape[1])
+            if feature_dim is None:
+                feature_dim = current_dim
+            elif current_dim != feature_dim:
+                raise ValueError(
+                    "Line-JEPA regularizer pool requires a shared feature dimension. "
+                    f"Got name={name!r}, dim={current_dim}, expected_dim={feature_dim}."
+                )
+            tensors.append(embeddings)
+        return torch.cat(tensors, dim=0)
+
+    @staticmethod
+    def _pooled_regularizer(
+        embeddings: torch.Tensor | None,
         *,
         coeff: float,
-        metric_name: str,
         regularizer,
         device,
-    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    ) -> torch.Tensor:
         if coeff <= 0.0:
-            return torch.zeros((), device=device, dtype=torch.float32), {}
-        terms = {}
-        for name, embeddings in embedding_items:
-            terms[f"{metric_name}_{name}"] = regularizer(embeddings)
-        mean_value = torch.stack(list(terms.values()), dim=0).mean()
-        return mean_value, terms
+            return torch.zeros((), device=device, dtype=torch.float32)
+        if embeddings is None:
+            raise ValueError("Line-JEPA regularizer is active, but the pooled embeddings tensor is missing.")
+        return regularizer(embeddings)
 
     @staticmethod
     def _validate_prediction_inputs(*, prediction: torch.Tensor, target: torch.Tensor) -> None:
