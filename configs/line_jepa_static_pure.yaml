@@ -30,7 +30,7 @@ data:
   line_samples_per_file: 100000
   line_atoms: 5
   line_candidate_atoms: 2048
-  line_min_separation_radius_factor: 1.5
+  line_min_separation_radius_factor: 1.0
   line_seed: 0
   center_neighborhoods: true
   line_selection_method: closest
@@ -106,7 +106,7 @@ encoder:
     use_gradient_checkpointing: false
 
 line_jepa_weight: 1.0
-line_jepa_prediction_coeff: 5.0
+line_jepa_prediction_coeff: 20.0
 line_jepa_target_view_sim_coeff: 25.0
 line_jepa_sigreg_coeff: 0.0
 line_jepa_regularizer_projector_dim: 96
@@ -121,15 +121,15 @@ line_jepa_prediction_positions: endpoints
 line_jepa_prediction_target: residual
 line_jepa_prediction_loss: smooth_l1
 line_jepa_prediction_hard_top_fraction: 0.35
-line_jepa_prediction_hard_weight_low: 1.0
-line_jepa_prediction_hard_weight_high: 1.0
+line_jepa_prediction_hard_weight_low: 0.5
+line_jepa_prediction_hard_weight_high: 2.0
 line_jepa_view_jitter_std: 0.01
 line_jepa_view_scale_range: 0.02
 line_jepa_sigreg_num_slices: 256
 line_jepa_sigreg_integration_min: -5.0
 line_jepa_sigreg_integration_max: 5.0
 line_jepa_sigreg_integration_points: 17
-line_jepa_predictor_hidden_dim: 136
+line_jepa_predictor_hidden_dim: 256
 line_jepa_predictor_depth: 3
 line_jepa_predictor_heads: 8
 line_jepa_predictor_mlp_ratio: 4.0

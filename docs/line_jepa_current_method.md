@@ -6,6 +6,8 @@ These diagrams describe the current `line_jepa_static_pure.yaml` setup.
 
 ![Training data flow and losses](line_jepa_current_method_dataflow.svg)
 
+Metric definitions: [Line-JEPA metrics](line_jepa_metrics.md).
+
 ## Current Settings Shown
 
 - Data: Al only, `datasets/Al/inherent_configurations_off`.

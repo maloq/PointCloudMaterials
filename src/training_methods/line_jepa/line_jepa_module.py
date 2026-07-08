@@ -884,17 +884,11 @@ class LineJEPAModule(BaseSSLModule):
                     target_view_extra_features,
                 )
                 target_sim_weighted = self.target_view_sim_coeff * target_sim
-                losses["line_jepa_target_view_sim"] = target_sim_weighted
+                losses["line_jepa_target_view_sim_weighted"] = target_sim_weighted
                 self._log_metric(
                     stage,
                     "line_jepa_target_view_sim",
                     target_sim,
-                    batch_size=batch_size,
-                )
-                self._log_metric(
-                    stage,
-                    "line_jepa_target_view_sim_weighted",
-                    target_sim_weighted,
                     batch_size=batch_size,
                 )
                 self._log_metric(
@@ -911,7 +905,17 @@ class LineJEPAModule(BaseSSLModule):
                         prediction_target.detach().float(),
                         dim=-1,
                     ).mean()
-                    self._log_metric(stage, "line_jepa_pred_cos", pred_cos, batch_size=prediction_batch_size)
+                    if self.prediction_target == "residual":
+                        pred_cos_name = "line_jepa_pred_residual_cos"
+                        pred_cos_status_name = "pred_residual_cos"
+                    elif self.prediction_target == "target":
+                        pred_cos_name = "line_jepa_pred_target_cos"
+                        pred_cos_status_name = "pred_target_cos"
+                    else:
+                        raise RuntimeError(
+                            f"Unsupported Line-JEPA prediction target mode: {self.prediction_target!r}."
+                        )
+                    self._log_metric(stage, pred_cos_name, pred_cos, batch_size=prediction_batch_size)
                     context_target_cos = F.cosine_similarity(
                         context_mean.float(),
                         target_features.detach().float(),
@@ -919,28 +923,54 @@ class LineJEPAModule(BaseSSLModule):
                     ).mean()
                     self._log_metric(
                         stage,
-                        "line_jepa_context_target_cos",
+                        "line_jepa_context_mean_target_cos",
                         context_target_cos,
                         batch_size=prediction_batch_size,
                     )
                     recon_cos = prediction.new_tensor(float("nan"))
                     if self.prediction_target == "residual":
-                        reconstructed_target = prediction.float() + context_mean.float()
+                        target_float = target_features.detach().float()
+                        context_float = context_mean.float()
+                        pred_residual = prediction.float()
+                        residual = target_float - context_float
+                        residual_norm = residual.norm(dim=-1)
+                        pred_error = (pred_residual - residual).norm(dim=-1)
+                        relative_residual_error = pred_error / residual_norm.clamp_min(1e-6)
+                        z_hat = context_float + pred_residual
                         recon_cos = F.cosine_similarity(
-                            reconstructed_target,
-                            target_features.detach().float(),
+                            z_hat,
+                            target_float,
                             dim=-1,
                         ).mean()
+                        baseline_error = residual_norm
+                        improvement = baseline_error - pred_error
+                        relative_improvement = improvement / baseline_error.clamp_min(1e-6)
+                        for metric_name, metric_value in {
+                            "line_jepa_residual_norm": residual_norm.mean(),
+                            "line_jepa_pred_residual_error": pred_error.mean(),
+                            "line_jepa_relative_residual_error": relative_residual_error.mean(),
+                            "line_jepa_baseline_residual_error": baseline_error.mean(),
+                            "line_jepa_residual_error_improvement": improvement.mean(),
+                            "line_jepa_relative_residual_error_improvement": relative_improvement.mean(),
+                        }.items():
+                            self._log_metric(
+                                stage,
+                                metric_name,
+                                metric_value,
+                                batch_size=prediction_batch_size,
+                            )
                         self._log_metric(
                             stage,
-                            "line_jepa_recon_target_cos",
+                            "line_jepa_recon_target_from_residual_cos",
                             recon_cos,
                             batch_size=prediction_batch_size,
                         )
                     if stage != "train" and batch_idx == 0:
                         residual_suffix = ""
                         if self.prediction_target == "residual":
-                            residual_suffix = f" recon_cos={float(recon_cos.detach()):.6f}"
+                            residual_suffix = (
+                                f" recon_target_from_residual_cos={float(recon_cos.detach()):.6f}"
+                            )
                         sigreg_value = metrics.get("line_jepa_sigreg")
                         sigreg_suffix = (
                             f"sigreg={float(sigreg_value.detach()):.6f} "
@@ -951,8 +981,8 @@ class LineJEPAModule(BaseSSLModule):
                             f"[{stage}-line-jepa] epoch={self.current_epoch} "
                             f"pred={float(metrics.get('line_jepa_pred', prediction.new_tensor(float('nan'))).detach()):.6f} "
                             f"{sigreg_suffix}"
-                            f"cos={float(pred_cos.detach()):.6f} "
-                            f"context_cos={float(context_target_cos.detach()):.6f} "
+                            f"{pred_cos_status_name}={float(pred_cos.detach()):.6f} "
+                            f"context_mean_target_cos={float(context_target_cos.detach()):.6f} "
                             f"tasks={prediction_task_count}"
                             f"{residual_suffix}"
                         )
