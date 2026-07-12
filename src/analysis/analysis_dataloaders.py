@@ -6,7 +6,9 @@ from typing import Any
 import numpy as np
 import torch
 
-from .temporal_real import _temporal_identity_or_default_collate
+from src.data_utils.data_modules.temporal_window import (
+    _temporal_identity_or_default_collate,
+)
 
 
 def _analysis_prefetch_factor(num_workers: int) -> int | None:
@@ -140,5 +142,4 @@ class _BatchedConcatDataset(torch.utils.data.ConcatDataset):
 
         _flush_current_run()
         return _concat_batched_values(batches, key_path="batch")
-
 

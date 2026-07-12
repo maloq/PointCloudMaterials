@@ -17,7 +17,6 @@ from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from src.data_utils.data_kinds import normalize_data_kind
 from .cluster_profiles import (
     _ALL_PROFILE_PROPERTIES,
     _compute_sample_properties,
@@ -424,11 +423,6 @@ def _load_point_cloud_batch(
             int(sample_idx),
             point_scale=float(point_scale),
         )
-        if points is None:
-            raise RuntimeError(
-                "Failed to load point cloud for descriptor analysis: "
-                f"sample_index={int(sample_idx)}."
-            )
         point_clouds.append(np.asarray(points, dtype=np.float32))
     if not point_clouds:
         raise ValueError("No point clouds were loaded for real-MD qualitative analysis.")
@@ -566,8 +560,13 @@ def _prepare_projection_features(
 ) -> tuple[np.ndarray, ProjectionFeaturePrep, dict[str, Any]]:
     x = np.asarray(latents, dtype=np.float32)
     if x.ndim != 2:
-        x = np.reshape(x, (x.shape[0], -1))
-    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+        raise ValueError(f"Projection latents must have shape (N, D), got {x.shape}.")
+    if not np.isfinite(x).all():
+        first_bad = np.argwhere(~np.isfinite(x))[0].tolist()
+        raise ValueError(
+            "Projection features contain non-finite values. "
+            f"first_nonfinite_index={first_bad}, shape={x.shape}."
+        )
 
     info: dict[str, Any] = {
         "input_dim": int(x.shape[1]),
@@ -705,8 +704,15 @@ def _transform_projection_features(
 ) -> np.ndarray:
     x = np.asarray(latents, dtype=np.float32)
     if x.ndim != 2:
-        x = np.reshape(x, (x.shape[0], -1))
-    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+        raise ValueError(
+            f"Projection transform latents must have shape (N, D), got {x.shape}."
+        )
+    if not np.isfinite(x).all():
+        first_bad = np.argwhere(~np.isfinite(x))[0].tolist()
+        raise ValueError(
+            "Projection transform features contain non-finite values. "
+            f"first_nonfinite_index={first_bad}, shape={x.shape}."
+        )
     if feature_prep.l2_normalize:
         norms = np.linalg.norm(x, axis=1, keepdims=True)
         x = x / np.clip(norms, 1e-8, None)
@@ -3607,10 +3613,10 @@ def run_real_md_qualitative_analysis(
     representative_selection_features: np.ndarray | None = None,
     representative_selection_info: dict[str, Any] | None = None,
     cluster_assignment_margins_by_k: dict[int, dict[str, Any]] | None = None,
-    selected_k_override: int | None = None,
+    selected_k: int,
     output_root_dir: Path | None = None,
 ) -> dict[str, Any]:
-    data_kind = normalize_data_kind(getattr(model_cfg.data, "kind", None))
+    data_kind = str(model_cfg.data.kind).strip().lower()
 
     clustering_cfg = getattr(analysis_cfg, "clustering", None)
     tsne_cfg = getattr(analysis_cfg, "tsne", None)
@@ -3625,18 +3631,10 @@ def run_real_md_qualitative_analysis(
     temporal_cfg = getattr(real_md_cfg, "temporal", None)
     transition_cfg = getattr(real_md_cfg, "transitions", None)
 
-    selected_k_raw = selected_k_override
-    if selected_k_raw is None:
-        selected_k_raw = getattr(real_md_cfg, "selected_k", None)
-    if selected_k_raw is None:
-        if not cluster_labels_by_k:
-            raise ValueError("cluster_labels_by_k is empty.")
-        selected_k = min(int(k) for k in cluster_labels_by_k.keys())
-    else:
-        selected_k = int(selected_k_raw)
+    selected_k = int(selected_k)
     if int(selected_k) not in cluster_labels_by_k:
         raise KeyError(
-            "Requested real_md.selected_k is not available. "
+            "Requested clustering k is not available for real-MD analysis. "
             f"Requested k={selected_k}, available={sorted(cluster_labels_by_k.keys())}."
         )
     labels = np.asarray(cluster_labels_by_k[int(selected_k)], dtype=int)

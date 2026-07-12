@@ -118,16 +118,13 @@ def _save_md_cluster_snapshot(
     view_azim: float = 35.0,
 ) -> dict[str, Any]:
     coords_arr = np.asarray(coords, dtype=np.float32)
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
-    if coords_arr.ndim != 2 or coords_arr.shape[1] < 3:
+    labels = np.asarray(cluster_labels, dtype=int)
+    if coords_arr.ndim != 2 or coords_arr.shape[1] != 3:
+        raise ValueError(f"coords must have shape (N, 3), got {coords_arr.shape}.")
+    if labels.ndim != 1 or labels.shape[0] != coords_arr.shape[0]:
         raise ValueError(
-            f"coords must have shape (N, >=3), got {coords_arr.shape}."
-        )
-    coords_arr = coords_arr[:, :3]
-    if labels.size != coords_arr.shape[0]:
-        raise ValueError(
-            "coords and cluster_labels length mismatch: "
-            f"{coords_arr.shape[0]} vs {labels.size}."
+            "cluster_labels must have shape (N,) matching coords. "
+            f"labels={labels.shape}, coords={coords_arr.shape}."
         )
 
     mask = labels >= 0
@@ -148,6 +145,9 @@ def _save_md_cluster_snapshot(
     unique_labels = sorted(int(v) for v in np.unique(labels_plot) if int(v) >= 0)
     if not unique_labels:
         raise ValueError("No non-negative cluster labels available for plotting.")
+    missing_colors = [cluster_id for cluster_id in unique_labels if cluster_id not in color_map]
+    if missing_colors:
+        raise KeyError(f"MD cluster snapshot is missing colors for clusters {missing_colors}.")
 
     fig = plt.figure(figsize=(7.8, 7.8), dpi=220)
     ax = fig.add_subplot(111, projection="3d")
@@ -157,7 +157,7 @@ def _save_md_cluster_snapshot(
         cluster_mask = labels_plot == cluster_id
         if not np.any(cluster_mask):
             continue
-        base_color = color_map.get(cluster_id, "#777777")
+        base_color = color_map[cluster_id]
         cluster_points = coords_plot[cluster_mask]
         point_colors = np.repeat(
             np.asarray(mcolors.to_rgb(str(base_color)), dtype=np.float32)[None, :],
@@ -237,6 +237,10 @@ def _prepare_cluster_representative_structures(
     )
     prepared: list[dict[str, Any]] = []
     for cluster_id in sorted(reps.keys()):
+        if cluster_id not in color_map:
+            raise KeyError(
+                f"Representative rendering is missing a color for cluster {cluster_id}."
+            )
         sample_idx = int(reps[cluster_id])
         points = _load_points_from_dataset(
             dataset,
@@ -256,7 +260,7 @@ def _prepare_cluster_representative_structures(
             {
                 "cluster_id": int(cluster_id),
                 "sample_index": int(sample_idx),
-                "base_color": str(color_map.get(cluster_id, "#777777")),
+                "base_color": str(color_map[cluster_id]),
                 "centered_points": np.asarray(centered, dtype=np.float32),
                 "local_points": np.asarray(local, dtype=np.float32),
                 "selection_info": {} if selection_info is None else dict(selection_info),
@@ -316,7 +320,9 @@ def _attach_structure_analysis_to_summary(
 ) -> None:
     representatives = summary.get("representatives")
     if not isinstance(representatives, list):
-        return
+        raise ValueError(
+            "Representative render summary must contain a 'representatives' list."
+        )
     for record in representatives:
         cluster_id = int(record["cluster_id"])
         if cluster_id in analysis_by_cluster_id:
@@ -337,6 +343,11 @@ def _render_cluster_representatives_variant(
     dpi: int = 220,
 ) -> dict[str, Any]:
     proj_norm = str(projection).strip().lower()
+    if proj_norm not in {"ortho", "persp"}:
+        raise ValueError(
+            "Representative projection must be 'ortho' or 'persp', "
+            f"got {projection!r}."
+        )
     n_clusters = len(prepared_records)
     n_cols = min(3, n_clusters)
     n_rows = int(np.ceil(n_clusters / max(1, n_cols)))
@@ -446,7 +457,7 @@ def _build_knn_representative_edges(
     *,
     knn_k: int,
 ) -> tuple[list[tuple[int, int]], dict[str, Any]]:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    pts = np.asarray(points, dtype=np.float32)
     n_points = int(pts.shape[0])
     if n_points < 2:
         return [], {
@@ -510,6 +521,11 @@ def _save_cluster_representatives_figure(
     selection_info: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     proj_norm = str(projection).strip().lower()
+    if proj_norm not in {"ortho", "persp"}:
+        raise ValueError(
+            "Representative projection must be 'ortho' or 'persp', "
+            f"got {projection!r}."
+        )
     method_norm = str(orientation_method).strip().lower()
     if method_norm not in {"pca", "none"}:
         raise ValueError(f"Unsupported representative orientation {method_norm!r}.")
@@ -552,7 +568,7 @@ def _save_cluster_representatives_figure(
         )
         representative_selection_summary = {} if selection_info is None else dict(selection_info)
     else:
-        cached_prepared_records = representative_render_cache.get("prepared_records")
+        cached_prepared_records = representative_render_cache["prepared_records"]
         if not isinstance(cached_prepared_records, list) or not cached_prepared_records:
             raise ValueError(
                 "representative_render_cache must contain a non-empty 'prepared_records' list."
@@ -570,11 +586,11 @@ def _save_cluster_representatives_figure(
         prepared_records = [
             {
                 **dict(record),
-                "base_color": str(color_map.get(int(record["cluster_id"]), "#777777")),
+                "base_color": str(color_map[int(record["cluster_id"])]),
             }
             for record in cached_prepared_records
         ]
-        cached_structure_summary = representative_render_cache.get("structure_analysis_summary")
+        cached_structure_summary = representative_render_cache["structure_analysis_summary"]
         if bool(representative_ptm_enabled) or bool(representative_cna_enabled):
             if not isinstance(cached_structure_summary, dict):
                 raise ValueError(
@@ -588,7 +604,7 @@ def _save_cluster_representatives_figure(
             )
         else:
             structure_analysis_summary = None
-        cached_selection_info = representative_render_cache.get("selection_info")
+        cached_selection_info = representative_render_cache["selection_info"]
         representative_selection_summary = (
             {} if cached_selection_info is None else dict(cached_selection_info)
         )

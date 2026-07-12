@@ -1,108 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import Any
 
 import numpy as np
 import torch
-
-
-def _broadcast_metadata(value: Any, *, batch_size: int) -> list[Any]:
-    if value is None:
-        return [None] * int(batch_size)
-    if torch.is_tensor(value):
-        if value.ndim == 0:
-            values = [value.item()]
-        else:
-            values = value.detach().cpu().reshape(-1).tolist()
-    elif isinstance(value, str):
-        values = [value]
-    elif isinstance(value, Iterable):
-        values = list(value)
-    else:
-        values = [value]
-    if len(values) == int(batch_size):
-        return values
-    if len(values) == 1 and int(batch_size) > 1:
-        return values * int(batch_size)
-    raise ValueError(
-        "Could not broadcast batch metadata to batch size. "
-        f"batch_size={batch_size}, actual_length={len(values)}, value_type={type(value)!r}."
-    )
-
-
-def _to_numpy_1d(values: list[Any], *, dtype: Any) -> np.ndarray:
-    if dtype is str:
-        return np.asarray([("" if value is None else str(value)) for value in values], dtype=str)
-    converted: list[Any] = []
-    for value in values:
-        if value is None:
-            converted.append(-1)
-        else:
-            converted.append(dtype(value))
-    return np.asarray(converted, dtype=dtype)
-
-
-def _slice_batch_tensor(
-    value: Any,
-    *,
-    batch_size: int,
-    anchor_index: int,
-) -> torch.Tensor | None:
-    if value is None:
-        return None
-    if not torch.is_tensor(value):
-        value = torch.as_tensor(value)
-    if value.ndim == 0:
-        value = value.reshape(1)
-    if value.shape[0] != int(batch_size):
-        raise ValueError(
-            "Batch metadata tensor must have the batch dimension first. "
-            f"Expected batch_size={batch_size}, got shape={tuple(value.shape)}."
-        )
-    if value.ndim == 2:
-        return value[:, anchor_index]
-    if value.ndim == 1:
-        return value
-    raise ValueError(
-        "Expected metadata tensor with shape (B,) or (B, T), "
-        f"got shape={tuple(value.shape)}."
-    )
-
-
-def _slice_anchor_coords(
-    batch: dict[str, Any],
-    *,
-    batch_size: int,
-    anchor_index: int,
-) -> torch.Tensor:
-    center_positions = batch.get("center_positions")
-    if center_positions is not None:
-        if not torch.is_tensor(center_positions):
-            center_positions = torch.as_tensor(center_positions)
-        if center_positions.ndim != 3 or center_positions.shape[0] != int(batch_size) or center_positions.shape[2] != 3:
-            raise ValueError(
-                "Expected batch['center_positions'] with shape (B, T, 3), "
-                f"got {tuple(center_positions.shape)}."
-            )
-        return center_positions[:, anchor_index, :].detach().cpu().to(dtype=torch.float32)
-
-    coords = batch.get("coords")
-    if coords is None:
-        raise KeyError(
-            "Temporal motif cache collection requires either batch['center_positions'] "
-            "or batch['coords'] to be present."
-        )
-    if not torch.is_tensor(coords):
-        coords = torch.as_tensor(coords)
-    if coords.ndim == 1:
-        coords = coords.unsqueeze(0)
-    if coords.ndim != 2 or coords.shape[0] != int(batch_size) or coords.shape[1] != 3:
-        raise ValueError(
-            "Expected batch['coords'] with shape (B, 3), "
-            f"got {tuple(coords.shape)}."
-        )
-    return coords.detach().cpu().to(dtype=torch.float32)
 
 
 def _seeded_forward_sequence(model: Any, batch: dict[str, Any], seed: int) -> dict[str, Any]:
@@ -136,19 +37,6 @@ def _concat_cache_chunks(chunks: dict[str, list[np.ndarray]]) -> dict[str, np.nd
             )
         cache[key] = np.concatenate(values, axis=0)
     return cache
-
-
-def cache_has_dynamic_motif_outputs(cache: dict[str, np.ndarray]) -> bool:
-    return any(
-        key in cache
-        for key in (
-            "stable_ids",
-            "stable_probs",
-            "bridge_ids",
-            "bridge_probs",
-            "hazard_probs_lag_1",
-        )
-    )
 
 
 def collect_tmf_inference_cache(
@@ -193,13 +81,7 @@ def collect_tmf_inference_cache(
                         "If you set inputs.data_config to a static dataset override, remove it "
                         "or point it to a temporal_lammps config for TMF evaluation."
                     )
-                points = batch.get("points")
-                if points is None:
-                    raise KeyError(
-                        f"Temporal batch at batch_idx={batch_idx} is missing required key 'points'."
-                    )
-                if not torch.is_tensor(points):
-                    points = torch.as_tensor(points)
+                points = batch["points"]
                 if points.ndim != 4 or points.shape[-1] != 3:
                     raise ValueError(
                         "TMF inference cache collection expects batch['points'] with shape (B, T, N, 3), "
@@ -233,18 +115,21 @@ def collect_tmf_inference_cache(
                 _append_numpy(chunks, "eq_latents", np.empty((0,), dtype=np.float32))
                 _append_numpy(chunks, "phases", np.empty((0,), dtype=np.int64))
 
-                coords = _slice_anchor_coords(batch, batch_size=batch_size, anchor_index=anchor_index)[:take]
+                coords = (
+                    batch["center_positions"][:take, anchor_index]
+                    .detach()
+                    .cpu()
+                    .to(dtype=torch.float32)
+                )
                 _append_numpy(chunks, "coords", coords.numpy())
 
-                instance_id = _slice_batch_tensor(
-                    batch.get("instance_id", batch.get("center_atom_id")),
-                    batch_size=batch_size,
-                    anchor_index=anchor_index,
+                instance_np = (
+                    batch["instance_id"][:take]
+                    .detach()
+                    .cpu()
+                    .numpy()
+                    .astype(np.int64, copy=False)
                 )
-                if instance_id is None:
-                    instance_np = np.arange(collected, collected + take, dtype=np.int64)
-                else:
-                    instance_np = instance_id.detach().cpu().numpy().astype(np.int64, copy=False)[:take]
                 _append_numpy(chunks, "instance_ids", instance_np)
 
                 stable_probs = outputs["stable_probs_anchor"].detach().cpu().to(dtype=torch.float32)[:take]
@@ -273,41 +158,32 @@ def collect_tmf_inference_cache(
                     )
                     _append_numpy(chunks, "bridge_gate", gate_np)
 
-                frame_indices = _slice_batch_tensor(
-                    batch.get("frame_indices"),
-                    batch_size=batch_size,
-                    anchor_index=anchor_index,
+                _append_numpy(
+                    chunks,
+                    "frame_index",
+                    batch["frame_indices"][:take, anchor_index]
+                    .detach()
+                    .cpu()
+                    .numpy(),
                 )
-                if frame_indices is not None:
-                    _append_numpy(
-                        chunks,
-                        "frame_index",
-                        frame_indices.detach().cpu().numpy().astype(np.int64, copy=False)[:take],
-                    )
-
-                timesteps = _slice_batch_tensor(
-                    batch.get("timesteps"),
-                    batch_size=batch_size,
-                    anchor_index=anchor_index,
+                _append_numpy(
+                    chunks,
+                    "timestep",
+                    batch["timesteps"][:take, anchor_index]
+                    .detach()
+                    .cpu()
+                    .numpy(),
                 )
-                if timesteps is not None:
-                    _append_numpy(
-                        chunks,
-                        "timestep",
-                        timesteps.detach().cpu().numpy().astype(np.int64, copy=False)[:take],
-                    )
 
-                center_atom_ids = _broadcast_metadata(batch.get("center_atom_id"), batch_size=batch_size)
                 _append_numpy(
                     chunks,
                     "center_atom_id",
-                    _to_numpy_1d(center_atom_ids[:take], dtype=np.int64),
+                    batch["center_atom_id"][:take].detach().cpu().numpy(),
                 )
-                source_paths = _broadcast_metadata(batch.get("source_path"), batch_size=batch_size)
                 _append_numpy(
                     chunks,
                     "source_path",
-                    _to_numpy_1d(source_paths[:take], dtype=str),
+                    np.asarray(batch["source_path"][:take], dtype=str),
                 )
 
                 future_logits = outputs.get("future_stable_logits", {})
@@ -399,12 +275,9 @@ def collect_tmf_inference_cache(
     cache = _concat_cache_chunks(chunks)
     num_samples = int(cache["inv_latents"].shape[0]) if "inv_latents" in cache else 0
     cache["sample_index"] = np.arange(num_samples, dtype=np.int64)
-    if "center_atom_id" not in cache and "instance_ids" in cache:
-        cache["center_atom_id"] = np.asarray(cache["instance_ids"], dtype=np.int64)
     return cache
 
 
 __all__ = [
-    "cache_has_dynamic_motif_outputs",
     "collect_tmf_inference_cache",
 ]

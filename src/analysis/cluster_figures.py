@@ -55,7 +55,6 @@ def _save_fixed_k_cluster_figure_set(
     icl_k_min: int,
     icl_k_max: int,
     icl_max_samples: int | None,
-    icl_covariance_type: str,
     representative_points: int,
     md_point_size: float,
     md_point_alpha: float,
@@ -124,11 +123,23 @@ def _save_fixed_k_cluster_figure_set(
     for stale_path in stale_paths:
         stale_path.unlink()
 
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
+    labels = np.asarray(cluster_labels, dtype=int)
     coords_arr = np.asarray(coords, dtype=np.float32)
     lat_arr = np.asarray(latents, dtype=np.float32)
+    if labels.ndim != 1:
+        raise ValueError(f"Cluster figure labels must have shape (N,), got {labels.shape}.")
+    if coords_arr.ndim != 2 or coords_arr.shape != (labels.shape[0], 3):
+        raise ValueError(
+            "Cluster figure coordinates must have shape (N, 3) matching labels, "
+            f"got coords={coords_arr.shape}, labels={labels.shape}."
+        )
     if lat_arr.ndim != 2:
-        lat_arr = lat_arr.reshape(lat_arr.shape[0], -1)
+        raise ValueError(f"Cluster figure latents must have shape (N, D), got {lat_arr.shape}.")
+    if lat_arr.shape[0] != labels.shape[0]:
+        raise ValueError(
+            "Cluster figure latents and labels must have the same row count, "
+            f"got latents={lat_arr.shape}, labels={labels.shape}."
+        )
 
     cluster_ids = sorted(int(v) for v in np.unique(labels) if int(v) >= 0)
     palette = _cluster_palette(len(cluster_ids))
@@ -155,7 +166,11 @@ def _save_fixed_k_cluster_figure_set(
     write_json(color_assignment_path, color_assignment_payload)
     raytrace_projection_norm = str(raytrace_render_projection).strip().lower()
     if raytrace_projection_norm not in {"orthographic", "ortho", "perspective", "persp"}:
-        raytrace_projection_norm = "perspective"
+        raise ValueError(
+            "Raytrace projection must be one of "
+            "['orthographic', 'ortho', 'perspective', 'persp'], "
+            f"got {raytrace_render_projection!r}."
+        )
 
     md_snapshot_kwargs = {
         "max_points": md_max_points,
@@ -416,16 +431,16 @@ def _save_fixed_k_cluster_figure_set(
             k_values_icl.append(int(k_value))
         k_values_icl = sorted(set(k_values_icl))
         max_valid_k = int(icl_features.shape[0] - 1)
-        k_values_icl = [k for k in k_values_icl if k <= max_valid_k]
-        if int(k_value) not in k_values_icl:
+        invalid_k_values = [k for k in k_values_icl if k > max_valid_k]
+        if invalid_k_values:
             raise ValueError(
-                f"Cannot evaluate ICL at k={k_value}; available max k is {max_valid_k} "
-                f"for {icl_features.shape[0]} ICL samples."
+                "ICL k values must be smaller than the number of ICL samples. "
+                f"invalid={invalid_k_values}, max_valid_k={max_valid_k}, "
+                f"num_samples={icl_features.shape[0]}."
             )
         icl_curve = _compute_icl_curve(
             icl_features,
             k_values_icl,
-            covariance_type=icl_covariance_type,
             random_state=int(random_state),
         )
         panel_icl = _save_icl_curve_figure(
@@ -496,5 +511,4 @@ def _save_fixed_k_cluster_figure_set(
         },
         "icl_feature_prep": icl_prep,
         "icl_num_samples": int(icl_num_samples),
-        "icl_covariance_type": str(icl_covariance_type) if bool(icl_enabled) else None,
     }

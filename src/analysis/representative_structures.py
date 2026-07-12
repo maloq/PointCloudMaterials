@@ -147,7 +147,13 @@ def _count_structure_types(
 ) -> dict[str, int]:
     counts: Counter[str] = Counter()
     for raw_structure_id in np.asarray(structure_ids, dtype=int):
-        counts[str(structure_name_by_id.get(int(raw_structure_id), "Unknown"))] += 1
+        structure_id = int(raw_structure_id)
+        if structure_id not in structure_name_by_id:
+            raise KeyError(
+                "OVITO returned a structure type absent from the modifier lookup. "
+                f"structure_id={structure_id}, available={sorted(structure_name_by_id)}."
+            )
+        counts[str(structure_name_by_id[structure_id])] += 1
     return {
         str(name): int(count)
         for name, count in sorted(counts.items(), key=lambda item: item[0])
@@ -196,7 +202,7 @@ def _run_ovito_ptm_analysis(
         "center_atom_index": int(center_idx),
         "center_atom_distance": float(center_dist),
         "center_structure_type_id": int(structure_ids[center_idx]),
-        "center_structure_type": str(structure_name_by_id.get(int(structure_ids[center_idx]), "Unknown")),
+        "center_structure_type": str(structure_name_by_id[int(structure_ids[center_idx])]),
         "center_rmsd": float(rmsd[center_idx]),
         "center_interatomic_distance": float(interatomic_distance[center_idx]),
         "center_ordering_type_id": int(ordering_value),
@@ -240,7 +246,7 @@ def _run_ovito_adaptive_cna_analysis(
         "center_atom_index": int(center_idx),
         "center_atom_distance": float(center_dist),
         "center_structure_type_id": int(structure_ids[center_idx]),
-        "center_structure_type": str(structure_name_by_id.get(int(structure_ids[center_idx]), "Unknown")),
+        "center_structure_type": str(structure_name_by_id[int(structure_ids[center_idx])]),
         "environment_structure_counts": _count_structure_types(structure_ids, structure_name_by_id),
     }
 
@@ -382,16 +388,10 @@ def _build_cluster_representative_analysis_summary(
         for signature, _ in aggregate_signature_counts.most_common(int(cna_max_signatures))
     ]
 
-    ovito_available = False
-    ovito_import_error: str | None = None
     if bool(ptm_enabled) or bool(cna_enabled):
-        try:
-            _build_ovito_data_collection(np.asarray(prepared_records[0]["local_points"], dtype=np.float64))
-            ovito_available = True
-        except ModuleNotFoundError as exc:
-            ovito_import_error = str(exc)
-            if bool(ptm_enabled):
-                raise
+        _build_ovito_data_collection(
+            np.asarray(prepared_records[0]["local_points"], dtype=np.float64)
+        )
 
     representative_records: list[dict[str, Any]] = []
     for prepared, cna_counts, shell_info in zip(
@@ -452,12 +452,11 @@ def _build_cluster_representative_analysis_summary(
                 "top_signature_label": str(_format_cna_signature(top_signature)),
                 "top_signature_fraction": float(int(cna_counts[top_signature]) / total_signatures),
             }
-            if bool(ovito_available):
-                cna_record["adaptive_structure"] = _run_ovito_adaptive_cna_analysis(
-                    local_points,
-                    center_atom_tolerance=float(center_atom_tolerance),
-                )
-                record["adaptive_cna"] = dict(cna_record["adaptive_structure"])
+            cna_record["adaptive_structure"] = _run_ovito_adaptive_cna_analysis(
+                local_points,
+                center_atom_tolerance=float(center_atom_tolerance),
+            )
+            record["adaptive_cna"] = dict(cna_record["adaptive_structure"])
             record["cna"] = cna_record
 
         if bool(ptm_enabled):
@@ -476,8 +475,7 @@ def _build_cluster_representative_analysis_summary(
         "shell_min_neighbors": int(shell_min_neighbors),
         "shell_max_neighbors": int(shell_max_neighbors),
         "cna_max_signatures": int(cna_max_signatures),
-        "ovito_available": bool(ovito_available),
-        "ovito_import_error": None if ovito_import_error is None else str(ovito_import_error),
+        "ovito_available": True,
         "cna_signature_vocab": list(cna_signature_vocab),
         "representatives": representative_records,
     }
@@ -499,7 +497,7 @@ def materialize_cluster_representative_analysis_summary(
         raise ValueError(
             "structure_analysis_summary must contain a non-empty 'representatives' list."
         )
-    cna_signature_vocab = structure_analysis_summary.get("cna_signature_vocab", [])
+    cna_signature_vocab = structure_analysis_summary["cna_signature_vocab"]
     if not isinstance(cna_signature_vocab, list):
         raise ValueError(
             "structure_analysis_summary['cna_signature_vocab'] must be a list, "
@@ -511,29 +509,14 @@ def materialize_cluster_representative_analysis_summary(
     json_path.parent.mkdir(parents=True, exist_ok=True)
 
     payload = {
-        "ptm_enabled": bool(structure_analysis_summary.get("ptm_enabled", False)),
-        "cna_enabled": bool(structure_analysis_summary.get("cna_enabled", False)),
-        "analysis_points_source": str(
-            structure_analysis_summary.get("analysis_points_source", "local_points")
-        ),
-        "center_atom_tolerance": float(
-            structure_analysis_summary.get("center_atom_tolerance", 1.0e-6)
-        ),
-        "shell_min_neighbors": int(
-            structure_analysis_summary.get("shell_min_neighbors", 8)
-        ),
-        "shell_max_neighbors": int(
-            structure_analysis_summary.get("shell_max_neighbors", 24)
-        ),
-        "cna_max_signatures": int(
-            structure_analysis_summary.get("cna_max_signatures", 5)
-        ),
-        "ovito_available": bool(structure_analysis_summary.get("ovito_available", False)),
-        "ovito_import_error": (
-            None
-            if structure_analysis_summary.get("ovito_import_error", None) is None
-            else str(structure_analysis_summary.get("ovito_import_error"))
-        ),
+        "ptm_enabled": bool(structure_analysis_summary["ptm_enabled"]),
+        "cna_enabled": bool(structure_analysis_summary["cna_enabled"]),
+        "analysis_points_source": str(structure_analysis_summary["analysis_points_source"]),
+        "center_atom_tolerance": float(structure_analysis_summary["center_atom_tolerance"]),
+        "shell_min_neighbors": int(structure_analysis_summary["shell_min_neighbors"]),
+        "shell_max_neighbors": int(structure_analysis_summary["shell_max_neighbors"]),
+        "cna_max_signatures": int(structure_analysis_summary["cna_max_signatures"]),
+        "ovito_available": bool(structure_analysis_summary["ovito_available"]),
         "cna_signature_vocab": [str(v) for v in cna_signature_vocab],
         "representatives": [dict(record) for record in representatives],
     }

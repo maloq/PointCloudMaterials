@@ -13,3 +13,6 @@ This is research code: correctness and clarity beat cleverness.
 Silent errors are worse than crashes. Crashes with good messages are acceptable.
 
 Do not add unnecessary checks, like any data checks in functions that only used once. I'm serious, If the code works than we don't need any checks, it works. It's a code for research to be use once
+
+This repository is a closed loop: before handling a value, trace it to the repository-owned dataset or producer and use its concrete type, shape, and required fields directly.
+Do not add generic broadcasting, arbitrary iterable/scalar coercion, compatibility fallbacks, or sentinel replacements for hypothetical external inputs that this repository never produces.

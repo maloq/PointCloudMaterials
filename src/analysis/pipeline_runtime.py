@@ -13,7 +13,6 @@ from src.data_utils.data_module import (
     TemporalLAMMPSDataModule,
     _resolve_temporal_window_start_frames,
 )
-from src.data_utils.data_kinds import is_static_data_kind, normalize_data_kind
 from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint
@@ -53,10 +52,7 @@ def _build_analysis_dataloader(
     inference_batch_size: int,
     dataloader_num_workers: int,
 ) -> torch.utils.data.DataLoader:
-    if normalize_data_kind(getattr(cfg.data, "kind", None)) in {
-        "temporal_lammps",
-        "line_lammps",
-    }:
+    if str(cfg.data.kind).strip().lower() in {"temporal_lammps", "line_lammps"}:
         data_cfg = cfg.data
         dump_file = getattr(data_cfg, "dump_file", None)
         cache_dir = getattr(data_cfg, "cache_dir", None)
@@ -191,7 +187,7 @@ def _collect_clustering_fit_cache(
         analysis_cfg,
         data_config_path_override=fit_settings.data_config_path,
     )
-    fit_kind = normalize_data_kind(getattr(fit_cfg.data, "kind", None))
+    fit_kind = str(fit_cfg.data.kind).strip().lower()
 
     fit_source_names: list[str] | None = None
     fit_analysis_files = None
@@ -434,7 +430,7 @@ def _configure_static_analysis_inputs(
     cfg: DictConfig,
     analysis_files: list[str],
 ) -> list[str]:
-    if not is_static_data_kind(getattr(cfg.data, "kind", None)):
+    if str(cfg.data.kind).strip().lower() not in {"static", "line_static"}:
         raise ValueError(
             "_configure_static_analysis_inputs can only be used for static datasets, "
             f"got kind={getattr(cfg.data, 'kind', None)!r}."
@@ -503,7 +499,7 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
     if model_type in {"vicreg", "visreg"}:
         return VICRegModule
-    if model_type in {"temporal_vicreg", "temporal_lejepa"}:
+    if model_type == "temporal_vicreg":
         from src.training_methods.temporal_ssl.temporal_ssl_module import TemporalSSLModule
 
         return TemporalSSLModule
@@ -520,7 +516,7 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
         "Expected one of ['vicreg', 'visreg', 'temporal_vicreg', "
-        "'temporal_lejepa', 'temporal_motif_field', 'line_jepa'], "
+        "'temporal_motif_field', 'line_jepa'], "
         f"got {model_type!r}."
     )
 
@@ -529,14 +525,11 @@ def build_datamodule(
     cfg: DictConfig,
     *,
     require_coords_for_static: bool = False,
-    require_coords_for_real: bool | None = None,
 ):
     """Instantiate the matching datamodule."""
     if getattr(cfg, "data", None) is None:
         raise ValueError("Config missing data section")
-    if require_coords_for_real is not None:
-        require_coords_for_static = bool(require_coords_for_real)
-    data_kind = normalize_data_kind(getattr(cfg.data, "kind", None))
+    data_kind = str(cfg.data.kind).strip().lower()
     if data_kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
     elif data_kind in {"temporal_lammps", "line_lammps"}:
@@ -549,7 +542,7 @@ def build_datamodule(
     else:
         raise ValueError(
             "Unsupported data.kind. Expected one of "
-            "['static', 'synthetic', 'temporal_lammps', 'line_static', 'line_lammps'] "
-            f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
+            "['static', 'synthetic', 'temporal_lammps', 'line_lammps', 'line_static'], "
+            f"got {cfg.data.kind!r}."
         )
     return dm

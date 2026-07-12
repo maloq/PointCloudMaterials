@@ -36,15 +36,16 @@ class HDBSCANResult:
 
 
 def _resolve_cluster_k_values(k_values: list[int], *, n_samples: int) -> list[int]:
-    resolved = [
-        max(2, min(int(k), int(n_samples)))
-        for k in k_values
-        if int(k) >= 2
-    ]
-    resolved = list(dict.fromkeys(resolved))
-    if resolved:
-        return resolved
-    return [max(2, min(int(n_samples), 3))]
+    resolved = list(dict.fromkeys(int(k) for k in k_values))
+    if not resolved:
+        raise ValueError("Clustering requires at least one configured k value.")
+    invalid = [k for k in resolved if k < 2 or k > int(n_samples)]
+    if invalid:
+        raise ValueError(
+            "Clustering k values must satisfy 2 <= k <= number of samples. "
+            f"invalid={invalid}, n_samples={int(n_samples)}, configured={resolved}."
+        )
+    return resolved
 
 
 def _build_clustering_state(
@@ -101,7 +102,7 @@ def _build_clustering_state(
                 return_info=True,
             )
         cluster_labels_by_k[int(k_value)] = labels_k
-        cluster_methods_by_k[int(k_value)] = str(info_k.get("method", "kmeans"))
+        cluster_methods_by_k[int(k_value)] = str(info_k["method"])
         cluster_info_by_k[int(k_value)] = dict(info_k)
         if feature_prep is None:
             feature_prep = {
@@ -208,8 +209,6 @@ def clustering_fit_quality_rejection_reasons(
 
     k = int(primary_k)
     info = info_by_k.get(k)
-    if info is None:
-        info = info_by_k.get(str(k))
     if not isinstance(info, dict):
         return [f"missing clustering fit info for primary_k={k}"]
 
@@ -311,7 +310,7 @@ def fit_reusable_clustering_models(
             pca_max_components=pca_max_components,
         )
         cluster_labels_by_k[int(k_value)] = labels_k
-        cluster_methods_by_k[int(k_value)] = str(info_k.get("method", "kmeans"))
+        cluster_methods_by_k[int(k_value)] = str(info_k["method"])
         cluster_info_by_k[int(k_value)] = dict(info_k)
         fitted_models_by_k[int(k_value)] = fitted_model
         if feature_prep is None:
@@ -426,8 +425,14 @@ def compute_clustering_assignment_margins(
 ) -> dict[str, Any]:
     latents_arr = np.asarray(latents, dtype=np.float32)
     if latents_arr.ndim != 2:
-        latents_arr = np.reshape(latents_arr, (latents_arr.shape[0], -1))
-    expected = np.asarray(expected_labels, dtype=int).reshape(-1)
+        raise ValueError(
+            f"Cluster assignment margin latents must have shape (N, D), got {latents_arr.shape}."
+        )
+    expected = np.asarray(expected_labels, dtype=int)
+    if expected.ndim != 1:
+        raise ValueError(
+            f"Cluster assignment margin labels must have shape (N,), got {expected.shape}."
+        )
     if expected.shape[0] != latents_arr.shape[0]:
         raise ValueError(
             "Cluster assignment margin labels must match latent rows: "
@@ -552,8 +557,13 @@ def representative_features_from_clustering_model(
         fitted_model,
         return_features=True,
     )
-    predicted_labels = np.asarray(predicted_labels, dtype=int).reshape(-1)
-    expected = np.asarray(expected_labels, dtype=int).reshape(-1)
+    predicted_labels = np.asarray(predicted_labels, dtype=int)
+    expected = np.asarray(expected_labels, dtype=int)
+    if predicted_labels.ndim != 1 or expected.ndim != 1:
+        raise ValueError(
+            "Representative feature labels must have shape (N,), "
+            f"got predicted={predicted_labels.shape}, expected={expected.shape}."
+        )
     if predicted_labels.shape != expected.shape:
         raise ValueError(
             "Representative feature validation found a label-shape mismatch: "
@@ -732,98 +742,53 @@ def _run_optional_hdbscan_analysis(
         return HDBSCANResult(labels=None, info=None, color_map=None)
 
     step("Running HDBSCAN clustering (sampled fit)")
-    try:
-        hdbscan_labels, hdbscan_info = compute_hdbscan_labels(
-            latents,
-            sample_fraction=settings.fit_fraction,
-            max_fit_samples=settings.max_fit_samples,
-            random_state=random_state,
-            l2_normalize=l2_normalize,
-            standardize=standardize,
-            pca_variance=pca_variance,
-            pca_max_components=pca_max_components,
-            target_clusters_min=settings.target_k_min,
-            target_clusters_max=settings.target_k_max,
-            min_cluster_size_candidates=settings.min_cluster_size_candidates,
-            min_samples=settings.min_samples,
-            min_samples_candidates=settings.min_samples_candidates,
-            cluster_selection_epsilon=settings.cluster_selection_epsilon,
-            cluster_selection_method=settings.cluster_selection_method,
-            refit_full_data=settings.refit_full_data,
-            prepared_features=prepared_features,
-            prep_info=prep_info,
-            return_info=True,
+    hdbscan_labels, hdbscan_info = compute_hdbscan_labels(
+        latents,
+        sample_fraction=settings.fit_fraction,
+        max_fit_samples=settings.max_fit_samples,
+        random_state=random_state,
+        l2_normalize=l2_normalize,
+        standardize=standardize,
+        pca_variance=pca_variance,
+        pca_max_components=pca_max_components,
+        target_clusters_min=settings.target_k_min,
+        target_clusters_max=settings.target_k_max,
+        min_cluster_size_candidates=settings.min_cluster_size_candidates,
+        min_samples=settings.min_samples,
+        min_samples_candidates=settings.min_samples_candidates,
+        cluster_selection_epsilon=settings.cluster_selection_epsilon,
+        cluster_selection_method=settings.cluster_selection_method,
+        refit_full_data=settings.refit_full_data,
+        prepared_features=prepared_features,
+        prep_info=prep_info,
+        return_info=True,
+    )
+    if hdbscan_info["status"] != "ok":
+        raise RuntimeError(
+            "HDBSCAN did not produce a valid fitted model. "
+            f"status={hdbscan_info['status']!r}, info={hdbscan_info}."
         )
-        n_hdb_clusters_full = int(hdbscan_info.get("n_clusters_full", -1))
-        if (
-            settings.cluster_selection_method != "auto"
-            and n_hdb_clusters_full >= 0
-            and n_hdb_clusters_full < settings.target_k_min
-        ):
-            print(
-                "[analysis][hdbscan] cluster count below target "
-                f"({n_hdb_clusters_full} < {settings.target_k_min}); "
-                "retrying with cluster_selection_method='auto'."
-            )
-            hdbscan_labels_retry, hdbscan_info_retry = compute_hdbscan_labels(
-                latents,
-                sample_fraction=settings.fit_fraction,
-                max_fit_samples=settings.max_fit_samples,
-                random_state=random_state,
-                l2_normalize=l2_normalize,
-                standardize=standardize,
-                pca_variance=pca_variance,
-                pca_max_components=pca_max_components,
-                target_clusters_min=settings.target_k_min,
-                target_clusters_max=settings.target_k_max,
-                min_cluster_size_candidates=settings.min_cluster_size_candidates,
-                min_samples=settings.min_samples,
-                min_samples_candidates=settings.min_samples_candidates,
-                cluster_selection_epsilon=settings.cluster_selection_epsilon,
-                cluster_selection_method="auto",
-                refit_full_data=settings.refit_full_data,
-                prepared_features=prepared_features,
-                prep_info=prep_info,
-                return_info=True,
-            )
-            retry_clusters = int(hdbscan_info_retry.get("n_clusters_full", -1))
-            retry_noise = float(hdbscan_info_retry.get("noise_fraction_full", 1.0))
-            base_noise = float(hdbscan_info.get("noise_fraction_full", 1.0))
-            if (
-                retry_clusters > n_hdb_clusters_full
-                or (retry_clusters == n_hdb_clusters_full and retry_noise < base_noise)
-            ):
-                hdbscan_labels = hdbscan_labels_retry
-                hdbscan_info = hdbscan_info_retry
-                print(
-                    "[analysis][hdbscan] using retry result: "
-                    f"clusters={retry_clusters}, noise={retry_noise:.4f}."
-                )
-        if hdbscan_labels.size != int(coords_count):
-            print(
-                "Warning: HDBSCAN labels do not match coordinate count; "
-                "skipping HDBSCAN MD outputs."
-            )
-            return HDBSCANResult(labels=None, info=hdbscan_info, color_map=None)
+    if hdbscan_labels.size != int(coords_count):
+        raise ValueError(
+            "HDBSCAN labels must match the coordinate count. "
+            f"labels={hdbscan_labels.shape}, coords_count={int(coords_count)}."
+        )
 
-        valid_hdbscan = hdbscan_labels[hdbscan_labels >= 0]
-        if valid_hdbscan.size > 0:
-            hdbscan_color_map = {
-                int(cluster_id): str(color)
-                for cluster_id, color in _build_cluster_color_map(
-                    hdbscan_labels,
-                    cluster_color_assignment=cluster_color_assignment,
-                ).items()
-            }
-        else:
-            hdbscan_color_map = {}
-        if np.any(hdbscan_labels < 0):
-            hdbscan_color_map[-1] = "lightgray"
-        return HDBSCANResult(
-            labels=np.asarray(hdbscan_labels, dtype=int),
-            info=hdbscan_info,
-            color_map=hdbscan_color_map,
-        )
-    except ImportError:
-        print("HDBSCAN package not installed; skipping HDBSCAN analysis.")
-        return HDBSCANResult(labels=None, info=None, color_map=None)
+    valid_hdbscan = hdbscan_labels[hdbscan_labels >= 0]
+    if valid_hdbscan.size > 0:
+        hdbscan_color_map = {
+            int(cluster_id): str(color)
+            for cluster_id, color in _build_cluster_color_map(
+                hdbscan_labels,
+                cluster_color_assignment=cluster_color_assignment,
+            ).items()
+        }
+    else:
+        hdbscan_color_map = {}
+    if np.any(hdbscan_labels < 0):
+        hdbscan_color_map[-1] = "lightgray"
+    return HDBSCANResult(
+        labels=np.asarray(hdbscan_labels, dtype=int),
+        info=hdbscan_info,
+        color_map=hdbscan_color_map,
+    )

@@ -93,7 +93,9 @@ def _build_cluster_color_map(
     *,
     cluster_color_assignment: dict[int, Any] | None = None,
 ) -> dict[int, str]:
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
+    labels = np.asarray(cluster_labels, dtype=int)
+    if labels.ndim != 1:
+        raise ValueError(f"Cluster labels must have shape (N,), got {labels.shape}.")
     valid_ids = sorted(int(v) for v in np.unique(labels) if int(v) >= 0)
     if not valid_ids:
         raise ValueError("Cannot build cluster color map: no non-negative cluster IDs were found.")
@@ -107,13 +109,23 @@ def _build_cluster_color_map(
             continue
         raw_value = cluster_color_assignment[cluster_id]
         if isinstance(raw_value, (int, np.integer)):
-            color_map[cluster_id] = palette[int(raw_value) % len(palette)]
+            palette_index = int(raw_value)
+            if palette_index < 0 or palette_index >= len(palette):
+                raise ValueError(
+                    "Cluster color palette index is out of range. "
+                    f"cluster_id={cluster_id}, palette_index={palette_index}, "
+                    f"palette_size={len(palette)}."
+                )
+            color_map[cluster_id] = palette[palette_index]
         elif isinstance(raw_value, str):
             text = raw_value.strip()
-            if text.lstrip("+-").isdigit():
-                color_map[cluster_id] = palette[int(text) % len(palette)]
-            else:
-                color_map[cluster_id] = mcolors.to_hex(mcolors.to_rgb(text))
+            color_map[cluster_id] = mcolors.to_hex(mcolors.to_rgb(text))
+        else:
+            raise TypeError(
+                "Cluster color assignments must be palette indices or color strings. "
+                f"cluster_id={cluster_id}, value={raw_value!r}, "
+                f"type={type(raw_value)!r}."
+            )
 
     return color_map
 
@@ -127,7 +139,7 @@ def _compute_center_to_edge_colors(
     radius_percentile: float = 95.0,
     gamma: float = 0.85,
 ) -> np.ndarray:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    pts = np.asarray(points, dtype=np.float32)
     base_rgb = np.asarray(mcolors.to_rgb(str(base_color)), dtype=np.float32)
 
     if pts.shape[0] == 1:

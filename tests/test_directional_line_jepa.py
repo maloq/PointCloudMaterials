@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import numpy as np
+import pytest
 import torch
 
 from src.analysis.directional_line_jepa import (
@@ -153,6 +154,7 @@ def test_directional_per_snapshot_visualizations(tmp_path) -> None:
     np.save(source_a, rng.normal(size=(80, 3)).astype(np.float32))
     np.save(source_b, rng.normal(size=(80, 3)).astype(np.float32))
     cosine_error = rng.random((atom_count, direction_count), dtype=np.float32) + 0.1
+    summaries = compute_directional_error_summaries(cosine_error, directions)
     arrays = {
         "coords": rng.normal(size=(atom_count, 3)).astype(np.float32),
         "source_slots": np.asarray([0] * 6 + [1] * 6, dtype=np.int64),
@@ -162,6 +164,8 @@ def test_directional_per_snapshot_visualizations(tmp_path) -> None:
         "atom_ids": np.arange(100, 100 + atom_count, dtype=np.int64),
         "directions": directions,
         "prediction_cosine_error": cosine_error,
+        "mean_prediction_cosine_error": summaries["mean_error"],
+        "relative_directional_variation": summaries["relative_directional_variation"],
         "context_coords": rng.normal(size=(14, 3)).astype(np.float32),
         "context_source_slots": np.asarray([0] * 7 + [1] * 7, dtype=np.int64),
         "context_atom_ids": np.arange(200, 214, dtype=np.int64),
@@ -170,10 +174,6 @@ def test_directional_per_snapshot_visualizations(tmp_path) -> None:
             [True] * 6 + [False] + [True] * 6 + [False]
         ),
     }
-    legacy_path = tmp_path / "interactive" / "directional_volume_3d.html"
-    legacy_path.parent.mkdir(parents=True)
-    legacy_path.write_text("legacy")
-
     artifacts = render_directional_line_jepa_visualizations(
         arrays,
         tmp_path / "interactive",
@@ -197,27 +197,25 @@ def test_directional_per_snapshot_visualizations(tmp_path) -> None:
     assert "Unit-direction sphere" in profiles_html
     assert '\"type\":\"cone\"' not in profiles_html
     assert '\"type\":\"mesh3d\"' not in profiles_html
-    assert not legacy_path.exists()
 
 
-def test_legacy_visualization_schema_is_still_supported(tmp_path) -> None:
+def test_obsolete_visualization_schema_is_rejected(tmp_path) -> None:
     rng = np.random.default_rng(9)
     directions = fibonacci_sphere_directions(8)
     arrays = {
         "coords": rng.normal(size=(5, 3)).astype(np.float32),
-        "source_names": np.asarray(["legacy"] * 5),
-        "source_paths": np.asarray([str(tmp_path / "legacy.npy")] * 5),
+        "source_names": np.asarray(["obsolete"] * 5),
+        "source_paths": np.asarray([str(tmp_path / "obsolete.npy")] * 5),
         "analysis_sample_indices": np.arange(5, dtype=np.int64),
         "atom_ids": np.arange(5, dtype=np.int64),
         "directions": directions,
         "reconstruction_cosine_error": rng.random((5, 8), dtype=np.float32),
     }
 
-    artifacts = render_directional_line_jepa_visualizations(
-        arrays, tmp_path / "legacy_report", include_plotlyjs="cdn"
-    )
-
-    assert Path(artifacts["snapshot_legacy_prediction_error"]).is_file()
+    with pytest.raises(KeyError, match="current directional_line_jepa schema"):
+        render_directional_line_jepa_visualizations(
+            arrays, tmp_path / "obsolete_report", include_plotlyjs="cdn"
+        )
 
 
 def test_directional_summaries_recover_max_axis_and_anisotropy() -> None:

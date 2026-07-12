@@ -55,25 +55,29 @@ def resolve_point_scale(cfg: Any) -> float:
 def _safe_xyz(points: np.ndarray) -> np.ndarray:
     arr = np.asarray(points, dtype=np.float32)
     if arr.ndim == 3:
-        # Temporal datasets provide (T, N, 3); old qualitative plots should use the anchor frame.
+        # Temporal datasets provide (T, N, 3); profiles use the anchor frame.
         arr = arr[0]
-    if arr.ndim != 2:
-        arr = np.reshape(arr, (-1, arr.shape[-1]))
-    if arr.shape[1] > 3:
-        arr = arr[:, :3]
-    if arr.shape[1] < 3:
-        raise ValueError(f"Expected points with at least 3 columns, got {arr.shape}")
-    finite = np.all(np.isfinite(arr), axis=1)
-    arr = arr[finite]
-    if arr.size == 0:
-        return np.empty((0, 3), dtype=np.float32)
+    if arr.ndim != 2 or arr.shape[1] != 3:
+        raise ValueError(
+            "Point-cloud profiles require shape (N, 3) or (T, N, 3), "
+            f"got {arr.shape}."
+        )
+    if not np.isfinite(arr).all():
+        first_bad = np.argwhere(~np.isfinite(arr))[0].tolist()
+        raise ValueError(
+            "Point-cloud profiles require finite coordinates. "
+            f"first_nonfinite_index={first_bad}, shape={arr.shape}."
+        )
     return arr.astype(np.float32, copy=False)
 
 
 def _extract_points_from_item(item: Any) -> torch.Tensor:
     points = item["points"]
     if not torch.is_tensor(points):
-        points = torch.as_tensor(points)
+        raise TypeError(
+            "Analysis datasets must return item['points'] as a torch.Tensor, "
+            f"got {type(points)!r}."
+        )
     return points
 
 
@@ -82,13 +86,20 @@ def _load_point_cloud_from_dataset(
     sample_index: int,
     *,
     point_scale: float = 1.0,
-) -> np.ndarray | None:
+) -> np.ndarray:
     if dataset is None or not hasattr(dataset, "__getitem__"):
-        return None
+        raise TypeError(
+            "Point-cloud loading requires an indexable dataset, "
+            f"got {type(dataset)!r}."
+        )
+    index = int(sample_index)
     try:
-        item = dataset[int(sample_index)]
-    except (IndexError, KeyError):
-        return None
+        item = dataset[index]
+    except (IndexError, KeyError) as exc:
+        raise IndexError(
+            "Failed to load a point-cloud dataset sample. "
+            f"sample_index={index}, dataset_type={type(dataset)!r}."
+        ) from exc
     points = _extract_points_from_item(item)
     points_np = points.detach().cpu().numpy()
     points_np = _safe_xyz(points_np)
@@ -170,15 +181,18 @@ def _compute_convex_volume(points: np.ndarray) -> float:
         return _axis_aligned_volume(points)
     try:
         hull = ConvexHull(points)
-        volume = float(hull.volume)
-        if np.isfinite(volume) and volume > 0.0:
-            return volume
     except (QhullError, ValueError) as exc:
-        if n == 0:
-            raise RuntimeError(
-                "Convex volume fallback received zero points after the n>=4 guard."
-            ) from exc
-    return _axis_aligned_volume(points)
+        raise ValueError(
+            "Could not compute the convex volume of a representative point cloud. "
+            f"shape={np.asarray(points).shape}."
+        ) from exc
+    volume = float(hull.volume)
+    if not np.isfinite(volume) or volume <= 0.0:
+        raise ValueError(
+            "Representative point-cloud convex volume must be finite and positive, "
+            f"got volume={volume}, shape={np.asarray(points).shape}."
+        )
+    return volume
 
 
 def _compute_rdf_peak(points: np.ndarray, nn_mean: float) -> tuple[float | None, float | None]:

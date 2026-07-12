@@ -18,7 +18,6 @@ import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf, open_dict
 
-from src.data_utils.data_kinds import normalize_data_kind
 
 from .cluster_profiles import resolve_point_scale
 from .cluster_rendering import _build_cluster_representative_render_cache
@@ -33,12 +32,16 @@ from .clustering import (
 from .config import (
     DEFAULT_ANALYSIS_CONFIG_PATH, _positive_int_or_none, _print_resolved_analysis_settings,
     _resolve_analysis_files, _resolve_analysis_settings, _resolve_figure_set_settings,
-    _resolve_input_settings, _resolve_optional_cluster_k, _resolve_run_settings,
+    _resolve_input_settings, _resolve_run_settings,
     build_runtime_model_config, load_checkpoint_analysis_config,
 )
 from .connected_regimes import (
     resolve_connected_regime_settings,
     run_connected_regime_analysis,
+)
+from .gateway_phase import (
+    resolve_gateway_phase_settings,
+    run_gateway_phase_analysis,
 )
 from .dynamic_motif import run_dynamic_motif_analysis
 from .directional_line_jepa import (
@@ -290,21 +293,6 @@ def run_post_training_analysis(
             "clustering.hdbscan.enabled yet. Disable HDBSCAN or disable dense "
             "MD-space animation sampling."
         )
-    real_md_selected_k_override = _resolve_optional_cluster_k(
-        OmegaConf.select(analysis_cfg, "real_md.selected_k", default=None),
-        field_name="real_md.selected_k",
-    )
-    if (
-        real_md_selected_k_override is not None
-        and int(real_md_selected_k_override) != int(analysis_settings.primary_k)
-    ):
-        raise ValueError(
-            "real_md.selected_k conflicts with clustering.primary_k. "
-            f"Got real_md.selected_k={int(real_md_selected_k_override)} and "
-            f"clustering.primary_k={int(analysis_settings.primary_k)}. "
-            "Use clustering.primary_k as the single selected clustering k and "
-            "leave real_md.selected_k unset."
-        )
     real_md_selected_k = int(analysis_settings.primary_k)
     runtime_profile = resolve_analysis_runtime_profile(analysis_cfg)
     if runtime_profile.real_md_projection_method is not None:
@@ -350,9 +338,10 @@ def run_post_training_analysis(
         analysis_cfg,
         default_random_state=int(analysis_settings.seed_base),
     )
+    gateway_phase_settings = resolve_gateway_phase_settings(analysis_cfg)
     directional_eligible = (
         str(getattr(cfg, "model_type", "")).strip().lower() == "line_jepa"
-        and normalize_data_kind(getattr(cfg.data, "kind", None)) in {"static", "line_static"}
+        and str(cfg.data.kind).strip().lower() in {"static", "line_static"}
     )
     if directional_eligible:
         directional_line_jepa_settings = apply_directional_runtime_limits(
@@ -381,7 +370,7 @@ def run_post_training_analysis(
         analysis_settings=analysis_settings,
         figure_settings=figure_settings,
     )
-    is_synthetic = normalize_data_kind(getattr(cfg.data, "kind", None)) == "synthetic"
+    is_synthetic = str(cfg.data.kind).strip().lower() == "synthetic"
     analysis_inference_batch_size = _resolve_analysis_inference_batch_size(cfg, input_settings)
     print(
         "Analysis inference batch size: "
@@ -404,7 +393,7 @@ def run_post_training_analysis(
     clustering_random_state = int(analysis_settings.seed_base)
     preloaded_cache: dict[str, np.ndarray] | None = None
     preloaded_cache_message: str | None = None
-    normalized_data_kind = normalize_data_kind(getattr(cfg.data, "kind", None))
+    normalized_data_kind = str(cfg.data.kind).strip().lower()
     if (
         not temporal_real_mode
         and normalized_data_kind in {"static", "line_static"}
@@ -449,7 +438,7 @@ def run_post_training_analysis(
     if temporal_real_mode:
         _step("Building temporal dump analysis dataset")
         default_temporal_static_frame_index = 0
-        if normalize_data_kind(getattr(cfg.data, "kind", None)) == "temporal_lammps":
+        if str(cfg.data.kind).strip().lower() == "temporal_lammps":
             default_temporal_static_frame_index = int(getattr(cfg.data, "sequence_length", 1)) // 2
         configured_static_frame_index = OmegaConf.select(
             analysis_cfg,
@@ -609,7 +598,7 @@ def run_post_training_analysis(
         all_metrics["clustering_fit_inputs"] = {
             "enabled": True,
             "data_config": analysis_settings.cluster_fit.data_config_path,
-            "data_kind": normalize_data_kind(getattr(fit_cfg.data, "kind", None)),
+            "data_kind": str(fit_cfg.data.kind).strip().lower(),
             "static_data_files_requested": analysis_settings.cluster_fit.input_settings.static_data_files,
             "static_data_files_resolved": [
                 str(v)
@@ -1296,6 +1285,29 @@ def run_post_training_analysis(
     }
     shared_cluster_color_map = shared_cluster_color_maps_by_k[int(primary_k)]
 
+    if gateway_phase_settings.enabled and temporal_bundle is None:
+        raise ValueError(
+            "gateway_phase.enabled=true requires inputs.temporal_real.enabled=true so "
+            "stable LAMMPS atom identities and ordered anchor frames are available."
+        )
+    gateway_phase_metrics = run_gateway_phase_analysis(
+        labels=np.asarray(cluster_labels, dtype=int),
+        instance_ids=np.asarray(cache["instance_ids"]),
+        coords=np.asarray(cache["coords"], dtype=np.float32),
+        anchor_frame_indices=np.asarray(
+            cache.get("anchor_frame_indices", np.empty((0,), dtype=np.int64))
+        ),
+        out_dir=out_dir,
+        settings=gateway_phase_settings,
+        inference_dataset=(
+            None if temporal_bundle is None else temporal_bundle.inference_dataset
+        ),
+        temporal_dataset=(None if temporal_bundle is None else temporal_bundle.dataset),
+        step=_step,
+    )
+    if gateway_phase_metrics:
+        all_metrics["gateway_phase"] = gateway_phase_metrics
+
     connected_representative_selection_features = None
     if connected_regime_settings.interactive_3d:
         connected_representative_selection_features, _ = (
@@ -1651,7 +1663,7 @@ def run_post_training_analysis(
                 representative_selection_features=real_md_representative_selection_features,
                 representative_selection_info=real_md_representative_selection_info,
                 cluster_assignment_margins_by_k=real_md_assignment_margins_by_k,
-                selected_k_override=int(k_value),
+                selected_k=int(k_value),
                 output_root_dir=real_md_output_root,
             )
             real_md_summaries_by_k[str(int(k_value))] = real_md_summary
@@ -1666,7 +1678,6 @@ def run_post_training_analysis(
     dynamic_metrics = run_dynamic_motif_analysis(
         cache=cache,
         out_dir=out_dir,
-        model_cfg=cfg,
         analysis_cfg=analysis_settings,
         cluster_labels_primary=cluster_labels,
         step=_step,

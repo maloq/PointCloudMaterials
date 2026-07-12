@@ -93,6 +93,36 @@ clustering:
     cluster_selection_method: leaf
     refit_full_data: true
 
+# Test whether C2 is a required tracked-atom intermediate on paths from
+# liquid-like C0/C1 to C3, and validate the states with independent CNA motifs.
+# Cluster IDs are zero-based and refer to clustering.primary_k.
+gateway_phase:
+  enabled: true
+  states:
+    a: [0, 1]
+    intermediate: [2]
+    b: [3]
+  bootstrap_samples: 1000
+  random_state: 123
+  gateway_fraction_threshold: 0.95
+  minimum_reactive_paths: 30
+  lag_strides: [1, 2, 4, 8]
+  reactive_path_csv_limit: 100000
+  spatial:
+    enabled: true
+    neighbor_k: 12
+    max_frames: 60
+    precursor_lags: [1, 2, 4, 8]
+    precursor_radius_edges: [0.0, 4.0, 8.0, 12.0, 16.0]
+    precursor_max_events: 2000
+  cna:
+    enabled: true
+    max_samples: 1200
+    max_signatures: 12
+    fit_max_pointclouds: 1200
+    shell_min_neighbors: 8
+    shell_max_neighbors: 24
+
 md:
   overlap_boost: 0.0
   overlap_fraction: null

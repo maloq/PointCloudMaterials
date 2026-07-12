@@ -7,10 +7,11 @@ from typing import Any
 import numpy as np
 import torch
 from omegaconf import OmegaConf
-from torch.utils.data._utils.collate import default_collate
 
 from src.data_utils.data_load import PointCloudDataset
-from src.data_utils.data_kinds import normalize_data_kind
+from src.data_utils.data_modules.temporal_window import (
+    _temporal_identity_or_default_collate,
+)
 from src.data_utils.temporal_lammps_dataset import (
     TemporalLAMMPSDumpDataset,
     estimate_lammps_dump_cutoff_radius,
@@ -82,15 +83,6 @@ class TemporalRealInferenceSpec:
         }
 
 
-def _temporal_identity_or_default_collate(batch: Any) -> Any:
-    # TemporalLAMMPSDumpDataset implements batched __getitems__ and may hand the
-    # DataLoader an already-collated dict. In that case we must not run the
-    # default collate again.
-    if isinstance(batch, dict):
-        return batch
-    return default_collate(batch)
-
-
 def _temporal_real_dataloader_kwargs(
     *,
     batch_size: int,
@@ -129,7 +121,7 @@ def _validate_temporal_real_checkpoint_compatibility(
     model_cfg: Any,
     inference_mode: Any,
 ) -> None:
-    model_data_kind = normalize_data_kind(getattr(model_cfg.data, "kind", None))
+    model_data_kind = str(model_cfg.data.kind).strip().lower()
     inference_mode_norm = _normalize_temporal_real_inference_mode(inference_mode)
     if model_data_kind not in {"static", "temporal_lammps"}:
         raise ValueError(

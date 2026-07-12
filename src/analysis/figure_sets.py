@@ -696,7 +696,7 @@ def render_cluster_figure_outputs(
             f"Need at least {min_required_samples} samples per snapshot for "
             f"k={figure_settings.k}, got {details}. "
             "Increase inputs.max_samples_total / inputs.max_batches_latent, or lower "
-            "figure_set.k."
+            "clustering.primary_k."
         )
 
     global_color_map = build_shared_cluster_color_map(

@@ -14,7 +14,7 @@ import matplotlib.colors as mcolors
 import numpy as np
 
 from .cluster_colors import _boost_saturation
-from .cluster_geometry import _estimate_ball_radius_world
+from .cluster_geometry import _estimate_ball_radius_world, _sample_indices_stratified
 from .output_layout import log_saved_figure as _log_saved_figure
 
 
@@ -118,11 +118,21 @@ def _save_md_cluster_snapshot_raytrace_blender(
     This is an additive renderer used alongside the existing matplotlib
     outputs. It requires a Blender executable.
     """
-    coords_arr = np.asarray(coords, dtype=np.float32)[:, :3]
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
+    coords_arr = np.asarray(coords, dtype=np.float32)
+    labels = np.asarray(cluster_labels, dtype=int)
+    if coords_arr.ndim != 2 or coords_arr.shape[1] != 3:
+        raise ValueError(f"Raytracing coordinates must have shape (N, 3), got {coords_arr.shape}.")
+    if labels.ndim != 1 or labels.shape[0] != coords_arr.shape[0]:
+        raise ValueError(
+            "Raytracing cluster labels must have shape (N,) matching coordinates. "
+            f"labels={labels.shape}, coordinates={coords_arr.shape}."
+        )
     projection_norm = str(projection).strip().lower()
     if projection_norm not in {"perspective", "persp", "orthographic", "ortho"}:
-        projection_norm = "perspective"
+        raise ValueError(
+            "Raytracing projection must be one of "
+            f"['perspective', 'persp', 'orthographic', 'ortho'], got {projection!r}."
+        )
 
     mask = labels >= 0
     if visible_cluster_ids is not None:
@@ -133,13 +143,22 @@ def _save_md_cluster_snapshot_raytrace_blender(
 
     coords_use = coords_arr[mask]
     labels_use = labels[mask]
-    coords_plot = coords_use
-    labels_plot = labels_use
+    sample_indices = _sample_indices_stratified(labels_use, max_points, random_seed=0)
+    coords_plot = coords_use[sample_indices]
+    labels_plot = labels_use[sample_indices]
     unique_labels = sorted(int(v) for v in np.unique(labels_plot) if int(v) >= 0)
+    missing_colors = [cluster_id for cluster_id in unique_labels if cluster_id not in color_map]
+    if missing_colors:
+        raise KeyError(f"Blender raytrace is missing colors for clusters {missing_colors}.")
 
     bbox_min = np.min(coords_arr, axis=0)
     bbox_max = np.max(coords_arr, axis=0)
-    bbox_diag = max(1e-8, float(np.linalg.norm(bbox_max - bbox_min)))
+    bbox_diag = float(np.linalg.norm(bbox_max - bbox_min))
+    if not np.isfinite(bbox_diag) or bbox_diag <= 0.0:
+        raise ValueError(
+            "Blender raytracing requires coordinates with a nonzero finite bounding box, "
+            f"got bbox_min={bbox_min.tolist()}, bbox_max={bbox_max.tolist()}."
+        )
     # Keep physical sizing anchored to the full labeled cloud so downsampling
     # and subset views do not inflate sphere diameter.
     radius_ref_points = coords_arr[labels >= 0]
@@ -148,10 +167,15 @@ def _save_md_cluster_snapshot_raytrace_blender(
         sample_limit=1024,
         random_seed=0,
     )
-    # Keep backward compatibility with existing config value while making size
-    # physically data-driven by default.
-    user_radius_scale = max(1e-6, float(sphere_radius_fraction) / 0.0105)
-    sphere_radius_world = max(1e-9, float(auto_radius_world * user_radius_scale))
+    # The configured fraction scales the data-driven radius relative to its
+    # reference value in the checked-in analysis configs.
+    if not np.isfinite(sphere_radius_fraction) or float(sphere_radius_fraction) <= 0.0:
+        raise ValueError(
+            "sphere_radius_fraction must be finite and positive, "
+            f"got {sphere_radius_fraction}."
+        )
+    user_radius_scale = float(sphere_radius_fraction) / 0.0105
+    sphere_radius_world = float(auto_radius_world * user_radius_scale)
     wireframe_width_world = float(wireframe_width_fraction) * bbox_diag
 
     clusters_payload: list[dict[str, Any]] = []
@@ -161,7 +185,7 @@ def _save_md_cluster_snapshot_raytrace_blender(
         if pts.shape[0] == 0:
             continue
         color_rgb = np.asarray(
-            mcolors.to_rgb(str(color_map.get(cluster_id, "#777777"))),
+            mcolors.to_rgb(str(color_map[cluster_id])),
             dtype=np.float32,
         )
         color_rgb = _boost_saturation(color_rgb[None, :], 1.08)[0]

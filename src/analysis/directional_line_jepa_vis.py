@@ -29,27 +29,23 @@ _GENERATED_FILENAMES = (
     "directional_profiles.html",
 )
 
-_LEGACY_FILENAMES = (
-    "index.html",
-    "directional_discovery_map_3d.html",
-    "directional_signature_atlas.html",
-    "directional_metrics_3d.html",
-    "directional_residual_sweep_3d.html",
-    "directional_max_error_vectors_3d.html",
-    "directional_dense_atoms_3d.html",
-    "directional_volume_3d.html",
-)
-
-_LEGACY_ARTIFACT_KEYS = (
-    "interactive_3d_index",
-    "interactive_3d_discovery_map",
-    "interactive_directional_signature_atlas",
-    "interactive_3d_metrics",
-    "interactive_3d_direction_sweep",
-    "interactive_3d_max_error_vectors",
-    "interactive_3d_dense_atoms",
-    "interactive_3d_volume",
-)
+_REQUIRED_VISUALIZATION_FIELDS = {
+    "coords",
+    "source_slots",
+    "source_names_by_slot",
+    "source_paths_by_slot",
+    "analysis_sample_indices",
+    "atom_ids",
+    "directions",
+    "prediction_cosine_error",
+    "context_coords",
+    "context_source_slots",
+    "context_atom_ids",
+    "context_analysis_sample_indices",
+    "context_evaluated_mask",
+    "mean_prediction_cosine_error",
+    "relative_directional_variation",
+}
 
 
 def _plotly_modules():
@@ -64,124 +60,108 @@ def _plotly_modules():
 
 
 def _safe_output_name(value: str) -> str:
-    stem = Path(str(value)).stem
+    stem = Path(value).stem
     normalized = re.sub(r"[^A-Za-z0-9_.-]+", "_", stem).strip("_.")
-    return normalized or "snapshot"
+    if not normalized:
+        raise ValueError(
+            "Directional visualization source names must contain at least one filename-safe "
+            f"character, got {value!r}."
+        )
+    return normalized
 
 
-def _legacy_source_metadata(
-    arrays: Mapping[str, np.ndarray],
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    paths = np.asarray(arrays["source_paths"]).astype(str)
-    names = np.asarray(arrays["source_names"]).astype(str)
-    unique_paths = list(dict.fromkeys(paths.tolist()))
-    path_to_slot = {path: slot for slot, path in enumerate(unique_paths)}
-    slots = np.asarray([path_to_slot[path] for path in paths], dtype=np.int64)
-    names_by_slot = np.asarray(
-        [names[int(np.flatnonzero(paths == path)[0])] for path in unique_paths], dtype=str
-    )
-    return slots, names_by_slot, np.asarray(unique_paths, dtype=str)
-
-
-def _ensure_visualization_arrays(
+def _validate_visualization_arrays(
     arrays: Mapping[str, np.ndarray],
 ) -> dict[str, np.ndarray]:
-    resolved = {name: np.asarray(value) for name, value in arrays.items()}
-    required = {"coords", "atom_ids", "analysis_sample_indices", "directions"}
-    missing = sorted(required - set(resolved))
+    resolved = dict(arrays)
+    missing = sorted(_REQUIRED_VISUALIZATION_FIELDS - set(resolved))
     if missing:
-        raise KeyError(f"Directional visualization is missing required fields: {missing}.")
-
-    if "prediction_cosine_error" not in resolved:
-        if "reconstruction_cosine_error" not in resolved:
-            raise KeyError(
-                "Directional visualization requires prediction_cosine_error or the legacy "
-                "reconstruction_cosine_error field."
-            )
-        resolved["prediction_cosine_error"] = np.clip(
-            np.asarray(resolved["reconstruction_cosine_error"], dtype=np.float32),
-            0.0,
-            2.0,
+        raise KeyError(
+            "Directional visualization archive does not match the current "
+            f"directional_line_jepa schema. Missing fields: {missing}."
         )
 
-    if "source_names_by_slot" not in resolved:
-        legacy_fields = {"source_names", "source_paths"}
-        if not legacy_fields.issubset(resolved):
-            raise KeyError(
-                "Directional visualization needs compact source metadata or legacy "
-                "source_names/source_paths arrays."
-            )
-        slots, names_by_slot, paths_by_slot = _legacy_source_metadata(resolved)
-        resolved["source_slots"] = slots
-        resolved["source_names_by_slot"] = names_by_slot
-        resolved["source_paths_by_slot"] = paths_by_slot
-
-    if "context_coords" not in resolved:
-        resolved["context_coords"] = np.asarray(resolved["coords"], dtype=np.float32)
-        resolved["context_source_slots"] = np.asarray(
-            resolved["source_slots"], dtype=np.int64
-        )
-        resolved["context_atom_ids"] = np.asarray(resolved["atom_ids"], dtype=np.int64)
-        resolved["context_analysis_sample_indices"] = np.asarray(
-            resolved["analysis_sample_indices"], dtype=np.int64
-        )
-        resolved["context_evaluated_mask"] = np.ones(
-            (len(resolved["coords"]),), dtype=bool
-        )
-
-    summary_fields = {
-        "mean_error",
-        "max_error",
-        "std_error",
-        "relative_directional_variation",
-        "novelty_percentile",
-        "anisotropy_percentile",
-    }
-    if not summary_fields.issubset(resolved):
-        from .directional_line_jepa import compute_directional_error_summaries
-
-        resolved.update(
-            compute_directional_error_summaries(
-                resolved["prediction_cosine_error"], resolved["directions"]
-            )
-        )
-    resolved["mean_prediction_cosine_error"] = np.asarray(
-        resolved.get("mean_prediction_cosine_error", resolved["mean_error"]),
-        dtype=np.float32,
-    )
-    resolved["max_prediction_cosine_error"] = np.asarray(
-        resolved.get("max_prediction_cosine_error", resolved["max_error"]),
-        dtype=np.float32,
-    )
-    resolved["std_prediction_cosine_error"] = np.asarray(
-        resolved.get("std_prediction_cosine_error", resolved["std_error"]),
-        dtype=np.float32,
-    )
-
-    atom_count = len(resolved["coords"])
-    direction_count = len(resolved["directions"])
-    if resolved["prediction_cosine_error"].shape != (atom_count, direction_count):
+    coords = resolved["coords"]
+    directions = resolved["directions"]
+    context_coords = resolved["context_coords"]
+    if coords.ndim != 2 or coords.shape[1] != 3:
         raise ValueError(
-            "Directional prediction error shape does not match atoms and directions. "
-            f"errors={resolved['prediction_cosine_error'].shape}, atoms={atom_count}, "
-            f"directions={direction_count}."
+            f"Directional visualization coords must have shape (N, 3), got {coords.shape}."
+        )
+    if directions.ndim != 2 or directions.shape[1] != 3:
+        raise ValueError(
+            "Directional visualization directions must have shape (K, 3), "
+            f"got {directions.shape}."
+        )
+    if context_coords.ndim != 2 or context_coords.shape[1] != 3:
+        raise ValueError(
+            "Directional visualization context_coords must have shape (M, 3), "
+            f"got {context_coords.shape}."
+        )
+
+    atom_count = len(coords)
+    direction_count = len(directions)
+    context_count = len(context_coords)
+    expected_shapes = {
+        "source_slots": (atom_count,),
+        "analysis_sample_indices": (atom_count,),
+        "atom_ids": (atom_count,),
+        "prediction_cosine_error": (atom_count, direction_count),
+        "mean_prediction_cosine_error": (atom_count,),
+        "relative_directional_variation": (atom_count,),
+        "context_source_slots": (context_count,),
+        "context_atom_ids": (context_count,),
+        "context_analysis_sample_indices": (context_count,),
+        "context_evaluated_mask": (context_count,),
+    }
+    for name, expected_shape in expected_shapes.items():
+        if resolved[name].shape != expected_shape:
+            raise ValueError(
+                f"Directional visualization field {name!r} must have shape "
+                f"{expected_shape}, got {resolved[name].shape}."
+            )
+
+    names = resolved["source_names_by_slot"]
+    paths = resolved["source_paths_by_slot"]
+    if names.ndim != 1 or paths.shape != names.shape:
+        raise ValueError(
+            "Directional visualization source metadata must be parallel one-dimensional "
+            f"arrays, got names={names.shape}, paths={paths.shape}."
+        )
+    source_count = len(names)
+    for field in ("source_slots", "context_source_slots"):
+        slots = resolved[field]
+        if np.any(slots < 0) or np.any(slots >= source_count):
+            raise IndexError(
+                f"Directional visualization field {field!r} contains source slots outside "
+                f"[0, {source_count}), values={np.unique(slots).tolist()}."
+            )
+    if not np.isfinite(directions).all() or np.any(
+        np.linalg.norm(directions, axis=1) == 0.0
+    ):
+        raise ValueError(
+            "Directional visualization directions must be finite and non-zero."
+        )
+    if not np.isfinite(resolved["prediction_cosine_error"]).all():
+        raise ValueError(
+            "Directional visualization prediction_cosine_error contains non-finite values."
         )
     return resolved
 
 
 def _load_visualization_arrays(npz_path: Path) -> dict[str, np.ndarray]:
     with np.load(npz_path, allow_pickle=False) as archive:
-        arrays = {name: np.asarray(archive[name]) for name in archive.files}
-    return _ensure_visualization_arrays(arrays)
+        arrays = {name: archive[name] for name in archive.files}
+    return _validate_visualization_arrays(arrays)
 
 
 def _source_groups(
     arrays: Mapping[str, np.ndarray], *, context: bool = False
 ) -> list[tuple[int, str, str, np.ndarray]]:
     slot_field = "context_source_slots" if context else "source_slots"
-    slots = np.asarray(arrays[slot_field], dtype=np.int64)
-    names = np.asarray(arrays["source_names_by_slot"]).astype(str)
-    paths = np.asarray(arrays["source_paths_by_slot"]).astype(str)
+    slots = arrays[slot_field]
+    names = arrays["source_names_by_slot"]
+    paths = arrays["source_paths_by_slot"]
     groups = []
     for slot_raw in dict.fromkeys(slots.tolist()):
         slot = int(slot_raw)
@@ -190,11 +170,15 @@ def _source_groups(
 
 
 def _global_color_limits(values: np.ndarray) -> tuple[float, float]:
-    finite = np.asarray(values, dtype=np.float64)
-    finite = finite[np.isfinite(finite)]
-    if finite.size == 0:
-        raise ValueError("Cannot visualize a metric containing no finite values.")
-    low, high = np.quantile(finite, [0.01, 0.99])
+    if values.size == 0:
+        raise ValueError("Cannot visualize an empty directional metric.")
+    if not np.isfinite(values).all():
+        invalid_count = int(np.count_nonzero(~np.isfinite(values)))
+        raise ValueError(
+            "Cannot visualize a directional metric containing non-finite values. "
+            f"shape={values.shape}, invalid_count={invalid_count}."
+        )
+    low, high = np.quantile(values, [0.01, 0.99])
     if high <= low:
         high = low + max(abs(float(low)) * 1.0e-6, 1.0e-8)
     return float(low), float(high)
@@ -203,7 +187,6 @@ def _global_color_limits(values: np.ndarray) -> tuple[float, float]:
 def _render_spatial_map(
     arrays: Mapping[str, np.ndarray],
     *,
-    source_slot: int,
     source_label: str,
     evaluated_indices: np.ndarray,
     context_indices: np.ndarray,
@@ -215,12 +198,12 @@ def _render_spatial_map(
     include_plotlyjs: bool | str,
 ) -> None:
     go, _ = _plotly_modules()
-    coords = np.asarray(arrays["coords"], dtype=np.float32)[evaluated_indices]
-    values = np.asarray(arrays[metric_name], dtype=np.float32)[evaluated_indices]
+    coords = arrays["coords"][evaluated_indices]
+    values = arrays[metric_name][evaluated_indices]
     customdata = np.column_stack(
         (
-            np.asarray(arrays["analysis_sample_indices"])[evaluated_indices],
-            np.asarray(arrays["atom_ids"])[evaluated_indices],
+            arrays["analysis_sample_indices"][evaluated_indices],
+            arrays["atom_ids"][evaluated_indices],
             values,
         )
     )
@@ -249,12 +232,10 @@ def _render_spatial_map(
         )
     )
 
-    context_mask = np.asarray(arrays["context_evaluated_mask"], dtype=bool)[context_indices]
+    context_mask = arrays["context_evaluated_mask"][context_indices]
     excluded_indices = context_indices[~context_mask]
     if len(excluded_indices):
-        excluded_coords = np.asarray(arrays["context_coords"], dtype=np.float32)[
-            excluded_indices
-        ]
+        excluded_coords = arrays["context_coords"][excluded_indices]
         fig.add_trace(
             go.Scatter3d(
                 x=excluded_coords[:, 0],
@@ -290,7 +271,6 @@ def _render_spatial_map(
 
 
 def _rank_percentiles(values: np.ndarray) -> np.ndarray:
-    values = np.asarray(values, dtype=np.float64)
     if len(values) <= 1:
         return np.zeros(values.shape, dtype=np.float64)
     order = np.argsort(values, kind="mergesort")
@@ -302,8 +282,8 @@ def _rank_percentiles(values: np.ndarray) -> np.ndarray:
 def _representative_rows(
     arrays: Mapping[str, np.ndarray], indices: np.ndarray
 ) -> list[tuple[str, int]]:
-    prediction = np.asarray(arrays["mean_prediction_cosine_error"])[indices]
-    variation = np.asarray(arrays["relative_directional_variation"])[indices]
+    prediction = arrays["mean_prediction_cosine_error"][indices]
+    variation = arrays["relative_directional_variation"][indices]
     prediction_rank = _rank_percentiles(prediction)
     variation_rank = _rank_percentiles(variation)
     candidate_orders = (
@@ -352,11 +332,11 @@ def _render_directional_profiles(
     include_plotlyjs: bool | str,
 ) -> None:
     go, make_subplots = _plotly_modules()
-    directions = np.asarray(arrays["directions"], dtype=np.float64)
+    directions = arrays["directions"]
     directions = directions / np.linalg.norm(directions, axis=1, keepdims=True)
     azimuth = np.degrees(np.arctan2(directions[:, 1], directions[:, 0]))
     elevation = np.degrees(np.arcsin(np.clip(directions[:, 2], -1.0, 1.0)))
-    profiles = np.asarray(arrays["prediction_cosine_error"], dtype=np.float32)
+    profiles = arrays["prediction_cosine_error"]
     representatives = _representative_rows(arrays, evaluated_indices)
 
     fig = make_subplots(
@@ -499,23 +479,12 @@ def _render_directional_profiles(
     fig.write_html(str(out_file), include_plotlyjs=include_plotlyjs)
 
 
-def _remove_stale_outputs(out_dir: Path) -> None:
-    for filename in _LEGACY_FILENAMES:
-        path = out_dir / filename
-        if path.exists():
-            path.unlink()
+def _remove_generated_outputs(out_dir: Path) -> None:
     for path in out_dir.glob("*/"):
         for filename in _GENERATED_FILENAMES:
             generated = path / filename
             if generated.exists():
                 generated.unlink()
-
-    legacy_dir = out_dir.parent / "directional_line_jepa_3d"
-    if legacy_dir != out_dir and legacy_dir.is_dir():
-        for filename in _LEGACY_FILENAMES:
-            path = legacy_dir / filename
-            if path.exists():
-                path.unlink()
 
 
 def _write_index(
@@ -573,11 +542,11 @@ def render_directional_line_jepa_visualizations(
     arrays = (
         _load_visualization_arrays(Path(data))
         if isinstance(data, (str, Path))
-        else _ensure_visualization_arrays(data)
+        else _validate_visualization_arrays(data)
     )
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    _remove_stale_outputs(out_dir)
+    _remove_generated_outputs(out_dir)
 
     prediction_limits = _global_color_limits(arrays["mean_prediction_cosine_error"])
     sensitivity_limits = _global_color_limits(arrays["relative_directional_variation"])
@@ -587,21 +556,26 @@ def render_directional_line_jepa_visualizations(
     artifacts: dict[str, str] = {}
     snapshot_records: list[dict[str, str | int]] = []
     used_output_names: set[str] = set()
-    for slot, (name, source_path, evaluated_indices) in evaluated_groups.items():
-        output_name = _safe_output_name(name or Path(source_path).name)
+    for slot, (name, _source_path, evaluated_indices) in evaluated_groups.items():
+        output_name = _safe_output_name(name)
         if output_name in used_output_names:
             output_name = f"{output_name}_{slot:02d}"
         used_output_names.add(output_name)
         snapshot_dir = out_dir / output_name
-        context_indices = context_groups.get(slot, np.empty((0,), dtype=np.int64))
+        try:
+            context_indices = context_groups[slot]
+        except KeyError as exc:
+            raise KeyError(
+                "Directional visualization evaluated source slot has no context rows. "
+                f"source_slot={slot}, source_name={name!r}."
+            ) from exc
         excluded_count = int(
-            np.sum(~np.asarray(arrays["context_evaluated_mask"], dtype=bool)[context_indices])
+            np.sum(~arrays["context_evaluated_mask"][context_indices])
         )
 
         prediction_path = snapshot_dir / "prediction_error_space.html"
         _render_spatial_map(
             arrays,
-            source_slot=slot,
             source_label=name,
             evaluated_indices=evaluated_indices,
             context_indices=context_indices,
@@ -615,7 +589,6 @@ def render_directional_line_jepa_visualizations(
         sensitivity_path = snapshot_dir / "directional_sensitivity_space.html"
         _render_spatial_map(
             arrays,
-            source_slot=slot,
             source_label=name,
             evaluated_indices=evaluated_indices,
             context_indices=context_indices,
@@ -672,9 +645,12 @@ def main() -> None:
         summary_parent = args.npz.parent.resolve()
         if all(path.is_relative_to(summary_parent) for path in artifact_paths):
             summary = json.loads(summary_path.read_text(encoding="utf-8"))
-            summary_artifacts = summary.setdefault("artifacts", {})
-            for key in _LEGACY_ARTIFACT_KEYS:
-                summary_artifacts.pop(key, None)
+            if not isinstance(summary, dict) or not isinstance(summary.get("artifacts"), dict):
+                raise TypeError(
+                    "Directional summary must be a JSON object containing an artifacts object. "
+                    f"path={summary_path}."
+                )
+            summary_artifacts = summary["artifacts"]
             summary_artifacts.update(
                 {
                     key: str(path.relative_to(summary_parent))
@@ -687,6 +663,11 @@ def main() -> None:
                 "Summary was not updated because --output-dir is outside the directional NPZ "
                 f"directory: output_dir={output_dir.resolve()}, npz_dir={summary_parent}."
             )
+    else:
+        raise FileNotFoundError(
+            "Directional visualization expected the summary produced alongside the NPZ, "
+            f"but it does not exist: {summary_path}."
+        )
     for name, path in artifacts.items():
         print(f"{name}: {path}")
 

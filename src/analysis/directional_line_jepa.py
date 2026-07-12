@@ -9,7 +9,6 @@ import numpy as np
 import torch
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
-from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.line_static_dataset import LineStaticPointCloudDataset
 from src.vis_tools.latent_analysis_vis import FittedClusteringModel, predict_clustering_model
 
@@ -327,8 +326,11 @@ def compute_directional_harmonic_summaries(
 
 
 def phase_conditioned_z_scores(values: np.ndarray, labels: np.ndarray) -> np.ndarray:
-    values = np.asarray(values, dtype=np.float64).reshape(-1)
-    labels = np.asarray(labels, dtype=np.int64).reshape(-1)
+    if values.ndim != 1 or labels.ndim != 1:
+        raise ValueError(
+            "Phase-conditioned z-scores require one-dimensional inputs. "
+            f"Got values={values.shape}, labels={labels.shape}."
+        )
     if values.shape != labels.shape:
         raise ValueError(
             "Phase-conditioned z-scores require one label per value. "
@@ -345,7 +347,10 @@ def phase_conditioned_z_scores(values: np.ndarray, labels: np.ndarray) -> np.nda
 
 
 def _percentile_ranks(values: np.ndarray) -> np.ndarray:
-    values = np.asarray(values, dtype=np.float64).reshape(-1)
+    if values.ndim != 1:
+        raise ValueError(
+            f"Percentile ranks require a one-dimensional array, got {values.shape}."
+        )
     if values.size <= 1:
         return np.zeros(values.shape, dtype=np.float32)
     order = np.argsort(values, kind="mergesort")
@@ -386,8 +391,12 @@ def _selected_analysis_indices(
     names = np.full((sample_count,), "", dtype=object)
     covered = np.zeros((sample_count,), dtype=bool)
     groups = []
-    for source_name, indices_raw in source_groups:
-        indices = np.asarray(indices_raw, dtype=np.int64).reshape(-1)
+    for source_name, indices in source_groups:
+        if indices.ndim != 1:
+            raise ValueError(
+                f"Source {source_name!r} sample indices must be one-dimensional, "
+                f"got {indices.shape}."
+            )
         if np.any(indices < 0) or np.any(indices >= sample_count):
             raise IndexError(f"Source {source_name!r} contains out-of-range sample indices.")
         names[indices] = str(source_name)
@@ -476,11 +485,10 @@ def _valid_directional_line_anchor_mask(
     atom_ids: np.ndarray,
 ) -> np.ndarray:
     """Keep anchors with the boundary clearance used by Line-JEPA training."""
-    source_slots = np.asarray(source_slots, dtype=np.int64).reshape(-1)
-    atom_ids = np.asarray(atom_ids, dtype=np.int64).reshape(-1)
-    if source_slots.shape != atom_ids.shape:
+    if source_slots.ndim != 1 or atom_ids.ndim != 1 or source_slots.shape != atom_ids.shape:
         raise ValueError(
-            "Directional Line-JEPA anchor sources and atom IDs must have identical shapes. "
+            "Directional Line-JEPA anchor sources and atom IDs must be parallel "
+            "one-dimensional arrays. "
             f"Got source_slots={source_slots.shape}, atom_ids={atom_ids.shape}."
         )
 
@@ -509,7 +517,12 @@ def _predict_cluster_labels(
     fitted_model: FittedClusteringModel,
 ) -> np.ndarray:
     labels = predict_clustering_model(latents, fitted_model)
-    return np.asarray(labels, dtype=np.int64).reshape(-1)
+    if labels.ndim != 1:
+        raise RuntimeError(
+            "Clustering prediction returned an unexpected label shape. "
+            f"latents={latents.shape}, labels={labels.shape}."
+        )
+    return labels
 
 
 def _encode_environment_cache(
@@ -540,7 +553,6 @@ def _encode_environment_cache(
 
 
 def _quantiles(values: np.ndarray) -> dict[str, float]:
-    values = np.asarray(values, dtype=np.float64)
     result = {
         name: float(np.quantile(values, quantile))
         for name, quantile in (("min", 0), ("p50", .5), ("p90", .9),
@@ -550,9 +562,9 @@ def _quantiles(values: np.ndarray) -> dict[str, float]:
 
 
 def _write_atom_table(path: Path, arrays: dict[str, np.ndarray]) -> None:
-    source_slots = np.asarray(arrays["source_slots"], dtype=np.int64)
-    source_names = np.asarray(arrays["source_names_by_slot"]).astype(str)[source_slots]
-    source_paths = np.asarray(arrays["source_paths_by_slot"]).astype(str)[source_slots]
+    source_slots = arrays["source_slots"]
+    source_names = arrays["source_names_by_slot"][source_slots]
+    source_paths = arrays["source_paths_by_slot"][source_slots]
     columns = {
         "analysis_sample_index": arrays["analysis_sample_indices"],
         "source_name": source_names,
@@ -595,7 +607,7 @@ def _write_atom_table(path: Path, arrays: dict[str, np.ndarray]) -> None:
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(columns)
-        column_values = tuple(np.asarray(column) for column in columns.values())
+        column_values = tuple(columns.values())
         for row_index in range(len(source_slots)):
             writer.writerow(
                 [
@@ -628,19 +640,22 @@ def run_directional_line_jepa_analysis(
             "directional_line_jepa.enabled=true requires a LineJEPAModule checkpoint, "
             f"got model={type(model)!r}, model_type={getattr(model_cfg, 'model_type', None)!r}."
         )
-    data_kind = normalize_data_kind(getattr(model_cfg.data, "kind", None))
-    if data_kind not in {"static", "line_static"}:
+    data_kind = str(model_cfg.data.kind).strip().lower()
+    if data_kind != "line_static":
         raise NotImplementedError(
-            "Directional Line-JEPA currently supports static/line_static analysis inputs. "
+            "Directional Line-JEPA requires the current line_static dataset contract. "
             f"Got normalized data kind {data_kind!r}."
         )
-    if fitted_clustering_model is not None and primary_k is None:
+    if fitted_clustering_model is None or primary_k is None:
         raise ValueError(
-            "Directional Line-JEPA received a fitted clustering model without primary_k."
+            "Directional Line-JEPA requires the fitted primary clustering model produced by "
+            "the analysis pipeline. "
+            f"fitted_clustering_model={fitted_clustering_model is not None}, "
+            f"primary_k={primary_k!r}."
         )
 
-    sample_count = int(np.asarray(cache["inv_latents"]).shape[0])
-    coords_all = np.asarray(cache["coords"], dtype=np.float32)
+    sample_count = int(cache["inv_latents"].shape[0])
+    coords_all = cache["coords"]
     selected_indices, source_name_by_sample = _selected_analysis_indices(
         source_groups=source_groups,
         sample_count=sample_count,
@@ -734,10 +749,10 @@ def run_directional_line_jepa_analysis(
         "mean_residual_prediction_error": np.empty((atom_count,), dtype=np.float32),
         "mean_residual_norm": np.empty((atom_count,), dtype=np.float32),
         "mean_relative_residual_error": np.empty((atom_count,), dtype=np.float32),
-        "mean_cluster_surprise": np.zeros((atom_count,), dtype=np.float32),
-        "mean_context_cluster_disagreement": np.zeros((atom_count,), dtype=np.float32),
+        "mean_cluster_surprise": np.empty((atom_count,), dtype=np.float32),
+        "mean_context_cluster_disagreement": np.empty((atom_count,), dtype=np.float32),
     }
-    target_cluster_by_atom = np.full((atom_count,), -1, dtype=np.int64)
+    target_cluster_by_atom = np.empty((atom_count,), dtype=np.int64)
     source_stride = max(len(source.points) for source in line_dataset.sources)
     unique_environment_count = 0
     target_encoding_count = 0
@@ -834,15 +849,12 @@ def run_directional_line_jepa_analysis(
             else:
                 target_feature_cache = online_feature_cache[target_cache_indices]
 
-            unique_cluster_labels = None
-            target_embedding_labels = None
-            if fitted_clustering_model is not None:
-                unique_cluster_labels = _predict_cluster_labels(
-                    online_feature_cache, fitted_clustering_model
-                )
-                target_embedding_labels = _predict_cluster_labels(
-                    target_feature_cache, fitted_clustering_model
-                )
+            unique_cluster_labels = _predict_cluster_labels(
+                online_feature_cache, fitted_clustering_model
+            )
+            target_embedding_labels = _predict_cluster_labels(
+                target_feature_cache, fitted_clustering_model
+            )
 
             chunk_fields = {
                 "residual_prediction_error": np.empty(
@@ -855,12 +867,12 @@ def run_directional_line_jepa_analysis(
                 "relative_residual_error": np.empty(
                     (chunk_task_count,), dtype=np.float32
                 ),
-                "cluster_surprise": np.zeros((chunk_task_count,), dtype=np.float32),
-                "context_cluster_disagreement": np.zeros(
+                "cluster_surprise": np.empty((chunk_task_count,), dtype=np.float32),
+                "context_cluster_disagreement": np.empty(
                     (chunk_task_count,), dtype=np.float32
                 ),
             }
-            chunk_target_labels = np.full((chunk_task_count,), -1, dtype=np.int64)
+            chunk_target_labels = np.empty((chunk_task_count,), dtype=np.int64)
             for task_start in range(0, chunk_task_count, settings.task_batch_size):
                 task_stop = min(task_start + settings.task_batch_size, chunk_task_count)
                 local_atom_rows = chunk_atom_rows[task_start:task_stop]
@@ -898,23 +910,22 @@ def run_directional_line_jepa_analysis(
                         outputs[name].detach().to("cpu", dtype=torch.float32).numpy()
                     )
 
-                if fitted_clustering_model is not None:
-                    line_labels = unique_cluster_labels[feature_indices]
-                    target_labels = line_labels[:, target_index]
-                    reconstruction_labels = _predict_cluster_labels(
-                        outputs["reconstruction"].detach().cpu().float().numpy(),
-                        fitted_clustering_model,
+                line_labels = unique_cluster_labels[feature_indices]
+                target_labels = line_labels[:, target_index]
+                reconstruction_labels = _predict_cluster_labels(
+                    outputs["reconstruction"].detach().cpu().float().numpy(),
+                    fitted_clustering_model,
+                )
+                chunk_target_labels[task_start:task_stop] = target_labels
+                chunk_fields["cluster_surprise"][task_start:task_stop] = (
+                    reconstruction_labels
+                    != target_embedding_labels[local_atom_rows]
+                )
+                chunk_fields["context_cluster_disagreement"][task_start:task_stop] = (
+                    np.mean(
+                        line_labels[:, context_mask] != target_labels[:, None], axis=1
                     )
-                    chunk_target_labels[task_start:task_stop] = target_labels
-                    chunk_fields["cluster_surprise"][task_start:task_stop] = (
-                        reconstruction_labels
-                        != target_embedding_labels[local_atom_rows]
-                    )
-                    chunk_fields["context_cluster_disagreement"][task_start:task_stop] = (
-                        np.mean(
-                            line_labels[:, context_mask] != target_labels[:, None], axis=1
-                        )
-                    )
+                )
 
             cosine_chunk = np.clip(
                 chunk_fields["reconstruction_cosine_error"].reshape(
@@ -969,16 +980,8 @@ def run_directional_line_jepa_analysis(
         directions,
         atom_chunk_size=max(settings.atom_chunk_size, 8_192),
     )
-    phases = np.asarray(cache.get("phases", np.empty((0,), dtype=np.int64))).reshape(-1)
-    if phases.shape[0] == sample_count:
-        phase_or_cluster_label = phases[selected_indices].astype(np.int64, copy=False)
-        conditioning_source = "ground_truth_phase"
-    elif fitted_clustering_model is not None:
-        phase_or_cluster_label = target_cluster_by_atom.astype(np.int64, copy=False)
-        conditioning_source = f"predicted_cluster_k{int(primary_k)}"
-    else:
-        phase_or_cluster_label = np.zeros((atom_count,), dtype=np.int64)
-        conditioning_source = "global_no_phase_or_cluster_labels"
+    phase_or_cluster_label = target_cluster_by_atom
+    conditioning_source = f"predicted_cluster_k{primary_k}"
     phase_z = phase_conditioned_z_scores(summaries["mean_error"], phase_or_cluster_label)
 
     mean_fields = {
@@ -993,8 +996,7 @@ def run_directional_line_jepa_analysis(
         "anisotropy": summaries["anisotropy_scalar"],
         "phase_conditioned_z": phase_z,
     }
-    if fitted_clustering_model is not None:
-        joint_components["cluster_surprise"] = mean_fields["mean_cluster_surprise"]
+    joint_components["cluster_surprise"] = mean_fields["mean_cluster_surprise"]
     joint_hardness = compute_joint_hardness_score(
         joint_components,
         weights=settings.joint_weights,
@@ -1089,7 +1091,7 @@ def run_directional_line_jepa_analysis(
         "checkpoint_prediction_target": str(model.prediction_target),
         "checkpoint_target_encoder": str(model.target_encoder_mode),
         "directional_feature_mode": str(model.directional_feature_mode),
-        "cluster_surprise_available": fitted_clustering_model is not None,
+        "cluster_surprise_available": True,
         "epistemic_uncertainty_available": False,
         "directional_decomposition": {
             "novelty": "percentile rank of mean prediction error over directions",
@@ -1099,7 +1101,7 @@ def run_directional_line_jepa_analysis(
             "harmonic_explained_fraction": "fraction of directional variance explained by l<=2",
         },
         "phase_conditioning_source": conditioning_source,
-        "primary_k": None if primary_k is None else int(primary_k),
+        "primary_k": int(primary_k),
         "relative_error_clip": settings.relative_error_clip,
         "joint_weights": settings.joint_weights,
         "per_snapshot_counts": per_snapshot_counts,

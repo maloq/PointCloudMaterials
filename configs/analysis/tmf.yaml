@@ -219,7 +219,6 @@ dynamic_motif:
   stable_k: null
   bridge_k: null
   representative_samples_per_motif: 12
-  transition_top_k: 20
   transition_snapshot_flow_count: 5
   bridge_min_support: 50
   dwell_min_length: 1
@@ -234,4 +233,3 @@ dynamic_motif:
 
   field:
     enabled: false
-    top_neighbors: 8

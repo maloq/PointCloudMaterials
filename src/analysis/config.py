@@ -7,7 +7,6 @@ from typing import Any
 import numpy as np
 from omegaconf import DictConfig, OmegaConf, open_dict
 
-from src.data_utils.data_kinds import is_static_data_kind
 from src.utils.model_utils import resolve_config_path
 
 
@@ -42,11 +41,6 @@ class InputSettings:
     inference_batch_size: int | None
     max_batches_latent: int | None
     max_samples_total: int | None
-
-    @property
-    def real_data_files(self) -> list[str] | None:
-        return self.static_data_files
-
 
 @dataclass(frozen=True)
 class ClusteringFitSettings:
@@ -85,7 +79,6 @@ class DynamicMotifRenderSettings:
 @dataclass(frozen=True)
 class DynamicMotifFieldSettings:
     enabled: bool
-    top_neighbors: int
 
 
 @dataclass(frozen=True)
@@ -96,7 +89,6 @@ class DynamicMotifSettings:
     stable_k: int | None
     bridge_k: int | None
     representative_samples_per_motif: int
-    transition_top_k: int
     transition_snapshot_flow_count: int
     bridge_min_support: int
     dwell_min_length: int
@@ -152,7 +144,6 @@ class FigureSetSettings:
     icl_k_min: int
     icl_k_max: int
     icl_max_samples: int | None
-    icl_covariance: str
     representative_points: int
     representative_orientation: str
     representative_view_elev: float
@@ -196,7 +187,6 @@ class FigureSetSettings:
             "icl_k_min": int(self.icl_k_min),
             "icl_k_max": int(self.icl_k_max),
             "icl_max_samples": self.icl_max_samples,
-            "icl_covariance_type": str(self.icl_covariance),
             "representative_points": int(self.representative_points),
             "md_point_size": float(self.md_point_size),
             "md_point_alpha": float(self.md_alpha),
@@ -233,32 +223,9 @@ class FigureSetSettings:
 def _as_list_of_str(value: Any) -> list[str] | None:
     if value is None:
         return None
-    if isinstance(value, str):
-        return [value]
-    return [str(v) for v in list(value)]
-
-
-def _resolve_static_data_files_setting(
-    *,
-    static_value: Any,
-    legacy_real_value: Any,
-    static_field_name: str,
-    legacy_field_name: str,
-    default: list[str] | None = None,
-) -> list[str] | None:
-    static_files = _as_list_of_str(static_value)
-    legacy_files = _as_list_of_str(legacy_real_value)
-    if static_files is not None and legacy_files is not None and static_files != legacy_files:
-        raise ValueError(
-            f"Set either {static_field_name} or legacy {legacy_field_name}, not both "
-            f"with different values. Got {static_field_name}={static_files} and "
-            f"{legacy_field_name}={legacy_files}."
-        )
-    if static_files is not None:
-        return static_files
-    if legacy_files is not None:
-        return legacy_files
-    return default
+    if not isinstance(value, list) and not OmegaConf.is_list(value):
+        raise TypeError(f"Expected a list of strings, got {type(value)!r}.")
+    return [str(v) for v in value]
 
 
 def _to_plain(value: Any) -> Any:
@@ -284,6 +251,8 @@ def _cfg_int(cfg: Any, key: str, default: int) -> int:
 def _as_list_of_int(value: Any, *, field_name: str = "value") -> list[int] | None:
     if value is None:
         return None
+    if not isinstance(value, list) and not OmegaConf.is_list(value):
+        raise TypeError(f"{field_name} must be a list of integers, got {type(value)!r}.")
     values = list(value)
     if not values:
         return None
@@ -293,12 +262,19 @@ def _as_list_of_int(value: Any, *, field_name: str = "value") -> list[int] | Non
 def _positive_int_or_none(value: Any) -> int | None:
     if value is None:
         return None
-    value = int(value)
-    return value if value > 0 else None
+    resolved = int(value)
+    if resolved < 0:
+        raise ValueError(f"Expected a non-negative integer or null, got {value!r}.")
+    return None if resolved == 0 else resolved
 
 
 def _validate_overlap_fraction(value: Any) -> float:
-    return float(value)
+    resolved = float(value)
+    if not 0.0 <= resolved < 1.0:
+        raise ValueError(
+            f"Overlap fraction must be in the half-open interval [0, 1), got {value!r}."
+        )
+    return resolved
 
 
 def _resolve_optional_cluster_k(value: Any, *, field_name: str) -> int | None:
@@ -328,7 +304,11 @@ def _resolve_input_path(
 def _load_dict_config_from_path(path: str | Path, *, field_name: str) -> DictConfig:
     resolved = _resolve_input_path(path)
     loaded_cfg = OmegaConf.load(resolved)
-    return loaded_cfg  # type: ignore
+    if not isinstance(loaded_cfg, DictConfig):
+        raise TypeError(
+            f"{field_name} must load to a mapping, got {type(loaded_cfg)!r} from {resolved}."
+        )
+    return loaded_cfg
 
 
 def _normalize_visible_cluster_sets(value: Any) -> list[list[int]] | None:
@@ -342,10 +322,12 @@ def _normalize_visible_cluster_sets(value: Any) -> list[list[int]] | None:
         )
     normalized: list[list[int]] = []
     for set_idx, cluster_set in enumerate(raw):
-        if isinstance(cluster_set, str):
-            tokens = [token.strip() for token in cluster_set.split(",") if token.strip()]
-        else:
-            tokens = list(cluster_set)
+        if not isinstance(cluster_set, list):
+            raise TypeError(
+                "figure_set.visible_cluster_sets entries must be lists of cluster IDs. "
+                f"Invalid entry at index {set_idx}: {cluster_set!r}."
+            )
+        tokens = list(cluster_set)
         if not tokens:
             raise ValueError(
                 "figure_set.visible_cluster_sets entries must be non-empty. "
@@ -373,17 +355,12 @@ def _normalize_cluster_color_assignment(
         return None
     if OmegaConf.is_config(value):
         value = OmegaConf.to_container(value, resolve=True)
-    if isinstance(value, dict):
-        return {int(k): _parse_color_value(v) for k, v in value.items()} or None
-    entries = [value] if isinstance(value, str) else list(value)
-    result: dict[int, int | str] = {}
-    for entry in entries:
-        entry = str(entry).strip()
-        if "=" not in entry:
-            raise ValueError(f"{field_name}: expected CLUSTER=VALUE syntax, got {entry!r}")
-        cluster_part, value_part = entry.split("=", 1)
-        result[int(cluster_part.strip())] = _parse_color_value(value_part.strip())
-    return result or None
+    if not isinstance(value, dict):
+        raise TypeError(
+            f"{field_name} must be a mapping from cluster ID to palette index or color, "
+            f"got {type(value)!r}."
+        )
+    return {int(k): _parse_color_value(v) for k, v in value.items()} or None
 
 
 def _load_cluster_color_assignment_file(
@@ -394,9 +371,13 @@ def _load_cluster_color_assignment_file(
     resolved = _resolve_input_path(path, base_dir=base_dir)
     with resolved.open("r") as handle:
         payload = json.load(handle)
-    raw_assignment = payload.get("assignment", payload) if isinstance(payload, dict) else payload
+    if not isinstance(payload, dict) or "assignment" not in payload:
+        raise ValueError(
+            "Cluster color assignment files must use the repository-produced schema "
+            f"with an 'assignment' mapping. Invalid file: {resolved}."
+        )
     assignment = _normalize_cluster_color_assignment(
-        raw_assignment,
+        payload["assignment"],
         field_name=f"cluster_color_assignment_file({resolved})",
     )
     if assignment is None:
@@ -459,19 +440,8 @@ def _resolve_run_settings(
 
 def _resolve_input_settings(analysis_cfg: DictConfig) -> InputSettings:
     return InputSettings(
-        static_data_files=_resolve_static_data_files_setting(
-            static_value=OmegaConf.select(
-                analysis_cfg,
-                "inputs.static_data_files",
-                default=None,
-            ),
-            legacy_real_value=OmegaConf.select(
-                analysis_cfg,
-                "inputs.real_data_files",
-                default=None,
-            ),
-            static_field_name="inputs.static_data_files",
-            legacy_field_name="inputs.real_data_files",
+        static_data_files=_as_list_of_str(
+            OmegaConf.select(analysis_cfg, "inputs.static_data_files", default=None)
         ),
         dataloader_num_workers=int(
             OmegaConf.select(analysis_cfg, "inputs.dataloader_num_workers", default=4)
@@ -523,20 +493,12 @@ def _resolve_clustering_fit_settings(
             None if data_config_path is None else str(data_config_path).strip() or None
         ),
         input_settings=InputSettings(
-            static_data_files=_resolve_static_data_files_setting(
-                static_value=_cfg_select(
+            static_data_files=_as_list_of_str(
+                _cfg_select(
                     fit_cfg,
                     "static_data_files",
-                    default=None,
-                ),
-                legacy_real_value=_cfg_select(
-                    fit_cfg,
-                    "real_data_files",
-                    default=None,
-                ),
-                static_field_name="clustering.fit_inputs.static_data_files",
-                legacy_field_name="clustering.fit_inputs.real_data_files",
-                default=parent_inputs.static_data_files,
+                    default=parent_inputs.static_data_files,
+                )
             ),
             dataloader_num_workers=int(
                 _cfg_select(
@@ -577,7 +539,7 @@ def _resolve_analysis_files(
     model_cfg: DictConfig,
     input_settings: InputSettings,
 ) -> list[str] | None:
-    if not is_static_data_kind(model_cfg.data.kind):
+    if str(model_cfg.data.kind).strip().lower() not in {"static", "line_static"}:
         return None
     if input_settings.static_data_files:
         return input_settings.static_data_files
@@ -594,6 +556,27 @@ def _resolve_dynamic_motif_settings(analysis_cfg: DictConfig) -> DynamicMotifSet
     dynamic_cfg = OmegaConf.select(analysis_cfg, "dynamic_motif", default=None)
     render_cfg = _cfg_select(dynamic_cfg, "render", default=None)
     field_cfg = _cfg_select(dynamic_cfg, "field", default=None)
+    representative_samples = int(
+        _cfg_select(dynamic_cfg, "representative_samples_per_motif", default=12)
+    )
+    snapshot_flow_count = int(
+        _cfg_select(dynamic_cfg, "transition_snapshot_flow_count", default=0)
+    )
+    bridge_min_support = int(
+        _cfg_select(dynamic_cfg, "bridge_min_support", default=50)
+    )
+    dwell_min_length = int(_cfg_select(dynamic_cfg, "dwell_min_length", default=1))
+    recurrence_max_gap = int(_cfg_select(dynamic_cfg, "recurrence_max_gap", default=64))
+    if representative_samples < 1:
+        raise ValueError("dynamic_motif.representative_samples_per_motif must be >= 1.")
+    if snapshot_flow_count < 0:
+        raise ValueError("dynamic_motif.transition_snapshot_flow_count must be >= 0.")
+    if bridge_min_support < 1:
+        raise ValueError("dynamic_motif.bridge_min_support must be >= 1.")
+    if dwell_min_length < 1:
+        raise ValueError("dynamic_motif.dwell_min_length must be >= 1.")
+    if recurrence_max_gap < 1:
+        raise ValueError("dynamic_motif.recurrence_max_gap must be >= 1.")
     return DynamicMotifSettings(
         enabled=bool(_cfg_select(dynamic_cfg, "enabled", default=False)),
         export_per_sample_arrays=bool(_cfg_select(dynamic_cfg, "export_per_sample_arrays", default=True)),
@@ -606,27 +589,11 @@ def _resolve_dynamic_motif_settings(analysis_cfg: DictConfig) -> DynamicMotifSet
             _cfg_select(dynamic_cfg, "bridge_k", default=None),
             field_name="dynamic_motif.bridge_k",
         ),
-        representative_samples_per_motif=int(
-            _cfg_select(dynamic_cfg, "representative_samples_per_motif", default=12)
-        ),
-        transition_top_k=int(
-            _cfg_select(dynamic_cfg, "transition_top_k", default=20)
-        ),
-        transition_snapshot_flow_count=max(
-            0,
-            int(_cfg_select(dynamic_cfg, "transition_snapshot_flow_count", default=0)),
-        ),
-        bridge_min_support=int(
-            _cfg_select(dynamic_cfg, "bridge_min_support", default=50)
-        ),
-        dwell_min_length=max(
-            1,
-            int(_cfg_select(dynamic_cfg, "dwell_min_length", default=1)),
-        ),
-        recurrence_max_gap=max(
-            1,
-            int(_cfg_select(dynamic_cfg, "recurrence_max_gap", default=64)),
-        ),
+        representative_samples_per_motif=representative_samples,
+        transition_snapshot_flow_count=snapshot_flow_count,
+        bridge_min_support=bridge_min_support,
+        dwell_min_length=dwell_min_length,
+        recurrence_max_gap=recurrence_max_gap,
         render=DynamicMotifRenderSettings(
             heatmaps=bool(_cfg_select(render_cfg, "heatmaps", default=True)),
             timelines=bool(_cfg_select(render_cfg, "timelines", default=True)),
@@ -636,10 +603,6 @@ def _resolve_dynamic_motif_settings(analysis_cfg: DictConfig) -> DynamicMotifSet
         ),
         field=DynamicMotifFieldSettings(
             enabled=bool(_cfg_select(field_cfg, "enabled", default=False)),
-            top_neighbors=max(
-                1,
-                int(_cfg_select(field_cfg, "top_neighbors", default=8)),
-            ),
         ),
     )
 
@@ -649,7 +612,6 @@ def _resolve_analysis_settings(
     model_cfg: DictConfig,
 ) -> AnalysisSettings:
     clustering_cfg = OmegaConf.select(analysis_cfg, "clustering", default=None)
-    figure_cfg = OmegaConf.select(analysis_cfg, "figure_set", default=None)
     md_cfg = OmegaConf.select(analysis_cfg, "md", default=None)
     tsne_cfg = OmegaConf.select(analysis_cfg, "tsne", default=None)
     cache_cfg = OmegaConf.select(analysis_cfg, "cache", default=None)
@@ -660,49 +622,27 @@ def _resolve_analysis_settings(
         _cfg_select(clustering_cfg, "primary_k", default=None),
         field_name="clustering.primary_k",
     )
-    figure_set_k = _resolve_optional_cluster_k(
-        _cfg_select(figure_cfg, "k", default=None),
-        field_name="figure_set.k",
-    )
-    real_md_selected_k = _resolve_optional_cluster_k(
-        OmegaConf.select(analysis_cfg, "real_md.selected_k", default=None),
-        field_name="real_md.selected_k",
-    )
+    if primary_k is None or int(primary_k) < 2:
+        raise ValueError(
+            "clustering.primary_k must be configured as an integer >= 2, "
+            f"got {primary_k!r}."
+        )
     cluster_k_values_raw = _as_list_of_int(
         _cfg_select(clustering_cfg, "k_values", default=None),
         field_name="clustering.k_values",
     )
+    if cluster_k_values_raw is not None and any(
+        int(k) < 2 for k in cluster_k_values_raw
+    ):
+        raise ValueError(
+            "clustering.k_values entries must all be >= 2, "
+            f"got {cluster_k_values_raw}."
+        )
     cluster_k_values = (
         []
         if cluster_k_values_raw is None
-        else list(dict.fromkeys(int(k) for k in cluster_k_values_raw if int(k) >= 2))
+        else list(dict.fromkeys(int(k) for k in cluster_k_values_raw))
     )
-
-    legacy_selected_k_candidates = {
-        "figure_set.k": figure_set_k,
-        "real_md.selected_k": real_md_selected_k,
-    }
-    if primary_k is None:
-        for field_name, field_value in legacy_selected_k_candidates.items():
-            if field_value is not None:
-                primary_k = int(field_value)
-                break
-    if primary_k is None and cluster_k_values:
-        primary_k = int(cluster_k_values[0])
-    if primary_k is None:
-        raise ValueError(
-            "Could not resolve a unified clustering k. Set clustering.primary_k explicitly, "
-            "or provide one of the legacy fields figure_set.k / real_md.selected_k, "
-            "or provide clustering.k_values with at least one integer >= 2."
-        )
-
-    for field_name, field_value in legacy_selected_k_candidates.items():
-        if field_value is not None and int(field_value) != int(primary_k):
-            raise ValueError(
-                f"{field_name}={int(field_value)} conflicts with clustering.primary_k="
-                f"{int(primary_k)}. Use clustering.primary_k as the single selected "
-                "clustering k and leave per-section overrides null."
-            )
 
     if cluster_k_values_raw is None:
         cluster_k_values = [int(primary_k)]
@@ -825,16 +765,6 @@ def _resolve_figure_set_settings(
 
     figure_only = bool(_cfg_select(figure_cfg, "figure_only", default=False))
     enabled = bool(_cfg_select(figure_cfg, "enabled", default=True)) or figure_only
-    cluster_k = _resolve_optional_cluster_k(
-        _cfg_select(figure_cfg, "k", default=None),
-        field_name="figure_set.k",
-    )
-    if cluster_k is not None and int(cluster_k) != int(primary_k):
-        raise ValueError(
-            f"figure_set.k={int(cluster_k)} conflicts with clustering.primary_k="
-            f"{int(primary_k)}. Use clustering.primary_k as the single selected "
-            "clustering k and keep figure_set.k unset."
-        )
     cluster_k = int(primary_k)
 
     cluster_color_assignment_cfg = _normalize_cluster_color_assignment(
@@ -856,12 +786,16 @@ def _resolve_figure_set_settings(
         getattr(model_cfg.data, "model_points", getattr(model_cfg.data, "num_points", 48))
     )
     representative_points_cfg = _cfg_select(rep_cfg, "points", default=None)
-    representative_points = max(
-        16,
+    representative_points = (
         representative_points_default
         if representative_points_cfg is None
-        else int(representative_points_cfg),
+        else int(representative_points_cfg)
     )
+    if representative_points < 16:
+        raise ValueError(
+            "figure_set.representatives.points must be >= 16, "
+            f"got {representative_points}."
+        )
     representative_orientation = str(
         _cfg_select(rep_cfg, "orientation", default="pca")
     ).strip().lower()
@@ -880,6 +814,9 @@ def _resolve_figure_set_settings(
     representative_shell_max_neighbors = int(
         getattr(figure_representatives_cfg, "shell_max_neighbors", 24)
     )
+    md_num_views = int(_cfg_select(figure_md_cfg, "num_views", default=4))
+    if md_num_views < 1:
+        raise ValueError("figure_set.md.num_views must be >= 1.")
 
     return FigureSetSettings(
         enabled=enabled,
@@ -897,7 +834,7 @@ def _resolve_figure_set_settings(
         ),
         md_view_elev=float(_cfg_select(figure_md_cfg, "view_elev", default=24.0)),
         md_view_azim=float(_cfg_select(figure_md_cfg, "view_azim", default=35.0)),
-        md_num_views=max(1, int(_cfg_select(figure_md_cfg, "num_views", default=4))),
+        md_num_views=md_num_views,
         visible_cluster_sets=_normalize_visible_cluster_sets(
             _cfg_select(figure_cfg, "visible_cluster_sets", default=None)
         ),
@@ -914,7 +851,6 @@ def _resolve_figure_set_settings(
         icl_max_samples=_positive_int_or_none(
             _cfg_select(icl_cfg, "max_samples", default=20000)
         ),
-        icl_covariance=str(_cfg_select(icl_cfg, "covariance", default="diag")).lower(),
         representative_points=representative_points,
         representative_orientation=representative_orientation,
         representative_view_elev=float(_cfg_select(rep_cfg, "view_elev", default=22.0)),
@@ -999,7 +935,7 @@ def _print_resolved_analysis_settings(
     print(
         "Unified selected clustering k: "
         f"k={analysis_settings.primary_k} "
-        "(driven by clustering.primary_k; figure_set.k and real_md.selected_k inherit it)"
+        "(configured by clustering.primary_k)"
     )
     print(f"t-SNE sample cap: {analysis_settings.tsne_max_samples}")
     print(f"Available clustering keys: {analysis_settings.cluster_k_values}")
@@ -1078,6 +1014,8 @@ def _print_resolved_analysis_settings(
         f"sankey={analysis_settings.dynamic_motif.render.sankey}), "
         f"field_enabled={analysis_settings.dynamic_motif.field.enabled}"
     )
+
+
 def load_checkpoint_training_config(checkpoint_path: str) -> DictConfig:
     config_dir, config_name = resolve_config_path(checkpoint_path)
     config_path = Path(config_dir) / f"{config_name}.yaml"

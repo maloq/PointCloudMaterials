@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import bisect
 from dataclasses import dataclass
+import json
 from pathlib import Path
 from typing import Any
 
@@ -62,7 +63,11 @@ class LazyStaticAnalysisDataset(Dataset):
             _plain(getattr(data_cfg, "data_sources", None)),
         )
         entries = [(source, str(name)) for source in sources for name in source["files"]]
-        counts = self._infer_cached_file_counts(coords, file_count=len(entries))
+        entries, counts = self._cached_file_entries(
+            data_cfg,
+            entries=entries,
+            row_count=len(coords),
+        )
         auto_cutoff = PointCloudDataset._resolve_auto_cutoff_config(
             _plain(getattr(data_cfg, "auto_cutoff", None)),
             default_target_points=self.num_points,
@@ -98,28 +103,49 @@ class LazyStaticAnalysisDataset(Dataset):
         }
 
     @staticmethod
-    def _infer_cached_file_counts(expected_coords: np.ndarray, *, file_count: int) -> list[int]:
-        """Infer concatenated file runs from the large x reset between regular grids."""
-        rows = int(expected_coords.shape[0])
-        if file_count <= 0 or rows < file_count:
+    def _cached_file_entries(
+        data_cfg: Any,
+        *,
+        entries: list[tuple[dict[str, Any], str]],
+        row_count: int,
+    ) -> tuple[list[tuple[dict[str, Any], str]], list[int]]:
+        cache_dir = Path(str(data_cfg.sample_cache.cache_dir)).expanduser().resolve()
+        metadata_path = cache_dir / "metadata.json"
+        with metadata_path.open("r", encoding="utf-8") as handle:
+            metadata = json.load(handle)
+        shards = metadata["shards"]
+
+        selected_entries: list[tuple[dict[str, Any], str]] = []
+        selected_counts: list[int] = []
+        remaining = int(row_count)
+        for shard_index, shard in enumerate(shards):
+            if remaining == 0:
+                break
+            if shard_index >= len(entries):
+                raise ValueError(
+                    "Static sample-cache metadata has more shards than configured source files. "
+                    f"metadata={metadata_path}, shard_index={shard_index}, entries={len(entries)}."
+                )
+            source, file_name = entries[shard_index]
+            expected_source = str(source["name"])
+            if str(shard["source"]) != expected_source or str(shard["file"]) != file_name:
+                raise ValueError(
+                    "Static sample-cache shard order does not match the configured sources. "
+                    f"metadata={metadata_path}, shard_index={shard_index}, "
+                    f"cached=({shard['source']!r}, {shard['file']!r}), "
+                    f"configured=({expected_source!r}, {file_name!r})."
+                )
+            count = min(int(shard["count"]), remaining)
+            selected_entries.append((source, file_name))
+            selected_counts.append(count)
+            remaining -= count
+        if remaining != 0:
             raise ValueError(
-                "Cannot infer cached file boundaries: "
-                f"cache_rows={rows}, file_count={file_count}."
+                "Static inference cache has more rows than its sample-cache metadata. "
+                f"metadata={metadata_path}, requested_rows={row_count}, "
+                f"metadata_rows={int(metadata['total_samples'])}."
             )
-        if file_count == 1:
-            return [rows]
-        x = np.asarray(expected_coords[:, 0], dtype=np.float64)
-        deltas = np.diff(x)
-        resets = np.argpartition(deltas, file_count - 2)[: file_count - 1] + 1
-        threshold = -max(1.0e-6, 0.25 * float(np.ptp(x)))
-        if np.any(deltas[resets - 1] > threshold):
-            raise RuntimeError(
-                "Cache has too few coordinate resets to recover all source files; "
-                "recompute it without a global sample cap. "
-                f"file_count={file_count}, selected_deltas={deltas[resets - 1].tolist()}."
-            )
-        boundaries = np.concatenate(([0], np.sort(resets), [rows]))
-        return [int(value) for value in np.diff(boundaries)]
+        return selected_entries, selected_counts
 
     def __len__(self) -> int:
         return int(self._cumulative_counts[-1])

@@ -35,7 +35,9 @@ def _build_md_plot_title(
     sample_count: int,
     source_name: str | None = None,
 ) -> str:
-    labels_arr = np.asarray(labels_for_k, dtype=int).reshape(-1)
+    labels_arr = np.asarray(labels_for_k, dtype=int)
+    if labels_arr.ndim != 1:
+        raise ValueError(f"MD plot labels must have shape (N,), got {labels_arr.shape}.")
     visible_clusters = int(len(np.unique(labels_arr)))
     parts = [f"k={int(k_value)}", f"n={int(sample_count)}"]
     if visible_clusters != int(k_value):
@@ -63,10 +65,10 @@ def _save_md_cluster_outputs(
         raise ValueError("Cannot save MD cluster outputs: no k values were provided.")
 
     coords_arr = np.asarray(coords, dtype=np.float32)
-    if coords_arr.ndim != 2 or coords_arr.shape[0] < 2 or coords_arr.shape[1] < 3:
+    if coords_arr.ndim != 2 or coords_arr.shape[0] < 2 or coords_arr.shape[1] != 3:
         raise ValueError(
-            "Cannot save MD cluster outputs: expected coords with shape (n, d), "
-            f"n >= 2, d >= 3, got shape={coords_arr.shape}."
+            "Cannot save MD cluster outputs: expected coords with shape (N, 3), "
+            f"N >= 2, got shape={coords_arr.shape}."
         )
 
     stale_patterns = (
@@ -95,10 +97,11 @@ def _save_md_cluster_outputs(
                 f"k={int(k_value)}. Available k values: "
                 f"{sorted(int(k) for k in shared_cluster_color_maps_by_k)}."
             )
-        labels_arr = np.asarray(labels_by_k[int(k_value)], dtype=int).reshape(-1)
-        if labels_arr.shape[0] != coords_arr.shape[0]:
+        labels_arr = np.asarray(labels_by_k[int(k_value)], dtype=int)
+        if labels_arr.ndim != 1 or labels_arr.shape[0] != coords_arr.shape[0]:
             raise ValueError(
-                "Cannot save MD cluster outputs because coords/labels lengths do not match. "
+                "Cannot save MD cluster outputs because labels are not shaped (N,) "
+                "or do not match the coordinates. "
                 f"k={int(k_value)}, coords_shape={coords_arr.shape}, labels_shape={labels_arr.shape}."
             )
         title = _build_md_plot_title(
@@ -125,52 +128,45 @@ def _save_md_cluster_outputs(
         "static_pngs": static_pngs,
     }
 
-    try:
-        for k_value in ordered_k_values:
-            labels_arr = np.asarray(labels_by_k[int(k_value)], dtype=int).reshape(-1)
-            title = _build_md_plot_title(
-                labels_arr,
-                k_value=int(k_value),
-                sample_count=int(coords_arr.shape[0]),
-                source_name=source_name,
-            )
-            interactive_path = out_dir / f"md_space_clusters_k{int(k_value)}.html"
-            save_interactive_md_plot(
-                coords_arr,
-                labels_arr,
-                interactive_path,
-                palette="tab10",
-                cluster_color_map=shared_cluster_color_maps_by_k[int(k_value)],
-                max_points=max_points,
-                marker_size=3.0,
-                marker_line_width=0.0,
-                title=title,
-                aspect_mode="cube",
-            )
-            interactive_htmls[int(k_value)] = str(interactive_path)
-        primary_interactive_path = out_dir / f"md_space_clusters_k{int(primary_k)}.html"
-        results["interactive_html"] = str(primary_interactive_path)
-        results["interactive_htmls"] = interactive_htmls
-    except ImportError:
-        context = "full dataset" if source_name is None else f"snapshot {source_name}"
-        print(f"Plotly not installed; skipping interactive MD plot for {context}.")
+    for k_value in ordered_k_values:
+        labels_arr = np.asarray(labels_by_k[int(k_value)], dtype=int)
+        title = _build_md_plot_title(
+            labels_arr,
+            k_value=int(k_value),
+            sample_count=int(coords_arr.shape[0]),
+            source_name=source_name,
+        )
+        interactive_path = out_dir / f"md_space_clusters_k{int(k_value)}.html"
+        save_interactive_md_plot(
+            coords_arr,
+            labels_arr,
+            interactive_path,
+            palette="tab10",
+            cluster_color_map=shared_cluster_color_maps_by_k[int(k_value)],
+            max_points=max_points,
+            marker_size=3.0,
+            marker_line_width=0.0,
+            title=title,
+            aspect_mode="cube",
+        )
+        interactive_htmls[int(k_value)] = str(interactive_path)
+    primary_interactive_path = out_dir / f"md_space_clusters_k{int(primary_k)}.html"
+    results["interactive_html"] = str(primary_interactive_path)
+    results["interactive_htmls"] = interactive_htmls
 
     return results
 
 
 def _save_hdbscan_md_outputs(
     coords: np.ndarray,
-    hdbscan_labels: np.ndarray | None,
+    hdbscan_labels: np.ndarray,
     out_dir: Path,
     *,
-    hdbscan_color_map: dict[int, str] | None,
+    hdbscan_color_map: dict[int, str],
     max_points: int | None,
     title: str,
     context_label: str,
 ) -> dict[str, Any]:
-    if hdbscan_labels is None:
-        return {}
-
     outputs: dict[str, Any] = {}
     hdbscan_coord_files = save_local_structure_assignments(
         coords,
@@ -178,30 +174,28 @@ def _save_hdbscan_md_outputs(
         out_dir,
         prefix="local_structure_hdbscan",
     )
-    if hdbscan_coord_files:
-        outputs["hdbscan_coords_files"] = hdbscan_coord_files
-    try:
-        hdbscan_path = Path(out_dir) / "md_space_clusters_hdbscan.html"
-        n_hdb_clusters = int(len(np.unique(hdbscan_labels[hdbscan_labels >= 0])))
-        save_interactive_md_plot(
-            coords,
-            hdbscan_labels,
-            hdbscan_path,
-            palette="tab10",
-            cluster_color_map=hdbscan_color_map,
-            max_points=max_points,
-            marker_size=3.0,
-            marker_line_width=0.0,
-            title=f"{title}, k={n_hdb_clusters})",
-            label_prefix="HDBSCAN",
-            aspect_mode="cube",
+    if not hdbscan_coord_files:
+        raise RuntimeError(
+            "Failed to save HDBSCAN coordinate assignments. "
+            f"context={context_label}, out_dir={out_dir}."
         )
-        outputs["hdbscan_interactive_html"] = str(hdbscan_path)
-    except ImportError:
-        print(
-            "Plotly not installed; skipping HDBSCAN interactive MD plot "
-            f"for {context_label}."
-        )
+    outputs["hdbscan_coords_files"] = hdbscan_coord_files
+    hdbscan_path = Path(out_dir) / "md_space_clusters_hdbscan.html"
+    n_hdb_clusters = int(len(np.unique(hdbscan_labels[hdbscan_labels >= 0])))
+    save_interactive_md_plot(
+        coords,
+        hdbscan_labels,
+        hdbscan_path,
+        palette="tab10",
+        cluster_color_map=hdbscan_color_map,
+        max_points=max_points,
+        marker_size=3.0,
+        marker_line_width=0.0,
+        title=f"{title}, k={n_hdb_clusters})",
+        label_prefix="HDBSCAN",
+        aspect_mode="cube",
+    )
+    outputs["hdbscan_interactive_html"] = str(hdbscan_path)
     return outputs
 
 

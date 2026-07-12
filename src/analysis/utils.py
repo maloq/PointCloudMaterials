@@ -60,12 +60,6 @@ def _extract_pc_phase_coords(
     phase = batch.get("class_id", None)
     coords = batch.get("coords", None)
     instance_id = batch.get("instance_id", None)
-    if phase is not None and not torch.is_tensor(phase):
-        phase = torch.as_tensor(phase)
-    if coords is not None and not torch.is_tensor(coords):
-        coords = torch.as_tensor(coords)
-    if instance_id is not None and not torch.is_tensor(instance_id):
-        instance_id = torch.as_tensor(instance_id)
     return pc, phase, coords, instance_id
 
 
@@ -78,8 +72,6 @@ def _extract_optional_flat_tensor(batch: Any, key: str) -> torch.Tensor | None:
     value = batch.get(key, None)
     if value is None:
         return None
-    if not torch.is_tensor(value):
-        value = torch.as_tensor(value)
     return value.detach().view(-1).cpu()
 
 
@@ -89,8 +81,6 @@ def _prepare_pointcloud_batch_for_model(
     temporal_sequence_mode: str = "static_anchor",
     temporal_static_frame_index: int | None = 0,
 ) -> torch.Tensor:
-    if not torch.is_tensor(pc):
-        pc = torch.as_tensor(pc)
     if pc.ndim == 3:
         if pc.shape[-1] != 3:
             raise ValueError(
@@ -152,8 +142,6 @@ def _prepare_coords_batch_for_model(
     center_positions = batch.get("center_positions", None)
     if center_positions is None:
         return coords
-    if not torch.is_tensor(center_positions):
-        center_positions = torch.as_tensor(center_positions)
     if center_positions.ndim != 3 or center_positions.shape[-1] != 3:
         raise ValueError(
             "Temporal analysis expects batch['center_positions'] with shape (B, T, 3), "
@@ -288,9 +276,6 @@ def build_static_coords_dataloader(
         pin_memory=True,
         persistent_workers=cfg.num_workers > 0,
     )
-
-
-build_real_coords_dataloader = build_static_coords_dataloader
 
 
 def _torch_dtype_to_numpy_dtype(dtype: torch.dtype) -> np.dtype:
@@ -624,12 +609,6 @@ def _sample_indices(num_samples: int, max_samples: int | None) -> np.ndarray:
     return rng.choice(num_samples, size=max_samples, replace=False)
 
 
-def _default_cluster_count(num_samples: int, fallback: int = 4) -> int:
-    if num_samples < 2:
-        return 0
-    return max(2, min(fallback, num_samples // 2))
-
-
 def _seed_inference_rng_once(
     seed: int,
     device: str | torch.device,
@@ -812,11 +791,9 @@ def evaluate_latent_equivariance(
 
 __all__ = [
     "AnalyzableModel",
-    "_default_cluster_count",
     "_sample_indices",
     "_unwrap_dataset",
     "build_static_coords_dataloader",
-    "build_real_coords_dataloader",
     "cap_cluster_labels",
     "evaluate_latent_equivariance",
     "gather_inference_batches",

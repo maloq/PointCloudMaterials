@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 from omegaconf import OmegaConf
 
@@ -33,17 +35,24 @@ def test_full_runtime_profile_does_not_override_directional_settings() -> None:
     assert profile.directional_max_atoms_total is None
 
 
-def test_cached_static_file_boundaries_follow_coordinate_resets() -> None:
-    first = np.column_stack(
-        (np.repeat(np.arange(3, dtype=np.float32), 4), np.zeros(12), np.zeros(12))
+def test_lazy_static_file_counts_come_from_sample_cache_metadata(tmp_path) -> None:
+    metadata = {
+        "total_samples": 18,
+        "shards": [
+            {"source": "Al", "file": "a.npy", "count": 10},
+            {"source": "Al", "file": "b.npy", "count": 8},
+        ],
+    }
+    (tmp_path / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    source = {"name": "Al"}
+    entries, counts = LazyStaticAnalysisDataset._cached_file_entries(
+        OmegaConf.create({"sample_cache": {"cache_dir": str(tmp_path)}}),
+        entries=[(source, "a.npy"), (source, "b.npy")],
+        row_count=14,
     )
-    second = first + np.asarray([0.25, 1.0, 0.0], dtype=np.float32)
-    third = first + np.asarray([0.5, 2.0, 0.0], dtype=np.float32)
-    coords = np.concatenate((first, second, third), axis=0)
 
-    counts = LazyStaticAnalysisDataset._infer_cached_file_counts(coords, file_count=3)
-
-    assert counts == [12, 12, 12]
+    assert [file_name for _, file_name in entries] == ["a.npy", "b.npy"]
+    assert counts == [10, 4]
 
 
 def test_figure_only_metrics_keep_runtime_profile(tmp_path) -> None:

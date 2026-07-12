@@ -6,7 +6,6 @@ from typing import Any, Callable
 
 import numpy as np
 import pandas as pd
-from omegaconf import OmegaConf
 
 from .dynamic_motif_metrics import (
     build_bridge_event_windows,
@@ -51,29 +50,18 @@ class AssignmentBundle:
     frame_index: np.ndarray | None
     timestep: np.ndarray | None
     residual_norm: np.ndarray | None
-    inv_latents: np.ndarray | None
+    inv_latents: np.ndarray
     stable_k: int
     bridge_k: int
-
-
-def _resolve_dynamic_settings(analysis_cfg: Any) -> Any:
-    if hasattr(analysis_cfg, "dynamic_motif"):
-        return analysis_cfg.dynamic_motif
-    raw_cfg = OmegaConf.select(analysis_cfg, "dynamic_motif", default=None)
-    if raw_cfg is None:
-        class _DisabledSettings:
-            enabled = False
-        return _DisabledSettings()
-    return raw_cfg
 
 
 def _per_sample_strings(cache: dict[str, np.ndarray], key: str, *, default: str, num_samples: int) -> np.ndarray:
     if key not in cache:
         return np.asarray([default] * int(num_samples), dtype=str)
-    values = np.asarray(cache[key]).reshape(-1)
-    if values.shape[0] != int(num_samples):
+    values = np.asarray(cache[key])
+    if values.shape != (int(num_samples),):
         raise ValueError(
-            f"Cache key {key!r} must have {num_samples} entries, got shape={tuple(values.shape)}."
+            f"Cache key {key!r} must have shape ({num_samples},), got {tuple(values.shape)}."
         )
     return values.astype(str)
 
@@ -81,10 +69,10 @@ def _per_sample_strings(cache: dict[str, np.ndarray], key: str, *, default: str,
 def _per_sample_ints(cache: dict[str, np.ndarray], key: str, *, num_samples: int) -> np.ndarray | None:
     if key not in cache:
         return None
-    values = np.asarray(cache[key]).reshape(-1)
-    if values.shape[0] != int(num_samples):
+    values = np.asarray(cache[key])
+    if values.shape != (int(num_samples),):
         raise ValueError(
-            f"Cache key {key!r} must have {num_samples} entries, got shape={tuple(values.shape)}."
+            f"Cache key {key!r} must have shape ({num_samples},), got {tuple(values.shape)}."
         )
     return values.astype(np.int64, copy=False)
 
@@ -92,10 +80,10 @@ def _per_sample_ints(cache: dict[str, np.ndarray], key: str, *, num_samples: int
 def _per_sample_floats(cache: dict[str, np.ndarray], key: str, *, num_samples: int) -> np.ndarray | None:
     if key not in cache:
         return None
-    values = np.asarray(cache[key]).reshape(-1)
-    if values.shape[0] != int(num_samples):
+    values = np.asarray(cache[key])
+    if values.shape != (int(num_samples),):
         raise ValueError(
-            f"Cache key {key!r} must have {num_samples} entries, got shape={tuple(values.shape)}."
+            f"Cache key {key!r} must have shape ({num_samples},), got {tuple(values.shape)}."
         )
     return values.astype(np.float32, copy=False)
 
@@ -113,15 +101,25 @@ def resolve_motif_assignments(
     stable_probs = None
     if "stable_probs" in cache:
         stable_probs = np.asarray(cache["stable_probs"], dtype=np.float32)
+        if stable_probs.ndim != 2 or stable_probs.shape[0] != num_samples:
+            raise ValueError(
+                "cache['stable_probs'] must have shape (N, K), "
+                f"got {stable_probs.shape} for N={num_samples}."
+            )
 
     stable_ids = None
     if "stable_ids" in cache:
-        stable_ids = np.asarray(cache["stable_ids"], dtype=np.int64).reshape(-1)
+        stable_ids = np.asarray(cache["stable_ids"], dtype=np.int64)
     elif cluster_labels_fallback is not None:
-        stable_ids = np.asarray(cluster_labels_fallback, dtype=np.int64).reshape(-1)
-
-    if "stable_probs" in cache and stable_probs is None:
-        stable_probs = np.asarray(cache["stable_probs"], dtype=np.float32)
+        stable_ids = np.asarray(cluster_labels_fallback, dtype=np.int64)
+    if stable_ids is None:
+        raise ValueError(
+            "Dynamic motif analysis requires cache['stable_ids'] or fallback cluster labels."
+        )
+    if stable_ids.shape != (num_samples,):
+        raise ValueError(
+            f"Stable motif ids must have shape ({num_samples},), got {stable_ids.shape}."
+        )
     if stable_probs is not None:
         stable_confidence = stable_probs.max(axis=1).astype(np.float32, copy=False)
         stable_k = int(stable_probs.shape[1])
@@ -129,15 +127,27 @@ def resolve_motif_assignments(
         stable_confidence = np.ones((num_samples,), dtype=np.float32)
         stable_k = int(np.max(stable_ids)) + 1 if stable_ids.size > 0 else 0
 
-    bridge_probs = None
+    bridge_probs = (
+        np.asarray(cache["bridge_probs"], dtype=np.float32)
+        if "bridge_probs" in cache
+        else None
+    )
+    if bridge_probs is not None and (
+        bridge_probs.ndim != 2 or bridge_probs.shape[0] != num_samples
+    ):
+        raise ValueError(
+            "cache['bridge_probs'] must have shape (N, K), "
+            f"got {bridge_probs.shape} for N={num_samples}."
+        )
     bridge_ids = None
     if "bridge_ids" in cache:
-        bridge_ids = np.asarray(cache["bridge_ids"], dtype=np.int64).reshape(-1)
-    elif "bridge_probs" in cache:
-        bridge_probs = np.asarray(cache["bridge_probs"], dtype=np.float32)
+        bridge_ids = np.asarray(cache["bridge_ids"], dtype=np.int64)
+    elif bridge_probs is not None:
         bridge_ids = bridge_probs.argmax(axis=1).astype(np.int64, copy=False)
-    if bridge_probs is None and "bridge_probs" in cache:
-        bridge_probs = np.asarray(cache["bridge_probs"], dtype=np.float32)
+    if bridge_ids is not None and bridge_ids.shape != (num_samples,):
+        raise ValueError(
+            f"Bridge motif ids must have shape ({num_samples},), got {bridge_ids.shape}."
+        )
     if bridge_probs is not None:
         bridge_confidence = bridge_probs.max(axis=1).astype(np.float32, copy=False)
         bridge_k = int(bridge_probs.shape[1])
@@ -153,10 +163,8 @@ def resolve_motif_assignments(
         bridge_active = np.zeros((num_samples,), dtype=bool)
     elif bridge_gate is not None:
         bridge_active = bridge_gate >= 0.5
-    elif bridge_confidence is not None:
-        bridge_active = bridge_confidence >= 0.5
     else:
-        bridge_active = np.ones((num_samples,), dtype=bool)
+        bridge_active = bridge_confidence >= 0.5
 
     center_atom_id = _per_sample_ints(cache, "center_atom_id", num_samples=num_samples)
     if center_atom_id is None:
@@ -188,10 +196,14 @@ def _build_sample_assignments_dataframe(
 ) -> pd.DataFrame:
     num_samples = int(bundle.stable_ids.shape[0])
     sample_index = (
-        np.asarray(cache["sample_index"], dtype=np.int64).reshape(-1)
+        np.asarray(cache["sample_index"], dtype=np.int64)
         if "sample_index" in cache
         else np.arange(num_samples, dtype=np.int64)
     )
+    if sample_index.shape != (num_samples,):
+        raise ValueError(
+            f"cache['sample_index'] must have shape ({num_samples},), got {sample_index.shape}."
+        )
     resolved_family = np.where(bundle.bridge_active, "bridge", "stable")
     resolved_motif_id = np.where(
         bundle.bridge_active,
@@ -357,13 +369,12 @@ def run_dynamic_motif_analysis(
     *,
     cache: dict[str, np.ndarray],
     out_dir: Path,
-    model_cfg: Any,
     analysis_cfg: Any,
     cluster_labels_primary: np.ndarray | None,
     step: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
-    settings = _resolve_dynamic_settings(analysis_cfg)
-    if not bool(getattr(settings, "enabled", False)):
+    settings = analysis_cfg.dynamic_motif
+    if not settings.enabled:
         return {"enabled": False}
 
     if step is not None:
@@ -389,26 +400,19 @@ def run_dynamic_motif_analysis(
         directory.mkdir(parents=True, exist_ok=True)
 
     assignment_cache = dict(cache)
-    if not bool(getattr(settings, "use_model_outputs", True)):
+    if not settings.use_model_outputs:
         for key in ("stable_ids", "stable_probs", "bridge_ids", "bridge_probs", "bridge_gate"):
             assignment_cache.pop(key, None)
 
     warnings_list: list[str] = []
-    try:
-        bundle = resolve_motif_assignments(
-            assignment_cache,
-            cluster_labels_fallback=cluster_labels_primary,
-        )
-    except ValueError as exc:
-        return {
-            "enabled": True,
-            "skipped": True,
-            "warnings": [str(exc)],
-        }
+    bundle = resolve_motif_assignments(
+        assignment_cache,
+        cluster_labels_fallback=cluster_labels_primary,
+    )
 
     sample_df = _build_sample_assignments_dataframe(cache, bundle)
     sample_assignments_path: Path | None = None
-    if bool(getattr(settings, "export_per_sample_arrays", True)):
+    if settings.export_per_sample_arrays:
         sample_assignments_path = assignments_dir / "sample_assignments.csv"
         _write_csv(sample_df, sample_assignments_path)
 
@@ -417,8 +421,8 @@ def run_dynamic_motif_analysis(
         confidences=bundle.stable_confidence,
         motif_family="stable",
         total_motif_count=(
-            getattr(settings, "stable_k", None)
-            if getattr(settings, "stable_k", None) is not None
+            settings.stable_k
+            if settings.stable_k is not None
             else bundle.stable_k
         ),
     )
@@ -443,8 +447,8 @@ def run_dynamic_motif_analysis(
             confidences=active_bridge_conf,
             motif_family="bridge",
             total_motif_count=(
-                getattr(settings, "bridge_k", None)
-                if getattr(settings, "bridge_k", None) is not None
+                settings.bridge_k
+                if settings.bridge_k is not None
                 else bundle.bridge_k
             ),
         )
@@ -480,13 +484,13 @@ def run_dynamic_motif_analysis(
         "enabled": True,
         "warnings": warnings_list,
         "num_stable_motifs": int(
-            getattr(settings, "stable_k", None)
-            if getattr(settings, "stable_k", None) is not None
+            settings.stable_k
+            if settings.stable_k is not None
             else bundle.stable_k
         ),
         "num_bridge_motifs": int(
-            getattr(settings, "bridge_k", None)
-            if getattr(settings, "bridge_k", None) is not None
+            settings.bridge_k
+            if settings.bridge_k is not None
             else bundle.bridge_k
         ),
         "stable_active_count": int(stable_usage_metrics["stable_active_count"]),
@@ -506,7 +510,7 @@ def run_dynamic_motif_analysis(
         dynamic_metrics.update(transition_metrics)
         dwell_df, survival_df, hazard_df, dwell_metrics = compute_dwell_tables(
             sample_df,
-            dwell_min_length=int(getattr(settings, "dwell_min_length", 1)),
+            dwell_min_length=int(settings.dwell_min_length),
         )
         dynamic_metrics.update(dwell_metrics)
         bridge_stats_df, bridge_triplets, bridge_metrics = compute_bridge_tables(
@@ -514,12 +518,12 @@ def run_dynamic_motif_analysis(
             dwell_df=dwell_df,
             transition_counts=transition_counts,
             bridge_triplets=bridge_triplets,
-            bridge_min_support=int(getattr(settings, "bridge_min_support", 50)),
+            bridge_min_support=int(settings.bridge_min_support),
         )
         dynamic_metrics.update(bridge_metrics)
         recurrence_scores_df, revisit_df, recurrence_metrics = compute_recurrence_tables(
             dwell_df,
-            recurrence_max_gap=int(getattr(settings, "recurrence_max_gap", 64)),
+            recurrence_max_gap=int(settings.recurrence_max_gap),
         )
         dynamic_metrics.update(recurrence_metrics)
 
@@ -564,7 +568,7 @@ def run_dynamic_motif_analysis(
         _write_csv(hazard_calibration_df, hazard_calibration_path)
         dynamic_metrics["artifacts"]["hazard_calibration_csv"] = _path_relative_to(out_dir, hazard_calibration_path)
 
-    if bool(getattr(getattr(settings, "field", None), "enabled", False)):
+    if settings.field.enabled:
         field_gain_df, field_metrics = compute_field_gain(sample_df)
         dynamic_metrics.update(field_metrics)
         if not field_gain_df.empty:
@@ -601,7 +605,7 @@ def run_dynamic_motif_analysis(
     neighbor_heatmap_path: Path | None = None
     representative_index_path: Path | None = None
 
-    if not transition_counts.empty and bool(getattr(getattr(settings, "render", None), "heatmaps", True)):
+    if not transition_counts.empty and settings.render.heatmaps:
         state_ids = sorted(
             set(zip(transition_counts["from_family"], transition_counts["from_id"], strict=False)).union(
                 set(zip(transition_counts["to_family"], transition_counts["to_id"], strict=False))
@@ -614,12 +618,9 @@ def run_dynamic_motif_analysis(
         )
         transition_matrix_path = transitions_dir / "transition_matrix.png"
         plot_transition_heatmap(matrix, labels, transition_matrix_path)
-    if not transition_counts.empty and bool(getattr(getattr(settings, "render", None), "sankey", True)):
+    if not transition_counts.empty and settings.render.sankey:
         _remove_existing_transition_snapshot_flow_artifacts(transitions_dir)
-        legacy_transition_flow_path = transitions_dir / "transition_flow.png"
-        if legacy_transition_flow_path.exists():
-            legacy_transition_flow_path.unlink()
-        snapshot_flow_count = int(getattr(settings, "transition_snapshot_flow_count", 0))
+        snapshot_flow_count = int(settings.transition_snapshot_flow_count)
         if snapshot_flow_count > 0:
             anchors = _resolve_transition_snapshot_anchors(
                 sample_df,
@@ -703,17 +704,17 @@ def run_dynamic_motif_analysis(
     proportion_plot_path = temporal_dir / "motif_proportion_area.png"
     plot_motif_proportion_area(frame_proportions_df, proportion_plot_path)
 
-    if not dwell_df.empty and bool(getattr(getattr(settings, "render", None), "heatmaps", True)):
+    if not dwell_df.empty and settings.render.heatmaps:
         dwell_hist_path = dwell_dir / "dwell_histograms.png"
         survival_plot_path = dwell_dir / "survival_curves.png"
         plot_dwell_histograms(dwell_df, dwell_hist_path)
         plot_survival_curves(survival_df, survival_plot_path)
 
-    if not revisit_df.empty and bool(getattr(getattr(settings, "render", None), "heatmaps", True)):
+    if not revisit_df.empty and settings.render.heatmaps:
         recurrence_plot_path = recurrence_dir / "recurrence_heatmap.png"
         plot_recurrence_heatmap(revisit_df, recurrence_plot_path)
 
-    if bool(getattr(getattr(settings, "render", None), "event_gallery", True)):
+    if settings.render.event_gallery:
         bridge_events = build_bridge_event_windows(
             sample_df,
             window_radius=2,
@@ -728,7 +729,7 @@ def run_dynamic_motif_analysis(
         [column for column in sample_df.columns if column.startswith("hazard_probs_lag_")]
     )
     projection_2d = plot_motif_latent_2d(
-        bundle.inv_latents if bundle.inv_latents is not None else np.empty((0, 2), dtype=np.float32),
+        bundle.inv_latents,
         stable_ids=bundle.stable_ids,
         bridge_active=bundle.bridge_active,
         hazard_probs=(
@@ -748,14 +749,14 @@ def run_dynamic_motif_analysis(
         plot_neighbor_influence_heatmap(field_gain_df, neighbor_heatmap_path)
 
     representative_rows: list[dict[str, Any]] = []
-    if bool(getattr(getattr(settings, "render", None), "representatives", True)) and projection_2d.size > 0:
+    if settings.render.representatives and projection_2d.size > 0:
         stable_ids_to_render = sorted(int(v) for v in np.unique(bundle.stable_ids[bundle.stable_ids >= 0]))
         for stable_id in stable_ids_to_render:
             selected = _select_representatives(
                 sample_df,
                 motif_family="stable",
                 motif_id=int(stable_id),
-                max_samples=int(getattr(settings, "representative_samples_per_motif", 12)),
+                max_samples=int(settings.representative_samples_per_motif),
             )
             if not selected:
                 continue
@@ -792,7 +793,7 @@ def run_dynamic_motif_analysis(
                     sample_df,
                     motif_family="bridge",
                     motif_id=int(bridge_id),
-                    max_samples=int(getattr(settings, "representative_samples_per_motif", 12)),
+                    max_samples=int(settings.representative_samples_per_motif),
                 )
                 if not selected:
                     continue

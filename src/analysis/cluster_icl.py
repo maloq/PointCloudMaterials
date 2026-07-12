@@ -25,8 +25,13 @@ def _prepare_icl_features(
 ) -> tuple[np.ndarray, dict[str, Any]]:
     x = np.asarray(latents, dtype=np.float32)
     if x.ndim != 2:
-        x = np.reshape(x, (x.shape[0], -1))
-    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+        raise ValueError(f"ICL latents must have shape (N, D), got {x.shape}.")
+    if not np.isfinite(x).all():
+        first_bad = np.argwhere(~np.isfinite(x))[0].tolist()
+        raise ValueError(
+            "ICL features contain non-finite values. "
+            f"first_nonfinite_index={first_bad}, shape={x.shape}."
+        )
     if x.shape[0] < 3:
         raise ValueError(
             f"Need at least 3 samples to compute ICL curve, got {x.shape[0]}."
@@ -80,7 +85,6 @@ def _compute_icl_curve(
     features: np.ndarray,
     k_values: list[int],
     *,
-    covariance_type: str = "diag",
     random_state: int = 42,
 ) -> dict[int, dict[str, float]]:
     x = np.asarray(features, dtype=np.float32)
@@ -88,9 +92,6 @@ def _compute_icl_curve(
         raise ValueError(f"features must be 2D, got shape {x.shape}.")
     if x.shape[0] < 3:
         raise ValueError(f"Need at least 3 samples for ICL curve, got {x.shape[0]}.")
-
-    # Keep covariance_type for backward-compatible function signature.
-    _ = covariance_type
 
     curve: dict[int, dict[str, float]] = {}
     for k in k_values:

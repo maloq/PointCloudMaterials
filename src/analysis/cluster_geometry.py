@@ -37,7 +37,7 @@ def _estimate_ball_radius_world(
     The returned radius is chosen so spheres touch at the closest sampled
     nearest-neighbor distance without overlap (uniform global radius).
     """
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    pts = np.asarray(points, dtype=np.float32)
     n_pts = pts.shape[0]
 
     mins = np.min(pts, axis=0).astype(np.float64)
@@ -130,7 +130,9 @@ def _sample_indices_stratified(
     *,
     random_seed: int = 0,
 ) -> np.ndarray:
-    labels = np.asarray(labels).reshape(-1)
+    labels = np.asarray(labels)
+    if labels.ndim != 1:
+        raise ValueError(f"Stratified sampling labels must have shape (N,), got {labels.shape}.")
     n_samples = int(labels.size)
     if max_points is None or max_points <= 0 or n_samples <= int(max_points):
         return np.arange(n_samples, dtype=int)
@@ -171,23 +173,25 @@ def _sample_indices_stratified(
 def _extract_points_from_sample(sample: Any) -> np.ndarray:
     points = sample["points"]
     if not torch.is_tensor(points):
-        points = torch.as_tensor(points)
+        raise TypeError(
+            "Analysis datasets must return sample['points'] as a torch.Tensor, "
+            f"got {type(points)!r}."
+        )
     pts = points.detach().cpu().numpy()
     if pts.ndim == 3:
         # Temporal datasets provide (T, N, 3); representative renders use the anchor frame.
         pts = pts[0]
-    if pts.ndim != 2:
-        pts = np.reshape(pts, (-1, pts.shape[-1]))
-    if pts.shape[1] < 3:
+    if pts.ndim != 2 or pts.shape[1] != 3:
         raise ValueError(
-            "Sample points must have at least 3 columns for xyz coordinates, "
+            "Analysis dataset points must have shape (N, 3) or (T, N, 3), "
             f"got shape {pts.shape}."
         )
-    pts = pts[:, :3]
-    finite = np.all(np.isfinite(pts), axis=1)
-    pts = pts[finite]
-    if pts.size == 0:
-        raise ValueError("Sample contains no finite xyz points.")
+    if not np.isfinite(pts).all():
+        first_bad = np.argwhere(~np.isfinite(pts))[0].tolist()
+        raise ValueError(
+            "Analysis dataset points contain non-finite coordinates. "
+            f"first_nonfinite_index={first_bad}, shape={pts.shape}."
+        )
     return pts.astype(np.float32, copy=False)
 
 
@@ -223,7 +227,7 @@ def _resolve_local_coordination_shell(
     max_shell_neighbors: int = 6,
     shell_gap_ratio: float = 1.18,
 ) -> dict[str, Any]:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    pts = np.asarray(points, dtype=np.float32)
     n_points = pts.shape[0]
     if n_points < 2:
         return {
@@ -319,21 +323,13 @@ def _build_local_coordination_edges(
         }
 
     edge_mode_norm = str(edge_mode).strip().lower()
-    alias_map = {
-        "coordination_shell": "coordination_shell",
-        "shell_union": "coordination_shell",
-        "union": "coordination_shell",
-        "coordination_shell_mutual": "coordination_shell_mutual",
-        "shell_mutual": "coordination_shell_mutual",
-        "mutual": "coordination_shell_mutual",
-    }
-    if edge_mode_norm not in alias_map:
+    if edge_mode_norm not in {"coordination_shell", "coordination_shell_mutual"}:
         raise ValueError(
             "Unsupported representative edge mode: "
             f"{edge_mode!r}. Expected one of "
             "['coordination_shell', 'coordination_shell_mutual']."
         )
-    edge_mode_use = alias_map[edge_mode_norm]
+    edge_mode_use = edge_mode_norm
 
     neighbor_sets = [set(neighbors) for neighbors in neighbor_lists]
     union_edges: set[tuple[int, int]] = set()
@@ -376,10 +372,10 @@ def _draw_edges(
     edge_alpha: float = 0.72,
     edge_linewidth: float = 1.05,
 ) -> None:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    pts = np.asarray(points, dtype=np.float32)
     point_rgb: np.ndarray | None = None
     if point_colors is not None:
-        point_rgb = np.clip(np.asarray(point_colors, dtype=np.float32)[:, :3], 0.0, 1.0)
+        point_rgb = np.clip(np.asarray(point_colors, dtype=np.float32), 0.0, 1.0)
 
     for edge in edges:
         p1, p2 = pts[edge[0]], pts[edge[1]]
@@ -404,7 +400,7 @@ def _compute_pca_orientation_basis(
     *,
     eps: float = 1e-8,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, int, float]:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    pts = np.asarray(points, dtype=np.float32)
 
     center_idx = int(np.argmin(np.linalg.norm(pts, axis=1)))
     centered = pts - pts[center_idx]
@@ -447,7 +443,7 @@ def _orient_points_for_crystal_view(
     method: str = "pca",
     eps: float = 1e-8,
 ) -> tuple[np.ndarray, dict[str, Any]]:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
+    pts = np.asarray(points, dtype=np.float32)
     method_norm = str(method).strip().lower()
     if method_norm == "none":
         return pts.astype(np.float32, copy=False), {
@@ -482,9 +478,16 @@ def _compute_cluster_representative_indices(
         latents if selection_features is None else selection_features,
         dtype=np.float32,
     )
-    labels = np.asarray(cluster_labels, dtype=int).reshape(-1)
+    labels = np.asarray(cluster_labels, dtype=int)
     if lat.ndim != 2:
-        lat = np.reshape(lat, (lat.shape[0], -1))
+        raise ValueError(
+            "Representative selection features must have shape (N, D), "
+            f"got {lat.shape}."
+        )
+    if labels.ndim != 1:
+        raise ValueError(
+            f"Representative cluster labels must have shape (N,), got {labels.shape}."
+        )
     if labels.size != lat.shape[0]:
         raise ValueError(
             "representative selection features and cluster_labels length mismatch: "
