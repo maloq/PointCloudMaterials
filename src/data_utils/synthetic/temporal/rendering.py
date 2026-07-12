@@ -12,7 +12,6 @@ except ImportError:
     njit = None
     _NUMBA_AVAILABLE = False
 
-from ..atomistic_generator import LiquidMetalGenerator, LiquidStructureConfig
 from .config import TemporalBenchmarkConfig
 from .dynamics import LatentTrajectories, SiteLayout
 from .geometry import quaternion_to_rotation_matrix, quaternion_to_rotation_matrix_batch, random_rotation_matrices, random_unit_vector
@@ -399,32 +398,31 @@ class FrameRenderer:
         )
 
     def _build_base_atom_cloud(self) -> np.ndarray:
-        liquid_state = next(
-            (state for state in self.graph.states if state.template_kind == "liquid"),
-            None,
-        )
-        fallback_state = liquid_state or self.graph.states[0]
-        phase_recipe = self.templates.phase_recipe(fallback_state.name)
-        liquid_config = LiquidStructureConfig(**phase_recipe.get("liquid_config", {"method": "simple"}))
-        min_pair_distance = phase_recipe.get("min_pair_dist")
-        generator = LiquidMetalGenerator(
-            self.box_size,
-            float(self.config.rendering.target_density),
-            self.avg_nn_distance,
-            config=liquid_config,
-            rng=np.random.default_rng(int(self.config.seed) + 4_211),
-            min_pair_dist=min_pair_distance,
-        )
-        atoms = generator.generate().astype(np.float32)
-        expected_atoms = int(round(float(self.config.rendering.target_density) * (self.box_size**3)))
-        if atoms.shape[0] < int(0.95 * expected_atoms):
-            raise RuntimeError(
-                "Persistent full-box atom generation underfilled the simulation box. "
-                f"Expected about {expected_atoms} atoms but generated {atoms.shape[0]}. "
-                f"liquid_method={liquid_config.method!r}, box_size={self.box_size}, "
-                f"target_density={self.config.rendering.target_density}."
+        source_path = self.config.rendering.initial_positions_file
+        if source_path is None:
+            raise ValueError(
+                "Temporal dense rendering now requires rendering.initial_positions_file. "
+                "Point it to atoms.npy from a force-driven environment; random/RDF liquid "
+                "packing was removed because it does not represent a simulated liquid."
             )
-        return atoms
+        if not source_path.is_file():
+            raise FileNotFoundError(
+                f"Temporal rendering initial_positions_file does not exist: {source_path}."
+            )
+        atoms = np.load(source_path)
+        if atoms.ndim != 2 or atoms.shape[1] != 3:
+            raise ValueError(
+                f"Temporal rendering initial positions must have shape (N, 3), got "
+                f"{atoms.shape} from {source_path}."
+            )
+        if np.any(atoms < 0.0) or np.any(atoms >= self.box_size):
+            minima = np.min(atoms, axis=0).tolist()
+            maxima = np.max(atoms, axis=0).tolist()
+            raise ValueError(
+                "Temporal initial positions must already use the configured periodic box "
+                f"[0, {self.box_size}); minima={minima}, maxima={maxima}, path={source_path}."
+            )
+        return np.asarray(atoms, dtype=np.float32)
 
     def _build_atom_reference_directions(self, atom_count: int) -> np.ndarray:
         directions = self._renderer_rng.normal(size=(atom_count, 3)).astype(np.float32)

@@ -1,272 +1,69 @@
-# =============================================================================
-# POLYCRYSTALLINE METAL (BALANCED GEOMETRIES) - V2
-# =============================================================================
-# Adds 4 new classes on top of the original 4:
-# - 3 heavily perturbed crystal variants (BCC/FCC/HCP) with structure still intact
-# - 1 additional amorphous class with medium-range-order (MRO) clusters
-# =============================================================================
+# Larger force-driven aluminium benchmark for the final model study.
+# The physics is identical to data_synth_polycrystalline_balanced_geometries.yaml;
+# only the periodic system and equilibration lengths are increased.
+
 kind: synthetic
-data_path: output/synthetic_data/polycrystalline_balanced_geometries_v2
+data_path: output/synthetic_data/al_phase_context_large
 num_points: 128
 model_points: 80
 radius: 7.2
 sample_type: regular
-overlap_fraction: 0.15
+overlap_fraction: 0.10
 n_samples: 0
+dataset_max_samples: null
 train_ratio: 0.8
 drop_edge_samples: true
 pre_normalize: true
 normalize: true
+synthetic:
+  root_dir: output/synthetic_data/al_phase_context_large
+  classes: [solid_bulk, liquid_bulk, interface]
 
-global:
-  L: 200.0
-  rho_target: 0.0849
-  avg_nn_dist: 2.49
-  grain_count: 32
-  intermediate_layer_thickness_factor: 2.0
-  random_seed: 24680
-  output_dir: output/synthetic_data/polycrystalline_balanced_geometries_v2
+dataset_name: al_phase_context_mace_mpa_large
+random_seed: 24680
 
-  parallel:
-    enabled: true
-    n_workers: null
-    chunk_size: 2
+potential:
+  model_path: datasets/potentials/mace-mpa-0-medium.model
+  sha256: 75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638
+  device: cuda
+  default_dtype: float32
 
-  cell_size_factor: 1.5
+dynamics:
+  pressure_GPa: 0.0
+  target_temperature_K: 650.0
+  melt_temperature_K: 1600.0
+  timestep_fs: 1.0
+  thermostat_time_fs: 100.0
+  barostat_time_fs: 1000.0
+  solid_equilibration_steps: 10000
+  melt_steps: 20000
+  quench_steps: 10000
+  quench_stages: 20
+  target_equilibration_steps: 10000
+  interface_evolution_steps: 100
+  sample_interval: 250
 
-# =============================================================================
-# PHASE DEFINITIONS
-# =============================================================================
-phases:
-  # ---------------------------------------------------------------------------
-  # ORIGINAL CLASSES
-  # ---------------------------------------------------------------------------
-  bcc_iron:
-    phase_type: crystal_bcc
-    structural_params:
-      density_target: 0.0849
-    perturbations:
-      temperature_K: 350.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.009
-      dropout_relax_radius: 6.8
-      dropout_relax_max_fraction: 0.10
-      use_elastic_relaxation: true
-      rot_bubble_prob: 0.45
-      rot_bubble_radius: 7.2
-      rot_bubble_angle_deg: 13.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 4.5
-          alpha: -0.28
-        - expected_count: 1
-          radius: 3.5
-          alpha: 0.18
+system:
+  chemical_symbol: Al
+  crystal_structure: fcc
+  initial_lattice_constant_A: 4.05
+  repetitions: [10, 10, 24]
+  liquid_slab_fraction: 0.70
+  interface_half_width_A: 5.0
 
-  fcc_iron:
-    phase_type: crystal_fcc
-    structural_params:
-      density_target: 0.0849
-    perturbations:
-      temperature_K: 350.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.009
-      dropout_relax_radius: 6.8
-      dropout_relax_max_fraction: 0.10
-      use_elastic_relaxation: true
-      rot_bubble_prob: 0.45
-      rot_bubble_radius: 7.2
-      rot_bubble_angle_deg: 13.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 4.5
-          alpha: -0.28
-        - expected_count: 1
-          radius: 3.5
-          alpha: 0.18
+validation:
+  maximum_force_eV_per_A: 20.0
+  maximum_pressure_error_GPa: 0.15
+  maximum_temperature_error_K: 50.0
+  minimum_pair_distance_A: 1.8
+  reference_density_cache: datasets/dump_first_10.temporal_cache
+  maximum_relative_density_error: 0.08
+  minimum_solid_fcc_fraction: 0.90
+  maximum_liquid_crystalline_fraction: 0.10
+  minimum_interface_crystalline_fraction: 0.20
+  maximum_interface_crystalline_fraction: 0.80
 
-  hcp_iron:
-    phase_type: crystal_hcp
-    structural_params:
-      density_target: 0.0849
-    perturbations:
-      temperature_K: 350.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.009
-      dropout_relax_radius: 6.8
-      dropout_relax_max_fraction: 0.10
-      use_elastic_relaxation: true
-      rot_bubble_prob: 0.45
-      rot_bubble_radius: 7.2
-      rot_bubble_angle_deg: 13.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 4.5
-          alpha: -0.28
-        - expected_count: 1
-          radius: 3.5
-          alpha: 0.18
-
-  amorphous_pure:
-    phase_type: amorphous_mixed
-    structural_params:
-      min_pair_dist: 2.1
-      density_target: 0.078
-      embedded_crystal: crystal_fcc
-      embedded_probability: 0.06
-      embedded_radius: 4.2
-    liquid_structure:
-      method: rdf_constrained
-      target_coordination: 11.0
-      rdf_iterations: 700
-      rdf_tolerance: 0.05
-    perturbations:
-      sigma_thermal: 0.26
-      temperature_K: 0.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.010
-      dropout_relax_radius: 3.8
-      dropout_relax_max_fraction: 0.07
-      use_elastic_relaxation: false
-      rot_bubble_prob: 0.20
-      rot_bubble_radius: 5.2
-      rot_bubble_angle_deg: 8.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 3.0
-          alpha: -0.16
-        - expected_count: 1
-          radius: 2.3
-          alpha: 0.10
-
-  # ---------------------------------------------------------------------------
-  # NEW CLASS 1/4: HEAVILY PERTURBED BCC (structure remains crystalline)
-  # ---------------------------------------------------------------------------
-  bcc_iron_perturbed:
-    phase_type: crystal_bcc
-    structural_params:
-      density_target: 0.0849
-    perturbations:
-      temperature_K: 520.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.018
-      dropout_relax_radius: 8.5
-      dropout_relax_max_fraction: 0.18
-      use_elastic_relaxation: true
-      rot_bubble_prob: 0.85
-      rot_bubble_radius: 10.5
-      rot_bubble_angle_deg: 24.0
-      density_bubbles:
-        - expected_count: 2
-          radius: 5.5
-          alpha: -0.50
-        - expected_count: 2
-          radius: 4.2
-          alpha: -0.25
-        - expected_count: 1
-          radius: 4.5
-          alpha: 0.35
-
-  # ---------------------------------------------------------------------------
-  # NEW CLASS 2/4: HEAVILY PERTURBED FCC
-  # ---------------------------------------------------------------------------
-  fcc_iron_perturbed:
-    phase_type: crystal_fcc
-    structural_params:
-      density_target: 0.0849
-    perturbations:
-      temperature_K: 500.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.016
-      dropout_relax_radius: 8.2
-      dropout_relax_max_fraction: 0.17
-      use_elastic_relaxation: true
-      rot_bubble_prob: 0.80
-      rot_bubble_radius: 10.0
-      rot_bubble_angle_deg: 22.0
-      density_bubbles:
-        - expected_count: 2
-          radius: 5.2
-          alpha: -0.45
-        - expected_count: 2
-          radius: 4.0
-          alpha: -0.22
-        - expected_count: 1
-          radius: 4.3
-          alpha: 0.30
-
-  # ---------------------------------------------------------------------------
-  # NEW CLASS 3/4: HEAVILY PERTURBED HCP
-  # ---------------------------------------------------------------------------
-  hcp_iron_perturbed:
-    phase_type: crystal_hcp
-    structural_params:
-      density_target: 0.0849
-    perturbations:
-      temperature_K: 510.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.017
-      dropout_relax_radius: 8.3
-      dropout_relax_max_fraction: 0.17
-      use_elastic_relaxation: true
-      rot_bubble_prob: 0.82
-      rot_bubble_radius: 10.2
-      rot_bubble_angle_deg: 21.0
-      density_bubbles:
-        - expected_count: 2
-          radius: 5.3
-          alpha: -0.47
-        - expected_count: 2
-          radius: 4.1
-          alpha: -0.23
-        - expected_count: 1
-          radius: 4.4
-          alpha: 0.32
-
-  # ---------------------------------------------------------------------------
-  # NEW CLASS 4/4: AMORPHOUS WITH MEDIUM-RANGE ORDER (MRO) CLUSTERS
-  # ---------------------------------------------------------------------------
-  glassy_mro:
-    phase_type: liquid_metal
-    structural_params:
-      min_pair_dist: 2.15
-      density_target: 0.080
-    liquid_structure:
-      method: mro_clustered
-      target_coordination: 11.7
-      mro_cluster_fraction: 0.55
-      mro_cluster_radius: 6.2
-      mro_radial_jitter: 0.09
-      mro_tetra_fraction: 0.45
-    perturbations:
-      sigma_thermal: 0.20
-      temperature_K: 0.0
-      atomic_mass_amu: 55.845
-      p_dropout: 0.012
-      dropout_relax_radius: 4.5
-      dropout_relax_max_fraction: 0.08
-      use_elastic_relaxation: false
-      rot_bubble_prob: 0.10
-      rot_bubble_radius: 5.5
-      rot_bubble_angle_deg: 9.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 3.5
-          alpha: -0.12
-        - expected_count: 1
-          radius: 2.6
-          alpha: 0.08
-
-# =============================================================================
-# GRAIN ASSIGNMENT
-# =============================================================================
-grain_assignment:
-  probabilities:
-    bcc_iron: 0.125
-    fcc_iron: 0.125
-    hcp_iron: 0.125
-    amorphous_pure: 0.125
-    bcc_iron_perturbed: 0.125
-    fcc_iron_perturbed: 0.125
-    hcp_iron_perturbed: 0.125
-    glassy_mro: 0.125
+output:
+  root_dir: output/synthetic_data/al_phase_context_large
+  overwrite: false
+  save_extxyz: true

@@ -1,12 +1,9 @@
-"""
-Synthetic atomistic dataset generation utilities.
-
-The :mod:`synthetic.atomistic_generator` module exposes the main entrypoint
-for building synthetic multi-phase 3D atomistic boxes based on YAML configs.
-"""
+"""Synthetic atomistic dataset generation utilities."""
 
 __all__ = [
-    "SyntheticAtomisticDatasetGenerator",
+    "GenerationResult",
+    "GeneratorConfig",
+    "generate_dataset",
     "generate_temporal_dataset",
     "generate_temporal_visualizations",
     "load_config",
@@ -16,11 +13,18 @@ __all__ = [
 
 
 def __getattr__(name):
-    if name in {"SyntheticAtomisticDatasetGenerator", "load_config"}:
-        from .atomistic_generator import SyntheticAtomisticDatasetGenerator, load_config
+    if name in {"GenerationResult", "GeneratorConfig", "generate_dataset", "load_config"}:
+        from .atomistic_generator import (
+            GenerationResult,
+            GeneratorConfig,
+            generate_dataset,
+            load_config,
+        )
 
         namespace = {
-            "SyntheticAtomisticDatasetGenerator": SyntheticAtomisticDatasetGenerator,
+            "GenerationResult": GenerationResult,
+            "GeneratorConfig": GeneratorConfig,
+            "generate_dataset": generate_dataset,
             "load_config": load_config,
         }
         return namespace[name]

@@ -1,6 +1,6 @@
 numpy
 torch
-e3nn
+e3nn==0.4.4  # required by mace-torch 0.3.15 checkpoint serialization
 mace-torch
 pytorch-lightning
 omegaconf
@@ -16,6 +16,7 @@ scipy
 deeptime
 dscribe
 ase
+ovito
 hdbscan
 seaborn
 umap-learn

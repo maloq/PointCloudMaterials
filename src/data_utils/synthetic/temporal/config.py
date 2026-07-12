@@ -111,6 +111,7 @@ class RenderingConfig:
     phase_region_target_atoms: Optional[int] = None
     phase_field_jitter_fraction: float = 0.15
     fast_mode: bool = False
+    initial_positions_file: Optional[Path] = None
 
 
 @dataclass(frozen=True)
@@ -272,7 +273,11 @@ def load_temporal_config(path: str | Path) -> TemporalBenchmarkConfig:
         ),
     )
     nuisance = NuisanceConfig(**dict(raw.get("nuisance", {})))
-    rendering = RenderingConfig(**dict(raw.get("rendering", {})))
+    rendering_raw = dict(raw.get("rendering", {}))
+    initial_positions = rendering_raw.get("initial_positions_file")
+    if initial_positions is not None:
+        rendering_raw["initial_positions_file"] = Path(initial_positions)
+    rendering = RenderingConfig(**rendering_raw)
     if rendering.frame_style != "dense_persistent_box":
         raise ValueError(
             "Temporal rendering supports only rendering.frame_style='dense_persistent_box'. "

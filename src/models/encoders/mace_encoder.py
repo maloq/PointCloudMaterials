@@ -9,14 +9,6 @@ from .base import Encoder
 from .registry import register_encoder
 
 try:
-    from e3nn import o3
-except ImportError as exc:  # pragma: no cover - exercised only without e3nn installed
-    o3 = None
-    _E3NN_IMPORT_ERROR: Exception | None = exc
-else:
-    _E3NN_IMPORT_ERROR = None
-
-try:
     from mace.modules.blocks import (
         EquivariantProductBasisBlock,
         LinearNodeEmbeddingBlock,
@@ -33,6 +25,17 @@ except ImportError as exc:  # pragma: no cover - exercised only without mace-tor
     _MACE_IMPORT_ERROR: Exception | None = exc
 else:
     _MACE_IMPORT_ERROR = None
+
+# mace-torch 0.3.15 pins e3nn 0.4.4 and configures PyTorch's trusted checkpoint
+# loading before importing it.  Importing e3nn first breaks on PyTorch >=2.6
+# because e3nn's packaged constants predate the weights-only default.
+try:
+    from e3nn import o3
+except ImportError as exc:  # pragma: no cover - exercised only without e3nn installed
+    o3 = None
+    _E3NN_IMPORT_ERROR: Exception | None = exc
+else:
+    _E3NN_IMPORT_ERROR = None
 
 
 def _require_backends() -> None:
