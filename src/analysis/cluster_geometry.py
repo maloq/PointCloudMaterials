@@ -292,35 +292,6 @@ def _resolve_local_coordination_shell(
     }
 
 
-def _build_knn_edges(
-    points: np.ndarray,
-    *,
-    knn_k: int,
-    mutual_only: bool,
-) -> list[tuple[int, int]]:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
-    n_points = int(pts.shape[0])
-    if n_points < 2:
-        return []
-    k_eff = min(max(1, int(knn_k)), n_points - 1)
-    dmat = np.linalg.norm(pts[:, None, :] - pts[None, :, :], axis=-1)
-    np.fill_diagonal(dmat, np.inf)
-    sorted_idx = np.argsort(dmat, axis=1)
-    neighbor_sets = [
-        {int(v) for v in sorted_idx[point_idx, :k_eff].tolist()}
-        for point_idx in range(n_points)
-    ]
-    edges: set[tuple[int, int]] = set()
-    for point_idx, neighbors in enumerate(neighbor_sets):
-        for neighbor_idx in neighbors:
-            if mutual_only and point_idx not in neighbor_sets[neighbor_idx]:
-                continue
-            edge = (min(point_idx, neighbor_idx), max(point_idx, neighbor_idx))
-            if edge[0] != edge[1]:
-                edges.add(edge)
-    return sorted(edges)
-
-
 def _build_local_coordination_edges(
     points: np.ndarray,
     *,
@@ -426,42 +397,6 @@ def _draw_edges(
             linewidth=float(edge_linewidth),
             alpha=float(edge_alpha),
         )
-
-
-def _draw_local_coordination_edges(
-    ax: Any,
-    points: np.ndarray,
-    *,
-    min_shell_neighbors: int = 3,
-    max_shell_neighbors: int = 6,
-    shell_gap_ratio: float = 1.18,
-    edge_mode: str = "coordination_shell",
-    edge_color: str = "#5f5f5f",
-    point_colors: np.ndarray | None = None,
-    edge_alpha: float = 0.72,
-    edge_linewidth: float = 1.05,
-) -> dict[str, Any]:
-    pts = np.asarray(points, dtype=np.float32)[:, :3]
-    if pts.shape[0] < 2:
-        return {"edge_mode": "coordination_shell", "num_edges": 0,
-                "shell_neighbor_count_median": 0.0, "shell_cutoff_median": 0.0}
-    edges, edge_info = _build_local_coordination_edges(
-        pts,
-        min_shell_neighbors=min_shell_neighbors,
-        max_shell_neighbors=max_shell_neighbors,
-        shell_gap_ratio=shell_gap_ratio,
-        edge_mode=edge_mode,
-    )
-    _draw_edges(
-        ax,
-        pts,
-        edges,
-        edge_color=edge_color,
-        point_colors=point_colors,
-        edge_alpha=edge_alpha,
-        edge_linewidth=edge_linewidth,
-    )
-    return edge_info
 
 
 def _compute_pca_orientation_basis(

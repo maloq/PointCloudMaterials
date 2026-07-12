@@ -1,5 +1,5 @@
 import argparse
-from dataclasses import replace
+from dataclasses import asdict, replace
 import sys
 import time
 from pathlib import Path
@@ -36,14 +36,26 @@ from .config import (
     _resolve_input_settings, _resolve_optional_cluster_k, _resolve_run_settings,
     build_runtime_model_config, load_checkpoint_analysis_config,
 )
+from .connected_regimes import (
+    resolve_connected_regime_settings,
+    run_connected_regime_analysis,
+)
 from .dynamic_motif import run_dynamic_motif_analysis
+from .directional_line_jepa import (
+    apply_directional_runtime_limits,
+    disable_directional_for_non_line_jepa,
+    resolve_directional_line_jepa_settings,
+    run_directional_line_jepa_analysis,
+)
 from .figure_sets import (
     build_shared_cluster_color_map, filter_snapshot_figure_layout, print_figure_set_summary,
     render_cluster_figure_outputs, resolve_snapshot_figure_layout, write_figure_only_metrics,
 )
+from .cluster_gallery import _save_horizontal_image_gallery
 from .inference_cache import (
-    _build_inference_cache_spec, _inference_cache_spec_hash,
+    _build_inference_cache_spec, _inference_cache_spec_hash, _load_inference_cache,
 )
+from .lazy_static_dataset import build_lazy_static_analysis_dataloader
 from .latent_vis import print_analysis_summary, run_equivariance_evaluation, run_pca_and_latent_stats, run_tsne_visualizations
 from .md_outputs import build_md_metrics
 from .output_layout import real_md_outputs_root, real_md_outputs_root_for_k, write_json
@@ -59,6 +71,11 @@ from .pipeline_runtime import (
     load_vicreg_model,
 )
 from .real_md_qualitative import append_dynamic_motif_summary, run_real_md_qualitative_analysis
+from .runtime_profile import (
+    resolve_analysis_runtime_profile,
+    select_evenly_spaced_names,
+    subsample_clustering_reference,
+)
 from .swav_eval import run_swav_prototype_evaluation
 from .temporal_dense import (
     _collect_temporal_dense_outputs,
@@ -175,13 +192,21 @@ def run_post_training_analysis(
     analysis_cfg: DictConfig | None = None,
 ) -> Dict[str, Any]:
     """Generate qualitative and quantitative diagnostics for contrastive checkpoints."""
+    torch.set_float32_matmul_precision("high")
     t0 = time.perf_counter()
     step_idx = [0]
+    previous_step_time = [t0]
 
     def _step(msg: str) -> None:
         step_idx[0] += 1
-        elapsed = time.perf_counter() - t0
-        print(f"[analysis][step {step_idx[0]}][{elapsed:7.1f}s] {msg}")
+        now = time.perf_counter()
+        elapsed = now - t0
+        previous_duration = now - previous_step_time[0]
+        previous_step_time[0] = now
+        print(
+            f"[analysis][step {step_idx[0]}][total={elapsed:7.1f}s]"
+            f"[previous={previous_duration:6.1f}s] {msg}"
+        )
 
     # ── Config resolution ──────────────────────────────────────────────
     _step("Loading analysis config")
@@ -281,12 +306,77 @@ def run_post_training_analysis(
             "leave real_md.selected_k unset."
         )
     real_md_selected_k = int(analysis_settings.primary_k)
+    runtime_profile = resolve_analysis_runtime_profile(analysis_cfg)
+    if runtime_profile.real_md_projection_method is not None:
+        with open_dict(analysis_cfg):
+            OmegaConf.update(
+                analysis_cfg,
+                "real_md.projection.method",
+                runtime_profile.real_md_projection_method,
+                merge=False,
+                force_add=True,
+            )
+    effective_tsne_max_samples = int(analysis_settings.tsne_max_samples)
+    if runtime_profile.tsne_max_samples is not None:
+        effective_tsne_max_samples = min(
+            effective_tsne_max_samples,
+            int(runtime_profile.tsne_max_samples),
+        )
     figure_settings = _resolve_figure_set_settings(
         analysis_cfg,
         cfg,
         out_dir=out_dir,
         primary_k=int(analysis_settings.primary_k),
     )
+    figure_settings = replace(
+        figure_settings,
+        raytrace_enabled=figure_settings.raytrace_enabled and runtime_profile.raytrace_enabled,
+        md_num_views=(
+            figure_settings.md_num_views
+            if runtime_profile.md_num_views is None
+            else min(figure_settings.md_num_views, runtime_profile.md_num_views)
+        ),
+    )
+    directional_line_jepa_settings = resolve_directional_line_jepa_settings(analysis_cfg)
+    directional_line_jepa_settings, directional_skip_reason = (
+        disable_directional_for_non_line_jepa(
+            directional_line_jepa_settings,
+            model_type=getattr(cfg, "model_type", None),
+        )
+    )
+    if directional_skip_reason is not None:
+        print(f"[analysis][directional-line-jepa] Skipping: {directional_skip_reason}.")
+    connected_regime_settings = resolve_connected_regime_settings(
+        analysis_cfg,
+        default_random_state=int(analysis_settings.seed_base),
+    )
+    directional_eligible = (
+        str(getattr(cfg, "model_type", "")).strip().lower() == "line_jepa"
+        and normalize_data_kind(getattr(cfg.data, "kind", None)) in {"static", "line_static"}
+    )
+    if directional_eligible:
+        directional_line_jepa_settings = apply_directional_runtime_limits(
+            directional_line_jepa_settings,
+            enabled=(
+                None
+                if figure_settings.figure_only
+                else runtime_profile.directional_line_jepa_enabled
+            ),
+            max_directions=runtime_profile.directional_max_directions,
+            max_atoms=runtime_profile.directional_max_atoms_total,
+        )
+    if directional_line_jepa_settings.enabled and figure_settings.figure_only:
+        raise ValueError(
+            "directional_line_jepa.enabled=true is incompatible with "
+            "figure_set.figure_only=true because directional profiles require model inference. "
+            "Run the full analysis with figure_set.figure_only=false."
+        )
+    if connected_regime_settings.enabled and figure_settings.figure_only:
+        raise ValueError(
+            "clustering.connected_regimes.enabled=true is incompatible with "
+            "figure_set.figure_only=true. Run the full analysis so connected-regime "
+            "metrics use the original inference latents and primary clustering labels."
+        )
     _print_resolved_analysis_settings(
         analysis_settings=analysis_settings,
         figure_settings=figure_settings,
@@ -298,9 +388,63 @@ def run_post_training_analysis(
         f"{analysis_inference_batch_size} "
         f"(checkpoint batch_size={int(cfg.batch_size)})"
     )
+    print(f"Analysis runtime profile: {runtime_profile}")
+
+    max_batches_latent = input_settings.max_batches_latent
+    max_samples_total = (
+        None
+        if temporal_real_mode
+        else _resolve_analysis_max_samples_total(
+            input_settings,
+            is_synthetic=is_synthetic,
+            md_use_all_points=analysis_settings.md_use_all_points,
+        )
+    )
+    seed_base = int(analysis_settings.seed_base)
+    clustering_random_state = int(analysis_settings.seed_base)
+    preloaded_cache: dict[str, np.ndarray] | None = None
+    preloaded_cache_message: str | None = None
+    normalized_data_kind = normalize_data_kind(getattr(cfg.data, "kind", None))
+    if (
+        not temporal_real_mode
+        and normalized_data_kind in {"static", "line_static"}
+        and analysis_settings.inference_cache_enabled
+        and not analysis_settings.inference_cache_force_recompute
+    ):
+        static_cache_spec = _build_inference_cache_spec(
+            checkpoint_path=run_settings.checkpoint_path,
+            cfg=cfg,
+            inference_batch_size=int(analysis_inference_batch_size),
+            max_batches_latent=max_batches_latent,
+            max_samples_total=max_samples_total,
+            seed_base=seed_base,
+            collector_mode="generic",
+        )
+        preloaded_cache, preloaded_cache_message = _load_inference_cache(
+            out_dir=out_dir,
+            cache_filename=analysis_settings.inference_cache_file,
+            expected_spec=static_cache_spec,
+        )
+        print(f"[analysis][cache preflight] {preloaded_cache_message}")
+        if figure_settings.figure_only and preloaded_cache is None:
+            raise RuntimeError(
+                "figure_set.figure_only requires a valid static inference cache. "
+                "Cache preflight failed before dataset construction: "
+                f"{preloaded_cache_message}. Run once with figure_set.figure_only=false."
+            )
 
     # ── Data loading ───────────────────────────────────────────────────
-    all_metrics: Dict[str, Any] = {}
+    runtime_metrics = asdict(runtime_profile)
+    runtime_metrics.update(md_num_views=figure_settings.md_num_views,
+                           raytrace_enabled=figure_settings.raytrace_enabled)
+    runtime_metrics["directional_line_jepa"] = {
+        "enabled": directional_line_jepa_settings.enabled,
+        "num_directions": directional_line_jepa_settings.num_directions,
+        "max_atoms_total": directional_line_jepa_settings.max_atoms_total,
+        "atom_chunk_size": directional_line_jepa_settings.atom_chunk_size,
+        "skip_reason": directional_skip_reason,
+    }
+    all_metrics: Dict[str, Any] = {"runtime_profile": runtime_metrics}
     dm = None
     if temporal_real_mode:
         _step("Building temporal dump analysis dataset")
@@ -349,40 +493,45 @@ def run_post_training_analysis(
             f"inference_mode={temporal_inference_spec.mode}."
         )
     else:
-        _step("Building datamodule")
-        dm = build_datamodule(
-            cfg,
-            require_coords_for_static=not is_synthetic,
+        use_lazy_static_dataset = bool(
+            preloaded_cache is not None
+            and runtime_profile.lazy_static_dataset_on_cache_hit
+            and normalized_data_kind in {"static", "line_static"}
         )
-        dm.setup(stage="fit")
-        dl = _build_analysis_dataloader(
-            cfg,
-            dm,
-            is_synthetic=is_synthetic,
-            inference_batch_size=int(analysis_inference_batch_size),
-            dataloader_num_workers=int(input_settings.dataloader_num_workers),
-        )
-        class_names = _extract_class_names(dm.train_dataset)
+        if use_lazy_static_dataset:
+            _step("Building lazy cache-backed static dataset")
+            dl = build_lazy_static_analysis_dataloader(
+                cfg,
+                expected_coords=np.asarray(preloaded_cache["coords"], dtype=np.float32),
+                batch_size=int(analysis_inference_batch_size),
+                dataloader_num_workers=int(input_settings.dataloader_num_workers),
+            )
+            class_names = None
+        else:
+            _step("Building datamodule")
+            dm = build_datamodule(
+                cfg,
+                require_coords_for_static=not is_synthetic,
+            )
+            dm.setup(stage="fit")
+            dl = _build_analysis_dataloader(
+                cfg,
+                dm,
+                is_synthetic=is_synthetic,
+                inference_batch_size=int(analysis_inference_batch_size),
+                dataloader_num_workers=int(input_settings.dataloader_num_workers),
+            )
+            class_names = _extract_class_names(dm.train_dataset)
     print(f"Loaded class names: {class_names}")
 
-    max_batches_latent = input_settings.max_batches_latent
     if temporal_real_mode:
-        max_samples_total = None
         if input_settings.max_samples_total is not None:
             print(
                 "[analysis] inputs.max_samples_total is ignored for temporal dump analysis; "
                 "the temporal inference snapshot selection already defines the full inference set."
             )
-    else:
-        max_samples_total = _resolve_analysis_max_samples_total(
-            input_settings,
-            is_synthetic=is_synthetic,
-            md_use_all_points=analysis_settings.md_use_all_points,
-        )
 
     # ── Inference / cache ──────────────────────────────────────────────
-    seed_base = int(analysis_settings.seed_base)
-    clustering_random_state = int(analysis_settings.seed_base)
     cache_spec = _build_inference_cache_spec(
         checkpoint_path=run_settings.checkpoint_path,
         cfg=cfg,
@@ -419,6 +568,8 @@ def run_post_training_analysis(
         seed_base=seed_base,
         temporal_bundle=temporal_bundle,
         step=_step,
+        preloaded_cache=preloaded_cache,
+        preloaded_cache_message=preloaded_cache_message,
     )
     n_samples = len(cache["inv_latents"])
     if temporal_bundle is not None:
@@ -548,6 +699,32 @@ def run_post_training_analysis(
         _record_temporal_fit_reference(anchor_frames, int(fit_indices.shape[0]))
 
     _use_temporal_stratified_main_fit()
+    runtime_fit_source_latents = (
+        np.asarray(cache["inv_latents"], dtype=np.float32)
+        if fit_latents_for_clustering is None
+        else np.asarray(fit_latents_for_clustering, dtype=np.float32)
+    )
+    runtime_fit_source_phases = (
+        np.asarray(cache["phases"], dtype=int)
+        if fit_phases_for_clustering is None
+        else np.asarray(fit_phases_for_clustering, dtype=int)
+    )
+    sampled_fit_latents, sampled_fit_phases, runtime_fit_indices = (
+        subsample_clustering_reference(
+            runtime_fit_source_latents,
+            runtime_fit_source_phases,
+            max_samples=runtime_profile.clustering_fit_max_samples,
+            random_state=clustering_random_state,
+        )
+    )
+    if runtime_fit_indices is not None:
+        fit_latents_for_clustering = sampled_fit_latents
+        fit_phases_for_clustering = sampled_fit_phases
+        fit_reference_source = f"{fit_reference_source}_runtime_subsample"
+        print(
+            "[analysis][fast-path] Clustering fit subsample: "
+            f"{runtime_fit_indices.shape[0]}/{runtime_fit_source_latents.shape[0]} rows."
+        )
     coords = cache["coords"]
     md_metrics_key = "synthetic_md" if is_synthetic else "real_md"
     point_scale = (
@@ -694,6 +871,27 @@ def run_post_training_analysis(
         if temporal_snapshot_visualization_cache is None
         else list(temporal_bundle.selection.analysis_source_names)
     )
+    figure_snapshot_layout_for_outputs = snapshot_layout_for_outputs
+    figure_analysis_source_names_for_outputs = snapshot_analysis_source_names_for_outputs
+    snapshot_figure_limit = runtime_profile.snapshot_figure_limit
+    if (
+        snapshot_figure_limit is not None
+        and len(snapshot_layout_for_outputs.source_groups) > int(snapshot_figure_limit)
+    ):
+        group_count = len(snapshot_layout_for_outputs.source_groups)
+        selected_figure_sources = select_evenly_spaced_names(
+            [str(name) for name, _ in snapshot_layout_for_outputs.source_groups],
+            snapshot_figure_limit,
+        )
+        figure_snapshot_layout_for_outputs = filter_snapshot_figure_layout(
+            snapshot_layout_for_outputs,
+            allowed_source_names=selected_figure_sources,
+        )
+        figure_analysis_source_names_for_outputs = selected_figure_sources
+        print(
+            "[analysis][fast-path] Snapshot figures limited to "
+            f"{selected_figure_sources} ({len(selected_figure_sources)}/{group_count})."
+        )
     snapshot_cluster_labels_by_k_for_outputs: dict[int, np.ndarray] | None = None
 
     def _build_figure_set_run_kwargs(figure_settings_for_k: Any) -> dict[str, Any]:
@@ -912,8 +1110,8 @@ def run_post_training_analysis(
                 latents=snapshot_latents_for_outputs,
                 coords=snapshot_coords_for_outputs,
                 dataset_obj=snapshot_dataset_obj_for_outputs,
-                snapshot_layout=snapshot_layout_for_outputs,
-                analysis_source_names=snapshot_analysis_source_names_for_outputs,
+                snapshot_layout=figure_snapshot_layout_for_outputs,
+                analysis_source_names=figure_analysis_source_names_for_outputs,
                 step=_step,
                 representative_selection_features=representative_selection_features_for_k,
                 representative_selection_info=representative_selection_info_for_k,
@@ -958,14 +1156,14 @@ def run_post_training_analysis(
                 OmegaConf.select(
                     analysis_cfg,
                     "pca.max_samples",
-                    default=analysis_settings.tsne_max_samples,
+                    default=effective_tsne_max_samples,
                 )
             ),
             latent_stats_max_samples=_positive_int_or_none(
                 OmegaConf.select(
                     analysis_cfg,
                     "latent_stats.max_samples",
-                    default=analysis_settings.tsne_max_samples,
+                    default=effective_tsne_max_samples,
                 )
             ),
             latent_stats_correlation_max_samples=_positive_int_or_none(
@@ -1071,6 +1269,22 @@ def run_post_training_analysis(
     )
     figure_output_cluster_labels = figure_output_labels_by_k[int(primary_k)]
 
+    # ── Directional Line-JEPA uncertainty / novelty ───────────────────
+    directional_line_jepa_metrics = run_directional_line_jepa_analysis(
+        model=model,
+        model_cfg=cfg,
+        analysis_cfg=analysis_cfg,
+        cache=cache,
+        source_groups=snapshot_layout_inference.source_groups,
+        fitted_clustering_model=clustering_models_by_k.get(primary_k),
+        primary_k=primary_k,
+        out_dir=out_dir,
+        step=_step,
+        settings=directional_line_jepa_settings,
+    )
+    if directional_line_jepa_metrics:
+        all_metrics["directional_line_jepa"] = directional_line_jepa_metrics
+
     # ── Shared cluster color maps ──────────────────────────────────────
     _step("Building shared cluster color maps")
     shared_cluster_color_maps_by_k = {
@@ -1081,6 +1295,33 @@ def run_post_training_analysis(
         for k_val_inner in configured_k_values
     }
     shared_cluster_color_map = shared_cluster_color_maps_by_k[int(primary_k)]
+
+    connected_representative_selection_features = None
+    if connected_regime_settings.interactive_3d:
+        connected_representative_selection_features, _ = (
+            _representative_selection_for(
+                np.asarray(cache["inv_latents"], dtype=np.float32),
+                cluster_labels_by_k,
+                int(primary_k),
+                source_name="connected_regime_cluster_gallery",
+            )
+        )
+    connected_regime_metrics = run_connected_regime_analysis(
+        latents=np.asarray(cache["inv_latents"], dtype=np.float32),
+        labels=np.asarray(cluster_labels, dtype=int),
+        out_dir=out_dir,
+        settings=connected_regime_settings,
+        cluster_color_map=shared_cluster_color_map,
+        frame_groups=snapshot_layout_inference.source_groups,
+        dataset=dataset_obj,
+        representatives_out_dir=Path(out_dir) / "real_md" / "representatives",
+        representative_point_scale=float(point_scale),
+        representative_target_points=int(figure_settings.representative_points),
+        representative_selection_features=connected_representative_selection_features,
+        step=_step,
+    )
+    if connected_regime_metrics:
+        all_metrics["connected_regimes"] = connected_regime_metrics
 
     swav_prototype_metrics = run_swav_prototype_evaluation(
         model=model,
@@ -1097,8 +1338,8 @@ def run_post_training_analysis(
         figure_settings=figure_settings,
         figure_set_run_kwargs=_build_figure_set_run_kwargs(figure_settings),
         figure_dataloader=dl,
-        figure_snapshot_layout=snapshot_layout_for_outputs,
-        figure_analysis_source_names=snapshot_analysis_source_names_for_outputs,
+        figure_snapshot_layout=figure_snapshot_layout_for_outputs,
+        figure_analysis_source_names=figure_analysis_source_names_for_outputs,
         step=_step,
     )
     if swav_prototype_metrics:
@@ -1199,8 +1440,8 @@ def run_post_training_analysis(
                 latents=snapshot_latents_for_outputs,
                 coords=snapshot_coords_for_outputs,
                 dataset_obj=snapshot_dataset_obj_for_outputs,
-                snapshot_layout=snapshot_layout_for_outputs,
-                analysis_source_names=snapshot_analysis_source_names_for_outputs,
+                snapshot_layout=figure_snapshot_layout_for_outputs,
+                analysis_source_names=figure_analysis_source_names_for_outputs,
                 step=_step,
                 representative_render_cache=representative_render_cache_for_k,
                 representative_selection_features=representative_selection_features_for_k,
@@ -1234,7 +1475,7 @@ def run_post_training_analysis(
         class_names=class_names,
         is_synthetic=is_synthetic,
         clustering_random_state=clustering_random_state,
-        tsne_max_samples=analysis_settings.tsne_max_samples,
+        tsne_max_samples=effective_tsne_max_samples,
         tsne_n_iter=analysis_settings.tsne_n_iter,
         cluster_method=analysis_settings.cluster_method,
         step=_step,
@@ -1310,7 +1551,7 @@ def run_post_training_analysis(
             else np.asarray(
                 _sample_indices(
                     n_samples,
-                    analysis_settings.tsne_max_samples,
+                    effective_tsne_max_samples,
                 ),
                 dtype=int,
             )
@@ -1447,26 +1688,29 @@ def run_post_training_analysis(
             )
 
     # ── Equivariance ───────────────────────────────────────────────────
-    all_metrics.update(
-        run_equivariance_evaluation(
-            model,
-            dl,
-            device,
-            out_dir,
-            analysis_cfg=analysis_cfg,
-            step=_step,
-            temporal_sequence_mode=(
-                "static_anchor"
-                if temporal_bundle is None
-                else temporal_bundle.collection_inference_spec.mode
-            ),
-            temporal_static_frame_index=(
-                0
-                if temporal_bundle is None
-                else temporal_bundle.collection_inference_spec.static_frame_index
-            ),
+    if runtime_profile.equivariance_enabled:
+        all_metrics.update(
+            run_equivariance_evaluation(
+                model,
+                dl,
+                device,
+                out_dir,
+                analysis_cfg=analysis_cfg,
+                step=_step,
+                temporal_sequence_mode=(
+                    "static_anchor"
+                    if temporal_bundle is None
+                    else temporal_bundle.collection_inference_spec.mode
+                ),
+                temporal_static_frame_index=(
+                    0
+                    if temporal_bundle is None
+                    else temporal_bundle.collection_inference_spec.static_frame_index
+                ),
+            )
         )
-    )
+    else:
+        all_metrics["runtime_profile"]["equivariance_skipped"] = True
 
     # ── Write metrics & summary ────────────────────────────────────────
     _step("Writing metrics")

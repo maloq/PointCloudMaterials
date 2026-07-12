@@ -25,3 +25,8 @@ data_files:
   - '175ps.npy'
   - '177ps.npy'
   - '240ps.npy'
+sample_cache:
+  enabled: true
+  cache_dir: datasets/cache/data_ae_Al_80_analysis_coords
+  local_cache_dir: /dev/shm/${oc.env:USER}/pointcloudmaterials/data_ae_Al_80_analysis_coords
+  rebuild: false

@@ -1,0 +1,49 @@
+defaults:
+  - line_jepa_geo_frame_simple
+  - _self_
+
+experiment_name: LINE_JEPA_GEOFRAME_MULTISCALE_8_12_VICREG_l${latent_size}_L${data.line_atoms}_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+init_from_checkpoint: output/2026-07-12/13-15-39-vicreg-geoframe-8-12-l128-paper/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=199.ckpt
+
+latent_size: 128
+encoder:
+  kwargs:
+    latent_size: ${latent_size}
+    num_group: 24
+    patch_sizes: [8, 12]
+    encoder_dims: 256
+    trans_dim: 128
+    depth: 6
+    num_heads: 8
+    mlp_ratio: 4.0
+    dropout: 0.0
+    mask_ratio: 0.6
+    mask_predictor_depth: 2
+    ema_decay: 0.996
+    deterministic_fps: true
+    sorting_mode: none
+    group_sampling: random
+    center_input: true
+    frame_builder: triad
+    frame_eps: 1.0e-6
+    use_frame_gating: false
+    geometry_bias_mode: orientation
+    pooling_mode: max_mean
+    ray_feature_dim: 64
+
+# Preserve and predict the complete pretrained 128-D representation.
+line_jepa_semantic_dim: 128
+
+# Continue the same paper-weighted VICReg objective through its trained MLP
+# projector while Line-JEPA adapts the encoder slowly.
+vicreg_projector_mode: mlp
+vicreg_embed_dim: 128
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+
+# The wider encoder and 128-D target/predictor paths require more memory than
+# the earlier l64 Line-JEPA run.
+batch_size: 2400
+probe_pca_max_components: 128

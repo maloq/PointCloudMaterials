@@ -2,9 +2,9 @@ checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
   # path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
   # path: output/2026-06-16/18-46-58/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=789.ckpt
-  path: output/2026-07-07/23-09-31/LINE_JEPA_PURE_STATIC_MULTI_ENDPOINTS_PRED5_TARGETSIM_l512_L5_N160_M80_RI_MAE_Invariant-epoch=57.ckpt
+  path: output/2026-07-12/13-15-39-vicreg-geoframe-8-12-l128-paper/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=199.ckpt
 
-  output_dir: outputs/static_Al_6frames_single_line
+  output_dir: outputs/static_Al_6frames_multiscale_vicreg
   cuda_device: 0
 
 inputs:
@@ -21,6 +21,33 @@ cache:
   enabled: true
   force_recompute: false
   file: analysis_inference_cache.npz
+
+# Optional Line-JEPA novelty analysis that retains error(atom, direction).
+# The stage supports static/line_static checkpoints and runs in both runtime
+# profiles (figure_set.figure_only must be false).
+directional_line_jepa:
+  enabled: false
+  num_directions: 64
+  # 0 evaluates every inference-cache center; use a cap for exploratory runs.
+  max_atoms_total: 0
+  # Bounds candidate geometry and environment-feature memory during the full sweep.
+  atom_chunk_size: 128
+  task_batch_size: 512
+  selection_seed: 123
+  # checkpoint: endpoints -> one-sided ray; center/all/cycle -> centered line.
+  target_position: checkpoint
+  # Caps only the relative-error field when the true residual is nearly zero.
+  relative_error_clip: 100.0
+  # Per-snapshot Plotly report written under directional_line_jepa_report/.
+  visualize_3d: true
+  joint_weights:
+    mean_error: 1.0
+    max_error: 1.0
+    relative_residual_error: 1.0
+    residual_norm: 0.5
+    anisotropy: 0.5
+    cluster_surprise: 0.5
+    phase_conditioned_z: 0.5
 
 swav:
   enabled: false
@@ -40,8 +67,24 @@ swav:
   plots: true
 
 runtime:
+  # fast avoids eager point-cloud materialization, Blender, UMAP, and
+  # equivariance without reducing sample, direction, snapshot, or view counts.
+  profile: full
   progress_every_batches: 20
   seed_base: 123
+  fast:
+    lazy_static_dataset_on_cache_hit: true
+    clustering_fit_max_samples: null
+    snapshot_figure_limit: null
+    md_num_views: null
+    raytrace_enabled: false
+    tsne_max_samples: null
+    equivariance_enabled: false
+    real_md_projection_method: pca
+    # Fast Line-JEPA runs automatically enable the configured directional sweep.
+    directional_line_jepa_enabled: true
+    directional_max_directions: null
+    directional_max_atoms_total: null
 
 clustering:
   # Unified selected clustering k used by figure_set and real_md outputs.
@@ -56,6 +99,25 @@ clustering:
   standardize: true
   pca_variance: 0.99
   pca_max_components: 64
+  connected_regimes:
+    enabled: true
+    # Zero-based IDs may be forced here; for example C6/C7 is [[5, 6]].
+    # Empty means discover touching pairs from cross-cluster kNN contact.
+    pairs: []
+    auto_detect: true
+    auto_max_pairs: 4
+    max_samples_per_cluster: 1500
+    neighbor_k: 15
+    min_cross_neighbor_fraction: 0.002
+    # PCA is fit in the original invariant latent space. The component with the
+    # largest standardized regime shift becomes the continuous order parameter.
+    pca_components: 8
+    histogram_bins: 40
+    random_state: 123
+    # Real local structures along connected-pair directions and, for clusters outside
+    # every selected pair, along the dominant within-cluster PCA direction.
+    interactive_3d: true
+    representative_steps: 30
   hdbscan:
     enabled: false
     fit_fraction: 0.25

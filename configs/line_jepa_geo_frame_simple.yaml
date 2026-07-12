@@ -2,14 +2,14 @@ defaults:
   - _self_
 
 project_name: pointnet
-experiment_name: LINE_JEPA_COMPACT64_PROTOTYPES_DIRMOM_l${latent_size}_L${data.line_atoms}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: LINE_JEPA_GEOFRAME_CONTINUOUS_VICREG_l${latent_size}_L${data.line_atoms}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
 model_type: line_jepa
-latent_size: 512
+latent_size: 64
 
 resume_from_checkpoint: null
-init_from_checkpoint: output/2026-06-16/18-46-58/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=789.ckpt
+init_from_checkpoint: output/2026-07-10/21-12-03-vicreg-geoframe-simple/VICREG_GEOFRAME_SIMPLE_MULTI_l64_N160_M80_GeoFrameTransformer-epoch=49.ckpt
 init_from_checkpoint_strict: false
 init_from_checkpoint_encoder_only: false
 run_post_training_analysis: false
@@ -33,6 +33,9 @@ data:
   line_min_separation_radius_factor: 0.0
   line_slot_spacing_radius_factor: 0.5
   line_fixed_slot_max_deviation_radius_factor: 0.35
+  # Retry a different random ray instead of accepting a line that violates the
+  # fixed-slot tolerance. Exhaustion remains a loud dataset error.
+  line_direction_max_retries: 8
   line_seed: 0
   center_neighborhoods: true
   line_selection_method: fixed_slots
@@ -87,24 +90,30 @@ data:
         - 5ns.npy
 
 encoder:
-  name: RI_MAE_Invariant
+  name: GeoFrameTransformer
   kwargs:
     latent_size: ${latent_size}
     num_group: 24
-    group_size: 12
-    encoder_dims: 384
-    trans_dim: 256
-    depth: 8
-    predictor_depth: 4
-    num_heads: 16
+    patch_sizes: [12]
+    encoder_dims: 128
+    trans_dim: 64
+    depth: 6
+    num_heads: 8
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6
+    mask_predictor_depth: 2
     ema_decay: 0.996
-    deterministic_fps: false
+    deterministic_fps: true
     sorting_mode: none
-    group_sampling: random
+    group_sampling: fps
     center_input: true
+    frame_builder: triad
+    frame_eps: 1.0e-6
+    use_frame_gating: false
+    geometry_bias_mode: orientation
+    pooling_mode: max_mean
+    ray_feature_dim: 32
     use_gradient_checkpointing: false
 
 line_jepa_weight: 1.0
@@ -124,11 +133,15 @@ line_jepa_prediction_positions: endpoints
 line_jepa_prediction_target: target
 line_jepa_prediction_normalization: l2
 line_jepa_prediction_loss: cosine
-line_jepa_context_match_coeff: 0.05
+# Continuous-manifold run: no hard-negative contrastive separation.
+line_jepa_context_match_coeff: 0.0
 line_jepa_context_match_temperature: 0.1
 line_jepa_context_match_negative_count: 64
 line_jepa_context_match_negative_max_target_cosine: 0.98
-line_jepa_directional_feature_mode: moments
+line_jepa_directional_feature_mode: encoder
+# Masked-token encoder fine-tuning changed the pretrained geometry in the ablation.
+line_jepa_masked_token_coeff: 0.0
+line_jepa_masked_token_samples: 256
 line_jepa_prediction_hard_enabled: false
 line_jepa_prediction_hard_top_fraction: 0.35
 line_jepa_prediction_hard_weight_low: 1.0
@@ -136,16 +149,20 @@ line_jepa_prediction_hard_weight_high: 1.0
 line_jepa_shuffle_controls_enabled: true
 line_jepa_shuffle_control_seed: 17
 line_jepa_semantic_dim: 64
+# Preserve the pretrained continuous geometry while VICReg slowly adapts the encoder.
+# Balanced discrete prototypes remain disabled.
 line_jepa_semantic_anchor_coeff: 5.0
 line_jepa_semantic_relation_coeff: 1.0
 line_jepa_semantic_relation_samples: 1024
-line_jepa_prototype_coeff: 0.1
+line_jepa_prototype_coeff: 0.0
 line_jepa_prototype_counts: [6, 12, 24]
 line_jepa_prototype_temperature: 0.1
 line_jepa_prototype_sinkhorn_epsilon: 0.1
 line_jepa_prototype_sinkhorn_iterations: 20
+line_jepa_freeze_encoder: false
+line_jepa_freeze_semantic_projector: true
 line_jepa_encoder_freeze_epochs: 2
-line_jepa_encoder_lr_scale: 0.1
+line_jepa_encoder_lr_scale: 0.01
 line_jepa_view_jitter_std: 0.01
 line_jepa_view_scale_range: 0.02
 line_jepa_sigreg_num_slices: 256
@@ -158,22 +175,30 @@ line_jepa_predictor_heads: 8
 line_jepa_predictor_mlp_ratio: 4.0
 line_jepa_predictor_dropout: 0.0
 
-vicreg_enabled: false
-vicreg_weight: 0.0
+vicreg_enabled: true
+vicreg_weight: 1.0
 vicreg_objective: vicreg
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 0.5
 vicreg_embed_dim: ${latent_size}
-vicreg_jitter_std: 0.0
+vicreg_projector_mode: identity
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.01
+vicreg_jitter_mode: physical
 vicreg_drop_ratio: 0.0
 vicreg_neighbor_view: false
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
 vicreg_strain_std: 0.0
 vicreg_occlusion_mode: none
+vicreg_std_eps: 1.0e-04
+vicreg_std_target: 1.0
 vicreg_radial_enabled: false
 
 learning_rate: 0.001
-batch_size: 2400
-precision: bf16-true
+batch_size: 4800
+precision: bf16-mixed
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1
 auto_batch_size_search: false
@@ -204,7 +229,7 @@ num_workers: 12
 line_prefetch_factor: 4
 test_single_device: true
 
-compile_encoder: true
+compile_encoder: false
 encoder_compile_mode: default
 encoder_compile_fullgraph: false
 encoder_compile_dynamic: false
@@ -217,6 +242,8 @@ warmup_start_factor: 0.1
 decay_rate: 0.0003
 enable_embedding_metrics: false
 enable_svm_accuracy: false
+# Silhouette remains useful for genuinely separated manifolds (for example C1 versus
+# C6/C7), but it is interpreted together with continuous-coordinate diagnostics.
 enable_probe_metrics: true
 probe_k: 6
 probe_max_samples: 8192

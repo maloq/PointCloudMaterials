@@ -612,6 +612,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         )
     checkpoint_save_top_k = int(getattr(cfg, "checkpoint_save_top_k", 3))
     checkpoint_save_top_k = max(1, checkpoint_save_top_k)
+    checkpoint_save_last = bool(getattr(cfg, "checkpoint_save_last", False))
 
     # Set up checkpoint callbacks
     if checkpoint_callbacks is None:
@@ -620,6 +621,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             monitor=checkpoint_monitor,
             filename=f'{cfg.experiment_name}-{{epoch:02d}}',
             save_top_k=checkpoint_save_top_k,
+            save_last=checkpoint_save_last,
             mode=checkpoint_mode,
         )]
 

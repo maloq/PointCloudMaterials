@@ -18,9 +18,6 @@ from .cluster_colors import (
     _build_cluster_color_map,
     _cluster_palette,
 )
-from .cluster_gallery import (
-    _save_horizontal_image_gallery,
-)
 from .cluster_geometry import (
     _build_rotation_view_specs,
 )
@@ -36,7 +33,6 @@ from .output_layout import write_json
 # Re-export public symbols used by predict_and_visualize.py
 __all__ = [
     "_build_cluster_color_map",
-    "_save_horizontal_image_gallery",
     "_save_fixed_k_cluster_figure_set",
 ]
 
@@ -68,6 +64,7 @@ def _save_fixed_k_cluster_figure_set(
     md_saturation_boost: float,
     md_view_elev: float,
     md_view_azim: float,
+    md_num_views: int,
     representative_orientation_method: str,
     representative_view_elev: float,
     representative_view_azim: float,
@@ -309,11 +306,11 @@ def _save_fixed_k_cluster_figure_set(
                 raytrace_info = future.result()
                 raytrace_pending_jobs[job_idx]["panel_view"]["raytrace_render"] = raytrace_info
 
-    # -- 01  All-clusters views (4 rotations) with optional raytrace ----------
+    # -- 01  All-clusters rotation views with optional raytrace ---------------
     all_view_specs = _build_rotation_view_specs(
         base_elev=float(md_view_elev),
         base_azim=float(md_view_azim),
-        num_views=4,
+        num_views=max(1, int(md_num_views)),
     )
     panel_all_views: list[dict[str, Any]] = []
     panel_all: dict[str, Any] | None = None
@@ -466,6 +463,7 @@ def _save_fixed_k_cluster_figure_set(
             "saturation_boost": float(md_saturation_boost),
             "view_elev": float(md_view_elev),
             "view_azim": float(md_view_azim),
+            "num_views": int(md_num_views),
         },
         "raytrace_render_settings": {
             "enabled": bool(raytrace_render_enabled),

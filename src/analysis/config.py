@@ -144,6 +144,7 @@ class FigureSetSettings:
     md_saturation_boost: float
     md_view_elev: float
     md_view_azim: float
+    md_num_views: int
     visible_cluster_sets: list[list[int]] | None
     cluster_color_assignment: dict[int, int | str] | None
     profile_point_scale_enabled: bool
@@ -204,6 +205,7 @@ class FigureSetSettings:
             "md_saturation_boost": float(self.md_saturation_boost),
             "md_view_elev": float(self.md_view_elev),
             "md_view_azim": float(self.md_view_azim),
+            "md_num_views": int(self.md_num_views),
             "representative_orientation_method": str(self.representative_orientation),
             "representative_view_elev": float(self.representative_view_elev),
             "representative_view_azim": float(self.representative_view_azim),
@@ -895,6 +897,7 @@ def _resolve_figure_set_settings(
         ),
         md_view_elev=float(_cfg_select(figure_md_cfg, "view_elev", default=24.0)),
         md_view_azim=float(_cfg_select(figure_md_cfg, "view_azim", default=35.0)),
+        md_num_views=max(1, int(_cfg_select(figure_md_cfg, "num_views", default=4))),
         visible_cluster_sets=_normalize_visible_cluster_sets(
             _cfg_select(figure_cfg, "visible_cluster_sets", default=None)
         ),

@@ -309,18 +309,28 @@ def _collect_main_inference_cache(
     seed_base: int,
     temporal_bundle: Any | None,
     step: Callable[[str], None],
+    preloaded_cache: dict[str, np.ndarray] | None = None,
+    preloaded_cache_message: str | None = None,
 ) -> tuple[dict[str, np.ndarray], Any | None, DictConfig, str, bool]:
-    cache: dict[str, np.ndarray] | None = None
-    cache_loaded = False
-    if figure_only:
-        step("Loading cached inference batches")
-        cache, cache_msg = _load_inference_cache(
-            out_dir=out_dir,
-            cache_filename=analysis_settings.inference_cache_file,
-            expected_spec=cache_spec,
+    cache = preloaded_cache
+    cache_loaded = cache is not None
+    if cache is not None:
+        print(
+            "[analysis][cache] "
+            + (preloaded_cache_message or "using cache loaded during static-data preflight")
         )
-        cache_loaded = cache is not None
-        print(f"[analysis][cache] {cache_msg}")
+    if figure_only:
+        if cache is None:
+            step("Loading cached inference batches")
+            cache, cache_msg = _load_inference_cache(
+                out_dir=out_dir,
+                cache_filename=analysis_settings.inference_cache_file,
+                expected_spec=cache_spec,
+            )
+            cache_loaded = cache is not None
+            print(f"[analysis][cache] {cache_msg}")
+        else:
+            cache_msg = preloaded_cache_message or "cache loaded during preflight"
         if cache is None:
             raise RuntimeError(
                 "figure_set.figure_only requires a valid inference cache because it does not "
@@ -337,7 +347,7 @@ def _collect_main_inference_cache(
             cfg=cfg,
         )
         step("Collecting inference batches")
-        if (
+        if cache is None and (
             analysis_settings.inference_cache_enabled
             and not analysis_settings.inference_cache_force_recompute
         ):

@@ -192,8 +192,22 @@ class BaseSSLModule(pl.LightningModule):
         return self._shared_invariant(z_inv_model, None)
 
     def _should_cache_supervised_stage(self, stage: str) -> bool:
-        return stage in self._supervised_cache and (
-            stage != "train" or self.cache_train_supervised_metrics
+        stage_l = str(stage).lower()
+        wants_supervised_metrics = bool(self.enable_supervised_metrics) and (
+            stage_l in self.supervised_metric_stages
+        )
+        wants_probe_metrics = bool(self.enable_probe_metrics) and (
+            stage_l in self.probe_metric_stages
+        )
+        wants_embedding_metrics = bool(self.enable_embedding_metrics) and (
+            stage_l in self.embedding_metric_stages
+        )
+        return (
+            stage_l in self._supervised_cache
+            and (wants_supervised_metrics or wants_probe_metrics or wants_embedding_metrics)
+            and (
+                stage_l != "train" or self.cache_train_supervised_metrics
+            )
         )
 
     def _cache_supervised_embeddings_if_needed(
@@ -243,10 +257,13 @@ class BaseSSLModule(pl.LightningModule):
 
         if print_first_eval_batch and stage != "train" and batch_idx == 0:
             parts = [f"[{stage}-diag] epoch={self.current_epoch} batch_idx=0"]
-            for key, value in losses.items():
+            visible_losses = {
+                key: value for key, value in losses.items() if not key.startswith("_")
+            }
+            for key, value in visible_losses.items():
                 parts.append(f"{key}={value.item():.6f}")
             parts.append(f"total={total_loss.item():.6f}")
-            parts.append(f"active_losses={list(losses.keys())}")
+            parts.append(f"active_losses={list(visible_losses)}")
             self._status_print(" | ".join(parts))
 
         if self._nonfinite_step_flag is None or self._nonfinite_step_flag.device != total_loss.device:
@@ -269,7 +286,9 @@ class BaseSSLModule(pl.LightningModule):
         total_loss = torch.nan_to_num(total_loss, nan=0.0, posinf=0.0, neginf=0.0)
 
         metrics_to_log = {"loss": total_loss}
-        metrics_to_log.update(losses)
+        metrics_to_log.update(
+            {name: value for name, value in losses.items() if not name.startswith("_")}
+        )
         for name, value in metrics_to_log.items():
             self._log_metric(
                 stage,
@@ -302,6 +321,7 @@ class BaseSSLModule(pl.LightningModule):
         name: str,
         value,
         *,
+        metric_name: str | None = None,
         on_step=None,
         on_epoch=None,
         batch_size: int | None = None,
@@ -339,7 +359,8 @@ class BaseSSLModule(pl.LightningModule):
             self.log(f"loss/{stage}", value, on_step=on_step, on_epoch=on_epoch, **logger_kwargs)
             return
 
-        self.log(f"{stage}/{name}", value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
+        resolved_name = f"{stage}/{name}" if metric_name is None else str(metric_name)
+        self.log(resolved_name, value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
 
     def _handle_epoch_boundary(self, stage: str, is_start: bool):
         if is_start:

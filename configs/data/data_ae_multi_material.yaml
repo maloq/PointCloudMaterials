@@ -25,6 +25,7 @@ auto_cutoff:
 sample_cache:
   enabled: true
   cache_dir: 'datasets/cache/data_ae_multi_material_ready_samples'
+  local_cache_dir: '/dev/shm/${oc.env:USER}/pointcloudmaterials/data_ae_multi_material_ready_samples'
   rebuild: false
 
 # Multiple data sources: each entry has a path and list of .npy files

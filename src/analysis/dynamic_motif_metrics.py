@@ -16,20 +16,6 @@ def _safe_entropy(probabilities: np.ndarray) -> float:
     return float(-(probs * np.log(probs)).sum())
 
 
-def _sorted_state_id_list(df: pd.DataFrame) -> list[tuple[str, int]]:
-    if df.empty:
-        return []
-    unique_pairs = (
-        df.loc[:, ["resolved_family", "resolved_motif_id"]]
-        .drop_duplicates()
-        .sort_values(["resolved_family", "resolved_motif_id"])
-    )
-    return [
-        (str(row.resolved_family), int(row.resolved_motif_id))
-        for row in unique_pairs.itertuples(index=False)
-    ]
-
-
 def _state_to_label(family: str, motif_id: int) -> str:
     prefix = "S" if str(family) == "stable" else "B"
     return f"{prefix}{int(motif_id)}"

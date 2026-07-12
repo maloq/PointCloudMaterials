@@ -30,30 +30,6 @@ _FIXED_CLUSTER_BASE_PALETTE = [
 ]
 
 
-def _srgb_to_linear_unit(colors: np.ndarray) -> np.ndarray:
-    arr = np.asarray(colors, dtype=np.float64)
-    threshold = 0.04045
-    return np.where(
-        arr <= threshold,
-        arr / 12.92,
-        np.power((arr + 0.055) / 1.055, 2.4),
-    )
-
-
-def _relative_luminance(color: Any) -> float:
-    rgb = np.asarray(mcolors.to_rgb(color), dtype=np.float64)
-    linear = _srgb_to_linear_unit(rgb)
-    return float(0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2])
-
-
-def _contrast_ratio(color_a: Any, color_b: Any) -> float:
-    lum_a = _relative_luminance(color_a)
-    lum_b = _relative_luminance(color_b)
-    lighter = max(lum_a, lum_b)
-    darker = min(lum_a, lum_b)
-    return float((lighter + 0.05) / (darker + 0.05))
-
-
 def _adjust_color_lightness(color: Any, factor: float) -> str:
     rgb = np.asarray(mcolors.to_rgb(color), dtype=np.float64)
     h, l, s = colorsys.rgb_to_hls(float(rgb[0]), float(rgb[1]), float(rgb[2]))
@@ -65,24 +41,6 @@ def _adjust_color_lightness(color: Any, factor: float) -> str:
 def _cluster_label_color(color: Any, *, darken_factor: float = 0.58) -> str:
     factor = float(darken_factor)
     return _adjust_color_lightness(color, factor)
-
-
-def _ensure_text_contrast(
-    color: Any,
-    *,
-    background: Any = "#ffffff",
-    min_ratio: float = 4.8,
-    fallback: str = "#303030",
-) -> str:
-    color_hex = mcolors.to_hex(mcolors.to_rgb(color))
-    if _contrast_ratio(color_hex, background) >= float(min_ratio):
-        return color_hex
-    for factor in (0.92, 0.84, 0.76, 0.68, 0.60, 0.52, 0.44, 0.36):
-        candidate = _adjust_color_lightness(color_hex, factor)
-        if _contrast_ratio(candidate, background) >= float(min_ratio):
-            return candidate
-    fallback_hex = mcolors.to_hex(mcolors.to_rgb(fallback))
-    return fallback_hex
 
 
 def _darken_rgb(rgb: np.ndarray, factor: float) -> np.ndarray:

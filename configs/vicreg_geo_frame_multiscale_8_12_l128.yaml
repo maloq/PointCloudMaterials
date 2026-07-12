@@ -1,0 +1,52 @@
+defaults:
+  - vicreg_geo_frame_multi
+  - _self_
+
+experiment_name: VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+# The training-only projector receives this wider encoder representation;
+# downstream analysis and Line-JEPA consume the representation before it.
+latent_size: 128
+encoder:
+  kwargs:
+    latent_size: ${latent_size}
+    num_group: 24
+    patch_sizes: [8, 12]
+    encoder_dims: 256
+    trans_dim: 128
+    depth: 6
+    num_heads: 8
+    mlp_ratio: 4.0
+    dropout: 0.0
+    mask_ratio: 0.6
+    mask_predictor_depth: 2
+    ema_decay: 0.996
+    deterministic_fps: true
+    sorting_mode: none
+    group_sampling: random
+    center_input: true
+    frame_builder: triad
+    frame_eps: 1.0e-6
+    use_frame_gating: false
+    geometry_bias_mode: orientation
+    pooling_mode: max_mean
+    ray_feature_dim: 64
+
+# Paper VICReg objective: lambda=25, mu=25, nu=1, applied after the
+# three-layer BatchNorm/ReLU projector rather than directly to encoder output.
+vicreg_projector_mode: mlp
+vicreg_embed_dim: 128
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+
+# Requested strong AdamW regularization and a longer cosine schedule.
+decay_rate: 0.04
+epochs: 200
+warmup_epochs: 10
+check_val_every_n_epoch: 4
+
+# The wider transformer roughly doubles activation memory. This batch retains
+# a large covariance estimate and leaves H100 compile/runtime headroom.
+batch_size: 8192
+probe_pca_max_components: 128

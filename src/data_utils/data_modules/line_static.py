@@ -121,6 +121,18 @@ class LineStaticDataModule(pl.LightningDataModule):
             line_min_separation_radius_factor=float(
                 _cfg_get(data_cfg, "line_min_separation_radius_factor", default=0.0, context=ctx)
             ),
+            line_slot_spacing_radius_factor=_cfg_get(
+                data_cfg, "line_slot_spacing_radius_factor", default=None, context=ctx
+            ),
+            line_fixed_slot_max_deviation_radius_factor=_cfg_get(
+                data_cfg,
+                "line_fixed_slot_max_deviation_radius_factor",
+                default=None,
+                context=ctx,
+            ),
+            line_direction_max_retries=int(
+                _cfg_get(data_cfg, "line_direction_max_retries", default=8, context=ctx)
+            ),
             line_samples_per_file=line_samples_per_file,
             normalize=bool(_cfg_get(data_cfg, "normalize", default=True, context=ctx)),
             center_neighborhoods=bool(

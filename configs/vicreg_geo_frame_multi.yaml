@@ -1,44 +1,52 @@
 defaults:
 # - data: data_synth_polycrystalline_balanced_geometries_v2
-  - data: data_ae_multi_material
-# - data: data_synth_polycrystalline_balanced_geometries
-#  - data: data_ae_Al_80
-  - _self_
+ - data: data_ae_multi_material
+#  - data: data_synth_polycrystalline_balanced_geometries
+# - data: data_ae_Al_80
+ - _self_
 project_name: pointnet
-experiment_name: VICREG_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: VICREG_GEOFRAME_SIMPLE_MULTI_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
 wandb_mode: online
 
 model_type: vicreg  # Self-supervised VICReg
-latent_size: 512  # Invariant embedding size consumed by VICReg.
+latent_size: 64  # Compact invariant embedding consumed directly by VICReg.
 
 load_supervised_checkpoint: null
-init_from_checkpoint: null
+init_from_checkpoint: null  # Old l512 checkpoint does not match the latent-128 RI-MAE encoder.
 
 resume_from_checkpoint: null
 # Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
 # VN_REVNET_Backbone, REVNET_InvariantFast, PnE_VN, VN_DGCNN, DGCNN,
 # EGNN_Encoder, PnE_L, PnE_S, MLP).
 encoder:
-  name: RI_MAE_Invariant
+  name: GeoFrameTransformer
   kwargs:
     latent_size: ${latent_size}
     num_group: 24
-    group_size: 12
-    encoder_dims: 384
-    trans_dim: 256
-    depth: 8
-    predictor_depth: 4
-    num_heads: 16
+    patch_sizes: [12]
+    encoder_dims: 128
+    trans_dim: 64
+    depth: 6
+    num_heads: 8
     mlp_ratio: 4.0
     dropout: 0.0
     mask_ratio: 0.6
+    mask_predictor_depth: 2
     ema_decay: 0.996
-    deterministic_fps: false
+    deterministic_fps: true
     sorting_mode: none
-    center_input: true
+    # Random centers avoid the 24-step sequential FPS kernel loop during training.
+    # Group.forward still uses deterministic FPS for validation and test.
     group_sampling: random
+    center_input: true
+    frame_builder: triad
+    frame_eps: 1.0e-6
+    use_frame_gating: false
+    geometry_bias_mode: orientation
+    pooling_mode: max_mean
+    ray_feature_dim: 32
 
-compile_encoder: True
+compile_encoder: true
 encoder_compile_mode: reduce-overhead
 
 # encoder:
@@ -54,9 +62,9 @@ encoder_compile_mode: reduce-overhead
 #     emit_eq_latent: true
 
 # Training parameters
-learning_rate: 0.005
-batch_size: 6096
-precision: bf16-true
+learning_rate: 0.001
+batch_size: 8192
+precision: bf16-mixed
 gradient_clip_val: 1.0
 accumulate_grad_batches: 1
 auto_batch_size_search: false
@@ -71,26 +79,36 @@ auto_batch_size_strict: false
 
 enable_swa: False
 swa_epoch_start: 1000
-epochs: 800
+epochs: 50
 max_samples: 0
-check_val_every_n_epoch: 5
+check_val_every_n_epoch: 2
+checkpoint_monitor: loss/val
+checkpoint_mode: min
+checkpoint_save_top_k: 3
+checkpoint_save_last: true
+run_post_training_analysis: false
+run_test_after_training: true
 
 gpu: True
 devices: [0]
 ddp_find_unused_parameters: True
 log_every_n_steps: 5
 num_workers: 12
-scheduler_gamma: 0.5
 scheduler_name: Cosine
 scheduler_min_lr: 1e-6
 warmup_enabled: true
-warmup_epochs: 8
-warmup_start_factor: 0.01
+warmup_epochs: 2
+warmup_start_factor: 0.05
 
-decay_rate: 0.04
+decay_rate: 0.0004
 enable_embedding_metrics: false
 enable_svm_accuracy: false
 enable_probe_metrics: true
+# Validation remains loss-only so CPU KMeans/PCA probes do not leave the GPU idle.
+# Full supervised and probe metrics are still computed during the final test.
+supervised_metric_stages: [test]
+embedding_metric_stages: [test]
+probe_metric_stages: [test]
 probe_k: 6
 probe_max_samples: 8192
 probe_pca_max_components: 64
@@ -98,6 +116,8 @@ probe_silhouette_samples: 5000
 probe_kmeans_seed_count: 3
 probe_kmeans_n_init: 5
 probe_seed: 0
+probe_best_k_min: 2
+probe_best_k_max: 12
 
 # IDEC clustering (disabled by default; enable after pretraining)
 idec_enabled: False
@@ -115,32 +135,21 @@ vicreg_enabled: True
 vicreg_weight: 1.0
 vicreg_sim_coeff: 25.0
 vicreg_std_coeff: 25.0
-vicreg_cov_coeff: 1.0
-vicreg_embed_dim: 120
+vicreg_cov_coeff: 0.5
+vicreg_embed_dim: ${latent_size}
+vicreg_projector_mode: identity
 vicreg_start_epoch: 0
 vicreg_jitter_std: 0.01
 vicreg_jitter_mode: physical
 vicreg_drop_ratio: 0.0
-vicreg_neighbor_view: true
-vicreg_neighbor_view_mode: second
-vicreg_neighbor_k: 8
-vicreg_neighbor_max_relative_distance: 0.0
+vicreg_neighbor_view: false
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
-vicreg_rotation_deg: 10.0
 vicreg_strain_std: 0.00
-vicreg_strain_volume_preserve: true
-vicreg_occlusion_mode: mixed
-vicreg_occlusion_view: second
-vicreg_occlusion_slab_frac: 0.0
-vicreg_occlusion_cone_deg: 0.0
+vicreg_occlusion_mode: none
 vicreg_std_eps: 1e-4
 vicreg_std_target: 1.0
 vicreg_radial_enabled: false
-vicreg_radial_beta1: 1.0
-vicreg_radial_beta2: 0.1
-vicreg_radial_m: null
-vicreg_radial_eps: 1e-8
 
 
 # Data augmentation (applied in dataloaders)

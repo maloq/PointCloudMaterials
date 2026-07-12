@@ -31,6 +31,10 @@ class LineJEPALoss(nn.Module):
         integration_min: float,
         integration_max: float,
         integration_points: int,
+        context_match_coeff: float = 0.0,
+        context_match_temperature: float = 0.1,
+        context_match_negative_count: int = 64,
+        context_match_negative_max_target_cosine: float = 0.98,
     ) -> None:
         super().__init__()
         self.weight = float(weight)
@@ -46,6 +50,12 @@ class LineJEPALoss(nn.Module):
         self.integration_min = float(integration_min)
         self.integration_max = float(integration_max)
         self.integration_points = int(integration_points)
+        self.context_match_coeff = float(context_match_coeff)
+        self.context_match_temperature = float(context_match_temperature)
+        self.context_match_negative_count = int(context_match_negative_count)
+        self.context_match_negative_max_target_cosine = float(
+            context_match_negative_max_target_cosine
+        )
 
         if self.weight <= 0.0:
             raise ValueError(f"line_jepa_weight must be > 0 for Line-JEPA, got {self.weight}.")
@@ -61,9 +71,9 @@ class LineJEPALoss(nn.Module):
             raise ValueError(f"line_jepa_std_eps must be > 0, got {self.std_eps}.")
         if self.std_target <= 0.0:
             raise ValueError(f"line_jepa_std_target must be > 0, got {self.std_target}.")
-        if self.prediction_loss not in {"mse", "smooth_l1"}:
+        if self.prediction_loss not in {"mse", "smooth_l1", "cosine"}:
             raise ValueError(
-                "line_jepa_prediction_loss must be 'mse' or 'smooth_l1', "
+                "line_jepa_prediction_loss must be 'mse', 'smooth_l1', or 'cosine', "
                 f"got {prediction_loss!r}."
             )
         if self.num_slices <= 0:
@@ -77,6 +87,26 @@ class LineJEPALoss(nn.Module):
             raise ValueError(
                 "line_jepa_sigreg_integration_max must be > line_jepa_sigreg_integration_min, "
                 f"got min={self.integration_min}, max={self.integration_max}."
+            )
+        if self.context_match_coeff < 0.0:
+            raise ValueError(
+                "line_jepa_context_match_coeff must be >= 0, "
+                f"got {self.context_match_coeff}."
+            )
+        if self.context_match_temperature <= 0.0:
+            raise ValueError(
+                "line_jepa_context_match_temperature must be > 0, "
+                f"got {self.context_match_temperature}."
+            )
+        if self.context_match_negative_count <= 0:
+            raise ValueError(
+                "line_jepa_context_match_negative_count must be > 0, "
+                f"got {self.context_match_negative_count}."
+            )
+        if not (-1.0 <= self.context_match_negative_max_target_cosine < 1.0):
+            raise ValueError(
+                "line_jepa_context_match_negative_max_target_cosine must be in [-1, 1), "
+                f"got {self.context_match_negative_max_target_cosine}."
             )
 
     @classmethod
@@ -95,6 +125,16 @@ class LineJEPALoss(nn.Module):
             integration_min=float(getattr(cfg, "line_jepa_sigreg_integration_min", -5.0)),
             integration_max=float(getattr(cfg, "line_jepa_sigreg_integration_max", 5.0)),
             integration_points=int(getattr(cfg, "line_jepa_sigreg_integration_points", 17)),
+            context_match_coeff=float(getattr(cfg, "line_jepa_context_match_coeff", 0.0)),
+            context_match_temperature=float(
+                getattr(cfg, "line_jepa_context_match_temperature", 0.1)
+            ),
+            context_match_negative_count=int(
+                getattr(cfg, "line_jepa_context_match_negative_count", 64)
+            ),
+            context_match_negative_max_target_cosine=float(
+                getattr(cfg, "line_jepa_context_match_negative_max_target_cosine", 0.98)
+            ),
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -148,6 +188,20 @@ class LineJEPALoss(nn.Module):
                 )
             prediction_loss = torch.zeros((), device=device, dtype=torch.float32)
 
+        if self.context_match_coeff > 0.0:
+            if not prediction_active or prediction is None or target is None:
+                raise ValueError(
+                    "line_jepa_context_match_coeff > 0 requires active prediction and aligned "
+                    "prediction/target tensors."
+                )
+            context_match, context_match_metrics = self._context_match_loss(
+                prediction=prediction.float(),
+                target=target.detach().float(),
+            )
+        else:
+            context_match = torch.zeros((), device=device, dtype=torch.float32)
+            context_match_metrics = {}
+
         pooled_embeddings = (
             self._pooled_regularizer_embeddings(embedding_items)
             if needs_regularized_embeddings
@@ -176,6 +230,7 @@ class LineJEPALoss(nn.Module):
         )
         unweighted = (
             self.prediction_coeff * prediction_loss
+            + self.context_match_coeff * context_match
             + self.sigreg_coeff * sigreg
             + self.std_coeff * std_loss
             + self.cov_coeff * cov_loss
@@ -184,24 +239,92 @@ class LineJEPALoss(nn.Module):
 
         metrics = {}
         if prediction_active:
-            metrics["line_jepa_pred"] = prediction_loss
+            metrics["jepa/pred/loss"] = prediction_loss
+        if self.context_match_coeff > 0.0:
+            metrics["jepa/sim/loss"] = context_match
+            metrics.update(context_match_metrics)
         if self.sigreg_coeff > 0.0:
-            metrics["line_jepa_sigreg"] = sigreg
+            metrics["jepa/reg/sigreg"] = sigreg
         if self.std_coeff > 0.0:
-            metrics["line_jepa_std"] = std_loss
+            metrics["jepa/reg/std"] = std_loss
         if self.cov_coeff > 0.0:
-            metrics["line_jepa_cov"] = cov_loss
+            metrics["jepa/reg/cov"] = cov_loss
         if not torch.isfinite(loss).item():
             raise RuntimeError(
                 "Line-JEPA loss became non-finite. "
                 f"prediction_loss={float(prediction_loss.detach())}, "
+                f"context_match={float(context_match.detach())}, "
                 f"sigreg={float(sigreg.detach())}, std={float(std_loss.detach())}, "
                 f"cov={float(cov_loss.detach())}, weight={self.weight}, "
                 f"prediction_coeff={self.prediction_coeff}, "
+                f"context_match_coeff={self.context_match_coeff}, "
                 f"sigreg_coeff={self.sigreg_coeff}, std_coeff={self.std_coeff}, "
                 f"cov_coeff={self.cov_coeff}."
             )
         return loss, metrics
+
+    def _context_match_loss(
+        self,
+        *,
+        prediction: torch.Tensor,
+        target: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+        """Match each prediction to its target using data-agnostic hard in-batch negatives."""
+        if prediction.shape != target.shape or prediction.dim() != 2:
+            raise ValueError(
+                "Line-JEPA context matching expects aligned (B, D) tensors, "
+                f"got prediction={tuple(prediction.shape)}, target={tuple(target.shape)}."
+            )
+        batch_size = int(prediction.shape[0])
+        if batch_size <= 1:
+            raise ValueError(
+                "Line-JEPA context matching requires at least two prediction tasks per batch, "
+                f"got {batch_size}."
+            )
+
+        target_mean = target.mean(dim=0, keepdim=True)
+        centered_target = F.normalize(target - target_mean, dim=-1, eps=1.0e-6)
+        centered_prediction = F.normalize(prediction - target_mean, dim=-1, eps=1.0e-6)
+        target_similarity = centered_target @ centered_target.T
+        eye = torch.eye(batch_size, dtype=torch.bool, device=target.device)
+        valid_negative = (~eye) & (
+            target_similarity <= self.context_match_negative_max_target_cosine
+        )
+        valid_count = valid_negative.sum(dim=1)
+        if torch.any(valid_count == 0).item():
+            bad_count = int((valid_count == 0).sum().item())
+            raise RuntimeError(
+                "Line-JEPA context matching found no structurally distinct in-batch negative "
+                f"for {bad_count}/{batch_size} tasks. Increase batch diversity or increase "
+                "line_jepa_context_match_negative_max_target_cosine "
+                f"(currently {self.context_match_negative_max_target_cosine})."
+            )
+
+        negative_count = min(self.context_match_negative_count, batch_size - 1)
+        candidate_scores = target_similarity.masked_fill(~valid_negative, -torch.inf)
+        _, negative_indices = torch.topk(
+            candidate_scores,
+            k=negative_count,
+            dim=1,
+            largest=True,
+            sorted=False,
+        )
+        selected_valid = valid_negative.gather(1, negative_indices)
+        prediction_target_logits = centered_prediction @ centered_target.T
+        positive_logits = prediction_target_logits.diagonal().unsqueeze(1)
+        negative_logits = prediction_target_logits.gather(1, negative_indices)
+        negative_logits = negative_logits.masked_fill(~selected_valid, -torch.inf)
+        logits = torch.cat((positive_logits, negative_logits), dim=1)
+        logits = logits / self.context_match_temperature
+        labels = torch.zeros(batch_size, dtype=torch.long, device=prediction.device)
+        loss = F.cross_entropy(logits, labels)
+
+        with torch.no_grad():
+            hardest_negative = negative_logits.max(dim=1).values
+            accuracy = (positive_logits.squeeze(1) > hardest_negative).float().mean()
+        return loss, {
+            "jepa/sim/top1": accuracy,
+        }
 
     @staticmethod
     def _loss_device(
@@ -291,13 +414,16 @@ class LineJEPALoss(nn.Module):
         target: torch.Tensor,
         prediction_weights: torch.Tensor | None,
     ) -> torch.Tensor:
-        if self.prediction_loss == "mse":
+        if self.prediction_loss == "cosine":
+            per_sample = 1.0 - F.cosine_similarity(prediction, target, dim=-1)
+        elif self.prediction_loss == "mse":
             per_dim = F.mse_loss(prediction, target, reduction="none")
+            per_sample = per_dim.mean(dim=1)
         elif self.prediction_loss == "smooth_l1":
             per_dim = F.smooth_l1_loss(prediction, target, reduction="none")
+            per_sample = per_dim.mean(dim=1)
         else:
             raise RuntimeError(f"Unsupported prediction loss at runtime: {self.prediction_loss!r}.")
-        per_sample = per_dim.mean(dim=1)
         if prediction_weights is None:
             return per_sample.mean()
         weights = prediction_weights.detach().to(device=per_sample.device, dtype=per_sample.dtype).reshape(-1)

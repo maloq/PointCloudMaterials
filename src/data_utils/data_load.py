@@ -1,4 +1,5 @@
 import bisect
+import fcntl
 import hashlib
 import shutil
 import sys,os
@@ -526,6 +527,7 @@ class PointCloudDataset(Dataset):
             "enabled": True,
             "cache_dir": str(cache_dir),
             "rebuild": bool(sample_cache_config.get("rebuild", False)),
+            "local_cache_dir": sample_cache_config.get("local_cache_dir", None),
         }
 
     def _build_sample_cache_request(
@@ -614,7 +616,15 @@ class PointCloudDataset(Dataset):
                 metadata = json.load(handle)
             observed_fingerprint = metadata.get("fingerprint")
             if observed_fingerprint == expected_fingerprint:
-                self._load_sample_cache_from_metadata(cache_dir=cache_dir, metadata=metadata)
+                load_dir, load_metadata = self._stage_sample_cache_if_configured(
+                    source_cache_dir=cache_dir,
+                    metadata=metadata,
+                    cache_cfg=cache_cfg,
+                )
+                self._load_sample_cache_from_metadata(
+                    cache_dir=load_dir,
+                    metadata=load_metadata,
+                )
                 return
             if not cache_cfg["rebuild"]:
                 raise RuntimeError(
@@ -643,7 +653,140 @@ class PointCloudDataset(Dataset):
         )
         with metadata_path.open("r", encoding="utf-8") as handle:
             metadata = json.load(handle)
-        self._load_sample_cache_from_metadata(cache_dir=cache_dir, metadata=metadata)
+        load_dir, load_metadata = self._stage_sample_cache_if_configured(
+            source_cache_dir=cache_dir,
+            metadata=metadata,
+            cache_cfg=cache_cfg,
+        )
+        self._load_sample_cache_from_metadata(cache_dir=load_dir, metadata=load_metadata)
+
+    @staticmethod
+    def _cache_copy_matches(
+        *,
+        source_cache_dir: Path,
+        staged_cache_dir: Path,
+        metadata: dict[str, Any],
+    ) -> tuple[bool, str]:
+        staged_metadata_path = staged_cache_dir / "metadata.json"
+        if not staged_metadata_path.exists():
+            return False, f"metadata is missing: {staged_metadata_path}"
+        try:
+            with staged_metadata_path.open("r", encoding="utf-8") as handle:
+                staged_metadata = json.load(handle)
+        except (OSError, json.JSONDecodeError) as exc:
+            return False, f"metadata is unreadable: {staged_metadata_path}: {exc}"
+        if staged_metadata.get("fingerprint") != metadata.get("fingerprint"):
+            return False, "metadata fingerprint differs from the source cache"
+
+        relative_paths = ["metadata.json"]
+        for shard in metadata.get("shards", []):
+            relative_paths.append(str(shard["samples_path"]))
+            coords_path = shard.get("coords_path")
+            if coords_path is not None:
+                relative_paths.append(str(coords_path))
+        for relative_path in relative_paths:
+            source_path = source_cache_dir / relative_path
+            staged_path = staged_cache_dir / relative_path
+            if not source_path.is_file():
+                return False, f"source cache file is missing: {source_path}"
+            if not staged_path.is_file():
+                return False, f"staged cache file is missing: {staged_path}"
+            if source_path.stat().st_size != staged_path.stat().st_size:
+                return False, (
+                    f"file size differs for {relative_path}: "
+                    f"source={source_path.stat().st_size}, staged={staged_path.stat().st_size}"
+                )
+        return True, "cache fingerprint and file sizes match"
+
+    def _stage_sample_cache_if_configured(
+        self,
+        *,
+        source_cache_dir: Path,
+        metadata: dict[str, Any],
+        cache_cfg: dict[str, Any],
+    ) -> tuple[Path, dict[str, Any]]:
+        local_cache_dir_raw = cache_cfg.get("local_cache_dir", None)
+        if local_cache_dir_raw is None or not str(local_cache_dir_raw).strip():
+            return source_cache_dir, metadata
+
+        staged_cache_dir = Path(str(local_cache_dir_raw)).expanduser()
+        if not staged_cache_dir.is_absolute():
+            raise ValueError(
+                "data.sample_cache.local_cache_dir must be an absolute path, "
+                f"got {local_cache_dir_raw!r}."
+            )
+        if staged_cache_dir.resolve() == source_cache_dir.resolve():
+            raise ValueError(
+                "data.sample_cache.local_cache_dir must differ from cache_dir, "
+                f"both resolve to {staged_cache_dir.resolve()}."
+            )
+
+        stage_parent = staged_cache_dir.parent
+        stage_parent.mkdir(parents=True, exist_ok=True)
+        lock_path = stage_parent / f".{staged_cache_dir.name}.lock"
+        with lock_path.open("a+", encoding="utf-8") as lock_handle:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+
+            if staged_cache_dir.exists():
+                matches, reason = self._cache_copy_matches(
+                    source_cache_dir=source_cache_dir,
+                    staged_cache_dir=staged_cache_dir,
+                    metadata=metadata,
+                )
+                if matches:
+                    logger.print(
+                        f"[sample_cache] using node-local staged cache at {staged_cache_dir}."
+                    )
+                    with (staged_cache_dir / "metadata.json").open("r", encoding="utf-8") as handle:
+                        return staged_cache_dir, json.load(handle)
+                logger.print(
+                    "[sample_cache] replacing invalid node-local staged cache: "
+                    f"path={staged_cache_dir}, reason={reason}."
+                )
+                self._remove_cache_dir_for_rebuild(staged_cache_dir)
+
+            source_bytes = sum(
+                path.stat().st_size
+                for path in source_cache_dir.rglob("*")
+                if path.is_file()
+            )
+            available_bytes = shutil.disk_usage(stage_parent).free
+            if available_bytes < source_bytes:
+                raise RuntimeError(
+                    "Insufficient space for node-local static sample cache. "
+                    f"source={source_cache_dir}, destination={staged_cache_dir}, "
+                    f"required_bytes={source_bytes}, available_bytes={available_bytes}."
+                )
+
+            staging_dir = stage_parent / f".{staged_cache_dir.name}.staging-{os.getpid()}"
+            if staging_dir.exists():
+                self._remove_cache_dir_for_rebuild(staging_dir)
+            logger.print(
+                "[sample_cache] staging cache to node-local storage: "
+                f"source={source_cache_dir}, destination={staged_cache_dir}, "
+                f"bytes={source_bytes}."
+            )
+            try:
+                shutil.copytree(source_cache_dir, staging_dir, copy_function=shutil.copy2)
+                matches, reason = self._cache_copy_matches(
+                    source_cache_dir=source_cache_dir,
+                    staged_cache_dir=staging_dir,
+                    metadata=metadata,
+                )
+                if not matches:
+                    raise RuntimeError(
+                        "Node-local static sample cache validation failed after copy. "
+                        f"source={source_cache_dir}, staging_dir={staging_dir}, reason={reason}."
+                    )
+                staging_dir.rename(staged_cache_dir)
+            except Exception:
+                if staging_dir.exists():
+                    self._remove_cache_dir_for_rebuild(staging_dir)
+                raise
+
+            logger.print(f"[sample_cache] staged node-local cache at {staged_cache_dir}.")
+            with (staged_cache_dir / "metadata.json").open("r", encoding="utf-8") as handle:
+                return staged_cache_dir, json.load(handle)
 
     @staticmethod
     def _remove_cache_dir_for_rebuild(cache_dir: Path) -> None:
@@ -1092,6 +1235,61 @@ class PointCloudDataset(Dataset):
         if self.return_coords:
             sample["coords"] = torch.tensor(self.coords[index], dtype=torch.float32)
         return sample
+
+    def __getitems__(self, indices):
+        if self._cache_sample_arrays is None:
+            return [self[index] for index in indices]
+
+        global_indices = np.asarray(indices, dtype=np.int64)
+        if global_indices.ndim != 1:
+            raise ValueError(
+                "PointCloudDataset batched indices must be one-dimensional, "
+                f"got shape={global_indices.shape}."
+            )
+        global_indices = global_indices.copy()
+        global_indices[global_indices < 0] += int(self._cache_total_samples)
+        invalid = (global_indices < 0) | (global_indices >= int(self._cache_total_samples))
+        if np.any(invalid):
+            bad_indices = global_indices[invalid][:10].tolist()
+            raise IndexError(
+                "PointCloudDataset batched cache indices are out of range. "
+                f"dataset_length={self._cache_total_samples}, invalid_indices={bad_indices}."
+            )
+
+        batch_size = int(global_indices.size)
+        point_batch = np.empty((batch_size, self.num_points, 3), dtype=np.float32)
+        coord_batch = np.empty((batch_size, 3), dtype=np.float32) if self.return_coords else None
+        cumulative = np.asarray(self._cache_cumulative_counts, dtype=np.int64)
+        shard_indices = np.searchsorted(cumulative, global_indices, side="right")
+
+        for shard_idx in np.unique(shard_indices):
+            output_positions = np.flatnonzero(shard_indices == shard_idx)
+            previous = 0 if shard_idx == 0 else int(cumulative[shard_idx - 1])
+            local_indices = global_indices[output_positions] - previous
+            local_order = np.argsort(local_indices, kind="stable")
+            sorted_output_positions = output_positions[local_order]
+            sorted_local_indices = local_indices[local_order]
+            point_batch[sorted_output_positions] = self._cache_sample_arrays[shard_idx][
+                sorted_local_indices
+            ]
+            if coord_batch is not None:
+                coord_array = self._cache_coord_arrays[shard_idx]
+                if coord_array is None:
+                    raise RuntimeError(
+                        "Cached PointCloudDataset was requested with return_coords=True, "
+                        f"but shard {shard_idx} has no coords array."
+                    )
+                coord_batch[sorted_output_positions] = coord_array[sorted_local_indices]
+
+        point_tensor = torch.from_numpy(point_batch)
+        coord_tensor = torch.from_numpy(coord_batch) if coord_batch is not None else None
+        samples = []
+        for batch_index in range(batch_size):
+            sample = {"points": point_tensor[batch_index]}
+            if coord_tensor is not None:
+                sample["coords"] = coord_tensor[batch_index]
+            samples.append(sample)
+        return samples
 
  
 class SyntheticPointCloudDataset(Dataset):

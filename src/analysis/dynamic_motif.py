@@ -277,106 +277,10 @@ def _path_relative_to(base_dir: Path, path: Path | None) -> str | None:
     return str(path.relative_to(base_dir))
 
 
-def _equidistant_selection_indices(*, num_items: int, num_selected: int) -> np.ndarray:
-    raw = np.linspace(0, num_items - 1, num=num_selected, dtype=np.float64)
-    rounded = np.rint(raw).astype(np.int64)
-    unique = np.unique(rounded)
-    return unique.astype(np.int64, copy=False)
-
-
-def _format_transition_snapshot_label(*, frame_index: int, timestep: int | None) -> str:
-    if timestep is None:
-        return f"frame {int(frame_index)}"
-    return f"frame {int(frame_index)} (t={int(timestep)})"
-
-
 def _remove_existing_transition_snapshot_flow_artifacts(transitions_dir: Path) -> None:
     for pattern in ("transition_snapshot_flow_*.png", "transition_snapshot_flow_index.csv"):
         for path in transitions_dir.glob(pattern):
             path.unlink()
-
-
-def _build_snapshot_flow_anchors(
-    sample_df: pd.DataFrame,
-    *,
-    num_flow_charts: int,
-) -> list[dict[str, Any]]:
-    required = {"frame_index", "time_value"}
-    frame_table = (
-        sample_df[["frame_index", "time_value"]]
-        .groupby("frame_index", as_index=False)
-        .mean()
-        .sort_values("frame_index")
-    )
-
-    anchor_positions = _equidistant_selection_indices(
-        num_items=int(frame_table.shape[0]),
-        num_selected=anchor_count,
-    )
-    anchors = frame_table.iloc[anchor_positions].reset_index(drop=True)
-    return [
-        {
-            "frame_index": int(row.frame_index),
-            "timestep": None if pd.isna(row.time_value) else int(row.time_value),
-            "label": _format_transition_snapshot_label(
-                frame_index=int(row.frame_index),
-                timestep=None if pd.isna(row.time_value) else int(row.time_value),
-            ),
-        }
-        for row in anchors.itertuples(index=False)
-    ]
-
-
-def _build_snapshot_transition_flow_counts(
-    sample_df: pd.DataFrame,
-    *,
-    frame_index_from: int,
-    frame_index_to: int,
-) -> tuple[np.ndarray, list[int], list[int]]:
-    left = sample_df[sample_df["frame_index"] == int(frame_index_from)][
-        ["instance_id", "stable_id"]
-    ].copy()
-    right = sample_df[sample_df["frame_index"] == int(frame_index_to)][
-        ["instance_id", "stable_id"]
-    ].copy()
-    merged = pd.merge(
-        left,
-        right,
-        on="instance_id",
-        how="inner",
-        suffixes=("_from", "_to"),
-    )
-
-    counts = (
-        merged.groupby(
-            [
-                "resolved_family_from",
-                "resolved_motif_id_from",
-                "resolved_family_to",
-                "resolved_motif_id_to",
-                "resolved_state_label_from",
-                "resolved_state_label_to",
-            ],
-            sort=True,
-        )
-        .size()
-        .reset_index(name="count")
-        .rename(
-            columns={
-                "resolved_family_from": "from_family",
-                "resolved_motif_id_from": "from_id",
-                "resolved_family_to": "to_family",
-                "resolved_motif_id_to": "to_id",
-                "resolved_state_label_from": "from_label",
-                "resolved_state_label_to": "to_label",
-            }
-        )
-        .sort_values(["count", "from_label", "to_label"], ascending=[False, True, True])
-        .reset_index(drop=True)
-    )
-    counts["total_transitions"] = int(counts["count"].sum())
-    counts["fraction"] = counts["count"].astype(np.float64) / float(counts["count"].sum())
-    return counts
 
 
 def _select_representatives(

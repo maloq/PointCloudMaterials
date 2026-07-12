@@ -1,0 +1,13 @@
+defaults:
+  - line_jepa_geo_frame_simple
+  - _self_
+
+experiment_name: LINE_JEPA_GEOFRAME_MULTISCALE_VICREG_l${latent_size}_L${data.line_atoms}_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+init_from_checkpoint: output/2026-07-11/14-48-42-vicreg-geoframe-multiscale-h100/VICREG_GEOFRAME_MULTISCALE_12_24_l64_N160_M80_GeoFrameTransformer-epoch=49.ckpt
+
+encoder:
+  kwargs:
+    patch_sizes: [12, 24]
+    use_frame_gating: false
+

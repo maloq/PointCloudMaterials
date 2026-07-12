@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from itertools import combinations
 from pathlib import Path
 from typing import Any
 
@@ -99,18 +98,6 @@ def _ensure_connected_edges(
             "Failed to construct a connected edge graph for cluster representative rendering."
         )
     return sorted(edge_set)
-
-
-def _compute_structure_half_span(points: np.ndarray) -> float:
-    pts = np.asarray(points, dtype=np.float32)
-    if pts.ndim != 2 or pts.shape[1] != 3:
-        raise ValueError(f"points must have shape (N, 3), got {pts.shape}.")
-    mins = np.min(pts, axis=0)
-    maxs = np.max(pts, axis=0)
-    span = float(np.max(maxs - mins))
-    if not np.isfinite(span) or span <= 0.0:
-        raise ValueError(f"Computed invalid structure span {span} for points shape {pts.shape}.")
-    return 0.5 * span
 
 
 def _save_md_cluster_snapshot(
@@ -232,108 +219,6 @@ def _save_md_cluster_snapshot(
     }
 
 
-def _enumerate_cluster_combinations(
-    cluster_ids: list[int],
-    order_scores: dict[int, float],
-    *,
-    min_size: int,
-    max_size: int,
-    max_outputs: int,
-) -> list[tuple[int, ...]]:
-    if not cluster_ids:
-        return []
-    min_size = max(1, int(min_size))
-    max_size = max(min_size, int(max_size))
-    max_size = min(max_size, len(cluster_ids))
-    max_outputs = max(1, int(max_outputs))
-
-    combos: list[tuple[int, ...]] = []
-    for size in range(min_size, max_size + 1):
-        combos.extend(tuple(int(v) for v in c) for c in combinations(cluster_ids, size))
-    if not combos:
-        return []
-
-    def _combo_score(combo: tuple[int, ...]) -> tuple[float, int]:
-        vals = [float(order_scores.get(int(cid), 0.0)) for cid in combo]
-        return (float(np.mean(vals)), len(combo))
-
-    combos_sorted = sorted(
-        combos,
-        key=lambda c: (_combo_score(c)[0], _combo_score(c)[1]),
-        reverse=True,
-    )
-    return combos_sorted[:max_outputs]
-
-
-def _save_cluster_combination_library(
-    *,
-    out_dir: Path,
-    coords: np.ndarray,
-    cluster_labels: np.ndarray,
-    color_map: dict[int, str],
-    k_value: int,
-    order_scores: dict[int, float],
-    min_size: int,
-    max_size: int,
-    max_outputs: int,
-    max_points: int | None,
-    point_size: float,
-    alpha: float,
-    halo_scale: float,
-    halo_alpha: float,
-    view_elev: float,
-    view_azim: float,
-) -> dict[str, Any]:
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    cluster_ids = sorted(int(v) for v in np.unique(np.asarray(cluster_labels, dtype=int)) if int(v) >= 0)
-    combos = _enumerate_cluster_combinations(
-        cluster_ids,
-        order_scores,
-        min_size=int(min_size),
-        max_size=int(max_size),
-        max_outputs=int(max_outputs),
-    )
-    if not combos:
-        raise ValueError("No cluster combinations were generated for visualization.")
-
-    records: list[dict[str, Any]] = []
-    for idx, combo in enumerate(combos, start=1):
-        combo_tag = "-".join(str(int(v)) for v in combo)
-        out_path = out_dir / f"combo_{idx:03d}_clusters_{combo_tag}.png"
-        title = f"MD clusters combo {idx:03d} (k={k_value}, ids={combo_tag})"
-        panel = _save_md_cluster_snapshot(
-            coords,
-            cluster_labels,
-            color_map,
-            out_path,
-            title=title,
-            visible_cluster_ids=[int(v) for v in combo],
-            max_points=max_points,
-            point_size=point_size,
-            alpha=alpha,
-            halo_scale=halo_scale,
-            halo_alpha=halo_alpha,
-            view_elev=view_elev,
-            view_azim=view_azim,
-        )
-        panel["combo_index"] = int(idx)
-        panel["cluster_ids"] = [int(v) for v in combo]
-        panel["combo_score"] = float(
-            np.mean([float(order_scores.get(int(cid), 0.0)) for cid in combo])
-        )
-        records.append(panel)
-
-    return {
-        "out_dir": str(out_dir),
-        "num_outputs": int(len(records)),
-        "min_size": int(min_size),
-        "max_size": int(max_size),
-        "max_outputs_requested": int(max_outputs),
-        "records": records,
-    }
-
-
 def _prepare_cluster_representative_structures(
     dataset: Any,
     latents: np.ndarray,
@@ -438,35 +323,6 @@ def _attach_structure_analysis_to_summary(
             record["structure_analysis"] = dict(analysis_by_cluster_id[cluster_id])
 
 
-def _build_cluster_representative_variant_specs(
-    preferred_orientation: str,
-) -> list[dict[str, Any]]:
-    preferred = str(preferred_orientation).strip().lower()
-    if preferred not in {"pca", "none"}:
-        raise ValueError(
-            "Unsupported preferred representative orientation: "
-            f"{preferred_orientation!r}. Expected one of ['pca', 'none']."
-        )
-
-    def _orientation_slug(method: str) -> str:
-        if method in {"pca", "none"}:
-            return method
-        raise ValueError(
-            "Unsupported representative orientation while building filename suffix: "
-            f"{method!r}."
-        )
-
-    preferred_slug = _orientation_slug(preferred)
-    return [
-        {
-            "variant_name": f"{preferred_slug}_reciprocal",
-            "file_suffix": f"_{preferred_slug}_reciprocal",
-            "edge_method": "coordination_shell_mutual",
-            "orientation_method": preferred,
-        },
-    ]
-
-
 def _render_cluster_representatives_variant(
     prepared_records: list[dict[str, Any]],
     out_file: Path,
@@ -478,12 +334,13 @@ def _render_cluster_representatives_variant(
     view_azim: float,
     projection: str,
     variant_name: str,
+    dpi: int = 220,
 ) -> dict[str, Any]:
     proj_norm = str(projection).strip().lower()
     n_clusters = len(prepared_records)
     n_cols = min(3, n_clusters)
     n_rows = int(np.ceil(n_clusters / max(1, n_cols)))
-    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=220, facecolor="white")
+    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=dpi, facecolor="white")
 
     summary_records: list[dict[str, Any]] = []
     for pos, prepared in enumerate(prepared_records):
@@ -500,13 +357,18 @@ def _render_cluster_representatives_variant(
         base_color = str(prepared["base_color"])
         # Keep representative coloring consistent across representative variants.
         point_colors = _compute_center_to_edge_colors(local_oriented, base_color)
-        edges, edge_info = _build_local_coordination_edges(
-            local_oriented,
-            min_shell_neighbors=max(2, int(knn_k) - 1),
-            max_shell_neighbors=max(5, int(knn_k) + 2),
-            shell_gap_ratio=1.22,
-            edge_mode=str(edge_method),
-        )
+        if edge_method == "knn_connected":
+            edges, edge_info = _build_knn_representative_edges(
+                local_oriented, knn_k=max(2, int(knn_k))
+            )
+        else:
+            edges, edge_info = _build_local_coordination_edges(
+                local_oriented,
+                min_shell_neighbors=max(2, int(knn_k) - 1),
+                max_shell_neighbors=max(5, int(knn_k) + 2),
+                shell_gap_ratio=1.22,
+                edge_mode=str(edge_method),
+            )
         _draw_edges(
             ax,
             local_oriented,
@@ -584,10 +446,7 @@ def _build_knn_representative_edges(
     *,
     knn_k: int,
 ) -> tuple[list[tuple[int, int]], dict[str, Any]]:
-    pts = np.asarray(points, dtype=np.float32)
-    if pts.ndim != 2 or pts.shape[1] < 3:
-        raise ValueError(f"points must have shape (N, >=3), got {pts.shape}.")
-    pts = pts[:, :3]
+    pts = np.asarray(points, dtype=np.float32)[:, :3]
     n_points = int(pts.shape[0])
     if n_points < 2:
         return [], {
@@ -601,13 +460,9 @@ def _build_knn_representative_edges(
     k_eff = min(max(1, int(knn_k)), n_points - 1)
     tree = cKDTree(pts)
     _, indices = tree.query(pts, k=k_eff + 1)
-    if np.ndim(indices) == 1:
-        indices = np.asarray(indices, dtype=np.int64)[:, None]
-    else:
-        indices = np.asarray(indices, dtype=np.int64)
+    indices = np.asarray(indices, dtype=np.int64).reshape(n_points, -1)
 
     edges: set[tuple[int, int]] = set()
-    edge_distances: list[float] = []
     for point_idx in range(n_points):
         for neighbor_idx in indices[point_idx, 1:]:
             neighbor_idx_int = int(neighbor_idx)
@@ -615,128 +470,18 @@ def _build_knn_representative_edges(
             if edge[0] == edge[1] or edge in edges:
                 continue
             edges.add(edge)
-            edge_distances.append(float(np.linalg.norm(pts[edge[0]] - pts[edge[1]])))
 
     connected_edges = _ensure_connected_edges(pts, sorted(edges))
-    if connected_edges:
-        connected_distances = [
-            float(np.linalg.norm(pts[src_idx] - pts[dst_idx]))
-            for src_idx, dst_idx in connected_edges
-        ]
-    else:
-        connected_distances = []
+    distances = np.asarray([
+        np.linalg.norm(pts[src] - pts[dst]) for src, dst in connected_edges
+    ])
 
     return connected_edges, {
         "graph_method": "representative_knn",
         "knn_k": int(k_eff),
         "num_edges": int(len(connected_edges)),
-        "edge_distance_mean": float(np.mean(connected_distances)) if connected_distances else 0.0,
-        "edge_distance_median": float(np.median(connected_distances)) if connected_distances else 0.0,
-    }
-
-
-def _render_knn_edge_representatives_figure(
-    prepared_records: list[dict[str, Any]],
-    out_file: Path,
-    *,
-    knn_k: int,
-    view_elev: float = 22.0,
-    view_azim: float = 38.0,
-    projection: str = "ortho",
-) -> dict[str, Any]:
-    proj_norm = str(projection).strip().lower()
-    n_clusters = len(prepared_records)
-    n_cols = min(3, n_clusters)
-    n_rows = int(np.ceil(n_clusters / max(1, n_cols)))
-    fig = plt.figure(figsize=(3.45 * n_cols, 3.5 * n_rows), dpi=300, facecolor="white")
-    summary_records: list[dict[str, Any]] = []
-
-    for pos, prepared in enumerate(prepared_records):
-        ax = fig.add_subplot(n_rows, n_cols, pos + 1, projection="3d")
-        ax.set_facecolor("white")
-        if hasattr(ax, "set_proj_type"):
-            ax.set_proj_type(proj_norm)
-        ax.view_init(elev=float(view_elev), azim=float(view_azim))
-
-        base_color = str(prepared["base_color"])
-        oriented_points, orientation_info = _orient_points_for_crystal_view(
-            prepared["local_points"],
-            method="pca",
-        )
-        point_colors = _compute_center_to_edge_colors(oriented_points, base_color)
-        edges, edge_info = _build_knn_representative_edges(
-            oriented_points,
-            knn_k=max(2, int(knn_k)),
-        )
-        _draw_edges(
-            ax,
-            oriented_points,
-            edges,
-            point_colors=point_colors,
-            edge_alpha=0.54,
-            edge_linewidth=0.82,
-        )
-        ax.scatter(
-            oriented_points[:, 0],
-            oriented_points[:, 1],
-            oriented_points[:, 2],
-            c=point_colors,
-            s=58,
-            alpha=0.97,
-            edgecolors="#222222",
-            linewidths=0.36,
-            depthshade=False,
-        )
-        _set_equal_axes_3d(ax, oriented_points)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_zticks([])
-        ax.grid(False)
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-        ax.set_zlabel("")
-        for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
-            if hasattr(axis, "pane"):
-                axis.pane.fill = False
-                axis.pane.set_edgecolor((1.0, 1.0, 1.0, 1.0))
-            if hasattr(axis, "line"):
-                axis.line.set_color((1.0, 1.0, 1.0, 1.0))
-        panel_label = f"C{pos + 1}"
-        title_color = _cluster_label_color(base_color, darken_factor=0.58)
-        ax.set_title(
-            panel_label,
-            fontsize=12,
-            color=title_color,
-            pad=2,
-            fontweight="bold",
-        )
-        summary_records.append(
-            {
-                "panel_label": panel_label,
-                "cluster_id": int(prepared["cluster_id"]),
-                "sample_index": int(prepared["sample_index"]),
-                "num_points_plotted": int(oriented_points.shape[0]),
-                "orientation": orientation_info,
-                "edge_info": edge_info,
-            }
-        )
-
-    fig.suptitle("Cluster representatives", fontsize=12, fontweight="bold", y=0.965)
-    fig.subplots_adjust(left=0.02, right=0.988, bottom=0.035, top=0.91, wspace=0.03, hspace=0.06)
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
-    _log_saved_figure(out_file)
-    return {
-        "variant_name": "knn_edges",
-        "out_file": str(out_file),
-        "orientation_method": "pca",
-        "connection_mode": "knn_connected",
-        "view_elev": float(view_elev),
-        "view_azim": float(view_azim),
-        "projection": str(proj_norm),
-        "representatives": summary_records,
+        "edge_distance_mean": float(distances.mean()) if distances.size else 0.0,
+        "edge_distance_median": float(np.median(distances)) if distances.size else 0.0,
     }
 
 
@@ -766,8 +511,15 @@ def _save_cluster_representatives_figure(
 ) -> dict[str, Any]:
     proj_norm = str(projection).strip().lower()
     method_norm = str(orientation_method).strip().lower()
+    if method_norm not in {"pca", "none"}:
+        raise ValueError(f"Unsupported representative orientation {method_norm!r}.")
     out_file = Path(out_file)
-    variant_specs = _build_cluster_representative_variant_specs(method_norm)
+    variant_specs = [{
+        "variant_name": f"{method_norm}_reciprocal",
+        "file_suffix": f"_{method_norm}_reciprocal",
+        "edge_method": "coordination_shell_mutual",
+        "orientation_method": method_norm,
+    }]
     variant_summaries: list[dict[str, Any]] = []
     stem_parts = out_file.stem.rsplit("_k", 1)
     if len(stem_parts) != 2 or not stem_parts[1].strip():
@@ -872,15 +624,19 @@ def _save_cluster_representatives_figure(
     )
     if stale_spatial_neighbors_paper_path.exists():
         stale_spatial_neighbors_paper_path.unlink()
-    knn_edges_summary = _render_knn_edge_representatives_figure(
+    knn_edges_summary = _render_cluster_representatives_variant(
         prepared_records,
         out_file.with_name(
             f"09_cluster_representatives_knn_edges_k{k_token}.png"
         ),
         knn_k=int(knn_k),
+        orientation_method="pca",
+        edge_method="knn_connected",
         view_elev=float(view_elev),
         view_azim=float(view_azim),
         projection=str(proj_norm),
+        variant_name="knn_edges",
+        dpi=300,
     )
     _attach_structure_analysis_to_summary(knn_edges_summary, analysis_by_cluster_id)
     primary_summary = dict(variant_summaries[0])

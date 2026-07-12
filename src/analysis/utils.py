@@ -8,7 +8,6 @@ from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from src.data_utils.data_load import PointCloudDataset
 from src.utils.evaluation_metrics import random_rotation_matrix
-from src.utils.training_utils import apply_rotation
 
 
 @runtime_checkable

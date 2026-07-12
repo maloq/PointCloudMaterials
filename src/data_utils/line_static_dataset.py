@@ -17,9 +17,14 @@ from src.utils.logging_config import setup_logging
 logger = setup_logging()
 
 
+class FixedSlotDirectionError(RuntimeError):
+    """A sampled ray cannot satisfy fixed-slot geometry for its anchor batch."""
+
+
 @dataclass
 class _LineStaticSource:
     name: str
+    group_name: str
     path: str
     points: np.ndarray
     tree: cKDTree
@@ -48,6 +53,9 @@ class LineStaticPointCloudDataset(Dataset):
         edge_drop_layers: int | None = None,
         line_selection_method: str = "closest",
         line_min_separation_radius_factor: float = 0.0,
+        line_slot_spacing_radius_factor: float | None = None,
+        line_fixed_slot_max_deviation_radius_factor: float | None = None,
+        line_direction_max_retries: int = 8,
         line_seed: int = 0,
         deterministic_lines: bool = False,
         auto_cutoff_config: dict[str, Any] | None = None,
@@ -64,6 +72,17 @@ class LineStaticPointCloudDataset(Dataset):
         self.edge_drop_layers = None if edge_drop_layers is None else int(edge_drop_layers)
         self.line_selection_method = str(line_selection_method).strip().lower()
         self.line_min_separation_radius_factor = float(line_min_separation_radius_factor)
+        self.line_slot_spacing_radius_factor = (
+            None
+            if line_slot_spacing_radius_factor is None
+            else float(line_slot_spacing_radius_factor)
+        )
+        self.line_fixed_slot_max_deviation_radius_factor = (
+            None
+            if line_fixed_slot_max_deviation_radius_factor is None
+            else float(line_fixed_slot_max_deviation_radius_factor)
+        )
+        self.line_direction_max_retries = int(line_direction_max_retries)
         self.line_seed = int(line_seed)
         self.deterministic_lines = bool(deterministic_lines)
         self._worker_rngs: dict[int, np.random.Generator] = {}
@@ -91,10 +110,34 @@ class LineStaticPointCloudDataset(Dataset):
                 "line_min_separation_radius_factor must be >= 0. "
                 f"Got {self.line_min_separation_radius_factor}."
             )
-        if self.line_selection_method not in {"closest", "radius_then_closest"}:
+        if self.line_selection_method not in {"closest", "radius_then_closest", "fixed_slots"}:
             raise ValueError(
-                "line_selection_method must be 'closest' or 'radius_then_closest', "
+                "line_selection_method must be 'closest', 'radius_then_closest', or 'fixed_slots', "
                 f"got {line_selection_method!r}."
+            )
+        if self.line_selection_method == "fixed_slots":
+            if self.line_slot_spacing_radius_factor is None or self.line_slot_spacing_radius_factor <= 0.0:
+                raise ValueError(
+                    "line_selection_method='fixed_slots' requires "
+                    "line_slot_spacing_radius_factor > 0."
+                )
+            if self.line_min_separation_radius_factor != 0.0:
+                raise ValueError(
+                    "fixed_slots defines its own spacing; set "
+                    "line_min_separation_radius_factor=0 to avoid conflicting geometry controls."
+                )
+        if (
+            self.line_fixed_slot_max_deviation_radius_factor is not None
+            and self.line_fixed_slot_max_deviation_radius_factor <= 0.0
+        ):
+            raise ValueError(
+                "line_fixed_slot_max_deviation_radius_factor must be > 0 when provided, "
+                f"got {self.line_fixed_slot_max_deviation_radius_factor}."
+            )
+        if self.line_direction_max_retries < 0:
+            raise ValueError(
+                "line_direction_max_retries must be >= 0, "
+                f"got {self.line_direction_max_retries}."
             )
 
         self.sources = self._load_sources(
@@ -206,6 +249,7 @@ class LineStaticPointCloudDataset(Dataset):
                 resolved_sources.append(
                     _LineStaticSource(
                         name=f"{source['name']}:{Path(path).name}",
+                        group_name=str(source["name"]),
                         path=str(Path(path).expanduser().resolve()),
                         points=points,
                         tree=tree,
@@ -280,6 +324,15 @@ class LineStaticPointCloudDataset(Dataset):
         np.ndarray,
         np.ndarray,
     ]:
+        if self.line_selection_method == "fixed_slots":
+            return self._select_fixed_slot_atoms_from_candidates(
+                source=source,
+                anchor_positions=anchor_positions,
+                anchor_indices=anchor_indices,
+                candidate_indices=candidate_indices,
+                directions=directions,
+                target_index=self.target_line_index,
+            )
         candidate_points = np.asarray(source.points[candidate_indices], dtype=np.float32)
         delta = candidate_points - anchor_positions[:, None, :]
         line_t = np.einsum("bkc,bc->bk", delta, directions, optimize=True)
@@ -313,6 +366,95 @@ class LineStaticPointCloudDataset(Dataset):
                 perp2=perp2,
                 selected_slots=np.take_along_axis(closest_slots, order, axis=1),
             )
+
+    def _select_fixed_slot_atoms_from_candidates(
+        self,
+        *,
+        source: _LineStaticSource,
+        anchor_positions: np.ndarray,
+        anchor_indices: np.ndarray,
+        candidate_indices: np.ndarray,
+        directions: np.ndarray,
+        target_index: int,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Assign unique atoms to equally spaced ideal points on a directed line."""
+        if self.line_slot_spacing_radius_factor is None:
+            raise RuntimeError("Fixed-slot selection has no configured slot spacing.")
+        target_index = int(target_index)
+        if target_index not in {0, self.target_line_index}:
+            raise ValueError(
+                f"Fixed-slot target_index must be 0 or {self.target_line_index}, got {target_index}."
+            )
+        delta, line_t, _, perp2, _ = self._explicit_line_geometry(
+            source, anchor_positions, candidate_indices, directions
+        )
+        del delta
+        anchor_matches = candidate_indices == anchor_indices[:, None]
+        match_counts = anchor_matches.sum(axis=1)
+        if np.any(match_counts != 1):
+            first = int(np.flatnonzero(match_counts != 1)[0])
+            raise RuntimeError(
+                "Fixed-slot line selection expected the anchor exactly once in the candidate pool. "
+                f"source={source.path}, row={first}, matches={int(match_counts[first])}."
+            )
+        batch_size, candidate_count = candidate_indices.shape
+        anchor_slots = np.argmax(anchor_matches, axis=1)
+        spacing = float(source.radius) * self.line_slot_spacing_radius_factor
+        desired_t = (
+            np.arange(self.line_atoms, dtype=np.float32) - float(target_index)
+        ) * spacing
+        selected_slots = np.empty((batch_size, self.line_atoms), dtype=np.int64)
+        selected_slots[:, target_index] = anchor_slots
+        used = np.zeros((batch_size, candidate_count), dtype=bool)
+        rows = np.arange(batch_size)
+        used[rows, anchor_slots] = True
+
+        slot_order = sorted(
+            (slot for slot in range(self.line_atoms) if slot != target_index),
+            key=lambda slot: abs(slot - target_index),
+        )
+        for slot in slot_order:
+            score = perp2 + (line_t - float(desired_t[slot])) ** 2
+            score = np.where(used, np.inf, score)
+            chosen = np.argmin(score, axis=1)
+            chosen_score = score[rows, chosen]
+            if not np.isfinite(chosen_score).all():
+                first = int(np.flatnonzero(~np.isfinite(chosen_score))[0])
+                raise RuntimeError(
+                    "Fixed-slot line selection exhausted candidate atoms. "
+                    f"source={source.path}, row={first}, slot={slot}, "
+                    f"candidate_count={candidate_count}."
+                )
+            if self.line_fixed_slot_max_deviation_radius_factor is not None:
+                max_deviation = (
+                    float(source.radius)
+                    * self.line_fixed_slot_max_deviation_radius_factor
+                )
+                deviation = np.sqrt(chosen_score)
+                if np.any(deviation > max_deviation):
+                    first = int(np.flatnonzero(deviation > max_deviation)[0])
+                    raise FixedSlotDirectionError(
+                        "Fixed-slot line selection could not find an atom close enough to an ideal slot. "
+                        f"source={source.path}, row={first}, slot={slot}, "
+                        f"desired_t={float(desired_t[slot]):.6f}, "
+                        f"deviation={float(deviation[first]):.6f}, "
+                        f"max_deviation={max_deviation:.6f}. Increase "
+                        "line_fixed_slot_max_deviation_radius_factor or line_candidate_atoms."
+                    )
+            selected_slots[:, slot] = chosen
+            used[rows, chosen] = True
+
+        selected, selected_t, selected_perp = self._gather_line_selection(
+            candidate_indices=candidate_indices,
+            line_t=line_t,
+            perp2=perp2,
+            selected_slots=selected_slots,
+        )
+        if not np.array_equal(selected[:, target_index], anchor_indices):
+            raise RuntimeError(
+                f"Fixed-slot line selection lost its anchor in {source.path}."
+            )
+        return selected, selected_t, selected_perp
 
     @staticmethod
     def _gather_line_selection(
@@ -655,6 +797,7 @@ class LineStaticPointCloudDataset(Dataset):
         anchor_atom_ids = np.empty((batch_size,), dtype=np.int64)
         coords = np.empty((batch_size, 3), dtype=np.float32)
         source_names: list[str | None] = [None] * batch_size
+        source_groups: list[str | None] = [None] * batch_size
         source_paths: list[str | None] = [None] * batch_size
 
         grouped_positions: dict[int, list[int]] = {}
@@ -665,13 +808,16 @@ class LineStaticPointCloudDataset(Dataset):
         for source_slot, batch_positions_list in grouped_positions.items():
             source = self.sources[source_slot]
             batch_positions = np.asarray(batch_positions_list, dtype=np.int64)
+            direction_rngs: list[np.random.Generator] | None = None
             if self.deterministic_lines:
                 anchor_indices = []
                 directions_rows = []
+                direction_rngs = []
                 for pos in batch_positions.tolist():
                     rng = self._rng_for_base_index(int(base_indices[pos]))
                     anchor_indices.append(int(rng.choice(source.center_indices)))
                     directions_rows.append(self._sample_directions(1, rng=rng)[0])
+                    direction_rngs.append(rng)
                 anchor_indices = np.asarray(anchor_indices, dtype=np.int64)
                 directions = np.asarray(directions_rows, dtype=np.float32)
             else:
@@ -700,17 +846,60 @@ class LineStaticPointCloudDataset(Dataset):
                     f"got_shape={tuple(candidates.shape)}."
                 )
 
-            (
-                selected,
-                selected_t,
-                selected_perp,
-            ) = self._select_line_atoms_from_candidates(
-                source=source,
-                anchor_positions=anchors,
-                anchor_indices=anchor_indices,
-                candidate_indices=candidates,
-                directions=directions,
-            )
+            direction_attempt = 0
+            first_direction_error: FixedSlotDirectionError | None = None
+            while True:
+                try:
+                    (
+                        selected,
+                        selected_t,
+                        selected_perp,
+                    ) = self._select_line_atoms_from_candidates(
+                        source=source,
+                        anchor_positions=anchors,
+                        anchor_indices=anchor_indices,
+                        candidate_indices=candidates,
+                        directions=directions,
+                    )
+                    break
+                except FixedSlotDirectionError as exc:
+                    if first_direction_error is None:
+                        first_direction_error = exc
+                    if direction_attempt >= self.line_direction_max_retries:
+                        raise RuntimeError(
+                            "Fixed-slot line selection exhausted random direction retries. "
+                            f"source={source.path}, batch_rows={len(batch_positions)}, "
+                            f"retries={self.line_direction_max_retries}, "
+                            f"first_error={first_direction_error}, last_error={exc}. "
+                            "Increase data.line_direction_max_retries only if additional random "
+                            "rays are scientifically acceptable; otherwise relax the explicit "
+                            "slot geometry configuration."
+                        ) from exc
+                    direction_attempt += 1
+                    if direction_rngs is not None:
+                        directions = np.asarray(
+                            [self._sample_directions(1, rng=rng)[0] for rng in direction_rngs],
+                            dtype=np.float32,
+                        )
+                    else:
+                        if worker_rng is None:
+                            raise RuntimeError(
+                                "Fixed-slot retry has neither deterministic per-row RNGs nor a "
+                                f"worker RNG. source={source.path}."
+                            ) from exc
+                        directions = self._sample_directions(
+                            len(batch_positions),
+                            rng=worker_rng,
+                        )
+            if direction_attempt > 0:
+                logger.warning(
+                    "[line-static/fixed-slots] Resampled line directions after an invalid "
+                    "fixed-slot ray: source=%s, attempts=%d, batch_rows=%d, first_error=%s",
+                    source.path,
+                    direction_attempt,
+                    len(batch_positions),
+                    first_direction_error,
+                )
             flat_centers = np.asarray(source.points[selected.reshape(-1)], dtype=np.float32)
             local_indices, _ = self._query_local_structures(source=source, centers=flat_centers)
             local_points = np.asarray(source.points[local_indices], dtype=np.float32)
@@ -737,9 +926,14 @@ class LineStaticPointCloudDataset(Dataset):
             coords[batch_positions] = source.points[target_indices]
             for pos in batch_positions.tolist():
                 source_names[pos] = source.name
+                source_groups[pos] = source.group_name
                 source_paths[pos] = source.path
 
-        if any(value is None for value in source_names) or any(value is None for value in source_paths):
+        if (
+            any(value is None for value in source_names)
+            or any(value is None for value in source_groups)
+            or any(value is None for value in source_paths)
+        ):
             raise RuntimeError("Static Line-JEPA batch assembly left source metadata unset.")
 
         result = {
@@ -754,9 +948,376 @@ class LineStaticPointCloudDataset(Dataset):
             "instance_id": torch.from_numpy(target_atom_ids.copy()),
             "coords": torch.from_numpy(coords),
             "source_name": [str(value) for value in source_names],
+            "source_group": [str(value) for value in source_groups],
             "source_path": [str(value) for value in source_paths],
         }
         return result
+
+    def resolve_explicit_centers(
+        self,
+        *,
+        source_names: Sequence[str],
+        center_coords: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Snap analysis centers to atoms in their corresponding static source."""
+        names = [str(value) for value in source_names]
+        coords = np.asarray(center_coords, dtype=np.float32)
+        if coords.shape != (len(names), 3):
+            raise ValueError(f"Expected {len(names)} center coordinates, got {coords.shape}.")
+
+        source_slots = np.empty((len(names),), dtype=np.int64)
+        center_atom_ids = np.empty((len(names),), dtype=np.int64)
+        snap_distances = np.empty((len(names),), dtype=np.float32)
+        slots_by_name: dict[str, list[int]] = {}
+        positions_by_name: dict[str, list[int]] = {}
+        for slot, source in enumerate(self.sources):
+            slots_by_name.setdefault(source.group_name, []).append(slot)
+        for row, source_name in enumerate(names):
+            positions_by_name.setdefault(source_name, []).append(row)
+
+        for source_name, positions_list in positions_by_name.items():
+            matching_slots = slots_by_name.get(source_name, [])
+            if not matching_slots and len(slots_by_name) == 1:
+                matching_slots = list(range(len(self.sources)))
+            if not matching_slots:
+                raise KeyError(
+                    f"Unknown source {source_name!r}; available={sorted(slots_by_name)}."
+                )
+            positions = np.asarray(positions_list, dtype=np.int64)
+            queries = [self.sources[slot].tree.query(coords[positions], k=1) for slot in matching_slots]
+            distances = np.stack([query[0] for query in queries])
+            atom_ids = np.stack([query[1] for query in queries])
+            choice = np.argmin(distances, axis=0)
+            columns = np.arange(len(positions))
+            source_slots[positions] = np.asarray(matching_slots)[choice]
+            center_atom_ids[positions] = atom_ids[choice, columns]
+            snap_distances[positions] = distances[choice, columns]
+
+        return source_slots, center_atom_ids, snap_distances
+
+    @staticmethod
+    def _explicit_line_geometry(
+        source: _LineStaticSource,
+        anchors: np.ndarray,
+        candidates: np.ndarray,
+        directions: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        delta = source.points[candidates] - anchors[:, None, :]
+        line_t = np.einsum("bkc,bc->bk", delta, directions, optimize=True)
+        dist2 = np.einsum("bkc,bkc->bk", delta, delta, optimize=True)
+        perp2 = np.maximum(dist2 - line_t**2, 0.0)
+        anchor_slots = np.argmin(dist2, axis=1)
+        return delta, line_t, dist2, perp2, anchor_slots
+
+    def _select_centered_line_atoms_from_candidates(
+        self,
+        *,
+        source: _LineStaticSource,
+        anchor_positions: np.ndarray,
+        anchor_indices: np.ndarray,
+        candidate_indices: np.ndarray,
+        directions: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Select a balanced line whose middle entry is always the requested atom."""
+        if self.line_selection_method == "fixed_slots":
+            return self._select_fixed_slot_atoms_from_candidates(
+                source=source,
+                anchor_positions=anchor_positions,
+                anchor_indices=anchor_indices,
+                candidate_indices=candidate_indices,
+                directions=directions,
+                target_index=self.target_line_index,
+            )
+        delta, line_t, dist2, perp2, anchor_slots = self._explicit_line_geometry(
+            source, anchor_positions, candidate_indices, directions
+        )
+
+        if self.line_min_separation_radius_factor > 0.0:
+            selected, selected_t, selected_perp = self._select_separated_line_vectorized(
+                source=source,
+                candidate_indices=candidate_indices,
+                anchor_indices=anchor_indices,
+                delta=delta,
+                line_t=line_t,
+                dist2=dist2,
+                perp2=perp2,
+            )
+        else:
+            side_count = self.line_atoms // 2
+            negative_slots = self._closest_centered_side_slots(
+                line_t=line_t,
+                perp2=perp2,
+                side_mask=line_t < 0.0,
+                required=side_count,
+                side_name="negative",
+                source=source,
+            )
+            positive_slots = self._closest_centered_side_slots(
+                line_t=line_t,
+                perp2=perp2,
+                side_mask=line_t > 0.0,
+                required=side_count,
+                side_name="positive",
+                source=source,
+            )
+            selected_slots = np.concatenate(
+                (negative_slots, anchor_slots[:, None], positive_slots),
+                axis=1,
+            )
+            selected, selected_t, selected_perp = self._gather_line_selection(
+                candidate_indices=candidate_indices,
+                line_t=line_t,
+                perp2=perp2,
+                selected_slots=selected_slots,
+            )
+
+        if not np.array_equal(selected[:, self.target_line_index], anchor_indices):
+            raise RuntimeError(
+                f"Centered directional line lost its anchor in {source.path}."
+            )
+        return selected, selected_t, selected_perp
+
+    def _select_endpoint_line_atoms_from_candidates(
+        self,
+        *,
+        source: _LineStaticSource,
+        anchor_positions: np.ndarray,
+        anchor_indices: np.ndarray,
+        candidate_indices: np.ndarray,
+        directions: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Select a one-sided line with the requested atom at index zero."""
+        if self.line_selection_method == "fixed_slots":
+            return self._select_fixed_slot_atoms_from_candidates(
+                source=source,
+                anchor_positions=anchor_positions,
+                anchor_indices=anchor_indices,
+                candidate_indices=candidate_indices,
+                directions=directions,
+                target_index=0,
+            )
+        delta, line_t, dist2, perp2, anchor_slots = self._explicit_line_geometry(
+            source, anchor_positions, candidate_indices, directions
+        )
+        context_count = self.line_atoms - 1
+        if self.line_min_separation_radius_factor > 0.0:
+            min_distance = float(source.radius) * self.line_min_separation_radius_factor
+            context_slots_list = self._select_separated_side_vectorized(
+                source=source,
+                side_name="positive",
+                base_allowed=(line_t > 0.0) & (dist2 >= min_distance * min_distance),
+                existing_selected_deltas=[],
+                required=context_count,
+                delta=delta,
+                dist2=dist2,
+                line_t=line_t,
+                perp2=perp2,
+                min_distance=min_distance,
+                min_dist2=min_distance * min_distance,
+            )
+            context_slots = np.stack(context_slots_list, axis=1)
+        else:
+            context_slots = self._closest_centered_side_slots(
+                line_t=line_t,
+                perp2=perp2,
+                side_mask=line_t > 0.0,
+                required=context_count,
+                side_name="positive endpoint context",
+                source=source,
+            )
+        selected_slots = np.concatenate((anchor_slots[:, None], context_slots), axis=1)
+        selected_order = np.argsort(
+            np.take_along_axis(line_t, selected_slots, axis=1),
+            axis=1,
+            kind="mergesort",
+        )
+        selected, selected_t, selected_perp = self._gather_line_selection(
+            candidate_indices=candidate_indices,
+            line_t=line_t,
+            perp2=perp2,
+            selected_slots=np.take_along_axis(selected_slots, selected_order, axis=1),
+        )
+        if not np.array_equal(selected[:, 0], anchor_indices):
+            raise RuntimeError(
+                f"Endpoint directional line lost its anchor in {source.path}."
+            )
+        return selected, selected_t, selected_perp
+
+    @staticmethod
+    def _closest_centered_side_slots(
+        *,
+        line_t: np.ndarray,
+        perp2: np.ndarray,
+        side_mask: np.ndarray,
+        required: int,
+        side_name: str,
+        source: _LineStaticSource,
+    ) -> np.ndarray:
+        scores = np.where(side_mask, perp2, np.inf)
+        available = np.isfinite(scores).sum(axis=1)
+        if np.any(available < int(required)):
+            first = int(np.flatnonzero(available < int(required))[0])
+            raise RuntimeError(
+                "Centered static line selection has too few candidates on one side. "
+                f"source={source.path}, side={side_name}, row={first}, "
+                f"available={int(available[first])}, required={int(required)}. "
+                "Increase data.line_candidate_atoms."
+            )
+        slots = np.argpartition(scores, int(required) - 1, axis=1)[:, : int(required)]
+        selected_t = np.take_along_axis(line_t, slots, axis=1)
+        order = np.argsort(selected_t, axis=1, kind="mergesort")
+        return np.take_along_axis(slots, order, axis=1)
+
+    def build_atom_environment_batch(
+        self,
+        *,
+        source_slots: np.ndarray,
+        atom_ids: np.ndarray,
+    ) -> torch.Tensor:
+        """Materialize local structures for unique source/atom pairs."""
+        source_slots = np.asarray(source_slots, dtype=np.int64).reshape(-1)
+        atom_ids = np.asarray(atom_ids, dtype=np.int64).reshape(-1)
+        if source_slots.shape != atom_ids.shape or source_slots.size == 0:
+            raise ValueError(
+                f"Expected equally sized non-empty source/atom arrays, got "
+                f"{source_slots.shape} and {atom_ids.shape}."
+            )
+        environments = np.empty(
+            (source_slots.size, self.num_points, 3), dtype=np.float32
+        )
+        for source_slot_raw in np.unique(source_slots):
+            source_slot = int(source_slot_raw)
+            source = self.sources[source_slot]
+            rows = np.flatnonzero(source_slots == source_slot)
+            centers = np.asarray(source.points[atom_ids[rows]], dtype=np.float32)
+            local_indices, _ = self._query_local_structures(source=source, centers=centers)
+            local = np.asarray(source.points[local_indices], dtype=np.float32)
+            if self.center_neighborhoods:
+                local -= centers[:, None, :]
+            if self.normalize:
+                local /= float(source.radius)
+            environments[rows] = local
+        return torch.from_numpy(environments)
+
+    def build_explicit_direction_batch(
+        self,
+        *,
+        source_slots: np.ndarray,
+        center_atom_ids: np.ndarray,
+        directions: np.ndarray,
+        target_index: int | None = None,
+        candidate_indices: np.ndarray | None = None,
+        materialize_points: bool = True,
+    ) -> dict[str, Any]:
+        """Build deterministic line contexts for explicit centers and directions."""
+        source_slots = np.asarray(source_slots, dtype=np.int64).reshape(-1)
+        center_atom_ids = np.asarray(center_atom_ids, dtype=np.int64).reshape(-1)
+        directions = np.asarray(directions, dtype=np.float32)
+        batch_size = int(source_slots.size)
+        if not batch_size or center_atom_ids.shape != (batch_size,) or directions.shape != (batch_size, 3):
+            raise ValueError(
+                f"Expected non-empty (B,), (B,), (B,3) inputs; got "
+                f"{source_slots.shape}, {center_atom_ids.shape}, {directions.shape}."
+            )
+        direction_norms = np.linalg.norm(directions, axis=1)
+        if not np.isfinite(directions).all() or np.any(direction_norms <= 0.0):
+            raise ValueError("Explicit Line-JEPA directions must be finite and non-zero.")
+        directions = directions / direction_norms[:, None]
+        resolved_target_index = self.target_line_index if target_index is None else int(target_index)
+        if resolved_target_index not in {0, self.target_line_index}:
+            raise ValueError(
+                f"target_index must be 0 or {self.target_line_index}, got {resolved_target_index}."
+            )
+        if candidate_indices is None:
+            candidate_indices = self.query_explicit_line_candidates(
+                source_slots=source_slots, center_atom_ids=center_atom_ids
+            )
+        candidate_indices = np.asarray(candidate_indices, dtype=np.int64)
+        if candidate_indices.shape != (batch_size, self.line_candidate_atoms):
+            raise ValueError(f"Invalid candidate pool shape {candidate_indices.shape}.")
+
+        line_atom_ids = np.empty((batch_size, self.line_atoms), dtype=np.int64)
+        line_t = np.empty((batch_size, self.line_atoms), dtype=np.float32)
+        line_perp = np.empty((batch_size, self.line_atoms), dtype=np.float32)
+        coords = np.empty((batch_size, 3), dtype=np.float32)
+        selector = (
+            self._select_endpoint_line_atoms_from_candidates
+            if resolved_target_index == 0
+            else self._select_centered_line_atoms_from_candidates
+        )
+
+        for source_slot_raw in np.unique(source_slots):
+            source_slot = int(source_slot_raw)
+            source = self.sources[source_slot]
+            rows = np.flatnonzero(source_slots == source_slot).astype(np.int64, copy=False)
+            atom_ids = center_atom_ids[rows]
+            anchors = np.asarray(source.points[atom_ids], dtype=np.float32)
+            selected, selected_t, selected_perp = selector(
+                source=source,
+                anchor_positions=anchors,
+                anchor_indices=atom_ids,
+                candidate_indices=candidate_indices[rows],
+                directions=directions[rows],
+            )
+            if self.normalize:
+                selected_t = (selected_t / float(source.radius)).astype(np.float32, copy=False)
+                selected_perp = (selected_perp / float(source.radius)).astype(np.float32, copy=False)
+
+            line_atom_ids[rows] = selected
+            line_t[rows] = selected_t
+            line_perp[rows] = selected_perp
+            coords[rows] = anchors
+
+        ids_tensor = torch.from_numpy(center_atom_ids.copy())
+        result = {
+            "line_atom_ids": torch.from_numpy(line_atom_ids),
+            "line_t": torch.from_numpy(line_t),
+            "line_perp": torch.from_numpy(line_perp),
+            "line_direction": torch.from_numpy(directions.astype(np.float32, copy=False)),
+            "target_line_index": torch.full((batch_size,), resolved_target_index, dtype=torch.long),
+            "target_atom_id": ids_tensor,
+            "anchor_atom_id": ids_tensor,
+            "instance_id": ids_tensor,
+            "coords": torch.from_numpy(coords),
+            "source_name": [self.sources[int(slot)].group_name for slot in source_slots],
+            "source_group": [self.sources[int(slot)].group_name for slot in source_slots],
+            "source_path": [self.sources[int(slot)].path for slot in source_slots],
+        }
+        if materialize_points:
+            environments = self.build_atom_environment_batch(
+                source_slots=np.repeat(source_slots, self.line_atoms),
+                atom_ids=line_atom_ids.reshape(-1),
+            )
+            result["points"] = environments.reshape(
+                batch_size, self.line_atoms, self.num_points, 3
+            )
+        return result
+
+    def query_explicit_line_candidates(
+        self,
+        *,
+        source_slots: np.ndarray,
+        center_atom_ids: np.ndarray,
+    ) -> np.ndarray:
+        """Query each atom's candidate pool once for reuse across directions."""
+        source_slots = np.asarray(source_slots, dtype=np.int64).reshape(-1)
+        center_atom_ids = np.asarray(center_atom_ids, dtype=np.int64).reshape(-1)
+        if source_slots.shape != center_atom_ids.shape or source_slots.size == 0:
+            raise ValueError(
+                f"Expected equally sized source/atom arrays, got "
+                f"{source_slots.shape} and {center_atom_ids.shape}."
+            )
+        candidates = np.empty((source_slots.size, self.line_candidate_atoms), dtype=np.int64)
+        for source_slot_raw in np.unique(source_slots):
+            source_slot = int(source_slot_raw)
+            if source_slot < 0 or source_slot >= len(self.sources):
+                raise IndexError(f"Source slot {source_slot} out of range for {len(self.sources)}.")
+            rows = np.flatnonzero(source_slots == source_slot)
+            source = self.sources[source_slot]
+            atom_ids = center_atom_ids[rows]
+            _, result = source.tree.query(source.points[atom_ids], k=self.line_candidate_atoms)
+            candidates[rows] = np.asarray(result).reshape(len(rows), self.line_candidate_atoms)
+        return candidates
 
 
 __all__ = ["LineStaticPointCloudDataset"]

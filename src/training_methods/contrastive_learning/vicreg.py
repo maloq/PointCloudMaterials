@@ -87,6 +87,7 @@ class VICRegLoss(nn.Module):
         overlap_hidden_dim: int | None = None,
         overlap_coeff: float | None = None,
         projector_bn_eval_batch_stats: bool = False,
+        projector_mode: str = "mlp",
     ) -> None:
         super().__init__()
         self.enabled = bool(enabled)
@@ -123,6 +124,12 @@ class VICRegLoss(nn.Module):
         self.occlusion_cone_deg = float(occlusion_cone_deg)
         self.occlusion_prob = float(occlusion_prob)
         self.projector_bn_eval_batch_stats = bool(projector_bn_eval_batch_stats)
+        self.projector_mode = str(projector_mode).strip().lower()
+        if self.projector_mode not in {"mlp", "identity"}:
+            raise ValueError(
+                "vicreg_projector_mode must be 'mlp' or 'identity', "
+                f"got {projector_mode!r}."
+            )
 
         self.std_eps = float(std_eps)
         self.std_target = float(std_target)
@@ -206,20 +213,29 @@ class VICRegLoss(nn.Module):
         self.projector = None
         needs_projector = self.enabled and self.weight > 0
         if projector_input_dim is not None and needs_projector:
-            projector_bn_cls = (
-                EvalBatchStatsBatchNorm1d
-                if self.projector_bn_eval_batch_stats
-                else nn.BatchNorm1d
-            )
-            self.projector = nn.Sequential(
-                nn.Linear(projector_input_dim, self.embed_dim, bias=False),
-                projector_bn_cls(self.embed_dim),
-                nn.ReLU(inplace=True),
-                nn.Linear(self.embed_dim, self.embed_dim, bias=False),
-                projector_bn_cls(self.embed_dim),
-                nn.ReLU(inplace=True),
-                nn.Linear(self.embed_dim, self.embed_dim, bias=False),
-            )
+            if self.projector_mode == "identity":
+                if projector_input_dim != self.embed_dim:
+                    raise ValueError(
+                        "vicreg_projector_mode='identity' requires vicreg_embed_dim to match "
+                        "the encoder invariant dimension. "
+                        f"Got encoder_dim={projector_input_dim}, vicreg_embed_dim={self.embed_dim}."
+                    )
+                self.projector = nn.Identity()
+            else:
+                projector_bn_cls = (
+                    EvalBatchStatsBatchNorm1d
+                    if self.projector_bn_eval_batch_stats
+                    else nn.BatchNorm1d
+                )
+                self.projector = nn.Sequential(
+                    nn.Linear(projector_input_dim, self.embed_dim, bias=False),
+                    projector_bn_cls(self.embed_dim),
+                    nn.ReLU(inplace=True),
+                    nn.Linear(self.embed_dim, self.embed_dim, bias=False),
+                    projector_bn_cls(self.embed_dim),
+                    nn.ReLU(inplace=True),
+                    nn.Linear(self.embed_dim, self.embed_dim, bias=False),
+                )
         self.overlap_predictor = None
         if self.objective == "overlap_vicreg" and needs_projector:
             if self.projector is None:
@@ -304,6 +320,7 @@ class VICRegLoss(nn.Module):
         projector_bn_eval_batch_stats = bool(
             getattr(cfg, "vicreg_projector_bn_eval_batch_stats", False)
         )
+        projector_mode = str(getattr(cfg, "vicreg_projector_mode", "mlp"))
 
         warn_common_view_sampler_ignored_fields(
             cfg,
@@ -372,6 +389,7 @@ class VICRegLoss(nn.Module):
             overlap_hidden_dim=overlap_hidden_dim,
             overlap_coeff=overlap_coeff,
             projector_bn_eval_batch_stats=projector_bn_eval_batch_stats,
+            projector_mode=projector_mode,
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -387,6 +405,11 @@ class VICRegLoss(nn.Module):
         return self.objective == "overlap_vicreg"
 
     def forward(self, features: torch.Tensor, *, profile_projector: bool = False) -> torch.Tensor:
+        return self._project(features)
+
+    def _project(self, features: torch.Tensor) -> torch.Tensor:
+        if self.projector_mode == "identity":
+            return features
         projector_dtype = next(self.projector.parameters()).dtype
         return self.projector(features.to(dtype=projector_dtype))
 
@@ -465,9 +488,8 @@ class VICRegLoss(nn.Module):
         if z_a_feat is None or z_b_feat is None:
             return None, {}
 
-        proj_dtype = next(self.projector.parameters()).dtype
-        z_a = self.projector(z_a_feat.to(dtype=proj_dtype))
-        z_b = self.projector(z_b_feat.to(dtype=proj_dtype))
+        z_a = self._project(z_a_feat)
+        z_b = self._project(z_b_feat)
         loss, metrics = self._loss(z_a, z_b, overlap_target=overlap_target)
         loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics

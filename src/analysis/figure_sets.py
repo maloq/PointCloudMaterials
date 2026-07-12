@@ -12,8 +12,8 @@ from .config import FigureSetSettings
 from .cluster_figures import (
     _build_cluster_color_map,
     _save_fixed_k_cluster_figure_set,
-    _save_horizontal_image_gallery,
 )
+from .cluster_gallery import _save_horizontal_image_gallery
 from .output_layout import (
     snapshot_figure_set_dir,
     snapshot_outputs_root,
@@ -797,6 +797,8 @@ def write_figure_only_metrics(
         merged_metrics["clustering"] = all_metrics["clustering"]
     if "clustering_model_fit" in all_metrics:
         merged_metrics["clustering_model_fit"] = all_metrics["clustering_model_fit"]
+    if "runtime_profile" in all_metrics:
+        merged_metrics["runtime_profile"] = all_metrics["runtime_profile"]
     merged_metrics["inference_cache"] = all_metrics["inference_cache"]
     if "cluster_figure_set" in all_metrics:
         merged_metrics["cluster_figure_set"] = all_metrics["cluster_figure_set"]

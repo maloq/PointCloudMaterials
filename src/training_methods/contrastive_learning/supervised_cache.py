@@ -15,14 +15,6 @@ from torch.utils.data import DataLoader
 from src.utils.evaluation_metrics import compute_cluster_metrics, compute_embedding_quality_metrics
 from src.utils.training_utils import cached_sample_count
 
-try:
-    import wandb
-except ImportError as exc:
-    wandb = None
-    _WANDB_IMPORT_ERROR = exc
-else:
-    _WANDB_IMPORT_ERROR = None
-
 def _as_string_list(value, default: list[str]) -> list[str]:
     if value is None: return list(default)
     if isinstance(value, str): return [value]
@@ -332,26 +324,6 @@ def _probe_cluster_entropy(assignments: np.ndarray, *, k: int) -> float:
     return entropy / float(np.log(int(k)))
 
 
-def _probe_center_separation_ratio(
-    features: np.ndarray,
-    centers: np.ndarray,
-    assignments: np.ndarray,
-    *,
-    eps: float,
-) -> float:
-    if centers.shape[0] < 2:
-        return 0.0
-    center_diffs = centers[:, None, :] - centers[None, :, :]
-    center_dist = np.sqrt(np.sum(center_diffs * center_diffs, axis=-1))
-    upper = center_dist[np.triu_indices(int(centers.shape[0]), k=1)]
-    mean_inter_center = float(upper.mean()) if upper.size > 0 else 0.0
-    assigned_centers = centers[np.asarray(assignments, dtype=np.int64)]
-    within_radius = float(np.linalg.norm(features - assigned_centers, axis=1).mean())
-    if mean_inter_center <= eps and within_radius <= eps:
-        return 0.0
-    return mean_inter_center / max(within_radius, eps)
-
-
 def _resolve_probe_best_k_range(
     module,
     *,
@@ -468,33 +440,26 @@ def _compute_probe_metrics(
     kmeans_n_init = int(getattr(module, "probe_kmeans_n_init", 5))
     eps = float(getattr(module, "probe_eps", 1e-12))
 
-    x_scaled = StandardScaler().fit_transform(x)
-    if not np.isfinite(x_scaled).all():
-        raise RuntimeError(
-            "Probe StandardScaler produced non-finite values: "
-            f"stage='{stage}', input_shape={tuple(x.shape)}."
-        )
-
-    rank = min(int(x_scaled.shape[0]) - 1, int(x_scaled.shape[1]))
+    x_centered = x - x.mean(axis=0, keepdims=True)
+    rank = min(int(x_centered.shape[0]) - 1, int(x_centered.shape[1]))
     if rank < 1:
         raise ValueError(
             f"PCA probe rank must be >= 1, got rank={rank}, stage='{stage}', "
-            f"shape={tuple(x_scaled.shape)}."
+            f"shape={tuple(x_centered.shape)}."
         )
 
-    if float(np.var(x_scaled, dtype=np.float64)) <= eps:
+    if float(np.var(x_centered, dtype=np.float64)) <= eps:
         return {
-            "pca_components_95": 0.0,
-            "kmeans_inertia_norm": 0.0,
-            "silhouette_sampled": 0.0,
-            "kmeans_seed_ari": 0.0,
-            "cluster_entropy": 0.0,
-            "center_separation_ratio": 0.0,
-            "best_num_clusters": 1.0,
+            "pca95": 0.0,
+            "effective_rank": 0.0,
+            "silhouette": 0.0,
+            "stability": 0.0,
+            "balance": 0.0,
+            "best_k": 1.0,
         }, [(1, 0.0)]
 
     pca = PCA(n_components=rank, svd_solver="full", random_state=seed)
-    projected = pca.fit_transform(x_scaled).astype(np.float32, copy=False)
+    projected = pca.fit_transform(x_centered).astype(np.float32, copy=False)
     explained = np.nan_to_num(
         np.asarray(pca.explained_variance_ratio_, dtype=np.float64),
         nan=0.0,
@@ -507,6 +472,15 @@ def _compute_probe_metrics(
         cumulative = np.cumsum(explained)
         components_95 = int(np.searchsorted(cumulative, target_variance, side="left") + 1)
         components_95 = min(components_95, int(explained.size))
+    explained_sum = float(explained.sum())
+    if explained_sum <= eps:
+        effective_rank = 0.0
+    else:
+        variance_distribution = explained / explained_sum
+        nonzero_variance = variance_distribution[variance_distribution > eps]
+        effective_rank = float(
+            np.exp(-np.sum(nonzero_variance * np.log(nonzero_variance)))
+        )
 
     pca_dims = min(pca_max_components, int(projected.shape[1]))
     features = normalize(projected[:, :pca_dims], norm="l2", axis=1)
@@ -518,13 +492,12 @@ def _compute_probe_metrics(
     feature_norms = np.linalg.norm(features, axis=1)
     if float(feature_norms.max()) <= eps:
         return {
-            "pca_components_95": float(components_95),
-            "kmeans_inertia_norm": 0.0,
-            "silhouette_sampled": 0.0,
-            "kmeans_seed_ari": 0.0,
-            "cluster_entropy": 0.0,
-            "center_separation_ratio": 0.0,
-            "best_num_clusters": 1.0,
+            "pca95": float(components_95),
+            "effective_rank": effective_rank,
+            "silhouette": 0.0,
+            "stability": 0.0,
+            "balance": 0.0,
+            "best_k": 1.0,
         }, [(1, 0.0)]
 
     best_k_min, best_k_max = _resolve_probe_best_k_range(
@@ -566,14 +539,7 @@ def _compute_probe_metrics(
     primary_model = models[0]
     primary_assignments = assignments_by_seed[0]
     unique_primary = np.unique(primary_assignments)
-    inertia_norm = float(primary_model.inertia_ / float(features.shape[0]))
     entropy = _probe_cluster_entropy(primary_assignments, k=k)
-    separation_ratio = _probe_center_separation_ratio(
-        features,
-        np.asarray(primary_model.cluster_centers_, dtype=np.float32),
-        primary_assignments,
-        eps=eps,
-    )
 
     if unique_primary.size < 2 or unique_primary.size >= features.shape[0]:
         silhouette = 0.0
@@ -606,13 +572,12 @@ def _compute_probe_metrics(
     seed_ari = 0.0 if degenerate_seed else float(np.mean(pairwise_ari))
 
     metrics = {
-        "pca_components_95": float(components_95),
-        "kmeans_inertia_norm": inertia_norm,
-        "silhouette_sampled": silhouette,
-        "kmeans_seed_ari": seed_ari,
-        "cluster_entropy": entropy,
-        "center_separation_ratio": separation_ratio,
-        "best_num_clusters": best_num_clusters,
+        "pca95": float(components_95),
+        "effective_rank": effective_rank,
+        "silhouette": silhouette,
+        "stability": seed_ari,
+        "balance": entropy,
+        "best_k": best_num_clusters,
     }
     for name, value in metrics.items():
         if not np.isfinite(float(value)):
@@ -1127,6 +1092,23 @@ def init_supervised_cache(module, cfg) -> None:
     module.enable_supervised_metrics = bool(getattr(cfg, "enable_supervised_metrics", True))
     module.enable_embedding_metrics = bool(getattr(cfg, "enable_embedding_metrics", False))
     module.enable_probe_metrics = bool(getattr(cfg, "enable_probe_metrics", True))
+    valid_metric_stages = {"train", "val", "test"}
+    for field_name in (
+        "supervised_metric_stages",
+        "embedding_metric_stages",
+        "probe_metric_stages",
+    ):
+        raw_stages = getattr(cfg, field_name, ("train", "val", "test"))
+        if isinstance(raw_stages, str):
+            raw_stages = [raw_stages]
+        resolved_stages = frozenset(str(stage).strip().lower() for stage in raw_stages)
+        invalid_stages = sorted(resolved_stages.difference(valid_metric_stages))
+        if invalid_stages:
+            raise ValueError(
+                f"{field_name} contains unsupported stages {invalid_stages}. "
+                f"Expected a subset of {sorted(valid_metric_stages)}."
+            )
+        setattr(module, field_name, resolved_stages)
     module._supervised_cache = {
         "train": {"latents": [], "encoder_features": [], "class_id": []},
         "val": {"latents": [], "encoder_features": [], "class_id": []},
@@ -1314,113 +1296,18 @@ def cache_supervised_batch(
         cache["class_id"].append(class_id[:effective_batch].cpu())
 
 
-def _iter_module_loggers(module) -> list:
-    trainer = getattr(module, "trainer", None)
-    if trainer is not None:
-        loggers = getattr(trainer, "loggers", None)
-        if loggers is not None:
-            return list(loggers)
-        logger = getattr(trainer, "logger", None)
-        if logger is not None:
-            return [logger]
-    logger = getattr(module, "logger", None)
-    if logger is None:
-        return []
-    if isinstance(logger, (list, tuple)):
-        return list(logger)
-    return [logger]
-
-
-def _wandb_experiments(module) -> list:
-    experiments = []
-    for logger in _iter_module_loggers(module):
-        if logger.__class__.__name__ != "WandbLogger":
-            continue
-        experiment = getattr(logger, "experiment", None)
-        if experiment is None or not hasattr(experiment, "log"):
-            raise RuntimeError(
-                "Found a WandbLogger, but it has no usable experiment.log method. "
-                f"logger_type={type(logger)!r}, experiment_type={type(experiment)!r}."
-            )
-        experiments.append(experiment)
-    return experiments
-
-
-def _probe_silhouette_histogram(
-    *,
-    stage: str,
-    silhouette_by_k: list[tuple[int, float]],
-):
-    if wandb is None:
-        raise RuntimeError(
-            "Cannot log probe silhouette histogram because wandb could not be imported."
-        ) from _WANDB_IMPORT_ERROR
-    if not silhouette_by_k:
-        raise ValueError(f"Probe silhouette histogram has no values for stage='{stage}'.")
-
-    silhouette_by_num_clusters: dict[int, float] = {}
-    for num_clusters, silhouette_score_value in silhouette_by_k:
-        num_clusters_int = int(num_clusters)
-        silhouette_float = float(silhouette_score_value)
-        if num_clusters_int < 1:
-            raise ValueError(
-                "Probe silhouette histogram received an invalid cluster count: "
-                f"stage='{stage}', num_clusters={num_clusters_int}."
-            )
-        if not np.isfinite(silhouette_float):
-            raise ValueError(
-                "Probe silhouette histogram received a non-finite score: "
-                f"stage='{stage}', num_clusters={num_clusters_int}, "
-                f"silhouette_score={silhouette_score_value!r}."
-            )
-        if num_clusters_int in silhouette_by_num_clusters:
-            raise ValueError(
-                "Probe silhouette histogram received duplicate cluster counts: "
-                f"stage='{stage}', num_clusters={num_clusters_int}."
-            )
-        silhouette_by_num_clusters[num_clusters_int] = silhouette_float
-
-    max_num_clusters = max(silhouette_by_num_clusters)
-    histogram_values = np.zeros(max_num_clusters, dtype=np.float64)
-    for num_clusters, silhouette_float in silhouette_by_num_clusters.items():
-        histogram_values[num_clusters - 1] = silhouette_float
-    bin_edges = np.arange(0.5, max_num_clusters + 1.5, dtype=np.float64)
-
-    return wandb.Histogram(
-        np_histogram=(histogram_values, bin_edges),
-    )
-
-
-def _log_probe_silhouette_histogram(
-    module,
-    stage: str,
-    silhouette_by_k: list[tuple[int, float]],
-) -> None:
-    trainer = getattr(module, "trainer", None)
-    if trainer is not None and not bool(getattr(trainer, "is_global_zero", True)):
-        return
-    experiments = _wandb_experiments(module)
-    if not experiments:
-        return
-
-    global_step = getattr(module, "global_step", None)
-    global_step_int = int(global_step) if global_step is not None else 0
-    histogram = _probe_silhouette_histogram(stage=stage, silhouette_by_k=silhouette_by_k)
-    payload = {
-        f"{stage}/probe/silhouette_by_num_clusters": histogram,
-        f"{stage}_probe_silhouette_by_num_clusters": histogram,
-    }
-    for experiment in experiments:
-        if global_step is None:
-            experiment.log(payload)
-        else:
-            experiment.log(payload, step=global_step_int)
-
-
 def log_supervised_metrics(module, stage: str) -> None:
-    wants_supervised_metrics = bool(getattr(module, "enable_supervised_metrics", True))
-    wants_probe_metrics = bool(getattr(module, "enable_probe_metrics", True))
-    if not (wants_supervised_metrics or wants_probe_metrics):
+    stage_l = str(stage).lower()
+    wants_supervised_metrics = bool(getattr(module, "enable_supervised_metrics", True)) and (
+        stage_l in getattr(module, "supervised_metric_stages", {"train", "val", "test"})
+    )
+    wants_probe_metrics = bool(getattr(module, "enable_probe_metrics", True)) and (
+        stage_l in getattr(module, "probe_metric_stages", {"train", "val", "test"})
+    )
+    wants_embedding_metrics = bool(getattr(module, "enable_embedding_metrics", False)) and (
+        stage_l in getattr(module, "embedding_metric_stages", {"train", "val", "test"})
+    )
+    if not (wants_supervised_metrics or wants_probe_metrics or wants_embedding_metrics):
         cache = module._supervised_cache.get(stage)
         if cache is not None:
             for key in cache:
@@ -1449,7 +1336,6 @@ def log_supervised_metrics(module, stage: str) -> None:
         encoder_features,
     )
 
-    stage_l = str(stage).lower()
     trainer = getattr(module, "trainer", None)
     if stage_l in {"val", "test"} and bool(getattr(trainer, "sanity_checking", False)):
         warnings.warn(
@@ -1563,20 +1449,34 @@ def log_supervised_metrics(module, stage: str) -> None:
                 )
 
     if wants_probe_metrics:
-        probe_metrics, probe_silhouette_by_k = _compute_probe_metrics(module, latents, labels, stage_l)
+        probe_metrics, _ = _compute_probe_metrics(module, latents, labels, stage_l)
+        metric_groups = {
+            "pca95": "manifold",
+            "effective_rank": "manifold",
+            "silhouette": "clustering",
+            "stability": "clustering",
+            "balance": "clustering",
+            "best_k": "clustering",
+        }
         for name, value in probe_metrics.items():
+            group = metric_groups.get(name)
+            if group is None:
+                raise KeyError(
+                    f"Probe metric {name!r} has no W&B category mapping. "
+                    f"Expected one of {sorted(metric_groups)}."
+                )
             module._log_metric(
                 stage,
                 f"probe/{name}",
                 value,
+                metric_name=f"{group}/{stage}_{name}",
                 prog_bar=False,
                 on_step=False,
                 on_epoch=True,
                 sync_dist=True,
             )
-        _log_probe_silhouette_histogram(module, stage_l, probe_silhouette_by_k)
 
-    if bool(getattr(module, "enable_embedding_metrics", False)):
+    if wants_embedding_metrics:
         if labels is None:
             raise ValueError(
                 "enable_embedding_metrics=true requires class_id labels, but no labels "
