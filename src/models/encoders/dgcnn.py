@@ -19,12 +19,11 @@ def _knn(x: torch.Tensor, k: int) -> torch.Tensor:
     return idx
 
 
-def _get_graph_feature(x: torch.Tensor, k: int, idx: torch.Tensor | None = None) -> torch.Tensor:
+def _get_graph_feature(x: torch.Tensor, k: int) -> torch.Tensor:
     """Construct edge features [x_j - x_i, x_i]."""
     # x: (B, C, N)
     batch_size, channels, num_points = x.size()
-    if idx is None:
-        idx = _knn(x, k=k)
+    idx = _knn(x, k=k)
 
     idx_base = torch.arange(batch_size, device=x.device).view(-1, 1, 1) * num_points
     idx = (idx + idx_base).view(-1)
@@ -50,7 +49,8 @@ def _norm1d(channels: int, use_batchnorm: bool) -> nn.Module:
 class DGCNNEncoder(Encoder):
     """Regular (non-VN) DGCNN encoder producing only invariant latent code."""
 
-    expects_channel_first = True
+    input_layout = "b3n"
+    output_contract = "invariant"
 
     def __init__(
         self,
@@ -66,7 +66,7 @@ class DGCNNEncoder(Encoder):
         super().__init__()
         self.invariant_dim = int(latent_size)
         self.n_knn = int(n_knn)
-        self.pooling = str(pooling).lower()
+        self.pooling = pooling
         if self.pooling not in {"max", "mean"}:
             raise ValueError(f"Unsupported pooling='{pooling}'. Expected 'max' or 'mean'.")
 

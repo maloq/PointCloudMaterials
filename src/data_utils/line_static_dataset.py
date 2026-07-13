@@ -169,15 +169,21 @@ class LineStaticPointCloudDataset(Dataset):
 
     def __getitem__(self, index: int) -> dict[str, Any]:
         batch = self._build_batch_from_indices(np.asarray([index], dtype=np.int64))
-        sample = {}
-        for key, value in batch.items():
-            if torch.is_tensor(value):
-                sample[key] = value[0]
-            elif isinstance(value, list):
-                sample[key] = value[0]
-            else:
-                sample[key] = value
-        return sample
+        return {
+            "points": batch["points"][0],
+            "line_atom_ids": batch["line_atom_ids"][0],
+            "line_t": batch["line_t"][0],
+            "line_perp": batch["line_perp"][0],
+            "line_direction": batch["line_direction"][0],
+            "target_line_index": batch["target_line_index"][0],
+            "target_atom_id": batch["target_atom_id"][0],
+            "anchor_atom_id": batch["anchor_atom_id"][0],
+            "instance_id": batch["instance_id"][0],
+            "coords": batch["coords"][0],
+            "source_name": batch["source_name"][0],
+            "source_group": batch["source_group"][0],
+            "source_path": batch["source_path"][0],
+        }
 
     def __getitems__(self, indices: Sequence[int]) -> dict[str, Any]:
         index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
@@ -189,7 +195,7 @@ class LineStaticPointCloudDataset(Dataset):
         source: dict[str, Any],
         auto_cutoff_config: dict[str, Any] | None,
     ) -> float:
-        radius_override = source.get("radius_override", None)
+        radius_override = source["radius_override"]
         if radius_override is not None:
             return float(radius_override)
         if auto_cutoff_config is None:
@@ -227,8 +233,6 @@ class LineStaticPointCloudDataset(Dataset):
         resolved_sources: list[_LineStaticSource] = []
         auto_cfg = PointCloudDataset._resolve_auto_cutoff_config(
             auto_cutoff_config,
-            default_target_points=self.num_points,
-            default_radius=self.radius,
         )
         for source in sources_cfg:
             source_radius = self._resolve_radius_for_source(

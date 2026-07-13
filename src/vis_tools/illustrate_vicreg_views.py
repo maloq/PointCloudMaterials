@@ -16,19 +16,18 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 from pathlib import Path
 from typing import Any, Sequence
 
+from hydra import compose, initialize_config_dir
 import numpy as np
 from matplotlib import pyplot as plt
+from omegaconf import DictConfig
 from scipy.spatial import cKDTree
-import yaml
 
 sys.path.append(os.getcwd())
 
-from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.synthetic.visualization import (
     _build_local_coordination_edges,
     _compute_radial_colormap_colors,
@@ -38,7 +37,6 @@ from src.data_utils.synthetic.visualization import (
 )
 
 
-_INTERPOLATION_PATTERN = re.compile(r"\$\{([^}]+)\}")
 _DROPPED_POINT_EDGE_COLOR = "#5A5A5A"
 
 
@@ -63,71 +61,7 @@ def _resolve_config_path(config_arg: str) -> Path:
     )
 
 
-def _cfg_get(cfg: dict[str, Any], path: str, default: Any = None) -> Any:
-    current: Any = cfg
-    for part in str(path).split("."):
-        if not isinstance(current, dict) or part not in current:
-            return default
-        current = current[part]
-    return current
-
-
-def _deep_merge_dicts(base: dict[str, Any], update: dict[str, Any]) -> dict[str, Any]:
-    merged = dict(base)
-    for key, value in update.items():
-        if (
-            key in merged
-            and isinstance(merged[key], dict)
-            and isinstance(value, dict)
-        ):
-            merged[key] = _deep_merge_dicts(merged[key], value)
-        else:
-            merged[key] = value
-    return merged
-
-
-def _resolve_interpolations(cfg: dict[str, Any]) -> dict[str, Any]:
-    root = cfg
-
-    def _resolve_path(path: str, stack: tuple[str, ...]) -> Any:
-        if path in stack:
-            raise ValueError(
-                "Config interpolation cycle detected: "
-                f"{' -> '.join(stack + (path,))}"
-            )
-        current: Any = root
-        for part in str(path).split("."):
-            if not isinstance(current, dict) or part not in current:
-                raise KeyError(f"Failed to resolve interpolation path {path!r}.")
-            current = current[part]
-        return _resolve_node(current, stack + (path,))
-
-    def _resolve_string(value: str, stack: tuple[str, ...]) -> Any:
-        matches = list(_INTERPOLATION_PATTERN.finditer(value))
-        if not matches:
-            return value
-        if len(matches) == 1 and matches[0].span() == (0, len(value)):
-            return _resolve_path(matches[0].group(1), stack)
-
-        resolved_text = value
-        for match in matches:
-            resolved = _resolve_path(match.group(1), stack)
-            resolved_text = resolved_text.replace(match.group(0), str(resolved))
-        return resolved_text
-
-    def _resolve_node(node: Any, stack: tuple[str, ...]) -> Any:
-        if isinstance(node, dict):
-            return {key: _resolve_node(val, stack) for key, val in node.items()}
-        if isinstance(node, list):
-            return [_resolve_node(val, stack) for val in node]
-        if isinstance(node, str):
-            return _resolve_string(node, stack)
-        return node
-
-    return _resolve_node(root, tuple())
-
-
-def _load_hydra_config(config_path: Path) -> dict[str, Any]:
+def _load_hydra_config(config_path: Path) -> DictConfig:
     configs_root = (Path.cwd() / "configs").resolve()
     config_path = config_path.resolve()
     if configs_root not in config_path.parents and config_path.parent != configs_root:
@@ -136,75 +70,15 @@ def _load_hydra_config(config_path: Path) -> dict[str, Any]:
             f"Got {config_path} outside {configs_root}."
         )
 
-    def _resolve_default_path(group: str, name: str) -> Path:
-        group_norm = str(group).strip().lstrip("/")
-        name_norm = str(name).strip()
-        if name_norm == "":
-            raise ValueError(f"Config default for group {group!r} must be non-empty.")
-        base = configs_root / group_norm
-        if name_norm.endswith(".yaml") or name_norm.endswith(".yml"):
-            return (base / name_norm).resolve()
-        return (base / f"{name_norm}.yaml").resolve()
-
-    def _compose_file(path: Path) -> dict[str, Any]:
-        with path.open("r") as handle:
-            cfg = yaml.safe_load(handle) or {}
-        if not isinstance(cfg, dict):
-            raise ValueError(f"Config at {path} must decode to a mapping, got {type(cfg)!r}.")
-        defaults = cfg.get("defaults", [])
-        self_cfg = dict(cfg)
-        self_cfg.pop("defaults", None)
-
-        if defaults is None:
-            defaults_list: list[Any] = []
-        else:
-            defaults_list = list(defaults)
-        if "_self_" not in defaults_list:
-            defaults_list.append("_self_")
-
-        merged: dict[str, Any] = {}
-        for entry in defaults_list:
-            if entry == "_self_":
-                merged = _deep_merge_dicts(merged, self_cfg)
-                continue
-            if isinstance(entry, str):
-                raise ValueError(
-                    f"Unsupported string default entry {entry!r} in {path}. "
-                    "Only '_self_' and single-key mapping defaults are supported here."
-                )
-            if not isinstance(entry, dict) or len(entry) != 1:
-                raise ValueError(
-                    f"Unsupported defaults entry {entry!r} in {path}. "
-                    "Expected a single-key mapping such as {'data': 'data_ae_multi_material'}."
-                )
-            group, name = next(iter(entry.items()))
-            if name is None:
-                continue
-            default_path = _resolve_default_path(str(group), str(name))
-            if not default_path.exists():
-                raise FileNotFoundError(
-                    f"Config default {entry!r} referenced by {path} does not exist at {default_path}."
-                )
-            default_cfg = _compose_file(default_path)
-            merged = _deep_merge_dicts(merged, {str(group).lstrip("/"): default_cfg})
-        return merged
-
-    unresolved = _compose_file(config_path)
-    return _resolve_interpolations(unresolved)
+    config_name = str(config_path.relative_to(configs_root).with_suffix(""))
+    with initialize_config_dir(version_base=None, config_dir=str(configs_root)):
+        return compose(config_name=config_name)
 
 
 def _load_point_cloud(file_path: Path) -> np.ndarray:
     if not file_path.exists():
         raise FileNotFoundError(f"Point-cloud file does not exist: {file_path}")
-    raw = np.load(file_path, allow_pickle=False)
-    if isinstance(raw, np.ndarray) and raw.dtype.names:
-        if "position" not in raw.dtype.names:
-            raise ValueError(
-                f"Structured array at {file_path} is missing a 'position' field: fields={raw.dtype.names}"
-            )
-        points = np.asarray(raw["position"], dtype=np.float32)
-    else:
-        points = np.asarray(raw, dtype=np.float32)
+    points = np.load(file_path, allow_pickle=False).astype(np.float32, copy=False)
     if points.ndim != 2 or points.shape[1] != 3:
         raise ValueError(f"Expected point cloud with shape (N, 3) at {file_path}, got {points.shape}.")
     if points.shape[0] < 2:
@@ -214,139 +88,18 @@ def _load_point_cloud(file_path: Path) -> np.ndarray:
     return points
 
 
-def _resolve_auto_cutoff_config(
-    auto_cutoff_config: dict[str, Any] | None,
-    *,
-    default_target_points: int,
-    default_radius: float,
-) -> dict[str, Any] | None:
-    if not auto_cutoff_config or not auto_cutoff_config.get("enabled", False):
-        return None
-    return {
-        "target_points": int(auto_cutoff_config.get("target_points", default_target_points)),
-        "quantile": float(auto_cutoff_config.get("quantile", 1.0)),
-        "estimation_samples_per_file": int(auto_cutoff_config.get("estimation_samples_per_file", 4096)),
-        "seed": int(auto_cutoff_config.get("seed", 0)),
-        "safety_factor": float(auto_cutoff_config.get("safety_factor", 1.0)),
-        "boundary_margin": auto_cutoff_config.get("boundary_margin", default_radius),
-    }
-
-
-def _estimate_source_cutoff_radius(
-    *,
-    source_root: Path,
-    source_files: Sequence[str],
-    target_points: int,
-    quantile: float,
-    estimation_samples_per_file: int,
-    seed: int,
-    safety_factor: float,
-    boundary_margin: float | None,
-) -> tuple[float, float]:
-    rng = np.random.default_rng(int(seed))
-    kth_distances_all: list[np.ndarray] = []
-
-    for file_name in source_files:
-        file_path = source_root / str(file_name)
-        points = _load_point_cloud(file_path)
-        num_atoms = int(points.shape[0])
-        candidate_indices = np.arange(num_atoms, dtype=np.int64)
-        if boundary_margin is not None and float(boundary_margin) > 0.0:
-            margin = float(boundary_margin)
-            min_coords = np.min(points, axis=0)
-            max_coords = np.max(points, axis=0)
-            interior_mask = np.all(
-                (points >= (min_coords + margin)) & (points <= (max_coords - margin)),
-                axis=1,
-            )
-            interior_indices = np.flatnonzero(interior_mask)
-            if interior_indices.size > 0:
-                candidate_indices = interior_indices.astype(np.int64, copy=False)
-
-        centers_to_sample = min(int(estimation_samples_per_file), int(candidate_indices.size))
-        if centers_to_sample <= 0:
-            raise ValueError(
-                "Auto-cutoff estimation found no candidate center atoms after boundary filtering for "
-                f"{file_path} with boundary_margin={boundary_margin}."
-            )
-        center_indices = rng.choice(candidate_indices, size=centers_to_sample, replace=False)
-        tree = cKDTree(points)
-        k = min(int(target_points), num_atoms)
-        dists, _ = tree.query(points[center_indices], k=k)
-        dists = np.asarray(dists, dtype=np.float64)
-        kth_dist = dists.reshape(-1) if k == 1 else dists[:, k - 1]
-        kth_distances_all.append(kth_dist)
-
-    if not kth_distances_all:
-        raise RuntimeError("Auto-cutoff estimation did not collect any kth-neighbor distances.")
-    kth_all = np.concatenate(kth_distances_all).astype(np.float64, copy=False)
-    estimated_radius = float(np.quantile(kth_all, float(quantile))) * float(safety_factor)
-    coverage = float(np.mean(kth_all <= estimated_radius))
-    return estimated_radius, coverage
-
-
-def _resolve_real_source_radius(
-    data_cfg: dict[str, Any],
-    *,
-    source_index: int,
-    source_dict: dict[str, Any],
-    target_points: int,
-) -> tuple[float, dict[str, Any] | None]:
-    radius_override = source_dict.get("radius", None)
-    if radius_override is not None:
-        return float(radius_override), {
-            "mode": "override",
-            "radius_override": float(radius_override),
-        }
-
-    default_radius = float(data_cfg.get("radius", 0.0))
-    auto_cfg = _resolve_auto_cutoff_config(
-        data_cfg.get("auto_cutoff", None),
-        default_target_points=int(target_points),
-        default_radius=default_radius,
-    )
-    if auto_cfg is None:
-        return default_radius, None
-
-    data_files = source_dict.get("data_files", [])
-    if isinstance(data_files, str):
-        data_files = [data_files]
-    estimated_radius, coverage = _estimate_source_cutoff_radius(
-        source_root=Path(str(source_dict["data_path"])),
-        source_files=list(data_files),
-        target_points=max(int(auto_cfg["target_points"]), int(target_points)),
-        quantile=float(auto_cfg["quantile"]),
-        estimation_samples_per_file=int(auto_cfg["estimation_samples_per_file"]),
-        seed=int(auto_cfg["seed"]) + int(source_index),
-        safety_factor=float(auto_cfg["safety_factor"]),
-        boundary_margin=auto_cfg["boundary_margin"],
-    )
-    return estimated_radius, {
-        "mode": "auto_cutoff",
-        "quantile": float(auto_cfg["quantile"]),
-        "coverage_estimate": float(coverage),
-        "estimated_radius": float(estimated_radius),
-        "default_radius": float(default_radius),
-        "target_points": int(max(int(auto_cfg["target_points"]), int(target_points))),
-    }
-
-
 def _resolve_source_spec(
-    cfg: dict[str, Any],
+    cfg: DictConfig,
     *,
     source_index: int,
     file_index: int,
     target_points: int,
 ) -> dict[str, Any]:
-    data_cfg = cfg.get("data", None)
-    if data_cfg is None:
-        raise ValueError("Config is missing a top-level data section.")
-    if not isinstance(data_cfg, dict):
-        raise ValueError(f"Config data section must be a dict, got {type(data_cfg)!r}.")
+    data_cfg = cfg.data
 
-    kind = normalize_data_kind(data_cfg.get("kind", ""))
+    kind = data_cfg.kind
     if kind == "synthetic":
-        env_dir = Path(str(data_cfg.get("data_path", "")))
+        env_dir = Path(data_cfg.data_path)
         if not env_dir.exists():
             raise FileNotFoundError(f"Synthetic data_path does not exist: {env_dir}")
         atoms_path = env_dir / "atoms.npy"
@@ -363,51 +116,40 @@ def _resolve_source_spec(
         return {
             "kind": kind,
             "file_path": file_path,
-            "radius": float(data_cfg.get("radius", 0.0)),
+            "radius": data_cfg.radius,
             "source_name": env_dir.name or "synthetic",
             "radius_details": None,
         }
 
     if kind == "static":
-        data_sources = data_cfg.get("data_sources", None)
-        if not data_sources:
-            raise ValueError("Static data config must define data.data_sources.")
+        data_sources = data_cfg.data_sources
         if source_index < 0 or source_index >= len(data_sources):
             raise IndexError(
                 f"source_index={source_index} is out of range for {len(data_sources)} data sources."
             )
-        source = dict(data_sources[source_index])
-        data_files = source.get("data_files", [])
-        if isinstance(data_files, str):
-            data_files = [data_files]
-        if not data_files:
-            raise ValueError(f"Selected source has no data_files entries: {source}")
+        source = data_sources[source_index]
+        data_files = source.data_files
         if file_index < 0 or file_index >= len(data_files):
             raise IndexError(
                 f"file_index={file_index} is out of range for {len(data_files)} files in source {source_index}."
             )
         file_name = str(data_files[file_index])
-        root = Path(str(source["data_path"]))
+        root = Path(source.data_path)
         file_path = root / file_name
-        radius, radius_details = _resolve_real_source_radius(
-            data_cfg,
-            source_index=source_index,
-            source_dict=source,
-            target_points=target_points,
-        )
-        source_name = str(source.get("name", root.name or f"source_{source_index}"))
+        radius = source.radius
+        source_name = source.name
         return {
             "kind": kind,
             "file_path": file_path,
             "radius": float(radius),
             "source_name": source_name,
-            "radius_details": radius_details,
+            "radius_details": {"mode": "source", "radius": radius},
         }
 
     raise ValueError(
         "Unsupported data kind for VICReg illustration. "
-        f"Expected 'synthetic' or 'static' ('real' is accepted as a legacy alias), "
-        f"got {data_cfg.get('kind', '')!r}."
+        f"Expected 'synthetic' or 'static', "
+        f"got {data_cfg.kind!r}."
     )
 
 
@@ -920,7 +662,7 @@ def _save_stage_xyz_and_npz(
 
 def build_illustration(
     *,
-    cfg: dict[str, Any],
+    cfg: DictConfig,
     config_label: str,
     output_path: Path,
     source_index: int,
@@ -1206,25 +948,19 @@ def main() -> None:
     cfg = _load_hydra_config(config_path)
     config_label = str(config_path.relative_to(Path.cwd())) if config_path.is_relative_to(Path.cwd()) else str(config_path)
 
-    target_points = int(args.target_points) if args.target_points is not None else int(_cfg_get(cfg, "data.num_points", 0))
+    target_points = args.target_points if args.target_points is not None else cfg.data.num_points
     if target_points <= 0:
         raise ValueError(f"target_points must be > 0, got {target_points}.")
 
     translated_points = (
-        int(args.translated_points)
+        args.translated_points
         if args.translated_points is not None
-        else int(
-            _cfg_get(
-                cfg,
-                "vicreg_view_points",
-                _cfg_get(cfg, "data.model_points", target_points),
-            )
-        )
+        else cfg.vicreg_view_points
     )
     if translated_points <= 0:
         raise ValueError(f"translated_points must be > 0, got {translated_points}.")
 
-    neighbor_k = int(args.neighbor_k) if args.neighbor_k is not None else int(_cfg_get(cfg, "vicreg_neighbor_k", 6))
+    neighbor_k = args.neighbor_k if args.neighbor_k is not None else cfg.vicreg_neighbor_k
     if neighbor_k <= 0:
         raise ValueError(f"neighbor_k must be > 0, got {neighbor_k}.")
 

@@ -2,7 +2,7 @@ from typing import Any
 
 import torch
 from torch.utils.data import random_split
-from omegaconf import DictConfig, ListConfig, MISSING, OmegaConf
+from omegaconf import MISSING, OmegaConf
 
 from src.utils.logging_config import setup_logging
 logger = setup_logging()
@@ -15,15 +15,7 @@ _REQUIRED = object()
 
 def _cfg_has(cfg: Any, key: str) -> bool:
     """Return True if ``cfg`` defines ``key`` and the value is not the OmegaConf MISSING sentinel."""
-    if cfg is None:
-        return False
-    if isinstance(cfg, DictConfig):
-        if key not in cfg:
-            return False
-        return OmegaConf.select(cfg, key, default=MISSING) is not MISSING
-    if isinstance(cfg, dict):
-        return key in cfg
-    return hasattr(cfg, key)
+    return key in cfg and OmegaConf.select(cfg, key, default=MISSING) is not MISSING
 
 
 def _cfg_get(cfg: Any, key: str, *, default: Any = _REQUIRED, context: str = "data config") -> Any:
@@ -35,9 +27,7 @@ def _cfg_get(cfg: Any, key: str, *, default: Any = _REQUIRED, context: str = "da
       is returned when the key is absent.
     """
     if _cfg_has(cfg, key):
-        if isinstance(cfg, (DictConfig, dict)):
-            return cfg[key]
-        return getattr(cfg, key)
+        return cfg[key]
     if default is _REQUIRED:
         raise KeyError(
             f"{context}: required key {key!r} is missing. "
@@ -47,10 +37,9 @@ def _cfg_get(cfg: Any, key: str, *, default: Any = _REQUIRED, context: str = "da
 
 
 def _resolve_split_seed(cfg, *, default: int = 42) -> int:
-    data_cfg = getattr(cfg, "data", None)
-    raw_seed = getattr(data_cfg, "split_seed", None) if data_cfg is not None else None
+    raw_seed = OmegaConf.select(cfg, "data.split_seed", default=None)
     if raw_seed is None:
-        raw_seed = getattr(cfg, "split_seed", default)
+        raw_seed = OmegaConf.select(cfg, "split_seed", default=default)
     try:
         seed = int(raw_seed)
     except (TypeError, ValueError) as exc:
@@ -155,6 +144,6 @@ def _split_temporal_window_start_frames(
 
 # Module-level helper
 def _to_container(cfg):
-    if isinstance(cfg, (DictConfig, ListConfig)):
-        return OmegaConf.to_container(cfg, resolve=True)
-    return cfg
+    if cfg is None:
+        return None
+    return OmegaConf.to_container(cfg, resolve=True)

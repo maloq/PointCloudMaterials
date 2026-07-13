@@ -5,10 +5,7 @@ from typing import Any
 
 import numpy as np
 import torch
-
-from src.data_utils.data_modules.temporal_window import (
-    _temporal_identity_or_default_collate,
-)
+from torch.utils.data import default_collate
 
 
 def _analysis_prefetch_factor(num_workers: int) -> int | None:
@@ -47,10 +44,8 @@ def _fetch_batched_dataset_items(dataset: Any, indices: list[int]) -> Any:
         batch = dataset.__getitems__([int(v) for v in indices])
         if not isinstance(batch, list):
             return batch
-        return _temporal_identity_or_default_collate(batch)
-    return _temporal_identity_or_default_collate(
-        [dataset[int(index)] for index in indices]
-    )
+        return default_collate(batch)
+    return default_collate([dataset[int(index)] for index in indices])
 
 
 def _concat_batched_values(values: list[Any], *, key_path: str) -> Any:
@@ -142,4 +137,3 @@ class _BatchedConcatDataset(torch.utils.data.ConcatDataset):
 
         _flush_current_run()
         return _concat_batched_values(batches, key_path="batch")
-

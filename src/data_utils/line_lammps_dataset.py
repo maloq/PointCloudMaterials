@@ -70,15 +70,22 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
 
     def __getitem__(self, index: int) -> dict[str, Any]:
         batch = self._build_line_batch_from_indices(np.asarray([index], dtype=np.int64))
-        sample = {}
-        for key, value in batch.items():
-            if torch.is_tensor(value):
-                sample[key] = value[0]
-            elif isinstance(value, list):
-                sample[key] = value[0]
-            else:
-                sample[key] = value
-        return sample
+        return {
+            "points": batch["points"][0],
+            "line_atom_ids": batch["line_atom_ids"][0],
+            "line_t": batch["line_t"][0],
+            "line_perp": batch["line_perp"][0],
+            "line_direction": batch["line_direction"][0],
+            "target_line_index": batch["target_line_index"][0],
+            "target_atom_id": batch["target_atom_id"][0],
+            "anchor_atom_id": batch["anchor_atom_id"][0],
+            "instance_id": batch["instance_id"][0],
+            "frame_indices": batch["frame_indices"][0],
+            "timesteps": batch["timesteps"][0],
+            "coords": batch["coords"][0],
+            "anchor_positions": batch["anchor_positions"][0],
+            "source_path": batch["source_path"][0],
+        }
 
     def __getitems__(self, indices: Sequence[int]) -> dict[str, Any]:
         index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
@@ -126,7 +133,7 @@ class LineLAMMPSDataset(TemporalLAMMPSDumpDataset):
         anchor_indices: np.ndarray,
         candidate_indices: np.ndarray,
         directions: np.ndarray,
-        frame_idx_info: str = "unknown",
+        frame_idx_info: str,
     ) -> tuple[
         np.ndarray,
         np.ndarray,

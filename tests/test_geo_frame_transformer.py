@@ -2,17 +2,19 @@ from __future__ import annotations
 
 import os
 
+import pytest
 import torch
 from hydra import compose, initialize_config_dir
 from omegaconf import OmegaConf
 
 from src.models.encoders.factory import available_encoder_names
 from src.models.encoders.geo_frame_transformer import GeoFrameTransformerEncoder
+from src.models.encoders.ri_mae_encoder import RIMAEBackbone
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.training_methods.line_jepa.line_jepa_module import LineJEPAModule
 
 
-def _small_encoder() -> GeoFrameTransformerEncoder:
+def _small_encoder(frame_builder: str = "triad") -> GeoFrameTransformerEncoder:
     return GeoFrameTransformerEncoder(
         latent_size=64,
         num_group=8,
@@ -25,6 +27,7 @@ def _small_encoder() -> GeoFrameTransformerEncoder:
         mask_predictor_depth=1,
         deterministic_fps=True,
         group_sampling="fps",
+        frame_builder=frame_builder,
     )
 
 
@@ -41,9 +44,12 @@ def test_new_and_ablation_encoders_are_both_registered() -> None:
     assert "RI_MAE_Invariant" in names
 
 
-def test_geo_frame_features_and_ray_conditioning_are_rotation_invariant() -> None:
+@pytest.mark.parametrize("frame_builder", ["triad", "pca"])
+def test_geo_frame_features_and_ray_conditioning_are_rotation_invariant(
+    frame_builder: str,
+) -> None:
     torch.manual_seed(7)
-    encoder = _small_encoder().eval()
+    encoder = _small_encoder(frame_builder).eval()
     points = torch.randn(4, 24, 3)
     rays = torch.randn(4, 3)
     rotation = _rotation()
@@ -51,16 +57,45 @@ def test_geo_frame_features_and_ray_conditioning_are_rotation_invariant() -> Non
     with torch.no_grad():
         output = encoder(points)
         rotated_output = encoder(points @ rotation)
-        directional = encoder.directional_features_from_geometry(output[3], rays)
+        directional = encoder.directional_features_from_geometry(output[1], rays)
         rotated_directional = encoder.directional_features_from_geometry(
-            rotated_output[3],
+            rotated_output[1],
             rays @ rotation,
         )
 
     assert output[0].shape == (4, 64)
-    assert output[3]["tokens"].shape == (4, 8, 32)
+    assert output[1]["tokens"].shape == (4, 8, 32)
     torch.testing.assert_close(output[0], rotated_output[0], atol=3.0e-5, rtol=3.0e-5)
     torch.testing.assert_close(directional, rotated_directional, atol=3.0e-5, rtol=3.0e-5)
+
+
+def test_triad_frame_completion_handles_collapsed_and_collinear_patches() -> None:
+    collapsed = torch.zeros(1, 1, 6, 3)
+    collinear = torch.zeros(1, 1, 6, 3)
+    collinear[0, 0, :, 0] = torch.linspace(-2.0, 2.0, 6)
+    neighborhoods = torch.cat([collapsed, collinear], dim=1)
+
+    with pytest.warns(RuntimeWarning, match="1 fully collapsed patch"):
+        frames = RIMAEBackbone._estimate_patch_frames(
+            neighborhoods,
+            frame_builder="triad",
+            frame_eps=1.0e-6,
+        )
+    gram = frames.transpose(-1, -2) @ frames
+
+    assert torch.isfinite(frames).all()
+    torch.testing.assert_close(
+        gram,
+        torch.eye(3).expand_as(gram),
+        atol=1.0e-6,
+        rtol=1.0e-6,
+    )
+    torch.testing.assert_close(
+        torch.det(frames),
+        torch.ones(1, 2),
+        atol=1.0e-6,
+        rtol=1.0e-6,
+    )
 
 
 def test_masked_token_objective_has_gradients_and_updates_ema_teacher() -> None:

@@ -2,6 +2,9 @@ numpy
 torch
 e3nn==0.4.4  # required by mace-torch 0.3.15 checkpoint serialization
 mace-torch
+cuequivariance==0.10.0
+cuequivariance-torch==0.10.0
+cuequivariance-ops-torch-cu12==0.10.0
 pytorch-lightning
 omegaconf
 hydra-core

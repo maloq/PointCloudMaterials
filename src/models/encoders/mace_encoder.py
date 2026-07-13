@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-
 import torch
 import torch.nn as nn
 
@@ -55,7 +53,7 @@ def _radius_graph(
     points: torch.Tensor,
     *,
     r_max: float,
-    max_neighbors: int | None,
+    max_neighbors: int,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """
     Build a (sender, receiver) radius graph for each point cloud in a batch, and
@@ -77,10 +75,10 @@ def _radius_graph(
         raise ValueError(
             f"MACE_Backbone requires at least 2 points per cloud to build edges, got {num_points}."
         )
-    if max_neighbors is not None:
-        max_neighbors = int(max_neighbors)
-        if max_neighbors <= 0:
-            raise ValueError(f"max_neighbors must be > 0, got {max_neighbors}")
+    if max_neighbors <= 0 or max_neighbors >= num_points:
+        raise ValueError(
+            f"max_neighbors must be in [1, N - 1], got {max_neighbors} for N={num_points}."
+        )
 
     edge_dst_parts: list[torch.Tensor] = []
     edge_src_parts: list[torch.Tensor] = []
@@ -94,21 +92,17 @@ def _radius_graph(
         eye = torch.eye(num_points, dtype=torch.bool, device=points.device)
         valid = (dist < float(r_max)) & (~eye)
 
-        if max_neighbors is None:
-            dst_local, src_local = torch.nonzero(valid, as_tuple=True)
-        else:
-            k_eff = min(max_neighbors, num_points - 1)
-            masked = dist.masked_fill(~valid, float("inf"))
-            values, indices = torch.topk(
-                masked, k=k_eff, dim=-1, largest=False, sorted=False
-            )
-            keep = torch.isfinite(values)
-            dst_local = (
-                torch.arange(num_points, device=points.device, dtype=torch.long)
-                .unsqueeze(1)
-                .expand_as(indices)[keep]
-            )
-            src_local = indices[keep]
+        masked = dist.masked_fill(~valid, float("inf"))
+        values, indices = torch.topk(
+            masked, k=max_neighbors, dim=-1, largest=False, sorted=False
+        )
+        keep = torch.isfinite(values)
+        dst_local = (
+            torch.arange(num_points, device=points.device, dtype=torch.long)
+            .unsqueeze(1)
+            .expand_as(indices)[keep]
+        )
+        src_local = indices[keep]
 
         if dst_local.numel() == 0:
             raise ValueError(
@@ -143,7 +137,6 @@ def _scatter_sum(src: torch.Tensor, index: torch.Tensor, dim_size: int) -> torch
 def _batch_mean_pool(x: torch.Tensor, batch: torch.Tensor, num_graphs: int) -> torch.Tensor:
     pooled = _scatter_sum(x, batch, dim_size=num_graphs)
     counts = torch.bincount(batch, minlength=num_graphs).to(dtype=x.dtype).unsqueeze(-1)
-    counts = counts.clamp_min(1.0)
     return pooled / counts
 
 
@@ -201,24 +194,26 @@ class MACEBackboneEncoder(Encoder):
     passes coordinates only (no per-point atom types).
     """
 
+    output_contract = "invariant_equivariant"
+
     def __init__(
         self,
-        latent_size: int = 128,
+        latent_size: int,
         *,
-        r_max: float = 2.0,
-        num_interactions: int = 2,
-        max_ell: int = 2,
-        num_features: int = 32,
-        correlation: int | Sequence[int] = 3,
-        num_bessel: int = 8,
-        num_polynomial_cutoff: int = 6,
-        radial_type: str = "bessel",
-        radial_MLP: Sequence[int] | None = None,
-        avg_num_neighbors: float | None = None,
-        max_neighbors: int | None = None,
-        num_types: int = 1,
-        pool: str = "mean",
-        include_parity_odd_scalars: bool = False,
+        r_max: float,
+        num_interactions: int,
+        max_ell: int,
+        num_features: int,
+        correlation: int,
+        num_bessel: int,
+        num_polynomial_cutoff: int,
+        radial_type: str,
+        radial_MLP: list[int],
+        avg_num_neighbors: float,
+        max_neighbors: int,
+        num_types: int,
+        pool: str,
+        include_parity_odd_scalars: bool,
     ) -> None:
         super().__init__()
         _require_backends()
@@ -243,29 +238,14 @@ class MACEBackboneEncoder(Encoder):
                 "API in this repo passes coordinates only, not per-point atom types."
             )
 
-        pool_mode = str(pool).lower().strip()
-        if pool_mode not in {"mean", "sum"}:
-            raise ValueError(f"Unsupported pool={pool!r}; expected 'mean' or 'sum'.")
-
-        if isinstance(correlation, int):
-            correlation_list = [int(correlation)] * int(num_interactions)
-        else:
-            correlation_list = [int(v) for v in correlation]
-            if len(correlation_list) != int(num_interactions):
-                raise ValueError(
-                    "correlation must be an int or a list of length num_interactions "
-                    f"({num_interactions}), got {correlation_list}."
-                )
-        if any(c < 1 for c in correlation_list):
-            raise ValueError(f"correlation entries must be >= 1, got {correlation_list}.")
-
-        if avg_num_neighbors is None:
-            if max_neighbors is not None:
-                avg_num_neighbors = float(max_neighbors)
-            else:
-                avg_num_neighbors = 1.0
+        if pool != "mean":
+            raise ValueError(f"MACE_Backbone is configured for pool='mean', got {pool!r}.")
+        if int(correlation) < 1:
+            raise ValueError(f"correlation must be >= 1, got {correlation}.")
         if float(avg_num_neighbors) <= 0.0:
             raise ValueError(f"avg_num_neighbors must be > 0, got {avg_num_neighbors}")
+
+        correlation_list = [int(correlation)] * int(num_interactions)
 
         self.latent_size = int(latent_size)
         self.invariant_dim = self.latent_size
@@ -275,8 +255,7 @@ class MACEBackboneEncoder(Encoder):
         self.max_ell = int(max_ell)
         self.num_features = int(num_features)
         self.correlation_list = correlation_list
-        self.pool = pool_mode
-        self.max_neighbors = None if max_neighbors is None else int(max_neighbors)
+        self.max_neighbors = int(max_neighbors)
         self.avg_num_neighbors = float(avg_num_neighbors)
         self.num_types = int(num_types)
 
@@ -321,8 +300,6 @@ class MACEBackboneEncoder(Encoder):
             sh_irreps, normalize=True, normalization="component"
         )
 
-        radial_mlp = [64, 64, 64] if radial_MLP is None else [int(v) for v in radial_MLP]
-
         interactions: list[nn.Module] = []
         products: list[nn.Module] = []
 
@@ -335,7 +312,7 @@ class MACEBackboneEncoder(Encoder):
             target_irreps=interaction_irreps,
             hidden_irreps=hidden_irreps,
             avg_num_neighbors=self.avg_num_neighbors,
-            radial_MLP=radial_mlp,
+            radial_MLP=radial_MLP,
         )
         prod_first = EquivariantProductBasisBlock(
             node_feats_irreps=inter_first.target_irreps,
@@ -356,7 +333,7 @@ class MACEBackboneEncoder(Encoder):
                 target_irreps=interaction_irreps,
                 hidden_irreps=hidden_irreps,
                 avg_num_neighbors=self.avg_num_neighbors,
-                radial_MLP=radial_mlp,
+                radial_MLP=radial_MLP,
             )
             prod = EquivariantProductBasisBlock(
                 node_feats_irreps=interaction_irreps,
@@ -406,11 +383,6 @@ class MACEBackboneEncoder(Encoder):
                 f"irreps={irreps}, found {len(matches)}."
             )
         return matches[0]
-
-    def _pool(self, x: torch.Tensor, batch: torch.Tensor, batch_size: int) -> torch.Tensor:
-        if self.pool == "sum":
-            return _scatter_sum(x, batch, dim_size=batch_size)
-        return _batch_mean_pool(x, batch, num_graphs=batch_size)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         if x.dim() != 3 or x.shape[-1] != 3:
@@ -467,8 +439,8 @@ class MACEBackboneEncoder(Encoder):
         scalar_feats = node_feats[:, s0:s1]
         vector_feats = node_feats[:, v0:v1].view(node_count, -1, 3)
 
-        pooled_scalars = self._pool(scalar_feats, batch, batch_size)
-        pooled_vectors = self._pool(
+        pooled_scalars = _batch_mean_pool(scalar_feats, batch, num_graphs=batch_size)
+        pooled_vectors = _batch_mean_pool(
             vector_feats.reshape(node_count, -1), batch, batch_size
         ).view(batch_size, -1, 3)
 

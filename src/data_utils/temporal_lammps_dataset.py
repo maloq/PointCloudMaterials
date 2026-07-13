@@ -37,10 +37,7 @@ def _setup_logger() -> logging.Logger:
 logger = _setup_logger()
 
 
-_SUPPORTED_POSITION_COLUMNS: tuple[tuple[str, str, str], ...] = (
-    ("x", "y", "z"),
-    ("xu", "yu", "zu"),
-)
+_POSITION_COLUMNS = ("x", "y", "z")
 _PRECOMPUTED_NEIGHBOR_INDEX_PROCESS_CACHE: dict[str, np.ndarray] = {}
 
 
@@ -223,7 +220,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         frame_stop: int | None = None,
         anchor_frame_indices: Sequence[int] | None = None,
         anchor_source_names: Sequence[str] | None = None,
-        center_selection_mode: str | None = None,
+        center_selection_mode: str,
         center_atom_ids: Sequence[int] | None = None,
         center_atom_stride: int | None = None,
         max_center_atoms: int | None = None,
@@ -254,9 +251,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
             None if anchor_frame_indices is None else np.asarray(anchor_frame_indices, dtype=np.int64)
         )
         self.anchor_source_names = None if anchor_source_names is None else [str(v) for v in anchor_source_names]
-        self.center_selection_mode = (
-            None if center_selection_mode is None else str(center_selection_mode).strip().lower()
-        )
+        self.center_selection_mode = center_selection_mode.strip().lower()
         self.normalize = bool(normalize)
         self.center_neighborhoods = bool(center_neighborhoods)
         self.center_selection_seed = int(center_selection_seed)
@@ -381,7 +376,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
             f"Loaded dataset from {self.dump_file} with "
             f"{self.frame_count} frames, {self.num_atoms} atoms, "
             f"{self._center_atom_indices.size} tracked centers "
-            f"(selection={self.center_selection_mode or 'legacy'}), "
+            f"(selection={self.center_selection_mode}), "
             f"{self._window_start_frames.size} windows, total_samples={len(self)}."
         )
 
@@ -673,6 +668,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         required_files = [
             self.cache_dir / "positions.npy",
             self.cache_dir / "atom_ids.npy",
+            self.cache_dir / "atom_types.npy",
             self.cache_dir / "timesteps.npy",
             self.cache_dir / "box_low.npy",
             self.cache_dir / "box_high.npy",
@@ -681,15 +677,15 @@ class TemporalLAMMPSDumpDataset(Dataset):
             if not path.exists():
                 return False
 
-        if int(manifest.get("cache_version", -1)) != self.cache_version:
+        if int(manifest["cache_version"]) != self.cache_version:
             return False
-        if manifest.get("source_path") != str(self.dump_file):
+        if manifest["source_path"] != str(self.dump_file):
             return False
 
         stat = self.dump_file.stat()
-        if int(manifest.get("source_size_bytes", -1)) != int(stat.st_size):
+        if int(manifest["source_size_bytes"]) != int(stat.st_size):
             return False
-        if int(manifest.get("source_mtime_ns", -1)) != int(stat.st_mtime_ns):
+        if int(manifest["source_mtime_ns"]) != int(stat.st_mtime_ns):
             return False
         return True
 
@@ -753,6 +749,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         required_files = [
             resolved_cache_dir / "positions.npy",
             resolved_cache_dir / "atom_ids.npy",
+            resolved_cache_dir / "atom_types.npy",
             resolved_cache_dir / "timesteps.npy",
             resolved_cache_dir / "box_low.npy",
             resolved_cache_dir / "box_high.npy",
@@ -762,18 +759,16 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 return None
 
         source_stat = dump_path.stat()
-        if int(manifest.get("cache_version", -1)) != cls.cache_version:
+        if int(manifest["cache_version"]) != cls.cache_version:
             return None
-        if manifest.get("source_path") != str(dump_path):
+        if manifest["source_path"] != str(dump_path):
             return None
-        if int(manifest.get("source_size_bytes", -1)) != int(source_stat.st_size):
+        if int(manifest["source_size_bytes"]) != int(source_stat.st_size):
             return None
-        if int(manifest.get("source_mtime_ns", -1)) != int(source_stat.st_mtime_ns):
+        if int(manifest["source_mtime_ns"]) != int(source_stat.st_mtime_ns):
             return None
 
-        atom_columns_raw = manifest.get("atom_columns")
-        if not isinstance(atom_columns_raw, list) or not atom_columns_raw:
-            return None
+        atom_columns_raw = manifest["atom_columns"]
 
         timesteps = np.load(resolved_cache_dir / "timesteps.npy", mmap_mode="r")
         box_low = np.load(resolved_cache_dir / "box_low.npy", mmap_mode="r")
@@ -959,7 +954,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         atom_types: np.ndarray | None = None
         position_columns = self._resolve_position_columns(scan.atom_columns)
         id_column = self._resolve_required_column(scan.atom_columns, "id")
-        type_column = self._resolve_optional_column(scan.atom_columns, "type")
+        type_column = self._resolve_required_column(scan.atom_columns, "type")
 
         logger.print(f"[temporal-lammps] Building binary cache in {self.cache_dir}")
         with self.dump_file.open("r", encoding="utf-8") as handle:
@@ -998,15 +993,14 @@ class TemporalLAMMPSDumpDataset(Dataset):
                         f"frame_idx={frame_idx}, source_path={self.dump_file}."
                     )
 
-                if type_column is not None:
-                    sorted_types = frame_table[:, type_column].astype(np.int32, copy=False)[order]
-                    if atom_types is None:
-                        atom_types = np.array(sorted_types, dtype=np.int32, copy=True)
-                    elif not np.array_equal(sorted_types, atom_types):
-                        raise ValueError(
-                            "Atom types changed across frames for the same atom ids. "
-                            f"frame_idx={frame_idx}, source_path={self.dump_file}."
-                        )
+                sorted_types = frame_table[:, type_column].astype(np.int32, copy=False)[order]
+                if atom_types is None:
+                    atom_types = np.array(sorted_types, dtype=np.int32, copy=True)
+                elif not np.array_equal(sorted_types, atom_types):
+                    raise ValueError(
+                        "Atom types changed across frames for the same atom ids. "
+                        f"frame_idx={frame_idx}, source_path={self.dump_file}."
+                    )
 
                 coords = frame_table[:, position_columns].astype(np.float32, copy=False)[order]
                 box_low = scan.box_low[frame_idx]
@@ -1029,15 +1023,14 @@ class TemporalLAMMPSDumpDataset(Dataset):
                     )
 
         positions_memmap.flush()
-        if atom_ids is None:
+        if atom_ids is None or atom_types is None:
             raise RuntimeError(
-                "Temporal cache build finished without atom ids. "
+                "Temporal cache build finished without repository-required atom ids/types. "
                 f"source_path={self.dump_file}, cache_dir={self.cache_dir}."
             )
 
         np.save(self.cache_dir / "atom_ids.npy", atom_ids)
-        if atom_types is not None:
-            np.save(self.cache_dir / "atom_types.npy", atom_types)
+        np.save(self.cache_dir / "atom_types.npy", atom_types)
         np.save(self.cache_dir / "timesteps.npy", scan.timesteps)
         np.save(self.cache_dir / "box_low.npy", scan.box_low)
         np.save(self.cache_dir / "box_high.npy", scan.box_high)
@@ -1052,7 +1045,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
             "num_atoms": int(scan.num_atoms),
             "atom_columns": list(scan.atom_columns),
             "position_columns": list(position_columns),
-            "has_type_column": bool(atom_types is not None),
+            "has_type_column": True,
         }
         with (self.cache_dir / "manifest.json").open("w", encoding="utf-8") as handle:
             json.dump(manifest, handle, indent=2)
@@ -1064,7 +1057,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         self.positions = np.load(self.cache_dir / "positions.npy", mmap_mode="r")
         self.atom_ids = np.load(self.cache_dir / "atom_ids.npy", mmap_mode="r")
         atom_types_path = self.cache_dir / "atom_types.npy"
-        self.atom_types = np.load(atom_types_path, mmap_mode="r") if atom_types_path.exists() else None
+        self.atom_types = np.load(atom_types_path, mmap_mode="r")
         self.timesteps = np.load(self.cache_dir / "timesteps.npy", mmap_mode="r")
         self.box_low = np.load(self.cache_dir / "box_low.npy", mmap_mode="r")
         self.box_high = np.load(self.cache_dir / "box_high.npy", mmap_mode="r")
@@ -1083,6 +1076,12 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 f"expected={(self.num_atoms,)}, got={tuple(self.atom_ids.shape)}, "
                 f"cache_dir={self.cache_dir}."
             )
+        if tuple(self.atom_types.shape) != (self.num_atoms,):
+            raise ValueError(
+                "Cached atom_types shape does not match manifest metadata. "
+                f"expected={(self.num_atoms,)}, got={tuple(self.atom_types.shape)}, "
+                f"cache_dir={self.cache_dir}."
+            )
         if tuple(self.timesteps.shape) != (self.frame_count,):
             raise ValueError(
                 "Cached timesteps shape does not match manifest metadata. "
@@ -1099,7 +1098,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
     def _resolve_center_atom_indices(
         self,
         *,
-        center_selection_mode: str | None,
+        center_selection_mode: str,
         center_atom_ids: Sequence[int] | None,
         center_atom_stride: int | None,
         max_center_atoms: int | None,
@@ -1164,35 +1163,12 @@ class TemporalLAMMPSDumpDataset(Dataset):
     def _resolve_center_selection_mode(
         self,
         *,
-        center_selection_mode: str | None,
+        center_selection_mode: str,
         center_atom_ids: Sequence[int] | None,
         center_atom_stride: int | None,
         max_center_atoms: int | None,
     ) -> str:
-        if center_selection_mode is None:
-            specified_modes = sum(
-                option is not None
-                for option in (center_atom_ids, center_atom_stride, max_center_atoms)
-            )
-            if specified_modes == 0:
-                raise ValueError(
-                    "Explicit center atom selection is required for TemporalLAMMPSDumpDataset. "
-                    "Set center_selection_mode='regular_grid' for periodic grid sampling, or set one of "
-                    "center_atom_ids, center_atom_stride, or max_center_atoms."
-                )
-            if specified_modes > 1:
-                raise ValueError(
-                    "Use exactly one legacy center atom selection mode when center_selection_mode is omitted. "
-                    f"Got center_atom_ids={center_atom_ids is not None}, "
-                    f"center_atom_stride={center_atom_stride}, max_center_atoms={max_center_atoms}."
-                )
-            if center_atom_ids is not None:
-                return "atom_ids"
-            if center_atom_stride is not None:
-                return "atom_stride"
-            return "random_subset"
-
-        mode = str(center_selection_mode).strip().lower()
+        mode = center_selection_mode.strip().lower()
         if mode not in {"atom_ids", "atom_stride", "random_subset", "regular_grid"}:
             raise ValueError(
                 "center_selection_mode must be one of "
@@ -1566,13 +1542,13 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
     @staticmethod
     def _resolve_position_columns(atom_columns: Sequence[str]) -> tuple[int, int, int]:
-        for names in _SUPPORTED_POSITION_COLUMNS:
-            if all(name in atom_columns for name in names):
-                return tuple(int(atom_columns.index(name)) for name in names)
-        raise ValueError(
-            "LAMMPS dump must provide one of the supported coordinate column sets "
-            f"{_SUPPORTED_POSITION_COLUMNS}, got atom_columns={list(atom_columns)}."
-        )
+        missing = [name for name in _POSITION_COLUMNS if name not in atom_columns]
+        if missing:
+            raise ValueError(
+                "Repository LAMMPS dumps must provide wrapped Cartesian columns x, y, z. "
+                f"Missing columns={missing}, atom_columns={list(atom_columns)}."
+            )
+        return tuple(int(atom_columns.index(name)) for name in _POSITION_COLUMNS)
 
     @staticmethod
     def _resolve_required_column(atom_columns: Sequence[str], name: str) -> int:
@@ -1581,12 +1557,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 f"LAMMPS dump is missing required atom column {name!r}. "
                 f"Available columns: {list(atom_columns)}."
             )
-        return int(atom_columns.index(name))
-
-    @staticmethod
-    def _resolve_optional_column(atom_columns: Sequence[str], name: str) -> int | None:
-        if name not in atom_columns:
-            return None
         return int(atom_columns.index(name))
 
     @classmethod

@@ -2,7 +2,6 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Tuple
 
 from .base import Encoder
 from .registry import register_encoder
@@ -110,17 +109,12 @@ class _PointNetBackbone(nn.Module):
 
     def forward(self, x: torch.Tensor):
         B, D, N = x.size()
-        # B, 3, N for point clouds
-        assert D == 3, "PointNet encoder expects 3 channels"
+        if D != 3:
+            raise ValueError(f"PointNet encoder expects input shape (B,3,N), got {tuple(x.shape)}.")
         trans = self.stn(x)
 
         x = x.transpose(2, 1)                       # (B,N,C)
-        if D > 3:                                   # extra channels?
-            other = x[:, :, 3:]
-            x     = x[:, :, :3]
         x = torch.bmm(x, trans)
-        if D > 3:
-            x = torch.cat([x, other], dim=2)
         x = x.transpose(2, 1)                       # (B,C,N)
 
         x = F.relu(self.bn1(self.conv1(x)))
@@ -142,7 +136,8 @@ class _PointNetBackbone(nn.Module):
 # ---------------------------------------------------------------------------
 @register_encoder("PnE_L")
 class PointNetEncoder(Encoder):
-    expects_channel_first = True
+    input_layout = "b3n"
+    output_contract = "invariant"
     def __init__(
         self,
         latent_size: int = 128,
@@ -169,10 +164,9 @@ class PointNetEncoder(Encoder):
             nn.Linear(128, latent_size),
         )
 
-    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor | None]:
-        feat, trans, trans_feat = self.backbone(x)
-        latent = self.mlp(feat)
-        return latent, trans, trans_feat
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        feat, _, _ = self.backbone(x)
+        return self.mlp(feat)
 
 
 # ---------------------------------------------------------------------------
@@ -180,7 +174,8 @@ class PointNetEncoder(Encoder):
 # ---------------------------------------------------------------------------
 @register_encoder("PnE_S")
 class PointNetEncoderSmall(Encoder):
-    expects_channel_first = True
+    input_layout = "b3n"
+    output_contract = "invariant"
     def __init__(
         self,
         latent_size: int = 128,
@@ -203,6 +198,5 @@ class PointNetEncoderSmall(Encoder):
         )
 
     def forward(self, x: torch.Tensor):
-        feat, trans, trans_feat = self.backbone(x)
-        latent = self.mlp(feat)
-        return latent, trans, trans_feat
+        feat, _, _ = self.backbone(x)
+        return self.mlp(feat)

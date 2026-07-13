@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
 
 import torch
 import torch.nn as nn
@@ -40,15 +39,6 @@ _ACTS = {
 }
 
 
-def _resolve_activation(name: str):
-    key = str(name).lower().strip()
-    if key not in _ACTS:
-        raise ValueError(
-            f"Unsupported activation {name!r}. Expected one of {sorted(_ACTS)}."
-        )
-    return _ACTS[key]
-
-
 def _scatter_sum(src: torch.Tensor, index: torch.Tensor, dim_size: int) -> torch.Tensor:
     if src.dim() != 2:
         raise ValueError(f"Expected src with shape [E, F], got {tuple(src.shape)}")
@@ -66,7 +56,6 @@ def _scatter_sum(src: torch.Tensor, index: torch.Tensor, dim_size: int) -> torch
 def _batch_mean_pool(x: torch.Tensor, batch: torch.Tensor, num_graphs: int) -> torch.Tensor:
     pooled = _scatter_sum(x, batch, dim_size=num_graphs)
     counts = torch.bincount(batch, minlength=num_graphs).to(dtype=x.dtype).unsqueeze(-1)
-    counts = counts.clamp_min(1.0)
     return pooled / counts
 
 
@@ -87,18 +76,10 @@ def _build_feature_irreps(
     *,
     l_max: int,
     parity: bool,
-    num_features: int | Sequence[int],
+    num_features: int,
 ):
     _require_e3nn()
-    if isinstance(num_features, int):
-        feature_counts = [int(num_features)] * (int(l_max) + 1)
-    else:
-        feature_counts = [int(v) for v in num_features]
-    if len(feature_counts) != int(l_max) + 1:
-        raise ValueError(
-            f"num_features must have length l_max + 1 ({int(l_max) + 1}), "
-            f"got {feature_counts}."
-        )
+    feature_counts = [int(num_features)] * (int(l_max) + 1)
 
     irreps = []
     for l, mul in enumerate(feature_counts):
@@ -108,42 +89,6 @@ def _build_feature_irreps(
         for p in parities:
             irreps.append((mul, (l, p)))
     return o3.Irreps(irreps)
-
-
-def _resolve_hidden_irreps(
-    *,
-    num_layers: int,
-    feature_irreps_hidden,
-    l_max: int,
-    parity: bool,
-    num_features: int | Sequence[int],
-):
-    _require_e3nn()
-    if feature_irreps_hidden is None:
-        base = _build_feature_irreps(l_max=l_max, parity=parity, num_features=num_features)
-        return [base for _ in range(int(num_layers))]
-
-    if isinstance(feature_irreps_hidden, str):
-        base = o3.Irreps(feature_irreps_hidden)
-        return [base for _ in range(int(num_layers))]
-
-    if hasattr(feature_irreps_hidden, "dim") and hasattr(feature_irreps_hidden, "simplify"):
-        base = o3.Irreps(feature_irreps_hidden)
-        return [base for _ in range(int(num_layers))]
-
-    if not isinstance(feature_irreps_hidden, Sequence):
-        raise TypeError(
-            "feature_irreps_hidden must be None, an Irreps/string, or a sequence "
-            f"of Irreps/string entries, got {type(feature_irreps_hidden)}."
-        )
-
-    hidden_list = [o3.Irreps(ir) for ir in feature_irreps_hidden]
-    if len(hidden_list) != int(num_layers):
-        raise ValueError(
-            f"feature_irreps_hidden must have one entry per layer ({num_layers}), "
-            f"got {len(hidden_list)}."
-        )
-    return hidden_list
 
 
 def _scalar_irreps(mul: int):
@@ -157,7 +102,7 @@ def _radius_graph(
     points: torch.Tensor,
     *,
     r_max: float,
-    max_neighbors: int | None,
+    max_neighbors: int,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     if points.dim() != 3 or points.shape[-1] != 3:
         raise ValueError(f"Expected points shape [B, N, 3], got {tuple(points.shape)}")
@@ -170,10 +115,10 @@ def _radius_graph(
             f"NequIP_Backbone requires at least 2 points per cloud to build edges, got {num_points}."
         )
 
-    if max_neighbors is not None:
-        max_neighbors = int(max_neighbors)
-        if max_neighbors <= 0:
-            raise ValueError(f"max_neighbors must be > 0, got {max_neighbors}")
+    if max_neighbors <= 0 or max_neighbors >= num_points:
+        raise ValueError(
+            f"max_neighbors must be in [1, N - 1], got {max_neighbors} for N={num_points}."
+        )
 
     edge_dst_parts: list[torch.Tensor] = []
     edge_src_parts: list[torch.Tensor] = []
@@ -187,25 +132,21 @@ def _radius_graph(
         eye = torch.eye(num_points, dtype=torch.bool, device=points.device)
         valid = (dist < float(r_max)) & (~eye)
 
-        if max_neighbors is None:
-            dst_local, src_local = torch.nonzero(valid, as_tuple=True)
-        else:
-            k_eff = min(max_neighbors, num_points - 1)
-            masked = dist.masked_fill(~valid, float("inf"))
-            values, indices = torch.topk(
-                masked,
-                k=k_eff,
-                dim=-1,
-                largest=False,
-                sorted=False,
-            )
-            keep = torch.isfinite(values)
-            dst_local = (
-                torch.arange(num_points, device=points.device, dtype=torch.long)
-                .unsqueeze(1)
-                .expand_as(indices)[keep]
-            )
-            src_local = indices[keep]
+        masked = dist.masked_fill(~valid, float("inf"))
+        values, indices = torch.topk(
+            masked,
+            k=max_neighbors,
+            dim=-1,
+            largest=False,
+            sorted=False,
+        )
+        keep = torch.isfinite(values)
+        dst_local = (
+            torch.arange(num_points, device=points.device, dtype=torch.long)
+            .unsqueeze(1)
+            .expand_as(indices)[keep]
+        )
+        src_local = indices[keep]
 
         if dst_local.numel() == 0:
             raise ValueError(
@@ -448,30 +389,9 @@ class NequIPConvNetLayer(nn.Module):
         avg_num_neighbors: float,
         use_sc: bool,
         resnet: bool,
-        nonlinearity_scalars: dict[str, str] | None = None,
-        nonlinearity_gates: dict[str, str] | None = None,
     ) -> None:
         super().__init__()
         _require_e3nn()
-
-        nonlinearity_scalars = (
-            {"e": "silu", "o": "tanh"}
-            if nonlinearity_scalars is None
-            else dict(nonlinearity_scalars)
-        )
-        nonlinearity_gates = (
-            {"e": "silu", "o": "tanh"}
-            if nonlinearity_gates is None
-            else dict(nonlinearity_gates)
-        )
-        if set(nonlinearity_scalars) != {"e", "o"}:
-            raise ValueError(
-                "nonlinearity_scalars must provide exactly the keys {'e', 'o'}."
-            )
-        if set(nonlinearity_gates) != {"e", "o"}:
-            raise ValueError(
-                "nonlinearity_gates must provide exactly the keys {'e', 'o'}."
-            )
 
         self.feature_irreps_in = o3.Irreps(feature_irreps_in)
         self.feature_irreps_hidden = o3.Irreps(feature_irreps_hidden)
@@ -506,9 +426,9 @@ class NequIPConvNetLayer(nn.Module):
 
         self.equivariant_nonlin = Gate(
             irreps_scalars=irreps_scalars,
-            act_scalars=[_resolve_activation(nonlinearity_scalars["e" if ir.p == 1 else "o"]) for _, ir in irreps_scalars],
+            act_scalars=[_ACTS["silu" if ir.p == 1 else "tanh"] for _, ir in irreps_scalars],
             irreps_gates=irreps_gates,
-            act_gates=[_resolve_activation(nonlinearity_gates["e" if ir.p == 1 else "o"]) for _, ir in irreps_gates],
+            act_gates=[_ACTS["silu" if ir.p == 1 else "tanh"] for _, ir in irreps_gates],
             irreps_gated=irreps_gated,
         )
         conv_irreps_out = self.equivariant_nonlin.irreps_in.simplify()
@@ -568,79 +488,42 @@ class NequIPBackboneEncoder(Encoder):
     repo's encoder interface provides coordinates but not per-point atom types.
     """
 
+    output_contract = "invariant_equivariant"
+
     def __init__(
         self,
-        latent_size: int = 128,
+        latent_size: int,
         *,
-        r_max: float = 2.0,
-        num_layers: int = 4,
-        l_max: int = 1,
-        parity: bool = True,
-        num_features: int | Sequence[int] = 32,
-        type_embed_num_features: int | None = None,
-        radial_mlp_depth: int = 1,
-        radial_mlp_width: int = 128,
-        feature_irreps_hidden=None,
-        num_bessels: int = 8,
-        bessel_trainable: bool = False,
-        polynomial_cutoff_p: int = 6,
-        avg_num_neighbors: float | None = None,
-        max_neighbors: int | None = None,
-        pool: str = "mean",
-        num_types: int = 1,
-        resnet: bool = False,
-        convnet_sc: bool = True,
-        final_scalar_layer: bool = True,
-        nonlinearity_scalars: dict[str, str] | None = None,
-        nonlinearity_gates: dict[str, str] | None = None,
-        # Backwards-compatible aliases / traps for the previous simplified encoder.
-        cutoff: float | None = None,
-        num_neighbors: int | None = None,
-        radial_basis: int | None = None,
-        pooling: str | None = None,
-        scalar_dim: int | None = None,
-        vector_dim: int | None = None,
-        hidden_dim: int | None = None,
-        dropout_rate: float | None = None,
-        invariant_eps: float | None = None,
+        r_max: float,
+        num_layers: int,
+        l_max: int,
+        parity: bool,
+        num_features: int,
+        type_embed_num_features: int,
+        radial_mlp_depth: int,
+        radial_mlp_width: int,
+        num_bessels: int,
+        bessel_trainable: bool,
+        polynomial_cutoff_p: int,
+        avg_num_neighbors: float,
+        max_neighbors: int,
+        pool: str,
+        num_types: int,
+        resnet: bool,
+        convnet_sc: bool,
     ) -> None:
         super().__init__()
         _require_e3nn()
-
-        if scalar_dim is not None or vector_dim is not None:
-            raise ValueError(
-                "scalar_dim/vector_dim belong to the previous simplified encoder and are not "
-                "part of faithful NequIP. Use l_max, parity, and num_features instead."
-            )
-        if hidden_dim is not None:
-            raise ValueError(
-                "hidden_dim belongs to the previous simplified encoder and is ambiguous here. "
-                "Use radial_mlp_width and num_features instead."
-            )
-        if dropout_rate is not None:
-            raise ValueError(
-                "dropout_rate is not part of the original NequIP interaction blocks implemented here."
-            )
-        if invariant_eps is not None:
-            raise ValueError(
-                "invariant_eps belongs to the previous simplified encoder and is not used here."
-            )
-
-        if cutoff is not None:
-            r_max = float(cutoff)
-        if num_neighbors is not None:
-            max_neighbors = int(num_neighbors)
-        if radial_basis is not None:
-            num_bessels = int(radial_basis)
-        if pooling is not None:
-            pool = str(pooling)
 
         if int(latent_size) <= 0:
             raise ValueError(f"latent_size must be > 0, got {latent_size}")
         if float(r_max) <= 0.0:
             raise ValueError(f"r_max must be > 0, got {r_max}")
-        if int(num_layers) <= 0:
-            raise ValueError(f"num_layers must be > 0, got {num_layers}")
+        if int(num_layers) < 2:
+            raise ValueError(
+                "NequIP_Backbone requires num_layers >= 2 so the equivariant latent "
+                f"can be read before the final scalar layer, got {num_layers}."
+            )
         if int(l_max) < 1:
             raise ValueError(
                 f"l_max must be >= 1 to produce vector latents, got {l_max}."
@@ -650,14 +533,13 @@ class NequIPBackboneEncoder(Encoder):
                 "NequIP_Backbone currently supports num_types=1 only because the encoder "
                 "API in this repo passes coordinates only, not per-point atom types."
             )
-        if type_embed_num_features is not None and int(type_embed_num_features) <= 0:
+        if int(type_embed_num_features) <= 0:
             raise ValueError(
-                f"type_embed_num_features must be > 0 when set, got {type_embed_num_features}"
+                f"type_embed_num_features must be > 0, got {type_embed_num_features}"
             )
 
-        pool = str(pool).lower().strip()
-        if pool not in {"mean", "sum"}:
-            raise ValueError(f"Unsupported pool={pool!r}; expected 'mean' or 'sum'.")
+        if pool != "mean":
+            raise ValueError(f"NequIP_Backbone is configured for pool='mean', got {pool!r}.")
 
         self.latent_size = int(latent_size)
         self.invariant_dim = self.latent_size
@@ -666,74 +548,22 @@ class NequIPBackboneEncoder(Encoder):
         self.num_layers = int(num_layers)
         self.l_max = int(l_max)
         self.parity = bool(parity)
-        self.pool = pool
-        self.max_neighbors = None if max_neighbors is None else int(max_neighbors)
-        self.final_scalar_layer = bool(final_scalar_layer)
-
-        hidden_feature_counts = (
-            [int(v) for v in num_features]
-            if isinstance(num_features, Sequence) and not isinstance(num_features, (str, bytes))
-            else num_features
-        )
-        if type_embed_num_features is None:
-            if isinstance(hidden_feature_counts, int):
-                type_embed_num_features = int(hidden_feature_counts)
-            else:
-                type_embed_num_features = int(hidden_feature_counts[0])
+        self.max_neighbors = int(max_neighbors)
         self.type_embed_num_features = int(type_embed_num_features)
 
-        if avg_num_neighbors is None:
-            if self.max_neighbors is not None:
-                avg_num_neighbors = float(self.max_neighbors)
-            else:
-                avg_num_neighbors = 1.0
         if float(avg_num_neighbors) <= 0.0:
             raise ValueError(
                 f"avg_num_neighbors must be > 0, got {avg_num_neighbors}"
             )
         self.avg_num_neighbors = float(avg_num_neighbors)
 
-        scalar_readout_mul = (
-            int(hidden_feature_counts)
-            if isinstance(hidden_feature_counts, int)
-            else int(hidden_feature_counts[0])
+        full_hidden = _build_feature_irreps(
+            l_max=self.l_max,
+            parity=self.parity,
+            num_features=num_features,
         )
-        if self.final_scalar_layer:
-            if self.num_layers < 2:
-                raise ValueError(
-                    "NequIP_Backbone with final_scalar_layer=True requires num_layers >= 2 "
-                    "so the equivariant latent can be read from a penultimate equivariant layer."
-                )
-            if feature_irreps_hidden is None:
-                full_hidden = _build_feature_irreps(
-                    l_max=self.l_max,
-                    parity=self.parity,
-                    num_features=num_features,
-                )
-                hidden_irreps_list = [full_hidden for _ in range(self.num_layers - 1)]
-                hidden_irreps_list.append(_scalar_irreps(scalar_readout_mul))
-            elif isinstance(feature_irreps_hidden, Sequence) and not isinstance(
-                feature_irreps_hidden, (str, bytes)
-            ):
-                hidden_irreps_list = _resolve_hidden_irreps(
-                    num_layers=self.num_layers,
-                    feature_irreps_hidden=feature_irreps_hidden,
-                    l_max=self.l_max,
-                    parity=self.parity,
-                    num_features=num_features,
-                )
-            else:
-                full_hidden = o3.Irreps(feature_irreps_hidden)
-                hidden_irreps_list = [full_hidden for _ in range(self.num_layers - 1)]
-                hidden_irreps_list.append(_scalar_irreps(scalar_readout_mul))
-        else:
-            hidden_irreps_list = _resolve_hidden_irreps(
-                num_layers=self.num_layers,
-                feature_irreps_hidden=feature_irreps_hidden,
-                l_max=self.l_max,
-                parity=self.parity,
-                num_features=num_features,
-            )
+        hidden_irreps_list = [full_hidden for _ in range(self.num_layers - 1)]
+        hidden_irreps_list.append(_scalar_irreps(int(num_features)))
 
         self.node_attr_irreps = o3.Irreps([(self.type_embed_num_features, (0, 1))])
         self.edge_attr_irreps = o3.Irreps.spherical_harmonics(lmax=self.l_max)
@@ -755,7 +585,7 @@ class NequIPBackboneEncoder(Encoder):
 
         self.layers = nn.ModuleList()
         current_irreps = self.node_attr_irreps
-        self.eq_source_layer_index = self.num_layers - 2 if self.final_scalar_layer else self.num_layers - 1
+        self.eq_source_layer_index = self.num_layers - 2
         self.eq_feature_irreps = None
         for layer_idx, hidden_irreps in enumerate(hidden_irreps_list):
             layer = NequIPConvNetLayer(
@@ -769,8 +599,6 @@ class NequIPBackboneEncoder(Encoder):
                 avg_num_neighbors=self.avg_num_neighbors,
                 use_sc=bool(convnet_sc and layer_idx != 0),
                 resnet=bool(resnet and layer_idx != 0),
-                nonlinearity_scalars=nonlinearity_scalars,
-                nonlinearity_gates=nonlinearity_gates,
             )
             self.layers.append(layer)
             current_irreps = layer.irreps_out
@@ -798,11 +626,6 @@ class NequIPBackboneEncoder(Encoder):
 
         self.inv_head = o3.Linear(self.feature_irreps_out, self.inv_irreps)
         self.eq_head = o3.Linear(self.eq_feature_irreps, self.eq_irreps)
-
-    def _pool(self, x: torch.Tensor, batch: torch.Tensor, batch_size: int) -> torch.Tensor:
-        if self.pool == "sum":
-            return _scatter_sum(x, batch, dim_size=batch_size)
-        return _batch_mean_pool(x, batch, num_graphs=batch_size)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         if x.dim() != 3 or x.shape[-1] != 3:
@@ -854,8 +677,8 @@ class NequIPBackboneEncoder(Encoder):
                 f"eq_source_layer_index={self.eq_source_layer_index}, num_layers={len(self.layers)}."
             )
 
-        pooled = self._pool(node_features, batch, batch_size)
-        pooled_eq = self._pool(eq_source_features, batch, batch_size)
+        pooled = _batch_mean_pool(node_features, batch, num_graphs=batch_size)
+        pooled_eq = _batch_mean_pool(eq_source_features, batch, num_graphs=batch_size)
         inv_z = self.inv_head(pooled)
         eq_z = self.eq_head(pooled_eq)
 

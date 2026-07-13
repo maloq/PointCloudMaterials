@@ -585,7 +585,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     if datamodule_class is not None:
         dm = datamodule_class(cfg)
     else:
-        data_kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
+        data_kind = normalize_data_kind(cfg.data.kind)
         if data_kind == "synthetic":
             dm = SyntheticPointCloudDataModule(cfg)
         elif data_kind == "line_static":
@@ -600,7 +600,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             raise ValueError(
                 "Unsupported data.kind. Expected one of "
                 "['static', 'synthetic', 'temporal_lammps', 'line_lammps', 'line_static'] "
-                f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
+                f"got {cfg.data.kind!r}."
             )
     model = model_class(cfg)
 

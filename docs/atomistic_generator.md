@@ -1,6 +1,7 @@
 # Force-driven atomistic benchmark
 
-`src.data_utils.synthetic.atomistic_generator` builds three aluminium environments:
+`src.data_utils.synthetic.atomistic_generator` builds three aluminium environments for every
+explicitly configured random seed:
 
 1. finite-temperature FCC bulk equilibrated in NPT;
 2. a liquid melted at 1600 K, quenched, and sampled as a finite-time supercooled state at 650 K;
@@ -8,7 +9,7 @@
 
 There is no density input. At fixed atom count, pressure, and temperature, the barostat changes the cell volume and the measured number density is `N / <V>`. This follows the constant-stress molecular-dynamics construction of [Parrinello and Rahman](https://doi.org/10.1063/1.328693) and the MTK NPT equations implemented by ASE ([Martyna, Tobias, and Klein](https://doi.org/10.1063/1.467468)). The solid, liquid, and interface therefore do not receive independently chosen packing densities.
 
-The force model is an explicit local file below `datasets/`. Generation never downloads a checkpoint or substitutes a calculator. Every output records the model SHA-256 digest. The supplied recipes use MACE-MPA; the underlying foundation-model scope and limitations are described by [Batatia et al.](https://arxiv.org/abs/2401.00096). This is still an approximate Hamiltonian, so matching a density does not establish that every local motif is quantitatively correct.
+The force model is an explicit local file below `datasets/`. Generation never downloads a checkpoint or substitutes a calculator. Every output records the model SHA-256 digest. The supplied recipe uses MACE-MPA with cuEquivariance CUDA kernels. A local parity test on 256 perturbed Al atoms found a force RMSE of `8.2e-7 eV/A` and a maximum force difference of `2.8e-6 eV/A` relative to the original e3nn kernels. The calculator also retains a neighbor graph with a configured Verlet skin and rebuilds it from an exact atomic-displacement and cell-deformation bound. On 9,216 atoms, the selected `0.3 A` skin reduced measured 650 K NPT time from `0.468` to `0.213 s/step` and 1600 K NVT time from `0.411` to `0.242 s/step`. Cached-versus-fresh graph parity gave `7.3e-7 eV/A` force RMSE and `9.5e-9 eV/A^3` maximum stress difference. The underlying foundation-model scope and limitations are described by [Batatia et al.](https://arxiv.org/abs/2401.00096). This is still an approximate Hamiltonian, so matching a density does not establish that every local motif is quantitatively correct.
 
 ## What the labels mean
 
@@ -22,7 +23,7 @@ CNA, PTM, and bond-order parameters do not create the labels. PTM is run only af
 
 The implementation calibration used the configured MACE-MPA checkpoint on a deliberately small 288-atom cell. The constrained slab was 41.7% FCC after melting and 45.1% FCC after rapid quench/capture, so both sides of the front survived even under strong finite-size interaction. The production cells are longer along the interface normal and must independently pass the configured 20--80% crystalline acceptance interval.
 
-At 650 K the solid-liquid interface is not an equilibrium coexistence interface; it is a moving growth front in an undercooled liquid. This matches the repository's nucleation setting. The interface snapshot is therefore captured after a short, explicitly recorded evolution instead of being falsely described as equilibrated.
+At 650 K the solid-liquid interface is not an equilibrium coexistence interface; it is a moving growth front in an undercooled liquid. This matches the repository's nucleation setting. Its volume is constructed from the measured solid and liquid endpoint volumes in the same replica, weighted by the prepared slab fractions. The rapidly quenched front is then evolved at fixed volume and explicitly recorded rather than being falsely described as an equilibrium interface.
 
 ## Claims this benchmark can support
 
@@ -40,7 +41,12 @@ The synthetic class labels alone cannot prove a new thermodynamic phase, determi
 
 ```bash
 conda run -n pointnet python -m src.data_utils.synthetic.atomistic_generator \
-  --config configs/data/data_synth_polycrystalline_balanced_geometries.yaml
+  --config configs/data/atomistic_al_phase_context.yaml
 ```
 
-The ordinary recipe is intended for validation and iteration. The `_v2` recipe is the larger, slower study configuration. Both fail if the selected potential is absent, an endpoint is structurally wrong, pressure has not converged for a bulk branch, atoms overlap, forces are non-finite/excessive, or simulated bulk densities disagree with the repository MD reference beyond the configured tolerance.
+The single production recipe fails if the selected potential is absent, an endpoint is structurally wrong, pressure has not converged for a bulk branch, atoms overlap, forces are non-finite/excessive, or simulated bulk densities disagree with the repository MD reference beyond the configured tolerance.
+
+Each environment stores its final atom table and a `trajectory.npz` containing wrapped positions,
+cell vectors, thermodynamic values, and exact MD step indices at the configured sampling interval.
+For the production recipe this retains 51 solid frames, 31 target-temperature liquid frames,
+and 11 growth-front frames per replica.

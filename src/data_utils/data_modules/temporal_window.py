@@ -3,13 +3,11 @@ from collections import deque
 
 import torch
 from torch.utils.data import BatchSampler, Sampler
-from torch.utils.data._utils.collate import default_collate
 
 
-def _temporal_identity_or_default_collate(batch):
-    if isinstance(batch, dict):
-        return batch
-    return default_collate(batch)
+def _identity_batch_collate(batch: dict) -> dict:
+    """Return the batch dictionary produced by repository dataset ``__getitems__`` methods."""
+    return batch
 
 
 class _EpochTrackingSampler(Sampler[int]):
@@ -348,4 +346,4 @@ class TemporalWindowBatchSampler(BatchSampler):
             yield batch
 
 
-__all__ = ["TemporalWindowBatchSampler", "_temporal_identity_or_default_collate"]
+__all__ = ["TemporalWindowBatchSampler", "_identity_batch_collate"]

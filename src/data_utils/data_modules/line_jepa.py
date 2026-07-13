@@ -10,7 +10,7 @@ class LineJEPADataModule(pl.LightningDataModule):
 
     def __init__(self, cfg):
         super().__init__()
-        kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
+        kind = normalize_data_kind(cfg.data.kind)
         if kind in {"static", "line_static"}:
             self.impl = LineStaticDataModule(cfg)
         elif kind in {"temporal_lammps", "line_lammps"}:
@@ -19,7 +19,7 @@ class LineJEPADataModule(pl.LightningDataModule):
             raise ValueError(
                 "Line-JEPA data.kind must be one of "
                 "['static', 'line_static', 'temporal_lammps', 'line_lammps'], "
-                f"got {getattr(cfg.data, 'kind', None)!r}."
+                f"got {cfg.data.kind!r}."
             )
 
     def setup(self, stage=None):

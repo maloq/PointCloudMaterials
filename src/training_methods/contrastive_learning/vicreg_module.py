@@ -1,5 +1,6 @@
 import torch
 
+from src.data_utils.data_kinds import normalize_data_kind
 from src.training_methods.base_ssl_module import BaseSSLModule
 
 
@@ -9,20 +10,26 @@ class VICRegModule(BaseSSLModule):
     """
 
     def __init__(self, cfg):
+        self.data_kind = normalize_data_kind(cfg.data.kind)
         super().__init__(
             cfg,
             module_name="VICRegModule",
-            require_summary_points=getattr(cfg, "data", None) is not None,
         )
         self.cache_warning_prefix = "contrastive"
 
-    @staticmethod
-    def _unpack_batch(batch):
-        return batch["points"], {
-            "class_id": batch.get("class_id"),
-            "instance_id": batch.get("instance_id"),
-            "rotation": batch.get("rotation"),
-        }
+    def _unpack_batch(self, batch):
+        if self.data_kind == "static":
+            return batch["points"], {}
+        if self.data_kind == "synthetic":
+            return batch["points"], {
+                "class_id": batch["class_id"],
+                "instance_id": batch["instance_id"],
+                "rotation": batch["rotation"],
+            }
+        raise RuntimeError(
+            "VICRegModule only consumes the repository's static or synthetic batches, "
+            f"got data.kind={self.data_kind!r}."
+        )
 
     def _build_contrastive_view_pair(
         self,
@@ -96,46 +103,53 @@ class VICRegModule(BaseSSLModule):
         run_swav = self.swav.should_run(current_epoch=int(self.current_epoch))
         can_share_views = run_vicreg and run_swav and self.vicreg.view_points == self.swav.view_points
 
-        def process_head(head_name, compute_fn, view_points, shared_features=None, view_pair=None):
-            views = view_pair
-            if shared_features:
-                z_a, z_b = shared_features
-            else:
-                views = self._build_contrastive_view_pair(pc_raw, view_points=view_points)
-                z_a, z_b = self._encode_contrastive_view_pair(views)
-            loss, metrics = compute_fn(z_a, z_b, views)
-            if loss is not None: losses[head_name] = loss
-            for k, v in metrics.items(): self._log_metric(stage, k, v, batch_size=batch_size)
-            return z_a, z_b
-
-        shared_features = None
-        shared_view_pair = None
         if can_share_views:
             shared_view_pair = self._build_contrastive_view_pair(pc_raw, view_points=self.vicreg.view_points)
             shared_features = self._encode_contrastive_view_pair(shared_view_pair)
 
         if run_vicreg:
-            process_head(
-                self.vicreg.metric_prefix,
-                lambda a, b, views: self.vicreg.compute_loss_from_features(
-                    z_a_feat=a,
-                    z_b_feat=b,
-                    current_epoch=int(self.current_epoch),
-                    overlap_target=None if views is None else views.get("overlap_target"),
-                ),
-                self.vicreg.view_points,
-                shared_features,
-                shared_view_pair,
+            if can_share_views:
+                vicreg_views = shared_view_pair
+                z_a, z_b = shared_features
+            else:
+                vicreg_views = self._build_contrastive_view_pair(
+                    pc_raw,
+                    view_points=self.vicreg.view_points,
+                )
+                z_a, z_b = self._encode_contrastive_view_pair(vicreg_views)
+            overlap_target = (
+                vicreg_views["overlap_target"]
+                if self.vicreg.requires_overlap_target
+                else None
             )
+            vicreg_loss, vicreg_metrics = self.vicreg.compute_loss_from_features(
+                z_a_feat=z_a,
+                z_b_feat=z_b,
+                current_epoch=int(self.current_epoch),
+                overlap_target=overlap_target,
+            )
+            if vicreg_loss is not None:
+                losses[self.vicreg.metric_prefix] = vicreg_loss
+            for name, value in vicreg_metrics.items():
+                self._log_metric(stage, name, value, batch_size=batch_size)
 
         if run_swav:
-            process_head(
-                "swav",
-                lambda a, b, views: self.swav.compute_loss(view_features=[a, b], current_epoch=int(self.current_epoch)),
-                self.swav.view_points,
-                shared_features,
-                shared_view_pair,
+            if can_share_views:
+                z_a, z_b = shared_features
+            else:
+                swav_views = self._build_contrastive_view_pair(
+                    pc_raw,
+                    view_points=self.swav.view_points,
+                )
+                z_a, z_b = self._encode_contrastive_view_pair(swav_views)
+            swav_loss, swav_metrics = self.swav.compute_loss(
+                view_features=[z_a, z_b],
+                current_epoch=int(self.current_epoch),
             )
+            if swav_loss is not None:
+                losses["swav"] = swav_loss
+            for name, value in swav_metrics.items():
+                self._log_metric(stage, name, value, batch_size=batch_size)
 
         if self._should_cache_supervised_stage(stage):
             with torch.no_grad():

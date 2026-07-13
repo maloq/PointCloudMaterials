@@ -5,30 +5,17 @@ import math
 import torch
 
 
-def resolve_model_summary_batch_size(cfg, *, default: int = 1) -> int:
-    raw_value = getattr(cfg, "model_summary_batch_size", default)
-    batch_size = int(raw_value)
-    if batch_size < 1:
-        raise ValueError(
-            "model_summary_batch_size must be >= 1 so PyTorch Lightning can estimate FLOPs, "
-            f"got {raw_value!r}."
-        )
-    return batch_size
-
-
 def make_model_summary_point_cloud(
     *,
     batch_size: int,
     num_points: int,
     sequence_length: int | None = None,
 ) -> torch.Tensor:
-    batch_size = int(batch_size)
-    num_points = int(num_points)
     if batch_size < 1:
         raise ValueError(f"Summary point-cloud batch_size must be >= 1, got {batch_size}.")
     if num_points < 1:
         raise ValueError(f"Summary point-cloud num_points must be >= 1, got {num_points}.")
-    if sequence_length is not None and int(sequence_length) < 1:
+    if sequence_length is not None and sequence_length < 1:
         raise ValueError(
             "Summary temporal sequence_length must be >= 1 when provided, "
             f"got {sequence_length}."
@@ -65,8 +52,8 @@ def make_model_summary_point_cloud(
         return batch.contiguous()
 
     frames = []
-    center = (int(sequence_length) - 1) / 2.0
-    for frame_idx in range(int(sequence_length)):
+    center = (sequence_length - 1) / 2.0
+    for frame_idx in range(sequence_length):
         angle = 0.03 * (float(frame_idx) - center)
         cos_a = math.cos(angle)
         sin_a = math.sin(angle)

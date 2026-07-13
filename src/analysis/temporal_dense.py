@@ -25,7 +25,7 @@ from .inference_cache import (
     _validate_inference_cache_arrays,
 )
 from .temporal_real import (
-    _temporal_identity_or_default_collate,
+    _identity_batch_collate,
     build_temporal_real_single_snapshot_bundle,
     resolve_temporal_real_snapshot_subset,
 )
@@ -622,7 +622,7 @@ def _run_temporal_dense_snapshot_plan_inference(
         **_analysis_dataloader_kwargs(
             batch_size=int(plan["inference_batch_size"]),
             dataloader_num_workers=int(plan["dataloader_num_workers"]),
-            collate_fn=_temporal_identity_or_default_collate,
+            collate_fn=_identity_batch_collate,
         ),
     )
     snapshot_bundles = plan["snapshot_bundles"]
@@ -769,7 +769,7 @@ def _run_temporal_dense_snapshot_union_inference(
         **_analysis_dataloader_kwargs(
             batch_size=int(plans[0]["inference_batch_size"]),
             dataloader_num_workers=int(plans[0]["dataloader_num_workers"]),
-            collate_fn=_temporal_identity_or_default_collate,
+            collate_fn=_identity_batch_collate,
         ),
     )
     union_cache = gather_inference_batches(

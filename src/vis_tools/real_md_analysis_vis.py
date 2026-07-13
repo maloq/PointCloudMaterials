@@ -484,7 +484,10 @@ def _draw_diagonal_cut_plane(ax: Any, *, bounds: np.ndarray) -> None:
         plane_normal=_DIAGONAL_DIRECTION,
     )
     if polygon.shape[0] < 3:
-        return
+        raise RuntimeError(
+            "The configured diagonal cut plane did not intersect the spatial bounds "
+            f"as a polygon; bounds={bounds_arr.tolist()}."
+        )
     poly = Poly3DCollection(
         [polygon],
         facecolor="#CBD5E1",
@@ -1187,20 +1190,13 @@ def save_temporal_transition_flow_animation(
     min_draw_fraction: float = 0.0,
     frame_duration_ms: int = 450,
     total_duration_seconds: float | None = None,
-    title: str = "Cluster transition flow",
 ) -> dict[str, Any]:
     if not pair_records:
         raise ValueError("pair_records must be a non-empty list.")
 
     frames_rgb: list[np.ndarray] = []
-    for pair_idx, record in enumerate(pair_records):
-        pair_title = str(
-            record.get(
-                "title",
-                f"{title} | {record.get('frame_from_label', record.get('frame_from', '?'))} -> "
-                f"{record.get('frame_to_label', record.get('frame_to', '?'))}",
-            )
-        )
+    for record in pair_records:
+        pair_title = record["title"]
         fig, _ = _build_transition_flow_figure(
             np.asarray(record["counts"], dtype=np.float64),
             title=pair_title,
@@ -1224,16 +1220,7 @@ def save_temporal_transition_flow_animation(
     return {
         "out_file": str(out_file),
         "frame_count": int(len(pair_records)),
-        "pair_titles": [
-            str(
-                record.get(
-                    "title",
-                    f"{record.get('frame_from_label', record.get('frame_from', '?'))} -> "
-                    f"{record.get('frame_to_label', record.get('frame_to', '?'))}",
-                )
-            )
-            for record in pair_records
-        ],
+        "pair_titles": [record["title"] for record in pair_records],
     }
 
 

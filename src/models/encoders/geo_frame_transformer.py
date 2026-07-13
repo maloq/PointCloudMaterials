@@ -278,11 +278,11 @@ class GeoFrameTokenEncoder(nn.Module):
         self.num_group = int(num_group)
         self.patch_sizes = tuple(int(size) for size in patch_sizes)
         self.trans_dim = int(trans_dim)
-        self.frame_builder = str(frame_builder).strip().lower()
+        self.frame_builder = frame_builder
         self.frame_eps = float(frame_eps)
         self.use_frame_gating = bool(use_frame_gating)
         self.frame_confidence_floor = float(frame_confidence_floor)
-        self.geometry_bias_mode = str(geometry_bias_mode).strip().lower()
+        self.geometry_bias_mode = geometry_bias_mode
         if not self.patch_sizes or any(size < 3 for size in self.patch_sizes):
             raise ValueError(
                 "GeoFrameTransformer patch_sizes must contain integers >= 3, "
@@ -296,7 +296,7 @@ class GeoFrameTokenEncoder(nn.Module):
         if self.frame_builder not in {"triad", "pca"}:
             raise ValueError(
                 "GeoFrameTransformer frame_builder must be 'triad' or 'pca', "
-                f"got {self.frame_builder!r}."
+                f"got {frame_builder!r}."
             )
         if self.frame_eps <= 0.0:
             raise ValueError(
@@ -317,8 +317,8 @@ class GeoFrameTokenEncoder(nn.Module):
             num_group=self.num_group,
             group_size=max(self.patch_sizes),
             deterministic_fps=bool(deterministic_fps),
-            sorting_mode=str(sorting_mode),
-            group_sampling=str(group_sampling),
+            sorting_mode=sorting_mode,
+            group_sampling=group_sampling,
         )
         self.patch_encoders = nn.ModuleList(
             [PatchPointEncoder(int(encoder_dims)) for _ in self.patch_sizes]
@@ -388,7 +388,6 @@ class GeoFrameTokenEncoder(nn.Module):
                 neighborhood.float(),
                 frame_builder=self.frame_builder,
                 frame_eps=self.frame_eps,
-                validate=not self.training,
             )
             batch_size, num_group, group_size, _ = neighborhood.shape
             if self.use_frame_gating:
@@ -502,7 +501,7 @@ class GeoFrameTransformerEncoder(Encoder):
     RI_MAE_Invariant remains registered separately and is intentionally not modified.
     """
 
-    expects_channel_first = False
+    output_contract = "invariant_aux"
 
     def __init__(
         self,
@@ -543,7 +542,7 @@ class GeoFrameTransformerEncoder(Encoder):
         self.directional_feature_dim = int(ray_feature_dim)
         self.mask_ratio = float(mask_ratio)
         self.ema_decay = float(ema_decay)
-        self.pooling_mode = str(pooling_mode).strip().lower()
+        self.pooling_mode = pooling_mode
         if self.latent_size <= 0:
             raise ValueError(
                 f"GeoFrameTransformer latent_size must be > 0, got {self.latent_size}."
@@ -587,13 +586,13 @@ class GeoFrameTransformerEncoder(Encoder):
             mlp_ratio=float(mlp_ratio),
             dropout=float(dropout),
             deterministic_fps=bool(deterministic_fps),
-            sorting_mode=str(sorting_mode),
-            group_sampling=str(group_sampling),
-            frame_builder=str(frame_builder),
+            sorting_mode=sorting_mode,
+            group_sampling=group_sampling,
+            frame_builder=frame_builder,
             frame_eps=float(frame_eps),
             use_frame_gating=bool(use_frame_gating),
             frame_confidence_floor=float(frame_confidence_floor),
-            geometry_bias_mode=str(geometry_bias_mode),
+            geometry_bias_mode=geometry_bias_mode,
             num_rbf=int(num_rbf),
             use_gradient_checkpointing=bool(use_gradient_checkpointing),
         )
@@ -674,7 +673,7 @@ class GeoFrameTransformerEncoder(Encoder):
             features = 0.5 * (tokens.max(dim=1).values + tokens.mean(dim=1))
         else:
             features = self.pool(tokens)
-        return features, features, None, state
+        return features, state
 
     def directional_features_from_geometry(
         self,

@@ -10,7 +10,7 @@ from omegaconf import OmegaConf
 
 from src.data_utils.data_load import PointCloudDataset
 from src.data_utils.data_modules.temporal_window import (
-    _temporal_identity_or_default_collate,
+    _identity_batch_collate,
 )
 from src.data_utils.temporal_lammps_dataset import (
     TemporalLAMMPSDumpDataset,
@@ -96,7 +96,7 @@ def _temporal_real_dataloader_kwargs(
         "drop_last": False,
         "pin_memory": torch.cuda.is_available(),
         "persistent_workers": bool(num_workers > 0),
-        "collate_fn": _temporal_identity_or_default_collate,
+        "collate_fn": _identity_batch_collate,
     }
     if num_workers > 0:
         kwargs["prefetch_factor"] = 4
@@ -382,25 +382,21 @@ def build_temporal_real_analysis_bundle(
         auto_cutoff_cfg_raw = OmegaConf.select(model_cfg, "data.auto_cutoff", default=None)
         auto_cutoff_cfg = PointCloudDataset._resolve_auto_cutoff_config(
             OmegaConf.to_container(auto_cutoff_cfg_raw, resolve=True) if auto_cutoff_cfg_raw is not None else None,
-            default_target_points=int(num_points),
-            default_radius=float(model_radius_raw) if model_radius_raw is not None else 0.0,
         )
         if auto_cutoff_cfg is not None:
-            reference_frame_index = int(
-                auto_cutoff_cfg.get("reference_frame_index", int(inference_frame_indices[0]))
-            )
+            reference_frame_index = int(auto_cutoff_cfg["reference_frame_index"])
             radius_estimation = estimate_lammps_dump_cutoff_radius(
                 dump_file,
                 reference_frame_index=reference_frame_index,
                 target_points=max(
                     int(num_points),
-                    int(auto_cutoff_cfg.get("target_points", num_points)),
+                    int(auto_cutoff_cfg["target_points"]),
                 ),
-                quantile=float(auto_cutoff_cfg.get("quantile", 1.0)),
-                estimation_samples=int(auto_cutoff_cfg.get("estimation_samples_per_file", 4096)),
-                seed=int(auto_cutoff_cfg.get("seed", 0)),
-                safety_factor=float(auto_cutoff_cfg.get("safety_factor", 1.0)),
-                boundary_margin=auto_cutoff_cfg.get("boundary_margin", None),
+                quantile=float(auto_cutoff_cfg["quantile"]),
+                estimation_samples=int(auto_cutoff_cfg["estimation_samples_per_file"]),
+                seed=int(auto_cutoff_cfg["seed"]),
+                safety_factor=float(auto_cutoff_cfg["safety_factor"]),
+                boundary_margin=auto_cutoff_cfg["boundary_margin"],
                 periodic=False,
             )
             radius = float(radius_estimation["estimated_radius"])

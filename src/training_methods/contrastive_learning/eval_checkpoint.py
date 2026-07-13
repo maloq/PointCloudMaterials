@@ -69,7 +69,7 @@ def build_datamodule(
     num_workers_override: int | None = None,
     batch_size_override: int | None = None,
 ):
-    data_kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
+    data_kind = normalize_data_kind(cfg.data.kind)
     if data_files_override:
         cfg.data.data_files = [str(v) for v in data_files_override]
     if num_workers_override is not None:

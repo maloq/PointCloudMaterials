@@ -62,6 +62,7 @@ class VICRegLoss(nn.Module):
         drop_apply_to_both: bool,
         rotation_mode: str,
         rotation_deg: float,
+        mirror_prob: float,
         strain_std: float,
         strain_volume_preserve: bool,
         occlusion_mode: str,
@@ -116,6 +117,12 @@ class VICRegLoss(nn.Module):
         self.drop_apply_to_both = bool(drop_apply_to_both)
         self.rotation_mode = str(rotation_mode).lower()
         self.rotation_deg = float(rotation_deg)
+        self.mirror_prob = float(mirror_prob)
+        if not (0.0 <= self.mirror_prob <= 1.0):
+            raise ValueError(
+                "vicreg_mirror_prob must be in [0, 1], "
+                f"got {self.mirror_prob}."
+            )
         self.strain_std = float(strain_std)
         self.strain_volume_preserve = bool(strain_volume_preserve)
         self.occlusion_mode = str(occlusion_mode).lower()
@@ -292,6 +299,7 @@ class VICRegLoss(nn.Module):
         drop_apply_to_both = bool(getattr(cfg, "vicreg_drop_apply_to_both", True))
         rotation_mode = str(getattr(cfg, "vicreg_rotation_mode", "none"))
         rotation_deg = float(getattr(cfg, "vicreg_rotation_deg", 0.0))
+        mirror_prob = float(getattr(cfg, "vicreg_mirror_prob", 0.0))
         strain_std = float(getattr(cfg, "vicreg_strain_std", 0.0))
         strain_volume_preserve = bool(getattr(cfg, "vicreg_strain_volume_preserve", True))
         occlusion_mode = str(getattr(cfg, "vicreg_occlusion_mode", "none"))
@@ -364,6 +372,7 @@ class VICRegLoss(nn.Module):
             drop_apply_to_both=drop_apply_to_both,
             rotation_mode=rotation_mode,
             rotation_deg=rotation_deg,
+            mirror_prob=mirror_prob,
             strain_std=strain_std,
             strain_volume_preserve=strain_volume_preserve,
             occlusion_mode=occlusion_mode,
@@ -542,8 +551,8 @@ class VICRegLoss(nn.Module):
         y_b, idx_b = crop_to_num_points_with_indices(shifted, view_points)
         overlap_target = self._count_index_overlap(idx_a, idx_b).to(device=pc.device)
         return {
-            "y_a": y_a,
-            "y_b": y_b,
+            "y_a": self._apply_mirror(y_a),
+            "y_b": self._apply_mirror(y_b),
             "overlap_target": overlap_target,
             "overlap_fraction_target": overlap_target / float(view_points),
             "overlap_idx_a": idx_a,
@@ -669,6 +678,7 @@ class VICRegLoss(nn.Module):
         target_view_points = self.view_points if view_points is _VIEW_POINTS_UNSET else view_points
         if target_view_points is not None:
             x = crop_to_num_points(x, int(target_view_points))
+        x = self._apply_mirror(x)
         x = self._apply_rotation(x)
         x = self._apply_strain(x)
         x = self._apply_masked_occlusion(x, apply_mask=apply_occlusion_mask)
@@ -765,6 +775,26 @@ class VICRegLoss(nn.Module):
             angle = (torch.rand(bsz, device=device, dtype=dtype) * 2.0 - 1.0) * max_rad
             R = self._axis_angle_to_matrix(axis, angle)
         return torch.matmul(x, R)
+
+    def _apply_mirror(self, x: torch.Tensor) -> torch.Tensor:
+        """Reflect selected point clouds across one random coordinate plane."""
+        if self.mirror_prob <= 0.0:
+            return x
+
+        batch_size = int(x.shape[0])
+        if self.mirror_prob >= 1.0:
+            apply_mirror = torch.ones((batch_size,), dtype=torch.bool, device=x.device)
+        else:
+            apply_mirror = torch.rand((batch_size,), device=x.device) < self.mirror_prob
+        mirror_axis = torch.randint(0, 3, (batch_size,), device=x.device)
+        coordinate_sign = torch.ones((batch_size, 3), dtype=x.dtype, device=x.device)
+        batch_indices = torch.arange(batch_size, device=x.device)
+        coordinate_sign[batch_indices, mirror_axis] = torch.where(
+            apply_mirror,
+            -torch.ones((batch_size,), dtype=x.dtype, device=x.device),
+            torch.ones((batch_size,), dtype=x.dtype, device=x.device),
+        )
+        return x * coordinate_sign.unsqueeze(1)
 
     def _apply_strain(self, x: torch.Tensor) -> torch.Tensor:
         if self.strain_std <= 0:

@@ -57,7 +57,7 @@ tsne:
   n_iter: 1000
   paper_enabled: true
   umap_comparison_enabled: false
-  umap_backend: auto
+  umap_backend: cpu
   umap_neighbors: 30
   umap_min_dist: 0.15
   umap_metric: euclidean
@@ -151,7 +151,7 @@ real_md:
 
   projection:
     method: umap
-    umap_backend: auto
+    umap_backend: cpu
     max_samples: 15000
     umap_neighbors: 30
     umap_min_dist: 0.15

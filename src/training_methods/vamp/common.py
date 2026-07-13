@@ -126,28 +126,24 @@ def resolve_radius(
     if auto_cutoff_cfg_raw is not None:
         auto_cutoff_cfg = PointCloudDataset._resolve_auto_cutoff_config(
             OmegaConf.to_container(auto_cutoff_cfg_raw, resolve=True),
-            default_target_points=int(num_points),
-            default_radius=(
-                0.0 if model_radius_raw is None else float(model_radius_raw)
-            ),
         )
 
     if auto_cutoff_cfg is not None:
-        reference_frame_index = int(auto_cutoff_cfg.get("reference_frame_index", 0))
+        reference_frame_index = int(auto_cutoff_cfg["reference_frame_index"])
         estimation = estimate_lammps_dump_cutoff_radius(
             dump_file,
             reference_frame_index=reference_frame_index,
             target_points=max(
                 int(num_points),
-                int(auto_cutoff_cfg.get("target_points", num_points)),
+                int(auto_cutoff_cfg["target_points"]),
             ),
-            quantile=float(auto_cutoff_cfg.get("quantile", 1.0)),
+            quantile=float(auto_cutoff_cfg["quantile"]),
             estimation_samples=int(
-                auto_cutoff_cfg.get("estimation_samples_per_file", 4096)
+                auto_cutoff_cfg["estimation_samples_per_file"]
             ),
-            seed=int(auto_cutoff_cfg.get("seed", 0)),
-            safety_factor=float(auto_cutoff_cfg.get("safety_factor", 1.0)),
-            boundary_margin=auto_cutoff_cfg.get("boundary_margin", None),
+            seed=int(auto_cutoff_cfg["seed"]),
+            safety_factor=float(auto_cutoff_cfg["safety_factor"]),
+            boundary_margin=auto_cutoff_cfg["boundary_margin"],
             periodic=True,
         )
         return float(estimation["estimated_radius"]), "auto_cutoff", estimation

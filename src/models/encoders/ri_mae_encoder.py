@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import math
+import warnings
 
 import torch
 import torch.nn as nn
@@ -16,13 +17,9 @@ from .registry import register_encoder
 # ---------------------------------------------------------------------------
 
 def _to_bn3(points: torch.Tensor) -> torch.Tensor:
-    if points.dim() != 3:
-        raise ValueError(f"Expected point cloud with shape (B, N, 3) or (B, 3, N), got {tuple(points.shape)}")
-    if points.shape[-1] == 3:
-        return points
-    if points.shape[1] == 3:
-        return points.transpose(1, 2).contiguous()
-    raise ValueError(f"Expected point cloud with 3 coordinates, got {tuple(points.shape)}")
+    if points.dim() != 3 or points.shape[-1] != 3:
+        raise ValueError(f"Expected point cloud with shape (B, N, 3), got {tuple(points.shape)}")
+    return points
 
 
 def _farthest_point_sample(xyz: torch.Tensor, npoint: int, *, deterministic: bool = False) -> torch.Tensor:
@@ -60,11 +57,12 @@ def _index_points(points: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
 def _knn_point(k: int, xyz: torch.Tensor, new_xyz: torch.Tensor) -> torch.Tensor:
     xyz = _to_bn3(xyz)
     new_xyz = _to_bn3(new_xyz)
-    k_eff = min(int(k), int(xyz.shape[1]))
-    if k_eff <= 0:
-        raise ValueError(f"k must be positive, got {k}")
+    if k <= 0 or k > xyz.shape[1]:
+        raise ValueError(
+            f"k must satisfy 1 <= k <= number of points, got k={k}, points={xyz.shape[1]}."
+        )
     dist = torch.cdist(new_xyz.to(torch.float32), xyz.to(torch.float32))
-    return dist.topk(k=k_eff, dim=-1, largest=False).indices
+    return dist.topk(k=k, dim=-1, largest=False).indices
 
 
 # ---------------------------------------------------------------------------
@@ -85,7 +83,7 @@ class Group(nn.Module):
         self.num_group = int(num_group)
         self.group_size = int(group_size)
         self.deterministic_fps = bool(deterministic_fps)
-        self.sorting_mode = str(sorting_mode).lower()
+        self.sorting_mode = sorting_mode
         if self.sorting_mode not in {"nearest", "none"}:
             raise ValueError(f"Unsupported sorting_mode={sorting_mode!r}.")
         # #9: opt-in random group-center selection during training. FPS
@@ -94,7 +92,7 @@ class Group(nn.Module):
         # a single vectorised `topk` of random scores. In eval mode we
         # always fall back to FPS for reproducibility. `fps_always` keeps
         # today's behaviour; `random` switches the training path only.
-        self.group_sampling = str(group_sampling).lower()
+        self.group_sampling = group_sampling
         if self.group_sampling not in {"fps", "random"}:
             raise ValueError(
                 "Group sampling mode must be one of {'fps', 'random'}, "
@@ -326,7 +324,8 @@ class RIMAEBackbone(nn.Module):
         depth: int, predictor_depth: int, num_heads: int, mask_ratio: float,
         ema_decay: float, mlp_ratio: float, dropout: float,
         deterministic_fps: bool, sorting_mode: str,
-        frame_builder: str = "triad", frame_eps: float = 1e-6,
+        frame_builder: str = "triad",
+        frame_eps: float = 1.0e-6,
         use_gradient_checkpointing: bool = False,
         group_sampling: str = "fps",
     ) -> None:
@@ -338,17 +337,17 @@ class RIMAEBackbone(nn.Module):
         self.num_heads = int(num_heads)
         self.mask_ratio = float(mask_ratio)
         self.ema_decay = float(ema_decay)
-        self.frame_builder = str(frame_builder).strip().lower()
+        self.frame_builder = frame_builder
         self.frame_eps = float(frame_eps)
         self.use_gradient_checkpointing = bool(use_gradient_checkpointing)
-        self.group_sampling = str(group_sampling)
+        self.group_sampling = group_sampling
         if self.frame_builder not in {"triad", "pca"}:
             raise ValueError(
-                "RIMAEBackbone frame_builder must be one of {'triad', 'pca'}, "
+                "RIMAEBackbone frame_builder must be 'triad' or 'pca', "
                 f"got {frame_builder!r}."
             )
         if self.frame_eps <= 0.0:
-            raise ValueError(f"RIMAEBackbone frame_eps must be > 0, got {self.frame_eps}.")
+            raise ValueError(f"frame_eps must be > 0, got {self.frame_eps}.")
 
         self.group_divider = Group(
             num_group=self.num_group,
@@ -400,27 +399,7 @@ class RIMAEBackbone(nn.Module):
         for start in range(0, cov.shape[0], chunk_size):
             stop = min(start + chunk_size, cov.shape[0])
             cov_chunk = cov[start:stop]
-            try:
-                eigvals_chunk, eigvecs_chunk = torch.linalg.eigh(cov_chunk)
-            except RuntimeError as exc:
-                nonfinite = int((~torch.isfinite(cov_chunk)).sum().item())
-                if nonfinite > 0:
-                    raise RuntimeError(
-                        "Patch-frame covariance contains non-finite values before eigendecomposition. "
-                        f"cov_shape={tuple(cov.shape)}, chunk_start={start}, chunk_stop={stop}, "
-                        f"chunk_shape={tuple(cov_chunk.shape)}, nonfinite_values={nonfinite}, "
-                        f"device={cov.device}, dtype={cov.dtype}."
-                    ) from exc
-                try:
-                    eigvals_cpu, eigvecs_cpu = torch.linalg.eigh(cov_chunk.cpu())
-                except RuntimeError as cpu_exc:
-                    raise RuntimeError(
-                        "Patch-frame eigendecomposition failed on both CUDA and CPU for finite covariances. "
-                        f"cov_shape={tuple(cov.shape)}, chunk_start={start}, chunk_stop={stop}, "
-                        f"chunk_shape={tuple(cov_chunk.shape)}, device={cov.device}, dtype={cov.dtype}."
-                    ) from cpu_exc
-                eigvals_chunk = eigvals_cpu.to(device=cov.device, dtype=cov.dtype)
-                eigvecs_chunk = eigvecs_cpu.to(device=cov.device, dtype=cov.dtype)
+            eigvals_chunk, eigvecs_chunk = torch.linalg.eigh(cov_chunk)
             eigvals_chunks.append(eigvals_chunk)
             eigvecs_chunks.append(eigvecs_chunk)
 
@@ -431,70 +410,44 @@ class RIMAEBackbone(nn.Module):
         vectors: torch.Tensor,
         *,
         eps: float,
-        context: str,
-        validate: bool = False,
     ) -> torch.Tensor:
         norms = torch.linalg.vector_norm(vectors, dim=-1)
-        # Loud validation forces a CPU sync via `.item()`, which torch.compile
-        # cannot trace and which stalls the training hot path. We only run it
-        # when explicitly requested (eval / sanity paths) and never when
-        # Dynamo is capturing the graph. The clamp_min(eps) below is the
-        # real safety net for non-validated training paths. Callers that know
-        # how to handle degenerate geometry should replace those vectors before
-        # normalizing; otherwise validation raises loudly below.
-        if validate and not torch.compiler.is_compiling():
-            if not bool(torch.isfinite(norms).all().item()):
-                nonfinite = int((~torch.isfinite(norms)).sum().item())
-                raise RuntimeError(
-                    f"RI-MAE frame builder produced non-finite vector norms for {context}. "
-                    f"vectors_shape={tuple(vectors.shape)}, nonfinite_norms={nonfinite}, "
-                    f"dtype={vectors.dtype}, device={vectors.device}."
-                )
-            if bool((norms <= eps).any().item()):
-                degenerate = int((norms <= eps).sum().item())
-                raise RuntimeError(
-                    f"RI-MAE frame builder encountered degenerate vectors for {context}. "
-                    f"vectors_shape={tuple(vectors.shape)}, degenerate_count={degenerate}, "
-                    f"min_norm={float(norms.min().item()):.6e}, eps={float(eps):.6e}, "
-                    f"dtype={vectors.dtype}, device={vectors.device}."
-                )
         return vectors / norms.clamp_min(eps).unsqueeze(-1)
 
     @staticmethod
-    def _canonical_axis_like(vectors: torch.Tensor, axis_index: int) -> torch.Tensor:
-        if vectors.dim() != 2 or vectors.shape[-1] != 3:
-            raise ValueError(
-                "vectors must have shape (B, 3) when building a canonical axis, "
-                f"got {tuple(vectors.shape)}."
-            )
+    def _canonical_axis_like(
+        vectors: torch.Tensor,
+        axis_index: int,
+    ) -> torch.Tensor:
         axis = torch.zeros_like(vectors)
-        axis[:, int(axis_index)] = 1.0
+        axis[:, axis_index] = 1.0
         return axis
 
     @staticmethod
-    def _orthogonal_axis_fallback(axis: torch.Tensor, *, eps: float) -> torch.Tensor:
-        if axis.dim() != 2 or axis.shape[-1] != 3:
-            raise ValueError(
-                "axis must have shape (B, 3) when building an orthogonal fallback, "
-                f"got {tuple(axis.shape)}."
-            )
-        axis_abs = axis.abs()
-        basis_index = axis_abs.argmin(dim=-1)
-        basis = torch.eye(3, dtype=axis.dtype, device=axis.device)[basis_index]
-        fallback = basis - (basis * axis).sum(dim=-1, keepdim=True) * axis
-        fallback_norm = torch.linalg.vector_norm(fallback, dim=-1, keepdim=True)
-        return fallback / fallback_norm.clamp_min(float(eps))
-
-    @staticmethod
-    def _replace_degenerate_frame_vectors(
-        vectors: torch.Tensor,
-        fallback: torch.Tensor,
+    def _orthogonal_axis_completion(
+        axis: torch.Tensor,
         *,
         eps: float,
     ) -> torch.Tensor:
-        norms = torch.linalg.vector_norm(vectors, dim=-1, keepdim=True)
-        use_fallback = norms <= float(eps)
-        return torch.where(use_fallback, fallback, vectors)
+        # A collinear patch determines its longitudinal axis but has no preferred
+        # roll around it. Complete the frame with the Cartesian basis direction
+        # least aligned with that axis.
+        basis_index = axis.abs().argmin(dim=-1)
+        basis = torch.eye(3, dtype=axis.dtype, device=axis.device)[basis_index]
+        orthogonal = basis - (basis * axis).sum(dim=-1, keepdim=True) * axis
+        return RIMAEBackbone._normalize_frame_vectors(orthogonal, eps=eps)
+
+    @staticmethod
+    def _replace_unorientable_vectors(
+        vectors: torch.Tensor,
+        completion: torch.Tensor,
+        *,
+        eps: float,
+    ) -> torch.Tensor:
+        unorientable = torch.linalg.vector_norm(
+            vectors, dim=-1, keepdim=True
+        ) <= eps
+        return torch.where(unorientable, completion, vectors)
 
     @staticmethod
     def _apply_axis_sign_convention(patches: torch.Tensor, axis: torch.Tensor) -> torch.Tensor:
@@ -510,26 +463,41 @@ class RIMAEBackbone(nn.Module):
         return axis * signs.unsqueeze(-1)
 
     @staticmethod
-    def _estimate_patch_frames_pca(neighborhood: torch.Tensor) -> torch.Tensor:
+    def _estimate_patch_frames_pca(
+        neighborhood: torch.Tensor,
+    ) -> torch.Tensor:
         batch_size, num_group, group_size, _ = neighborhood.shape
         with torch.autocast(device_type=neighborhood.device.type, enabled=False):
-            patches = neighborhood.reshape(batch_size * num_group, group_size, 3).to(torch.float32)
-            cov = torch.matmul(patches.transpose(1, 2), patches) / float(max(group_size, 1))
-        eigvals, eigvecs = RIMAEBackbone._stable_patch_eigh(cov)
-        order = torch.argsort(eigvals, dim=-1, descending=True)
-        order_exp = order.unsqueeze(1).expand(-1, 3, -1)
-        basis = torch.gather(eigvecs, 2, order_exp)
-        coords = torch.matmul(patches, basis)
-        signs = torch.ones((basis.shape[0], 3), dtype=basis.dtype, device=basis.device)
-        batch_idx = torch.arange(basis.shape[0], device=basis.device)
-        for axis in range(3):
-            vals = coords[:, :, axis]
-            max_idx = vals.abs().argmax(dim=1)
-            picked = vals[batch_idx, max_idx]
-            signs[:, axis] = torch.where(picked >= 0, torch.ones_like(picked), -torch.ones_like(picked))
+            patches = neighborhood.reshape(
+                batch_size * num_group, group_size, 3
+            ).float()
+            covariance = patches.transpose(1, 2) @ patches / float(group_size)
+
+        eigenvalues, eigenvectors = RIMAEBackbone._stable_patch_eigh(covariance)
+        descending = eigenvalues.argsort(dim=-1, descending=True)
+        basis = eigenvectors.gather(
+            2,
+            descending.unsqueeze(1).expand(-1, 3, -1),
+        )
+
+        coordinates = patches @ basis
+        pivot_indices = coordinates.abs().argmax(dim=1)
+        pivot_values = coordinates.gather(
+            1,
+            pivot_indices.unsqueeze(1),
+        ).squeeze(1)
+        signs = torch.where(
+            pivot_values >= 0,
+            torch.ones_like(pivot_values),
+            -torch.ones_like(pivot_values),
+        )
         basis = basis * signs.unsqueeze(1)
-        det = torch.det(basis)
-        handedness = torch.where(det < 0, -torch.ones_like(det), torch.ones_like(det))
+
+        handedness = torch.where(
+            torch.det(basis) < 0,
+            -torch.ones_like(signs[:, 2]),
+            torch.ones_like(signs[:, 2]),
+        )
         basis[:, :, 2] = basis[:, :, 2] * handedness.unsqueeze(-1)
         return basis.reshape(batch_size, num_group, 3, 3)
 
@@ -538,7 +506,6 @@ class RIMAEBackbone(nn.Module):
         neighborhood: torch.Tensor,
         *,
         frame_eps: float,
-        validate: bool = False,
     ) -> torch.Tensor:
         batch_size, num_group, group_size, _ = neighborhood.shape
         patches = neighborhood.reshape(batch_size * num_group, group_size, 3).contiguous()
@@ -547,17 +514,12 @@ class RIMAEBackbone(nn.Module):
         radial_sq = torch.einsum("bpc,bpc->bp", patches, patches)
         primary_idx = radial_sq.argmax(dim=1)
         axis1_raw = patches[batch_idx, primary_idx]
-        axis1_raw = RIMAEBackbone._replace_degenerate_frame_vectors(
+        axis1_raw = RIMAEBackbone._replace_unorientable_vectors(
             axis1_raw,
             RIMAEBackbone._canonical_axis_like(axis1_raw, axis_index=0),
             eps=frame_eps,
         )
-        axis1 = RIMAEBackbone._normalize_frame_vectors(
-            axis1_raw,
-            eps=frame_eps,
-            context="primary RI-MAE triad axis",
-            validate=validate,
-        )
+        axis1 = RIMAEBackbone._normalize_frame_vectors(axis1_raw, eps=frame_eps)
         axis1 = RIMAEBackbone._apply_axis_sign_convention(patches, axis1)
 
         axis1_proj = torch.einsum("bpc,bc->bp", patches, axis1).unsqueeze(-1)
@@ -565,43 +527,23 @@ class RIMAEBackbone(nn.Module):
         residual_sq = torch.einsum("bpc,bpc->bp", residual, residual)
         secondary_idx = residual_sq.argmax(dim=1)
         axis2_raw = residual[batch_idx, secondary_idx]
-        axis2_raw = RIMAEBackbone._replace_degenerate_frame_vectors(
+        axis2_raw = RIMAEBackbone._replace_unorientable_vectors(
             axis2_raw,
-            RIMAEBackbone._orthogonal_axis_fallback(axis1, eps=frame_eps),
+            RIMAEBackbone._orthogonal_axis_completion(axis1, eps=frame_eps),
             eps=frame_eps,
         )
-        axis2 = RIMAEBackbone._normalize_frame_vectors(
-            axis2_raw,
-            eps=frame_eps,
-            context="secondary RI-MAE triad axis",
-            validate=validate,
-        )
+        axis2 = RIMAEBackbone._normalize_frame_vectors(axis2_raw, eps=frame_eps)
         axis2 = RIMAEBackbone._apply_axis_sign_convention(patches, axis2)
 
         axis3_raw = torch.cross(axis1, axis2, dim=-1)
-        axis3 = RIMAEBackbone._normalize_frame_vectors(
-            axis3_raw,
-            eps=frame_eps,
-            context="tertiary RI-MAE triad axis",
-            validate=validate,
-        )
+        axis3 = RIMAEBackbone._normalize_frame_vectors(axis3_raw, eps=frame_eps)
 
         axis2 = torch.cross(axis3, axis1, dim=-1)
-        axis2 = RIMAEBackbone._normalize_frame_vectors(
-            axis2,
-            eps=frame_eps,
-            context="re-orthogonalized secondary RI-MAE triad axis",
-            validate=validate,
-        )
+        axis2 = RIMAEBackbone._normalize_frame_vectors(axis2, eps=frame_eps)
         axis2 = RIMAEBackbone._apply_axis_sign_convention(patches, axis2)
 
         axis3 = torch.cross(axis1, axis2, dim=-1)
-        axis3 = RIMAEBackbone._normalize_frame_vectors(
-            axis3,
-            eps=frame_eps,
-            context="final tertiary RI-MAE triad axis",
-            validate=validate,
-        )
+        axis3 = RIMAEBackbone._normalize_frame_vectors(axis3, eps=frame_eps)
         basis = torch.stack([axis1, axis2, axis3], dim=-1)
         return basis.reshape(batch_size, num_group, 3, 3)
 
@@ -609,22 +551,30 @@ class RIMAEBackbone(nn.Module):
     def _estimate_patch_frames(
         neighborhood: torch.Tensor,
         *,
-        frame_builder: str = "triad",
-        frame_eps: float = 1e-6,
-        validate: bool = False,
+        frame_builder: str,
+        frame_eps: float,
     ) -> torch.Tensor:
-        resolved_builder = str(frame_builder).strip().lower()
-        if resolved_builder == "triad":
+        patch_radii = torch.linalg.vector_norm(neighborhood, dim=-1).amax(dim=-1)
+        fully_collapsed = patch_radii <= frame_eps
+        if bool(fully_collapsed.any().item()):
+            collapsed_count = int(fully_collapsed.sum().item())
+            warnings.warn(
+                "Patch-frame construction encountered "
+                f"{collapsed_count} fully collapsed patch(es), where every neighbor "
+                f"is within frame_eps={frame_eps:.3e} of its group center. "
+                "Continuing with an arbitrary valid orientation for those patches.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        if frame_builder == "triad":
             return RIMAEBackbone._estimate_patch_frames_triad(
                 neighborhood,
-                frame_eps=float(frame_eps),
-                validate=validate,
+                frame_eps=frame_eps,
             )
-        if resolved_builder == "pca":
+        if frame_builder == "pca":
             return RIMAEBackbone._estimate_patch_frames_pca(neighborhood)
         raise ValueError(
-            "RI-MAE frame builder must be one of {'triad', 'pca'}, "
-            f"got {frame_builder!r}."
+            f"frame_builder must be 'triad' or 'pca', got {frame_builder!r}."
         )
 
 
@@ -633,16 +583,8 @@ class RIMAEBackbone(nn.Module):
 # ---------------------------------------------------------------------------
 
 class RIMAEInvariantEncoderForContrastive(nn.Module):
-    expects_channel_first = False
-
-    def __init__(self, backbone, *, center_input: bool, output_dim: int) -> None:
+    def __init__(self, backbone, *, center_input: bool) -> None:
         super().__init__()
-        required = ("group_divider", "patch_encoder", "input_proj", "pos_embed",
-                     "orientation_mlp", "orientation_scale", "student_encoder")
-        missing = [name for name in required if not hasattr(backbone, name)]
-        if missing:
-            raise TypeError(f"backbone is missing required attributes: {missing}.")
-
         self.group_divider = backbone.group_divider
         self.patch_encoder = backbone.patch_encoder
         self.input_proj = backbone.input_proj
@@ -650,10 +592,9 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
         self.orientation_mlp = backbone.orientation_mlp
         self.orientation_scale = backbone.orientation_scale
         self.student_encoder = backbone.student_encoder
-        self.frame_builder = str(getattr(backbone, "frame_builder", "triad"))
-        self.frame_eps = float(getattr(backbone, "frame_eps", 1e-6))
+        self.frame_builder = backbone.frame_builder
+        self.frame_eps = backbone.frame_eps
         self.center_input = bool(center_input)
-        self.output_dim = int(output_dim)
 
     def _build_orientation_bias(self, frames: torch.Tensor) -> torch.Tensor:
         rel = torch.matmul(frames.unsqueeze(2).transpose(-1, -2), frames.unsqueeze(1))
@@ -672,7 +613,6 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
                 neighborhood,
                 frame_builder=self.frame_builder,
                 frame_eps=self.frame_eps,
-                validate=not self.training,
             )
         frames = frames.to(dtype=bn3_points.dtype, device=bn3_points.device)
         canonical = torch.einsum("bgsc,bgcd->bgsd", neighborhood, frames)
@@ -684,8 +624,7 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
         tokens = self.student_encoder(encoder_input, attn_bias_full)
         max_features = tokens.max(dim=1).values
         mean_features = tokens.mean(dim=1)
-        features = torch.cat([max_features, mean_features], dim=-1)
-        return features, features, None
+        return torch.cat([max_features, mean_features], dim=-1)
 
 
 # ---------------------------------------------------------------------------
@@ -694,19 +633,14 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
 
 @register_encoder("RI_MAE_Invariant")
 class RIMAEInvariantEncoder(Encoder):
-    """
-    RI-MAE invariant transformer encoder exposed through the common encoder registry.
+    """RI-MAE invariant transformer exposed through the encoder registry."""
 
-    Returns tuple compatible with existing contrastive code:
-    (inv_latent_net, inv_latent_net, eq_z=None)
-    """
-
-    expects_channel_first = False
+    output_contract = "invariant"
 
     def __init__(
         self,
         *,
-        latent_size: int | None = None,
+        latent_size: int,
         num_group: int = 64,
         group_size: int = 32,
         encoder_dims: int = 384,
@@ -722,13 +656,13 @@ class RIMAEInvariantEncoder(Encoder):
         sorting_mode: str = "nearest",
         center_input: bool = True,
         frame_builder: str = "triad",
-        frame_eps: float = 1e-6,
+        frame_eps: float = 1.0e-6,
         use_gradient_checkpointing: bool = False,
         group_sampling: str = "fps",
     ) -> None:
         super().__init__()
         output_dim = int(2 * int(trans_dim))
-        if latent_size is not None and int(latent_size) != output_dim:
+        if int(latent_size) != output_dim:
             raise ValueError(
                 "RI_MAE_Invariant latent_size must match 2 * trans_dim. "
                 f"Got latent_size={int(latent_size)}, trans_dim={int(trans_dim)}, "
@@ -750,16 +684,15 @@ class RIMAEInvariantEncoder(Encoder):
             mlp_ratio=float(mlp_ratio),
             dropout=float(dropout),
             deterministic_fps=bool(deterministic_fps),
-            sorting_mode=str(sorting_mode),
-            frame_builder=str(frame_builder),
+            sorting_mode=sorting_mode,
+            frame_builder=frame_builder,
             frame_eps=float(frame_eps),
             use_gradient_checkpointing=bool(use_gradient_checkpointing),
-            group_sampling=str(group_sampling),
+            group_sampling=group_sampling,
         )
         self.encoder = RIMAEInvariantEncoderForContrastive(
             backbone,
             center_input=bool(center_input),
-            output_dim=output_dim,
         )
 
     def forward(self, x):

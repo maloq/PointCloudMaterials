@@ -10,9 +10,10 @@ from .registry import register_encoder
 class MLPEncoder(Encoder):
     """Flatten points → 3‑layer MLP → latent vector."""
 
+    output_contract = "invariant"
+
     def __init__(self, num_points: int, latent_size: int):
         super().__init__()
-        self._n = num_points
         self.invariant_dim = int(latent_size)
         self.net = nn.Sequential(
             nn.Linear(num_points * 3, 512), nn.ReLU(inplace=True),
@@ -21,5 +22,4 @@ class MLPEncoder(Encoder):
         )
 
     def forward(self, x: torch.Tensor):
-        latent = self.net(x.reshape(x.size(0), -1))
-        return latent, None, None
+        return self.net(x.reshape(x.size(0), -1))

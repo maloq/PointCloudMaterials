@@ -62,6 +62,10 @@ experiments:
     overrides:
       - "vicreg_strain_std=0.0"
 
+  - name: no_mirror
+    overrides:
+      - "vicreg_mirror_prob=0.0"
+
 metrics:
   final:
     - test/loss

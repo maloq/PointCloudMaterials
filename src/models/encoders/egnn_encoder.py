@@ -173,6 +173,8 @@ class EGNNEncoder(Encoder):
       - center_loc: (B, 3)
     """
 
+    output_contract = "invariant_equivariant"
+
     def __init__(
         self,
         latent_size: int = 256,
@@ -188,8 +190,6 @@ class EGNNEncoder(Encoder):
         n_knn = int(n_knn)
         num_layers = int(num_layers)
         hidden_dim = int(hidden_dim)
-        pooling = str(pooling).lower()
-
         if latent_size <= 0:
             raise ValueError(f"EGNNEncoder: latent_size must be > 0, got {latent_size}")
         if n_knn <= 0:
@@ -228,39 +228,16 @@ class EGNNEncoder(Encoder):
             nn.Linear(hidden_dim, latent_size),
         )
 
-    @staticmethod
-    def _coerce_input_points(x: torch.Tensor) -> torch.Tensor:
-        if x.dim() != 3:
-            raise ValueError(f"EGNNEncoder: expected input with 3 dims, got shape {tuple(x.shape)}")
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        if x.dim() != 3 or x.shape[-1] != 3:
+            raise ValueError(
+                f"EGNNEncoder expects repository input shape (B,N,3), got {tuple(x.shape)}."
+            )
         if not x.is_floating_point():
             raise TypeError(
-                f"EGNNEncoder: expected floating-point input tensor, got dtype={x.dtype} shape={tuple(x.shape)}"
+                f"EGNNEncoder expects floating-point input, got dtype={x.dtype}."
             )
-        if x.shape[-1] == 3:
-            return x
-        if x.shape[1] == 3:
-            return x.transpose(1, 2).contiguous()
-        raise ValueError(
-            "EGNNEncoder: unable to infer point-cloud layout. "
-            f"Expected shape (B,N,3) or (B,3,N), got {tuple(x.shape)}"
-        )
-
-    @staticmethod
-    def _validate_edge_idx(edge_idx: torch.Tensor, *, num_points: int) -> None:
-        if edge_idx.dtype != torch.long:
-            raise TypeError(f"EGNNEncoder: knn returned dtype={edge_idx.dtype}, expected torch.long")
-        if edge_idx.numel() == 0:
-            raise ValueError("EGNNEncoder: knn returned an empty edge index tensor.")
-        min_idx = int(edge_idx.min().item())
-        max_idx = int(edge_idx.max().item())
-        if min_idx < 0 or max_idx >= num_points:
-            raise ValueError(
-                "EGNNEncoder: knn produced out-of-range neighbor indices: "
-                f"min={min_idx}, max={max_idx}, valid=[0,{num_points - 1}]"
-            )
-
-    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        points = self._coerce_input_points(x)
+        points = x
         batch_size, num_points, _ = points.shape
         if num_points <= 0:
             raise ValueError(f"EGNNEncoder: point cloud must contain at least one point, got {num_points}")
@@ -277,7 +254,6 @@ class EGNNEncoder(Encoder):
 
         x_coord_knn = points.transpose(1, 2).contiguous()
         edge_idx = knn(x_coord_knn, k=self.n_knn)
-        self._validate_edge_idx(edge_idx, num_points=num_points)
 
         for layer in self.layers:
             h, x_centered = layer(h, x_centered, edge_idx)

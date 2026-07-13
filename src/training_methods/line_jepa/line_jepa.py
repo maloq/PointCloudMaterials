@@ -1,15 +1,8 @@
 import torch
 import torch.distributed as dist
+import torch.distributed.nn.functional as dist_nn_functional
 import torch.nn as nn
 import torch.nn.functional as F
-
-try:
-    import torch.distributed.nn.functional as dist_nn_functional
-except ImportError as exc:
-    dist_nn_functional = None
-    _DIST_NN_FUNCTIONAL_IMPORT_ERROR = exc
-else:
-    _DIST_NN_FUNCTIONAL_IMPORT_ERROR = None
 
 
 class LineJEPALoss(nn.Module):
@@ -37,23 +30,23 @@ class LineJEPALoss(nn.Module):
         context_match_negative_max_target_cosine: float = 0.98,
     ) -> None:
         super().__init__()
-        self.weight = float(weight)
-        self.prediction_coeff = float(prediction_coeff)
-        self.sigreg_coeff = float(sigreg_coeff)
-        self.std_coeff = float(std_coeff)
-        self.cov_coeff = float(cov_coeff)
-        self.std_eps = float(std_eps)
-        self.std_target = float(std_target)
-        self.start_epoch = max(0, int(start_epoch))
-        self.prediction_loss = str(prediction_loss).strip().lower()
-        self.num_slices = int(num_slices)
-        self.integration_min = float(integration_min)
-        self.integration_max = float(integration_max)
-        self.integration_points = int(integration_points)
-        self.context_match_coeff = float(context_match_coeff)
-        self.context_match_temperature = float(context_match_temperature)
-        self.context_match_negative_count = int(context_match_negative_count)
-        self.context_match_negative_max_target_cosine = float(
+        self.weight = weight
+        self.prediction_coeff = prediction_coeff
+        self.sigreg_coeff = sigreg_coeff
+        self.std_coeff = std_coeff
+        self.cov_coeff = cov_coeff
+        self.std_eps = std_eps
+        self.std_target = std_target
+        self.start_epoch = start_epoch
+        self.prediction_loss = prediction_loss
+        self.num_slices = num_slices
+        self.integration_min = integration_min
+        self.integration_max = integration_max
+        self.integration_points = integration_points
+        self.context_match_coeff = context_match_coeff
+        self.context_match_temperature = context_match_temperature
+        self.context_match_negative_count = context_match_negative_count
+        self.context_match_negative_max_target_cosine = (
             context_match_negative_max_target_cosine
         )
 
@@ -71,6 +64,10 @@ class LineJEPALoss(nn.Module):
             raise ValueError(f"line_jepa_std_eps must be > 0, got {self.std_eps}.")
         if self.std_target <= 0.0:
             raise ValueError(f"line_jepa_std_target must be > 0, got {self.std_target}.")
+        if self.start_epoch < 0:
+            raise ValueError(
+                f"line_jepa_start_epoch must be >= 0, got {self.start_epoch}."
+            )
         if self.prediction_loss not in {"mse", "smooth_l1", "cosine"}:
             raise ValueError(
                 "line_jepa_prediction_loss must be 'mse', 'smooth_l1', or 'cosine', "
@@ -112,28 +109,24 @@ class LineJEPALoss(nn.Module):
     @classmethod
     def from_config(cls, cfg):
         return cls(
-            weight=float(getattr(cfg, "line_jepa_weight", 1.0)),
-            prediction_coeff=float(getattr(cfg, "line_jepa_prediction_coeff", 1.0)),
-            sigreg_coeff=float(getattr(cfg, "line_jepa_sigreg_coeff", 0.05)),
-            std_coeff=float(getattr(cfg, "line_jepa_std_coeff", 0.0)),
-            cov_coeff=float(getattr(cfg, "line_jepa_cov_coeff", 0.0)),
-            std_eps=float(getattr(cfg, "line_jepa_std_eps", 1e-4)),
-            std_target=float(getattr(cfg, "line_jepa_std_target", 1.0)),
-            start_epoch=int(getattr(cfg, "line_jepa_start_epoch", 0)),
-            prediction_loss=str(getattr(cfg, "line_jepa_prediction_loss", "mse")),
-            num_slices=int(getattr(cfg, "line_jepa_sigreg_num_slices", 512)),
-            integration_min=float(getattr(cfg, "line_jepa_sigreg_integration_min", -5.0)),
-            integration_max=float(getattr(cfg, "line_jepa_sigreg_integration_max", 5.0)),
-            integration_points=int(getattr(cfg, "line_jepa_sigreg_integration_points", 17)),
-            context_match_coeff=float(getattr(cfg, "line_jepa_context_match_coeff", 0.0)),
-            context_match_temperature=float(
-                getattr(cfg, "line_jepa_context_match_temperature", 0.1)
-            ),
-            context_match_negative_count=int(
-                getattr(cfg, "line_jepa_context_match_negative_count", 64)
-            ),
-            context_match_negative_max_target_cosine=float(
-                getattr(cfg, "line_jepa_context_match_negative_max_target_cosine", 0.98)
+            weight=cfg.line_jepa_weight,
+            prediction_coeff=cfg.line_jepa_prediction_coeff,
+            sigreg_coeff=cfg.line_jepa_sigreg_coeff,
+            std_coeff=cfg.line_jepa_std_coeff,
+            cov_coeff=cfg.line_jepa_cov_coeff,
+            std_eps=cfg.line_jepa_std_eps,
+            std_target=cfg.line_jepa_std_target,
+            start_epoch=cfg.line_jepa_start_epoch,
+            prediction_loss=cfg.line_jepa_prediction_loss,
+            num_slices=cfg.line_jepa_sigreg_num_slices,
+            integration_min=cfg.line_jepa_sigreg_integration_min,
+            integration_max=cfg.line_jepa_sigreg_integration_max,
+            integration_points=cfg.line_jepa_sigreg_integration_points,
+            context_match_coeff=cfg.line_jepa_context_match_coeff,
+            context_match_temperature=cfg.line_jepa_context_match_temperature,
+            context_match_negative_count=cfg.line_jepa_context_match_negative_count,
+            context_match_negative_max_target_cosine=(
+                cfg.line_jepa_context_match_negative_max_target_cosine
             ),
         )
 
@@ -145,7 +138,7 @@ class LineJEPALoss(nn.Module):
         *,
         prediction: torch.Tensor | None,
         target: torch.Tensor | None,
-        regularized_embeddings: dict[str, torch.Tensor] | list[torch.Tensor],
+        regularized_embeddings: dict[str, torch.Tensor],
         current_epoch: int,
         global_step: int,
         prediction_weights: torch.Tensor | None = None,
@@ -340,14 +333,9 @@ class LineJEPALoss(nn.Module):
 
     @staticmethod
     def _regularized_embedding_items(
-        regularized_embeddings: dict[str, torch.Tensor] | list[torch.Tensor],
+        regularized_embeddings: dict[str, torch.Tensor],
     ) -> list[tuple[str, torch.Tensor]]:
-        if isinstance(regularized_embeddings, dict):
-            return [(str(name), value) for name, value in regularized_embeddings.items()]
-        return [
-            (f"embedding_{index}", value)
-            for index, value in enumerate(regularized_embeddings)
-        ]
+        return list(regularized_embeddings.items())
 
     @staticmethod
     def _pooled_regularizer_embeddings(
@@ -461,14 +449,6 @@ class LineJEPALoss(nn.Module):
         if not dist.is_available() or not dist.is_initialized():
             return tensor
         if tensor.requires_grad:
-            if dist_nn_functional is None:
-                raise RuntimeError(
-                    "Line-JEPA distributed SIGReg requires "
-                    "torch.distributed.nn.functional.all_reduce for gradient-carrying tensors, "
-                    f"but it is unavailable. tensor_shape={tuple(tensor.shape)}, "
-                    f"tensor_dtype={tensor.dtype}. Use a PyTorch build that provides "
-                    "torch.distributed.nn.functional, or disable multi-device Line-JEPA."
-                ) from _DIST_NN_FUNCTIONAL_IMPORT_ERROR
             return dist_nn_functional.all_reduce(tensor, op=dist.ReduceOp.SUM)
         dist.all_reduce(tensor, op=dist.ReduceOp.SUM)
         return tensor

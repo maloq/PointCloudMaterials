@@ -3,122 +3,94 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import torch
-import torch.nn as nn
-from omegaconf import DictConfig
+
+from .base import Encoder
 
 
 @dataclass(frozen=True)
 class EncoderOutput:
-    invariant: torch.Tensor | None
+    invariant: torch.Tensor
     equivariant: torch.Tensor | None
-    aux: tuple[object, ...] = ()
-    raw: object | None = None
-
-    def require_invariant(self, *, context: str) -> torch.Tensor:
-        if self.invariant is None:
-            raise RuntimeError(f"{context} requires an invariant latent, but the encoder returned none.")
-        return self.invariant
+    aux: tuple[object, ...]
+    raw: object
 
 
-def resolve_encoder_output_dim(cfg: DictConfig, *, encoder: nn.Module | None = None) -> int | None:
-    if encoder is not None:
-        invariant_dim = getattr(encoder, "invariant_dim", None)
-        if invariant_dim is not None:
-            return int(invariant_dim)
-
-    if hasattr(cfg, "latent_size"):
-        return int(cfg.latent_size)
-
-    encoder_cfg = getattr(cfg, "encoder", None)
-    encoder_kwargs = getattr(encoder_cfg, "kwargs", None) if encoder_cfg is not None else None
-    if encoder_kwargs is not None:
-        latent_size = encoder_kwargs.get("latent_size", None)
-        if latent_size is not None:
-            return int(latent_size)
-
-    if encoder is not None:
-        for attr_name in ("output_dim", "latent_size"):
-            value = getattr(encoder, attr_name, None)
-            if value is not None:
-                return int(value)
-    return None
+def resolve_encoder_output_dim(encoder: Encoder) -> int:
+    if encoder.invariant_dim is None:
+        raise RuntimeError(
+            f"{encoder.__class__.__name__} does not declare its invariant_dim."
+        )
+    return encoder.invariant_dim
 
 
-def prepare_encoder_input(encoder: nn.Module, points):
-    if not torch.is_tensor(points):
-        if bool(getattr(encoder, "supports_precomputed_input", False)):
-            return points
-        raise TypeError(f"Encoder input must be a torch.Tensor, got {type(points)}.")
-    if points.dim() != 3:
+def prepare_encoder_input(encoder: Encoder, points: torch.Tensor) -> torch.Tensor:
+    """Convert repository point clouds from dataset layout (B, N, 3)."""
+    if points.dim() != 3 or points.shape[-1] != 3:
         raise ValueError(
-            "Encoder input must have shape (B, N, 3) or (B, 3, N), "
+            "Repository encoder inputs must have dataset shape (B, N, 3), "
             f"got {tuple(points.shape)}."
         )
-
-    expects_channel_first = bool(getattr(encoder, "expects_channel_first", False))
-    if expects_channel_first:
-        if points.shape[1] == 3:
-            return points.contiguous()
-        if points.shape[-1] == 3:
-            return points.transpose(1, 2).contiguous()
-    else:
-        if points.shape[-1] == 3:
-            return points.contiguous()
-        if points.shape[1] == 3:
-            return points.transpose(1, 2).contiguous()
-
-    raise ValueError(
-        "Unable to infer point-cloud layout for the configured encoder. "
-        f"expects_channel_first={expects_channel_first}, points.shape={tuple(points.shape)}."
+    if encoder.input_layout == "bn3":
+        return points.contiguous()
+    if encoder.input_layout == "b3n":
+        return points.transpose(1, 2).contiguous()
+    raise RuntimeError(
+        f"{encoder.__class__.__name__} declares unknown input_layout={encoder.input_layout!r}."
     )
 
 
-def split_encoder_output(enc_out) -> EncoderOutput:
-    if isinstance(enc_out, EncoderOutput):
-        return enc_out
+def split_encoder_output(encoder: Encoder, raw_output: object) -> EncoderOutput:
+    """Apply the concrete forward-output contract declared by an encoder."""
+    contract = encoder.output_contract
+    if contract == "invariant":
+        if not torch.is_tensor(raw_output):
+            raise TypeError(
+                f"{encoder.__class__.__name__} must return one invariant tensor, "
+                f"got {type(raw_output)}."
+            )
+        return EncoderOutput(raw_output, None, (), raw_output)
 
-    if isinstance(enc_out, (tuple, list)):
-        if not enc_out:
-            raise ValueError("Encoder returned an empty tuple/list output.")
-
-        invariant = enc_out[0]
-        equivariant = None
-        for candidate in enc_out[1:]:
-            if not (torch.is_tensor(candidate) and candidate.dim() == 3 and candidate.shape[-1] == 3):
-                continue
-            if torch.is_tensor(invariant) and invariant.dim() == 2:
-                if candidate.shape[1] == invariant.shape[1]:
-                    equivariant = candidate
-                    break
-                if candidate.shape[1] == 3:
-                    continue
-            if candidate.shape[1] != 3:
-                equivariant = candidate
-                break
-        return EncoderOutput(
-            invariant=invariant,
-            equivariant=equivariant,
-            aux=tuple(enc_out[1:]),
-            raw=enc_out,
+    if not isinstance(raw_output, tuple) or not raw_output:
+        raise TypeError(
+            f"{encoder.__class__.__name__} declares output_contract={contract!r} "
+            f"and must return a non-empty tuple, got {type(raw_output)}."
+        )
+    invariant = raw_output[0]
+    if not torch.is_tensor(invariant):
+        raise TypeError(
+            f"{encoder.__class__.__name__} returned a non-tensor invariant value: "
+            f"{type(invariant)}."
         )
 
-    return EncoderOutput(invariant=enc_out, equivariant=None, raw=enc_out)
+    if contract == "invariant_aux":
+        return EncoderOutput(invariant, None, tuple(raw_output[1:]), raw_output)
+    if contract == "invariant_equivariant":
+        equivariant = raw_output[1]
+        if equivariant is not None and not torch.is_tensor(equivariant):
+            raise TypeError(
+                f"{encoder.__class__.__name__} returned a non-tensor equivariant value: "
+                f"{type(equivariant)}."
+            )
+        return EncoderOutput(invariant, equivariant, tuple(raw_output[2:]), raw_output)
+    raise RuntimeError(
+        f"{encoder.__class__.__name__} declares unknown output_contract={contract!r}."
+    )
 
 
-def encode_point_clouds(encoder: nn.Module, points: torch.Tensor) -> EncoderOutput:
+def encode_point_clouds(encoder: Encoder, points: torch.Tensor) -> EncoderOutput:
     prepared = prepare_encoder_input(encoder, points)
-    return split_encoder_output(encoder(prepared))
+    return split_encoder_output(encoder, encoder(prepared))
 
 
 class EncoderAdapter:
-    def __init__(self, encoder: nn.Module) -> None:
+    def __init__(self, encoder: Encoder) -> None:
         self.encoder = encoder
 
     def prepare_input(self, points: torch.Tensor) -> torch.Tensor:
         return prepare_encoder_input(self.encoder, points)
 
-    def split_output(self, enc_out):
-        output = split_encoder_output(enc_out)
+    def split_output(self, raw_output: object) -> tuple[torch.Tensor, torch.Tensor | None]:
+        output = split_encoder_output(self.encoder, raw_output)
         return output.invariant, output.equivariant
 
     def encode(self, points: torch.Tensor) -> EncoderOutput:

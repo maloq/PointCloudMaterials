@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict
-import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -109,11 +108,6 @@ def save_latent_tsne(
     )
 
 
-def _l2_normalize_rows(x: np.ndarray, eps: float = 1e-8) -> np.ndarray:
-    norms = np.linalg.norm(x, axis=1, keepdims=True)
-    return x / np.clip(norms, eps, None)
-
-
 def _l2_normalize_rows_strict(
     x: np.ndarray,
     *,
@@ -137,17 +131,11 @@ def _l2_normalize_rows_strict(
 
 
 def _normalize_clustering_method_name(method: str) -> str:
-    raw_method = str(method).strip()
-    if raw_method == "":
-        raise ValueError("Clustering method must be a non-empty string.")
-    key = raw_method.lower().replace(" ", "").replace("-", "").replace("_", "")
-    if key in {"auto", "kmeans", "euclideankmeans", "regularkmeans", "standardkmeans"}:
-        return "kmeans"
-    if key in {"spherical", "sphericalkmeans"}:
-        return "spherical_kmeans"
+    if method in {"kmeans", "spherical_kmeans"}:
+        return method
     raise ValueError(
-        "Unsupported clustering method "
-        f"{method!r}. Supported values: auto, kmeans, spherical_kmeans."
+        "Clustering method must be 'kmeans' or 'spherical_kmeans', "
+        f"got {method!r}."
     )
 
 
@@ -272,8 +260,9 @@ def fit_clustering_feature_transform(
 ) -> tuple[np.ndarray, ClusteringFeatureTransform, Dict[str, Any]]:
     x = np.asarray(latents, dtype=np.float32)
     if x.ndim != 2:
-        x = np.reshape(x, (x.shape[0], -1))
-    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+        raise ValueError(f"Clustering latents must have shape (N, D), got {x.shape}.")
+    if not np.isfinite(x).all():
+        raise ValueError("Clustering latents contain non-finite values.")
 
     info: Dict[str, Any] = {
         "input_dim": int(x.shape[1]),
@@ -282,7 +271,10 @@ def fit_clustering_feature_transform(
     }
 
     if l2_normalize:
-        x = _l2_normalize_rows(x)
+        x = _l2_normalize_rows_strict(
+            x,
+            context="Clustering feature-transform fit latents",
+        )
 
     scaler = None
     if standardize and x.shape[0] > 1:
@@ -338,8 +330,9 @@ def transform_clustering_features(
 ) -> np.ndarray:
     x = np.asarray(latents, dtype=np.float32)
     if x.ndim != 2:
-        x = np.reshape(x, (x.shape[0], -1))
-    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+        raise ValueError(f"Clustering latents must have shape (N, D), got {x.shape}.")
+    if not np.isfinite(x).all():
+        raise ValueError("Clustering latents contain non-finite values.")
     if int(x.shape[1]) != int(transform.input_dim):
         raise ValueError(
             "Clustering feature transform input dimension mismatch. "
@@ -347,7 +340,10 @@ def transform_clustering_features(
         )
 
     if bool(transform.l2_normalize):
-        x = _l2_normalize_rows(x)
+        x = _l2_normalize_rows_strict(
+            x,
+            context="Clustering feature-transform prediction latents",
+        )
     if transform.scaler is not None:
         x = transform.scaler.transform(x)
     if transform.pca is not None:
@@ -482,7 +478,6 @@ def _fit_spherical_kmeans_model(
             best_info = {
                 "requested_method": "spherical_kmeans",
                 "method": "spherical_kmeans",
-                "fallback_used": False,
                 "model_score_name": "spherical_inertia",
                 "model_score": float(spherical_inertia),
                 "mean_assigned_cosine_similarity": float(
@@ -569,7 +564,7 @@ def _resolve_clustering_features(
 
     latents_arr = np.asarray(latents, dtype=np.float32)
     if latents_arr.ndim != 2:
-        latents_arr = np.reshape(latents_arr, (latents_arr.shape[0], -1))
+        raise ValueError(f"Clustering latents must have shape (N, D), got {latents_arr.shape}.")
     features = np.asarray(prepared_features, dtype=np.float32)
     if features.ndim != 2:
         raise ValueError(
@@ -582,19 +577,9 @@ def _resolve_clustering_features(
             f"got features.shape[0]={features.shape[0]}, latents.shape[0]={latents_arr.shape[0]}."
         )
 
-    resolved_info = (
-        dict(prep_info)
-        if prep_info is not None
-        else {
-            "input_dim": int(latents_arr.shape[1]),
-            "output_dim": int(features.shape[1]),
-            "l2_normalize": bool(l2_normalize),
-            "standardize": bool(standardize),
-            "pca_components": int(features.shape[1]),
-            "pca_explained_variance": 1.0,
-        }
-    )
-    return features.astype(np.float32, copy=False), resolved_info
+    if prep_info is None:
+        raise ValueError("prep_info is required when prepared_features is provided.")
+    return features.astype(np.float32, copy=False), dict(prep_info)
 
 
 def fit_clustering_model(
@@ -602,7 +587,7 @@ def fit_clustering_model(
     n_clusters: int,
     *,
     random_state: int = 42,
-    method: str = "auto",
+    method: str = "spherical_kmeans",
     l2_normalize: bool = True,
     standardize: bool = True,
     pca_variance: float | None = 0.98,
@@ -611,7 +596,11 @@ def fit_clustering_model(
     if latents.size == 0 or len(latents) < 2:
         raise ValueError("Cannot fit a clustering model on fewer than 2 samples.")
 
-    n_clusters = max(2, min(int(n_clusters), len(latents)))
+    if n_clusters < 2 or n_clusters > len(latents):
+        raise ValueError(
+            "n_clusters must satisfy 2 <= n_clusters <= number of samples, "
+            f"got n_clusters={n_clusters}, samples={len(latents)}."
+        )
     fit_features, feature_transform, prep_info = fit_clustering_feature_transform(
         latents,
         random_state=int(random_state),
@@ -635,7 +624,6 @@ def fit_clustering_model(
         fit_info: Dict[str, Any] = {
             "method": "kmeans",
             "requested_method": str(method),
-            "fallback_used": False,
             "model_score_name": "inertia",
             "model_score": float(sklearn_model.inertia_),
             "random_state": int(random_state),
@@ -675,7 +663,7 @@ def fit_clustering_model(
         feature_transform=feature_transform,
         label_remap={
             int(old): int(new)
-            for old, new in canonical_info.get("cluster_label_remap", {}).items()
+            for old, new in canonical_info["cluster_label_remap"].items()
         },
         fit_info=dict(fit_summary),
         sklearn_model=sklearn_model,
@@ -733,7 +721,7 @@ def compute_transfer_kmeans_labels(
     n_clusters: int,
     *,
     random_state: int = 42,
-    method: str = "auto",
+    method: str = "spherical_kmeans",
     l2_normalize: bool = True,
     standardize: bool = True,
     pca_variance: float | None = 0.98,
@@ -853,7 +841,6 @@ def _cluster_with_method_selection(
         fit_info: Dict[str, Any] = {
             "method": "kmeans",
             "requested_method": str(method),
-            "fallback_used": False,
             "model_score_name": "inertia",
             "model_score": float(model.inertia_),
             "random_state": int(random_state),
@@ -889,7 +876,7 @@ def compute_kmeans_labels(
     *,
     max_samples: int | None = None,
     random_state: int = 42,
-    method: str = "auto",
+    method: str = "spherical_kmeans",
     l2_normalize: bool = True,
     standardize: bool = True,
     pca_variance: float | None = 0.98,
@@ -899,11 +886,12 @@ def compute_kmeans_labels(
     return_info: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
     if latents.size == 0 or len(latents) < 2:
-        empty = np.empty((0,), dtype=int)
-        if return_info:
-            return empty, {"method": "none"}
-        return empty
-    n_clusters = max(2, min(int(n_clusters), len(latents)))
+        raise ValueError("Cannot cluster fewer than 2 latent samples.")
+    if n_clusters < 2 or n_clusters > len(latents):
+        raise ValueError(
+            "n_clusters must satisfy 2 <= n_clusters <= number of samples, "
+            f"got n_clusters={n_clusters}, samples={len(latents)}."
+        )
     features, prep_info_resolved = _resolve_clustering_features(
         latents,
         prepared_features=prepared_features,
@@ -932,7 +920,7 @@ def compute_kmeans_labels(
         labels = labels_fit
     else:
         # Refit on full preprocessed features with selected method for consistent labels.
-        selected_method = str(fit_info.get("method", "kmeans"))
+        selected_method = str(fit_info["method"])
         labels, fit_info = _cluster_with_method_selection(
             features,
             n_clusters,
@@ -974,10 +962,7 @@ def compute_hdbscan_labels(
     return_info: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
     if latents.size == 0 or len(latents) < 2:
-        empty = np.empty((0,), dtype=int)
-        if return_info:
-            return empty, {"method": "hdbscan", "status": "empty"}
-        return empty
+        raise ValueError("Cannot run HDBSCAN on fewer than 2 latent samples.")
 
     if min_samples is not None and min_samples_candidates is not None:
         raise ValueError(
@@ -1078,7 +1063,6 @@ def compute_hdbscan_labels(
     best_labels_fit: np.ndarray | None = None
     best_selection_method: str | None = None
     best_score = None
-    fit_failures: list[tuple[int, int, str, Exception]] = []
     trials_evaluated = 0
 
     def _resolve_min_samples_candidates(mcs: int) -> list[int]:
@@ -1122,18 +1106,14 @@ def compute_hdbscan_labels(
         min_samples_grid = _resolve_min_samples_candidates(int(mcs))
         for method_name in selection_methods:
             for ms in min_samples_grid:
-                try:
-                    clusterer = hdbscan.HDBSCAN(
-                        min_cluster_size=int(mcs),
-                        min_samples=int(ms),
-                        cluster_selection_method=str(method_name),
-                        cluster_selection_epsilon=float(cluster_selection_epsilon),
-                        prediction_data=True,
-                    )
-                    labels_fit = clusterer.fit_predict(fit_features).astype(int)
-                except Exception as exc:
-                    fit_failures.append((int(mcs), int(ms), str(method_name), exc))
-                    continue
+                clusterer = hdbscan.HDBSCAN(
+                    min_cluster_size=int(mcs),
+                    min_samples=int(ms),
+                    cluster_selection_method=str(method_name),
+                    cluster_selection_epsilon=float(cluster_selection_epsilon),
+                    prediction_data=True,
+                )
+                labels_fit = clusterer.fit_predict(fit_features).astype(int)
                 trials_evaluated += 1
 
                 valid = labels_fit[labels_fit >= 0]
@@ -1176,103 +1156,32 @@ def compute_hdbscan_labels(
                     best_labels_fit = labels_fit
                     best_selection_method = str(method_name)
 
-    if fit_failures:
-        failed_mcs, failed_ms, failed_method, failed_exc = fit_failures[0]
-        warnings.warn(
-            f"HDBSCAN fitting failed for {len(fit_failures)} candidate setting(s); "
-            f"first failure min_cluster_size={failed_mcs}, min_samples={failed_ms}, "
-            f"selection_method={failed_method}. "
-            f"Error: {failed_exc}",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
     if (
         best is None
         or best_clusterer is None
         or best_labels_fit is None
         or best_selection_method is None
     ):
-        fallback = np.full((n_total,), -1, dtype=int)
-        info = {
-            **prep_info_resolved,
-            "method": "hdbscan",
-            "status": "failed",
-            "fit_samples": int(fit_size),
-            "total_samples": int(n_total),
-            "target_clusters_min": int(target_low),
-            "target_clusters_max": int(target_high),
-            "cluster_selection_method_requested": requested_selection_method,
-            "trials_evaluated": int(trials_evaluated),
-            "trials_failed": int(len(fit_failures)),
-        }
-        if return_info:
-            return fallback, info
-        return fallback
+        raise RuntimeError(
+            "HDBSCAN candidate search did not produce a fitted model; "
+            f"fit_samples={fit_size}, candidates={min_cluster_size_candidates}, "
+            f"selection_methods={selection_methods}."
+        )
 
     if refit_full_data:
-        try:
-            clusterer_full = hdbscan.HDBSCAN(
-                min_cluster_size=int(best["min_cluster_size"]),
-                min_samples=int(best["min_samples"]),
-                cluster_selection_method=str(best_selection_method),
-                cluster_selection_epsilon=float(cluster_selection_epsilon),
-                prediction_data=False,
-            )
-            labels_full = clusterer_full.fit_predict(features).astype(int)
-        except Exception as full_exc:
-            warnings.warn(
-                "HDBSCAN full-data refit failed; falling back to sampled-fit labels/predictions. "
-                f"Error: {full_exc}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
-            if fit_size == n_total:
-                labels_full = best_labels_fit
-            else:
-                try:
-                    labels_full, _ = hdbscan.approximate_predict(best_clusterer, features)
-                    labels_full = np.asarray(labels_full, dtype=int)
-                except Exception as approx_exc:
-                    warnings.warn(
-                        "hdbscan.approximate_predict failed after refit failure; assigning "
-                        "non-fit samples to noise. "
-                        f"Error: {approx_exc}",
-                        RuntimeWarning,
-                        stacklevel=2,
-                    )
-                    labels_full = np.full((n_total,), -1, dtype=int)
-                    labels_full[fit_idx] = best_labels_fit
+        clusterer_full = hdbscan.HDBSCAN(
+            min_cluster_size=int(best["min_cluster_size"]),
+            min_samples=int(best["min_samples"]),
+            cluster_selection_method=str(best_selection_method),
+            cluster_selection_epsilon=float(cluster_selection_epsilon),
+            prediction_data=False,
+        )
+        labels_full = clusterer_full.fit_predict(features).astype(int)
     elif fit_size == n_total:
         labels_full = best_labels_fit
     else:
-        try:
-            labels_full, _ = hdbscan.approximate_predict(best_clusterer, features)
-            labels_full = np.asarray(labels_full, dtype=int)
-        except Exception as exc:
-            warnings.warn(
-                f"hdbscan.approximate_predict failed; trying full refit. Error: {exc}",
-                RuntimeWarning,
-                stacklevel=2,
-            )
-            try:
-                clusterer_full = hdbscan.HDBSCAN(
-                    min_cluster_size=int(best["min_cluster_size"]),
-                    min_samples=int(best["min_samples"]),
-                    cluster_selection_method=str(best_selection_method),
-                    cluster_selection_epsilon=float(cluster_selection_epsilon),
-                    prediction_data=False,
-                )
-                labels_full = clusterer_full.fit_predict(features).astype(int)
-            except Exception as full_exc:
-                warnings.warn(
-                    "HDBSCAN full refit failed; using fit-sample labels and assigning "
-                    f"non-fit samples to noise. Error: {full_exc}",
-                    RuntimeWarning,
-                    stacklevel=2,
-                )
-                labels_full = np.full((n_total,), -1, dtype=int)
-                labels_full[fit_idx] = best_labels_fit
+        labels_full, _ = hdbscan.approximate_predict(best_clusterer, features)
+        labels_full = np.asarray(labels_full, dtype=int)
 
     valid_full = labels_full[labels_full >= 0]
     info = {
@@ -1292,7 +1201,7 @@ def compute_hdbscan_labels(
         "cluster_selection_method": str(best_selection_method),
         "refit_full_data": bool(refit_full_data),
         "trials_evaluated": int(trials_evaluated),
-        "trials_failed": int(len(fit_failures)),
+        "trials_failed": 0,
         "min_cluster_size_candidates_evaluated": [int(v) for v in min_cluster_size_candidates],
     }
     if return_info:
@@ -1376,8 +1285,13 @@ def save_tsne_plot_with_coords(
     paper_title: str | None = None,
     paper_label_prefix: str | None = None,
 ) -> None:
-    if tsne_coords.size == 0 or labels.size != len(tsne_coords):
-        return
+    if tsne_coords.ndim != 2 or tsne_coords.shape[1] != 2 or tsne_coords.shape[0] == 0:
+        raise ValueError(f"tsne_coords must have non-empty shape (N, 2), got {tsne_coords.shape}.")
+    if labels.ndim != 1 or labels.shape[0] != tsne_coords.shape[0]:
+        raise ValueError(
+            "labels must have shape (N,) matching t-SNE coordinates, "
+            f"got coords={tsne_coords.shape}, labels={labels.shape}."
+        )
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     save_tsne_plot(
@@ -1560,8 +1474,13 @@ def save_local_structure_assignments(
     *,
     prefix: str = "local_structure",
 ) -> Dict[str, str]:
-    if coords.size == 0 or cluster_labels.size != len(coords):
-        return {}
+    if coords.ndim != 2 or coords.shape[1] != 3 or coords.shape[0] == 0:
+        raise ValueError(f"coords must have non-empty shape (N, 3), got {coords.shape}.")
+    if cluster_labels.ndim != 1 or cluster_labels.shape[0] != coords.shape[0]:
+        raise ValueError(
+            "cluster_labels must have shape (N,) matching coordinates, "
+            f"got coords={coords.shape}, labels={cluster_labels.shape}."
+        )
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1592,10 +1511,13 @@ def save_md_space_clusters_plot(
     title: str | None = None,
     legend_title: str = "cluster",
 ) -> None:
-    if coords.size == 0 or len(coords) < 2:
-        return
-    if cluster_labels.size != len(coords):
-        return
+    if coords.ndim != 2 or coords.shape[1] != 3 or coords.shape[0] < 2:
+        raise ValueError(f"coords must have shape (N, 3) with N >= 2, got {coords.shape}.")
+    if cluster_labels.ndim != 1 or cluster_labels.shape[0] != coords.shape[0]:
+        raise ValueError(
+            "cluster_labels must have shape (N,) matching coordinates, "
+            f"got coords={coords.shape}, labels={cluster_labels.shape}."
+        )
 
     coords_plot = coords
     labels_plot = cluster_labels
@@ -1653,8 +1575,11 @@ def save_pca_visualization(
     class_names: Dict[int, str] | None = None,
 ) -> Dict[str, Any]:
     """Generate PCA visualizations and statistics for latent space analysis."""
-    if inv_latents.size == 0 or len(inv_latents) < 2:
-        return {}
+    if inv_latents.ndim != 2 or inv_latents.shape[0] < 2:
+        raise ValueError(
+            "PCA visualization requires latents with shape (N, D) and N >= 2, "
+            f"got {inv_latents.shape}."
+        )
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1791,8 +1716,11 @@ def save_latent_statistics(
     correlation_max_samples: int | None = None,
 ) -> Dict[str, Any]:
     """Compute and visualize detailed latent space statistics."""
-    if inv_latents.size == 0:
-        return {}
+    if inv_latents.ndim != 2 or inv_latents.shape[0] == 0:
+        raise ValueError(
+            "Latent statistics require non-empty latents with shape (N, D), "
+            f"got {inv_latents.shape}."
+        )
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1979,7 +1907,7 @@ def save_latent_statistics(
 
 def save_equivariance_plot(eq_errors: np.ndarray, out_file: Path) -> None:
     if eq_errors.size == 0:
-        return
+        raise ValueError("Cannot plot an empty equivariance-error array.")
 
     out_file = Path(out_file)
     out_file.parent.mkdir(parents=True, exist_ok=True)

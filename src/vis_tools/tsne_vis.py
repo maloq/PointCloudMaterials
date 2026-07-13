@@ -1,22 +1,18 @@
 import os
-import inspect
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Dict, Any
 from sklearn.manifold import TSNE
+import umap
 
 
 def _log_saved_figure(path: Path | str) -> None:
     print(f"[analysis][savefig] {Path(path).resolve()}")
 
 
-def _normalize_label_scalar(value: Any) -> Any:
-    return value.item() if isinstance(value, np.generic) else value
-
-
 def _is_noise_label(value: Any) -> bool:
-    return value in {-1, -1.0, "-1"}
+    return value == -1
 
 
 def _resolve_label_text(
@@ -27,13 +23,6 @@ def _resolve_label_text(
 ) -> str:
     if class_names is not None and label in class_names:
         return str(class_names[label])
-    try:
-        label_int = int(label)
-    except (TypeError, ValueError):
-        label_int = None
-    if class_names is not None and label_int is not None and label_int in class_names:
-        return str(class_names[label_int])
-
     label_text = str(label)
     if label_prefix is not None and class_names is None and not _is_noise_label(label):
         return f"{label_prefix}{label_text}"
@@ -45,7 +34,7 @@ def _build_label_color_map(
     *,
     cluster_color_map: Dict[int, str] | None,
 ) -> tuple[list[Any], Dict[Any, Any]]:
-    unique_labels = [_normalize_label_scalar(v) for v in np.unique(labels)]
+    unique_labels = list(np.unique(labels))
     non_noise_labels = [v for v in unique_labels if not _is_noise_label(v)]
     tab10_colors = plt.cm.tab10(np.linspace(0, 1, 10)).astype(np.float32)
     label_to_color: Dict[Any, Any] = {}
@@ -184,7 +173,6 @@ def compute_tsne(
             f"got perplexity={perplexity}, num_samples={num_samples}."
         )
 
-    # Build kwargs to avoid passing None for sklearn parameters
     tsne_kwargs: Dict[str, Any] = {
         "n_components": 2,
         "init": "pca",
@@ -192,143 +180,12 @@ def compute_tsne(
         "random_state": random_state,
         "perplexity": perplexity,
     }
-    if n_iter is not None:
-        n_iter_int = int(n_iter)
-        if n_iter_int <= 0:
-            raise ValueError(f"n_iter must be > 0, got {n_iter_int}.")
-        tsne_params = inspect.signature(TSNE.__init__).parameters
-        if "max_iter" in tsne_params:
-            tsne_kwargs["max_iter"] = n_iter_int
-        elif "n_iter" in tsne_params:
-            tsne_kwargs["n_iter"] = n_iter_int
-        else:
-            raise RuntimeError(
-                "Unsupported sklearn TSNE signature: expected parameter "
-                "'max_iter' or 'n_iter', but found neither. "
-                f"Available parameters: {sorted(tsne_params.keys())}."
-            )
+    if n_iter <= 0:
+        raise ValueError(f"n_iter must be > 0, got {n_iter}.")
+    tsne_kwargs["max_iter"] = n_iter
 
     tsne = TSNE(**tsne_kwargs)
     return tsne.fit_transform(arr)
-
-
-def _resolve_umap_backend(requested_backend: str) -> dict[str, Any]:
-    backend_norm = str(requested_backend).strip().lower() or "auto"
-    if backend_norm not in {"auto", "cpu", "gpu"}:
-        raise ValueError(
-            "UMAP backend must be one of ['auto', 'cpu', 'gpu'], "
-            f"got {requested_backend!r}."
-        )
-
-    gpu_available = False
-    gpu_probe_error: str | None = None
-    try:
-        import torch
-    except ImportError as exc:
-        gpu_probe_error = f"PyTorch import failed while probing CUDA availability: {exc}"
-    else:
-        gpu_available = bool(torch.cuda.is_available())
-
-    if backend_norm == "cpu":
-        return {
-            "backend": "umap-learn",
-            "device": "cpu",
-            "requested_backend": backend_norm,
-            "gpu_available": bool(gpu_available),
-            "reason": "CPU backend forced by configuration.",
-        }
-
-    if gpu_available:
-        try:
-            from cuml.manifold import UMAP as CuMLUMAP
-        except ImportError as exc:
-            if backend_norm == "gpu":
-                raise ImportError(
-                    "UMAP backend 'gpu' requires RAPIDS cuML "
-                    "(cuml.manifold.UMAP), but it is not installed."
-                ) from exc
-            return {
-                "backend": "umap-learn",
-                "device": "cpu",
-                "requested_backend": backend_norm,
-                "gpu_available": True,
-                "reason": (
-                    "CUDA is available, but RAPIDS cuML is not installed. "
-                    "Falling back to CPU umap-learn."
-                ),
-            }
-        return {
-            "backend": "cuml",
-            "device": "gpu",
-            "requested_backend": backend_norm,
-            "gpu_available": True,
-            "reason": None,
-            "umap_class": CuMLUMAP,
-        }
-
-    if backend_norm == "gpu":
-        raise RuntimeError(
-            "UMAP backend 'gpu' requires a CUDA-capable runtime, "
-            f"but torch.cuda.is_available() returned False. "
-            f"Probe details: {gpu_probe_error or 'ok'}."
-        )
-
-    return {
-        "backend": "umap-learn",
-        "device": "cpu",
-        "requested_backend": backend_norm,
-        "gpu_available": False,
-        "reason": (
-            "CUDA is not available for UMAP acceleration."
-            if gpu_probe_error is None
-            else gpu_probe_error
-        ),
-    }
-
-
-def _build_umap_reducer(
-    backend_info: dict[str, Any],
-    *,
-    random_state: int,
-    n_neighbors: int,
-    min_dist: float,
-    metric: str,
-) -> Any:
-    reducer_kwargs = {
-        "n_components": 2,
-        "n_neighbors": int(n_neighbors),
-        "min_dist": float(min_dist),
-        "metric": str(metric),
-    }
-    if str(backend_info["backend"]) == "cuml":
-        reducer_cls = backend_info.get("umap_class")
-        if reducer_cls is None:
-            raise RuntimeError("Missing cuML UMAP class in backend_info.")
-        try:
-            reducer_signature = inspect.signature(reducer_cls.__init__)
-        except (TypeError, ValueError):
-            reducer_signature = None
-        if reducer_signature is not None and "output_type" in reducer_signature.parameters:
-            reducer_kwargs["output_type"] = "numpy"
-        if reducer_signature is not None and "random_state" in reducer_signature.parameters:
-            reducer_kwargs["random_state"] = int(random_state)
-        return reducer_cls(**reducer_kwargs)
-
-    try:
-        import umap
-    except ImportError as exc:
-        raise ImportError("UMAP projection requested but umap-learn is not installed.") from exc
-
-    try:
-        reducer_signature = inspect.signature(umap.UMAP.__init__)
-    except (TypeError, ValueError):
-        reducer_signature = None
-    if reducer_signature is not None:
-        if "random_state" in reducer_signature.parameters:
-            reducer_kwargs["random_state"] = int(random_state)
-        if "transform_seed" in reducer_signature.parameters:
-            reducer_kwargs["transform_seed"] = int(random_state)
-    return umap.UMAP(**reducer_kwargs)
 
 
 def compute_umap(
@@ -338,7 +195,7 @@ def compute_umap(
     n_neighbors: int = 30,
     min_dist: float = 0.15,
     metric: str = "euclidean",
-    backend: str = "auto",
+    backend: str = "cpu",
     return_info: bool = False,
 ) -> np.ndarray | tuple[np.ndarray, Dict[str, Any]]:
     arr = np.asarray(latents, dtype=np.float32)
@@ -350,25 +207,26 @@ def compute_umap(
     if num_samples < 2:
         raise ValueError("Cannot compute UMAP with fewer than 2 samples.")
 
-    n_neighbors_int = int(n_neighbors)
-    if n_neighbors_int < 2:
-        raise ValueError(f"UMAP n_neighbors must be >= 2, got {n_neighbors_int}.")
-    if not np.isfinite(float(min_dist)) or float(min_dist) < 0.0:
-        raise ValueError(f"UMAP min_dist must be finite and >= 0, got {min_dist}.")
-    n_neighbors_used = min(n_neighbors_int, num_samples - 1)
-    if n_neighbors_used < 2:
+    if n_neighbors < 2 or n_neighbors >= num_samples:
         raise ValueError(
-            "UMAP requires at least 2 neighbors after sample-count adjustment, "
-            f"got n_neighbors_used={n_neighbors_used}, num_samples={num_samples}."
+            "UMAP n_neighbors must satisfy 2 <= n_neighbors < number of samples, "
+            f"got n_neighbors={n_neighbors}, samples={num_samples}."
+        )
+    if not np.isfinite(min_dist) or min_dist < 0.0:
+        raise ValueError(f"UMAP min_dist must be finite and >= 0, got {min_dist}.")
+    if backend != "cpu":
+        raise ValueError(
+            "Current repository analysis uses the installed umap-learn CPU backend; "
+            f"got backend={backend!r}."
         )
 
-    backend_info = _resolve_umap_backend(backend)
-    reducer = _build_umap_reducer(
-        backend_info,
-        random_state=int(random_state),
-        n_neighbors=int(n_neighbors_used),
-        min_dist=float(min_dist),
-        metric=str(metric),
+    reducer = umap.UMAP(
+        n_components=2,
+        n_neighbors=n_neighbors,
+        min_dist=min_dist,
+        metric=metric,
+        random_state=random_state,
+        transform_seed=random_state,
     )
     embedding = np.asarray(reducer.fit_transform(arr), dtype=np.float32)
     if embedding.shape != (num_samples, 2):
@@ -378,12 +236,11 @@ def compute_umap(
         )
     info = {
         "method": "umap",
-        "backend": str(backend_info["backend"]),
-        "device": str(backend_info["device"]),
-        "requested_backend": str(backend_info["requested_backend"]),
-        "backend_reason": backend_info.get("reason"),
-        "n_neighbors_requested": int(n_neighbors_int),
-        "n_neighbors_used": int(n_neighbors_used),
+        "backend": "umap-learn",
+        "device": "cpu",
+        "requested_backend": backend,
+        "n_neighbors_requested": n_neighbors,
+        "n_neighbors_used": n_neighbors,
         "min_dist": float(min_dist),
         "metric": str(metric),
         "random_state": int(random_state),

@@ -43,6 +43,11 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--frame-stride", type=int, default=1)
     parser.add_argument("--window-stride", type=int, default=1)
     parser.add_argument(
+        "--center-selection-mode",
+        required=True,
+        choices=("atom_ids", "atom_stride", "random_subset"),
+    )
+    parser.add_argument(
         "--center-atom-id",
         type=int,
         action="append",
@@ -83,16 +88,6 @@ def main() -> None:
     if not args.build_cache:
         return
 
-    if (
-        args.center_atom_id is None
-        and args.center_atom_stride is None
-        and args.max_center_atoms is None
-    ):
-        raise ValueError(
-            "Cache build mode requires one of --center-atom-id, "
-            "--center-atom-stride, or --max-center-atoms."
-        )
-
     dataset = TemporalLAMMPSDumpDataset(
         dump_file=args.dump_file,
         cache_dir=args.cache_dir,
@@ -101,6 +96,7 @@ def main() -> None:
         radius=float(args.radius),
         frame_stride=int(args.frame_stride),
         window_stride=int(args.window_stride),
+        center_selection_mode=args.center_selection_mode,
         center_atom_ids=args.center_atom_id,
         center_atom_stride=args.center_atom_stride,
         max_center_atoms=args.max_center_atoms,

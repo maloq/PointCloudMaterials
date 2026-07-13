@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.data_modules.line_jepa import LineJEPADataModule
 from src.models import EncoderAdapter
 from src.training_methods.base_ssl_module import BaseSSLModule
@@ -18,8 +19,6 @@ class CompactSemanticProjector(nn.Module):
 
     def __init__(self, *, input_dim: int, output_dim: int) -> None:
         super().__init__()
-        input_dim = int(input_dim)
-        output_dim = int(output_dim)
         if input_dim <= 0 or output_dim <= 0:
             raise ValueError(
                 "CompactSemanticProjector dimensions must be positive, "
@@ -94,16 +93,10 @@ class LineContextPredictor(nn.Module):
         num_heads: int,
         mlp_ratio: float,
         dropout: float,
+        output_dim: int,
         directional_dim: int = 0,
-        output_dim: int | None = None,
     ) -> None:
         super().__init__()
-        input_dim = int(input_dim)
-        hidden_dim = int(hidden_dim)
-        depth = int(depth)
-        num_heads = int(num_heads)
-        directional_dim = int(directional_dim)
-        output_dim = input_dim if output_dim is None else int(output_dim)
         if input_dim <= 0:
             raise ValueError(f"LineContextPredictor input_dim must be > 0, got {input_dim}.")
         if hidden_dim <= 0:
@@ -242,8 +235,9 @@ class LineJEPAModule(BaseSSLModule):
     }
 
     def __init__(self, cfg):
-        data_cfg = getattr(cfg, "data", None)
-        self.line_atoms = int(getattr(data_cfg, "line_atoms", 0))
+        self.data_kind = normalize_data_kind(cfg.data.kind)
+        self.encoder_name = cfg.encoder.name
+        self.line_atoms = cfg.data.line_atoms
         if self.line_atoms <= 1 or self.line_atoms % 2 != 1:
             raise ValueError(
                 "LineJEPAModule requires data.line_atoms to be an odd integer > 1. "
@@ -257,15 +251,13 @@ class LineJEPAModule(BaseSSLModule):
         )
         self.cache_warning_prefix = "line-jepa"
         self.line_jepa = LineJEPALoss.from_config(cfg)
-        self.prediction_target = str(getattr(cfg, "line_jepa_prediction_target", "target")).strip().lower()
+        self.prediction_target = cfg.line_jepa_prediction_target
         if self.prediction_target not in {"target", "residual"}:
             raise ValueError(
                 "line_jepa_prediction_target must be 'target' or 'residual', "
                 f"got {self.prediction_target!r}."
             )
-        self.prediction_normalization = str(
-            getattr(cfg, "line_jepa_prediction_normalization", "none")
-        ).strip().lower()
+        self.prediction_normalization = cfg.line_jepa_prediction_normalization
         if self.prediction_normalization not in {"none", "l2"}:
             raise ValueError(
                 "line_jepa_prediction_normalization must be 'none' or 'l2', "
@@ -284,38 +276,28 @@ class LineJEPAModule(BaseSSLModule):
                 "Data-agnostic context matching requires direct L2-normalized target prediction. "
                 f"Got target={self.prediction_target!r}, normalization={self.prediction_normalization!r}."
             )
-        self.prediction_positions = str(
-            getattr(cfg, "line_jepa_prediction_positions", "endpoints")
-        ).strip().lower()
+        self.prediction_positions = cfg.line_jepa_prediction_positions
         if self.prediction_positions not in {"center", "all", "cycle", "endpoints"}:
             raise ValueError(
                 "line_jepa_prediction_positions must be 'center', 'all', 'cycle', or 'endpoints', "
                 f"got {self.prediction_positions!r}."
             )
-        self.view_jitter_std = float(getattr(cfg, "line_jepa_view_jitter_std", 0.0))
+        self.view_jitter_std = cfg.line_jepa_view_jitter_std
         if self.view_jitter_std < 0.0:
             raise ValueError(
                 "line_jepa_view_jitter_std must be >= 0, "
                 f"got {self.view_jitter_std}."
             )
-        self.view_scale_range = float(getattr(cfg, "line_jepa_view_scale_range", 0.0))
+        self.view_scale_range = cfg.line_jepa_view_scale_range
         if not (0.0 <= self.view_scale_range < 1.0):
             raise ValueError(
                 "line_jepa_view_scale_range must be in [0, 1), "
                 f"got {self.view_scale_range}."
             )
-        self.prediction_hard_enabled = bool(
-            getattr(cfg, "line_jepa_prediction_hard_enabled", True)
-        )
-        self.prediction_hard_top_fraction = float(
-            getattr(cfg, "line_jepa_prediction_hard_top_fraction", 0.35)
-        )
-        self.prediction_hard_weight_low = float(
-            getattr(cfg, "line_jepa_prediction_hard_weight_low", 0.2)
-        )
-        self.prediction_hard_weight_high = float(
-            getattr(cfg, "line_jepa_prediction_hard_weight_high", 2.0)
-        )
+        self.prediction_hard_enabled = cfg.line_jepa_prediction_hard_enabled
+        self.prediction_hard_top_fraction = cfg.line_jepa_prediction_hard_top_fraction
+        self.prediction_hard_weight_low = cfg.line_jepa_prediction_hard_weight_low
+        self.prediction_hard_weight_high = cfg.line_jepa_prediction_hard_weight_high
         if not (0.0 < self.prediction_hard_top_fraction <= 1.0):
             raise ValueError(
                 "line_jepa_prediction_hard_top_fraction must be in (0, 1], "
@@ -338,30 +320,26 @@ class LineJEPAModule(BaseSSLModule):
                 f"Got high={self.prediction_hard_weight_high}, "
                 f"low={self.prediction_hard_weight_low}."
             )
-        self.target_view_sim_coeff = float(getattr(cfg, "line_jepa_target_view_sim_coeff", 0.0))
+        self.target_view_sim_coeff = cfg.line_jepa_target_view_sim_coeff
         if self.target_view_sim_coeff < 0.0:
             raise ValueError(
                 "line_jepa_target_view_sim_coeff must be >= 0, "
                 f"got {self.target_view_sim_coeff}."
             )
-        self.shuffle_controls_enabled = bool(
-            getattr(cfg, "line_jepa_shuffle_controls_enabled", False)
-        )
-        self.shuffle_control_seed = int(
-            getattr(cfg, "line_jepa_shuffle_control_seed", 0)
-        )
+        self.shuffle_controls_enabled = cfg.line_jepa_shuffle_controls_enabled
+        self.shuffle_control_seed = cfg.line_jepa_shuffle_control_seed
         if self.shuffle_controls_enabled and self.prediction_target != "target":
             raise ValueError(
                 "Line-JEPA shuffle controls currently require direct target prediction, "
                 f"got line_jepa_prediction_target={self.prediction_target!r}."
             )
-        self.target_encoder_mode = str(getattr(cfg, "line_jepa_target_encoder", "ema")).strip().lower()
+        self.target_encoder_mode = cfg.line_jepa_target_encoder
         if self.target_encoder_mode not in {"ema", "frozen", "online"}:
             raise ValueError(
                 "line_jepa_target_encoder must be 'ema', 'frozen', or 'online', "
                 f"got {self.target_encoder_mode!r}."
             )
-        self.target_ema_decay = float(getattr(cfg, "line_jepa_target_ema_decay", 0.996))
+        self.target_ema_decay = cfg.line_jepa_target_ema_decay
         if not (0.0 <= self.target_ema_decay < 1.0):
             raise ValueError(
                 "line_jepa_target_ema_decay must be in [0, 1), "
@@ -378,9 +356,7 @@ class LineJEPAModule(BaseSSLModule):
             self.target_encoder_io = None
         self._frozen_target_initialized = self.target_encoder_mode != "frozen"
 
-        self.directional_feature_mode = str(
-            getattr(cfg, "line_jepa_directional_feature_mode", "none")
-        ).strip().lower()
+        self.directional_feature_mode = cfg.line_jepa_directional_feature_mode
         if self.directional_feature_mode not in {"none", "moments", "encoder"}:
             raise ValueError(
                 "line_jepa_directional_feature_mode must be 'none', 'moments', or 'encoder', "
@@ -396,26 +372,18 @@ class LineJEPAModule(BaseSSLModule):
             directional_feature_dim = 8
         elif self.directional_feature_mode == "encoder":
             encoder_extension = self._encoder_extension()
-            directional_feature_dim = int(
-                getattr(encoder_extension, "directional_feature_dim", 0)
-            )
-            if directional_feature_dim <= 0 or not callable(
-                getattr(encoder_extension, "directional_features_from_geometry", None)
-            ):
+            if self.encoder_name != "GeoFrameTransformer":
                 raise ValueError(
-                    "line_jepa_directional_feature_mode='encoder' requires an encoder exposing "
-                    "a positive directional_feature_dim and directional_features_from_geometry(). "
-                    f"Configured encoder type={type(encoder_extension).__name__}."
+                    "line_jepa_directional_feature_mode='encoder' is produced by the "
+                    "GeoFrameTransformer geometry state, "
+                    f"got encoder.name={self.encoder_name!r}."
                 )
+            directional_feature_dim = encoder_extension.directional_feature_dim
         else:
             directional_feature_dim = 0
 
-        self.masked_token_coeff = float(
-            getattr(cfg, "line_jepa_masked_token_coeff", 0.0)
-        )
-        self.masked_token_samples = int(
-            getattr(cfg, "line_jepa_masked_token_samples", 256)
-        )
+        self.masked_token_coeff = cfg.line_jepa_masked_token_coeff
+        self.masked_token_samples = cfg.line_jepa_masked_token_samples
         if self.masked_token_coeff < 0.0:
             raise ValueError(
                 "line_jepa_masked_token_coeff must be >= 0, "
@@ -427,52 +395,31 @@ class LineJEPAModule(BaseSSLModule):
                 f"got {self.masked_token_samples}."
             )
         if self.masked_token_coeff > 0.0:
-            encoder_extension = self._encoder_extension()
-            if not callable(getattr(encoder_extension, "masked_token_loss", None)):
+            if self.encoder_name != "GeoFrameTransformer":
                 raise ValueError(
-                    "line_jepa_masked_token_coeff > 0 requires an encoder exposing "
-                    "masked_token_loss(). "
-                    f"Configured encoder type={type(encoder_extension).__name__}."
+                    "line_jepa_masked_token_coeff > 0 requires the GeoFrameTransformer "
+                    f"masked-token producer, got encoder.name={self.encoder_name!r}."
                 )
 
         feature_dim = self._resolve_feature_dim()
-        self.semantic_dim = int(getattr(cfg, "line_jepa_semantic_dim", 64))
+        self.semantic_dim = cfg.line_jepa_semantic_dim
         if not (1 <= self.semantic_dim <= feature_dim):
             raise ValueError(
                 "line_jepa_semantic_dim must be in [1, encoder_feature_dim], "
                 f"got semantic_dim={self.semantic_dim}, encoder_feature_dim={feature_dim}."
             )
-        self.semantic_anchor_coeff = float(
-            getattr(cfg, "line_jepa_semantic_anchor_coeff", 5.0)
-        )
-        self.semantic_relation_coeff = float(
-            getattr(cfg, "line_jepa_semantic_relation_coeff", 1.0)
-        )
-        self.semantic_relation_samples = int(
-            getattr(cfg, "line_jepa_semantic_relation_samples", 1024)
-        )
-        self.prototype_coeff = float(getattr(cfg, "line_jepa_prototype_coeff", 0.1))
-        self.prototype_temperature = float(
-            getattr(cfg, "line_jepa_prototype_temperature", 0.1)
-        )
-        self.prototype_sinkhorn_epsilon = float(
-            getattr(cfg, "line_jepa_prototype_sinkhorn_epsilon", 0.1)
-        )
-        self.prototype_sinkhorn_iterations = int(
-            getattr(cfg, "line_jepa_prototype_sinkhorn_iterations", 20)
-        )
-        prototype_counts_raw = getattr(cfg, "line_jepa_prototype_counts", [6, 12, 24])
-        self.prototype_counts = tuple(int(value) for value in prototype_counts_raw)
-        self.encoder_freeze_epochs = int(
-            getattr(cfg, "line_jepa_encoder_freeze_epochs", 2)
-        )
-        self.freeze_encoder = bool(
-            getattr(cfg, "line_jepa_freeze_encoder", False)
-        )
-        self.freeze_semantic_projector = bool(
-            getattr(cfg, "line_jepa_freeze_semantic_projector", False)
-        )
-        self.encoder_lr_scale = float(getattr(cfg, "line_jepa_encoder_lr_scale", 0.1))
+        self.semantic_anchor_coeff = cfg.line_jepa_semantic_anchor_coeff
+        self.semantic_relation_coeff = cfg.line_jepa_semantic_relation_coeff
+        self.semantic_relation_samples = cfg.line_jepa_semantic_relation_samples
+        self.prototype_coeff = cfg.line_jepa_prototype_coeff
+        self.prototype_temperature = cfg.line_jepa_prototype_temperature
+        self.prototype_sinkhorn_epsilon = cfg.line_jepa_prototype_sinkhorn_epsilon
+        self.prototype_sinkhorn_iterations = cfg.line_jepa_prototype_sinkhorn_iterations
+        self.prototype_counts = tuple(cfg.line_jepa_prototype_counts)
+        self.encoder_freeze_epochs = cfg.line_jepa_encoder_freeze_epochs
+        self.freeze_encoder = cfg.line_jepa_freeze_encoder
+        self.freeze_semantic_projector = cfg.line_jepa_freeze_semantic_projector
+        self.encoder_lr_scale = cfg.line_jepa_encoder_lr_scale
         for name, value in (
             ("line_jepa_semantic_anchor_coeff", self.semantic_anchor_coeff),
             ("line_jepa_semantic_relation_coeff", self.semantic_relation_coeff),
@@ -581,17 +528,18 @@ class LineJEPAModule(BaseSSLModule):
             if self.regularizer_enabled
             else nn.Identity()
         )
-        hidden_dim = int(getattr(cfg, "line_jepa_predictor_hidden_dim", feature_dim))
+        hidden_dim = cfg.line_jepa_predictor_hidden_dim
         self.predictor = LineContextPredictor(
             input_dim=self.semantic_dim,
             hidden_dim=hidden_dim,
-            depth=int(getattr(cfg, "line_jepa_predictor_depth", 2)),
-            num_heads=int(getattr(cfg, "line_jepa_predictor_heads", 4)),
-            mlp_ratio=float(getattr(cfg, "line_jepa_predictor_mlp_ratio", 4.0)),
-            dropout=float(getattr(cfg, "line_jepa_predictor_dropout", 0.0)),
+            depth=cfg.line_jepa_predictor_depth,
+            num_heads=cfg.line_jepa_predictor_heads,
+            mlp_ratio=cfg.line_jepa_predictor_mlp_ratio,
+            dropout=cfg.line_jepa_predictor_dropout,
             directional_dim=directional_feature_dim,
             output_dim=self.semantic_dim,
         )
+        self._encoder_frozen_state: bool | None = None
         # Lightning evaluates example_input_array in its model-summary callback before
         # the first training batch. The semantic PCA basis is deliberately initialized
         # from that first frozen-teacher batch, so a pre-fit forward pass is undefined.
@@ -606,9 +554,8 @@ class LineJEPAModule(BaseSSLModule):
 
     @staticmethod
     def _build_regularizer_projector(cfg, *, input_dim: int) -> nn.Module:
-        input_dim = int(input_dim)
-        output_dim = int(getattr(cfg, "line_jepa_regularizer_projector_dim", 120))
-        hidden_dim = int(getattr(cfg, "line_jepa_regularizer_projector_hidden_dim", input_dim))
+        output_dim = cfg.line_jepa_regularizer_projector_dim
+        hidden_dim = cfg.line_jepa_regularizer_projector_hidden_dim
         if input_dim <= 0:
             raise ValueError(f"line_jepa regularizer projector input_dim must be > 0, got {input_dim}.")
         if output_dim <= 0:
@@ -831,61 +778,19 @@ class LineJEPAModule(BaseSSLModule):
         )
 
     def load_pretrained_weights_from_checkpoint(self, checkpoint_path: str, *, strict: bool = False) -> None:
-        try:
-            checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
-        except TypeError:
-            checkpoint = torch.load(checkpoint_path, map_location="cpu")
-        if not isinstance(checkpoint, dict):
-            raise TypeError(f"Expected checkpoint dict from {checkpoint_path}, got {type(checkpoint)!r}.")
-        source_state = checkpoint.get("state_dict", checkpoint.get("model_state_dict"))
-        if not isinstance(source_state, dict):
-            raise ValueError(
-                "Line-JEPA checkpoint initialization expected 'state_dict' or "
-                f"'model_state_dict' in {checkpoint_path}."
-            )
-
-        normalized_source = {}
-        for key, value in source_state.items():
-            new_key = str(key)
-            for prefix in ("model.", "module."):
-                while new_key.startswith(prefix):
-                    new_key = new_key[len(prefix):]
-            new_key = new_key.replace("._orig_mod.", ".")
-            if new_key.startswith("_orig_mod."):
-                new_key = new_key[len("_orig_mod."):]
-            normalized_source[new_key] = value
-
-        def candidate_model_keys(key: str) -> list[str]:
-            candidates = [key]
-            for prefix in ("encoder.", "target_encoder."):
-                if key.startswith(prefix):
-                    suffix = key[len(prefix):]
-                    candidates.append(f"{prefix}_orig_mod.{suffix}")
-            return candidates
-
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        source_state = checkpoint["state_dict"]
         model_state = self.state_dict()
         compatible = {}
         shape_mismatch = []
-        for key, value in normalized_source.items():
-            target_key = None
-            target = None
-            for candidate in candidate_model_keys(key):
-                maybe_target = model_state.get(candidate)
-                if maybe_target is not None:
-                    target_key = candidate
-                    target = maybe_target
-                    break
+        for key, value in source_state.items():
+            target = model_state.get(key)
             if target is None:
                 continue
             if tuple(target.shape) != tuple(value.shape):
                 shape_mismatch.append(key)
                 continue
-            if target_key in compatible:
-                raise RuntimeError(
-                    "Line-JEPA checkpoint initialization found duplicate source tensors for "
-                    f"target key {target_key!r} from {checkpoint_path}."
-                )
-            compatible[target_key] = value
+            compatible[key] = value
         if not compatible:
             raise RuntimeError(
                 f"No compatible tensors found when initializing Line-JEPA from {checkpoint_path}."
@@ -898,13 +803,8 @@ class LineJEPAModule(BaseSSLModule):
             )
 
         missing_keys, unexpected_keys = self.load_state_dict(compatible, strict=bool(strict))
-        reset_mask_teacher = getattr(
-            self._encoder_extension(),
-            "reset_mask_teacher_from_student",
-            None,
-        )
-        if callable(reset_mask_teacher):
-            reset_mask_teacher()
+        if self.masked_token_coeff > 0.0:
+            self._encoder_extension().reset_mask_teacher_from_student()
         target_sync_message = "No separate target encoder is active."
         if self.target_encoder_mode in {"ema", "frozen"}:
             if self.target_encoder is None:
@@ -930,21 +830,11 @@ class LineJEPAModule(BaseSSLModule):
     def _resolve_feature_dim(self) -> int:
         if self.vicreg.invariant_head is not None:
             return int(self.vicreg.invariant_head.output_dim)
-        latent_dim = getattr(self.encoder, "invariant_dim", None)
-        if latent_dim is None:
-            latent_dim = getattr(self.encoder, "latent_size", None)
-        if latent_dim is None:
-            latent_dim = getattr(self.hparams, "latent_size", None)
-        if latent_dim is None:
-            raise ValueError(
-                "LineJEPAModule could not resolve the encoder invariant feature dimension. "
-                "Set encoder.invariant_dim/latent_size or cfg.latent_size."
-            )
-        return int(latent_dim)
+        return self._encoder_extension().invariant_dim
 
     def on_load_checkpoint(self, checkpoint: dict) -> None:
         if self.target_encoder_mode == "frozen":
-            state = checkpoint.get("state_dict", {}) if isinstance(checkpoint, dict) else {}
+            state = checkpoint["state_dict"]
             if not any(str(key).startswith("target_encoder.") for key in state):
                 raise RuntimeError(
                     "A frozen-target Line-JEPA checkpoint has no target_encoder tensors. "
@@ -1001,20 +891,15 @@ class LineJEPAModule(BaseSSLModule):
         )
         for parameter in self.encoder.parameters():
             parameter.requires_grad_(not freeze_encoder)
-        enforce_frozen_teacher = getattr(
-            self._encoder_extension(),
-            "enforce_frozen_teacher",
-            None,
-        )
-        if callable(enforce_frozen_teacher):
-            enforce_frozen_teacher()
+        if self.encoder_name == "GeoFrameTransformer":
+            self._encoder_extension().enforce_frozen_teacher()
         if freeze_encoder:
             self.encoder.eval()
         if self.freeze_semantic_projector:
             self.semantic_projector.eval()
             for parameter in self.semantic_projector.parameters():
                 parameter.requires_grad_(False)
-        previous = getattr(self, "_encoder_frozen_state", None)
+        previous = self._encoder_frozen_state
         if previous is None or bool(previous) != freeze_encoder:
             freeze_reason = (
                 "configured permanently"
@@ -1028,20 +913,32 @@ class LineJEPAModule(BaseSSLModule):
             )
         self._encoder_frozen_state = freeze_encoder
 
-    @staticmethod
-    def _unpack_batch(batch):
-        return batch["points"], {
-            "class_id": batch.get("class_id"),
-            "target_atom_id": batch.get("target_atom_id"),
-            "anchor_atom_id": batch.get("anchor_atom_id"),
-            "instance_id": batch.get("instance_id"),
-            "frame_indices": batch.get("frame_indices"),
-            "timesteps": batch.get("timesteps"),
-            "coords": batch.get("coords"),
-            "line_direction": batch.get("line_direction"),
-            "source_group": batch.get("source_group"),
-            "source_path": batch.get("source_path"),
-        }
+    def _unpack_batch(self, batch):
+        if self.data_kind in {"static", "line_static"}:
+            return batch["points"], {
+                "target_atom_id": batch["target_atom_id"],
+                "anchor_atom_id": batch["anchor_atom_id"],
+                "instance_id": batch["instance_id"],
+                "coords": batch["coords"],
+                "line_direction": batch["line_direction"],
+                "source_group": batch["source_group"],
+                "source_path": batch["source_path"],
+            }
+        if self.data_kind in {"temporal_lammps", "line_lammps"}:
+            return batch["points"], {
+                "target_atom_id": batch["target_atom_id"],
+                "anchor_atom_id": batch["anchor_atom_id"],
+                "instance_id": batch["instance_id"],
+                "frame_indices": batch["frame_indices"],
+                "timesteps": batch["timesteps"],
+                "coords": batch["coords"],
+                "line_direction": batch["line_direction"],
+                "source_path": batch["source_path"],
+            }
+        raise RuntimeError(
+            "LineJEPAModule received a batch for an unsupported repository data kind: "
+            f"{self.data_kind!r}."
+        )
 
     def _weighted_total_loss(self, losses: dict[str, torch.Tensor]) -> torch.Tensor:
         line_loss_keys = {
@@ -1175,7 +1072,7 @@ class LineJEPAModule(BaseSSLModule):
         else:
             group_to_samples: dict[str, list[int]] = {}
             for sample_index, group in enumerate(source_groups):
-                group_to_samples.setdefault(str(group), []).append(sample_index)
+                group_to_samples.setdefault(group, []).append(sample_index)
 
         for task_index in range(task_count):
             for sample_indices in group_to_samples.values():
@@ -1214,7 +1111,7 @@ class LineJEPAModule(BaseSSLModule):
                 "source_group metadata. Add source_group to the dataset batch or disable "
                 "line_jepa_shuffle_controls_enabled."
             )
-        resolved_groups = [str(value) for value in source_groups]
+        resolved_groups = source_groups
         base_seed = self.shuffle_control_seed + int(batch_idx) * 2
         permutations = {
             "global": self._deterministic_context_shuffle_indices(
@@ -1381,14 +1278,6 @@ class LineJEPAModule(BaseSSLModule):
             for name, projected in zip(names, projected_blocks, strict=True)
         }
 
-    @staticmethod
-    def _geometry_state_from_encoder_output(encoded) -> dict[str, torch.Tensor] | None:
-        required = {"tokens", "centers", "frames", "confidence"}
-        for candidate in encoded.aux:
-            if isinstance(candidate, dict) and required.issubset(candidate):
-                return candidate
-        return None
-
     def _encode_prepared_feature_blocks(
         self,
         blocks: list[torch.Tensor],
@@ -1417,28 +1306,12 @@ class LineJEPAModule(BaseSSLModule):
                 f"got {tuple(features.shape)} for input_shape={tuple(fused_input.shape)}."
             )
         feature_blocks = list(features.split(batch_sizes, dim=0))
-        geometry_state = self._geometry_state_from_encoder_output(encoded)
-        if geometry_state is None:
-            if self.directional_feature_mode == "encoder":
-                raise RuntimeError(
-                    "Encoder-conditioned directional prediction was requested, but the encoder "
-                    "forward output did not include patch geometry state."
-                )
+        if self.directional_feature_mode != "encoder":
             return feature_blocks, [None] * len(blocks)
 
+        geometry_state = encoded.aux[0]
         geometry_blocks: list[dict[str, torch.Tensor]] = [dict() for _ in blocks]
         for key, value in geometry_state.items():
-            if not torch.is_tensor(value):
-                raise TypeError(
-                    "Encoder patch geometry state must contain only tensors. "
-                    f"Got key={key!r}, type={type(value)}."
-                )
-            if int(value.shape[0]) != int(fused_input.shape[0]):
-                raise ValueError(
-                    "Encoder patch geometry tensor is not batch-aligned with its invariant output. "
-                    f"key={key!r}, tensor_shape={tuple(value.shape)}, "
-                    f"input_shape={tuple(fused_input.shape)}."
-                )
             for block_state, block_value in zip(
                 geometry_blocks,
                 value.split(batch_sizes, dim=0),
@@ -1774,7 +1647,7 @@ class LineJEPAModule(BaseSSLModule):
             dtype=line_features.dtype,
         )[:, 0]
         context_directional_features = None
-        directional_mode = getattr(self, "directional_feature_mode", "none")
+        directional_mode = self.directional_feature_mode
         if directional_mode in {"moments", "encoder"}:
             if line_points is None or line_direction is None:
                 raise ValueError(
@@ -1805,11 +1678,7 @@ class LineJEPAModule(BaseSSLModule):
                 encoded = self.encoder_io.encode(
                     prepared_points.reshape(batch_size * line_atoms, -1, 3)
                 )
-                line_state = self._geometry_state_from_encoder_output(encoded)
-                if line_state is None:
-                    raise RuntimeError(
-                        "Encoder directional evaluation did not receive patch geometry state."
-                    )
+                line_state = encoded.aux[0]
                 context_directional_features = (
                     self._encoder_directional_features_from_line_state(
                         line_state=line_state,
@@ -1904,7 +1773,7 @@ class LineJEPAModule(BaseSSLModule):
             target_features=target_features,
             target_index=resolved_target_index,
             line_points=line_points,
-            line_direction=batch.get("line_direction"),
+            line_direction=batch["line_direction"],
         )
 
     def _step(self, batch, batch_idx, stage: str):
@@ -2103,12 +1972,7 @@ class LineJEPAModule(BaseSSLModule):
                 )
                 context_directional_features = None
                 if self.directional_feature_mode in {"moments", "encoder"}:
-                    line_direction = meta.get("line_direction")
-                    if line_direction is None:
-                        raise ValueError(
-                            "Directional Line-JEPA prediction requires "
-                            "batch['line_direction']."
-                        )
+                    line_direction = meta["line_direction"]
                     task_ray_direction = self._ray_directions_for_targets(
                         line_direction,
                         target_indices=target_index_values,
@@ -2131,12 +1995,7 @@ class LineJEPAModule(BaseSSLModule):
                             task_ray_direction.to(dtype=context_task_points.dtype),
                         )
                     else:
-                        line_state = encoded_geometry_blocks.get("line_views")
-                        if line_state is None:
-                            raise RuntimeError(
-                                "Encoder-conditioned directional prediction requires cached "
-                                "line-view patch geometry, but none was produced."
-                            )
+                        line_state = encoded_geometry_blocks["line_views"]
                         context_directional_features = (
                             self._encoder_directional_features_from_line_state(
                                 line_state=line_state,
@@ -2207,12 +2066,7 @@ class LineJEPAModule(BaseSSLModule):
                 line_features_flat = encoded_blocks["line_views"]
                 regularized_embeddings["line_views"] = line_features_flat
                 if self.target_view_sim_coeff > 0.0:
-                    target_view_extra_features = encoded_blocks.get("target_view_extra")
-                    if target_view_extra_features is None:
-                        raise RuntimeError(
-                            "Line-JEPA target-view similarity was active, but extra target-view "
-                            "features were not produced."
-                        )
+                    target_view_extra_features = encoded_blocks["target_view_extra"]
                     regularized_embeddings["target_view_extra"] = target_view_extra_features
                 regularized_embeddings = self._project_regularized_embeddings(
                     regularized_embeddings
@@ -2276,13 +2130,8 @@ class LineJEPAModule(BaseSSLModule):
                     batch_size=prediction_batch_size,
                 )
             if self.target_view_sim_coeff > 0.0:
-                line_view_features = regularized_embeddings.get("line_views")
-                target_view_extra_features = regularized_embeddings.get("target_view_extra")
-                if line_view_features is None or target_view_extra_features is None:
-                    raise RuntimeError(
-                        "Line-JEPA target-view similarity was active, but projected line/extra "
-                        "target-view features were not present in the regularized embedding pool."
-                    )
+                line_view_features = regularized_embeddings["line_views"]
+                target_view_extra_features = regularized_embeddings["target_view_extra"]
                 target_view_main_features = line_view_features.reshape(
                     batch_size,
                     self.line_atoms,
@@ -2329,7 +2178,11 @@ class LineJEPAModule(BaseSSLModule):
                         target_position=target_position,
                         target=prediction_target,
                         actual_prediction=prediction,
-                        source_groups=meta.get("source_group"),
+                        source_groups=(
+                            meta["source_group"]
+                            if self.shuffle_controls_enabled
+                            else None
+                        ),
                         context_directional_features=context_directional_features,
                     )
                     residual_gain = None
@@ -2399,7 +2252,11 @@ class LineJEPAModule(BaseSSLModule):
                 z_a_feat=z_a,
                 z_b_feat=z_b,
                 current_epoch=current_epoch,
-                overlap_target=views.get("overlap_target"),
+                overlap_target=(
+                    views["overlap_target"]
+                    if self.vicreg.requires_overlap_target
+                    else None
+                ),
             )
             if vicreg_loss is not None:
                 losses[self.vicreg.metric_prefix] = vicreg_loss
@@ -2434,13 +2291,7 @@ class LineJEPAModule(BaseSSLModule):
         if self.target_encoder_mode == "ema":
             self._update_target_encoder()
         if self.masked_token_coeff > 0.0:
-            update_teacher = getattr(self._encoder_extension(), "update_mask_teacher", None)
-            if not callable(update_teacher):
-                raise RuntimeError(
-                    "Masked-token training is active, but the encoder no longer exposes "
-                    "update_mask_teacher()."
-                )
-            update_teacher()
+            self._encoder_extension().update_mask_teacher()
 
 
 __all__ = ["CompactSemanticProjector", "LineJEPAModule", "LineContextPredictor"]

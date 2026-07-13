@@ -11,7 +11,7 @@ from src.training_methods.contrastive_learning.supervised_cache import (
 )
 from src.training_methods.contrastive_learning.swav import SwAVLoss
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
-from src.utils.model_summary import make_model_summary_point_cloud, resolve_model_summary_batch_size
+from src.utils.model_summary import make_model_summary_point_cloud
 from src.utils.pointcloud_ops import crop_to_num_points
 from src.utils.training_utils import cached_sample_count, get_optimizers_and_scheduler
 
@@ -34,7 +34,7 @@ class BaseSSLModule(pl.LightningModule):
         self.save_hyperparameters(cfg)
 
         self.encoder = build_encoder(cfg)
-        latent_dim = resolve_encoder_output_dim(cfg, encoder=self.encoder)
+        latent_dim = resolve_encoder_output_dim(self.encoder)
 
         self._compile_encoder = bool(getattr(cfg, "compile_encoder", False))
         self._encoder_compile_mode = str(getattr(cfg, "encoder_compile_mode", "default"))
@@ -101,7 +101,7 @@ class BaseSSLModule(pl.LightningModule):
             return
 
         kwargs = dict(
-            batch_size=resolve_model_summary_batch_size(cfg),
+            batch_size=1,
             num_points=summary_points,
         )
         if summary_sequence_length is not None:

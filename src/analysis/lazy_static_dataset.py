@@ -70,14 +70,12 @@ class LazyStaticAnalysisDataset(Dataset):
         )
         auto_cutoff = PointCloudDataset._resolve_auto_cutoff_config(
             _plain(getattr(data_cfg, "auto_cutoff", None)),
-            default_target_points=self.num_points,
-            default_radius=float(data_cfg.radius),
         )
 
         self.shards: list[_Shard] = []
         offset = 0
         for (source, file_name), count in zip(entries, counts, strict=True):
-            radius_override = source.get("radius_override")
+            radius_override = source["radius_override"]
             self.shards.append(
                 _Shard(
                     name=str(source["name"]),

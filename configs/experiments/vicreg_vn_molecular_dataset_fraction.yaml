@@ -2,7 +2,7 @@
 # base config.
 #
 # Important: `vicreg_vn_molecular.yaml` currently resolves to the synthetic
-# `data_synth_polycrystalline_balanced_geometries` dataset. This plan uses
+# `atomistic_al_phase_context` dataset. This plan uses
 # `data.dataset_max_samples` to cap the total dataset before the train/val split.
 # The absolute counts below are based on the current resolved dataset size:
 #   total_samples = 17576

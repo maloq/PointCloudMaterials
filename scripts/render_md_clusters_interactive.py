@@ -15,7 +15,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "analysis_dir",
         type=str,
-        help="Path to analysis directory containing local_structure_coords_clusters.(npz|csv).",
+        help="Path to analysis directory containing local_structure_coords_clusters.npz.",
     )
     parser.add_argument(
         "--out",

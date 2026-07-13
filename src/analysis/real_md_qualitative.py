@@ -4331,7 +4331,6 @@ def run_real_md_qualitative_analysis(
                             "min_draw_fraction": _cfg_float(transition_cfg, "flow_min_fraction", 0.001),
                             "frame_duration_ms": int(frame_duration_ms),
                             "total_duration_seconds": total_duration_seconds,
-                            "title": "Cluster transition flow",
                         },
                     )
                 )

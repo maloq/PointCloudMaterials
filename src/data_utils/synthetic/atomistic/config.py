@@ -16,6 +16,8 @@ class PotentialConfig:
     sha256: str
     device: str
     default_dtype: str
+    enable_cueq: bool
+    neighbor_skin_A: float
 
 
 @dataclass(frozen=True)
@@ -64,12 +66,13 @@ class OutputConfig:
     root_dir: Path
     overwrite: bool
     save_extxyz: bool
+    create_visualizations: bool
 
 
 @dataclass(frozen=True)
 class GeneratorConfig:
     dataset_name: str
-    random_seed: int
+    random_seeds: tuple[int, ...]
     potential: PotentialConfig
     dynamics: DynamicsConfig
     system: SystemConfig
@@ -190,7 +193,7 @@ def load_config(path: str | Path) -> GeneratorConfig:
             "auto_cutoff",
             "synthetic",
             "dataset_name",
-            "random_seed",
+            "random_seeds",
             "potential",
             "dynamics",
             "system",
@@ -208,7 +211,14 @@ def load_config(path: str | Path) -> GeneratorConfig:
     output_raw = _mapping(raw, "output", config_path)
     _reject_unknown_keys(
         potential_raw,
-        {"model_path", "sha256", "device", "default_dtype"},
+        {
+            "model_path",
+            "sha256",
+            "device",
+            "default_dtype",
+            "enable_cueq",
+            "neighbor_skin_A",
+        },
         "potential",
         config_path,
     )
@@ -264,7 +274,7 @@ def load_config(path: str | Path) -> GeneratorConfig:
     )
     _reject_unknown_keys(
         output_raw,
-        {"root_dir", "overwrite", "save_extxyz"},
+        {"root_dir", "overwrite", "save_extxyz", "create_visualizations"},
         "output",
         config_path,
     )
@@ -292,6 +302,22 @@ def load_config(path: str | Path) -> GeneratorConfig:
     if min(repetitions) < 2:
         raise ValueError(
             f"{config_path}: every system.repetitions entry must be >= 2, got {repetitions}."
+        )
+
+    random_seeds_raw = _required(raw, "random_seeds", "root", config_path)
+    if not isinstance(random_seeds_raw, list) or not random_seeds_raw:
+        raise TypeError(
+            f"{config_path}: random_seeds must be a non-empty list of integers, "
+            f"got {random_seeds_raw!r}."
+        )
+    if any(not isinstance(seed, int) or isinstance(seed, bool) for seed in random_seeds_raw):
+        raise TypeError(
+            f"{config_path}: every random_seeds entry must be an integer, "
+            f"got {random_seeds_raw!r}."
+        )
+    if len(set(random_seeds_raw)) != len(random_seeds_raw):
+        raise ValueError(
+            f"{config_path}: random_seeds must be unique, got {random_seeds_raw!r}."
         )
 
     target_temperature = _positive_float(
@@ -392,6 +418,17 @@ def load_config(path: str | Path) -> GeneratorConfig:
             f"{config_path}: potential.default_dtype must be 'float32' or 'float64', "
             f"got {default_dtype!r}."
         )
+    enable_cueq = _required(potential_raw, "enable_cueq", "potential", config_path)
+    if not isinstance(enable_cueq, bool):
+        raise TypeError(
+            f"{config_path}: potential.enable_cueq must be a boolean, "
+            f"got {enable_cueq!r}."
+        )
+    neighbor_skin_A = _positive_float(
+        _required(potential_raw, "neighbor_skin_A", "potential", config_path),
+        "potential.neighbor_skin_A",
+        config_path,
+    )
     potential_sha256 = str(
         _required(potential_raw, "sha256", "potential", config_path)
     ).lower()
@@ -405,12 +442,14 @@ def load_config(path: str | Path) -> GeneratorConfig:
 
     return GeneratorConfig(
         dataset_name=str(_required(raw, "dataset_name", "root", config_path)),
-        random_seed=int(_required(raw, "random_seed", "root", config_path)),
+        random_seeds=tuple(random_seeds_raw),
         potential=PotentialConfig(
             model_path=model_path,
             sha256=potential_sha256,
             device=str(potential_raw.get("device", "cuda")),
             default_dtype=default_dtype,
+            enable_cueq=enable_cueq,
+            neighbor_skin_A=neighbor_skin_A,
         ),
         dynamics=DynamicsConfig(
             pressure_GPa=float(_required(dynamics_raw, "pressure_GPa", "dynamics", config_path)),
@@ -526,6 +565,7 @@ def load_config(path: str | Path) -> GeneratorConfig:
             ),
             overwrite=bool(output_raw.get("overwrite", False)),
             save_extxyz=bool(output_raw.get("save_extxyz", True)),
+            create_visualizations=bool(output_raw.get("create_visualizations", True)),
         ),
         config_path=config_path,
     )

@@ -19,7 +19,7 @@ slurm:
 
 base_overrides:
   - latent_size=240
-  - init_from_checkpoint=null
+  - ++init_from_checkpoint=null
   - load_supervised_checkpoint=false
   - auto_batch_size_search=true
   - auto_batch_size_adjust_accumulate=true
@@ -34,20 +34,36 @@ base_overrides:
 
 experiments:
   - name: pointnet
-    overrides: ["encoder.name=PnE_L"]
+    overrides:
+      - "encoder.name=PnE_L"
+      - "encoder.kwargs=null"
+      - "+encoder.kwargs={latent_size:240}"
   - name: vn_pointnet
-    overrides: ["encoder.name=PnE_VN"]
+    overrides:
+      - "encoder.name=PnE_VN"
+      - "encoder.kwargs=null"
+      - "+encoder.kwargs={latent_size:240}"
+      - "precision=32-true"
   - name: dgcnn
-    overrides: ["encoder.name=DGCNN"]
+    overrides:
+      - "encoder.name=DGCNN"
+      - "encoder.kwargs=null"
+      - "+encoder.kwargs={latent_size:240}"
   - name: vn_dgcnn
-    overrides: ["encoder.name=VN_DGCNN"]
+    overrides:
+      - "encoder.name=VN_DGCNN"
+      - "encoder.kwargs=null"
+      - "+encoder.kwargs={latent_size:240}"
   - name: vn_revnet
     overrides:
       - "encoder.name=VN_REVNET_Backbone"
       - "encoder.kwargs=null"
       - "+encoder.kwargs={latent_size:240,sa_npoints:[80,40],sa_channels:[128,256],attn_hidden:256}"
   - name: egnn
-    overrides: ["encoder.name=EGNN_Encoder"]
+    overrides:
+      - "encoder.name=EGNN_Encoder"
+      - "encoder.kwargs=null"
+      - "+encoder.kwargs={latent_size:240}"
   - name: ri_mae
     overrides:
       - "encoder.name=RI_MAE_Invariant"

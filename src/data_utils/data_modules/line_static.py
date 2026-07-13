@@ -10,7 +10,7 @@ from src.data_utils.data_modules.common import (
     _to_container,
     logger,
 )
-from src.data_utils.data_modules.temporal_window import _temporal_identity_or_default_collate
+from src.data_utils.data_modules.temporal_window import _identity_batch_collate
 from src.data_utils.data_load import PointCloudDataset
 from src.data_utils.line_static_dataset import LineStaticPointCloudDataset
 
@@ -151,8 +151,6 @@ class LineStaticDataModule(pl.LightningDataModule):
             source_kwargs = dict(data_sources=data_sources)
         elif data_files_raw is not None:
             file_list = _to_container(data_files_raw)
-            if isinstance(file_list, str):
-                file_list = [file_list]
             source_kwargs = dict(
                 root=_cfg_get(data_cfg, "data_path", context=ctx),
                 data_files=file_list,
@@ -183,7 +181,7 @@ class LineStaticDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=True,
             persistent_workers=self.num_workers > 0,
-            collate_fn=_temporal_identity_or_default_collate,
+            collate_fn=_identity_batch_collate,
         )
         prefetch_factor = getattr(self.cfg, "line_prefetch_factor", None)
         if prefetch_factor is not None:

@@ -223,7 +223,7 @@ real_md:
     zoom_specs: []
   projection:
     method: umap
-    umap_backend: auto
+    umap_backend: cpu
     max_samples: 15000
     umap_neighbors: 30
     umap_min_dist: 0.15

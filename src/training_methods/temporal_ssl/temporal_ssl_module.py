@@ -1,5 +1,3 @@
-import os
-
 import torch
 
 from src.training_methods.base_ssl_module import BaseSSLModule
@@ -12,18 +10,75 @@ class TemporalSSLModule(BaseSSLModule):
     test_metrics_on_step = True
 
     def __init__(self, cfg):
-        self.sequence_length = int(getattr(getattr(cfg, "data", None), "sequence_length", 3))
+        self.sequence_length = cfg.data.sequence_length
         self.center_frame_index = self.sequence_length // 2
-        self.use_temporal_vicreg_views = bool(getattr(cfg, "temporal_vicreg_use_adjacent_views", True))
-        self.temporal_vicreg_anchor_frame = str(getattr(cfg, "temporal_vicreg_anchor_frame", "center")).strip().lower()
-        self.fused_views_anchor = str(getattr(cfg, "fused_views_anchor", "center")).strip().lower()
-        
+        self.use_temporal_vicreg_views = cfg.temporal_vicreg_use_adjacent_views
+        self.temporal_vicreg_anchor_frame = cfg.temporal_vicreg_anchor_frame
+        self.fused_views_anchor = cfg.fused_views_anchor
+
         super().__init__(
             cfg,
             module_name="TemporalSSLModule",
             summary_sequence_length=self.sequence_length,
         )
         self.cache_warning_prefix = "temporal-ssl"
+        self._validate_current_config()
+
+    def _validate_current_config(self) -> None:
+        if self.sequence_length < 3 or self.sequence_length % 2 != 1:
+            raise ValueError(
+                "TemporalSSLModule requires an odd data.sequence_length >= 3 so the "
+                "center frame has both a previous and a next frame, "
+                f"got {self.sequence_length}."
+            )
+        if self.temporal_vicreg_anchor_frame not in {"center", "last"}:
+            raise ValueError(
+                "temporal_vicreg_anchor_frame must be 'center' or 'last', "
+                f"got {self.temporal_vicreg_anchor_frame!r}."
+            )
+        if self.fused_views_anchor not in {"center", "previous"}:
+            raise ValueError(
+                "fused_views_anchor must be 'center' or 'previous', "
+                f"got {self.fused_views_anchor!r}."
+            )
+        if self.vicreg.enabled and self.vicreg.view_points is None:
+            raise ValueError("Temporal VICReg requires an explicit vicreg_view_points value.")
+        if self.swav.enabled and self.swav.view_points is None:
+            raise ValueError("Temporal SwAV requires an explicit swav_view_points value.")
+        if not (
+            self.use_temporal_vicreg_views
+            and self.vicreg.enabled
+            and self.swav.enabled
+        ):
+            return
+        expected_swav_mode = (
+            "center_adjacent" if self.fused_views_anchor == "center" else "adjacent"
+        )
+        if self.swav.view_mode != expected_swav_mode:
+            raise ValueError(
+                "Fused temporal views must match their SwAV meaning: "
+                f"fused_views_anchor={self.fused_views_anchor!r} requires "
+                f"swav_view_mode={expected_swav_mode!r}, got {self.swav.view_mode!r}."
+            )
+        if self.vicreg.view_points != self.swav.view_points:
+            raise ValueError(
+                "Fused temporal VICReg and SwAV views require the same point count, "
+                f"got vicreg_view_points={self.vicreg.view_points} and "
+                f"swav_view_points={self.swav.view_points}."
+            )
+        if self.vicreg.requires_overlap_target:
+            raise ValueError(
+                "Temporal fused views do not produce the sampled-index overlap target "
+                "required by overlap_vicreg."
+            )
+        if self.vicreg.neighbor_view and self.vicreg.neighbor_view_mode not in {
+            "none",
+            "second",
+        }:
+            raise ValueError(
+                "Temporal adjacent views support vicreg_neighbor_view_mode 'none' or "
+                f"'second', got {self.vicreg.neighbor_view_mode!r}."
+            )
 
     def _center_frame(self, sequence_points: torch.Tensor) -> torch.Tensor:
         return sequence_points[:, self.center_frame_index]
@@ -43,15 +98,13 @@ class TemporalSSLModule(BaseSSLModule):
 
     def _temporal_meta_from_batch(self, batch: dict) -> dict:
         return {
-            "class_id": batch.get("class_id"),
-            "instance_id": batch.get("instance_id"),
-            "rotation": batch.get("rotation"),
-            "center_atom_id": batch.get("center_atom_id"),
-            "anchor_frame_index": batch.get("anchor_frame_index"),
-            "anchor_timestep": batch.get("anchor_timestep"),
-            "frame_indices": batch.get("frame_indices"),
-            "timesteps": batch.get("timesteps"),
-            "source_path": batch.get("source_path"),
+            "instance_id": batch["instance_id"],
+            "center_atom_id": batch["center_atom_id"],
+            "anchor_frame_index": batch["anchor_frame_index"],
+            "anchor_timestep": batch["anchor_timestep"],
+            "frame_indices": batch["frame_indices"],
+            "timesteps": batch["timesteps"],
+            "source_path": batch["source_path"],
         }
 
     def _unpack_batch(self, batch):
@@ -65,14 +118,11 @@ class TemporalSSLModule(BaseSSLModule):
         next_pc = sequence_points[:, self.center_frame_index + 1]
         return center_pc, prev_pc, next_pc, meta
 
-    def _prepare_explicit_view(self, pc: torch.Tensor, *, target_points: int | None) -> torch.Tensor:
+    def _prepare_explicit_view(self, pc: torch.Tensor, *, target_points: int) -> torch.Tensor:
         return crop_to_num_points(pc, target_points)
 
     def _prepare_swav_view(self, pc: torch.Tensor) -> torch.Tensor:
-        target_points = self.swav.view_points
-        if target_points is not None:
-            return self._prepare_explicit_view(pc, target_points=target_points)
-        return self._prepare_model_input(pc)
+        return self._prepare_explicit_view(pc, target_points=self.swav.view_points)
 
     def _build_swav_temporal_views(
         self,
@@ -126,31 +176,12 @@ class TemporalSSLModule(BaseSSLModule):
         should_run_vicreg: bool,
         should_run_swav: bool,
     ) -> bool:
-        """Decide whether VICReg and SwAV can share a single encoder forward.
-
-        The fused path (#1) requires:
-          - both contrastive heads are active
-          - temporal VICReg views are enabled
-          - SwAV is in a 2-view mode (``center_adjacent`` or ``adjacent``)
-          - view crop sizes match between VICReg and SwAV
-          - VICReg neighbor_view_mode is one that ``_build_vicreg_temporal_views``
-            already supports (``none`` or ``second``)
-        Any unsupported combination falls back to the original separate-forward
-        paths so the optimisation is a pure opt-in improvement for common
-        configs.
-        """
-        if not (should_run_vicreg and should_run_swav):
-            return False
-        if not self.use_temporal_vicreg_views:
-            return False
-        if self.swav.view_mode not in {"center_adjacent", "adjacent"}:
-            return False
-        if self.vicreg.view_points != self.swav.view_points:
-            return False
-        neighbor_mode = str(self.vicreg.neighbor_view_mode).lower()
-        if self.vicreg.neighbor_view and neighbor_mode not in {"none", "second"}:
-            return False
-        return True
+        """Return whether both scheduled heads consume the configured shared views."""
+        return (
+            should_run_vicreg
+            and should_run_swav
+            and self.use_temporal_vicreg_views
+        )
 
     def _build_fused_contrastive_views(
         self,
@@ -167,7 +198,6 @@ class TemporalSSLModule(BaseSSLModule):
         view entirely (#2) and use (prev, next) as the two views.
         """
         target_points = self.vicreg.view_points
-        neighbor_mode = str(self.vicreg.neighbor_view_mode).lower()
 
         if self.fused_views_anchor == "previous":
             # Temporal-only contrast: both views come from adjacent frames and
@@ -189,16 +219,8 @@ class TemporalSSLModule(BaseSSLModule):
             )
             return {"anchor": anchor_view, "pair": pair_view}
 
-        # Default anchor='center': reuse the VICReg temporal view builder.
+        # Anchor='center': reuse the VICReg temporal view builder.
         vicreg_views = self._build_vicreg_temporal_views(center_pc, prev_pc, next_pc)
-        # Unused in this branch but referenced to keep linter happy.
-        del neighbor_mode
-        if vicreg_views is None:
-            raise RuntimeError(
-                "Fused contrastive path requested but _build_vicreg_temporal_views "
-                "returned None; this should not happen with "
-                "use_temporal_vicreg_views=True."
-            )
         return {"anchor": vicreg_views["y_a"], "pair": vicreg_views["y_b"]}
 
     def _encode_fused_contrastive_views(
@@ -216,9 +238,9 @@ class TemporalSSLModule(BaseSSLModule):
         center_pc: torch.Tensor,
         prev_pc: torch.Tensor,
         next_pc: torch.Tensor,
-    ) -> dict[str, torch.Tensor] | None:
+    ) -> dict[str, torch.Tensor]:
         target_points = self.vicreg.view_points
-        neighbor_mode = str(self.vicreg.neighbor_view_mode).lower()
+        neighbor_mode = self.vicreg.neighbor_view_mode
         apply_occlusion_a, apply_occlusion_b = self.vicreg._resolve_pair_occlusion_flags(
             use_neighbor_a=False,
             use_neighbor_b=bool(self.vicreg.neighbor_view and neighbor_mode != "none"),
@@ -317,8 +339,6 @@ class TemporalSSLModule(BaseSSLModule):
         should_run_swav = self.swav.should_run(current_epoch=int(self.current_epoch))
 
         losses = {}
-        center_embeddings = None
-
         if should_cache_stage:
             with torch.no_grad():
                 encoded = self.encoder_io.encode(pc)
@@ -327,6 +347,11 @@ class TemporalSSLModule(BaseSSLModule):
                     z_inv_model=encoded.invariant,
                     stage=stage,
                 )
+            self._cache_supervised_embeddings_if_needed(
+                stage=stage,
+                meta=meta,
+                embeddings=center_embeddings,
+            )
 
         # Fused path (#1 / #2): when both contrastive heads are active with
         # compatible view configurations, build the two shared views once and
@@ -346,7 +371,7 @@ class TemporalSSLModule(BaseSSLModule):
                 current_epoch=int(self.current_epoch),
             )
             if vicreg_loss is not None:
-                losses["vicreg"] = vicreg_loss
+                losses[self.vicreg.metric_prefix] = vicreg_loss
             for name, value in vicreg_metrics.items():
                 self._log_metric(stage, name, value, batch_size=batch_size)
 
@@ -389,13 +414,6 @@ class TemporalSSLModule(BaseSSLModule):
                     losses["swav"] = swav_loss
                 for name, value in swav_metrics.items():
                     self._log_metric(stage, name, value, batch_size=batch_size)
-
-        if should_cache_stage:
-            self._cache_supervised_embeddings_if_needed(
-                stage=stage,
-                meta=meta,
-                embeddings=center_embeddings,
-            )
 
         return self._finish_ssl_step(
             stage=stage,

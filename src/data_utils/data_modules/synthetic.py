@@ -4,13 +4,11 @@ from pathlib import Path
 
 import torch
 import pytorch_lightning as pl
+from omegaconf import OmegaConf
 from torch.utils.data import DataLoader
 
 from src.data_utils.data_load import SyntheticPointCloudDataset
 from src.data_utils.data_modules.common import (
-    _REQUIRED,
-    _cfg_get,
-    _cfg_has,
     _resolve_split_seed,
     _seeded_random_split,
     _to_container,
@@ -42,6 +40,7 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
                 max_val = min(self.max_samples, len(self.val_dataset))
                 self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
                 self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+                self.train_indices = self.train_indices[:max_train]
                 self.test_dataset = self.val_dataset
             self._datasets_initialized = True
             initialized_now = True
@@ -62,29 +61,35 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
 
     def _build_datasets(self):
         data_cfg = self.cfg.data
-        synth_cfg = getattr(data_cfg, "synthetic", None)
-        synth_dict = _to_container(synth_cfg) if synth_cfg is not None else {}
+        synth_dict = _to_container(data_cfg.synthetic)
 
-        aug_cfg = getattr(data_cfg, "augmentation", None)
+        aug_cfg = OmegaConf.select(self.cfg, "augmentation", default=None)
         if aug_cfg is None:
-            aug_cfg = getattr(self.cfg, "augmentation", None)
-        rotation_scale = getattr(aug_cfg, "rotation_scale", 0.0) if aug_cfg else 0.0
-        noise_scale = getattr(aug_cfg, "noise_scale", 0.0) if aug_cfg else 0.0
-        jitter_scale = getattr(aug_cfg, "jitter_scale", 0.0) if aug_cfg else 0.0
-        scaling_range = getattr(aug_cfg, "scaling_range", 0.0) if aug_cfg else 0.0
-        track_augmentation = getattr(aug_cfg, "track_augmentation", False) if aug_cfg else False
+            rotation_scale = 0.0
+            noise_scale = 0.0
+            jitter_scale = 0.0
+            scaling_range = 0.0
+            track_augmentation = False
+        else:
+            rotation_scale = aug_cfg.rotation_scale
+            noise_scale = aug_cfg.noise_scale
+            jitter_scale = aug_cfg.jitter_scale
+            scaling_range = aug_cfg.scaling_range
+            track_augmentation = aug_cfg.track_augmentation
 
-        dataset_type = self._get_param("dataset_type", data_cfg, synth_dict, default="synthetic_env")
-        auto_cutoff_cfg = _to_container(self._get_param("auto_cutoff", data_cfg, synth_dict, default=None))
-        model_type = str(getattr(self.cfg, "model_type", "")).lower()
-        disable_dataset_aug_for_ssl = bool(getattr(self.cfg, "disable_dataset_augmentation_for_ssl", True))
+        auto_cutoff_raw = OmegaConf.select(data_cfg, "auto_cutoff", default=None)
+        auto_cutoff_cfg = _to_container(auto_cutoff_raw)
+        model_type = OmegaConf.select(self.cfg, "model_type", default=None)
+        disable_dataset_aug_for_ssl = bool(
+            OmegaConf.select(self.cfg, "disable_dataset_augmentation_for_ssl", default=True)
+        )
         uses_ssl_views = (
             model_type in {"vicreg", "visreg"}
-            or bool(getattr(self.cfg, "vicreg_enabled", False))
+            or bool(OmegaConf.select(self.cfg, "vicreg_enabled", default=False))
         )
         if uses_ssl_views and disable_dataset_aug_for_ssl:
             has_dataset_aug = any(
-                float(v or 0.0) != 0.0 for v in (rotation_scale, noise_scale, jitter_scale, scaling_range)
+                float(v) != 0.0 for v in (rotation_scale, noise_scale, jitter_scale, scaling_range)
             )
             if has_dataset_aug:
                 logger.print(
@@ -97,39 +102,24 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             scaling_range = 0.0
             track_augmentation = False
 
-        if dataset_type != "synthetic_env":
-            raise ValueError(
-                f"Unsupported dataset_type {dataset_type!r}. "
-                "SyntheticPointCloudDataModule only supports 'synthetic_env'."
-            )
-
-        env_dirs = self._resolve_env_dirs(data_cfg, synth_dict)
-        radius = self._get_param("radius", data_cfg, synth_dict, required=True)
-        sample_type = self._get_param("sample_type", data_cfg, synth_dict, default="regular")
-        overlap_fraction = self._get_param("overlap_fraction", data_cfg, synth_dict, default=0.0)
-        n_samples = self._get_param("n_samples", data_cfg, synth_dict, default=0)
-        num_points = self._get_param("num_points", data_cfg, synth_dict, required=True)
-        drop_edge_samples = self._get_param("drop_edge_samples", data_cfg, synth_dict, default=True)
-        pre_normalize = self._get_param("pre_normalize", data_cfg, synth_dict, default=True)
-        normalize = self._get_param("normalize", data_cfg, synth_dict, default=True)
-        dataset_max = self._get_param("dataset_max_samples", data_cfg, synth_dict, default=None)
-        classes = self._get_param("classes", data_cfg, synth_dict, default=None)
-        if classes is not None:
-             classes = _to_container(classes)
-             if isinstance(classes, str):
-                 classes = [classes]
+        env_dirs = self._resolve_env_dirs(synth_dict)
+        classes = synth_dict["classes"]
 
         dataset = SyntheticPointCloudDataset(
             env_dirs=env_dirs,
-            radius=float(radius),
-            sample_type=str(sample_type),
-            overlap_fraction=float(overlap_fraction),
-            n_samples=int(n_samples),
-            num_points=int(num_points),
-            drop_edge_samples=bool(drop_edge_samples),
-            pre_normalize=bool(pre_normalize),
-            normalize=bool(normalize),
-            max_samples=int(dataset_max) if dataset_max is not None else None,
+            radius=float(data_cfg.radius),
+            sample_type=data_cfg.sample_type,
+            overlap_fraction=float(data_cfg.overlap_fraction),
+            n_samples=int(data_cfg.n_samples),
+            num_points=int(data_cfg.num_points),
+            drop_edge_samples=bool(data_cfg.drop_edge_samples),
+            pre_normalize=bool(data_cfg.pre_normalize),
+            normalize=bool(data_cfg.normalize),
+            max_samples=(
+                int(data_cfg.dataset_max_samples)
+                if data_cfg.dataset_max_samples is not None
+                else None
+            ),
             rotation_scale=rotation_scale,
             noise_scale=noise_scale,
             jitter_scale=jitter_scale,
@@ -139,63 +129,28 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             auto_cutoff_config=auto_cutoff_cfg,
         )
 
-        train_ratio = float(self._get_param("train_ratio", data_cfg, synth_dict, default=0.8))
+        train_ratio = float(data_cfg.train_ratio)
         train_size = int(train_ratio * len(dataset))
         val_size = len(dataset) - train_size
         if train_size <= 0 or val_size <= 0:
             raise ValueError("Synthetic dataset split resulted in empty train or val set")
-        return _seeded_random_split(
+        train_dataset, val_dataset = _seeded_random_split(
             dataset,
             [train_size, val_size],
             seed=self.split_seed,
         )
+        self.dataset = dataset
+        self.train_indices = list(train_dataset.indices)
+        return train_dataset, val_dataset
 
-    def _resolve_env_dirs(self, data_cfg, synth_dict):
-        env_dirs = []
-        if isinstance(synth_dict, dict):
-            if "data_dirs" in synth_dict and synth_dict["data_dirs"]:
-                env_dirs = synth_dict["data_dirs"]
-            elif synth_dict.get("data_dir"):
-                env_dirs = [synth_dict["data_dir"]]
-            elif synth_dict.get("root_dir"):
-                root = Path(synth_dict["root_dir"])
-                if not root.exists():
-                    raise FileNotFoundError(f"Synthetic root_dir {root} does not exist")
-                candidates = sorted([p for p in root.iterdir() if p.is_dir()])
-                num_env = synth_dict.get("num_environments")
-                if num_env is not None:
-                    candidates = candidates[:int(num_env)]
-                env_dirs = candidates
-        if not env_dirs and hasattr(data_cfg, "data_path"):
-            env_dirs = [getattr(data_cfg, "data_path")]
+    def _resolve_env_dirs(self, synth_dict):
+        root = Path(synth_dict["root_dir"])
+        if not root.is_dir():
+            raise FileNotFoundError(f"Synthetic root_dir is missing or not a directory: {root}")
+        env_dirs = sorted(path for path in root.iterdir() if path.is_dir())
         if not env_dirs:
-            raise ValueError("No synthetic environment directories configured")
-        resolved = []
-        for path in env_dirs:
-            if isinstance(path, (Path, str)):
-                resolved.append(Path(path))
-            else:
-                raise TypeError(f"Unsupported path type {type(path)} in synthetic env_dirs")
-        return resolved
-
-    @staticmethod
-    def _get_param(name, data_cfg, synth_dict, *, required=False, default=_REQUIRED):
-        """Strictly resolve a param from ``data_cfg`` first, then from ``synth_dict``.
-
-        Missing keys either raise (when ``required`` or no ``default`` is provided) or return
-        the caller-supplied ``default``. ``None`` is treated as a legitimate value if explicitly
-        set in the config.
-        """
-        if _cfg_has(data_cfg, name):
-            return _cfg_get(data_cfg, name, context="SyntheticPointCloudDataModule.data")
-        if isinstance(synth_dict, dict) and name in synth_dict:
-            return synth_dict[name]
-        if required or default is _REQUIRED:
-            raise ValueError(
-                f"Synthetic data configuration must provide {name!r} (not found in data.* or "
-                "data.synthetic.*)."
-            )
-        return default
+            raise ValueError(f"Synthetic root_dir contains no environment directories: {root}")
+        return env_dirs
 
     def train_dataloader(self):
         return DataLoader(
@@ -228,33 +183,6 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             persistent_workers=use_persistent,
         )
 
-    def _resolve_synthetic_dataset_with_indices(self):
-        dataset = getattr(self, 'train_dataset', None)
-        indices = None
-        visited = set()
-        while dataset is not None and id(dataset) not in visited:
-            visited.add(id(dataset))
-            if isinstance(dataset, torch.utils.data.Subset):
-                current = list(dataset.indices)
-                if indices is None:
-                    indices = current
-                else:
-                    indices = [current[i] for i in indices]
-                dataset = dataset.dataset
-                continue
-            if isinstance(dataset, SyntheticPointCloudDataset):
-                return dataset, indices
-            next_dataset = getattr(dataset, 'dataset', None)
-            if next_dataset is not None and next_dataset is not dataset:
-                dataset = next_dataset
-                continue
-            base_dataset = getattr(dataset, 'base_dataset', None)
-            if base_dataset is not None and base_dataset is not dataset:
-                dataset = base_dataset
-                continue
-            break
-        return None, None
-
     @staticmethod
     def _anisotropy_from_points(points: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
         if points.dim() != 3 or points.shape[-1] != 3:
@@ -266,107 +194,47 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         lam1, lam2, lam3 = eigvals.unbind(dim=-1)
         return (lam1 - lam3) / (lam1 + lam2 + lam3 + float(eps))
 
-    @staticmethod
-    def _class_id_to_name_map(dataset) -> dict[int, str]:
-        if not hasattr(dataset, "class_names"):
-            raise RuntimeError(
-                "SyntheticPointCloudDataModule requires the underlying dataset to expose "
-                f"`class_names`; got {type(dataset).__name__} which does not. "
-                "Update the dataset to publish its class-id→name mapping."
-            )
-        class_names = dataset.class_names
-        if class_names is None:
-            raise RuntimeError(
-                f"{type(dataset).__name__}.class_names is None; expected a class-id→name mapping."
-            )
-        return {int(k): str(v) for k, v in dict(class_names).items()}
-
-    def _log_train_anisotropy_by_class(self, dataset, subset_indices: list[int] | None) -> None:
-        class_ids_raw = getattr(dataset, "_class_ids", None)
-        points_raw = getattr(dataset, "samples", None)
-        if points_raw is None:
-            points_raw = getattr(dataset, "points", None)
-        class_name_map = self._class_id_to_name_map(dataset)
-
+    def _log_train_anisotropy_by_class(
+        self,
+        dataset: SyntheticPointCloudDataset,
+        subset_indices: list[int],
+    ) -> None:
+        class_name_map = dataset.class_names
         sums = defaultdict(float)
         counts = defaultdict(int)
 
-        if class_ids_raw is not None and points_raw is not None:
-            class_ids = class_ids_raw if torch.is_tensor(class_ids_raw) else torch.as_tensor(class_ids_raw)
-            class_ids = class_ids.to(dtype=torch.long).view(-1).cpu()
-            total = int(class_ids.shape[0])
-            if subset_indices is None:
-                selected = list(range(total))
-            else:
-                selected = [int(i) for i in subset_indices if 0 <= int(i) < total]
-
-            chunk_size = 512
-            for start in range(0, len(selected), chunk_size):
-                idx_list = selected[start:start + chunk_size]
-                if not idx_list:
-                    continue
-                idx = torch.as_tensor(idx_list, dtype=torch.long)
-                if torch.is_tensor(points_raw):
-                    pts = points_raw.index_select(0, idx).to(dtype=torch.float32)
-                else:
-                    pts = torch.stack([points_raw[int(i)] for i in idx_list], dim=0).to(dtype=torch.float32)
-                anis = self._anisotropy_from_points(pts).to(dtype=torch.float64).cpu()
-                cls = class_ids.index_select(0, idx)
-                valid = cls >= 0
-                if not valid.any():
-                    continue
-                cls = cls[valid]
-                anis = anis[valid]
-                for cid in torch.unique(cls):
-                    mask = cls == cid
-                    cid_int = int(cid.item())
-                    sums[cid_int] += float(anis[mask].sum().item())
-                    counts[cid_int] += int(mask.sum().item())
-        else:
-            train_ds = getattr(self, "train_dataset", None)
-            if train_ds is not None:
-                for idx in range(len(train_ds)):
-                    sample = train_ds[idx]
-                    if not isinstance(sample, dict):
-                        continue
-                    cls = sample.get("class_id", None)
-                    pts = sample.get("points", None)
-                    if cls is None or pts is None:
-                        continue
-                    cls_val = int(cls.item()) if torch.is_tensor(cls) else int(cls)
-                    if cls_val < 0:
-                        continue
-                    anis = float(self._anisotropy_from_points(pts.unsqueeze(0).to(dtype=torch.float32)).item())
-                    sums[cls_val] += anis
-                    counts[cls_val] += 1
+        class_ids = torch.as_tensor(dataset._class_ids, dtype=torch.long)
+        chunk_size = 512
+        for start in range(0, len(subset_indices), chunk_size):
+            idx_list = subset_indices[start:start + chunk_size]
+            idx = torch.as_tensor(idx_list, dtype=torch.long)
+            pts = torch.stack([dataset.samples[index] for index in idx_list], dim=0)
+            anis = self._anisotropy_from_points(pts).to(dtype=torch.float64).cpu()
+            cls = class_ids.index_select(0, idx)
+            for cid in torch.unique(cls):
+                mask = cls == cid
+                cid_int = int(cid.item())
+                sums[cid_int] += float(anis[mask].sum().item())
+                counts[cid_int] += int(mask.sum().item())
 
         logger.print("Train anisotropy by class (mean over train split):")
-        if not counts:
-            logger.print("  unavailable (no class_id labels found)")
-            return
         for cid in sorted(counts):
-            name = class_name_map.get(cid, f"class_{cid}")
-            mean_anis = sums[cid] / max(1, counts[cid])
+            name = class_name_map[cid]
+            mean_anis = sums[cid] / counts[cid]
             logger.print(f"  {name}: {mean_anis:.6f} (n={counts[cid]})")
 
     def _log_class_mapping(self):
         """Log the class name to ID mapping for the dataset."""
-        base_dataset, subset_indices = self._resolve_synthetic_dataset_with_indices()
-        if base_dataset is None or not hasattr(base_dataset, '_class_to_idx'):
-            logger.print("Class mapping unavailable; dataset not initialized yet")
-            return
-
+        base_dataset = self.dataset
         if not base_dataset._class_to_idx:
-            logger.print("Dataset did not expose any class labels")
-            return
+            raise RuntimeError("SyntheticPointCloudDataset produced no class labels.")
 
-        domain = getattr(base_dataset, 'domain', 'unknown')
-        logger.print(f"Dataset domain: {domain}")
+        logger.print(f"Dataset domain: {base_dataset.domain}")
         logger.print("Class labels:")
         for class_name, class_idx in sorted(base_dataset._class_to_idx.items(), key=lambda item: item[1]):
             logger.print(f"  Class {class_idx}: {class_name}")
 
-        self._log_train_anisotropy_by_class(base_dataset, subset_indices)
+        self._log_train_anisotropy_by_class(base_dataset, self.train_indices)
         self._phase_info_logged = True
 
 

@@ -12,7 +12,7 @@ class PointCloudDataModule(pl.LightningDataModule):
     def __init__(self, cfg):
         super().__init__()
         self.cfg = cfg
-        kind = normalize_data_kind(getattr(cfg.data, "kind", None), default="static")
+        kind = normalize_data_kind(cfg.data.kind)
         if kind == "synthetic":
             self.impl = SyntheticPointCloudDataModule(cfg)
         elif kind == "line_static":
@@ -27,7 +27,7 @@ class PointCloudDataModule(pl.LightningDataModule):
             raise ValueError(
                 "Unsupported data.kind. Expected one of "
                 "['static', 'synthetic', 'temporal_lammps', 'line_lammps', 'line_static'] "
-                f"('real' is accepted as a legacy alias for 'static'), got {getattr(cfg.data, 'kind', None)!r}."
+                f"got {cfg.data.kind!r}."
             )
 
     def setup(self, stage=None):

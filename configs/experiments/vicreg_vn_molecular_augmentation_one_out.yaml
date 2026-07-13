@@ -5,6 +5,7 @@
 #   - neighbor-view shift
 #   - jitter
 #   - strain
+#   - mirror reflection
 #
 # Retained experiments:
 #   - baseline
@@ -12,6 +13,7 @@
 #   - no neighbor shift
 #   - no jitter
 #   - no strain
+#   - no mirror reflection
 #
 # Occlusion is intentionally excluded from this one-out sweep because the base
 # config currently sets:
@@ -75,6 +77,10 @@ experiments:
   - name: no_strain
     overrides:
       - "vicreg_strain_std=0.0"
+
+  - name: no_mirror
+    overrides:
+      - "vicreg_mirror_prob=0.0"
 
 metrics:
   final:

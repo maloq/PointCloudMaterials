@@ -1,5 +1,5 @@
 defaults:
-  - data: data_synth_polycrystalline_balanced_geometries
+  - data: atomistic_al_phase_context
   - _self_
 
 project_name: pointnet

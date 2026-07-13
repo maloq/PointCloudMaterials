@@ -14,12 +14,13 @@ from ase.calculators.emt import EMT
 from src.data_utils.synthetic.atomistic import generate_dataset, load_config
 from src.data_utils.synthetic.atomistic.artifacts import PHASE_NAMES, label_interface
 from src.data_utils.data_load import SyntheticPointCloudDataset
+from src.data_utils.prepare_data import get_regular_samples
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/data/data_synth_polycrystalline_balanced_geometries.yaml"
+    / "configs/data/atomistic_al_phase_context.yaml"
 )
 
 
@@ -28,6 +29,10 @@ def test_production_config_has_no_density_control() -> None:
     assert config.system.chemical_symbol == "Al"
     assert config.dynamics.pressure_GPa == 0.0
     assert config.validation.reference_density_cache is not None
+    assert config.random_seeds == (12345,)
+    assert config.potential.enable_cueq is True
+    assert config.potential.neighbor_skin_A == 0.3
+    assert config.system.repetitions == (26, 26, 26)
 
 
 def test_density_control_is_rejected(tmp_path: Path) -> None:
@@ -62,6 +67,23 @@ def test_interface_labels_cover_real_slabs() -> None:
     assert sum(len(indices) for indices in labels.grain_atom_indices.values()) == len(atoms)
     assert labels.intermediate_atom_indices.size > 0
     assert np.all(labels.phase_names[labels.intermediate_atom_indices] == "interface")
+
+
+def test_regular_sampling_starts_at_single_radius_padding() -> None:
+    axis = np.arange(21, dtype=np.float64)
+    points = np.stack(np.meshgrid(axis, axis, axis, indexing="ij"), axis=-1).reshape(-1, 3)
+    samples = get_regular_samples(
+        points,
+        size=2.0,
+        overlap_fraction=0.0,
+        return_coords=True,
+        n_points=8,
+        max_samples=1,
+        drop_edge_samples=False,
+    )
+    assert len(samples) == 1
+    _, center = samples[0]
+    assert np.array_equal(center, np.array([2.0, 2.0, 2.0]))
 
 
 def test_small_force_driven_generation_round_trip(tmp_path: Path) -> None:
@@ -112,28 +134,39 @@ def test_small_force_driven_generation_round_trip(tmp_path: Path) -> None:
     result = generate_dataset(config, calculator=EMT(), progress=lambda _message: None)
 
     assert [path.name for path in result.environment_dirs] == [
-        "bulk_solid",
-        "bulk_liquid",
-        "solid_liquid_interface",
+        "replica_000_bulk_solid",
+        "replica_000_bulk_liquid",
+        "replica_000_solid_liquid_interface",
     ]
     manifest = json.loads((result.output_root / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["environment_dirs"] == [
-        "bulk_solid",
-        "bulk_liquid",
-        "solid_liquid_interface",
+        "replica_000_bulk_solid",
+        "replica_000_bulk_liquid",
+        "replica_000_solid_liquid_interface",
     ]
+    assert (result.output_root / "benchmark_overview.png").is_file()
     for environment_dir in result.environment_dirs:
         atoms = np.load(environment_dir / "atoms.npy")
         atom_table = np.load(environment_dir / "atoms_full.npy")
+        with np.load(environment_dir / "trajectory.npz") as trajectory:
+            trajectory_steps = trajectory["step"]
+            trajectory_positions = trajectory["positions_A"]
         metadata = json.loads((environment_dir / "metadata.json").read_text(encoding="utf-8"))
         assert atoms.shape == (144, 3)
         assert np.array_equal(atoms, atom_table["position"])
         assert metadata["global"]["N_final"] == 144
+        assert metadata["global"]["random_seed"] in config.random_seeds
+        assert trajectory_steps.tolist() == [0, 1, 2]
+        assert trajectory_positions.shape == (3, 144, 3)
+        assert np.allclose(trajectory_positions[-1], atoms)
         assert "rho_target" not in metadata["global"]
         assert metadata["physics"]["label_policy"].startswith("Labels encode preparation")
+        assert (environment_dir / "visualizations/structure_slice.png").is_file()
+        assert (environment_dir / "visualizations/thermodynamic_trace.png").is_file()
+        assert (environment_dir / "visualizations/structure_diagnostics.png").is_file()
 
     interface_metadata = json.loads(
-        (result.output_root / "solid_liquid_interface/metadata.json").read_text(
+        (result.output_root / "replica_000_solid_liquid_interface/metadata.json").read_text(
             encoding="utf-8"
         )
     )

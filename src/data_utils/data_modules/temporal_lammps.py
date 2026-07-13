@@ -15,7 +15,7 @@ from src.data_utils.data_modules.common import (
 )
 from src.data_utils.data_modules.temporal_window import (
     TemporalWindowBatchSampler,
-    _temporal_identity_or_default_collate,
+    _identity_batch_collate,
 )
 from src.data_utils.temporal_lammps_dataset import (
     TemporalLAMMPSDumpDataset,
@@ -109,7 +109,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             window_stride=window_stride,
             frame_start=frame_start,
             frame_stop=frame_stop,
-            center_selection_mode=_cfg_get(data_cfg, "center_selection_mode", default=None, context=ctx),
+            center_selection_mode=_cfg_get(data_cfg, "center_selection_mode", context=ctx),
             center_atom_ids=_to_container(
                 _cfg_get(data_cfg, "center_atom_ids", default=None, context=ctx)
             ),
@@ -158,8 +158,6 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         radius_raw = _cfg_get(data_cfg, "radius", default=None, context=ctx)
         auto_cutoff_cfg = PointCloudDataset._resolve_auto_cutoff_config(
             _to_container(_cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)),
-            default_target_points=int(num_points),
-            default_radius=float(radius_raw) if radius_raw is not None else 0.0,
         )
         if auto_cutoff_cfg is not None:
             if radius_raw is not None:
@@ -168,19 +166,19 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
                     "mutually exclusive — set exactly one. "
                     f"Got data.radius={float(radius_raw)!r} and data.auto_cutoff={dict(auto_cutoff_cfg)!r}."
                 )
-            reference_frame_index = int(auto_cutoff_cfg.get("reference_frame_index", frame_start))
+            reference_frame_index = int(auto_cutoff_cfg["reference_frame_index"])
             estimation = estimate_lammps_dump_cutoff_radius(
                 dump_file,
                 reference_frame_index=reference_frame_index,
                 target_points=max(
                     int(num_points),
-                    int(auto_cutoff_cfg.get("target_points", num_points)),
+                    int(auto_cutoff_cfg["target_points"]),
                 ),
-                quantile=float(auto_cutoff_cfg.get("quantile", 1.0)),
-                estimation_samples=int(auto_cutoff_cfg.get("estimation_samples_per_file", 4096)),
-                seed=int(auto_cutoff_cfg.get("seed", 0)),
-                safety_factor=float(auto_cutoff_cfg.get("safety_factor", 1.0)),
-                boundary_margin=auto_cutoff_cfg.get("boundary_margin", None),
+                quantile=float(auto_cutoff_cfg["quantile"]),
+                estimation_samples=int(auto_cutoff_cfg["estimation_samples_per_file"]),
+                seed=int(auto_cutoff_cfg["seed"]),
+                safety_factor=float(auto_cutoff_cfg["safety_factor"]),
+                boundary_margin=auto_cutoff_cfg["boundary_margin"],
                 periodic=False,
             )
             radius_value = float(estimation["estimated_radius"])
@@ -231,7 +229,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=True,
             persistent_workers=self.num_workers > 0,
-            collate_fn=_temporal_identity_or_default_collate,
+            collate_fn=_identity_batch_collate,
         )
         prefetch_factor = getattr(self.cfg, "temporal_prefetch_factor", None)
         if prefetch_factor is not None:

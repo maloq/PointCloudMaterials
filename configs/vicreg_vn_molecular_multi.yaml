@@ -1,7 +1,7 @@
 defaults:
-# - data: data_synth_polycrystalline_balanced_geometries_v2
+# - data: atomistic_al_phase_context
  - data: data_ae_multi_material
-#  - data: data_synth_polycrystalline_balanced_geometries
+#  - data: atomistic_al_phase_context
 # - data: data_ae_Al_80
  - _self_
 project_name: pointnet
@@ -116,6 +116,7 @@ vicreg_neighbor_max_relative_distance: 0.0
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
 vicreg_rotation_deg: 10.0
+vicreg_mirror_prob: 0.5
 vicreg_strain_std: 0.00
 vicreg_strain_volume_preserve: true
 vicreg_occlusion_mode: mixed

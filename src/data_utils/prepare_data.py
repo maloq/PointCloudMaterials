@@ -219,7 +219,7 @@ def generate_samples(
     M = min(len(grid_ijk), int(max_samples))
     grid_ijk = grid_ijk[:M]
 
-    computed_centers = min_coords + grid_ijk * stride + size
+    computed_centers = min_coords + grid_ijk * stride
 
     # Batch snap all grid centers to nearest atoms (one C call instead of M Python calls)
     _, nearest_indices = tree.query(computed_centers)

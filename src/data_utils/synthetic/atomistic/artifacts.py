@@ -124,6 +124,7 @@ def _atom_table(atoms: Atoms, labels: EnvironmentLabels) -> np.ndarray:
 
 def _trace_metadata(trace: ThermodynamicTrace, atom_count: int) -> dict[str, Any]:
     return {
+        "step": trace.step.tolist(),
         "temperature_K": trace.temperature_K.tolist(),
         "pressure_GPa": trace.pressure_GPa.tolist(),
         "volume_A3": trace.volume_A3.tolist(),
@@ -190,12 +191,24 @@ def _write_environment(
     diagnostics: SystemDiagnostics,
     config: GeneratorConfig,
     potential_sha256: str,
+    random_seed: int,
 ) -> None:
     directory.mkdir(parents=True)
     atom_table = _atom_table(atoms, labels)
     positions = atom_table["position"]
     np.save(directory / "atoms.npy", positions)
     np.save(directory / "atoms_full.npy", atom_table)
+    with (directory / "trajectory.npz").open("wb") as handle:
+        np.savez(
+            handle,
+            step=trace.step,
+            positions_A=trace.positions_A,
+            cell_vectors_A=trace.cell_vectors_A,
+            temperature_K=trace.temperature_K,
+            pressure_GPa=trace.pressure_GPa,
+            volume_A3=trace.volume_A3,
+            potential_energy_eV_per_atom=trace.potential_energy_eV_per_atom,
+        )
     if config.output.save_extxyz:
         extxyz_atoms = atoms.copy()
         extxyz_atoms.arrays["phase_id"] = atom_table["phase_id"]
@@ -215,7 +228,7 @@ def _write_environment(
             "rho_actual": float(len(atoms) / atoms.get_volume()),
             "temperature_K": config.dynamics.target_temperature_K,
             "pressure_GPa": config.dynamics.pressure_GPa,
-            "random_seed": config.random_seed,
+            "random_seed": random_seed,
             "grain_count": len(labels.grain_atom_indices),
             "phases": list(PHASE_NAMES),
         },
@@ -223,9 +236,16 @@ def _write_environment(
             "chemical_symbol": config.system.chemical_symbol,
             "potential_path": str(config.potential.model_path),
             "potential_sha256": potential_sha256,
-            "ensemble": "isothermal-isobaric (MTK) after explicit melt/quench preparation",
+            "ensemble": (
+                "constant-temperature (Langevin) transient at a volume derived from the "
+                "validated bulk endpoint volumes"
+                if name.endswith("solid_liquid_interface")
+                else "isothermal-isobaric (MTK)"
+            ),
             "phase_density_policy": (
-                "Density is measured from NPT volume samples. No phase density target is used."
+                "Bulk density is measured from NPT volume samples. The interface volume is the "
+                "phase-fraction-weighted combination of the replica's solid and liquid endpoint "
+                "volumes. No phase density target is used."
             ),
             "label_policy": (
                 "Labels encode preparation provenance and distance to the constructed interface; "
@@ -249,10 +269,22 @@ def _write_environment(
             handle,
             indent=2,
         )
+    if config.output.create_visualizations:
+        from .visualization import write_environment_visualizations
+
+        write_environment_visualizations(
+            directory,
+            name=name,
+            atoms=atoms,
+            labels=labels,
+            trace=trace,
+            diagnostics=diagnostics,
+            config=config,
+        )
 
 
 def write_dataset(
-    systems: SimulatedSystems,
+    replicas: dict[str, tuple[int, SimulatedSystems]],
     diagnostics: dict[str, SystemDiagnostics],
     reference_densities: dict[str, float] | None,
     config: GeneratorConfig,
@@ -268,29 +300,36 @@ def write_dataset(
         tempfile.mkdtemp(prefix=f".{output_root.name}.staging-", dir=output_root.parent)
     )
     potential_sha256 = sha256_file(config.potential.model_path)
-    environments = {
-        "bulk_solid": (
-            systems.solid,
-            label_bulk(len(systems.solid), "solid_bulk", 0),
-            systems.solid_trace,
-        ),
-        "bulk_liquid": (
-            systems.liquid,
-            label_bulk(len(systems.liquid), "liquid_bulk", 1),
-            systems.liquid_trace,
-        ),
-        "solid_liquid_interface": (
-            systems.interface,
-            label_interface(
-                systems.interface,
-                systems.liquid_slab_bounds_fractional,
-                config.system.interface_half_width_A,
-            ),
-            systems.interface_trace,
-        ),
-    }
+    environments = {}
+    for replica_name, (random_seed, systems) in replicas.items():
+        environments.update(
+            {
+                f"{replica_name}_bulk_solid": (
+                    systems.solid,
+                    label_bulk(len(systems.solid), "solid_bulk", 0),
+                    systems.solid_trace,
+                    random_seed,
+                ),
+                f"{replica_name}_bulk_liquid": (
+                    systems.liquid,
+                    label_bulk(len(systems.liquid), "liquid_bulk", 1),
+                    systems.liquid_trace,
+                    random_seed,
+                ),
+                f"{replica_name}_solid_liquid_interface": (
+                    systems.interface,
+                    label_interface(
+                        systems.interface,
+                        systems.liquid_slab_bounds_fractional,
+                        config.system.interface_half_width_A,
+                    ),
+                    systems.interface_trace,
+                    random_seed,
+                ),
+            }
+        )
     try:
-        for name, (atoms, labels, trace) in environments.items():
+        for name, (atoms, labels, trace, random_seed) in environments.items():
             _write_environment(
                 staging_root / name,
                 name=name,
@@ -300,13 +339,19 @@ def write_dataset(
                 diagnostics=diagnostics[name],
                 config=config,
                 potential_sha256=potential_sha256,
+                random_seed=random_seed,
             )
+        if config.output.create_visualizations:
+            from .visualization import write_benchmark_overview
+
+            write_benchmark_overview(staging_root, list(environments))
         manifest = {
             "schema_version": 3,
             "dataset_name": config.dataset_name,
             "environment_dirs": list(environments),
             "config": config.to_dict(),
             "potential_sha256": potential_sha256,
+            "random_seeds": list(config.random_seeds),
             "repository_reference_number_densities_per_A3": reference_densities,
             "scientific_scope": {
                 "supported_claim": (

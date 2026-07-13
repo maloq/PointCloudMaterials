@@ -108,6 +108,7 @@ def test_cached_feature_evaluation_matches_line_evaluation() -> None:
         line_atoms = 3
         target_line_index = 1
         target_encoder_mode = "online"
+        directional_feature_mode = "none"
         prediction_target = "residual"
         prediction_normalization = "none"
         device = torch.device("cpu")
@@ -127,7 +128,14 @@ def test_cached_feature_evaluation_matches_line_evaluation() -> None:
     line_t = torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0]])
     line_perp = torch.zeros_like(line_t)
     direct = model.evaluate_directional_line_batch(
-        {"points": points, "line_t": line_t, "line_perp": line_perp},
+        {
+            "points": points,
+            "line_t": line_t,
+            "line_perp": line_perp,
+            "line_direction": torch.tensor(
+                [[1.0, 0.0, 0.0], [1.0, 0.0, 0.0]]
+            ),
+        },
         target_index=1,
     )
     features = points.mean(dim=2)

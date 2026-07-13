@@ -1,301 +1,32 @@
-"""
-Evaluation metrics for point-cloud representation learning.
-Includes clustering, embedding quality, rotation equivariance,
-and reconstruction consistency metrics.
-"""
+"""Metrics used by the current supervised representation cache."""
 
-import logging
 import numpy as np
-import torch
-from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_score
-from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment
-from scipy.spatial.distance import pdist, cdist
+from scipy.spatial.distance import cdist, pdist
 from scipy.spatial.transform import Rotation
-
-from src.loss.reconstruction_loss import sinkhorn_distance
-
-logger = logging.getLogger(__name__)
-
-
-def get_cubic_symmetry_matrices() -> np.ndarray:
-    """
-    Generate the 24 rotation matrices of the octahedral (cubic) symmetry group.
-    Returns:
-        (24, 3, 3) numpy array
-    """
-    # Basic 90 degree rotations
-    s1 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    s2 = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
-    s3 = np.array([[-1, 0, 0], [0, -1, 0], [0, 0, 1]])
-    s4 = np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])
-    
-    base_rots = [s1, s2, s3, s4]
-    
-    # Permutations of axes
-    perms = [
-        np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
-        np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]]),
-        np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]]),
-        np.array([[0, 1, 0], [1, 0, 0], [0, 0, -1]]),
-        np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]]),
-        np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]])
-    ]
-    
-    # Generate all 24 by combining
-    symmetries = []
-    # This is a simplified construction. A robust way is to generate all signed permutations
-    # with determinant +1.
-    # Let's use a generator approach to be sure.
-    
-    # All signed permutations of identity
-    import itertools
-    for p in itertools.permutations([0, 1, 2]):
-        for signs in itertools.product([-1, 1], repeat=3):
-            mat = np.zeros((3, 3))
-            mat[0, p[0]] = signs[0]
-            mat[1, p[1]] = signs[1]
-            mat[2, p[2]] = signs[2]
-            if np.linalg.det(mat) > 0:
-                symmetries.append(mat)
-                
-    return np.array(symmetries)
+from sklearn.cluster import KMeans
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+from sklearn.model_selection import cross_val_score
 
 
-def compute_global_aligned_rot_metric(pred_rots: np.ndarray, gt_rots: np.ndarray, 
-                                     phase_labels: np.ndarray) -> dict:
-    """
-    Compute geodesic error after globally aligning the predicted frame to the GT frame per phase.
-    This removes the penalty for the network learning a consistent but rotated canonical frame.
-    
-    Args:
-        pred_rots: (N, 3, 3) predicted rotation matrices
-        gt_rots: (N, 3, 3) ground truth rotation matrices
-        phase_labels: (N,) phase labels
-        
-    Returns:
-        Dictionary of aligned metrics per phase
-    """
-    metrics = {}
-    
-    # Convert to torch for kabsch helper
-    pred_rots_t = torch.from_numpy(pred_rots).float()
-    gt_rots_t = torch.from_numpy(gt_rots).float()
-    
-    for phase in np.unique(phase_labels):
-        mask = phase_labels == phase
-        if np.sum(mask) < 3:
-            continue
-            
-        phase_pred = pred_rots_t[mask]
-        phase_gt = gt_rots_t[mask]
-        
-        # We want to find R_align such that R_align @ R_pred ~ R_gt
-        # This is equivalent to finding R_align that aligns the "frame vectors"
-        # But a simpler way is to treat the rotation matrices as point clouds in R9? No.
-        # Correct way: 
-        # We want R_align s.t. R_align * R_pred_i \approx R_gt_i
-        # => R_align \approx R_gt_i * R_pred_i^T
-        # So we want the "average" rotation of (R_gt_i * R_pred_i^T)
-        
-        diffs = torch.bmm(phase_gt, phase_pred.transpose(1, 2)) # (N, 3, 3)
-        
-        # Average rotation can be found by SVD of the sum of matrices
-        avg_diff = diffs.mean(dim=0) # (3, 3)
-        
-        # Project back to SO(3)
-        U, _, Vh = torch.linalg.svd(avg_diff.unsqueeze(0))
-        R_align = torch.bmm(U, Vh).squeeze(0)
-        
-        # Ensure det is +1
-        if torch.det(R_align) < 0:
-            # This is rare for average of rotations but possible
-            U, S, Vh = torch.linalg.svd(avg_diff.unsqueeze(0))
-            S_fix = torch.diag(torch.tensor([1.0, 1.0, -1.0], device=avg_diff.device))
-            R_align = U @ S_fix @ Vh
-            R_align = R_align.squeeze(0)
-            
-        # Apply alignment
-        # R_aligned = R_align @ R_pred
-        phase_pred_aligned = torch.matmul(R_align.unsqueeze(0), phase_pred)
-        
-        # Compute geodesic error
-        # trace(R_aligned^T @ R_gt)
-        delta = torch.bmm(phase_pred_aligned.transpose(1, 2), phase_gt)
-        trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1)
-        cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + 1e-6, 1.0 - 1e-6)
-        errors = torch.arccos(cos_theta) * (180.0 / np.pi)
-        
-        metrics[f'rot_aligned_error_phase_{int(phase)}'] = float(errors.mean())
-        
-    return metrics
-
-
-def compute_symmetry_aware_rot_metric(pred_rots: np.ndarray, gt_rots: np.ndarray, 
-                                     phase_labels: np.ndarray,
-                                     symmetry_phases: list = None) -> dict:
-    """
-    Compute geodesic error allowing for symmetry operations.
-    min_S dist(R_pred, R_gt @ S)
-    
-    Args:
-        pred_rots: (N, 3, 3)
-        gt_rots: (N, 3, 3)
-        phase_labels: (N,)
-        symmetry_phases: List of phase IDs (ints) to apply cubic symmetry to.
-                         If None, applies to all.
-    """
-    metrics = {}
-    symmetries = torch.from_numpy(get_cubic_symmetry_matrices()).float() # (24, 3, 3)
-    
-    pred_rots_t = torch.from_numpy(pred_rots).float()
-    gt_rots_t = torch.from_numpy(gt_rots).float()
-    
-    for phase in np.unique(phase_labels):
-        mask = phase_labels == phase
-        if np.sum(mask) == 0:
-            continue
-            
-        phase_pred = pred_rots_t[mask] # (B, 3, 3)
-        phase_gt = gt_rots_t[mask]     # (B, 3, 3)
-        
-        if symmetry_phases is None or phase in symmetry_phases:
-            # Apply all 24 symmetries to GT: R_gt_sym = R_gt @ S
-            # Shape: (B, 24, 3, 3)
-            phase_gt_expanded = phase_gt.unsqueeze(1) # (B, 1, 3, 3)
-            symmetries_expanded = symmetries.unsqueeze(0) # (1, 24, 3, 3)
-            
-            # (B, 1, 3, 3) @ (1, 24, 3, 3) -> (B, 24, 3, 3)
-            targets = torch.matmul(phase_gt_expanded, symmetries_expanded)
-            
-            # Compute distance to all 24 targets
-            # R_pred: (B, 3, 3) -> (B, 1, 3, 3)
-            preds = phase_pred.unsqueeze(1)
-            
-            # delta = preds^T @ targets
-            delta = torch.matmul(preds.transpose(-1, -2), targets) # (B, 24, 3, 3)
-            trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1) # (B, 24)
-            cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + 1e-6, 1.0 - 1e-6)
-            errors = torch.arccos(cos_theta) * (180.0 / np.pi) # (B, 24)
-            
-            min_errors, _ = errors.min(dim=1) # (B,)
-            metrics[f'rot_sym_error_phase_{int(phase)}'] = float(min_errors.mean())
-        else:
-            # Standard geodesic
-            delta = torch.bmm(phase_pred.transpose(1, 2), phase_gt)
-            trace = delta.diagonal(dim1=-2, dim2=-1).sum(-1)
-            cos_theta = ((trace - 1.0) * 0.5).clamp(-1.0 + 1e-6, 1.0 - 1e-6)
-            errors = torch.arccos(cos_theta) * (180.0 / np.pi)
-            metrics[f'rot_sym_error_phase_{int(phase)}'] = float(errors.mean())
-            
-    return metrics
-
-
-
-
-def random_rotation_matrix():
-    """Generate random 3D rotation using quaternions"""
+def random_rotation_matrix() -> np.ndarray:
+    """Generate one random 3D rotation matrix."""
     return Rotation.random().as_matrix()
 
 
-def rotation_geodesic_distance_np(R1: np.ndarray, R2: np.ndarray, eps: float = 1e-6) -> float:
-    """Geodesic distance between two rotation matrices in degrees."""
-    R_error = R1 @ R2.T
-    trace = np.trace(R_error)
-    angle_rad = np.arccos(np.clip((trace - 1) / 2, -1 + eps, 1 - eps))
-    return np.rad2deg(angle_rad)
-
-
 def _hungarian_cluster_accuracy(labels: np.ndarray, assignments: np.ndarray) -> float:
-    """Best label-permutation clustering accuracy via Hungarian matching."""
-    labels = np.asarray(labels)
-    assignments = np.asarray(assignments)
     if labels.shape != assignments.shape or labels.size == 0:
-        raise ValueError("labels and assignments must have identical non-empty shape")
-
-    label_vals, label_inv = np.unique(labels, return_inverse=True)
-    cluster_vals, cluster_inv = np.unique(assignments, return_inverse=True)
-    contingency = np.zeros((label_vals.size, cluster_vals.size), dtype=np.int64)
-    np.add.at(contingency, (label_inv, cluster_inv), 1)
-
-    row_ind, col_ind = linear_sum_assignment(contingency.max() - contingency)
-    correct = contingency[row_ind, col_ind].sum()
-    return float(correct / labels.size)
-
-
-def _normalize_acc_eval_methods(acc_eval_methods) -> list[str]:
-    """Normalize ACC evaluator names to canonical method ids."""
-    if acc_eval_methods is None:
-        raw_methods = ["kmeans++"]
-    elif isinstance(acc_eval_methods, str):
-        raw_methods = [acc_eval_methods]
-    else:
-        raw_methods = list(acc_eval_methods)
-
-    methods: list[str] = []
-    seen: set[str] = set()
-    for raw in raw_methods:
-        key = str(raw).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
-        method = None
-        if key in {"kmeans", "kmeansrandom"}:
-            logger.warning(
-                "ACC evaluator '%s' has been removed. Use 'kmeans++' (or aliases) instead; skipping.",
-                raw,
-            )
-            continue
-        elif key in {"kmeans++", "kmeansplusplus", "kmeanspp"}:
-            method = "kmeans++"
-        if method is None:
-            logger.warning("Unknown ACC evaluator '%s'; skipping.", raw)
-            continue
-        if method in seen:
-            continue
-        seen.add(method)
-        methods.append(method)
-    return methods
-
-
-def _normalize_acc_eval_runs_by_method(acc_eval_runs_by_method) -> dict[str, int]:
-    """Normalize optional per-method run counts for ACC evaluators."""
-    if acc_eval_runs_by_method is None:
-        return {}
-    if not hasattr(acc_eval_runs_by_method, "items"):
-        logger.warning("acc_eval_runs_by_method must be a mapping; got %s", type(acc_eval_runs_by_method))
-        return {}
-
-    runs_by_method: dict[str, int] = {}
-    for raw_method, raw_runs in acc_eval_runs_by_method.items():
-        methods = _normalize_acc_eval_methods([raw_method])
-        if not methods:
-            continue
-        try:
-            runs = max(1, int(raw_runs))
-        except Exception:
-            logger.warning("Invalid ACC run count for method '%s': %s", raw_method, raw_runs)
-            continue
-        runs_by_method[methods[0]] = runs
-    return runs_by_method
-
-
-def _compute_cluster_assignments_for_acc(
-    latents: np.ndarray,
-    n_clusters: int,
-    method: str,
-    *,
-    seed: int,
-) -> np.ndarray:
-    if method == "kmeans++":
-        model = KMeans(n_clusters=n_clusters, init="k-means++", n_init=10, random_state=seed)
-        return model.fit_predict(latents)
-    raise ValueError(f"Unsupported ACC evaluator method: {method}")
-
-
-def _acc_metric_prefix(method: str, k_eval: int) -> str:
-    if method == "kmeans++":
-        return f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{k_eval}"
-    raise ValueError(f"Unsupported ACC evaluator method: {method}")
+        raise ValueError(
+            "labels and assignments must have identical non-empty shape, "
+            f"got labels={labels.shape}, assignments={assignments.shape}."
+        )
+    label_values, label_indices = np.unique(labels, return_inverse=True)
+    cluster_values, cluster_indices = np.unique(assignments, return_inverse=True)
+    contingency = np.zeros((label_values.size, cluster_values.size), dtype=np.int64)
+    np.add.at(contingency, (label_indices, cluster_indices), 1)
+    rows, columns = linear_sum_assignment(contingency.max() - contingency)
+    return float(contingency[rows, columns].sum() / labels.size)
 
 
 def compute_cluster_metrics(
@@ -303,384 +34,118 @@ def compute_cluster_metrics(
     labels: np.ndarray,
     stage: str,
     *,
-    hungarian_eval_k: int | None = None,
-    acc_eval_methods=None,
-    acc_eval_runs: int = 1,
-    acc_eval_runs_by_method=None,
-    acc_random_seed: int = 0,
-) -> dict:
-    """
-    Compute clustering metrics (ARI, NMI, plus optional Hungarian ACC metrics).
+    hungarian_eval_k: int | None,
+    acc_eval_methods: list[str],
+    acc_eval_runs: int,
+    acc_eval_runs_by_method: dict[str, int],
+    acc_random_seed: int,
+) -> dict[str, float]:
+    """Compute KMeans ARI/NMI and configured k-means++ Hungarian accuracy."""
+    if latents.ndim != 2 or labels.ndim != 1 or latents.shape[0] != labels.shape[0]:
+        raise ValueError(
+            "Cluster metrics require latents (N, D) and labels (N,), "
+            f"got latents={latents.shape}, labels={labels.shape}."
+        )
+    if stage not in {"train", "val", "test"}:
+        raise ValueError(f"stage must be 'train', 'val', or 'test', got {stage!r}.")
+    if any(method != "kmeans++" for method in acc_eval_methods):
+        raise ValueError(
+            "The repository config supports only the 'kmeans++' ACC evaluator, "
+            f"got {acc_eval_methods}."
+        )
+    if acc_eval_runs < 1:
+        raise ValueError(f"acc_eval_runs must be positive, got {acc_eval_runs}.")
+    invalid_overrides = {
+        method: runs
+        for method, runs in acc_eval_runs_by_method.items()
+        if method != "kmeans++" or runs < 1
+    }
+    if invalid_overrides:
+        raise ValueError(f"Invalid ACC run overrides: {invalid_overrides}.")
 
-    Args:
-        latents: (N, d) latent embeddings
-        labels: (N,) ground truth labels
-        stage: Stage name (e.g., 'train', 'val', 'test')
-        hungarian_eval_k: Optional fixed K for val/test-time clustering accuracy
-            with Hungarian matching.
-        acc_eval_methods: Optional method list for ACC evaluation. Supported:
-            "kmeans++".
-        acc_eval_runs: Number of random-seed runs per ACC method.
-        acc_eval_runs_by_method: Optional per-method run-count overrides.
-        acc_random_seed: Base random seed for ACC runs.
+    metrics: dict[str, float] = {}
+    class_count = np.unique(labels).size
+    if class_count >= 2 and latents.shape[0] >= class_count:
+        assignments = KMeans(
+            n_clusters=class_count,
+            init="k-means++",
+            n_init=10,
+            random_state=0,
+        ).fit_predict(latents)
+        metrics["ARI"] = float(adjusted_rand_score(labels, assignments))
+        metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
 
-    Returns:
-        Dictionary of clustering metrics, or None if metrics cannot be computed
-    """
-    metrics = {}
-    unique = np.unique(labels)
-    if unique.size >= 2 and latents.shape[0] >= unique.size:
-        try:
-            assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
-            metrics["ARI"] = float(adjusted_rand_score(labels, assignments))
-            metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
-        except Exception as exc:
-            logger.warning(
-                "Failed to compute clustering metrics for stage='%s': %s",
-                stage,
-                exc,
-            )
+    if stage not in {"val", "test"} or hungarian_eval_k is None:
+        return metrics
+    if hungarian_eval_k < 2:
+        raise ValueError(f"hungarian_eval_k must be at least 2, got {hungarian_eval_k}.")
+    if latents.shape[0] < hungarian_eval_k:
+        raise ValueError(
+            "Hungarian evaluation needs at least one sample per requested cluster: "
+            f"samples={latents.shape[0]}, clusters={hungarian_eval_k}."
+        )
 
-    stage_l = str(stage).lower()
-    k_eval = int(hungarian_eval_k) if hungarian_eval_k is not None else None
-    if stage_l in {"val", "test"} and k_eval is not None and k_eval >= 2 and latents.shape[0] >= k_eval:
-        methods = _normalize_acc_eval_methods(acc_eval_methods)
-        runs = max(1, int(acc_eval_runs))
-        runs_by_method = _normalize_acc_eval_runs_by_method(acc_eval_runs_by_method)
-        base_seed = int(acc_random_seed)
-        for method in methods:
-            method_runs = runs_by_method.get(method, runs)
-            acc_values: list[float] = []
-            for run_idx in range(method_runs):
-                run_seed = base_seed + run_idx
-                try:
-                    pred_labels = _compute_cluster_assignments_for_acc(
-                        latents,
-                        k_eval,
-                        method,
-                        seed=run_seed,
-                    )
-                    acc_values.append(_hungarian_cluster_accuracy(labels, pred_labels))
-                except Exception as exc:
-                    logger.warning(
-                        (
-                            "Failed ACC run for stage='%s' method='%s' "
-                            "(k=%d, run=%d, seed=%d): %s"
-                        ),
-                        stage,
-                        method,
-                        k_eval,
-                        run_idx,
-                        run_seed,
-                        exc,
-                    )
+    for method in acc_eval_methods:
+        run_count = acc_eval_runs_by_method.get(method, acc_eval_runs)
+        accuracies = np.empty(run_count, dtype=np.float64)
+        for run_index in range(run_count):
+            assignments = KMeans(
+                n_clusters=hungarian_eval_k,
+                init="k-means++",
+                n_init=10,
+                random_state=acc_random_seed + run_index,
+            ).fit_predict(latents)
+            accuracies[run_index] = _hungarian_cluster_accuracy(labels, assignments)
 
-            if not acc_values:
-                continue
-
-            prefix = _acc_metric_prefix(method, k_eval)
-            if len(acc_values) == 1:
-                metrics[prefix] = float(acc_values[0])
-            else:
-                acc_arr = np.asarray(acc_values, dtype=np.float32)
-                metrics[prefix] = float(acc_arr.mean())
-                metrics[f"{prefix}_MEAN"] = float(acc_arr.mean())
-                metrics[f"{prefix}_STD"] = float(acc_arr.std())
-                metrics[f"{prefix}_BEST"] = float(acc_arr.max())
-                metrics[f"{prefix}_RUNS"] = float(acc_arr.size)
-
-    return metrics or None
+        prefix = f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{hungarian_eval_k}"
+        metrics[prefix] = float(accuracies.mean())
+        if run_count > 1:
+            metrics[f"{prefix}_MEAN"] = float(accuracies.mean())
+            metrics[f"{prefix}_STD"] = float(accuracies.std())
+            metrics[f"{prefix}_BEST"] = float(accuracies.max())
+            metrics[f"{prefix}_RUNS"] = float(run_count)
+    return metrics
 
 
-def compute_embedding_quality_metrics(Z_inv: np.ndarray, motif_labels: np.ndarray, include_expensive: bool = False) -> dict:
-    """
-    Compute embedding quality metrics.
+def compute_embedding_quality_metrics(
+    latents: np.ndarray,
+    labels: np.ndarray,
+    include_expensive: bool = False,
+) -> dict[str, float]:
+    """Compute class separation and embedding-scale metrics."""
+    if latents.ndim != 2 or labels.ndim != 1 or latents.shape[0] != labels.shape[0]:
+        raise ValueError(
+            "Embedding metrics require latents (N, D) and labels (N,), "
+            f"got latents={latents.shape}, labels={labels.shape}."
+        )
 
-    Args:
-        Z_inv: (N, d) embeddings
-        motif_labels: (N,) ground truth motif labels
-        include_expensive: If True, compute expensive metrics (classification, silhouette)
+    metrics: dict[str, float] = {}
+    unique_labels = np.unique(labels)
+    if include_expensive and unique_labels.size > 1 and latents.shape[0] >= 10:
+        classifier = LogisticRegression(max_iter=1000, random_state=42)
+        scores = cross_val_score(
+            classifier,
+            latents,
+            labels,
+            cv=min(5, latents.shape[0]),
+        )
+        metrics["classification_accuracy"] = float(scores.mean())
 
-    Returns:
-        Dictionary of metrics
-    """
-    metrics = {}
-
-    # Classification accuracy (train simple classifier) - EXPENSIVE, test only
-    if include_expensive and len(np.unique(motif_labels)) > 1 and len(Z_inv) >= 10:
-        from sklearn.linear_model import LogisticRegression
-        from sklearn.model_selection import cross_val_score
-        
-        clf = LogisticRegression(max_iter=1000, random_state=42)
-        scores = cross_val_score(clf, Z_inv, motif_labels, cv=min(5, len(Z_inv)))
-        metrics['classification_accuracy'] = float(scores.mean())
-
-
-
-
-    # Intra vs inter class distances
-    intra_distances = []
-    inter_distances = []
-
-    for motif in np.unique(motif_labels):
-        mask = motif_labels == motif
-        intra_mask = motif_labels != motif
-
-        Z_motif = Z_inv[mask]
-        Z_other = Z_inv[intra_mask]
-
-        if len(Z_motif) > 1:
-            # Intra-class distances
-            intra = pdist(Z_motif, metric='euclidean')
-            intra_distances.extend(intra)
-
-        if len(Z_other) > 0 and len(Z_motif) > 0:
-            # Inter-class distances
-            inter = cdist(Z_motif, Z_other, metric='euclidean')
-            inter_distances.extend(inter.flatten())
+    intra_distances: list[float] = []
+    inter_distances: list[float] = []
+    for label in unique_labels:
+        class_latents = latents[labels == label]
+        other_latents = latents[labels != label]
+        if class_latents.shape[0] > 1:
+            intra_distances.extend(pdist(class_latents, metric="euclidean"))
+        if class_latents.shape[0] and other_latents.shape[0]:
+            inter_distances.extend(cdist(class_latents, other_latents, metric="euclidean").ravel())
 
     if intra_distances:
-        metrics['intra_distance_mean'] = float(np.mean(intra_distances))
+        metrics["intra_distance_mean"] = float(np.mean(intra_distances))
     if inter_distances:
-        metrics['inter_distance_mean'] = float(np.mean(inter_distances))
-
-    # Embedding norm statistics (detect collapse)
-    norms = np.linalg.norm(Z_inv, axis=1)
-    metrics['embedding_norm_mean'] = float(norms.mean())
-    metrics['embedding_norm_std'] = float(norms.std())
-
-    # Pairwise distance statistics (detect if embeddings too similar)
-    # if len(Z_inv) > 1:
-    #     all_distances = pdist(Z_inv, metric='euclidean')
-    #     metrics['pairwise_distance_mean'] = float(all_distances.mean())
-    #     metrics['pairwise_distance_std'] = float(all_distances.std())
-
-    return metrics
-
-
-def compute_canonical_consistency_metrics(canonicals: np.ndarray, invariant_embeddings: np.ndarray,
-                                          phase_labels: np.ndarray) -> dict:
-    """
-    Test if different rotations of the same structure produce the same canonical pose.
-    For samples from the same phase, canonical poses should be similar.
-
-    Args:
-        canonicals: (N, num_points, 3) canonical point clouds
-        invariant_embeddings: (N, d) invariant embeddings
-        phase_labels: (N,) phase labels
-
-    Returns:
-        Dictionary of consistency metrics per phase
-    """
-    metrics = {}
-
-    # For each phase, compute variance in canonical poses
-    for phase in np.unique(phase_labels):
-        phase_mask = phase_labels == phase
-        phase_canonicals = canonicals[phase_mask]
-        phase_z_inv = invariant_embeddings[phase_mask]
-
-        if len(phase_canonicals) < 2:
-            continue
-
-        # Measure variance in canonical poses using pairwise distances
-        canonical_distances = []
-        z_inv_distances = []
-
-        n_samples = len(phase_canonicals)
-        # Sample pairs to avoid quadratic complexity
-        max_pairs = min(100, n_samples * (n_samples - 1) // 2)
-        pairs_sampled = 0
-
-        for i in range(n_samples):
-            if pairs_sampled >= max_pairs:
-                break
-            for j in range(i + 1, n_samples):
-                if pairs_sampled >= max_pairs:
-                    break
-
-                # Simple L2 distance between point clouds
-                cd = np.mean(np.linalg.norm(phase_canonicals[i] - phase_canonicals[j], axis=1))
-                canonical_distances.append(cd)
-
-                # L2 distance between embeddings
-                z_dist = np.linalg.norm(phase_z_inv[i] - phase_z_inv[j])
-                z_inv_distances.append(z_dist)
-
-                pairs_sampled += 1
-
-        if canonical_distances:
-            metrics[f'canonical_pose_variance_phase_{int(phase)}'] = float(np.mean(canonical_distances))
-            metrics[f'canonical_pose_max_dist_phase_{int(phase)}'] = float(np.max(canonical_distances))
-        if z_inv_distances:
-            metrics[f'z_inv_variance_phase_{int(phase)}'] = float(np.mean(z_inv_distances))
-            metrics[f'z_inv_max_dist_phase_{int(phase)}'] = float(np.max(z_inv_distances))
-
-    return metrics
-
-
-def compute_reconstruction_emd_per_phase(originals: np.ndarray, reconstructions: np.ndarray,
-                                         phase_labels: np.ndarray) -> dict:
-    """
-    Compute reconstruction EMD per phase.
-
-    Args:
-        originals: (N, num_points, 3) original point clouds
-        reconstructions: (N, num_points, 3) reconstructed point clouds
-        phase_labels: (N,) phase labels
-
-    Returns:
-        Dictionary with EMD per phase
-    """
-    metrics = {}
-
-    # Convert to torch for using sinkhorn distance
-    originals_t = torch.from_numpy(originals).float()
-    reconstructions_t = torch.from_numpy(reconstructions).float()
-    phase_labels_t = torch.from_numpy(phase_labels).long()
-
-    for phase in np.unique(phase_labels):
-        phase_mask = phase_labels_t == phase
-        phase_orig = originals_t[phase_mask]
-        phase_recon = reconstructions_t[phase_mask]
-
-        if len(phase_orig) == 0:
-            continue
-
-        emd, _ = sinkhorn_distance(phase_recon.contiguous(), phase_orig)
-        metrics[f'emd_phase_{int(phase)}'] = float(emd.item())
-
-
-    return metrics
-
-
-def test_rotation_equivariance_sample(model, reference_pcs: dict, phase_labels: np.ndarray,
-                                       n_test_rotations: int = 10, max_samples_per_phase: int = 5) -> dict:
-    """
-    Test rotation equivariance using reference point clouds.
-    Test if: R_pred(R_test @ X) ≈ R_test @ R_pred(X)
-
-    Args:
-        model: The model to test
-        reference_pcs: Dictionary mapping phase names to reference point clouds
-        phase_labels: Phase labels from dataset
-        n_test_rotations: Number of random rotations to test per phase
-        max_samples_per_phase: Maximum samples to use per phase
-
-    Returns:
-        Dictionary of equivariance metrics
-    """
-    metrics = {'equivariance_errors': []}
-
-    # Map phase labels to phase names
-    phase_map = {0: 'crystal_fcc', 1: 'crystal_bcc', 2: 'amorphous_repeat',
-                 3: 'amorphous_random', 4: 'amorphous_mixed'}
-
-    model.eval()
-    with torch.no_grad():
-        for phase_id in np.unique(phase_labels):
-            phase_name = phase_map.get(int(phase_id))
-            if phase_name is None or phase_name not in reference_pcs:
-                continue
-
-            X_base = reference_pcs[phase_name]  # (N_points, 3)
-            X_base_t = torch.from_numpy(X_base).float().to(model.device).unsqueeze(0)  # (1, N_points, 3)
-
-            # Get prediction for original
-            _, _, _, R_pred_orig, _ = model(X_base_t)
-            R_pred_orig_np = R_pred_orig[0].cpu().numpy()
-
-            # Test with random rotations
-            for _ in range(min(n_test_rotations, max_samples_per_phase)):
-                R_test = random_rotation_matrix()
-
-                # Apply known rotation to input
-                X_rotated = (R_test @ X_base.T).T  # (N_points, 3)
-                X_rotated_t = torch.from_numpy(X_rotated).float().to(model.device).unsqueeze(0)
-
-                # Get prediction for rotated input
-                _, _, _, R_pred_rot, _ = model(X_rotated_t)
-                R_pred_rot_np = R_pred_rot[0].cpu().numpy()
-
-                # Key test: R_pred_rot should equal R_test @ R_pred_orig
-                R_expected = R_test @ R_pred_orig_np
-
-                # Geodesic distance
-                angle_error_deg = rotation_geodesic_distance_np(R_pred_rot_np, R_expected)
-                metrics['equivariance_errors'].append(angle_error_deg)
-
-
-
-    if metrics['equivariance_errors']:
-        metrics['equivariance_mean_deg'] = float(np.mean(metrics['equivariance_errors']))
-        metrics['equivariance_std_deg'] = float(np.std(metrics['equivariance_errors']))
-        metrics['equivariance_max_deg'] = float(np.max(metrics['equivariance_errors']))
-
-    # Remove raw errors from logged metrics
-    del metrics['equivariance_errors']
-
-    return metrics
-
-
-def test_reconstruction_consistency_sample(model, reference_pcs: dict, phase_labels: np.ndarray,
-                                            n_rotations: int = 10, max_samples_per_phase: int = 3) -> dict:
-    """
-    Test reconstruction consistency across rotations.
-    Reconstruction quality should be similar for all rotations (if system is rotation invariant).
-
-    Args:
-        model: The model to test
-        reference_pcs: Dictionary mapping phase names to reference point clouds
-        phase_labels: Phase labels from dataset
-        n_rotations: Number of random rotations to test
-        max_samples_per_phase: Maximum samples to use per phase
-
-    Returns:
-        Dictionary of reconstruction consistency metrics
-    """
-    metrics = {}
-    reconstruction_errors_all = []
-
-    # Map phase labels to phase names
-    phase_map = {0: 'crystal_fcc', 1: 'crystal_bcc', 2: 'amorphous_repeat',
-                 3: 'amorphous_random', 4: 'amorphous_mixed'}
-
-    model.eval()
-    with torch.no_grad():
-        for phase_id in np.unique(phase_labels):
-            phase_name = phase_map.get(int(phase_id))
-            if phase_name is None or phase_name not in reference_pcs:
-                continue
-
-            X_base = reference_pcs[phase_name]  # (N_points, 3)
-            reconstruction_errors = []
-
-            for _ in range(min(n_rotations, max_samples_per_phase)):
-                R_test = random_rotation_matrix()
-                X_rotated = (R_test @ X_base.T).T
-                X_rotated_t = torch.from_numpy(X_rotated).float().to(model.device).unsqueeze(0)
-
-                _, recon, _, _, _ = model(X_rotated_t)
-
-                # Compute reconstruction error
-                emd, _ = sinkhorn_distance(recon.contiguous(), X_rotated_t)
-                reconstruction_errors.append(float(emd.item()))
-
-
-            if reconstruction_errors:
-                reconstruction_errors_all.extend(reconstruction_errors)
-                mean_err = np.mean(reconstruction_errors)
-                std_err = np.std(reconstruction_errors)
-                metrics[f'reconstruction_mean_phase_{int(phase_id)}'] = float(mean_err)
-                metrics[f'reconstruction_std_phase_{int(phase_id)}'] = float(std_err)
-                if mean_err > 0:
-                    metrics[f'reconstruction_cv_phase_{int(phase_id)}'] = float(std_err / mean_err)
-
-    if reconstruction_errors_all:
-        metrics['reconstruction_mean_all'] = float(np.mean(reconstruction_errors_all))
-        metrics['reconstruction_std_all'] = float(np.std(reconstruction_errors_all))
-        mean_all = np.mean(reconstruction_errors_all)
-        if mean_all > 0:
-            metrics['reconstruction_cv_all'] = float(np.std(reconstruction_errors_all) / mean_all)
-
+        metrics["inter_distance_mean"] = float(np.mean(inter_distances))
+    norms = np.linalg.norm(latents, axis=1)
+    metrics["embedding_norm_mean"] = float(norms.mean())
+    metrics["embedding_norm_std"] = float(norms.std())
     return metrics

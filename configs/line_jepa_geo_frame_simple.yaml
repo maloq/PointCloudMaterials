@@ -190,6 +190,7 @@ vicreg_drop_ratio: 0.0
 vicreg_neighbor_view: false
 vicreg_view_points: ${data.model_points}
 vicreg_rotation_mode: none
+vicreg_mirror_prob: 0.5
 vicreg_strain_std: 0.0
 vicreg_occlusion_mode: none
 vicreg_std_eps: 1.0e-04

@@ -150,6 +150,8 @@ enable_embedding_metrics: false
 enable_svm_accuracy: false
 
 temporal_vicreg_use_adjacent_views: true
+temporal_vicreg_anchor_frame: center
+fused_views_anchor: center
 
 vicreg_enabled: true
 vicreg_weight: 1.0

@@ -1,16 +1,17 @@
-# Force-driven aluminium phase-context benchmark.
+# Force-driven aluminium benchmark for bulk solid, supercooled liquid, and a
+# transient solid-liquid growth front.
 #
-# This file serves both Hydra training and the atomistic generation CLI:
+# Generate it with:
 #   conda run -n pointnet python -m src.data_utils.synthetic.atomistic_generator \
-#     --config configs/data/data_synth_polycrystalline_balanced_geometries.yaml
+#     --config configs/data/atomistic_al_phase_context.yaml
 
 kind: synthetic
-data_path: output/synthetic_data/al_phase_context
-num_points: 128
+data_path: output/synthetic_data/al_phase_context_70304x1
+num_points: 80
 model_points: 80
 radius: 7.2
 sample_type: regular
-overlap_fraction: 0.10
+overlap_fraction: 0.50
 n_samples: 0
 dataset_max_samples: null
 train_ratio: 0.8
@@ -18,18 +19,21 @@ drop_edge_samples: true
 pre_normalize: true
 normalize: true
 synthetic:
-  root_dir: output/synthetic_data/al_phase_context
+  root_dir: output/synthetic_data/al_phase_context_70304x1
   classes: [solid_bulk, liquid_bulk, interface]
 
-dataset_name: al_phase_context_mace_mpa
-random_seed: 12345
+dataset_name: al_phase_context_mace_mpa_70304x1
+random_seeds: [12345]
 
 potential:
-  # The generator refuses URLs and never downloads a model implicitly.
+  # Repository-owned checkpoint only. Generation checks this digest before MD.
   model_path: datasets/potentials/mace-mpa-0-medium.model
   sha256: 75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638
   device: cuda
   default_dtype: float32
+  enable_cueq: true
+  # Reuse the GPU neighbor graph until an exact displacement/cell bound expires.
+  neighbor_skin_A: 0.3
 
 dynamics:
   pressure_GPa: 0.0
@@ -37,26 +41,26 @@ dynamics:
   melt_temperature_K: 1600.0
   timestep_fs: 1.0
   thermostat_time_fs: 100.0
-  barostat_time_fs: 1000.0
-  solid_equilibration_steps: 2000
-  melt_steps: 5000
-  quench_steps: 2000
+  barostat_time_fs: 500.0
+  solid_equilibration_steps: 5000
+  melt_steps: 3000
+  quench_steps: 1000
   quench_stages: 10
-  target_equilibration_steps: 2000
-  interface_evolution_steps: 50
+  target_equilibration_steps: 3000
+  interface_evolution_steps: 1000
   sample_interval: 100
 
 system:
   chemical_symbol: Al
   crystal_structure: fcc
   initial_lattice_constant_A: 4.05
-  repetitions: [6, 6, 16]
+  repetitions: [26, 26, 26]
   liquid_slab_fraction: 0.70
   interface_half_width_A: 5.0
 
 validation:
   maximum_force_eV_per_A: 20.0
-  maximum_pressure_error_GPa: 0.50
+  maximum_pressure_error_GPa: 0.35
   maximum_temperature_error_K: 75.0
   minimum_pair_distance_A: 1.8
   reference_density_cache: datasets/dump_first_10.temporal_cache
@@ -67,6 +71,7 @@ validation:
   maximum_interface_crystalline_fraction: 0.80
 
 output:
-  root_dir: output/synthetic_data/al_phase_context
+  root_dir: output/synthetic_data/al_phase_context_70304x1
   overwrite: false
   save_extxyz: true
+  create_visualizations: true

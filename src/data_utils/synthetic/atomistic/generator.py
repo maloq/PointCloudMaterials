@@ -8,7 +8,7 @@ import torch
 
 from .artifacts import sha256_file, write_dataset
 from .config import GeneratorConfig
-from .simulation import simulate_systems
+from .simulation import build_initial_solid, simulate_systems
 from .validation import SystemDiagnostics, validate_systems
 
 
@@ -40,15 +40,17 @@ def _build_calculator(config: GeneratorConfig) -> object:
             "that CUDA is unavailable. Select an available device explicitly."
         )
     try:
-        from mace.calculators import MACECalculator
+        from .calculator import VerletSkinMACECalculator
     except ImportError as exc:
         raise ImportError(
             "The force-driven generator requires mace-torch in the pointnet environment."
         ) from exc
-    return MACECalculator(
+    return VerletSkinMACECalculator(
         model_paths=str(config.potential.model_path),
         device=config.potential.device,
         default_dtype=config.potential.default_dtype,
+        enable_cueq=config.potential.enable_cueq,
+        neighbor_skin_A=config.potential.neighbor_skin_A,
     )
 
 
@@ -66,14 +68,43 @@ def generate_dataset(
     """
 
     selected_calculator = calculator if calculator is not None else _build_calculator(config)
+    atom_count = len(build_initial_solid(config))
     progress(
-        f"Generating {config.dataset_name!r} with {config.system.chemical_symbol}, "
-        f"{config.system.repetitions} conventional cells"
+        f"Generating {config.dataset_name!r}: {len(config.random_seeds)} replicas, "
+        f"{atom_count} {config.system.chemical_symbol} atoms each, "
+        f"cuEquivariance={config.potential.enable_cueq}, "
+        f"neighbor_skin={config.potential.neighbor_skin_A:g} A"
     )
-    systems = simulate_systems(config, selected_calculator, progress=progress)
-    diagnostics, reference_densities = validate_systems(systems, config)
+    replicas = {}
+    diagnostics = {}
+    reference_densities = None
+    for replica_index, random_seed in enumerate(config.random_seeds):
+        replica_name = f"replica_{replica_index:03d}"
+        progress(f"{replica_name}: random_seed={random_seed}")
+        systems = simulate_systems(
+            config,
+            selected_calculator,
+            random_seed=random_seed,
+            checkpoint_prefix=replica_name,
+            progress=progress,
+        )
+        replica_diagnostics, observed_reference = validate_systems(systems, config)
+        replicas[replica_name] = (random_seed, systems)
+        diagnostics.update(
+            {
+                f"{replica_name}_{environment_name}": value
+                for environment_name, value in replica_diagnostics.items()
+            }
+        )
+        if reference_densities is None:
+            reference_densities = observed_reference
+        elif observed_reference != reference_densities:
+            raise RuntimeError(
+                "Repository density references changed while validating replicas: "
+                f"first={reference_densities}, {replica_name}={observed_reference}."
+            )
     environment_dirs = write_dataset(
-        systems,
+        replicas,
         diagnostics,
         reference_densities,
         config,

@@ -151,6 +151,8 @@ line_jepa_prototype_counts: [6, 12, 24]
 line_jepa_prototype_temperature: 0.1
 line_jepa_prototype_sinkhorn_epsilon: 0.1
 line_jepa_prototype_sinkhorn_iterations: 20
+line_jepa_freeze_encoder: false
+line_jepa_freeze_semantic_projector: false
 line_jepa_encoder_freeze_epochs: 0
 line_jepa_encoder_lr_scale: 1.0
 line_jepa_view_jitter_std: 0.01

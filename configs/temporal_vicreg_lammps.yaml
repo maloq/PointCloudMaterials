@@ -54,7 +54,7 @@ data:
 
 encoder:
   name: RI_MAE_Invariant
-  kwargsinu:
+  kwargs:
     latent_size: ${latent_size}
     num_group: 24
     group_size: 12
@@ -72,7 +72,6 @@ encoder:
     group_sampling: random
     center_input: true
     frame_builder: triad
-    frame_eps: 1e-6
     use_gradient_checkpointing: false
 
 learning_rate: 0.003
@@ -128,6 +127,8 @@ enable_embedding_metrics: false
 enable_svm_accuracy: false
 
 temporal_vicreg_use_adjacent_views: true
+temporal_vicreg_anchor_frame: center
+fused_views_anchor: center
 
 vicreg_enabled: true
 vicreg_weight: 1.0

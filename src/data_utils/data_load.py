@@ -15,7 +15,6 @@ from src.utils.logging_config import setup_logging
 import pandas as pd
 from typing import Union, Optional, Sequence, Dict, Any, List, Tuple
 from pathlib import Path
-import math
 from scipy.spatial import cKDTree
 
 logger = setup_logging()
@@ -74,116 +73,6 @@ def pc_normalize(pc: np.ndarray, radius: float) -> np.ndarray:
     assert radius > 0, f"pc_normalize requires radius > 0, got radius={radius!r}"
     return pc / radius
 
-
-def rotation_matrix_to_quaternion(R: np.ndarray) -> np.ndarray:
-    """Convert rotation matrix to quaternion (w, x, y, z).
-    
-    Args:
-        R: (3, 3) rotation matrix as numpy array
-        
-    Returns:
-        (4,) quaternion as numpy array [w, x, y, z]
-    """
-    if R.shape != (3, 3):
-        raise ValueError(f"Rotation matrix must be 3x3, got {R.shape}")
-    m00, m01, m02 = R[0]
-    m10, m11, m12 = R[1]
-    m20, m21, m22 = R[2]
-    tr = m00 + m11 + m22
-    if tr > 0:
-        S = math.sqrt(tr + 1.0) * 2.0
-        qw = 0.25 * S
-        qx = (m21 - m12) / S
-        qy = (m02 - m20) / S
-        qz = (m10 - m01) / S
-    elif (m00 > m11) and (m00 > m22):
-        S = math.sqrt(1.0 + m00 - m11 - m22) * 2.0
-        qw = (m21 - m12) / S
-        qx = 0.25 * S
-        qy = (m01 + m10) / S
-        qz = (m02 + m20) / S
-    elif m11 > m22:
-        S = math.sqrt(1.0 + m11 - m00 - m22) * 2.0
-        qw = (m02 - m20) / S
-        qx = (m01 + m10) / S
-        qy = 0.25 * S
-        qz = (m12 + m21) / S
-    else:
-        S = math.sqrt(1.0 + m22 - m00 - m11) * 2.0
-        qw = (m10 - m01) / S
-        qx = (m02 + m20) / S
-        qy = (m12 + m21) / S
-        qz = 0.25 * S
-    quat = np.array([qw, qx, qy, qz], dtype=np.float32)
-    norm = np.linalg.norm(quat)
-    if norm == 0.0:
-        raise ValueError(
-            "Degenerate rotation matrix produced a zero-norm quaternion. "
-            f"R={R.tolist()}."
-        )
-    return quat / norm
-
-
-def rotation_matrix_to_quaternion_batch(R: torch.Tensor) -> torch.Tensor:
-    """Convert batched rotation matrices to quaternions (w, x, y, z).
-    
-    Args:
-        R: (..., 3, 3) rotation matrices as torch tensor
-        
-    Returns:
-        (..., 4) quaternions as torch tensor [w, x, y, z]
-    """
-    batch_shape = R.shape[:-2]
-    R = R.reshape(-1, 3, 3)
-    batch_size = R.shape[0]
-    
-    m00, m01, m02 = R[:, 0, 0], R[:, 0, 1], R[:, 0, 2]
-    m10, m11, m12 = R[:, 1, 0], R[:, 1, 1], R[:, 1, 2]
-    m20, m21, m22 = R[:, 2, 0], R[:, 2, 1], R[:, 2, 2]
-    
-    tr = m00 + m11 + m22
-    quat = torch.zeros(batch_size, 4, dtype=R.dtype, device=R.device)
-    
-    # Case 1: tr > 0
-    mask1 = tr > 0
-    if mask1.any():
-        S = torch.sqrt(tr[mask1] + 1.0) * 2.0
-        quat[mask1, 0] = 0.25 * S
-        quat[mask1, 1] = (m21[mask1] - m12[mask1]) / S
-        quat[mask1, 2] = (m02[mask1] - m20[mask1]) / S
-        quat[mask1, 3] = (m10[mask1] - m01[mask1]) / S
-    
-    # Case 2: m00 > m11 and m00 > m22
-    mask2 = ~mask1 & (m00 > m11) & (m00 > m22)
-    if mask2.any():
-        S = torch.sqrt(1.0 + m00[mask2] - m11[mask2] - m22[mask2]) * 2.0
-        quat[mask2, 0] = (m21[mask2] - m12[mask2]) / S
-        quat[mask2, 1] = 0.25 * S
-        quat[mask2, 2] = (m01[mask2] + m10[mask2]) / S
-        quat[mask2, 3] = (m02[mask2] + m20[mask2]) / S
-    
-    # Case 3: m11 > m22
-    mask3 = ~mask1 & ~mask2 & (m11 > m22)
-    if mask3.any():
-        S = torch.sqrt(1.0 + m11[mask3] - m00[mask3] - m22[mask3]) * 2.0
-        quat[mask3, 0] = (m02[mask3] - m20[mask3]) / S
-        quat[mask3, 1] = (m01[mask3] + m10[mask3]) / S
-        quat[mask3, 2] = 0.25 * S
-        quat[mask3, 3] = (m12[mask3] + m21[mask3]) / S
-    
-    # Case 4: else
-    mask4 = ~mask1 & ~mask2 & ~mask3
-    if mask4.any():
-        S = torch.sqrt(1.0 + m22[mask4] - m00[mask4] - m11[mask4]) * 2.0
-        quat[mask4, 0] = (m10[mask4] - m01[mask4]) / S
-        quat[mask4, 1] = (m02[mask4] + m20[mask4]) / S
-        quat[mask4, 2] = (m12[mask4] + m21[mask4]) / S
-        quat[mask4, 3] = 0.25 * S
-    
-    # Normalize
-    quat = quat / (torch.norm(quat, dim=-1, keepdim=True) + 1e-8)
-    
-    return quat.reshape(*batch_shape, 4)
 
 def _load_points(filepath: str) -> np.ndarray:
     """Load point cloud from .npy or .off file. Returns float32 (N, 3) array."""
@@ -318,9 +207,9 @@ class PointCloudDataset(Dataset):
                  sample_cache_config: dict[str, Any] | None = None):
         """Initialize the dataset with samples from point cloud files.
 
-        Supports two configuration modes:
+        Supports the two repository configuration modes:
 
-        1. **Single source** (backward-compatible): provide ``root`` + ``data_files``.
+        1. **Single source**: provide ``root`` + ``data_files``.
         2. **Multi source**: provide ``data_sources``, a list of dicts each with
            ``data_path`` and ``data_files`` keys.  Samples from all sources are
            concatenated into a single dataset.
@@ -344,8 +233,6 @@ class PointCloudDataset(Dataset):
 
         auto_cfg = self._resolve_auto_cutoff_config(
             auto_cutoff_config,
-            default_target_points=self.num_points,
-            default_radius=self.radius,
         )
 
         sources = self._resolve_sources(root, data_files, data_sources)
@@ -400,7 +287,7 @@ class PointCloudDataset(Dataset):
                 overlap_fraction, sample_type, n_samples,
                 return_coords, sampling_method,
                 self.drop_edge_samples, self.edge_drop_layers,
-                source_max_samples=source.get("max_samples"),
+                source_max_samples=source["max_samples"],
             )
             all_samples.extend(samples)
             all_sample_radii.extend([src_radius] * len(samples))
@@ -447,8 +334,6 @@ class PointCloudDataset(Dataset):
             for source_index, src in enumerate(data_sources):
                 src_path = src["data_path"]
                 src_files = src["data_files"]
-                if isinstance(src_files, str):
-                    src_files = [src_files]
                 source_name_raw = src.get("name", None)
                 source_name = (
                     str(source_name_raw)
@@ -478,10 +363,6 @@ class PointCloudDataset(Dataset):
                 )
             return sources
 
-        if isinstance(data_files, str):
-            data_files = [data_files]
-        if not data_files:
-            data_files = []
         source_name = Path(str(root)).name if str(root) else "single_source"
         return [
             {
@@ -497,28 +378,31 @@ class PointCloudDataset(Dataset):
     @staticmethod
     def _resolve_auto_cutoff_config(
         auto_cutoff_config: dict[str, Any] | None,
-        *,
-        default_target_points: int,
-        default_radius: float,
     ) -> dict[str, Any] | None:
-        if not auto_cutoff_config or not auto_cutoff_config.get("enabled", False):
+        if auto_cutoff_config is None or not auto_cutoff_config["enabled"]:
             return None
-        return {
-            "target_points": int(auto_cutoff_config.get("target_points", default_target_points)),
-            "quantile": float(auto_cutoff_config.get("quantile", 1.0)),
-            "estimation_samples_per_file": int(auto_cutoff_config.get("estimation_samples_per_file", 4096)),
-            "seed": int(auto_cutoff_config.get("seed", 0)),
-            "safety_factor": float(auto_cutoff_config.get("safety_factor", 1.0)),
-            "boundary_margin": auto_cutoff_config.get("boundary_margin", default_radius),
+        resolved = {
+            "target_points": int(auto_cutoff_config["target_points"]),
+            "quantile": float(auto_cutoff_config["quantile"]),
+            "estimation_samples_per_file": int(auto_cutoff_config["estimation_samples_per_file"]),
+            "seed": int(auto_cutoff_config["seed"]),
+            "safety_factor": float(auto_cutoff_config["safety_factor"]),
+            "boundary_margin": auto_cutoff_config["boundary_margin"],
+            "reference_frame_index": (
+                int(auto_cutoff_config["reference_frame_index"])
+                if "reference_frame_index" in auto_cutoff_config
+                else None
+            ),
         }
+        return resolved
 
     @staticmethod
     def _resolve_sample_cache_config(
         sample_cache_config: dict[str, Any] | None,
     ) -> dict[str, Any]:
-        if not sample_cache_config or not sample_cache_config.get("enabled", False):
+        if sample_cache_config is None or not sample_cache_config["enabled"]:
             return {"enabled": False}
-        cache_dir = sample_cache_config.get("cache_dir", None)
+        cache_dir = sample_cache_config["cache_dir"]
         if cache_dir is None or not str(cache_dir).strip():
             raise ValueError(
                 "data.sample_cache.cache_dir is required when data.sample_cache.enabled=true."
@@ -526,8 +410,8 @@ class PointCloudDataset(Dataset):
         return {
             "enabled": True,
             "cache_dir": str(cache_dir),
-            "rebuild": bool(sample_cache_config.get("rebuild", False)),
-            "local_cache_dir": sample_cache_config.get("local_cache_dir", None),
+            "rebuild": bool(sample_cache_config["rebuild"]),
+            "local_cache_dir": sample_cache_config["local_cache_dir"],
         }
 
     def _build_sample_cache_request(
@@ -564,7 +448,7 @@ class PointCloudDataset(Dataset):
                     "name": str(source["name"]),
                     "root": str(source["root"]),
                     "radius": float(source["resolved_radius"]),
-                    "max_samples": source.get("max_samples"),
+                    "max_samples": source["max_samples"],
                     "files": file_entries,
                 }
             )
@@ -614,7 +498,7 @@ class PointCloudDataset(Dataset):
         if metadata_path.exists():
             with metadata_path.open("r", encoding="utf-8") as handle:
                 metadata = json.load(handle)
-            observed_fingerprint = metadata.get("fingerprint")
+            observed_fingerprint = metadata["fingerprint"]
             if observed_fingerprint == expected_fingerprint:
                 load_dir, load_metadata = self._stage_sample_cache_if_configured(
                     source_cache_dir=cache_dir,
@@ -633,7 +517,8 @@ class PointCloudDataset(Dataset):
                     f"observed_fingerprint={observed_fingerprint}. Set "
                     "data.sample_cache.rebuild=true to overwrite this cache in place."
                 )
-            self._remove_cache_dir_for_rebuild(cache_dir)
+            if cache_dir.exists():
+                self._remove_cache_dir_for_rebuild(cache_dir)
         elif cache_dir.exists() and any(cache_dir.iterdir()):
             if not cache_cfg["rebuild"]:
                 raise RuntimeError(
@@ -835,8 +720,8 @@ class PointCloudDataset(Dataset):
             source_root = str(source["root"])
             source_radius = float(source["resolved_radius"])
             source_files = list(source["files"])
-            file_limits = _split_source_sample_limit(source.get("max_samples"), len(source_files))
-            remaining = source.get("max_samples")
+            file_limits = _split_source_sample_limit(source["max_samples"], len(source_files))
+            remaining = source["max_samples"]
             remaining = None if remaining is None else int(remaining)
             source_count = 0
 
@@ -992,7 +877,7 @@ class PointCloudDataset(Dataset):
         cache_dir: Path,
         metadata: dict[str, Any],
     ) -> None:
-        schema_version = int(metadata.get("schema_version", -1))
+        schema_version = int(metadata["schema_version"])
         if schema_version != _STATIC_SAMPLE_CACHE_VERSION:
             raise RuntimeError(
                 "Unsupported static sample cache schema version. "
@@ -1000,14 +885,14 @@ class PointCloudDataset(Dataset):
                 f"expected={_STATIC_SAMPLE_CACHE_VERSION}."
             )
 
-        request = metadata.get("request", {})
-        cached_num_points = int(request.get("num_points", -1))
+        request = metadata["request"]
+        cached_num_points = int(request["num_points"])
         if cached_num_points != int(self.num_points):
             raise RuntimeError(
                 "Static sample cache num_points mismatch after metadata validation. "
                 f"cache_dir={cache_dir}, cached={cached_num_points}, requested={self.num_points}."
             )
-        cached_return_coords = bool(request.get("return_coords", False))
+        cached_return_coords = bool(request["return_coords"])
         if cached_return_coords != bool(self.return_coords):
             raise RuntimeError(
                 "Static sample cache return_coords mismatch after metadata validation. "
@@ -1021,7 +906,7 @@ class PointCloudDataset(Dataset):
         source_names: list[str] = []
         radii: list[float] = []
 
-        for shard in metadata.get("shards", []):
+        for shard in metadata["shards"]:
             count = int(shard["count"])
             sample_path = cache_dir / shard["samples_path"]
             if not sample_path.exists():
@@ -1043,7 +928,7 @@ class PointCloudDataset(Dataset):
                 )
 
             coord_array = None
-            coords_relpath = shard.get("coords_path")
+            coords_relpath = shard["coords_path"]
             if self.return_coords:
                 if coords_relpath is None:
                     raise RuntimeError(
@@ -1076,7 +961,7 @@ class PointCloudDataset(Dataset):
             source_names.append(str(shard["source"]))
             radii.append(float(shard["radius"]))
 
-        total_samples = int(metadata.get("total_samples", 0))
+        total_samples = int(metadata["total_samples"])
         if total_samples <= 0 or total_samples != int(sum(counts)):
             raise RuntimeError(
                 "Static sample cache total_samples is invalid. "
@@ -1114,7 +999,7 @@ class PointCloudDataset(Dataset):
         source_name = str(source["name"])
         source_root = str(source["root"])
         source_files = source["files"]
-        radius_override = source.get("radius_override", None)
+        radius_override = source["radius_override"]
 
         if radius_override is not None:
             return float(radius_override)
@@ -1301,7 +1186,7 @@ class SyntheticPointCloudDataset(Dataset):
     Returns dict with keys:
         - "points": (N, 3) point cloud tensor
         - "class_id": scalar int64 tensor (category/phase index)
-        - "instance_id": scalar int64 tensor (grain/instance index, -1 if unknown)
+        - "instance_id": scalar int64 tensor (grain/instance index)
         - "rotation": (3, 3) float32 rotation matrix tensor
         - "coords": (3,) float32 tensor with sample center in simulation space
     """
@@ -1357,8 +1242,6 @@ class SyntheticPointCloudDataset(Dataset):
         self._augmentation_metadata: Optional[List[Dict[str, Any]]] = None
         self.auto_cutoff_config = PointCloudDataset._resolve_auto_cutoff_config(
             auto_cutoff_config,
-            default_target_points=int(self.num_points),
-            default_radius=float(self.radius),
         )
 
         # Store as tensors to avoid conversion overhead
@@ -1406,20 +1289,53 @@ class SyntheticPointCloudDataset(Dataset):
         if self.max_samples is not None and len(self.samples) >= self.max_samples:
             return
         atoms_path = env_path / "atoms.npy"
+        atom_table_path = env_path / "atoms_full.npy"
         metadata_path = env_path / "metadata.json"
+        phase_mapping_path = env_path / "phase_mapping.json"
         if not atoms_path.exists():
             raise FileNotFoundError(f"atoms.npy missing in {env_path}")
+        if not atom_table_path.exists():
+            raise FileNotFoundError(f"atoms_full.npy missing in {env_path}")
         if not metadata_path.exists():
             raise FileNotFoundError(f"metadata.json missing in {env_path}")
+        if not phase_mapping_path.exists():
+            raise FileNotFoundError(f"phase_mapping.json missing in {env_path}")
 
         points = np.load(atoms_path)
+        atom_table = np.load(atom_table_path)
         if points.ndim != 2 or points.shape[1] != 3:
             raise ValueError(f"atoms.npy at {atoms_path} must have shape (N, 3)")
+        if atom_table.shape != (points.shape[0],):
+            raise ValueError(
+                f"atoms_full.npy at {atom_table_path} must have shape ({points.shape[0]},), "
+                f"got {atom_table.shape}."
+            )
+        if not np.array_equal(points, atom_table["position"]):
+            raise ValueError(
+                "atoms.npy and atoms_full.npy contain different positions. "
+                f"env_path={env_path}."
+            )
 
         with metadata_path.open("r") as handle:
             metadata = json.load(handle)
+        with phase_mapping_path.open("r") as handle:
+            phase_mapping = json.load(handle)
+        phase_id_to_name = phase_mapping["id_to_name"]
 
         env_label = env_path.name or f"env_{env_index}"
+        schema_version = metadata["schema_version"]
+        if schema_version != 3:
+            raise ValueError(
+                "SyntheticPointCloudDataset only consumes the repository-owned atomistic "
+                "metadata schema version 3. "
+                f"env_path={env_path}, schema_version={schema_version!r}."
+            )
+        if metadata["environment_name"] != env_label:
+            raise ValueError(
+                "Synthetic environment directory name does not match metadata.environment_name. "
+                f"env_path={env_path}, directory_name={env_label!r}, "
+                f"metadata_environment_name={metadata['environment_name']!r}."
+            )
         env_radius = self._resolve_environment_cutoff_radius(
             env_path=env_path,
             env_label=env_label,
@@ -1427,14 +1343,10 @@ class SyntheticPointCloudDataset(Dataset):
         )
         self.source_radii[env_label] = env_radius
 
-        # Build efficient metadata lookup instead of storing for all atoms
-        atom_to_meta_idx = self._build_efficient_atom_metadata(metadata, env_label, points.shape[0])
         position_tree = cKDTree(points)
-
-        # Build atom-to-phase mapping if needed for phase purity checking
-        atom_phases = None
-        if self.discard_mixed_phase:
-            atom_phases = self._build_atom_phase_map(metadata, points.shape[0])
+        atom_phase_ids = atom_table["phase_id"]
+        atom_grain_ids = atom_table["grain_id"]
+        atom_orientations = atom_table["orientation"].reshape(-1, 3, 3)
 
         samples = self._sample_points(points, env_radius)
         if not samples:
@@ -1458,24 +1370,25 @@ class SyntheticPointCloudDataset(Dataset):
                 # Query all atoms within the sampling radius
                 atom_indices = position_tree.query_ball_point(center, env_radius)
                 if len(atom_indices) > 0:
-                    sample_phases = atom_phases[atom_indices]
+                    sample_phases = atom_phase_ids[atom_indices]
                     unique_phases = np.unique(sample_phases)
                     # Discard if multiple phases are present
                     if len(unique_phases) > 1:
                         discarded_mixed_phase += 1
                         continue
 
-            # Look up metadata on-demand
-            meta = atom_to_meta_idx[atom_idx]
+            phase_name = phase_id_to_name[str(int(atom_phase_ids[atom_idx]))]
 
             # Filter by allowed classes if specified
             if self.allowed_classes is not None:
-                if meta["phase_id"] not in self.allowed_classes:
+                if phase_name not in self.allowed_classes:
                     continue
 
             processed = self._prepare_sample(sample_points, env_radius)
-            class_idx = self._encode_class(meta["phase_id"])
-            instance_idx = self._encode_instance(meta["grain_key"])
+            class_idx = self._encode_class(phase_name)
+            instance_idx = self._encode_instance(
+                (env_label, str(int(atom_grain_ids[atom_idx])))
+            )
 
             # Store as tensors to avoid conversion overhead in __getitem__
             self.samples.append(torch.tensor(processed, dtype=torch.float32))
@@ -1483,7 +1396,9 @@ class SyntheticPointCloudDataset(Dataset):
             self.sample_source_names.append(env_label)
             self._class_ids.append(class_idx)
             self._instance_ids.append(instance_idx)
-            self._rotations.append(torch.tensor(meta["orientation"], dtype=torch.float32))
+            self._rotations.append(
+                torch.tensor(atom_orientations[atom_idx], dtype=torch.float32)
+            )
             self._coords.append(torch.tensor(center, dtype=torch.float32))
 
             if self.max_samples is not None and len(self.samples) >= self.max_samples:
@@ -1576,157 +1491,6 @@ class SyntheticPointCloudDataset(Dataset):
             return sample_points.astype(np.float32) * self.normalization_scale
         return sample_points
 
-    def _build_atom_phase_map(
-        self,
-        metadata: Dict[str, Any],
-        num_atoms: int,
-    ) -> np.ndarray:
-        """Build efficient atom-to-phase mapping for phase purity checking.
-
-        Returns:
-            Array of shape (num_atoms,) where each element is the phase_id string.
-            Uses object dtype for variable-length strings.
-        """
-        # Initialize all atoms as "unknown" phase
-        atom_phases = np.full(num_atoms, "unknown", dtype=object)
-
-        # Assign phases from grains
-        for grain in metadata.get("grains", []):
-            phase_id = grain["base_phase_id"]
-            atom_indices = np.array(grain.get("atom_indices", []), dtype=np.int32)
-            if len(atom_indices) > 0:
-                valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
-                atom_phases[atom_indices[valid_mask]] = phase_id
-
-        # Assign phases from intermediate regions (overwrites grain assignments)
-        for region in metadata.get("intermediate_regions", []):
-            phase_id = region.get("intermediate_phase_id", "intermediate")
-            atom_indices = np.array(region.get("atom_indices", []), dtype=np.int32)
-            if len(atom_indices) > 0:
-                valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
-                atom_phases[atom_indices[valid_mask]] = phase_id
-
-        return atom_phases
-
-    def _build_efficient_atom_metadata(
-        self,
-        metadata: Dict[str, Any],
-        env_label: str,
-        num_atoms: int,
-    ) -> np.ndarray:
-        """Build efficient atom metadata using numpy arrays and lazy dict creation.
-
-        Instead of creating num_atoms dictionaries upfront, we use numpy arrays
-        to map atoms to grain indices, and only create dicts when queried.
-        This is much faster and uses far less memory for millions of atoms.
-        """
-        default_orientation = np.eye(3, dtype=np.float32)
-        default_quaternion = rotation_matrix_to_quaternion(default_orientation)
-
-        # Use numpy arrays for efficient storage - map atom_idx -> grain_id
-        atom_to_grain_idx = np.full(num_atoms, -1, dtype=np.int32)  # -1 = unknown
-
-        # Store unique grain metadata
-        grain_metadata = {}  # grain_local_idx -> metadata
-        grain_key_to_idx = {}  # grain_key -> local index
-        next_grain_idx = 0
-
-        # Helper to register a grain
-        def register_grain(grain_key, phase_id, orientation, quaternion):
-            nonlocal next_grain_idx
-            if grain_key not in grain_key_to_idx:
-                grain_key_to_idx[grain_key] = next_grain_idx
-                grain_metadata[next_grain_idx] = {
-                    "phase_id": phase_id,
-                    "grain_key": grain_key,
-                    "orientation": orientation,
-                    "quaternion": quaternion,
-                }
-                next_grain_idx += 1
-            return grain_key_to_idx[grain_key]
-
-        # Register default "unknown" grain
-        unknown_key = (env_label, "unknown")
-        unknown_idx = register_grain(unknown_key, "unknown", default_orientation, default_quaternion)
-
-        # Process grains
-        grain_meta_cache: Dict[Tuple[str, str], Dict[str, Any]] = {}
-        for grain in metadata.get("grains", []):
-            grain_id = str(grain["grain_id"])
-            orientation = np.asarray(grain["orientation_matrix"], dtype=np.float32)
-            quaternion = np.asarray(
-                grain.get("orientation_quaternion"),
-                dtype=np.float32,
-            ) if grain.get("orientation_quaternion") is not None else rotation_matrix_to_quaternion(orientation)
-            grain_key = (env_label, grain_id)
-
-            grain_meta_cache[grain_key] = {
-                "phase_id": grain["base_phase_id"],
-                "orientation": orientation,
-                "quaternion": quaternion,
-            }
-
-            local_idx = register_grain(grain_key, grain["base_phase_id"], orientation, quaternion)
-
-            # Efficiently assign atoms to this grain using numpy indexing
-            atom_indices = np.array(grain.get("atom_indices", []), dtype=np.int32)
-            valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
-            atom_to_grain_idx[atom_indices[valid_mask]] = local_idx
-
-        # Process intermediate regions
-        for region in metadata.get("intermediate_regions", []):
-            grain_a = region.get("grain_A_id")
-            grain_b = region.get("grain_B_id")
-            grain_identifier = f"interface_{grain_a}_{grain_b}"
-            if grain_a is None and grain_b is None:
-                raise ValueError(
-                    "Intermediate region metadata must reference at least one parent grain via "
-                    "grain_A_id or grain_B_id. "
-                    f"env_label={env_label!r}, region={region!r}."
-                )
-            parent_identifier = str(grain_a) if grain_a is not None else str(grain_b)
-            parent_key = (env_label, parent_identifier)
-            parent_meta = grain_meta_cache.get(parent_key)
-            if parent_meta is None:
-                raise KeyError(
-                    "Intermediate region references an unknown parent grain; its orientation "
-                    "cannot be resolved. "
-                    f"env_label={env_label!r}, grain_identifier={grain_identifier!r}, "
-                    f"parent_identifier={parent_identifier!r}, "
-                    f"known_grain_keys={sorted(k for _, k in grain_meta_cache.keys())}."
-                )
-            orientation = parent_meta["orientation"]
-            quaternion = parent_meta["quaternion"]
-            grain_key = (env_label, grain_identifier)
-            phase_id = region.get("intermediate_phase_id", "intermediate")
-
-            local_idx = register_grain(grain_key, phase_id, orientation, quaternion)
-
-            # Efficiently assign atoms to this region
-            atom_indices = np.array(region.get("atom_indices", []), dtype=np.int32)
-            valid_mask = (atom_indices >= 0) & (atom_indices < num_atoms)
-            atom_to_grain_idx[atom_indices[valid_mask]] = local_idx
-
-        # Create a lookup array that can be indexed directly
-        # Each element will be a metadata dict when accessed
-        class LazyMetadataArray:
-            """Lazy array-like object that creates metadata dicts on access."""
-            def __init__(self, atom_to_grain, grain_meta, unknown_idx):
-                self.atom_to_grain = atom_to_grain
-                self.grain_meta = grain_meta
-                self.unknown_idx = unknown_idx
-
-            def __getitem__(self, idx):
-                grain_idx = self.atom_to_grain[idx]
-                if grain_idx == -1:
-                    grain_idx = self.unknown_idx
-                return self.grain_meta[grain_idx]
-
-            def __len__(self):
-                return len(self.atom_to_grain)
-
-        return LazyMetadataArray(atom_to_grain_idx, grain_metadata, unknown_idx)
-
     @staticmethod
     def _group_class(class_name: str) -> str:
         """Group amorphous phases (but not intermediate) into one class."""
@@ -1743,8 +1507,6 @@ class SyntheticPointCloudDataset(Dataset):
 
     def _encode_instance(self, instance_key: Tuple[str, str]) -> int:
         """Encode instance key to integer index."""
-        if instance_key[1] == "unknown":
-            return -1
         if instance_key not in self._instance_to_idx:
             self._instance_to_idx[instance_key] = len(self._instance_to_idx)
         return self._instance_to_idx[instance_key]

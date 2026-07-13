@@ -79,16 +79,12 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
 
         if data_sources_raw is not None:
             data_sources = _to_container(data_sources_raw)
-            if not isinstance(data_sources, list) or not data_sources:
-                raise ValueError("data_sources must be a non-empty list of {data_path, data_files} dicts")
             full_dataset = PointCloudDataset(
                 data_sources=data_sources,
                 **dataset_common_kwargs,
             )
         elif data_files_raw is not None:
             file_list = _to_container(data_files_raw)
-            if isinstance(file_list, str):
-                file_list = [file_list]
             data_path = _cfg_get(data_cfg, "data_path", context=ctx)
             if not data_path:
                 raise ValueError("data_path is required when using data_files (single-source mode)")
