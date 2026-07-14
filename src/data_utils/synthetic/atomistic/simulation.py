@@ -66,7 +66,9 @@ class _TraceRecorder:
         self.positions_A.append(
             np.asarray(self.atoms.get_positions(wrap=True), dtype=np.float32)
         )
-        self.cell_vectors_A.append(np.asarray(self.atoms.cell, dtype=np.float64))
+        self.cell_vectors_A.append(
+            np.asarray(self.atoms.cell, dtype=np.float64).copy()
+        )
 
     def finish(self, stage: str) -> ThermodynamicTrace:
         if not self.volume_A3:
@@ -111,12 +113,14 @@ def build_initial_solid(config: GeneratorConfig) -> Atoms:
     return atoms
 
 
-def _initialize_velocities(atoms: Atoms, temperature_K: float, rng: np.random.Generator) -> None:
+def set_maxwell_boltzmann_velocities(
+    atoms: Atoms, temperature_K: float, rng: np.random.Generator
+) -> None:
     MaxwellBoltzmannDistribution(atoms, temperature_K=temperature_K, rng=rng)
     Stationary(atoms, preserve_temperature=True)
 
 
-def _run_npt(
+def run_npt(
     atoms: Atoms,
     *,
     config: GeneratorConfig,
@@ -128,7 +132,7 @@ def _run_npt(
     progress: Callable[[str], None],
 ) -> ThermodynamicTrace:
     if initialize_velocities:
-        _initialize_velocities(atoms, temperature_K, rng)
+        set_maxwell_boltzmann_velocities(atoms, temperature_K, rng)
     recorder = _TraceRecorder(atoms)
     if steps:
         dynamics = IsotropicMTKNPT(
@@ -153,7 +157,7 @@ def _run_npt(
     return recorder.finish(stage)
 
 
-def _run_nvt(
+def run_nvt(
     atoms: Atoms,
     *,
     config: GeneratorConfig,
@@ -165,7 +169,7 @@ def _run_nvt(
     progress: Callable[[str], None],
 ) -> ThermodynamicTrace:
     if initialize_velocities:
-        _initialize_velocities(atoms, temperature_K, rng)
+        set_maxwell_boltzmann_velocities(atoms, temperature_K, rng)
     recorder = _TraceRecorder(atoms)
     original_constraints = list(atoms.constraints)
     atoms.set_constraint([*original_constraints, FixCom()])
@@ -212,7 +216,7 @@ def _quench(
         stage_count + 1,
         dtype=np.float64,
     )[1:]
-    runner = _run_npt if use_npt else _run_nvt
+    runner = run_npt if use_npt else run_nvt
     for index, temperature_K in enumerate(temperatures):
         steps = base_steps + (1 if index < remainder else 0)
         runner(
@@ -259,7 +263,7 @@ def simulate_systems(
     if solid_checkpoint is None:
         solid = build_initial_solid(config)
         solid.calc = calculator
-        solid_trace = _run_npt(
+        solid_trace = run_npt(
             solid,
             config=config,
             temperature_K=config.dynamics.target_temperature_K,
@@ -280,7 +284,7 @@ def simulate_systems(
     if liquid_checkpoint is None:
         liquid = solid.copy()
         liquid.calc = calculator
-        _run_npt(
+        run_npt(
             liquid,
             config=config,
             temperature_K=config.dynamics.melt_temperature_K,
@@ -298,7 +302,7 @@ def simulate_systems(
             stage_prefix="liquid",
             use_npt=True,
         )
-        liquid_trace = _run_npt(
+        liquid_trace = run_npt(
             liquid,
             config=config,
             temperature_K=config.dynamics.target_temperature_K,
@@ -330,7 +334,7 @@ def simulate_systems(
             interface, liquid_fraction
         )
         interface.set_constraint(FixAtoms(mask=~liquid_mask))
-        _run_nvt(
+        run_nvt(
             interface,
             config=config,
             temperature_K=config.dynamics.melt_temperature_K,
@@ -343,10 +347,10 @@ def simulate_systems(
         interface.set_constraint()
         # The 650 K solid-liquid boundary is a moving growth front, not an equilibrium
         # interface. Resetting velocities implements the reference trajectory's rapid quench.
-        _initialize_velocities(
+        set_maxwell_boltzmann_velocities(
             interface, config.dynamics.target_temperature_K, interface_rng
         )
-        interface_trace = _run_nvt(
+        interface_trace = run_nvt(
             interface,
             config=config,
             temperature_K=config.dynamics.target_temperature_K,

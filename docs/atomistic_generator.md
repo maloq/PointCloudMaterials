@@ -50,3 +50,110 @@ Each environment stores its final atom table and a `trajectory.npz` containing w
 cell vectors, thermodynamic values, and exact MD step indices at the configured sampling interval.
 For the production recipe this retains 51 solid frames, 31 target-temperature liquid frames,
 and 11 growth-front frames per replica.
+
+## Crystallization and melting trajectories
+
+`src.data_utils.synthetic.atomistic_transition_generator` models phase change itself with
+planar direct coexistence. It reads step 0 of the repository-owned prepared interface, assigns
+independent velocities, and evolves two copies in MTK NPT at zero pressure:
+
+- `crystallization`: 650 K, where the undercooled liquid slab should be consumed by the two
+  periodic crystal fronts;
+- `melting`: 1100 K, where the solid regions should be consumed by the liquid fronts.
+
+This follows direct-coexistence simulations of aluminium, which construct explicit solid and
+liquid slabs and infer growth or melting from interface motion. The method avoids the superheated
+solid and rare homogeneous-nucleation waiting time of single-phase heating/cooling. It is used in
+first-principles aluminium melting calculations ([Alfè](https://discovery.ucl.ac.uk/id/eprint/8715/))
+and modern aluminium growth simulations with roughly 46,000--92,000 atoms
+([Sun, 2024](https://www.nature.com/articles/s41467-024-50182-7)). MACE is the force provider;
+the phase-change protocol is ordinary molecular dynamics. Official MACE documentation recommends
+the ML-IAP interface for still larger or longer GPU runs, while supporting cuEquivariance and
+atomic virials ([MACE ML-IAP documentation](https://mace-docs.readthedocs.io/en/latest/guide/lammps_mliap.html)).
+
+Every branch stores 101 full atomic states (99 intermediate states plus endpoints, every 50 fs)
+in `trajectory.npz`, plus `transition_progress.npz` with:
+
+- PTM FCC/HCP/BCC/ICO/other fractions for each frame;
+- crystalline fraction inside the initially liquid and initially solid spatial regions;
+- a one-dimensional crystalline-fraction profile along the interface normal;
+- net displacement per periodic front and its finite-trajectory average velocity.
+
+`phase_rdf.npz` stores a radial distribution function for every saved frame and each initial
+prepared provenance (`solid_bulk`, `liquid_bulk`, and `interface`). The selected atoms are RDF
+centers and all Al atoms are their possible neighbors; normalization uses the instantaneous
+whole-cell number density. This center-conditioned definition measures how the local coordination
+around each prepared population changes without incorrectly treating the finite interface slab as
+an independent periodic bulk phase. `visualizations/phase_rdf.png` shows initial, midpoint, and
+final curves together with the full time-resolved RDF heatmaps.
+RDF accumulation uses OVITO's compiled partial-RDF modifier and combines the phase-pair curves
+into the same center-conditioned total-Al definition. It does not materialize the full neighbor
+pair list in Python.
+
+Each branch also contains `visualizations/structure_slice.png`: central-y atomic slices at the
+initial, midpoint, and final frames. Atoms are colored by PTM structure and the dashed lines mark
+the two originally prepared solid-liquid interfaces. `structure_slice_overview.png` places the
+crystallization and melting slices together at the dataset root.
+
+PTM is an audit observable, not a training label. `phase_id` remains the initial preparation
+provenance of each atom. This is important for testing whether learned representations discover
+interfacial precursors, stacking faults, transient ordering, or other motifs without receiving
+CNA/PTM/BOP classifications as targets.
+
+Run the transition generator after the phase-context dataset exists:
+
+```bash
+conda run -n pointnet python -m src.data_utils.synthetic.atomistic_transition_generator \
+  --config configs/data/atomistic_al_phase_transition.yaml
+```
+
+RDFs are also an explicit post-processing operation, so an already running or completed MD job
+does not need to be repeated after changing RDF resolution:
+
+```bash
+conda run -n pointnet python -m src.data_utils.synthetic.atomistic_transition_rdf \
+  --config configs/data/atomistic_al_phase_transition.yaml
+```
+
+The two trajectories demonstrate seeded front growth and melting for this MACE Hamiltonian. They
+do not determine a homogeneous nucleation rate or a thermodynamic melting point. The latter needs
+a temperature bracket around zero interface velocity; quantitative kinetics should also be
+repeated over seeds, interface orientations, cell lengths, and a fine-tuned potential validated on
+solid, liquid, and interfacial DFT configurations.
+
+## Homogeneous crystallization from supercooled liquid
+
+`src.data_utils.synthetic.atomistic_homogeneous_crystallization` starts from the exact final
+frame of the validated 70,304-atom bulk liquid rather than the prepared solid-liquid interface.
+It assigns 500 K Maxwell-Boltzmann velocities and evolves the unseeded liquid for 10 ps in MTK
+NPT at zero pressure. The temperature follows ML-Al simulations reporting spontaneous
+crystallization at 500--540 K ([Tipeev and Zanotto, 2025](https://www.sciencedirect.com/science/article/abs/pii/S1359645425005324))
+and is consistent with earlier ambient-pressure work on deeply supercooled aluminium
+([Desgranges and Delhommelle, 2007](https://pubmed.ncbi.nlm.nih.gov/17935411/)).
+
+The trajectory stores 101 full states, including both endpoints. For every saved state, OVITO's
+compiled analysis computes the total Al RDF and PTM structure types. FCC, HCP, and BCC atoms are
+then joined with a 3.5 Å neighbor cutoff; `crystallization_progress.npz` records the number of
+connected crystalline clusters and the largest cluster size. The configured analysis event is
+the first saved frame with a connected cluster of at least 100 atoms, matching the published
+nucleation-time convention. The same study estimated a 20--30 atom critical size at 500 K using
+a different, pair-entropy fingerprint. Our PTM threshold is therefore an operational trajectory
+observable, not a computed critical nucleus size.
+
+If the finite run never crosses the threshold, generation still succeeds and metadata records
+`observed: false`. A single absence or occurrence in 10 ps is not a nucleation rate. Estimating a
+rate requires independent trajectories, survival statistics, finite-size checks, and validation
+of the potential's liquid/crystal free-energy difference.
+
+Run locally or submit `scripts/job_al_homogeneous_crystallization.sh` to Slurm:
+
+```bash
+conda run -n pointnet python \
+  -m src.data_utils.synthetic.atomistic_homogeneous_crystallization \
+  --config configs/data/atomistic_al_homogeneous_crystallization.yaml
+```
+
+Ready outputs are written below
+`output/synthetic_data/al_homogeneous_crystallization_70304/`, including the full trajectory,
+cluster/RDF archives, endpoint metadata, PTM-colored initial/midpoint/final structure slices, and
+`crystallization_overview.png`.

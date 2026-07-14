@@ -4,13 +4,23 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Protocol
 
 import numpy as np
 from ase import Atoms
 from ase.io import read, write
 
-from .config import GeneratorConfig
 from .simulation import ThermodynamicTrace
+
+
+class _CheckpointOutput(Protocol):
+    root_dir: Path
+
+
+class CheckpointConfig(Protocol):
+    output: _CheckpointOutput
+
+    def to_dict(self) -> dict[str, Any]: ...
 
 
 @dataclass(frozen=True)
@@ -21,7 +31,7 @@ class SimulationCheckpoint:
 
 
 class CheckpointStore:
-    def __init__(self, config: GeneratorConfig) -> None:
+    def __init__(self, config: CheckpointConfig) -> None:
         serialized = json.dumps(config.to_dict(), sort_keys=True, separators=(",", ":"))
         self.config_sha256 = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
         self.directory = (

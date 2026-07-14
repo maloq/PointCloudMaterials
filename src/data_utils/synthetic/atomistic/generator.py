@@ -20,7 +20,7 @@ class GenerationResult:
     reference_densities_per_A3: dict[str, float] | None
 
 
-def _build_calculator(config: GeneratorConfig) -> object:
+def build_calculator(config: GeneratorConfig) -> object:
     if not config.potential.model_path.is_file():
         raise FileNotFoundError(
             f"Configured potential model is missing: {config.potential.model_path}. "
@@ -67,7 +67,7 @@ def generate_dataset(
     hash-recorded MACE model is used.
     """
 
-    selected_calculator = calculator if calculator is not None else _build_calculator(config)
+    selected_calculator = calculator if calculator is not None else build_calculator(config)
     atom_count = len(build_initial_solid(config))
     progress(
         f"Generating {config.dataset_name!r}: {len(config.random_seeds)} replicas, "

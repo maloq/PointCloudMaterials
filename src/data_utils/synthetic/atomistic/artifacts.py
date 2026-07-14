@@ -108,7 +108,7 @@ def label_interface(
     )
 
 
-def _atom_table(atoms: Atoms, labels: EnvironmentLabels) -> np.ndarray:
+def build_atom_table(atoms: Atoms, labels: EnvironmentLabels) -> np.ndarray:
     table = np.empty(len(atoms), dtype=ATOM_DTYPE)
     table["position"] = np.asarray(atoms.get_positions(wrap=True), dtype=np.float32)
     table["phase_id"] = np.fromiter(
@@ -194,7 +194,7 @@ def _write_environment(
     random_seed: int,
 ) -> None:
     directory.mkdir(parents=True)
-    atom_table = _atom_table(atoms, labels)
+    atom_table = build_atom_table(atoms, labels)
     positions = atom_table["position"]
     np.save(directory / "atoms.npy", positions)
     np.save(directory / "atoms_full.npy", atom_table)

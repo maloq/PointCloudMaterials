@@ -2,9 +2,9 @@ checkpoint:
   # Required for manual runs. The training wrappers override this at runtime.
   # path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
   # path: output/2026-06-16/18-46-58/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=789.ckpt
-  path: output/2026-07-12/13-15-39-vicreg-geoframe-8-12-l128-paper/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=199.ckpt
+  path: output/2026-07-13/18-40-11/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=95.ckpt
 
-  output_dir: outputs/static_Al_6frames_multiscale_vicreg
+  output_dir: outputs/static_Al_6frames_multiscale_vicred
   cuda_device: 0
 
 inputs:
@@ -281,5 +281,5 @@ real_md:
     flow_min_fraction: 0.001
 
 equivariance:
-  enabled: true
+  enabled: false
   max_batches: 2

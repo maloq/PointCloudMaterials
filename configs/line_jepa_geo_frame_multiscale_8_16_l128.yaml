@@ -11,7 +11,7 @@ encoder:
   kwargs:
     latent_size: ${latent_size}
     num_group: 24
-    patch_sizes: [8, 12]
+    patch_sizes: [8, 16]
     encoder_dims: 256
     trans_dim: 128
     depth: 6

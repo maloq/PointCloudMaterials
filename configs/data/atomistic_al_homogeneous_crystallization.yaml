@@ -1,0 +1,28 @@
+# Homogeneous nucleation from the validated bulk supercooled liquid.
+dataset_name: al_homogeneous_crystallization_mace_mpa_70304
+source_generator_config: configs/data/atomistic_al_phase_context.yaml
+source_dataset: output/synthetic_data/al_phase_context_70304x1
+source_environment: replica_000_bulk_liquid
+source_frame_step: 3000
+random_seed: 35791
+
+# Published ML-Al simulations observe spontaneous nucleation in the 500--540 K range.
+temperature_K: 500.0
+# 10 ps: twice the duration of the direct-coexistence crystallization branch.
+steps: 10000
+# 101 complete states, including endpoints.
+sample_interval: 100
+
+analysis:
+  crystalline_cluster_cutoff_A: 3.5
+  # Tipeev and Zanotto define nucleation time when a crystal exceeds 100 atoms.
+  # This is an event threshold, not their 20--30 atom critical-size estimate.
+  nucleus_size_threshold_atoms: 100
+  rdf_cutoff_A: 8.0
+  rdf_bins: 160
+
+output:
+  root_dir: output/synthetic_data/al_homogeneous_crystallization_70304
+  overwrite: false
+  save_extxyz: true
+  create_visualizations: true
