@@ -1,0 +1,15 @@
+# Scientific quality is primary. Runtime is projected for each exact model-specific
+# workload; relative MH-1/MPA throughput is descriptive only.
+
+scientific_report: output/synthetic_data/al_potential_benchmark/report.json
+performance_report: output/synthetic_data/al_potential_benchmark/performance.json
+baseline_generator_config: configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml
+candidate_generator_config: configs/simulation/atomistic/al/liquid_source_16384_mh1.yaml
+baseline_homogeneous_config: configs/simulation/atomistic/al/homogeneous_16384_mpa.yaml
+candidate_homogeneous_config: configs/simulation/atomistic/al/homogeneous_16384_mh1.yaml
+workers: 2
+# Applied to the slowest measured timing block plus measured persistent-worker
+# initialization, first compiled evaluation, and warmup overhead.
+makespan_safety_factor: 1.25
+comparison_absolute_tolerance: 1.0e-12
+output_json: output/synthetic_data/al_potential_benchmark/selection.json

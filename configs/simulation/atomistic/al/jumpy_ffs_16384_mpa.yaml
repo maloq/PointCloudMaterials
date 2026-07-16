@@ -1,0 +1,62 @@
+# Jumpy forward-flux sampling template for the 16,384-atom Al liquid.
+# Interface placement and the CV cadence must be audited against a basin pilot before
+# using this configuration for a rate claim. This workflow uses fixed-volume NVT shots;
+# it intentionally refuses to branch the existing MTK-NPT integrator because its hidden
+# thermostat-chain and barostat state is not serialized by ASE.
+
+dataset_name: al_crystallization_jumpy_ffs_mpa_16384
+source_generator_config: configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml
+# Required gate: this report must have selected the exact MPA source config and SHA.
+potential_selection_report: output/synthetic_data/al_potential_benchmark/selection.json
+source_dataset: output/synthetic_data/al_liquid_source_16384_compiled_mpa_500K
+source_environment: replica_000_bulk_liquid
+source_frame_step: 3000
+
+ensemble: langevin_nvt
+temperature_K: 500.0
+timestep_fs: 1.0
+friction_time_fs: 100.0
+random_seed: 48151623
+# Re-equilibrate the fixed source volume at the target temperature before measuring flux.
+equilibration_steps: 5000
+# The 5 ps phase boundary is force-committed; this longer cadence avoids intermediate
+# full-state writes while still defining the maximum cadence for longer configurations.
+equilibration_checkpoint_interval_steps: 20000
+
+shot_calculator:
+  # NVT never requests pressure; this audited mode avoids an unused stress graph/output.
+  md_property_mode: forces
+
+cv:
+  type: ptm_largest_crystalline_cluster_atoms
+  ptm_rmsd_cutoff: 0.10
+  cluster_cutoff_A: 3.5
+  # Twenty femtoseconds resolves interface jumps much more finely than the 1 ps
+  # post-processing cadence used by the brute-force screen.
+  interval_steps: 20
+  # Integer cluster-size interfaces. Validate overlap and committor monotonicity in a
+  # pilot; skipped interfaces are handled exactly by weighted landing probabilities.
+  interfaces_atoms: [10, 15, 22, 32, 45, 65, 100]
+
+basin:
+  target_crossings: 100
+  max_steps: 2000000
+  # CV evaluation remains every 20 steps. Persist complete phase space every 20 ps
+  # between crossings, bounding discarded work after a crash while avoiding a full
+  # 16,384-atom state write at each CV observation.
+  checkpoint_interval_steps: 20000
+
+shooting:
+  trials_per_state: 4
+  max_steps: 200000
+  # Trial starts and every return/interface landing are committed immediately.
+  checkpoint_interval_steps: 20000
+
+uncertainty:
+  bootstrap_samples: 2000
+  # Moving-block bootstrap over consecutive basin exits; increase after estimating the
+  # integrated autocorrelation of exit intervals and descendant success probabilities.
+  bootstrap_block_crossings: 5
+
+output:
+  root_dir: output/synthetic_data/al_crystallization_jumpy_ffs_compiled_mpa_16384_500K

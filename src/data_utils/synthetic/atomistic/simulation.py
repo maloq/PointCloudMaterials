@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 from ase import Atoms, units
@@ -13,6 +13,9 @@ from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary
 
 from .config import GeneratorConfig
 
+if TYPE_CHECKING:
+    from .provenance import ExecutionProvenance
+
 
 @dataclass(frozen=True)
 class ThermodynamicTrace:
@@ -23,6 +26,73 @@ class ThermodynamicTrace:
     potential_energy_eV_per_atom: np.ndarray
     positions_A: np.ndarray
     cell_vectors_A: np.ndarray
+
+
+def validate_thermodynamic_trace(
+    trace: ThermodynamicTrace,
+    *,
+    atom_count: int,
+    context: str,
+) -> None:
+    if trace.step.ndim != 1 or len(trace.step) == 0:
+        raise ValueError(
+            f"{context}: step must have shape (frames,) with at least one frame, "
+            f"got shape={trace.step.shape}."
+        )
+    frame_count = len(trace.step)
+    expected_shapes = {
+        "step": (frame_count,),
+        "temperature_K": (frame_count,),
+        "pressure_GPa": (frame_count,),
+        "volume_A3": (frame_count,),
+        "potential_energy_eV_per_atom": (frame_count,),
+        "positions_A": (frame_count, atom_count, 3),
+        "cell_vectors_A": (frame_count, 3, 3),
+    }
+    for name, expected_shape in expected_shapes.items():
+        values = getattr(trace, name)
+        if values.shape != expected_shape:
+            raise ValueError(
+                f"{context}: {name} has shape={values.shape}, expected "
+                f"shape={expected_shape} for frames={frame_count}, atoms={atom_count}."
+            )
+        if not np.isfinite(values).all():
+            bad_indices = np.argwhere(~np.isfinite(values))
+            raise FloatingPointError(
+                f"{context}: {name} contains non-finite values at indices="
+                f"{bad_indices[:10].tolist()}."
+            )
+    if trace.step.dtype != np.dtype(np.int64):
+        raise TypeError(
+            f"{context}: step must have dtype=int64, got dtype={trace.step.dtype}."
+        )
+    if np.any(trace.step < 0) or np.any(np.diff(trace.step) <= 0):
+        raise ValueError(
+            f"{context}: step values must be nonnegative and strictly increasing, "
+            f"got step={trace.step.tolist()}."
+        )
+    if np.any(trace.volume_A3 <= 0.0):
+        invalid_frames = np.flatnonzero(trace.volume_A3 <= 0.0)
+        raise ValueError(
+            f"{context}: volume_A3 must be positive; invalid frames="
+            f"{invalid_frames.tolist()}, values={trace.volume_A3[invalid_frames].tolist()}."
+        )
+    cell_volume_A3 = np.linalg.det(trace.cell_vectors_A)
+    mismatched_frames = np.flatnonzero(
+        ~np.isclose(cell_volume_A3, trace.volume_A3, rtol=1.0e-10, atol=1.0e-8)
+    )
+    if len(mismatched_frames):
+        relative_error = np.abs(
+            cell_volume_A3[mismatched_frames] - trace.volume_A3[mismatched_frames]
+        ) / trace.volume_A3[mismatched_frames]
+        raise ValueError(
+            f"{context}: det(cell_vectors_A) does not match volume_A3 at frames="
+            f"{mismatched_frames.tolist()}; determinant_A3="
+            f"{cell_volume_A3[mismatched_frames].tolist()}, recorded_volume_A3="
+            f"{trace.volume_A3[mismatched_frames].tolist()}, relative_error="
+            f"{relative_error.tolist()}. The trajectory/checkpoint is internally corrupt."
+        )
+
 
 @dataclass(frozen=True)
 class SimulatedSystems:
@@ -84,20 +154,11 @@ class _TraceRecorder:
             positions_A=np.stack(self.positions_A),
             cell_vectors_A=np.stack(self.cell_vectors_A),
         )
-        for name, values in (
-            ("step", arrays.step),
-            ("temperature_K", arrays.temperature_K),
-            ("pressure_GPa", arrays.pressure_GPa),
-            ("volume_A3", arrays.volume_A3),
-            ("potential_energy_eV_per_atom", arrays.potential_energy_eV_per_atom),
-            ("positions_A", arrays.positions_A),
-            ("cell_vectors_A", arrays.cell_vectors_A),
-        ):
-            if not np.isfinite(values).all():
-                raise FloatingPointError(
-                    f"Non-finite thermodynamic values during {stage}: field={name}, "
-                    f"values={values.tolist()}."
-                )
+        validate_thermodynamic_trace(
+            arrays,
+            atom_count=len(self.atoms),
+            context=f"thermodynamic trace produced during {stage}",
+        )
         return arrays
 
 
@@ -244,11 +305,12 @@ def simulate_systems(
     *,
     random_seed: int,
     checkpoint_prefix: str,
+    execution_provenance: ExecutionProvenance,
     progress: Callable[[str], None],
 ) -> SimulatedSystems:
     from .checkpoints import CheckpointStore
 
-    checkpoints = CheckpointStore(config)
+    checkpoints = CheckpointStore(config, execution_provenance)
     seed_sequence = np.random.SeedSequence(random_seed)
     solid_seed, liquid_seed, interface_seed = seed_sequence.spawn(3)
     solid_rng = np.random.default_rng(solid_seed)

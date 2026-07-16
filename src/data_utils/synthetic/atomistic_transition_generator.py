@@ -1,4 +1,4 @@
-"""CLI for direct-coexistence crystallization and melting trajectories."""
+"""CLI for a replicated direct-coexistence temperature grid."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ from .atomistic.transition_generator import generate_transition_dataset
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Generate MACE crystallization and melting trajectories from a repository-owned "
-            "prepared solid-liquid interface."
+            "Generate the configured temperature grid and independent-velocity replicas from "
+            "a repository-owned prepared solid-liquid interface."
         )
     )
     parser.add_argument("--config", required=True, type=Path)

@@ -113,7 +113,7 @@ checkpoint:
   output_dir: outputs/real_md_qualitative_example
 
 inputs:
-  data_config: configs/data/data_ae_Al_80.yaml
+  data_config: configs/data/loaders/static_al_80.yaml
   real_data_files: [166ps.npy, 170ps.npy, 174ps.npy, 175ps.npy, 177ps.npy, 240ps.npy]
 
 real_md:

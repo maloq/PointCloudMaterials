@@ -22,6 +22,7 @@ class SystemDiagnostics:
     mean_sampled_temperature_K: float
     mean_sampled_pressure_GPa: float
     mean_sampled_number_density_per_A3: float
+    ptm_normalized_rmsd_cutoff: float
     ptm_structure_fractions: dict[str, float]
 
     def to_dict(self) -> dict[str, Any]:
@@ -34,6 +35,7 @@ class SystemDiagnostics:
             "mean_sampled_temperature_K": self.mean_sampled_temperature_K,
             "mean_sampled_pressure_GPa": self.mean_sampled_pressure_GPa,
             "mean_sampled_number_density_per_A3": self.mean_sampled_number_density_per_A3,
+            "ptm_normalized_rmsd_cutoff": self.ptm_normalized_rmsd_cutoff,
             "ptm_structure_fractions": self.ptm_structure_fractions,
         }
 
@@ -56,7 +58,9 @@ def _mass_density(atoms: Atoms) -> float:
     return atomic_mass_amu / float(atoms.get_volume()) * 1.66053906660
 
 
-def _ptm_structure_fractions(atoms: Atoms) -> dict[str, float]:
+def _ptm_structure_fractions(
+    atoms: Atoms, *, rmsd_cutoff: float
+) -> dict[str, float]:
     try:
         from ovito.io.ase import ase_to_ovito
         from ovito.modifiers import PolyhedralTemplateMatchingModifier
@@ -67,7 +71,9 @@ def _ptm_structure_fractions(atoms: Atoms) -> dict[str, float]:
             "implementation. Install the repository requirements in the pointnet environment."
         ) from exc
     pipeline = Pipeline(source=StaticSource(data=ase_to_ovito(atoms)))
-    pipeline.modifiers.append(PolyhedralTemplateMatchingModifier())
+    modifier = PolyhedralTemplateMatchingModifier()
+    modifier.rmsd_cutoff = rmsd_cutoff
+    pipeline.modifiers.append(modifier)
     data = pipeline.compute()
     atom_count = len(atoms)
     names = ("OTHER", "FCC", "HCP", "BCC", "ICO")
@@ -133,7 +139,10 @@ def diagnose_system(
         )
 
     atom_count = len(atoms)
-    ptm_fractions = _ptm_structure_fractions(atoms)
+    ptm_fractions = _ptm_structure_fractions(
+        atoms,
+        rmsd_cutoff=config.validation.ptm_rmsd_cutoff,
+    )
     return SystemDiagnostics(
         atom_count=atom_count,
         number_density_per_A3=float(atom_count / atoms.get_volume()),
@@ -145,6 +154,7 @@ def diagnose_system(
         mean_sampled_number_density_per_A3=float(
             atom_count / np.mean(_tail(trace.volume_A3))
         ),
+        ptm_normalized_rmsd_cutoff=config.validation.ptm_rmsd_cutoff,
         ptm_structure_fractions=ptm_fractions,
     )
 

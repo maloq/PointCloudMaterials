@@ -17,8 +17,5 @@ export PYTHONPATH=.
 
 /home/infres/vmorozov/miniconda3/envs/pointnet/bin/python -u \
   -m src.data_utils.synthetic.atomistic_transition_structure_slices \
-  --config configs/data/atomistic_al_phase_transition.yaml \
-  --dataset output/synthetic_data/al_direct_coexistence_70304 \
-  --dataset output/synthetic_data/al_direct_coexistence_70304_replica_001 \
-  --dataset output/synthetic_data/al_direct_coexistence_70304_replica_002 \
-  --dataset output/synthetic_data/al_direct_coexistence_70304_replica_003
+  --config configs/simulation/atomistic/al/phase_transition_70304_mpa.yaml \
+  --dataset output/synthetic_data/al_direct_coexistence_grid_70304

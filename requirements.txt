@@ -1,10 +1,11 @@
 numpy
 torch
-e3nn==0.4.4  # required by mace-torch 0.3.15 checkpoint serialization
-mace-torch
+e3nn==0.4.4  # required by the repository-owned MACE checkpoint serialization
+mace-torch==0.3.16  # fixed-shape compile and calculator internals are version-sensitive
 cuequivariance==0.10.0
 cuequivariance-torch==0.10.0
 cuequivariance-ops-torch-cu12==0.10.0
+openequivariance==0.6.8
 pytorch-lightning
 omegaconf
 hydra-core
@@ -18,7 +19,7 @@ scikit-learn
 scipy
 deeptime
 dscribe
-ase
+ase==3.28.0  # fixes the exact MTK/Langevin implementation recorded by atomistic provenance
 ovito
 hdbscan
 seaborn

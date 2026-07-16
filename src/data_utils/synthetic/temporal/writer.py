@@ -45,7 +45,7 @@ class TemporalDatasetWriter:
         self._chunk_site_ids: np.ndarray | None = None
         self._chunk_state_ids: np.ndarray | None = None
         self._chunk_grain_ids: np.ndarray | None = None
-        self._chunk_local_atom_ids: np.ndarray | None = None
+        self._chunk_local_atom_indices: np.ndarray | None = None
         self._chunk_metadata: list[dict[str, Any]] = []
 
     def prepare(self) -> None:
@@ -79,9 +79,24 @@ class TemporalDatasetWriter:
                 "grain_ids": "Per-frame per-atom true latent grain id; -1 means no crystal grain.",
             },
             "site_label_arrays": {
-                "latent/site_latent_trajectories.npz": "Tracked neighborhood true labels and nuisance variables.",
+                "latent/site_latent_trajectories.npz": (
+                    "Tracked central-site context labels and nuisance variables; these are "
+                    "not asserted to label every point in a mixed neighborhood."
+                ),
                 "latent/phase_latent_trajectories.npz": "Full phase-field true labels and nuisance variables.",
             },
+            "neighborhood_label_arrays": {
+                "state_ids": "Central-site context state retained for backward compatibility.",
+                "grain_ids": "Central-site context grain retained for backward compatibility.",
+                "point_state_ids": "True rendered state of every selected neighborhood point.",
+                "point_grain_ids": "True rendered grain of every selected neighborhood point.",
+                "same_state_fraction": "Fraction of points matching the central context state.",
+            },
+            "structural_audit": (
+                "validation_summary.json and manifest.json contain an OVITO PTM audit "
+                "conditioned on the rendered full-box per-atom state_ids. PTM remains an "
+                "observable, not a replacement label."
+            ),
         }
         with (self.output_dir / "label_schema.json").open("w", encoding="utf-8") as handle:
             json.dump(label_schema, handle, indent=2)
@@ -108,7 +123,7 @@ class TemporalDatasetWriter:
                 site_ids=frame.site_ids,
                 state_ids=frame.state_ids,
                 grain_ids=frame.grain_ids,
-                local_atom_ids=frame.local_atom_ids,
+                local_atom_indices=frame.local_atom_indices,
             )
         with (frame_dir / "metadata.json").open("w", encoding="utf-8") as handle:
             json.dump(frame.metadata, handle, indent=2)
@@ -130,7 +145,7 @@ class TemporalDatasetWriter:
         self._chunk_site_ids[frame_idx] = frame.site_ids
         self._chunk_state_ids[frame_idx] = frame.state_ids
         self._chunk_grain_ids[frame_idx] = frame.grain_ids
-        self._chunk_local_atom_ids[frame_idx] = frame.local_atom_ids
+        self._chunk_local_atom_indices[frame_idx] = frame.local_atom_indices
         self._chunk_metadata.append(frame.metadata)
         self._chunk_write_count += 1
 
@@ -142,7 +157,14 @@ class TemporalDatasetWriter:
         self._chunk_site_ids = np.empty((num_frames, atom_count), dtype=np.int32)
         self._chunk_state_ids = np.empty((num_frames, atom_count), dtype=np.int16)
         self._chunk_grain_ids = np.empty((num_frames, atom_count), dtype=np.int32)
-        self._chunk_local_atom_ids = np.empty((num_frames, atom_count), dtype=np.int32)
+        self._chunk_local_atom_indices = np.empty(
+            (
+                num_frames,
+                self.config.domain.site_count,
+                self.config.domain.atoms_per_site,
+            ),
+            dtype=np.int32,
+        )
         self._chunk_metadata = []
 
     def finalize_frames(self) -> None:
@@ -164,7 +186,7 @@ class TemporalDatasetWriter:
             site_ids=self._chunk_site_ids,
             state_ids=self._chunk_state_ids,
             grain_ids=self._chunk_grain_ids,
-            local_atom_ids=self._chunk_local_atom_ids,
+            local_atom_indices=self._chunk_local_atom_indices,
         )
         with self.frame_metadata_path.open("w", encoding="utf-8") as handle:
             json.dump(self._chunk_metadata, handle, indent=2)
@@ -214,6 +236,9 @@ class TemporalDatasetWriter:
             points=pack.points,
             state_ids=pack.state_ids,
             grain_ids=pack.grain_ids,
+            point_state_ids=pack.point_state_ids,
+            point_grain_ids=pack.point_grain_ids,
+            same_state_fraction=pack.same_state_fraction,
             transition_mask=pack.transition_mask,
             metastable_mask=pack.metastable_mask,
             site_centers=pack.site_centers,
@@ -234,6 +259,12 @@ class TemporalDatasetWriter:
         latent: LatentTrajectories,
         validation: ValidationSummary,
     ) -> Path:
+        structural_audit = validation.summary.get("structural_audit")
+        if not isinstance(structural_audit, dict):
+            raise RuntimeError(
+                "Temporal manifest writing requires the completed state-conditioned "
+                "structural_audit in validation.summary."
+            )
         manifest = {
             "dataset_name": self.config.dataset_name,
             "output_dir": str(self.output_dir),
@@ -253,6 +284,7 @@ class TemporalDatasetWriter:
             "phase_latent_path": str(self.latent_dir / "phase_latent_trajectories.npz"),
             "state_names": self.graph.state_names,
             "transition_event_count": int(len(latent.transition_events)),
+            "structural_audit": structural_audit,
             "validation_summary": validation.summary,
         }
         manifest_path = self.output_dir / "manifest.json"

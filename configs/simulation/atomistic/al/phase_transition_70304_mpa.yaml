@@ -1,0 +1,88 @@
+# Model-specific direct-coexistence temperature grid from the prepared
+# 70,304-atom solid-liquid interface. Every temperature and replica starts from
+# the same stored coordinates and receives independent velocities.
+
+dataset_name: al_direct_coexistence_mace_mpa_70304
+source_generator_config: configs/simulation/atomistic/al/phase_context_70304_mpa.yaml
+source_dataset: output/synthetic_data/al_phase_context_70304x1
+source_interface_environment: replica_000_solid_liquid_interface
+# Use the end of the prepared 1 ps interface evolution, not its 2.98 GPa step-0
+# transient. Each temperature then receives a separate NPT equilibration whose
+# samples are stored but excluded from the velocity fit.
+source_frame_step: 1000
+random_seeds: [24680, 24681, 24682, 24683]
+# 20,000 / 200 + 1 = 101 full atomic production frames per run.
+sample_interval: 200
+
+analysis:
+  # One bin per conventional FCC repeat along z (about 4 A); finer bins can lie
+  # entirely between crystal planes and do not define a local phase fraction.
+  profile_bins: 26
+  # Cyclic moving average applied before locating the two oriented PTM-profile
+  # threshold crossings. Must be odd.
+  profile_smoothing_bins: 3
+  # OVITO normalized PTM RMSD cutoff, recorded with every run.
+  ptm_rmsd_cutoff: 0.10
+  minimum_profile_contrast: 0.20
+  # Refuse to report a velocity when the selected post-equilibration interval is
+  # not approximately linear.
+  minimum_velocity_fit_r_squared: 0.80
+  # Resolve the first several Al coordination shells for every saved frame.
+  rdf_cutoff_A: 8.0
+  rdf_bins: 160
+
+temperature_runs:
+  - name: temperature_0650K
+    temperature_K: 650.0
+    expected_direction: growth
+    equilibration_steps: 5000
+    production_steps: 20000
+    steady_state_start_step: 5000
+    steady_state_end_step: 20000
+    minimum_crystalline_fraction_change: 0.03
+  - name: temperature_0800K
+    temperature_K: 800.0
+    expected_direction: unconstrained
+    equilibration_steps: 5000
+    production_steps: 20000
+    steady_state_start_step: 5000
+    steady_state_end_step: 20000
+    minimum_crystalline_fraction_change: 0.0
+  - name: temperature_0850K
+    temperature_K: 850.0
+    expected_direction: unconstrained
+    equilibration_steps: 5000
+    production_steps: 20000
+    steady_state_start_step: 5000
+    steady_state_end_step: 20000
+    minimum_crystalline_fraction_change: 0.0
+  - name: temperature_0900K
+    temperature_K: 900.0
+    expected_direction: unconstrained
+    equilibration_steps: 5000
+    production_steps: 20000
+    steady_state_start_step: 5000
+    steady_state_end_step: 20000
+    minimum_crystalline_fraction_change: 0.0
+  - name: temperature_0950K
+    temperature_K: 950.0
+    expected_direction: unconstrained
+    equilibration_steps: 5000
+    production_steps: 20000
+    steady_state_start_step: 5000
+    steady_state_end_step: 20000
+    minimum_crystalline_fraction_change: 0.0
+  - name: temperature_1000K
+    temperature_K: 1000.0
+    expected_direction: melting
+    equilibration_steps: 5000
+    production_steps: 20000
+    steady_state_start_step: 5000
+    steady_state_end_step: 20000
+    minimum_crystalline_fraction_change: 0.02
+
+output:
+  root_dir: output/synthetic_data/al_direct_coexistence_grid_70304
+  overwrite: false
+  save_extxyz: true
+  create_visualizations: true

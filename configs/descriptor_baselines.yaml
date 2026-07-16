@@ -1,5 +1,5 @@
 defaults:
-  - data: atomistic_al_phase_context
+  - data: loaders/synthetic_atomistic_al_phase_context
   - _self_
 
 project_name: pointnet

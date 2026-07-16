@@ -1,4 +1,4 @@
-# Multi-material static point cloud data config
+# Multi-material static point-cloud dataset loader.
 kind: static
 radius: 7.2
 sample_type: 'regular'

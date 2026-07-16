@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "migrations": [
+    {
+      "name": "compiled_graph_buffer_refill_v1_full_package",
+      "files": [
+        "__init__.py",
+        "artifacts.py",
+        "calculator.py",
+        "checkpoints.py",
+        "config.py",
+        "generator.py",
+        "homogeneous_analysis.py",
+        "homogeneous_campaign.py",
+        "homogeneous_campaign_config.py",
+        "homogeneous_campaign_queue.py",
+        "homogeneous_config.py",
+        "homogeneous_generator.py",
+        "homogeneous_liquid_source.py",
+        "homogeneous_online.py",
+        "homogeneous_resumable.py",
+        "jumpy_ffs.py",
+        "jumpy_ffs_config.py",
+        "jumpy_ffs_engine.py",
+        "jumpy_ffs_runner.py",
+        "potential_benchmark.py",
+        "potential_performance.py",
+        "potential_selection.py",
+        "provenance.py",
+        "simulation.py",
+        "transition_analysis.py",
+        "transition_config.py",
+        "transition_generator.py",
+        "transition_rdf.py",
+        "transition_slices.py",
+        "validation.py",
+        "visualization.py"
+      ],
+      "observed_sha256": "999a38bc6e1684c67bc71df9ab2ba34d6e443bd1876b6f8360ad24ee3f06a977",
+      "active_sha256": "28927ef8f8aa1aeaea7b112ad5af2e3c0ccc10d2dee09a8c54f071b3d1961b48",
+      "changed_files": [
+        "calculator.py",
+        "homogeneous_resumable.py",
+        "potential_performance.py",
+        "provenance.py"
+      ],
+      "equivalence_basis": "The fixed-shape compiled graph now refills the same edge_index, shifts, unit_shifts, positions, cell, reciprocal cell, volume, PBC, and fake padding tensors in existing buffers. Tensor-for-tensor tests compare it with a fresh AtomicData plus Batch rebuild after cell deformation. The MACE model, cutoff, neighbor algorithm and ordering, padding budget, FP32 arithmetic, forces, stress, and MTK state are unchanged. The other changed files only persist graph metrics and enforce this digest-bound checkpoint migration."
+    },
+    {
+      "name": "compiled_graph_buffer_refill_and_config_relocation_v2_liquid_source_scope",
+      "files": [
+        "artifacts.py",
+        "calculator.py",
+        "checkpoints.py",
+        "config.py",
+        "generator.py",
+        "homogeneous_liquid_source.py",
+        "provenance.py",
+        "simulation.py",
+        "validation.py"
+      ],
+      "observed_sha256": "ea3fdaabdeb2786ef7aa5dbebc489ffc7ce7b82ba98cd17915b5f76aa0573e39",
+      "active_sha256": "7f5e6624f67e9ccca84d9961b92a51885aed88275591c71bcd0defe32aea0848",
+      "changed_files": [
+        "calculator.py",
+        "provenance.py"
+      ],
+      "equivalence_basis": "The immutable liquid endpoint remains valid because its Hamiltonian, head, cutoff, graph edges and ordering, FP32 model evaluation, dynamics, and serialized state are unchanged. Fixed-shape graph tensors are refilled with identical values, and provenance validation now permits only the generator config_path field to move from configs/data into configs/simulation. Every physical and numerical field must still match exactly."
+    },
+    {
+      "name": "remove_wall_clock_controls_and_relocate_configs_v2_full_package",
+      "files": [
+        "__init__.py",
+        "artifacts.py",
+        "calculator.py",
+        "checkpoints.py",
+        "config.py",
+        "generator.py",
+        "homogeneous_analysis.py",
+        "homogeneous_campaign.py",
+        "homogeneous_campaign_config.py",
+        "homogeneous_campaign_queue.py",
+        "homogeneous_config.py",
+        "homogeneous_generator.py",
+        "homogeneous_liquid_source.py",
+        "homogeneous_online.py",
+        "homogeneous_resumable.py",
+        "jumpy_ffs.py",
+        "jumpy_ffs_config.py",
+        "jumpy_ffs_engine.py",
+        "jumpy_ffs_runner.py",
+        "potential_benchmark.py",
+        "potential_performance.py",
+        "potential_selection.py",
+        "provenance.py",
+        "simulation.py",
+        "transition_analysis.py",
+        "transition_config.py",
+        "transition_generator.py",
+        "transition_rdf.py",
+        "transition_slices.py",
+        "validation.py",
+        "visualization.py"
+      ],
+      "observed_sha256": "28927ef8f8aa1aeaea7b112ad5af2e3c0ccc10d2dee09a8c54f071b3d1961b48",
+      "active_sha256": "34bc51f14396cf99e28e965e579a69c4fb0f04892591b61acbae33fe8d151413",
+      "changed_files": [
+        "homogeneous_campaign.py",
+        "homogeneous_campaign_config.py",
+        "homogeneous_campaign_queue.py",
+        "homogeneous_resumable.py",
+        "provenance.py",
+        "potential_selection.py"
+      ],
+      "equivalence_basis": "The simulation Hamiltonian, MACE calculator settings, neighbor graph construction, MTK-NPT integration, random state, checkpoint tensor schema, configured physical endpoints, source artifacts, and output root are unchanged. The campaign no longer pauses at a wall-clock deadline. Repository configuration files moved from configs/data into configs/simulation; migration accepts only the four campaign/generator config location fields and rejects any physical or execution-policy difference. Existing checkpoints therefore represent the same trajectory state and resume to the same configured endpoint."
+    }
+  ]
+}

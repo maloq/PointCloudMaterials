@@ -2,7 +2,8 @@ dataset_name: temporal_synth_realistic_metal
 seed: 260625
 
 domain:
-  box_size: 70.0
+  # Exact final cubic cell of the force-driven bulk-liquid producer below.
+  box_size: 108.72010109
   avg_nn_distance: 2.86
   neighborhood_radius: 12.0
   atoms_per_site: 96
@@ -132,9 +133,9 @@ states:
 
 transition_graph:
   initial_state_probs:
-    L: 0.84
+    L: 0.86
     P: 0.14
-    I: 0.02
+    I: 0.0
   primary_path: [L, P, I, D, C]
   transitions:
     - source: L
@@ -209,7 +210,10 @@ nuisance:
 
 rendering:
   frame_style: dense_persistent_box
-  target_density: 0.0603
+  # 70304 atoms / (108.72010109 A)^3 from the configured source snapshot.
+  target_density: 0.05470795646
+  source_generator_config: configs/simulation/atomistic/al/phase_context_70304_mpa.yaml
+  initial_positions_file: output/synthetic_data/al_phase_context_70304x1/replica_000_bulk_liquid/atoms.npy
   default_crystal_structure: fcc
   save_frame_dirs: true
   save_atom_tables: true
@@ -219,7 +223,31 @@ rendering:
   phase_region_radius_nn: 1.0
   phase_region_target_atoms: 10
   phase_field_jitter_fraction: 0.18
+  contact_relaxation_max_iterations: 128
   fast_mode: false
+
+structural_audit:
+  # Recompute OVITO PTM from these complete rendered frames. Statistics are
+  # conditioned on full-box per-atom state_ids, never central-site labels.
+  frame_indices: [0, 6, 12, 18, 24, 47]
+  state_names: [L, P, I, D, C, G]
+  ptm_rmsd_cutoff: 0.10
+  # Applied to each state after pooling the six explicit frames. The selected
+  # frames provide more than 15k atoms even for the least-populated state.
+  minimum_aggregate_atoms_per_state: 4096
+  crystal_state_name: C
+  liquid_state_name: L
+  # C is an explicit crystal-core label; I, D, and G carry mixed/defective
+  # structures. A future renderer must therefore make at least half of C atoms
+  # independently recognizable as FCC/HCP/BCC by PTM.
+  minimum_crystal_crystalline_fraction: 0.50
+  # C explicitly declares crystal_structure: fcc; HCP/BCC matches cannot stand
+  # in for the intended structure.
+  minimum_crystal_fcc_fraction: 0.50
+  maximum_liquid_crystalline_fraction: 0.10
+  # These absolute gates imply a forty-percentage-point separation. Record and
+  # enforce that separation explicitly as its own falsification check.
+  minimum_crystal_liquid_fraction_margin: 0.40
 
 trajectories:
   center_neighborhoods: true
@@ -227,7 +255,9 @@ trajectories:
 
 output:
   output_dir: output/synthetic_data/temporal_synth_realistic_metal
-  overwrite: true
+  # Keep replacement explicit: the structural audit currently blocks this recipe,
+  # and a failed development run must not remove an earlier dataset.
+  overwrite: false
   compress: true
   frame_storage: single_chunk_npz
 

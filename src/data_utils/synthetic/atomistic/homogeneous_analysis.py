@@ -30,10 +30,151 @@ class HomogeneousCrystallizationAnalysis:
     largest_crystalline_cluster_atoms: np.ndarray
     rdf_distance_A: np.ndarray
     rdf_g_r: np.ndarray
+    ptm_rmsd_cutoff: float
     nucleus_size_threshold_atoms: int
+    threshold_persistence_frames: int
     nucleation_observed: bool
     nucleation_step: int | None
     nucleation_time_ps: float | None
+    confirmation_step: int | None
+    confirmation_time_ps: float | None
+
+
+@dataclass(frozen=True)
+class ReplicaObservation:
+    replica_name: str
+    random_seed: int
+    event_observed: bool
+    observation_time_ps: float
+
+
+@dataclass(frozen=True)
+class HomogeneousSurvivalAnalysis:
+    time_ps: np.ndarray
+    replicas_at_risk: np.ndarray
+    events: np.ndarray
+    censored: np.ndarray
+    survival_probability: np.ndarray
+    observations: tuple[ReplicaObservation, ...]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "replica_count": len(self.observations),
+            "observed_event_count": int(sum(item.event_observed for item in self.observations)),
+            "right_censored_count": int(
+                sum(not item.event_observed for item in self.observations)
+            ),
+            "observations": [
+                {
+                    "replica_name": item.replica_name,
+                    "random_seed": item.random_seed,
+                    "event_observed": item.event_observed,
+                    "observation_time_ps": item.observation_time_ps,
+                }
+                for item in self.observations
+            ],
+            "kaplan_meier": {
+                "time_ps": self.time_ps.tolist(),
+                "replicas_at_risk": self.replicas_at_risk.tolist(),
+                "events": self.events.tolist(),
+                "right_censored": self.censored.tolist(),
+                "survival_probability": self.survival_probability.tolist(),
+            },
+            "rate_estimate": None,
+            "rate_estimate_status": "not_computed",
+            "rate_estimate_reason": (
+                "A non-parametric survival curve does not by itself establish a stationary "
+                "Poisson nucleation process. A rate additionally requires validated "
+                "metastable-liquid stationarity, a model-specific undercooling, volume and "
+                "finite-size convergence, and enough independent events."
+            ),
+        }
+
+
+def analyze_replica_survival(
+    observations: tuple[ReplicaObservation, ...],
+) -> HomogeneousSurvivalAnalysis:
+    """Construct a Kaplan-Meier curve from event times and right-censored replicas."""
+    if not observations:
+        raise ValueError("Survival analysis requires at least one replica observation.")
+    if len({item.replica_name for item in observations}) != len(observations):
+        raise ValueError("Survival analysis replica names must be unique.")
+    if len({item.random_seed for item in observations}) != len(observations):
+        raise ValueError("Survival analysis random seeds must be unique.")
+    for item in observations:
+        if not np.isfinite(item.observation_time_ps) or item.observation_time_ps < 0.0:
+            raise ValueError(
+                f"Replica {item.replica_name!r} has invalid observation_time_ps="
+                f"{item.observation_time_ps}."
+            )
+
+    times = np.unique(
+        np.asarray([item.observation_time_ps for item in observations], dtype=np.float64)
+    )
+    at_risk = np.empty(len(times), dtype=np.int64)
+    events = np.empty(len(times), dtype=np.int64)
+    censored = np.empty(len(times), dtype=np.int64)
+    survival = np.empty(len(times), dtype=np.float64)
+    remaining = len(observations)
+    probability = 1.0
+    for index, time_ps in enumerate(times):
+        events_at_time = sum(
+            item.event_observed and item.observation_time_ps == time_ps
+            for item in observations
+        )
+        censored_at_time = sum(
+            (not item.event_observed) and item.observation_time_ps == time_ps
+            for item in observations
+        )
+        at_risk[index] = remaining
+        events[index] = events_at_time
+        censored[index] = censored_at_time
+        probability *= 1.0 - events_at_time / remaining
+        survival[index] = probability
+        remaining -= events_at_time + censored_at_time
+
+    if remaining != 0:
+        raise RuntimeError(
+            f"Survival accounting left {remaining} replicas at risk after all observations."
+        )
+    return HomogeneousSurvivalAnalysis(
+        time_ps=times,
+        replicas_at_risk=at_risk,
+        events=events,
+        censored=censored,
+        survival_probability=survival,
+        observations=observations,
+    )
+
+
+def first_persistent_threshold_run(
+    values: np.ndarray,
+    *,
+    threshold: int,
+    persistence_frames: int,
+) -> tuple[int, int] | None:
+    """Return the inclusive (onset, confirmation) indices of the first sustained crossing."""
+    if values.ndim != 1:
+        raise ValueError(
+            f"Persistent threshold analysis requires a one-dimensional series, got "
+            f"shape={values.shape}."
+        )
+    if threshold <= 0:
+        raise ValueError(f"threshold must be positive, got {threshold}.")
+    if persistence_frames <= 0:
+        raise ValueError(
+            f"persistence_frames must be positive, got {persistence_frames}."
+        )
+    run_start: int | None = None
+    for index, value in enumerate(values):
+        if value >= threshold:
+            if run_start is None:
+                run_start = index
+            if index - run_start + 1 == persistence_frames:
+                return run_start, index
+        else:
+            run_start = None
+    return None
 
 
 def analyze_homogeneous_crystallization(
@@ -41,8 +182,10 @@ def analyze_homogeneous_crystallization(
     *,
     chemical_symbol: str,
     timestep_fs: float,
+    ptm_rmsd_cutoff: float,
     crystalline_cluster_cutoff_A: float,
     nucleus_size_threshold_atoms: int,
+    threshold_persistence_frames: int,
     rdf_cutoff_A: float,
     rdf_bins: int,
     progress: Callable[[str], None] = print,
@@ -63,7 +206,7 @@ def analyze_homogeneous_crystallization(
 
     frame_count, atom_count, _ = trace.positions_A.shape
     progress(
-        f"homogeneous_crystallization: PTM, nucleus, and RDF audit of {frame_count} "
+        f"homogeneous_crystallization: PTM, connected-cluster, and RDF audit of {frame_count} "
         f"frames ({atom_count} atoms/frame)"
     )
     structure_fractions = np.empty((frame_count, len(STRUCTURE_NAMES)), dtype=np.float64)
@@ -73,6 +216,7 @@ def analyze_homogeneous_crystallization(
     rdf_g_r = np.empty((frame_count, rdf_bins), dtype=np.float64)
     numbers = np.full(atom_count, atomic_numbers[chemical_symbol], dtype=np.int32)
     ptm = PolyhedralTemplateMatchingModifier()
+    ptm.rmsd_cutoff = ptm_rmsd_cutoff
     clusters = ClusterAnalysisModifier(
         cutoff=crystalline_cluster_cutoff_A,
         only_selected=True,
@@ -118,16 +262,22 @@ def analyze_homogeneous_crystallization(
     if rdf_distance_A is None:
         raise RuntimeError("Homogeneous crystallization analysis received an empty trace.")
     time_ps = trace.step.astype(np.float64) * timestep_fs / 1000.0
-    threshold_crossings = np.flatnonzero(
-        largest_cluster >= nucleus_size_threshold_atoms
+    persistent_run = first_persistent_threshold_run(
+        largest_cluster,
+        threshold=nucleus_size_threshold_atoms,
+        persistence_frames=threshold_persistence_frames,
     )
-    if len(threshold_crossings):
-        onset_index = int(threshold_crossings[0])
+    if persistent_run is not None:
+        onset_index, confirmation_index = persistent_run
         nucleation_step = int(trace.step[onset_index])
         nucleation_time_ps = float(time_ps[onset_index])
+        confirmation_step = int(trace.step[confirmation_index])
+        confirmation_time_ps = float(time_ps[confirmation_index])
     else:
         nucleation_step = None
         nucleation_time_ps = None
+        confirmation_step = None
+        confirmation_time_ps = None
 
     return HomogeneousCrystallizationAnalysis(
         step=trace.step.copy(),
@@ -138,10 +288,14 @@ def analyze_homogeneous_crystallization(
         largest_crystalline_cluster_atoms=largest_cluster,
         rdf_distance_A=rdf_distance_A,
         rdf_g_r=rdf_g_r,
+        ptm_rmsd_cutoff=ptm_rmsd_cutoff,
         nucleus_size_threshold_atoms=nucleus_size_threshold_atoms,
+        threshold_persistence_frames=threshold_persistence_frames,
         nucleation_observed=nucleation_step is not None,
         nucleation_step=nucleation_step,
         nucleation_time_ps=nucleation_time_ps,
+        confirmation_step=confirmation_step,
+        confirmation_time_ps=confirmation_time_ps,
     )
 
 
@@ -184,7 +338,10 @@ def write_homogeneous_progress_visualization(
         analysis.nucleus_size_threshold_atoms,
         color="black",
         linestyle="--",
-        label=f"analysis threshold ({analysis.nucleus_size_threshold_atoms} atoms)",
+        label=(
+            f"analysis threshold ({analysis.nucleus_size_threshold_atoms} atoms for "
+            f"{analysis.threshold_persistence_frames} frames)"
+        ),
     )
     axes[0, 1].set(xlabel="time (ps)", ylabel="largest connected crystalline cluster (atoms)")
     axes[0, 1].legend()
@@ -215,9 +372,12 @@ def write_homogeneous_progress_visualization(
     figure.colorbar(image, ax=axes[1, 1], label="g(r)")
 
     if analysis.nucleation_observed:
-        result_text = f"threshold first crossed at {analysis.nucleation_time_ps:.2f} ps"
+        result_text = (
+            f"persistent threshold onset at {analysis.nucleation_time_ps:.2f} ps; "
+            f"confirmed at {analysis.confirmation_time_ps:.2f} ps"
+        )
     else:
-        result_text = "no threshold-sized crystalline nucleus observed"
+        result_text = "no persistent threshold-sized crystalline cluster observed"
     figure.suptitle(
         f"Homogeneous crystallization from supercooled liquid at {temperature_K:.0f} K\n"
         f"{result_text}"

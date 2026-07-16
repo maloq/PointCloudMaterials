@@ -5,12 +5,6 @@ from typing import Any
 
 import numpy as np
 from scipy.spatial import cKDTree
-try:
-    from numba import njit
-    _NUMBA_AVAILABLE = True
-except ImportError:
-    njit = None
-    _NUMBA_AVAILABLE = False
 
 from .config import TemporalBenchmarkConfig
 from .dynamics import LatentTrajectories, SiteLayout
@@ -26,7 +20,7 @@ class RenderedFrame:
     site_ids: np.ndarray
     state_ids: np.ndarray
     grain_ids: np.ndarray
-    local_atom_ids: np.ndarray
+    local_atom_indices: np.ndarray
     local_points: np.ndarray
     metadata: dict[str, Any]
 
@@ -59,7 +53,9 @@ _TEMPLATE_KIND_CODES = {
     "grain_boundary": 4,
     "defective_crystal": 5,
 }
-_NUMBA_CELL_LIST_WARMED = False
+def _minimum_image(displacement: np.ndarray, box_size: float) -> np.ndarray:
+    """Map Cartesian displacements into the cubic box's minimum-image interval."""
+    return displacement - box_size * np.rint(displacement / box_size)
 
 
 class FrameRenderer:
@@ -111,6 +107,14 @@ class FrameRenderer:
                 "rendering.site_assignment_candidate_count must be positive, "
                 f"got {config.rendering.site_assignment_candidate_count}."
             )
+        self.contact_relaxation_max_iterations = int(
+            config.rendering.contact_relaxation_max_iterations
+        )
+        if self.contact_relaxation_max_iterations <= 0:
+            raise ValueError(
+                "rendering.contact_relaxation_max_iterations must be positive, got "
+                f"{config.rendering.contact_relaxation_max_iterations}."
+            )
         estimated_atom_count = int(round(float(config.rendering.target_density) * (self.box_size**3)))
         self._kdtree_workers = min(self.parallel_workers, _recommended_kdtree_workers(estimated_atom_count))
         self._site_update_workers = min(
@@ -125,7 +129,7 @@ class FrameRenderer:
         self._site_spacing = self._estimate_site_spacing()
         self._field_rotations, self._field_axis_scales, self._field_bias = self._build_site_field()
         self._field_rotations_scaled = self._field_rotations / self._field_axis_scales[:, None, :]
-        self._site_tree = cKDTree(self.phase_centers)
+        self._site_tree = cKDTree(self.phase_centers, boxsize=self.box_size)
         self._surface_phases = self._renderer_rng.uniform(
             0.0,
             2.0 * np.pi,
@@ -155,44 +159,27 @@ class FrameRenderer:
         self.current_atoms = self.base_atoms.copy()
         self._current_site_ids = self._assign_sites(self.current_atoms)
         self._current_site_groups = self._group_atom_indices_by_site(self._current_site_ids)
-        self._last_assignment_atoms = self.current_atoms.copy()
         self._atom_reference_directions = self._build_atom_reference_directions(len(self.base_atoms))
         self._hardcore_distance = self._resolve_hardcore_distance()
-        self._relaxation_cell_size = float(max(self._hardcore_distance, 2.0 * self._hardcore_distance))
-        relaxation_cells_per_axis = max(1, int(np.ceil(self.box_size / self._relaxation_cell_size)))
-        self._relaxation_grid_shape = np.full(3, relaxation_cells_per_axis, dtype=np.int32)
-        self._relaxation_grid_size = int(relaxation_cells_per_axis**3)
-        self._relaxation_grid_strides = np.asarray(
-            [
-                1,
-                relaxation_cells_per_axis,
-                relaxation_cells_per_axis * relaxation_cells_per_axis,
-            ],
-            dtype=np.int64,
+        initial_tree = cKDTree(
+            self.current_atoms, balanced_tree=False, boxsize=self.box_size
         )
-        relaxation_neighbor_deltas: list[tuple[int, int, int]] = []
-        relaxation_neighbor_flat_offsets: list[int] = []
-        for dz in (-1, 0, 1):
-            for dy in (-1, 0, 1):
-                for dx in (-1, 0, 1):
-                    if dx == 0 and dy == 0 and dz == 0:
-                        continue
-                    if dz < 0 or (dz == 0 and dy < 0) or (dz == 0 and dy == 0 and dx <= 0):
-                        continue
-                    relaxation_neighbor_deltas.append((dx, dy, dz))
-                    relaxation_neighbor_flat_offsets.append(
-                        int(
-                            dx * self._relaxation_grid_strides[0]
-                            + dy * self._relaxation_grid_strides[1]
-                            + dz * self._relaxation_grid_strides[2]
-                        )
-                    )
-        self._relaxation_neighbor_deltas = np.asarray(relaxation_neighbor_deltas, dtype=np.int32)
-        self._relaxation_neighbor_flat_offsets = np.asarray(relaxation_neighbor_flat_offsets, dtype=np.int64)
+        initial_nearest_distances, _ = initial_tree.query(
+            self.current_atoms, k=2, workers=self._kdtree_workers
+        )
+        self._last_minimum_pair_distance = float(
+            np.min(initial_nearest_distances[:, 1])
+        )
+        if self._last_minimum_pair_distance < self._hardcore_distance:
+            raise ValueError(
+                "Force-driven temporal initial positions violate the configured periodic "
+                "minimum-distance invariant: minimum_pair_distance="
+                f"{self._last_minimum_pair_distance:.6f} A, required="
+                f"{self._hardcore_distance:.6f} A, source="
+                f"{config.rendering.initial_positions_file}."
+            )
         # Cached atom KDTree shared between _relax_close_contacts and _extract_local_neighborhoods
         self._cached_atom_tree: cKDTree | None = None
-        if _NUMBA_AVAILABLE and not self.fast_mode:
-            _warm_cell_list_pair_kernels()
 
         # Cache base lattice vectors and motif for each recipe to avoid repeated dict lookups
         self._recipe_cache: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
@@ -284,12 +271,6 @@ class FrameRenderer:
             else:
                 self._recipe_variant0_by_state_idx[state_idx] = self._state_phase_recipes[self._primary_crystal_state_idx]
 
-        # Cache for _assign_sites: skip full reassignment when atoms haven't moved much.
-        self._assignment_skip_threshold = float(0.45 * self._site_spacing)
-        self._assignment_skip_threshold_sq = self._assignment_skip_threshold**2
-        self._assignment_check_stride = max(1, len(self.base_atoms) // 32_768)
-        self._second_pass_overlap_threshold = float(0.045 * self.avg_nn_distance)
-        self._second_pass_pair_threshold = max(2_048, len(self.base_atoms) // 180)
         self._vectorized_lattice_chunk_atoms = max(65_536, min(524_288, estimated_atom_count))
 
         # Cache for _warp_points_static: the base warp (ownership modes) is position-dependent
@@ -309,15 +290,17 @@ class FrameRenderer:
             + self._flow_modes["phases"][None, :]
         ).astype(np.float32)
         self._fast_mode_local_points: np.ndarray | None = None
-        self._fast_mode_local_atom_ids: np.ndarray | None = None
+        self._fast_mode_local_atom_indices: np.ndarray | None = None
         if self.fast_mode:
-            self._cached_atom_tree = cKDTree(self.current_atoms, balanced_tree=False)
-            self._fast_mode_local_points, self._fast_mode_local_atom_ids = self._extract_local_neighborhoods(
+            self._cached_atom_tree = cKDTree(
+                self.current_atoms, balanced_tree=False, boxsize=self.box_size
+            )
+            self._fast_mode_local_points, self._fast_mode_local_atom_indices = self._extract_local_neighborhoods(
                 self.current_atoms
             )
 
     def close(self) -> None:
-        pass
+        return None
 
     def render_frame(self, frame_index: int) -> RenderedFrame:
         if frame_index < 0 or frame_index >= int(self.config.time.num_frames):
@@ -335,8 +318,8 @@ class FrameRenderer:
             displacements = np.zeros(self.current_atoms.shape[0], dtype=np.float32)
             self._frame_cursor = frame_index
             local_points = self._fast_mode_local_points
-            local_atom_ids = self._fast_mode_local_atom_ids
-            if local_points is None or local_atom_ids is None:
+            local_atom_indices = self._fast_mode_local_atom_indices
+            if local_points is None or local_atom_indices is None:
                 raise RuntimeError("Fast-mode renderer expected cached neighborhoods, but they were not initialized.")
         else:
             site_groups = self._current_site_groups
@@ -346,38 +329,25 @@ class FrameRenderer:
                 site_groups=site_groups,
                 base_flow_displacement=base_flow_displacement,
             )
-            proposed_atoms = np.clip(proposed_atoms, 0.0, self.box_size).astype(np.float32)
-            proposed_atoms = self._relax_close_contacts(proposed_atoms)
+            proposed_atoms = np.mod(proposed_atoms, self.box_size).astype(np.float32)
+            proposed_atoms = self._relax_close_contacts(
+                proposed_atoms,
+                max_iterations=self.contact_relaxation_max_iterations,
+            )
 
-            displacements = np.linalg.norm(proposed_atoms - self.current_atoms, axis=1)
+            displacements = np.linalg.norm(
+                _minimum_image(proposed_atoms - self.current_atoms, self.box_size), axis=1
+            )
             self.current_atoms = proposed_atoms
             self._frame_cursor = frame_index
 
-            if self._last_assignment_atoms is not None:
-                sample_slice = slice(None, None, self._assignment_check_stride)
-                sampled_delta = self.current_atoms[sample_slice] - self._last_assignment_atoms[sample_slice]
-                sampled_dist_sq = np.einsum("ij,ij->i", sampled_delta, sampled_delta, optimize=True)
-                sampled_max_sq = float(np.max(sampled_dist_sq)) if sampled_dist_sq.size > 0 else 0.0
-                if sampled_max_sq < 0.36 * self._assignment_skip_threshold_sq:
-                    should_reassign = False
-                else:
-                    full_delta = self.current_atoms - self._last_assignment_atoms
-                    full_dist_sq = np.einsum("ij,ij->i", full_delta, full_delta, optimize=True)
-                    should_reassign = bool(np.max(full_dist_sq) >= self._assignment_skip_threshold_sq)
-            else:
-                should_reassign = True
-
-            if not should_reassign:
-                site_ids = self._current_site_ids
-            else:
-                site_ids = self._assign_sites(self.current_atoms)
-                self._current_site_ids = site_ids
-                self._current_site_groups = self._group_atom_indices_by_site(site_ids)
-                self._last_assignment_atoms = self.current_atoms.copy()
+            site_ids = self._assign_sites(self.current_atoms)
+            self._current_site_ids = site_ids
+            self._current_site_groups = self._group_atom_indices_by_site(site_ids)
         state_ids = self.latent.phase_state_ids[frame_index, site_ids].astype(np.int16)
         grain_ids = self.latent.phase_grain_ids[frame_index, site_ids].astype(np.int32)
         if not self.fast_mode:
-            local_points, local_atom_ids = self._extract_local_neighborhoods(self.current_atoms)
+            local_points, local_atom_indices = self._extract_local_neighborhoods(self.current_atoms)
 
         metadata = self._build_frame_metadata(
             frame_index=frame_index,
@@ -392,7 +362,7 @@ class FrameRenderer:
             site_ids=site_ids,
             state_ids=state_ids,
             grain_ids=grain_ids,
-            local_atom_ids=local_atom_ids,
+            local_atom_indices=local_atom_indices,
             local_points=local_points,
             metadata=metadata,
         )
@@ -443,7 +413,7 @@ class FrameRenderer:
     def _estimate_site_spacing(self) -> float:
         if self.phase_site_count <= 1:
             return 0.5 * self.box_size
-        tree = cKDTree(self.phase_centers)
+        tree = cKDTree(self.phase_centers, boxsize=self.box_size)
         distances, _ = tree.query(self.phase_centers, k=min(4, self.phase_site_count))
         if distances.ndim == 1:
             return 0.5 * self.box_size
@@ -455,7 +425,7 @@ class FrameRenderer:
         if self.phase_site_count == 1:
             local_scale = np.full(1, 0.45 * self.box_size, dtype=np.float32)
         else:
-            tree = cKDTree(self.phase_centers)
+            tree = cKDTree(self.phase_centers, boxsize=self.box_size)
             distances, _ = tree.query(self.phase_centers, k=min(5, self.phase_site_count))
             neighbor_distances = distances[:, 1:]
             local_scale = 0.58 * np.mean(neighbor_distances, axis=1)
@@ -547,7 +517,9 @@ class FrameRenderer:
     def _assign_sites(self, points: np.ndarray) -> np.ndarray:
         chunk_size = self._assignment_chunk_size
         site_ids = np.empty(points.shape[0], dtype=np.int32)
-        warped_points = self._warp_points_static(points)
+        warped_points = np.mod(
+            self._warp_points_static(points), self.box_size
+        ).astype(np.float32)
         query_k = min(self.phase_site_count, self.site_assignment_candidate_count)
         for start in range(0, points.shape[0], chunk_size):
             stop = min(points.shape[0], start + chunk_size)
@@ -561,7 +533,10 @@ class FrameRenderer:
                 candidate_ids = candidate_ids[:, None]
             candidate_ids = np.asarray(candidate_ids, dtype=np.int32)
             candidate_centers = self.phase_centers[candidate_ids]
-            diff = chunk[:, None, :] - candidate_centers
+            diff = _minimum_image(
+                chunk[:, None, :] - candidate_centers,
+                self.box_size,
+            )
             candidate_rotations_scaled = self._field_rotations_scaled[candidate_ids]
             local_scaled = np.einsum("nki,nkij->nkj", diff, candidate_rotations_scaled, optimize=True)
             scores = np.sum(local_scaled * local_scaled, axis=2) + self._field_bias[candidate_ids]
@@ -689,7 +664,7 @@ class FrameRenderer:
         )
         max_step = (max_step_base + thermal_boost).astype(np.float32)
 
-        displacement = target - current_positions
+        displacement = _minimum_image(target - current_positions, self.box_size)
         step_norm = np.linalg.norm(displacement, axis=1)
         step_scale = np.minimum(1.0, max_step / np.maximum(step_norm, 1e-8))
         result = current_positions + step_scale[:, None] * displacement
@@ -794,7 +769,7 @@ class FrameRenderer:
         thermal_boost = np.minimum(0.12 * self.avg_nn_distance, 0.55 * per_atom_thermal * self.avg_nn_distance)
         max_step = (base_step + thermal_boost).astype(np.float32)
 
-        displacement = all_targets - all_current
+        displacement = _minimum_image(all_targets - all_current, self.box_size)
         step_norm = np.linalg.norm(displacement, axis=1)
         step_scale = np.minimum(1.0, max_step / np.maximum(step_norm, 1e-8))
         result = all_current + step_scale[:, None] * displacement
@@ -878,7 +853,9 @@ class FrameRenderer:
         per_atom_alpha = np.repeat(per_site_alpha, atoms_per_site)
 
         # Vectorized blend: target = liquid + alpha * (structured - liquid)
-        blended_target = all_liquid_target + per_atom_alpha[:, None] * (all_targets - all_liquid_target)
+        blended_target = all_liquid_target + per_atom_alpha[:, None] * _minimum_image(
+            all_targets - all_liquid_target, self.box_size
+        )
         per_atom_defect = np.repeat(defects, atoms_per_site).astype(np.float32)
         if np.any(per_atom_defect > 0.0):
             transition_band = per_atom_alpha * (1.0 - per_atom_alpha)
@@ -895,7 +872,7 @@ class FrameRenderer:
         thermal_boost = np.minimum(0.12 * self.avg_nn_distance, 0.55 * per_atom_thermal * self.avg_nn_distance)
         max_step = (base_step + thermal_boost).astype(np.float32)
 
-        displacement = blended_target - all_current
+        displacement = _minimum_image(blended_target - all_current, self.box_size)
         step_norm = np.linalg.norm(displacement, axis=1)
         step_scale = np.minimum(1.0, max_step / np.maximum(step_norm, 1e-8))
         result = all_current + step_scale[:, None] * displacement
@@ -986,7 +963,10 @@ class FrameRenderer:
         per_atom_solid_fractions = interface_solid_fractions[per_atom_local_site_ids]
         signed_distance = np.einsum(
             "ij,ij->i",
-            all_current - per_atom_centers,
+            _minimum_image(
+                all_current - per_atom_centers,
+                self.box_size,
+            ),
             per_atom_normals,
             optimize=True,
         )
@@ -1002,7 +982,9 @@ class FrameRenderer:
             / np.maximum(0.22 * per_atom_widths, 1e-5)
         )
         solid_alpha = np.clip(per_atom_solid_fractions * solid_alpha, 0.0, 1.0)
-        all_targets = all_liquid_target + solid_alpha[:, None] * (all_structured_targets - all_liquid_target)
+        all_targets = all_liquid_target + solid_alpha[:, None] * _minimum_image(
+            all_structured_targets - all_liquid_target, self.box_size
+        )
         per_atom_defect = np.repeat(defects, atoms_per_site).astype(np.float32)
         if np.any(per_atom_defect > 0.0):
             interface_band = solid_alpha * (1.0 - solid_alpha)
@@ -1018,7 +1000,7 @@ class FrameRenderer:
         base_step = 0.22 * self.avg_nn_distance  # interface base
         thermal_boost = np.minimum(0.12 * self.avg_nn_distance, 0.55 * per_atom_thermal * self.avg_nn_distance)
         max_step = (base_step + thermal_boost).astype(np.float32)
-        displacement = all_targets - all_current
+        displacement = _minimum_image(all_targets - all_current, self.box_size)
         step_norm = np.linalg.norm(displacement, axis=1)
         step_scale = np.minimum(1.0, max_step / np.maximum(step_norm, 1e-8))
         result = all_current + step_scale[:, None] * displacement
@@ -1083,10 +1065,15 @@ class FrameRenderer:
                 ordered_fraction = float(state_cfg.template_params.get("ordered_fraction", 0.60))
                 progress = self._state_progress(frame_index, site_id)
                 alpha = float(np.clip(0.18 + 0.50 * ordered_fraction + 0.18 * progress, 0.20, 0.88))
-                target = liquid_target + alpha * (structured_target - liquid_target)
+                target = liquid_target + alpha * _minimum_image(
+                    structured_target - liquid_target, self.box_size
+                )
             elif state_cfg.template_kind == "interface":
                 interface_context = self._interface_context(frame_index=frame_index, site_id=site_id)
-                signed_distance = np.dot(current_positions - center[None, :], interface_context.normal)
+                signed_distance = np.dot(
+                    _minimum_image(current_positions - center[None, :], self.box_size),
+                    interface_context.normal,
+                )
                 signed_distance += self._surface_modulation(
                     points=current_positions,
                     center=center,
@@ -1103,7 +1090,9 @@ class FrameRenderer:
                     0.0,
                     1.0,
                 )
-                target = liquid_target + solid_alpha[:, None] * (structured_target - liquid_target)
+                target = liquid_target + solid_alpha[:, None] * _minimum_image(
+                    structured_target - liquid_target, self.box_size
+                )
             elif state_cfg.template_kind == "grain_boundary":
                 boundary_context = self._grain_boundary_context(frame_index=frame_index, site_id=site_id)
                 target_a = self._nearest_lattice_targets(
@@ -1120,7 +1109,10 @@ class FrameRenderer:
                     recipe=self._site_crystal_recipe(state_name="C", variant_id=0),
                     strain=strain,
                 )
-                signed_distance = np.dot(current_positions - center[None, :], boundary_context.normal)
+                signed_distance = np.dot(
+                    _minimum_image(current_positions - center[None, :], self.box_size),
+                    boundary_context.normal,
+                )
                 signed_distance += self._surface_modulation(
                     points=current_positions,
                     center=center,
@@ -1135,7 +1127,9 @@ class FrameRenderer:
                 band_weight = np.exp(
                     -0.5 * (signed_distance / max(0.52 * boundary_context.width, 1e-5)) ** 2
                 ).astype(np.float32)
-                target = structured_target + band_weight[:, None] * (mixed_target - structured_target)
+                target = structured_target + band_weight[:, None] * _minimum_image(
+                    mixed_target - structured_target, self.box_size
+                )
                 target += (
                     band_weight[:, None]
                     * defect
@@ -1148,7 +1142,7 @@ class FrameRenderer:
 
         max_step = self._max_displacement_per_frame(state_cfg.template_kind, thermal)
         noise_scale = self._thermal_noise_scale(state_cfg.template_kind, thermal)
-        displacement = target - current_positions
+        displacement = _minimum_image(target - current_positions, self.box_size)
         step_norm = np.linalg.norm(displacement, axis=1)
         step_scale = np.minimum(1.0, max_step / np.maximum(step_norm, 1e-8))
         proposed_positions = current_positions + step_scale[:, None] * displacement
@@ -1233,7 +1227,9 @@ class FrameRenderer:
         # For small strain, inv ≈ base_inv / scale_factors (diagonal scaling)
         inv_lattice = base_inv / scale_factors[None, :]
 
-        local = (positions - center[None, :]) @ rotation  # (N, 3)
+        local = _minimum_image(
+            positions - center[None, :], self.box_size
+        ) @ rotation  # (N, 3)
         n_atoms = local.shape[0]
 
         # Vectorized over all motifs at once: (N, 1, 3) - (1, M, 3) -> (N, M, 3)
@@ -1274,7 +1270,7 @@ class FrameRenderer:
 
             local = np.einsum(
                 "ni,nij->nj",
-                pos_chunk - center_chunk,
+                _minimum_image(pos_chunk - center_chunk, self.box_size),
                 rotation_chunk,
                 optimize=True,
             )
@@ -1350,13 +1346,17 @@ class FrameRenderer:
         liquid_neighbor_mask = valid_neighbor_mask & self._state_kind_is_liquidish[neighbor_state_ids]
         solid_neighbor_mask = valid_neighbor_mask & self._state_kind_is_solidish[neighbor_state_ids]
 
+        centers = self.phase_centers[site_ids]
+        neighbor_offsets = _minimum_image(
+            neighbor_centers - centers[:, None, :], self.box_size
+        )
         liquid_sums = np.sum(
-            neighbor_centers * liquid_neighbor_mask[..., None].astype(np.float32),
+            neighbor_offsets * liquid_neighbor_mask[..., None].astype(np.float32),
             axis=1,
             dtype=np.float32,
         )
         solid_sums = np.sum(
-            neighbor_centers * solid_neighbor_mask[..., None].astype(np.float32),
+            neighbor_offsets * solid_neighbor_mask[..., None].astype(np.float32),
             axis=1,
             dtype=np.float32,
         )
@@ -1365,15 +1365,14 @@ class FrameRenderer:
 
         liquid_means = liquid_sums / np.maximum(liquid_counts[:, None], 1)
         solid_means = solid_sums / np.maximum(solid_counts[:, None], 1)
-        centers = self.phase_centers[site_ids]
         normals = np.empty_like(centers, dtype=np.float32)
         both_mask = (liquid_counts > 0) & (solid_counts > 0)
         solid_only_mask = (liquid_counts == 0) & (solid_counts > 0)
         liquid_only_mask = (liquid_counts > 0) & (solid_counts == 0)
         neither_mask = ~(both_mask | solid_only_mask | liquid_only_mask)
         normals[both_mask] = solid_means[both_mask] - liquid_means[both_mask]
-        normals[solid_only_mask] = solid_means[solid_only_mask] - centers[solid_only_mask]
-        normals[liquid_only_mask] = centers[liquid_only_mask] - liquid_means[liquid_only_mask]
+        normals[solid_only_mask] = solid_means[solid_only_mask]
+        normals[liquid_only_mask] = -liquid_means[liquid_only_mask]
         normals[neither_mask] = rotations[neither_mask, 0, :]
         normals = _normalize_vectors(
             normals,
@@ -1417,9 +1416,26 @@ class FrameRenderer:
         )
         grain_a = int(ranked_grains[0][0])
         grain_b = int(ranked_grains[1][0])
-        center_a = np.mean(np.asarray(ranked_grains[0][1], dtype=np.float32), axis=0)
-        center_b = np.mean(np.asarray(ranked_grains[1][1], dtype=np.float32), axis=0)
-        normal = _normalize_vector(center_b - center_a, fallback_axis=site_id + 11)
+        site_center = self.phase_centers[site_id]
+        center_a_offset = np.mean(
+            _minimum_image(
+                np.asarray(ranked_grains[0][1], dtype=np.float32)
+                - site_center[None, :],
+                self.box_size,
+            ),
+            axis=0,
+        )
+        center_b_offset = np.mean(
+            _minimum_image(
+                np.asarray(ranked_grains[1][1], dtype=np.float32)
+                - site_center[None, :],
+                self.box_size,
+            ),
+            axis=0,
+        )
+        normal = _normalize_vector(
+            center_b_offset - center_a_offset, fallback_axis=site_id + 11
+        )
         return BoundaryContext(
             normal=normal,
             width=width,
@@ -1447,7 +1463,7 @@ class FrameRenderer:
         if amplitude <= 0.0:
             return np.zeros(points.shape[0], dtype=np.float32)
         tangent_a, tangent_b = _orthonormal_tangent_basis(normal)
-        rel = points - center[None, :]
+        rel = _minimum_image(points - center[None, :], self.box_size)
         u_coord = np.dot(rel, tangent_a) / max(float(self._surface_scales[site_id, 0]), 1e-5)
         v_coord = np.dot(rel, tangent_b) / max(float(self._surface_scales[site_id, 1]), 1e-5)
         phases = self._surface_phases[site_id]
@@ -1470,7 +1486,7 @@ class FrameRenderer:
         if not np.any(amplitudes > 0.0):
             return np.zeros(points.shape[0], dtype=np.float32)
         tangent_a, tangent_b = _orthonormal_tangent_basis_batch(normals)
-        rel = points - centers
+        rel = _minimum_image(points - centers, self.box_size)
         surface_scales = self._surface_scales[site_ids]
         phases = self._surface_phases[site_ids]
         u_coord = np.einsum("ij,ij->i", rel, tangent_a, optimize=True) / np.maximum(surface_scales[:, 0], 1e-5)
@@ -1528,7 +1544,7 @@ class FrameRenderer:
         widths = self._defect_plane_widths[site_ids]
         signed_distance = np.einsum(
             "ij,ij->i",
-            positions - centers,
+            _minimum_image(positions - centers, self.box_size),
             normals,
             optimize=True,
         ) - offsets
@@ -1551,105 +1567,68 @@ class FrameRenderer:
         )[:, None] * self._atom_reference_directions[atom_indices]
         return (targets + slip + core_disorder).astype(np.float32)
 
-    def _find_close_pairs_cell_list(self, points: np.ndarray) -> np.ndarray:
-        if not _NUMBA_AVAILABLE:
-            tree = cKDTree(points, balanced_tree=False)
-            return np.asarray(
-                tree.query_pairs(r=self._hardcore_distance, output_type="ndarray"),
-                dtype=np.int32,
-            )
-        atom_count = int(points.shape[0])
-        if atom_count < 2:
+    def _find_periodic_close_pairs(self, points: np.ndarray) -> np.ndarray:
+        if points.shape[0] < 2:
             return np.empty((0, 2), dtype=np.int32)
-
-        cell_coords = np.floor(points / self._relaxation_cell_size).astype(np.int32)
-        np.clip(cell_coords, 0, self._relaxation_grid_shape - 1, out=cell_coords)
-        flat_ids = np.sum(cell_coords.astype(np.int64) * self._relaxation_grid_strides[None, :], axis=1)
-        order = np.argsort(flat_ids, kind="stable")
-        sorted_flat_ids = flat_ids[order]
-        unique_flat_ids, start_indices, counts = np.unique(
-            sorted_flat_ids,
-            return_index=True,
-            return_counts=True,
+        tree = cKDTree(
+            points,
+            balanced_tree=False,
+            boxsize=self.box_size,
         )
-        if unique_flat_ids.size == 0:
-            return np.empty((0, 2), dtype=np.int32)
-
-        cell_lookup = np.full(self._relaxation_grid_size, -1, dtype=np.int32)
-        cell_lookup[unique_flat_ids] = np.arange(unique_flat_ids.size, dtype=np.int32)
-        unique_cell_coords = cell_coords[order[start_indices]]
-        pair_count = _count_close_pairs_cell_list_numba(
-            points.astype(np.float32, copy=False),
-            order.astype(np.int64, copy=False),
-            unique_flat_ids.astype(np.int64, copy=False),
-            start_indices.astype(np.int64, copy=False),
-            counts.astype(np.int64, copy=False),
-            unique_cell_coords.astype(np.int32, copy=False),
-            cell_lookup,
-            self._relaxation_grid_shape.astype(np.int32, copy=False),
-            self._relaxation_neighbor_deltas,
-            self._relaxation_neighbor_flat_offsets,
-            float(self._hardcore_distance * self._hardcore_distance),
+        return np.asarray(
+            tree.query_pairs(
+                r=np.nextafter(self._hardcore_distance, 0.0),
+                output_type="ndarray",
+            ),
+            dtype=np.int32,
         )
-        if pair_count == 0:
-            return np.empty((0, 2), dtype=np.int32)
-        pairs = np.empty((pair_count, 2), dtype=np.int32)
-        filled_pair_count = _fill_close_pairs_cell_list_numba(
-            points.astype(np.float32, copy=False),
-            order.astype(np.int64, copy=False),
-            unique_flat_ids.astype(np.int64, copy=False),
-            start_indices.astype(np.int64, copy=False),
-            counts.astype(np.int64, copy=False),
-            unique_cell_coords.astype(np.int32, copy=False),
-            cell_lookup,
-            self._relaxation_grid_shape.astype(np.int32, copy=False),
-            self._relaxation_neighbor_deltas,
-            self._relaxation_neighbor_flat_offsets,
-            float(self._hardcore_distance * self._hardcore_distance),
-            pairs,
-        )
-        if filled_pair_count != pair_count:
-            raise RuntimeError(
-                "Cell-list overlap finder filled a different number of pairs than it counted. "
-                f"counted={pair_count}, filled={filled_pair_count}."
-            )
-        return pairs
 
-    def _relax_close_contacts(self, atoms: np.ndarray, iterations: int = 2) -> np.ndarray:
-        relaxed = atoms.astype(np.float32, copy=True)
-        tree = None
-        for iteration in range(iterations):
-            pairs = self._find_close_pairs_cell_list(relaxed)
+    def _relax_close_contacts(
+        self, atoms: np.ndarray, *, max_iterations: int
+    ) -> np.ndarray:
+        relaxed = np.mod(atoms, self.box_size).astype(np.float32)
+        relaxation_target_distance = self._hardcore_distance * (1.0 + 1.0e-4)
+        for _ in range(max_iterations):
+            pairs = self._find_periodic_close_pairs(relaxed)
             if len(pairs) == 0:
                 break
             i_idx = pairs[:, 0]
             j_idx = pairs[:, 1]
-            vec = relaxed[j_idx] - relaxed[i_idx]
+            vec = _minimum_image(
+                relaxed[j_idx] - relaxed[i_idx], self.box_size
+            )
             dist = np.linalg.norm(vec, axis=1)
             near_zero = dist < 1e-8
             if np.any(near_zero):
                 vec[near_zero] = self._atom_reference_directions[i_idx[near_zero]]
                 dist[near_zero] = 1.0
             direction = vec / dist[:, None]
-            overlap = np.maximum(0.0, self._hardcore_distance - dist)
+            overlap = np.maximum(0.0, relaxation_target_distance - dist)
             push = 0.52 * overlap[:, None] * direction
             adjustment = np.zeros_like(relaxed)
             np.add.at(adjustment, i_idx, -push)
             np.add.at(adjustment, j_idx, push)
             relaxed += adjustment.astype(np.float32)
-            relaxed = np.clip(relaxed, 0.0, self.box_size)
-            if (
-                iteration == 0
-                and (len(pairs) <= self._second_pass_pair_threshold)
-                and (float(np.max(overlap)) <= self._second_pass_overlap_threshold)
-            ):
-                tree = None
-                break
-            # Invalidate tree since positions changed
-            tree = None
-        # Cache tree for reuse in _extract_local_neighborhoods (rebuild if positions changed)
-        if tree is None:
-            tree = cKDTree(relaxed, balanced_tree=False)
+            relaxed = np.mod(relaxed, self.box_size).astype(np.float32)
+        remaining_pairs = self._find_periodic_close_pairs(relaxed)
+        if len(remaining_pairs):
+            i_idx = remaining_pairs[:, 0]
+            j_idx = remaining_pairs[:, 1]
+            distances = np.linalg.norm(
+                _minimum_image(relaxed[j_idx] - relaxed[i_idx], self.box_size),
+                axis=1,
+            )
+            raise RuntimeError(
+                "Periodic close-contact relaxation did not satisfy its minimum-distance "
+                f"invariant after {max_iterations} iterations: remaining_pairs="
+                f"{len(remaining_pairs)}, minimum_pair_distance={float(np.min(distances)):.6f} A, "
+                f"required={self._hardcore_distance:.6f} A, box_size={self.box_size:.6f} A."
+            )
+        tree = cKDTree(
+            relaxed, balanced_tree=False, boxsize=self.box_size
+        )
+        nearest_distances, _ = tree.query(relaxed, k=2, workers=self._kdtree_workers)
+        self._last_minimum_pair_distance = float(np.min(nearest_distances[:, 1]))
         self._cached_atom_tree = tree
         return relaxed.astype(np.float32)
 
@@ -1662,7 +1641,7 @@ class FrameRenderer:
             tree = self._cached_atom_tree
             self._cached_atom_tree = None
         else:
-            tree = cKDTree(atoms, balanced_tree=False)
+            tree = cKDTree(atoms, balanced_tree=False, boxsize=self.box_size)
         query_k = min(max(self.points_per_site * 4, self.points_per_site), atoms.shape[0])
         distances, indices = tree.query(
             self.track_centers,
@@ -1674,29 +1653,29 @@ class FrameRenderer:
             indices = indices[:, None]
 
         local_points = np.zeros((self.track_site_count, self.points_per_site, 3), dtype=np.float32)
-        local_atom_ids = np.full(atoms.shape[0], -1, dtype=np.int32)
-        local_ranks = np.arange(self.points_per_site, dtype=np.int32)
+        local_atom_indices = np.empty(
+            (self.track_site_count, self.points_per_site), dtype=np.int32
+        )
         for site_id in range(self.track_site_count):
             center = self.track_centers[site_id]
             neighbor_indices = np.asarray(indices[site_id], dtype=np.int32)
             neighbor_distances = np.asarray(distances[site_id], dtype=np.float32)
             within_radius = neighbor_indices[neighbor_distances <= self.neighborhood_radius]
-            if within_radius.size >= self.points_per_site:
-                selected = within_radius[: self.points_per_site]
-            else:
-                selected = neighbor_indices[: self.points_per_site]
-            if selected.size < self.points_per_site:
+            if within_radius.size < self.points_per_site:
                 raise RuntimeError(
-                    "Local neighborhood extraction could not recover enough atoms. "
-                    f"site_id={site_id}, selected={selected.size}, required={self.points_per_site}, "
+                    "Local neighborhood extraction found fewer atoms within the configured radius "
+                    "than the repository dataset contract requires. "
+                    f"site_id={site_id}, within_radius={within_radius.size}, "
+                    f"required={self.points_per_site}, "
                     f"n_atoms={atoms.shape[0]}, neighborhood_radius={self.neighborhood_radius}."
                 )
+            selected = within_radius[: self.points_per_site]
             points = atoms[selected]
             if self.config.trajectories.center_neighborhoods:
-                points = points - center[None, :]
+                points = _minimum_image(points - center[None, :], self.box_size)
             local_points[site_id] = points.astype(np.float32)
-            local_atom_ids[selected] = local_ranks
-        return local_points, local_atom_ids
+            local_atom_indices[site_id] = selected
+        return local_points, local_atom_indices
 
     def _build_frame_metadata(
         self,
@@ -1750,6 +1729,7 @@ class FrameRenderer:
             "mean_frame_displacement": float(np.mean(displacements)),
             "max_frame_displacement": float(np.max(displacements)),
             "hardcore_distance": float(self._hardcore_distance),
+            "minimum_periodic_pair_distance": self._last_minimum_pair_distance,
         }
 
     def _build_phase_progress_cache(self) -> tuple[np.ndarray, np.ndarray]:
@@ -1863,203 +1843,3 @@ def _recommended_assignment_chunk_size(*, estimated_atom_count: int, query_k: in
         raise ValueError(f"query_k must be positive, got {query_k}.")
     target_points = int(2_400_000 // query_k)
     return int(np.clip(target_points, 20_000, min(120_000, estimated_atom_count)))
-
-
-if _NUMBA_AVAILABLE:
-    @njit(cache=True)
-    def _count_close_pairs_cell_list_numba(
-        points: np.ndarray,
-        order: np.ndarray,
-        unique_flat_ids: np.ndarray,
-        start_indices: np.ndarray,
-        counts: np.ndarray,
-        unique_cell_coords: np.ndarray,
-        cell_lookup: np.ndarray,
-        grid_shape: np.ndarray,
-        neighbor_deltas: np.ndarray,
-        neighbor_flat_offsets: np.ndarray,
-        radius_sq: float,
-    ) -> int:
-        pair_count = 0
-        for group_idx in range(unique_flat_ids.shape[0]):
-            start = int(start_indices[group_idx])
-            count_a = int(counts[group_idx])
-            base_flat_id = int(unique_flat_ids[group_idx])
-            base_x = int(unique_cell_coords[group_idx, 0])
-            base_y = int(unique_cell_coords[group_idx, 1])
-            base_z = int(unique_cell_coords[group_idx, 2])
-
-            for local_i in range(count_a - 1):
-                atom_i = int(order[start + local_i])
-                px_i = float(points[atom_i, 0])
-                py_i = float(points[atom_i, 1])
-                pz_i = float(points[atom_i, 2])
-                for local_j in range(local_i + 1, count_a):
-                    atom_j = int(order[start + local_j])
-                    dx = float(points[atom_j, 0]) - px_i
-                    dy = float(points[atom_j, 1]) - py_i
-                    dz = float(points[atom_j, 2]) - pz_i
-                    if dx * dx + dy * dy + dz * dz <= radius_sq:
-                        pair_count += 1
-
-            for neighbor_idx in range(neighbor_deltas.shape[0]):
-                nx = base_x + int(neighbor_deltas[neighbor_idx, 0])
-                ny = base_y + int(neighbor_deltas[neighbor_idx, 1])
-                nz = base_z + int(neighbor_deltas[neighbor_idx, 2])
-                if (
-                    nx < 0
-                    or ny < 0
-                    or nz < 0
-                    or nx >= int(grid_shape[0])
-                    or ny >= int(grid_shape[1])
-                    or nz >= int(grid_shape[2])
-                ):
-                    continue
-                neighbor_group_idx = int(cell_lookup[base_flat_id + int(neighbor_flat_offsets[neighbor_idx])])
-                if neighbor_group_idx < 0:
-                    continue
-                neighbor_start = int(start_indices[neighbor_group_idx])
-                neighbor_count = int(counts[neighbor_group_idx])
-                for local_i in range(count_a):
-                    atom_i = int(order[start + local_i])
-                    px_i = float(points[atom_i, 0])
-                    py_i = float(points[atom_i, 1])
-                    pz_i = float(points[atom_i, 2])
-                    for local_j in range(neighbor_count):
-                        atom_j = int(order[neighbor_start + local_j])
-                        dx = float(points[atom_j, 0]) - px_i
-                        dy = float(points[atom_j, 1]) - py_i
-                        dz = float(points[atom_j, 2]) - pz_i
-                        if dx * dx + dy * dy + dz * dz <= radius_sq:
-                            pair_count += 1
-        return pair_count
-
-
-    @njit(cache=True)
-    def _fill_close_pairs_cell_list_numba(
-        points: np.ndarray,
-        order: np.ndarray,
-        unique_flat_ids: np.ndarray,
-        start_indices: np.ndarray,
-        counts: np.ndarray,
-        unique_cell_coords: np.ndarray,
-        cell_lookup: np.ndarray,
-        grid_shape: np.ndarray,
-        neighbor_deltas: np.ndarray,
-        neighbor_flat_offsets: np.ndarray,
-        radius_sq: float,
-        out_pairs: np.ndarray,
-    ) -> int:
-        pair_write_index = 0
-        for group_idx in range(unique_flat_ids.shape[0]):
-            start = int(start_indices[group_idx])
-            count_a = int(counts[group_idx])
-            base_flat_id = int(unique_flat_ids[group_idx])
-            base_x = int(unique_cell_coords[group_idx, 0])
-            base_y = int(unique_cell_coords[group_idx, 1])
-            base_z = int(unique_cell_coords[group_idx, 2])
-
-            for local_i in range(count_a - 1):
-                atom_i = int(order[start + local_i])
-                px_i = float(points[atom_i, 0])
-                py_i = float(points[atom_i, 1])
-                pz_i = float(points[atom_i, 2])
-                for local_j in range(local_i + 1, count_a):
-                    atom_j = int(order[start + local_j])
-                    dx = float(points[atom_j, 0]) - px_i
-                    dy = float(points[atom_j, 1]) - py_i
-                    dz = float(points[atom_j, 2]) - pz_i
-                    if dx * dx + dy * dy + dz * dz <= radius_sq:
-                        if atom_i <= atom_j:
-                            out_pairs[pair_write_index, 0] = atom_i
-                            out_pairs[pair_write_index, 1] = atom_j
-                        else:
-                            out_pairs[pair_write_index, 0] = atom_j
-                            out_pairs[pair_write_index, 1] = atom_i
-                        pair_write_index += 1
-
-            for neighbor_idx in range(neighbor_deltas.shape[0]):
-                nx = base_x + int(neighbor_deltas[neighbor_idx, 0])
-                ny = base_y + int(neighbor_deltas[neighbor_idx, 1])
-                nz = base_z + int(neighbor_deltas[neighbor_idx, 2])
-                if (
-                    nx < 0
-                    or ny < 0
-                    or nz < 0
-                    or nx >= int(grid_shape[0])
-                    or ny >= int(grid_shape[1])
-                    or nz >= int(grid_shape[2])
-                ):
-                    continue
-                neighbor_group_idx = int(cell_lookup[base_flat_id + int(neighbor_flat_offsets[neighbor_idx])])
-                if neighbor_group_idx < 0:
-                    continue
-                neighbor_start = int(start_indices[neighbor_group_idx])
-                neighbor_count = int(counts[neighbor_group_idx])
-                for local_i in range(count_a):
-                    atom_i = int(order[start + local_i])
-                    px_i = float(points[atom_i, 0])
-                    py_i = float(points[atom_i, 1])
-                    pz_i = float(points[atom_i, 2])
-                    for local_j in range(neighbor_count):
-                        atom_j = int(order[neighbor_start + local_j])
-                        dx = float(points[atom_j, 0]) - px_i
-                        dy = float(points[atom_j, 1]) - py_i
-                        dz = float(points[atom_j, 2]) - pz_i
-                        if dx * dx + dy * dy + dz * dz <= radius_sq:
-                            if atom_i <= atom_j:
-                                out_pairs[pair_write_index, 0] = atom_i
-                                out_pairs[pair_write_index, 1] = atom_j
-                            else:
-                                out_pairs[pair_write_index, 0] = atom_j
-                                out_pairs[pair_write_index, 1] = atom_i
-                            pair_write_index += 1
-        return pair_write_index
-
-
-    def _warm_cell_list_pair_kernels() -> None:
-        global _NUMBA_CELL_LIST_WARMED
-        if _NUMBA_CELL_LIST_WARMED:
-            return
-        dummy_points = np.zeros((2, 3), dtype=np.float32)
-        dummy_order = np.asarray([0, 1], dtype=np.int64)
-        dummy_unique_flat_ids = np.asarray([0], dtype=np.int64)
-        dummy_start_indices = np.asarray([0], dtype=np.int64)
-        dummy_counts = np.asarray([2], dtype=np.int64)
-        dummy_unique_cell_coords = np.zeros((1, 3), dtype=np.int32)
-        dummy_cell_lookup = np.asarray([0], dtype=np.int32)
-        dummy_grid_shape = np.asarray([1, 1, 1], dtype=np.int32)
-        dummy_neighbor_deltas = np.zeros((0, 3), dtype=np.int32)
-        dummy_neighbor_flat_offsets = np.zeros(0, dtype=np.int64)
-        dummy_pairs = np.empty((1, 2), dtype=np.int32)
-        _count_close_pairs_cell_list_numba(
-            dummy_points,
-            dummy_order,
-            dummy_unique_flat_ids,
-            dummy_start_indices,
-            dummy_counts,
-            dummy_unique_cell_coords,
-            dummy_cell_lookup,
-            dummy_grid_shape,
-            dummy_neighbor_deltas,
-            dummy_neighbor_flat_offsets,
-            0.0,
-        )
-        _fill_close_pairs_cell_list_numba(
-            dummy_points,
-            dummy_order,
-            dummy_unique_flat_ids,
-            dummy_start_indices,
-            dummy_counts,
-            dummy_unique_cell_coords,
-            dummy_cell_lookup,
-            dummy_grid_shape,
-            dummy_neighbor_deltas,
-            dummy_neighbor_flat_offsets,
-            0.0,
-            dummy_pairs,
-        )
-        _NUMBA_CELL_LIST_WARMED = True
-else:
-    def _warm_cell_list_pair_kernels() -> None:
-        return

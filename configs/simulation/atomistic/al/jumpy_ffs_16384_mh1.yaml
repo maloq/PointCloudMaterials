@@ -1,0 +1,47 @@
+# MH-1/omat_pbe jFFS counterpart. Run this only if the strict Al potential-selection
+# report selects the exact MH-1 SHA/head over MPA-0; outputs are intentionally disjoint.
+
+dataset_name: al_crystallization_jumpy_ffs_mh1_omat_pbe_16384
+source_generator_config: configs/simulation/atomistic/al/liquid_source_16384_mh1.yaml
+potential_selection_report: output/synthetic_data/al_potential_benchmark/selection.json
+source_dataset: output/synthetic_data/al_liquid_source_16384_compiled_mh1_omat_pbe_500K
+source_environment: replica_000_bulk_liquid
+source_frame_step: 3000
+
+ensemble: langevin_nvt
+temperature_K: 500.0
+timestep_fs: 1.0
+friction_time_fs: 100.0
+random_seed: 48151623
+equilibration_steps: 5000
+equilibration_checkpoint_interval_steps: 20000
+
+shot_calculator:
+  md_property_mode: forces
+
+cv:
+  type: ptm_largest_crystalline_cluster_atoms
+  ptm_rmsd_cutoff: 0.10
+  cluster_cutoff_A: 3.5
+  interval_steps: 20
+  # Revalidate these interfaces for MH-1: changing the Hamiltonian changes the basin
+  # distribution and committor even when the structural coordinate is unchanged.
+  interfaces_atoms: [10, 15, 22, 32, 45, 65, 100]
+
+basin:
+  target_crossings: 100
+  max_steps: 2000000
+  # Keep the 20-step CV cadence independent of the durable restart cadence.
+  checkpoint_interval_steps: 20000
+
+shooting:
+  trials_per_state: 4
+  max_steps: 200000
+  checkpoint_interval_steps: 20000
+
+uncertainty:
+  bootstrap_samples: 2000
+  bootstrap_block_crossings: 5
+
+output:
+  root_dir: output/synthetic_data/al_crystallization_jumpy_ffs_compiled_mh1_omat_pbe_16384_500K

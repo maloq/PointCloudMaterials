@@ -13,7 +13,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Compute per-phase radial distribution functions from every saved frame of a "
-            "completed crystallization and melting dataset."
+            "completed direct-coexistence temperature-grid dataset."
         )
     )
     parser.add_argument("--config", required=True, type=Path)

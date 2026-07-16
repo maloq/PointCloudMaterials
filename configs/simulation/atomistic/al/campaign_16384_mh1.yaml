@@ -1,0 +1,15 @@
+homogeneous_config: configs/simulation/atomistic/al/homogeneous_16384_mh1.yaml
+output_root: output/synthetic_data/al_homogeneous_campaign_16384_compiled_mh1_omat_pbe
+potential_selection_report: output/synthetic_data/al_potential_benchmark/selection.json
+
+execution:
+  # Commit the complete MTK state every 2 ps for interruption recovery.
+  chunk_steps: 2000
+  # PTM monitoring every 0.25 ps. Event persistence is evaluated only on the original
+  # 1 ps saved-frame cadence: three frames spanning 2 ps.
+  event_check_interval: 250
+  stop_on_event: true
+  post_event_steps: 5000
+  analysis_mode: asynchronous
+  analysis_workers: 2
+  checkpoint_retention: 2

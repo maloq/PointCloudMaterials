@@ -1,0 +1,20 @@
+# Dataset loader for the generated Al phase-context point clouds.
+# Generation parameters live separately in
+# configs/simulation/atomistic/al/phase_context_70304_mpa.yaml.
+
+kind: synthetic
+data_path: output/synthetic_data/al_phase_context_70304x1
+num_points: 80
+model_points: 80
+radius: 7.2
+sample_type: regular
+overlap_fraction: 0.50
+n_samples: 0
+dataset_max_samples: null
+train_ratio: 0.8
+drop_edge_samples: true
+pre_normalize: true
+normalize: true
+synthetic:
+  root_dir: output/synthetic_data/al_phase_context_70304x1
+  classes: [solid_bulk, liquid_bulk, interface]

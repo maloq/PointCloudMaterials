@@ -1,0 +1,84 @@
+# Application-specific comparison of the currently used MACE-MPA-0 checkpoint and
+# the newer MACE-MH-1 omat_pbe head. This report is deliberately not a scientific
+# qualification until both a DFT reference set and a direct-coexistence melting
+# scan are supplied below.
+
+model_configs:
+  - configs/simulation/atomistic/al/phase_context_70304_mpa.yaml
+  - configs/simulation/atomistic/al/phase_context_70304_mh1.yaml
+
+chemical_symbol: Al
+# Starting point for the EOS scan, not a fitted target.
+reference_fcc_lattice_constant_A: 4.05
+
+equation_of_state:
+  volume_scales: [0.91, 0.94, 0.97, 1.00, 1.03, 1.06, 1.09]
+  supercell_repetitions: [3, 3, 3]
+
+nve:
+  temperature_K: 650.0
+  # The smaller step is the convergence reference for the production 1 fs step.
+  timesteps_fs: [0.5, 1.0]
+  duration_ps: 5.0
+  sample_interval_fs: 10.0
+  random_seed: 73421
+
+# Optional model-disagreement diagnostics belong here only after the exact files
+# exist. They are not independent reference labels and never count as DFT evidence.
+application_structures: {}
+
+# When supplied, this must identify a converged, hashed all-Al periodic DFT set.
+# Every frame also needs unique `configuration_id`, `state`, and `temperature_K`
+# metadata plus energy, forces, and stress. Null keeps both models unqualified.
+dft_reference: null
+required_dft_states:
+  [solid_bulk, liquid_bulk, interface, strained_solid, nucleus, hcp, bcc]
+
+qualification_scope:
+  pressure_range_GPa: [0.0, 0.0]
+  state_temperature_ranges_K:
+    # Direct-coexistence contains metastable solid and liquid portions at every
+    # temperature in the 650--1000 K scan.
+    solid_bulk: [600.0, 1000.0]
+    liquid_bulk: [500.0, 1600.0]
+    # The homogeneous 500 K nucleus workflow also evaluates interfacial atoms.
+    interface: [500.0, 1600.0]
+    strained_solid: [600.0, 700.0]
+    nucleus: [500.0, 700.0]
+    hcp: [300.0, 700.0]
+    bcc: [300.0, 700.0]
+  maximum_timestep_fs: 1.0
+  authorized_claims:
+    # DFT structure/force/stress errors plus direct coexistence can support these
+    # claims if every configured gate passes.
+    phase_context_structure: true
+    equilibrium_thermodynamics: true
+    # This benchmark has no diffusion/viscosity/transport or time-rescaling gate.
+    kinetics: false
+
+melting_reference:
+  temperature_K: 933.45
+  source_url: "https://webbook.nist.gov/cgi/cbook.cgi?ID=C7429905&Mask=4"
+  maximum_absolute_error_K: 50.0
+  minimum_protocol_count: 2
+  minimum_replicas_per_temperature: 4
+  minimum_production_duration_ps: 20.0
+  maximum_protocol_spread_K: 25.0
+
+# Map each model_name to its replicated transition `velocity_summary.json` after
+# the scan resolves a robust zero-interface-velocity bracket.
+melting_scan_summaries: {}
+
+thresholds:
+  maximum_nve_drift_meV_per_atom_ps: 1.0
+  maximum_nve_excursion_meV_per_atom: 2.0
+  maximum_nve_detrended_rms_meV_per_atom: 0.5
+  maximum_nve_drift_difference_meV_per_atom_ps: 0.5
+  maximum_cache_energy_difference_meV_per_atom: 0.005
+  maximum_cache_force_rmse_eV_per_A: 0.0001
+  maximum_cache_stress_difference_GPa: 0.0001
+  maximum_dft_energy_rmse_meV_per_atom: 10.0
+  maximum_dft_force_rmse_eV_per_A: 0.15
+  maximum_dft_stress_rmse_GPa: 0.5
+
+output_json: output/synthetic_data/al_potential_benchmark/report.json

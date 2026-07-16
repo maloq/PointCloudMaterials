@@ -113,13 +113,17 @@ def add_phase_rdf_to_transition_dataset(
         )
 
     branch_images: dict[str, Path] = {}
-    for branch in (config.crystallization, config.melting):
-        branch_images[branch.name] = _write_branch_rdf(
-            output_root / branch.name,
-            branch=branch,
-            config=config,
-            progress=progress,
-        )
+    for branch in config.temperature_runs:
+        for replica_index, _random_seed in enumerate(config.random_seeds):
+            run_name = f"{branch.name}/replica_{replica_index:03d}"
+            image_path = _write_branch_rdf(
+                output_root / run_name,
+                branch=branch,
+                config=config,
+                progress=progress,
+            )
+            if replica_index == 0:
+                branch_images[branch.name] = image_path
     write_phase_rdf_overview(
         output_root / "phase_rdf_overview.png",
         branch_images,

@@ -1,4 +1,4 @@
-# Autoencoder
+# Static Al dataset loader for autoencoder training.
 kind: static
 radius: 7.6
 sample_type: 'regular'

@@ -1,0 +1,31 @@
+# End-to-end NPT timing gate for the exact MPA-0 and MH-1 configurations.
+# Run only when both models have exclusive access to the same production GPU type.
+
+model_configs:
+  - configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml
+  - configs/simulation/atomistic/al/liquid_source_16384_mh1.yaml
+# Each optimized path must reproduce the same checkpoint/head/backend without
+# compilation or padding before its timing result is eligible for selection.
+reference_model_configs:
+  - configs/simulation/atomistic/al/phase_context_70304_mpa.yaml
+  - configs/simulation/atomistic/al/phase_context_70304_mh1.yaml
+# Load each model's own immutable NPT endpoint so timing includes its actual density and
+# neighbor count. Each path validates manifest/labels/PTM and reads the campaign frame.
+initial_homogeneous_configs:
+  - configs/simulation/atomistic/al/homogeneous_16384_mpa.yaml
+  - configs/simulation/atomistic/al/homogeneous_16384_mh1.yaml
+temperature_K: 500.0
+pressure_GPa: 0.0
+timestep_fs: 1.0
+thermostat_time_fs: 100.0
+barostat_time_fs: 500.0
+# Compilation is triggered by the parity evaluation; this additional warmup reaches the
+# steady MD access pattern before eight independent timing blocks (400 measured steps).
+warmup_steps: 50
+measurement_blocks: 8
+steps_per_block: 50
+random_seed: 84621
+maximum_parity_energy_difference_meV_per_atom: 0.005
+maximum_parity_force_rmse_eV_per_A: 0.0001
+maximum_parity_stress_difference_GPa: 0.0001
+output_json: output/synthetic_data/al_potential_benchmark/performance.json

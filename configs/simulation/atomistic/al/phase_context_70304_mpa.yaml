@@ -3,7 +3,7 @@
 #
 # Generate it with:
 #   conda run -n pointnet python -m src.data_utils.synthetic.atomistic_generator \
-#     --config configs/data/atomistic_al_phase_context.yaml
+#     --config configs/simulation/atomistic/al/phase_context_70304_mpa.yaml
 
 kind: synthetic
 data_path: output/synthetic_data/al_phase_context_70304x1
@@ -27,11 +27,30 @@ random_seeds: [12345]
 
 potential:
   # Repository-owned checkpoint only. Generation checks this digest before MD.
+  model_name: mace-mpa-0-medium
+  family: MACE-MPA-0
   model_path: datasets/potentials/mace-mpa-0-medium.model
   sha256: 75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638
+  head: default
+  source_url: https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model
+  license_identifier: MIT
+  # No Al solid/liquid/interface/nucleus DFT qualification report exists yet.
+  usage_mode: exploratory
+  validation_report: null
   device: cuda
   default_dtype: float32
+  # CuEq-only is the current measured baseline. OEq/hybrid remains an explicit
+  # benchmark candidate; it is never selected by an availability fallback.
   enable_cueq: true
+  enable_oeq: false
+  # This shared model config is also used for variable-size EOS/NVE validation,
+  # so fixed-shape compilation belongs in dedicated production configs.
+  compile_mode: null
+  compile_fullgraph: false
+  pad_num_atoms: 0
+  pad_num_edges: 0
+  # ASE MTK requests pressure and force at the same state; retain both outputs.
+  md_property_mode: forces_stress
   # Reuse the GPU neighbor graph until an exact displacement/cell bound expires.
   neighbor_skin_A: 0.3
 
@@ -55,7 +74,9 @@ system:
   crystal_structure: fcc
   initial_lattice_constant_A: 4.05
   repetitions: [26, 26, 26]
-  liquid_slab_fraction: 0.70
+  # Balanced phase thicknesses keep both fronts separated during the 25 ps
+  # equilibration+production coexistence scans derived from this source.
+  liquid_slab_fraction: 0.50
   interface_half_width_A: 5.0
 
 validation:
@@ -63,8 +84,12 @@ validation:
   maximum_pressure_error_GPa: 0.35
   maximum_temperature_error_K: 75.0
   minimum_pair_distance_A: 1.8
-  reference_density_cache: datasets/dump_first_10.temporal_cache
-  maximum_relative_density_error: 0.10
+  # OVITO normalized PTM RMSD cutoff used for every endpoint acceptance check.
+  ptm_rmsd_cutoff: 0.10
+  # The legacy LAMMPS dump cache has no potential/T/P/phase provenance and is not a
+  # scientific density reference for this Hamiltonian.
+  reference_density_cache: null
+  maximum_relative_density_error: null
   minimum_solid_fcc_fraction: 0.85
   maximum_liquid_crystalline_fraction: 0.15
   minimum_interface_crystalline_fraction: 0.20

@@ -89,8 +89,9 @@ class NeighborPhaseContext:
 
 def build_site_layout(config: TemporalBenchmarkConfig) -> SiteLayout:
     domain = config.domain
+    box_size = float(domain.box_size)
     centers = _build_site_centers(domain=domain, seed=int(config.seed))
-    tree = cKDTree(centers)
+    tree = cKDTree(centers, boxsize=box_size)
     k = min(domain.site_count, max(1, int(config.dynamics.neighbor_count)) + 1)
     _, indices = tree.query(centers, k=k)
     if k == 1:
@@ -98,7 +99,7 @@ def build_site_layout(config: TemporalBenchmarkConfig) -> SiteLayout:
     else:
         neighbor_indices = np.asarray(indices[:, 1:], dtype=np.int32)
     phase_centers = _build_phase_field_centers(config=config, seed=int(config.seed))
-    phase_tree = cKDTree(phase_centers)
+    phase_tree = cKDTree(phase_centers, boxsize=box_size)
     phase_k = min(phase_centers.shape[0], max(1, int(config.dynamics.neighbor_count)) + 1)
     _, phase_indices = phase_tree.query(phase_centers, k=phase_k)
     if phase_k == 1:
@@ -138,6 +139,7 @@ def simulate_latent_trajectories(
 
     phase_seed_site_mask = np.zeros(phase_site_count, dtype=bool)
     nucleation_state_idx = _resolve_nucleation_state(config.dynamics, graph)
+    delayed_seed_source_state_idx: int | None = None
     if config.dynamics.mode == "coupled" and config.dynamics.nucleation_seed_fraction > 0.0:
         seed_count = max(1, int(round(config.dynamics.nucleation_seed_fraction * max(layout.site_count, 1))))
         seed_count = min(seed_count, phase_site_count)
@@ -150,6 +152,28 @@ def simulate_latent_trajectories(
                 neighbor_indices=layout.phase_neighbor_indices,
                 hops=blob_hops,
             )
+        if (
+            nucleation_state_idx is not None
+            and config.dynamics.nucleation_start_frame > 0
+        ):
+            nucleation_state_name = graph.name(nucleation_state_idx)
+            primary_position = graph.primary_position.get(nucleation_state_name)
+            if primary_position is None or primary_position == 0:
+                raise ValueError(
+                    "Delayed seed activation requires dynamics.nucleation_state to have an "
+                    "immediate predecessor in dynamics.primary_path."
+                )
+            delayed_seed_source_state_idx = graph.index(
+                graph.primary_path[primary_position - 1]
+            )
+            if not graph.is_valid_transition(
+                delayed_seed_source_state_idx, nucleation_state_idx
+            ):
+                raise ValueError(
+                    "Delayed seed activation predecessor is not connected to the nucleation "
+                    f"state: {graph.name(delayed_seed_source_state_idx)!r} -> "
+                    f"{nucleation_state_name!r}."
+                )
 
     current_state = np.empty(phase_site_count, dtype=np.int16)
     current_grain = np.full(phase_site_count, -1, dtype=np.int32)
@@ -170,21 +194,55 @@ def simulate_latent_trajectories(
     init_probs_arr /= init_probs_arr.sum()
     init_states_arr = np.array(init_states_list, dtype=np.int16)
     sampled_indices = rng.choice(init_states_arr, size=phase_site_count, p=init_probs_arr)
-    if nucleation_state_idx is not None:
+    if (
+        nucleation_state_idx is not None
+        and config.dynamics.nucleation_start_frame == 0
+    ):
         sampled_indices[phase_seed_site_mask] = nucleation_state_idx
+    elif delayed_seed_source_state_idx is not None:
+        sampled_indices[phase_seed_site_mask] = delayed_seed_source_state_idx
     current_state[:] = sampled_indices
+
+    current_dwell_target = np.empty(phase_site_count, dtype=np.int16)
+    frames_in_current_state = np.ones(phase_site_count, dtype=np.int16)
+    for site_id in range(phase_site_count):
+        state_name = graph.name(int(current_state[site_id]))
+        current_dwell_target[site_id] = _sample_dwell_duration(
+            states[state_name].dwell, rng
+        )
+
+    seed_nucleus_grain_id: int | None = None
+    if (
+        nucleation_state_idx is not None
+        and config.dynamics.nucleation_start_frame == 0
+        and np.any(phase_seed_site_mask)
+    ):
+        nucleation_state_name = graph.name(nucleation_state_idx)
+        if not states[nucleation_state_name].grain_bearing:
+            raise ValueError(
+                f"dynamics.nucleation_state={nucleation_state_name!r} must be grain-bearing "
+                "so one coherent seed blob has one orientation."
+            )
+        seed_nucleus_grain_id = next_grain_id
+        grain_orientations[seed_nucleus_grain_id] = rotation_matrix_to_quaternion(
+            random_rotation_matrix(rng)
+        )
+        next_grain_id += 1
 
     # Initial grain assignment (sequential because it allocates grain IDs)
     for site_id in range(phase_site_count):
         state_name = graph.state_names[int(current_state[site_id])]
-        current_grain[site_id], next_grain_id = _assign_initial_grain(
-            state_name=state_name,
-            states=states,
-            is_seed=bool(phase_seed_site_mask[site_id]),
-            next_grain_id=next_grain_id,
-            grain_orientations=grain_orientations,
-            rng=rng,
-        )
+        if phase_seed_site_mask[site_id] and seed_nucleus_grain_id is not None:
+            current_grain[site_id] = seed_nucleus_grain_id
+        else:
+            current_grain[site_id], next_grain_id = _assign_initial_grain(
+                state_name=state_name,
+                states=states,
+                is_seed=False,
+                next_grain_id=next_grain_id,
+                grain_orientations=grain_orientations,
+                rng=rng,
+            )
         current_orientation[site_id] = _initial_orientation(
             grain_id=current_grain[site_id],
             grain_orientations=grain_orientations,
@@ -251,7 +309,9 @@ def simulate_latent_trajectories(
             previous_state = current_state.copy()
             previous_grain = current_grain.copy()
 
-            # --- Vectorized coupled transition sampling ---
+            transition_due = frames_in_current_state >= current_dwell_target
+            if frame_idx < config.dynamics.nucleation_start_frame:
+                transition_due[phase_seed_site_mask] = False
             current_state = _sample_transitions_batch(
                 previous_state=previous_state,
                 previous_grain=previous_grain,
@@ -267,16 +327,54 @@ def simulate_latent_trajectories(
                 is_solid_core=_is_solid_core,
                 state_indices=(_L, _P, _I, _C, _G, _D),
                 frame_idx=frame_idx,
+                transition_due=transition_due,
                 rng=rng,
             )
+            if (
+                nucleation_state_idx is not None
+                and frame_idx == config.dynamics.nucleation_start_frame
+            ):
+                current_state[phase_seed_site_mask] = nucleation_state_idx
+                if seed_nucleus_grain_id is None and np.any(phase_seed_site_mask):
+                    nucleation_state_name = graph.name(nucleation_state_idx)
+                    if not states[nucleation_state_name].grain_bearing:
+                        raise ValueError(
+                            f"dynamics.nucleation_state={nucleation_state_name!r} must be "
+                            "grain-bearing so one coherent seed blob has one orientation."
+                        )
+                    seed_nucleus_grain_id = next_grain_id
+                    grain_orientations[seed_nucleus_grain_id] = (
+                        rotation_matrix_to_quaternion(random_rotation_matrix(rng))
+                    )
+                    next_grain_id += 1
+
+            changed_state = current_state != previous_state
+            unchanged_state = ~changed_state
+            frames_in_current_state[unchanged_state] += 1
+            changed_indices = np.flatnonzero(changed_state)
+            frames_in_current_state[changed_indices] = 1
+            for site_id in changed_indices:
+                state_name = graph.name(int(current_state[site_id]))
+                current_dwell_target[site_id] = _sample_dwell_duration(
+                    states[state_name].dwell, rng
+                )
 
             # --- Vectorized grain assignment ---
+            active_seed_mask = phase_seed_site_mask & (
+                frame_idx >= config.dynamics.nucleation_start_frame
+            )
+            grain_source = previous_grain.copy()
+            if (
+                frame_idx == config.dynamics.nucleation_start_frame
+                and seed_nucleus_grain_id is not None
+            ):
+                grain_source[phase_seed_site_mask] = seed_nucleus_grain_id
             current_grain, next_grain_id = _update_grains_batch(
                 current_state=current_state,
-                previous_grain=previous_grain,
+                previous_grain=grain_source,
                 neigh=_neigh,
                 neigh_valid=_neigh_valid,
-                phase_seed_site_mask=phase_seed_site_mask,
+                phase_seed_site_mask=active_seed_mask,
                 is_grain_bearing=_is_grain_bearing,
                 allows_new_grain=_allows_new_grain,
                 precursor_state_idx=_P,
@@ -445,28 +543,28 @@ def _build_phase_field_centers(config: TemporalBenchmarkConfig, seed: int) -> np
             )
         target_spacing = float((target_atoms / float(rendering.target_density)) ** (1.0 / 3.0))
         spacing = max(spacing, target_spacing)
-    jitter = float(np.clip(rendering.phase_field_jitter_fraction, 0.0, 0.45)) * spacing
     axis_values = _phase_axis_values(
-        start=float(domain.padding),
-        stop=float(domain.box_size) - float(domain.padding),
+        box_size=float(domain.box_size),
         spacing=spacing,
     )
+    periodic_spacing = float(domain.box_size) / len(axis_values)
+    jitter = float(rendering.phase_field_jitter_fraction) * periodic_spacing
     if axis_values.size == 0:
         raise RuntimeError(
             "Phase field center generation produced no axis points. "
-            f"box_size={domain.box_size}, padding={domain.padding}, spacing={spacing:.3f}."
+            f"box_size={domain.box_size}, spacing={spacing:.3f}."
         )
     rng = np.random.default_rng(seed + 4_091)
     centers = []
-    lower = float(domain.padding)
-    upper = float(domain.box_size) - float(domain.padding)
     for x in axis_values:
         for y in axis_values:
             for z in axis_values:
                 candidate = np.array([x, y, z], dtype=np.float32)
                 if jitter > 0.0:
                     candidate += rng.uniform(-jitter, jitter, size=3).astype(np.float32)
-                    candidate = np.clip(candidate, lower, upper)
+                    candidate = np.mod(candidate, float(domain.box_size)).astype(
+                        np.float32
+                    )
                 centers.append(candidate)
     if not centers:
         raise RuntimeError(
@@ -476,16 +574,16 @@ def _build_phase_field_centers(config: TemporalBenchmarkConfig, seed: int) -> np
     return np.asarray(centers, dtype=np.float32)
 
 
-def _phase_axis_values(*, start: float, stop: float, spacing: float) -> np.ndarray:
+def _phase_axis_values(*, box_size: float, spacing: float) -> np.ndarray:
     if spacing <= 0.0:
         raise ValueError(f"Phase field spacing must be positive, got {spacing}.")
-    if stop <= start:
-        raise ValueError(
-            f"Phase field axis bounds must satisfy stop > start, got start={start}, stop={stop}."
-        )
-    extent = stop - start
-    count = max(1, int(np.floor(extent / spacing)) + 1)
-    return np.linspace(start, stop, num=count, dtype=np.float32)
+    if box_size <= 0.0:
+        raise ValueError(f"Periodic phase-field box_size must be positive, got {box_size}.")
+    count = max(1, int(np.rint(box_size / spacing)))
+    periodic_spacing = box_size / count
+    return (
+        (np.arange(count, dtype=np.float64) + 0.5) * periodic_spacing
+    ).astype(np.float32)
 
 
 def _expand_seed_mask(
@@ -544,7 +642,11 @@ def _random_centers(domain, rng: np.random.Generator) -> np.ndarray:
         attempts += 1
         candidate = rng.uniform(float(domain.padding), float(domain.box_size) - float(domain.padding), size=3)
         if centers:
-            distances = np.linalg.norm(np.asarray(centers) - candidate, axis=1)
+            displacement = np.asarray(centers) - candidate
+            displacement -= float(domain.box_size) * np.rint(
+                displacement / float(domain.box_size)
+            )
+            distances = np.linalg.norm(displacement, axis=1)
             if np.any(distances < min_distance):
                 continue
         centers.append(candidate.astype(np.float32))
@@ -991,12 +1093,31 @@ def _sample_transitions_batch(
     is_solid_core: np.ndarray,
     state_indices: tuple[int, int, int, int, int, int],
     frame_idx: int,
+    transition_due: np.ndarray,
     rng: np.random.Generator,
 ) -> np.ndarray:
     """Vectorized coupled transition sampling for all sites in one frame."""
     _L, _P, _I, _C, _G, _D = state_indices
     n_sites = previous_state.shape[0]
     num_states = len(graph.state_names)
+    if transition_due.shape != (n_sites,):
+        raise ValueError(
+            f"transition_due must have shape ({n_sites},), got {transition_due.shape}."
+        )
+    if dynamics.mode == "independent":
+        return _sample_due_transitions(
+            previous_state=previous_state,
+            transition_weights=edge_weight_matrix[previous_state].copy(),
+            transition_due=transition_due,
+            edge_weight_matrix=edge_weight_matrix,
+            graph=graph,
+            rng=rng,
+        )
+    if dynamics.mode != "coupled":
+        raise ValueError(
+            f"Unsupported dynamics.mode={dynamics.mode!r}. Expected 'independent' or "
+            "'coupled'."
+        )
 
     # --- Compute neighbor phase fractions for all sites at once ---
     # Gather neighbor states: (n_sites, max_neighbors), -1 for invalid
@@ -1118,7 +1239,7 @@ def _sample_transitions_batch(
                 iface_prob,
             )
             # Pre-nucleation suppression
-            pre_nucleation = ~phase_seed_site_mask & (frame_idx < dynamics.nucleation_start_frame)
+            pre_nucleation = frame_idx < dynamics.nucleation_start_frame
             iface_prob = np.where(pre_nucleation, 0.0, iface_prob)
             back_prob = np.where(interface_core_count >= 1.0, 0.0, back_prob)
             iface_prob = np.clip(iface_prob, 0.0, 1.0)
@@ -1197,29 +1318,64 @@ def _sample_transitions_batch(
         if np.any(mask_D):
             trans_prob[mask_D, _C] = 0.040 * edge_weight_matrix[_D, _C]
 
-    # --- Sample transitions for all sites at once ---
-    # Clamp total probability and compute stay probability
-    total_prob = np.sum(trans_prob, axis=1)  # (n_sites,)
-    # Where total > 0.97, scale down
-    scale_down = np.where(total_prob > 0.97, 0.97 / np.maximum(total_prob, 1e-12), 1.0)
-    trans_prob *= scale_down[:, None]
-    total_prob = np.sum(trans_prob, axis=1)
-    stay_prob = np.maximum(0.0, 1.0 - total_prob)
+    return _sample_due_transitions(
+        previous_state=previous_state,
+        transition_weights=trans_prob,
+        transition_due=transition_due,
+        edge_weight_matrix=edge_weight_matrix,
+        graph=graph,
+        rng=rng,
+    )
 
-    # Build full probability matrix: (n_sites, num_states + 1) where last column is "stay"
-    # Actually, embed stay into the current state's column
-    full_prob = trans_prob.copy()
-    full_prob[np.arange(n_sites), previous_state] += stay_prob
-    # Normalize
-    row_sum = np.sum(full_prob, axis=1, keepdims=True)
-    row_sum = np.where(row_sum > 0, row_sum, 1.0)
-    full_prob /= row_sum
 
-    # Sample: cumulative sum then searchsorted
-    cum_prob = np.cumsum(full_prob, axis=1)
-    draws = rng.random(n_sites)
-    new_state = np.argmax(cum_prob >= draws[:, None], axis=1).astype(np.int16)
+def _sample_due_transitions(
+    *,
+    previous_state: np.ndarray,
+    transition_weights: np.ndarray,
+    transition_due: np.ndarray,
+    edge_weight_matrix: np.ndarray,
+    graph: TransitionGraph,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    """Sample the embedded chain when each site's configured holding time expires."""
 
+    new_state = previous_state.copy()
+    due_indices = np.flatnonzero(transition_due)
+    if due_indices.size == 0:
+        return new_state
+    due_weights = np.asarray(transition_weights[due_indices], dtype=np.float64).copy()
+    due_weights[np.arange(len(due_indices)), previous_state[due_indices]] = 0.0
+    contextual_totals = np.sum(due_weights, axis=1)
+    no_contextual_target = contextual_totals <= 0.0
+    if np.any(no_contextual_target):
+        embedded_chain_indices = due_indices[no_contextual_target]
+        due_weights[no_contextual_target] = edge_weight_matrix[
+            previous_state[embedded_chain_indices]
+        ]
+        due_weights[
+            np.flatnonzero(no_contextual_target),
+            previous_state[embedded_chain_indices],
+        ] = 0.0
+    totals = np.sum(due_weights, axis=1)
+    if np.any(totals <= 0.0):
+        invalid_sites = due_indices[totals <= 0.0]
+        invalid_states = [graph.name(int(previous_state[index])) for index in invalid_sites]
+        raise RuntimeError(
+            "Configured dwell time expired for states with no outgoing transition target: "
+            f"site_ids={invalid_sites.tolist()}, states={invalid_states}. Every finite-dwell "
+            "state must have at least one positive transition-graph edge."
+        )
+    probabilities = due_weights / totals[:, None]
+    cumulative = np.cumsum(probabilities, axis=1)
+    draws = rng.random(len(due_indices))
+    sampled = np.argmax(cumulative >= draws[:, None], axis=1).astype(np.int16)
+    if np.any(sampled == previous_state[due_indices]):
+        failed_sites = due_indices[sampled == previous_state[due_indices]]
+        raise RuntimeError(
+            "Semi-Markov embedded-chain sampling selected the current state despite its "
+            f"weight being zero: site_ids={failed_sites.tolist()}."
+        )
+    new_state[due_indices] = sampled
     return new_state
 
 

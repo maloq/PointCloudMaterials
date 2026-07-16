@@ -1,6 +1,6 @@
 defaults:
   - vicreg_vn_molecular
-  - override /data: data_ae_multi_material
+  - override /data: loaders/static_multi_material
   - _self_
 
 experiment_name: VISREG_l${latent_size}_K${visreg_num_projections}_N${data.num_points}_M${data.model_points}_${encoder.name}

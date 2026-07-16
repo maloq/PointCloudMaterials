@@ -13,7 +13,11 @@ from .graph import TransitionGraph
 from .neighborhoods import build_neighborhood_trajectory_pack
 from .rendering import FrameRenderer
 from .templates import TemplateLibrary
-from .validation import validate_temporal_dataset
+from .validation import (
+    StructuralAuditFrame,
+    audit_rendered_frame,
+    validate_temporal_dataset,
+)
 from .visualization import generate_temporal_visualizations
 from .writer import TemporalDatasetWriteResult, TemporalDatasetWriter, result_from_paths
 
@@ -28,6 +32,13 @@ def generate_temporal_dataset(
 ) -> TemporalDatasetWriteResult:
     started_at = time.perf_counter()
     config = _resolve_config(config_or_path, seed=seed, output_dir=output_dir)
+    if config.output.output_dir.exists() and not config.output.overwrite:
+        raise FileExistsError(
+            f"Temporal dataset output directory already exists: "
+            f"{config.output.output_dir}. Set output.overwrite=true or choose a different "
+            "output path. This check is performed before latent simulation and renderer "
+            "initialization."
+        )
     _emit_progress(progress, f"[temporal] Output directory: {config.output.output_dir}")
     if config.output.frame_storage == "frame_dirs" and not config.rendering.save_frame_dirs:
         raise ValueError(
@@ -69,7 +80,16 @@ def generate_temporal_dataset(
         ),
         dtype=np.float32,
     )
+    point_state_ids_by_frame = np.empty(
+        local_points_by_frame.shape[:-1], dtype=np.int16
+    )
+    point_grain_ids_by_frame = np.empty(
+        local_points_by_frame.shape[:-1], dtype=np.int32
+    )
     frame_atom_counts: list[int] = []
+    frame_minimum_pair_distances: list[float] = []
+    structural_audit_frames: list[StructuralAuditFrame] = []
+    structural_audit_frame_indices = set(config.structural_audit.frame_indices)
     frame_stage_started_at = time.perf_counter()
     report_interval = _frame_progress_interval(config.time.num_frames)
     _emit_progress(progress, "[temporal] Step 3/6: Rendering and writing frames")
@@ -79,7 +99,33 @@ def generate_temporal_dataset(
         for frame_idx in range(config.time.num_frames):
             frame = renderer.render_frame(frame_idx)
             local_points_by_frame[frame_idx] = frame.local_points
+            expected_index_shape = local_points_by_frame.shape[1:3]
+            if frame.local_atom_indices.shape != expected_index_shape:
+                raise RuntimeError(
+                    "Renderer returned neighborhood atom indices with an incompatible shape: "
+                    f"frame={frame_idx}, expected={expected_index_shape}, "
+                    f"got={frame.local_atom_indices.shape}."
+                )
+            point_state_ids_by_frame[frame_idx] = frame.state_ids[frame.local_atom_indices]
+            point_grain_ids_by_frame[frame_idx] = frame.grain_ids[frame.local_atom_indices]
             frame_atom_counts.append(int(frame.atoms.shape[0]))
+            frame_minimum_pair_distances.append(
+                float(frame.metadata["minimum_periodic_pair_distance"])
+            )
+            if frame_idx in structural_audit_frame_indices:
+                _emit_progress(
+                    progress,
+                    f"[temporal]   OVITO PTM structural audit for frame {frame_idx}",
+                )
+                structural_audit_frames.append(
+                    audit_rendered_frame(
+                        config=config,
+                        graph=graph,
+                        frame_index=frame_idx,
+                        positions_A=frame.atoms,
+                        true_state_ids=frame.state_ids,
+                    )
+                )
             # Wait for previous frame's write to finish before submitting next
             if pending_write_future is not None:
                 pending_write_future.result()
@@ -119,6 +165,8 @@ def generate_temporal_dataset(
         layout=layout,
         latent=latent,
         local_points_by_frame=local_points_by_frame,
+        point_state_ids_by_frame=point_state_ids_by_frame,
+        point_grain_ids_by_frame=point_grain_ids_by_frame,
     )
     writer.write_neighborhoods(neighborhood_pack)
     _emit_progress(progress, "[temporal] Step 4/6 complete")
@@ -133,7 +181,11 @@ def generate_temporal_dataset(
         layout=layout,
         latent=latent,
         local_points_by_frame=local_points_by_frame,
+        point_state_ids_by_frame=point_state_ids_by_frame,
+        point_grain_ids_by_frame=point_grain_ids_by_frame,
         frame_atom_counts=frame_atom_counts,
+        frame_minimum_pair_distances=frame_minimum_pair_distances,
+        structural_audit_frames=structural_audit_frames,
     )
     validation_summary_path = writer.write_validation(validation_summary)
     manifest_path = writer.write_manifest(layout=layout, latent=latent, validation=validation_summary)

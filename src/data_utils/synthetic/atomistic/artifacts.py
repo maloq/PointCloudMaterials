@@ -13,7 +13,12 @@ from ase import Atoms
 from ase.io import write
 
 from .config import GeneratorConfig
-from .simulation import SimulatedSystems, ThermodynamicTrace
+from .provenance import ExecutionProvenance
+from .simulation import (
+    SimulatedSystems,
+    ThermodynamicTrace,
+    validate_thermodynamic_trace,
+)
 from .validation import SystemDiagnostics
 
 
@@ -190,10 +195,15 @@ def _write_environment(
     trace: ThermodynamicTrace,
     diagnostics: SystemDiagnostics,
     config: GeneratorConfig,
-    potential_sha256: str,
+    execution_provenance: ExecutionProvenance,
     random_seed: int,
 ) -> None:
     directory.mkdir(parents=True)
+    validate_thermodynamic_trace(
+        trace,
+        atom_count=len(atoms),
+        context=f"dataset environment {name!r} before artifact write",
+    )
     atom_table = build_atom_table(atoms, labels)
     positions = atom_table["position"]
     np.save(directory / "atoms.npy", positions)
@@ -234,8 +244,7 @@ def _write_environment(
         },
         "physics": {
             "chemical_symbol": config.system.chemical_symbol,
-            "potential_path": str(config.potential.model_path),
-            "potential_sha256": potential_sha256,
+            "calculator": execution_provenance.calculator.to_dict(),
             "ensemble": (
                 "constant-temperature (Langevin) transient at a volume derived from the "
                 "validated bulk endpoint volumes"
@@ -288,6 +297,8 @@ def write_dataset(
     diagnostics: dict[str, SystemDiagnostics],
     reference_densities: dict[str, float] | None,
     config: GeneratorConfig,
+    *,
+    execution_provenance: ExecutionProvenance,
 ) -> tuple[Path, ...]:
     output_root = config.output.root_dir
     if output_root.exists() and not config.output.overwrite:
@@ -299,7 +310,6 @@ def write_dataset(
     staging_root = Path(
         tempfile.mkdtemp(prefix=f".{output_root.name}.staging-", dir=output_root.parent)
     )
-    potential_sha256 = sha256_file(config.potential.model_path)
     environments = {}
     for replica_name, (random_seed, systems) in replicas.items():
         environments.update(
@@ -338,7 +348,7 @@ def write_dataset(
                 trace=trace,
                 diagnostics=diagnostics[name],
                 config=config,
-                potential_sha256=potential_sha256,
+                execution_provenance=execution_provenance,
                 random_seed=random_seed,
             )
         if config.output.create_visualizations:
@@ -346,11 +356,16 @@ def write_dataset(
 
             write_benchmark_overview(staging_root, list(environments))
         manifest = {
-            "schema_version": 3,
+            "schema_version": 4,
             "dataset_name": config.dataset_name,
             "environment_dirs": list(environments),
             "config": config.to_dict(),
-            "potential_sha256": potential_sha256,
+            "potential_sha256": execution_provenance.calculator.model_sha256,
+            "execution_provenance": execution_provenance.to_dict(),
+            "potential_usage_mode": execution_provenance.calculator.usage_mode,
+            "scientifically_qualified_potential": (
+                execution_provenance.calculator.scientifically_qualified
+            ),
             "random_seeds": list(config.random_seeds),
             "repository_reference_number_densities_per_A3": reference_densities,
             "scientific_scope": {
@@ -359,7 +374,9 @@ def write_dataset(
                     "solid, metastable/supercooled liquid, and solid-liquid interfacial contexts."
                 ),
                 "unsupported_claim": (
-                    "Identification of equilibrium thermodynamic phases from cluster identity alone."
+                    "Quantitative real-Al thermodynamics or kinetics, equilibrium phase "
+                    "identification from cluster identity alone, or application-specific MLIP "
+                    "accuracy without a qualification report for this exact model SHA and head."
                 ),
             },
         }

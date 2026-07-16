@@ -8,8 +8,8 @@ checkpoint:
   cuda_device: 0
 
 inputs:
-  # Optional data override YAML, for example configs/data/data_ae_Al_80.yaml
-  data_config: configs/data/data_ae_Al_80.yaml
+  # Optional data override YAML, for example configs/data/loaders/static_al_80.yaml
+  data_config: configs/data/loaders/static_al_80.yaml
   # Optional static frame selection. null -> use data.data_files from the checkpoint config.
   static_data_files: null
   dataloader_num_workers: 4

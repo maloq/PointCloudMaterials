@@ -11,7 +11,7 @@ from .atomistic.transition_slices import add_structure_slices_to_transition_data
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Render initial, midpoint, and final atomic slices for transition branches."
+        description="Render initial, midpoint, and final atomic slices for all transition runs."
     )
     parser.add_argument("--config", required=True, type=Path)
     parser.add_argument("--dataset", required=True, action="append", type=Path)
