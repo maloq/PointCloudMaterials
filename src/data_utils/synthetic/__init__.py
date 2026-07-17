@@ -4,10 +4,7 @@ __all__ = [
     "GenerationResult",
     "GeneratorConfig",
     "generate_dataset",
-    "generate_temporal_dataset",
-    "generate_temporal_visualizations",
     "load_config",
-    "load_temporal_config",
     "generate_visualizations",
 ]
 
@@ -26,19 +23,6 @@ def __getattr__(name):
             "GeneratorConfig": GeneratorConfig,
             "generate_dataset": generate_dataset,
             "load_config": load_config,
-        }
-        return namespace[name]
-    if name in {"generate_temporal_dataset", "generate_temporal_visualizations", "load_temporal_config"}:
-        from .temporal import (
-            generate_temporal_dataset,
-            generate_temporal_visualizations,
-            load_temporal_config,
-        )
-
-        namespace = {
-            "generate_temporal_dataset": generate_temporal_dataset,
-            "generate_temporal_visualizations": generate_temporal_visualizations,
-            "load_temporal_config": load_temporal_config,
         }
         return namespace[name]
     if name == "generate_visualizations":
