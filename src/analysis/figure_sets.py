@@ -126,7 +126,23 @@ def _resolve_sample_source_groups(
 
 
 def _sanitize_snapshot_output_name(name: str) -> str:
-    stem = Path(str(name)).stem or Path(str(name)).name or str(name)
+    source_name = Path(str(name)).name or str(name)
+    known_data_suffixes = {
+        ".dump",
+        ".extxyz",
+        ".lammpstrj",
+        ".npy",
+        ".npz",
+        ".pos",
+        ".traj",
+        ".xyz",
+    }
+    source_path = Path(source_name)
+    stem = (
+        source_path.stem
+        if source_path.suffix.lower() in known_data_suffixes
+        else source_name
+    )
     sanitized = re.sub(r"[^A-Za-z0-9_-]+", "_", stem).strip("_")
     return sanitized or "snapshot"
 

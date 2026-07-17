@@ -1,0 +1,285 @@
+checkpoint:
+  # Required for manual runs. The training wrappers override this at runtime.
+  # path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
+  # path: output/2026-06-16/18-46-58/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=789.ckpt
+  path: output/2026-07-13/18-40-11/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=95.ckpt
+
+  output_dir: outputs/static_crystallization_step187800_multiscale_vicreg
+  cuda_device: 0
+
+inputs:
+  # Optional data override YAML, for example configs/data/loaders/static_al_80.yaml
+  data_config: configs/data/loaders/static_al_crystallization_step187800.yaml
+  # Optional static frame selection. null -> use data.data_files from the checkpoint config.
+  static_data_files: null
+  dataloader_num_workers: 4
+  max_batches_latent: null
+  # 0/null -> unlimited unless the code imposes a static-data fallback cap.
+  max_samples_total: 0
+
+cache:
+  enabled: true
+  force_recompute: false
+  file: analysis_inference_cache.npz
+
+# Optional Line-JEPA novelty analysis that retains error(atom, direction).
+# The stage supports static/line_static checkpoints and runs in both runtime
+# profiles (figure_set.figure_only must be false).
+directional_line_jepa:
+  enabled: false
+  num_directions: 64
+  # 0 evaluates every inference-cache center; use a cap for exploratory runs.
+  max_atoms_total: 0
+  # Bounds candidate geometry and environment-feature memory during the full sweep.
+  atom_chunk_size: 128
+  task_batch_size: 512
+  selection_seed: 123
+  # checkpoint: endpoints -> one-sided ray; center/all/cycle -> centered line.
+  target_position: checkpoint
+  # Caps only the relative-error field when the true residual is nearly zero.
+  relative_error_clip: 100.0
+  # Per-snapshot Plotly report written under directional_line_jepa_report/.
+  visualize_3d: true
+  joint_weights:
+    mean_error: 1.0
+    max_error: 1.0
+    relative_residual_error: 1.0
+    residual_norm: 0.5
+    anisotropy: 0.5
+    cluster_surprise: 0.5
+    phase_conditioned_z: 0.5
+
+swav:
+  enabled: false
+  assignment_method: sinkhorn
+  sinkhorn_iterations: 20
+  batch_size: 8192
+  export_assignment_csv: true
+  # 0/null -> write all rows; positive value caps only the human-readable CSV.
+  # The compressed NPZ always stores all logits/probabilities/labels.
+  max_assignment_csv_rows: 100000
+  representative_top_k: 12
+  frame_proportions: true
+  transitions: true
+  compare_to_clustering: true
+  md_outputs: true
+  md_max_points: 0
+  plots: true
+
+runtime:
+  # fast avoids eager point-cloud materialization, Blender, UMAP, and
+  # equivariance without reducing sample, direction, snapshot, or view counts.
+  profile: full
+  progress_every_batches: 20
+  seed_base: 123
+  fast:
+    lazy_static_dataset_on_cache_hit: true
+    clustering_fit_max_samples: null
+    snapshot_figure_limit: null
+    md_num_views: null
+    raytrace_enabled: false
+    tsne_max_samples: null
+    equivariance_enabled: false
+    real_md_projection_method: pca
+    # Fast Line-JEPA runs automatically enable the configured directional sweep.
+    directional_line_jepa_enabled: true
+    directional_max_directions: null
+    directional_max_atoms_total: null
+
+clustering:
+  # Unified selected clustering k used by figure_set and real_md outputs.
+  primary_k: 7
+  # null -> run clustering-dependent analyses only for primary_k.
+  # Set a list such as [5, 6, 7, 8] to additionally run clustering-dependent analyses for each key.
+  k_values: null
+  # Supported: auto, kmeans, spherical_kmeans. Default is spherical_kmeans.
+  method: spherical_kmeans
+  compare_methods: []
+  l2_normalize: true
+  standardize: true
+  pca_variance: 0.99
+  pca_max_components: 64
+  connected_regimes:
+    enabled: true
+    # Zero-based IDs may be forced here; for example C6/C7 is [[5, 6]].
+    # Empty means discover touching pairs from cross-cluster kNN contact.
+    pairs: []
+    auto_detect: true
+    auto_max_pairs: 4
+    max_samples_per_cluster: 1500
+    neighbor_k: 15
+    min_cross_neighbor_fraction: 0.002
+    # PCA is fit in the original invariant latent space. The component with the
+    # largest standardized regime shift becomes the continuous order parameter.
+    pca_components: 8
+    histogram_bins: 40
+    random_state: 123
+    # Real local structures along connected-pair directions and, for clusters outside
+    # every selected pair, along the dominant within-cluster PCA direction.
+    interactive_3d: true
+    representative_steps: 30
+  hdbscan:
+    enabled: false
+    fit_fraction: 0.25
+    max_fit_samples: 50000
+    target_k_min: 5
+    target_k_max: 6
+    min_cluster_size_candidates: []
+    min_samples: null
+    min_samples_candidates: null
+    cluster_selection_epsilon: 0.0
+    cluster_selection_method: leaf
+    refit_full_data: true
+
+md:
+  overlap_boost: 0.0
+  overlap_fraction: null
+  use_all_points: true
+  interactive_max_points: 0
+
+tsne:
+  max_samples: 8000
+  n_iter: 1000
+  paper_enabled: true
+  umap_comparison_enabled: false
+  umap_backend: cpu
+  umap_neighbors: 30
+  umap_min_dist: 0.15
+  umap_metric: euclidean
+
+figure_set:
+  enabled: true
+  figure_only: false
+  visible_cluster_sets:
+    - [0, 1, 2, 3, 4, 5]
+  color_assignment: {}
+  color_assignment_file: null
+  profile_point_scale_enabled: false
+  md:
+    max_points: null
+    point_size: 5.6
+    alpha: 0.62
+    halo_scale: 1.0
+    halo_alpha: 0.0
+    saturation_boost: 1.18
+    view_elev: 24.0
+    view_azim: 35.0
+  icl:
+    enabled: false
+    k_min: 2
+    k_max: 20
+    max_samples: 20000
+    covariance: diag
+  representatives:
+    # null -> data.model_points / data.num_points from the checkpoint config
+    points: null
+    orientation: pca
+    view_elev: 22.0
+    view_azim: 38.0
+    projection: ortho
+    ptm_enabled: true
+    cna_enabled: true
+    cna_max_signatures: 5
+    center_atom_tolerance: 1.0e-6
+    shell_min_neighbors: 8
+    shell_max_neighbors: 24
+  raytrace:
+    enabled: true
+    blender_executable: blender
+    resolution: 1600
+    max_points: null
+    samples: 64
+    projection: perspective
+    fov_deg: 34.0
+    camera_distance_factor: 2.8
+    sphere_radius_fraction: 0.0105
+    timeout_sec: 1200
+    use_gpu: true
+    parallel_views: true
+    parallel_max_workers: 4
+
+real_md:
+  enabled: true
+  time_series:
+    paper_enabled: true
+    alpha: 0.78
+    bar_alpha: 0.82
+    paper_alpha: 0.72
+  profiles:
+    enabled: true
+    samples_per_cluster: 6
+    target_points: 64
+    knn_k: 4
+    max_cluster_property_samples: 256
+  cluster_group_order: []
+  cluster_groups: {}
+  spatial:
+    enabled: true
+    max_points: 25000
+    point_size: 5.6
+    alpha: 0.62
+    saturation_boost: 1.18
+    view_elev: 24.0
+    view_azim: 35.0
+    auto_top_clusters: 2
+    auto_zoom_enabled: true
+    auto_zoom_count: 2
+    auto_zoom_half_extent: 18.0
+    auto_zoom_search_radius: 14.0
+    zoom_specs: []
+  projection:
+    method: umap
+    umap_backend: cpu
+    max_samples: 15000
+    umap_neighbors: 30
+    umap_min_dist: 0.15
+    umap_metric: euclidean
+    scalar_alpha: 0.86
+    scalar_background_alpha: 0.06
+  descriptors:
+    enabled: false
+    max_samples: 6000
+    physical_scalar: coord_mean
+    scalar_columns: []
+    optional:
+      steinhardt:
+        enabled: false
+        l_values: [4, 6]
+        append_shell_size: true
+        center_atom_tolerance: 1.0e-6
+        shell_min_neighbors: 8
+        shell_max_neighbors: 24
+      cna:
+        enabled: false
+        max_signatures: 12
+        append_shell_size: true
+        fit_max_pointclouds: 4000
+        center_atom_tolerance: 1.0e-6
+        shell_min_neighbors: 8
+        shell_max_neighbors: 24
+      soap:
+        enabled: false
+        species: Al
+        point_scale: null
+        r_cut: null
+        r_cut_multiplier: 1.25
+        r_cut_min: 1.01
+        n_max: 8
+        l_max: 6
+        sigma: 0.3
+        pca_components: 16
+        fit_max_pointclouds: 4000
+        n_jobs: 1
+        center_atom_tolerance: 1.0e-6
+        shell_min_neighbors: 8
+        shell_max_neighbors: 24
+  transitions:
+    enabled: true
+    require_mutual: true
+    max_distance: null
+    flow_mute_diagonal: true
+    flow_min_fraction: 0.001
+
+equivariance:
+  enabled: false
+  max_batches: 2

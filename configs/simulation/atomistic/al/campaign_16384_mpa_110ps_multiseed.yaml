@@ -1,0 +1,16 @@
+homogeneous_config: configs/simulation/atomistic/al/homogeneous_16384_mpa_110ps_multiseed.yaml
+output_root: output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717
+
+# This remains exploratory MPA-MACE MD, matching the accepted reference run.
+# No scientific potential-selection qualification is implied.
+potential_selection_report: null
+
+execution:
+  # Each committed checkpoint advances 2 ps and contains the complete MTK state.
+  chunk_steps: 2000
+  event_check_interval: 250
+  stop_on_event: false
+  post_event_steps: 0
+  analysis_mode: deferred
+  analysis_workers: 0
+  checkpoint_retention: 2
