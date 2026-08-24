@@ -3,7 +3,8 @@
 # =============================================================================
 # Derived from the exact paper_version balanced-geometries configuration.
 # The box size, grain count, output path, liquid method, and parallelism are
-# reduced for an executable notebook. Phase recipes and perturbations are kept.
+# reduced for an executable notebook. Phase recipes are kept while thermal,
+# vacancy, and bubble perturbations are intentionally milder than the full run.
 # =============================================================================
 kind: synthetic
 data_path: output/notebook_polycrystal
@@ -33,7 +34,7 @@ auto_cutoff:
   boundary_margin: 7.4
 
 global:
-  L: 48.0
+  L: 64.0
   rho_target: 0.0849
   avg_nn_dist: 2.49
   grain_count: 8
@@ -62,22 +63,16 @@ phases:
       density_target: 0.0849
 
     perturbations:
-      temperature_K: 325.0
+      temperature_K: 150.0
       atomic_mass_amu: 55.845
-      p_dropout: 0.008
+      p_dropout: 0.003
       dropout_relax_radius: 6.5
       dropout_relax_max_fraction: 0.10
       use_elastic_relaxation: true
-      rot_bubble_prob: 0.40
+      rot_bubble_prob: 0.10
       rot_bubble_radius: 7.0
       rot_bubble_angle_deg: 12.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 4.5
-          alpha: -0.30
-        - expected_count: 1
-          radius: 3.5
-          alpha: 0.20
+      density_bubbles: []
 
   # ---------------------------------------------------------------------------
   # FCC IRON (single FCC class)
@@ -89,22 +84,16 @@ phases:
       density_target: 0.0849
 
     perturbations:
-      temperature_K: 325.0
+      temperature_K: 150.0
       atomic_mass_amu: 55.845
-      p_dropout: 0.008
+      p_dropout: 0.003
       dropout_relax_radius: 6.5
       dropout_relax_max_fraction: 0.10
       use_elastic_relaxation: true
-      rot_bubble_prob: 0.40
+      rot_bubble_prob: 0.10
       rot_bubble_radius: 7.0
       rot_bubble_angle_deg: 12.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 4.5
-          alpha: -0.30
-        - expected_count: 1
-          radius: 3.5
-          alpha: 0.20
+      density_bubbles: []
 
   # ---------------------------------------------------------------------------
   # HCP IRON (additional geometry class)
@@ -116,22 +105,16 @@ phases:
       density_target: 0.0849
 
     perturbations:
-      temperature_K: 325.0
+      temperature_K: 150.0
       atomic_mass_amu: 55.845
-      p_dropout: 0.008
+      p_dropout: 0.003
       dropout_relax_radius: 6.5
       dropout_relax_max_fraction: 0.10
       use_elastic_relaxation: true
-      rot_bubble_prob: 0.40
+      rot_bubble_prob: 0.10
       rot_bubble_radius: 7.0
       rot_bubble_angle_deg: 12.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 4.5
-          alpha: -0.30
-        - expected_count: 1
-          radius: 3.5
-          alpha: 0.20
+      density_bubbles: []
 
   # ---------------------------------------------------------------------------
   # AMORPHOUS PHASE WITH SPARSE CRYSTAL NUCLEI
@@ -155,23 +138,17 @@ phases:
       rdf_tolerance: 0.06
 
     perturbations:
-      sigma_thermal: 0.28
+      sigma_thermal: 0.16
       temperature_K: 0.0
       atomic_mass_amu: 55.845
-      p_dropout: 0.008
+      p_dropout: 0.003
       dropout_relax_radius: 3.5
       dropout_relax_max_fraction: 0.06
       use_elastic_relaxation: false
-      rot_bubble_prob: 0.15
+      rot_bubble_prob: 0.05
       rot_bubble_radius: 5.0
       rot_bubble_angle_deg: 8.0
-      density_bubbles:
-        - expected_count: 1
-          radius: 3.0
-          alpha: -0.15
-        - expected_count: 1
-          radius: 2.2
-          alpha: 0.10
+      density_bubbles: []
 
 # =============================================================================
 # GRAIN ASSIGNMENT

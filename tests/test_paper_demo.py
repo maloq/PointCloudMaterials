@@ -17,7 +17,7 @@ def test_notebook_polycrystal_config_is_balanced_and_paper_sized() -> None:
         REPO_ROOT / "configs/data/paper_demo_polycrystal.yaml"
     )
 
-    assert global_config.L == 48.0
+    assert global_config.L == 64.0
     assert global_config.grain_count == 8
     assert set(phase_configs) == {
         "amorphous_pure",
@@ -31,6 +31,19 @@ def test_notebook_polycrystal_config_is_balanced_and_paper_sized() -> None:
         phase: grain_assignment.assignments.count(phase)
         for phase in phase_configs
     } == {phase: 2 for phase in phase_configs}
+
+    for phase_name in ("bcc_iron", "fcc_iron", "hcp_iron"):
+        perturbations = phase_configs[phase_name].perturbations
+        assert perturbations.temperature_K == 150.0
+        assert perturbations.p_dropout == 0.003
+        assert perturbations.rot_bubble_prob == 0.10
+        assert perturbations.density_bubbles == []
+
+    amorphous = phase_configs["amorphous_pure"].perturbations
+    assert amorphous.sigma_thermal == 0.16
+    assert amorphous.p_dropout == 0.003
+    assert amorphous.rot_bubble_prob == 0.05
+    assert amorphous.density_bubbles == []
 
 
 def test_post_training_md_renderer_uses_physical_coordinates(tmp_path: Path) -> None:

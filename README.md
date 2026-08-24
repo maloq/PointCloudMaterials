@@ -29,9 +29,9 @@ flowchart LR
 ```
 
 It generates an eight-grain polycrystal containing amorphous, BCC, FCC, and HCP
-regions; applies the submission perturbations; trains without motif labels; checks
-SO(3) invariance; clusters held-out embeddings; and assigns every valid center back to
-its physical `(x, y, z)` coordinate.
+regions; applies a milder documented perturbation regime; trains without motif labels;
+checks SO(3) invariance; clusters held-out embeddings; and assigns every valid center
+back to its physical `(x, y, z)` coordinate.
 
 The two large interactive plots are physical MD space in angstrom, not a latent PCA
 projection:
@@ -44,9 +44,11 @@ Drag either plot to rotate, scroll to zoom, and hover over atoms to inspect thei
 coordinates. Both are embedded in the committed executed notebook and are regenerated
 as standalone HTML under `output/notebook_analysis/` when the notebook runs.
 
-The recorded reference run improves Hungarian-matched held-out accuracy from `0.454`
-to `0.750` (`ARI = 0.452`) and has mean rotation-relative embedding error below
-`4e-7`. These are qualitative integration results from one compact box, not the
+The recorded reference run uses 20,868 atoms, 6,119 spatial centers, 1,920 balanced
+training neighborhoods, batch size 128, and 160 epochs. It improves
+Hungarian-matched held-out accuracy from `0.565` to `0.848` (`ARI = 0.637`) and has
+mean rotation-relative embedding error below `4e-7`. These are qualitative
+integration results from one compact box, not the
 paper's reported multi-run benchmark.
 
 ## Quick start
@@ -63,9 +65,10 @@ pip install -r requirements.txt
 jupyter lab notebooks/synthetic_motif_demo.ipynb
 ```
 
-Run the notebook from top to bottom. CUDA is selected when available; CPU execution
-uses the same code but takes longer. Generated atoms and analysis HTML are written
-under the ignored `output/` directory.
+Run the notebook from top to bottom. CUDA is selected when available; the recorded
+training run takes about 3.6 minutes on the reference GPU. CPU execution uses the same
+code but takes longer. Generated atoms and analysis HTML are written under the ignored
+`output/` directory.
 
 ## Paper provenance
 
@@ -82,11 +85,14 @@ data and visualization code:
 | VN encoder and VICReg path | cleaned current implementation |
 
 The exact retained configuration uses a 200 Å box, 16 grains, parallel generation,
-and the RDF-constrained liquid method. The notebook derivative uses a 48 Å box, eight
+and the RDF-constrained liquid method. The notebook derivative uses a 64 Å box, eight
 explicitly balanced grains, serial generation, and the generator's fast liquid method.
-Phase recipes, perturbations, 128 input atoms, 80 view atoms, and the 7.4 Å cutoff are
-preserved. The original generator prints a density warning for the fast hard-core
-liquid; the notebook records it rather than hiding it.
+Phase recipes, 128 input atoms, 80 view atoms, and the 7.4 Å cutoff are preserved.
+Perturbations are intentionally milder: crystal temperature is reduced from 325 K to
+150 K, vacancy probability from `0.008` to `0.003`, thermal noise in the amorphous
+phase from `0.28` to `0.16`, density bubbles are disabled, and rotation-bubble
+probabilities are reduced. The original generator prints a density warning for the
+fast hard-core liquid; the notebook records it rather than hiding it.
 
 ## Encoder alternatives
 

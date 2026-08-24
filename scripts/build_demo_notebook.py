@@ -29,8 +29,8 @@ cells = [
 
         This notebook is a compact, executable demonstration of the paper's full path:
 
-        1. generate a perturbed four-phase polycrystal with the generator preserved on
-           `paper_version`;
+        1. generate a mildly perturbed four-phase polycrystal with the generator
+           preserved on `paper_version`;
         2. extract 128-atom local environments at their physical MD coordinates;
         3. train a rotation-aware encoder with VICReg and **no motif labels**;
         4. cluster frozen invariant embeddings with K-Means;
@@ -41,9 +41,10 @@ cells = [
         zoom, and hover over a center atom to inspect its coordinates.
 
         The generator and MD renderer are restored from `paper_version`. The notebook
-        uses a scaled 48 Å / 8-grain configuration so the complete workflow executes in
-        about a minute on a GPU. The exact 200 Å / 16-grain submission configuration is
-        retained at `configs/data/data_synth_polycrystalline_balanced_geometries.yaml`.
+        uses a scaled 64 Å / 8-grain configuration so the complete workflow executes in
+        about four minutes on the reference GPU. The exact 200 Å / 16-grain submission
+        configuration is retained at
+        `configs/data/data_synth_polycrystalline_balanced_geometries.yaml`.
         """
     ),
     code(
@@ -120,10 +121,10 @@ cells = [
         RAW_POINTS = 128
         VIEW_POINTS = 80
         RADIUS = 7.4
-        TRAIN_PER_PHASE = 200
-        TEST_PER_PHASE = 60
-        EPOCHS = 80
-        BATCH_SIZE = 64
+        TRAIN_PER_PHASE = 480
+        TEST_PER_PHASE = 120
+        EPOCHS = 160
+        BATCH_SIZE = 128
 
         # Choices retained in this branch: vn_atomic, vn_dgcnn, vn_pointnet,
         # dgcnn, and pointnet. The last two are rotation-sensitive controls.
@@ -156,8 +157,9 @@ cells = [
 
         This is the submission-era `SyntheticAtomisticDatasetGenerator`, including
         Voronoi grains, independently oriented BCC/FCC/HCP lattices, an amorphous
-        phase, thermal displacement, vacancies, rotation/density bubbles, interface
-        construction, and minimum-distance relaxation.
+        phase, mild thermal displacement and vacancies, interface construction, and
+        minimum-distance relaxation. Bubble probabilities are retained at reduced
+        values, while density bubbles are disabled in the notebook configuration.
 
         The notebook derivative uses the generator's fast liquid path. A warning that
         the hard-core liquid did not reach its nominal density is deliberately printed
@@ -776,7 +778,7 @@ cells = [
         ## What this demonstrates
 
         - Data come from the paper-version polycrystal generator, including all four
-          benchmark phases and submission perturbations.
+          benchmark phases and a milder, explicitly documented perturbation regime.
         - The self-supervised optimizer receives only coordinates.
         - Neighbor-centered 80-atom views reuse the maintained VICReg path.
         - The VN embedding is checked after fresh global SO(3) rotations.
