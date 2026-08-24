@@ -1,23 +1,53 @@
 # Self-supervised motif discovery in molecular dynamics
 
-Reference implementation and runnable demonstration for **“Self-Supervised Rotation-Invariant Representations for Unsupervised Motif Discovery in Molecular Dynamics”** by Vsevolod Morozov, Emilie Devijver, Charlotte Laclau, Paul Krzakala, and Noel Jakse.
+Reference implementation and runnable demonstration for **“Self-Supervised
+Rotation-Invariant Representations for Unsupervised Motif Discovery in Molecular
+Dynamics”** by Vsevolod Morozov, Emilie Devijver, Charlotte Laclau, Paul Krzakala,
+and Noel Jakse.
 
-The method learns clusterable representations of local atomic neighborhoods directly from coordinates. A rotation-equivariant Vector Neuron encoder is trained with VICReg on overlapping views; K-Means then discovers structural motifs without using labels during representation learning.
+The method learns clusterable representations of local atomic neighborhoods directly
+from coordinates. A rotation-aware Vector Neuron encoder is trained with VICReg on
+overlapping views; K-Means then discovers structural motifs without using labels during
+representation learning.
 
-[Read the paper](paper/paper.pdf) · [Open the executed demo](notebooks/synthetic_motif_demo.ipynb)
+[Read the paper](paper/paper.pdf) ·
+[Open the executed demonstration](notebooks/synthetic_motif_demo.ipynb)
 
-## Method
+## Demonstration
+
+The notebook runs the paper pipeline from a synthetic molecular-dynamics box to a
+spatial motif map:
 
 ```mermaid
 flowchart LR
-    A[Atomic neighborhood] --> B[Two overlapping views]
-    B --> C[Shared VN encoder]
-    C --> D[Invariant embeddings]
-    D --> E[VICReg training]
-    D --> F[K-Means motifs]
+    A[Paper polycrystal generator] --> B[128-atom neighborhoods]
+    B --> C[Two overlapping 80-atom views]
+    C --> D[Shared VN encoder + VICReg]
+    D --> E[Invariant embeddings]
+    E --> F[K-Means motifs]
+    F --> G[Interactive 3D MD-space map]
 ```
 
-The encoder keeps directional information in equivariant vector features and derives rotation-invariant scalar embeddings for the self-supervised objective and clustering. Labels are used only after training to report evaluation metrics.
+It generates an eight-grain polycrystal containing amorphous, BCC, FCC, and HCP
+regions; applies the submission perturbations; trains without motif labels; checks
+SO(3) invariance; clusters held-out embeddings; and assigns every valid center back to
+its physical `(x, y, z)` coordinate.
+
+The two large interactive plots are physical MD space in angstrom, not a latent PCA
+projection:
+
+- a synthetic phase reference; and
+- the raw post-training K-Means assignments produced through the paper-version
+  `local_structure_coords_clusters.npz → md_space_clusters.html` analysis path.
+
+Drag either plot to rotate, scroll to zoom, and hover over atoms to inspect their
+coordinates. Both are embedded in the committed executed notebook and are regenerated
+as standalone HTML under `output/notebook_analysis/` when the notebook runs.
+
+The recorded reference run improves Hungarian-matched held-out accuracy from `0.454`
+to `0.750` (`ARI = 0.452`) and has mean rotation-relative embedding error below
+`4e-7`. These are qualitative integration results from one compact box, not the
+paper's reported multi-run benchmark.
 
 ## Quick start
 
@@ -33,75 +63,106 @@ pip install -r requirements.txt
 jupyter lab notebooks/synthetic_motif_demo.ipynb
 ```
 
-Run the notebook from top to bottom. It generates randomized BCC, FCC, and amorphous neighborhoods in memory, trains the encoder without motif labels, clusters held-out embeddings, and repeats inference after independent random SO(3) rotations. Interactive 3D views let you rotate and inspect both the atomic neighborhoods and the learned embedding space.
+Run the notebook from top to bottom. CUDA is selected when available; CPU execution
+uses the same code but takes longer. Generated atoms and analysis HTML are written
+under the ignored `output/` directory.
 
-The executed reference run stored in the notebook reaches approximately `0.97` clustering accuracy and `0.90` adjusted Rand index. Its mean rotation-relative embedding error is below `1e-6`. The code selects CUDA when available and otherwise runs unchanged on CPU.
+## Paper provenance
 
-## What the demo represents
+The demonstration deliberately combines the maintained encoder with submission-era
+data and visualization code:
 
-The notebook is a compact check of the full method, not a reproduction of the paper's numerical tables.
+| Component | Demonstration source |
+|---|---|
+| Polycrystal generator | restored from `paper_version` |
+| Full synthetic configuration | exact `paper_version` configuration |
+| Notebook configuration | explicitly documented, runtime-scaled derivative |
+| Static synthetic visualization utilities | restored from `paper_version` |
+| Interactive MD cluster renderer | restored from post-training analysis on `paper_version` |
+| VN encoder and VICReg path | cleaned current implementation |
 
-| | Notebook | Paper benchmark |
-|---|---:|---:|
-| Motifs | BCC, FCC, amorphous | BCC, FCC, HCP, amorphous |
-| Raw neighborhood | 80 atoms | 128 atoms |
-| Encoder view | 56 atoms | 80 atoms |
-| Default encoder | compact `VN_REVNET_Atomic` | full VN-RevNet |
-| Evaluation | one fixed train/test seed | five independent runs |
-
-HCP is intentionally omitted from the small example because reliable FCC/HCP separation depends on stacking information across larger neighbor shells.
+The exact retained configuration uses a 200 Å box, 16 grains, parallel generation,
+and the RDF-constrained liquid method. The notebook derivative uses a 48 Å box, eight
+explicitly balanced grains, serial generation, and the generator's fast liquid method.
+Phase recipes, perturbations, 128 input atoms, 80 view atoms, and the 7.4 Å cutoff are
+preserved. The original generator prints a density warning for the fast hard-core
+liquid; the notebook records it rather than hiding it.
 
 ## Encoder alternatives
 
-Set `ENCODER_VARIANT` near the top of the notebook to test the retained paper architectures and controls:
+Change `ENCODER_VARIANT` near the top of the notebook to test the retained paper
+architectures and controls:
 
-| Value | Encoder | Purpose |
+| Value | Encoder | Role |
 |---|---|---|
-| `vn_atomic` | Atomic VN-RevNet | recommended invariant demonstration |
+| `vn_atomic` | Atomic VN-RevNet | default rotation-invariant demonstration |
 | `vn_dgcnn` | VN-DGCNN | equivariant backbone alternative |
 | `vn_pointnet` | VN-PointNet | simpler equivariant alternative |
 | `dgcnn` | DGCNN | rotation-sensitive control |
 | `pointnet` | PointNet | rotation-sensitive control |
 
-The regular DGCNN and PointNet controls intentionally do not guarantee rotation-invariant embeddings, so their rotation check is expected to differ from the VN models. The registry also retains the RI-MAE invariant encoder and additional sizes/backbones used during model exploration. Hand-crafted Steinhardt, common-neighbor-analysis, and SOAP baselines are available in `src/baselines/descriptor_baselines.py`.
+The regular DGCNN and PointNet controls do not guarantee rotation-invariant
+embeddings, so their final SO(3) diagnostic is expected to differ. Hand-crafted
+Steinhardt, common-neighbor-analysis, and SOAP baselines are retained in
+`src/baselines/descriptor_baselines.py`.
 
 ## Repository layout
 
 ```text
 .
-├── notebooks/synthetic_motif_demo.ipynb  # executed end-to-end example
-├── paper/                                # manuscript source and PDF
+├── configs/data/
+│   ├── data_synth_polycrystalline_balanced_geometries.yaml  # exact full config
+│   └── paper_demo_polycrystal.yaml                          # notebook-scale config
+├── notebooks/synthetic_motif_demo.ipynb                     # executed end to end
+├── paper/                                                   # manuscript and PDF
+├── scripts/build_demo_notebook.py                           # reproducible cell source
 ├── src/
-│   ├── baselines/                        # structural descriptor baselines
-│   ├── models/encoders/                  # paper encoders and runtime adapter
-│   ├── training_methods/contrastive_learning/
-│   │   └── vicreg.py                     # self-supervised objective
-│   └── utils/                            # point-cloud and evaluation helpers
-├── tests/                                # symmetry, encoder, and VICReg checks
+│   ├── baselines/                                           # descriptor baselines
+│   ├── data_utils/synthetic/                                # paper data generator
+│   ├── models/encoders/                                     # paper encoders
+│   ├── training_methods/contrastive_learning/vicreg.py      # SSL objective
+│   ├── utils/                                               # point-cloud helpers
+│   └── vis_tools/md_cluster_plot.py                         # physical 3D renderer
+├── tests/                                                   # focused method checks
 └── requirements.txt
 ```
 
-This demonstration branch is deliberately narrow. Post-submission simulation campaigns, temporal model stacks, infrastructure-specific launch scripts, and their configuration trees are excluded.
+This branch is intentionally narrow: post-submission simulation campaigns, temporal
+model stacks, infrastructure launch scripts, and unrelated configuration trees are
+excluded.
 
-## Branches and provenance
+## Branches
 
-- `paper_demo` is the cleaned, notebook-first public demonstration.
-- `paper_version` preserves the implementation and configurations used at submission time.
-- `main` contains later research development from which the maintained encoder code was selected.
+- `paper_demo` is this cleaned, notebook-first demonstration.
+- `paper_version` preserves the full implementation used around paper submission.
+- `main` contains later research development.
 
-Use `paper_version` to audit the exact submission-era implementation. Use `paper_demo` for the shortest runnable path through the current method.
+Use `paper_version` to audit the submission-era implementation and `paper_demo` for
+the shortest runnable path through the current method.
 
-## Reproducibility
+## Reproducibility and tests
 
-- NumPy, PyTorch, dataset, DataLoader, and K-Means seeds are fixed in the notebook.
-- Motif labels never enter optimization.
-- Clustering accuracy uses Hungarian matching because K-Means cluster identifiers are arbitrary.
+- NumPy, PyTorch, dataset split, DataLoader, and K-Means seeds are fixed.
+- The training DataLoader contains point clouds only; motif labels enter after training.
+- Clustering accuracy uses Hungarian matching because K-Means IDs are arbitrary.
 - Rotation robustness is measured after independently rotating every held-out cloud.
-- The notebook records its environment, training history, metrics, and plots directly in the committed output cells.
+- Generator progress, warnings, training history, metrics, and plots are recorded in
+  the committed notebook.
+
+Run the test suite with:
+
+```bash
+pytest -q
+```
+
+To rebuild source cells after editing `scripts/build_demo_notebook.py`, run the script
+and then execute the notebook before committing it:
+
+```bash
+python scripts/build_demo_notebook.py
+```
 
 ## Citation
-
-If you use this repository, please cite:
 
 ```bibtex
 @misc{morozov2026motif,
