@@ -1,0 +1,13 @@
+# Continues the exact verified step-115000 trajectory from the immutable 110 ps campaign.
+homogeneous_config: configs/simulation/atomistic/al/homogeneous_70304_mpa_130ps_source12345_seed35803.yaml
+output_root: output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720
+potential_selection_report: null
+
+execution:
+  chunk_steps: 1000
+  event_check_interval: 250
+  stop_on_event: false
+  post_event_steps: 0
+  analysis_mode: deferred
+  analysis_workers: 0
+  checkpoint_retention: 2

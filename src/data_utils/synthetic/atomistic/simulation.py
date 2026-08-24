@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Iterator
 
 import numpy as np
 from ase import Atoms, units
@@ -181,6 +182,63 @@ def set_maxwell_boltzmann_velocities(
     Stationary(atoms, preserve_temperature=True)
 
 
+@contextmanager
+def _temporary_nvt_property_mode(
+    atoms: Atoms, requested_mode: str | None
+) -> Iterator[None]:
+    """Apply an explicit force-only NVT policy and restore the calculator mode."""
+
+    if requested_mode is None:
+        yield
+        return
+    if requested_mode != "forces":
+        raise ValueError(
+            f"NVT property mode must be null or 'forces', got {requested_mode!r}."
+        )
+    calculator = atoms.calc
+    if calculator is None:
+        raise RuntimeError(
+            "Cannot enable force-only NVT because the Atoms object has no calculator."
+        )
+    missing = object()
+    original_mode = getattr(calculator, "md_property_mode", missing)
+    mode_setter = getattr(calculator, "set_md_property_mode", missing)
+    if original_mode is missing and mode_setter is missing:
+        # Generic injected ASE calculators already evaluate only the properties
+        # requested by Langevin and by the sparse thermodynamic recorder.
+        yield
+        return
+    if original_mode is missing or not callable(mode_setter):
+        raise TypeError(
+            "Force-only NVT requires both calculator.md_property_mode and callable "
+            "calculator.set_md_property_mode(); the attached calculator implements "
+            "only part of that contract."
+        )
+    if original_mode not in {"forces", "forces_stress"}:
+        raise ValueError(
+            "Force-only NVT cannot restore an unsupported calculator mode: "
+            f"md_property_mode={original_mode!r}."
+        )
+
+    mode_setter("forces")
+    if getattr(calculator, "md_property_mode", None) != "forces":
+        raise RuntimeError(
+            "Calculator did not enter the requested force-only NVT mode; "
+            "observed md_property_mode="
+            f"{getattr(calculator, 'md_property_mode', None)!r}."
+        )
+    try:
+        yield
+    finally:
+        mode_setter(original_mode)
+        restored_mode = getattr(calculator, "md_property_mode", None)
+        if restored_mode != original_mode:
+            raise RuntimeError(
+                "Calculator did not restore its pre-NVT property mode: "
+                f"expected={original_mode!r}, observed={restored_mode!r}."
+            )
+
+
 def run_npt(
     atoms: Atoms,
     *,
@@ -231,30 +289,34 @@ def run_nvt(
 ) -> ThermodynamicTrace:
     if initialize_velocities:
         set_maxwell_boltzmann_velocities(atoms, temperature_K, rng)
-    recorder = _TraceRecorder(atoms)
-    original_constraints = list(atoms.constraints)
-    atoms.set_constraint([*original_constraints, FixCom()])
-    try:
-        if steps:
-            dynamics = Langevin(
-                atoms,
-                timestep=config.dynamics.timestep_fs * units.fs,
-                temperature_K=temperature_K,
-                friction=1.0 / (config.dynamics.thermostat_time_fs * units.fs),
-                fixcm=False,
-                rng=rng,
-            )
-            dynamics.attach(
-                lambda: recorder.sample(dynamics.nsteps),
-                interval=config.dynamics.sample_interval,
-            )
-            progress(f"{stage}: {steps} NVT steps at {temperature_K:.1f} K")
-            dynamics.run(steps)
-            if steps % config.dynamics.sample_interval:
-                recorder.sample(steps)
-    finally:
-        atoms.set_constraint(original_constraints)
-    return recorder.finish(stage)
+    with _temporary_nvt_property_mode(
+        atoms, config.potential.nvt_md_property_mode
+    ):
+        recorder = _TraceRecorder(atoms)
+        original_constraints = list(atoms.constraints)
+        atoms.set_constraint([*original_constraints, FixCom()])
+        try:
+            if steps:
+                dynamics = Langevin(
+                    atoms,
+                    timestep=config.dynamics.timestep_fs * units.fs,
+                    temperature_K=temperature_K,
+                    friction=1.0
+                    / (config.dynamics.thermostat_time_fs * units.fs),
+                    fixcm=False,
+                    rng=rng,
+                )
+                dynamics.attach(
+                    lambda: recorder.sample(dynamics.nsteps),
+                    interval=config.dynamics.sample_interval,
+                )
+                progress(f"{stage}: {steps} NVT steps at {temperature_K:.1f} K")
+                dynamics.run(steps)
+                if steps % config.dynamics.sample_interval:
+                    recorder.sample(steps)
+        finally:
+            atoms.set_constraint(original_constraints)
+        return recorder.finish(stage)
 
 
 def _quench(

@@ -29,11 +29,13 @@ POTENTIAL_CLAIM_NAMES = (
     "kinetics",
 )
 DEFAULT_ENABLE_OEQ = False
+DEFAULT_AUTOCAST_DTYPE = None
 DEFAULT_COMPILE_MODE = None
 DEFAULT_COMPILE_FULLGRAPH = False
 DEFAULT_PAD_NUM_ATOMS = 0
 DEFAULT_PAD_NUM_EDGES = 0
 DEFAULT_MD_PROPERTY_MODE = "forces_stress"
+DEFAULT_NVT_MD_PROPERTY_MODE = None
 SUPPORTED_COMPILE_MODES = {
     "default",
     "reduce-overhead",
@@ -82,6 +84,7 @@ class PotentialConfig:
     qualification: PotentialQualification | None
     device: str
     default_dtype: str
+    autocast_dtype: str | None
     enable_cueq: bool
     enable_oeq: bool
     compile_mode: str | None
@@ -89,6 +92,7 @@ class PotentialConfig:
     pad_num_atoms: int
     pad_num_edges: int
     md_property_mode: str
+    nvt_md_property_mode: str | None
     neighbor_skin_A: float
 
 
@@ -155,6 +159,10 @@ class GeneratorConfig:
 
     def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
+        if self.potential.autocast_dtype is None:
+            del result["potential"]["autocast_dtype"]
+        if self.potential.nvt_md_property_mode is None:
+            del result["potential"]["nvt_md_property_mode"]
         return _serialize(result)
 
 
@@ -183,7 +191,7 @@ def mace_kernel_backend(*, enable_cueq: bool, enable_oeq: bool) -> str:
 def potential_calculator_settings(potential: PotentialConfig) -> dict[str, object]:
     """Canonical numerical/backend settings bound into provenance and reports."""
 
-    return {
+    settings: dict[str, object] = {
         "device": potential.device,
         "default_dtype": potential.default_dtype,
         "kernel_backend": mace_kernel_backend(
@@ -199,6 +207,12 @@ def potential_calculator_settings(potential: PotentialConfig) -> dict[str, objec
         "md_property_mode": potential.md_property_mode,
         "neighbor_skin_A": potential.neighbor_skin_A,
     }
+    if potential.autocast_dtype is not None:
+        settings["autocast_dtype"] = potential.autocast_dtype
+        settings["autocast_scope"] = "second_interaction"
+    if potential.nvt_md_property_mode is not None:
+        settings["nvt_md_property_mode"] = potential.nvt_md_property_mode
+    return settings
 
 
 def _mapping(parent: dict[str, Any], key: str, path: Path) -> dict[str, Any]:
@@ -1068,6 +1082,7 @@ def load_config(path: str | Path) -> GeneratorConfig:
             "validation_report",
             "device",
             "default_dtype",
+            "autocast_dtype",
             "enable_cueq",
             "enable_oeq",
             "compile_mode",
@@ -1075,6 +1090,7 @@ def load_config(path: str | Path) -> GeneratorConfig:
             "pad_num_atoms",
             "pad_num_edges",
             "md_property_mode",
+            "nvt_md_property_mode",
             "neighbor_skin_A",
         },
         "potential",
@@ -1284,6 +1300,26 @@ def load_config(path: str | Path) -> GeneratorConfig:
             f"{config_path}: potential.default_dtype must be 'float32' or 'float64', "
             f"got {default_dtype!r}."
         )
+    autocast_dtype_raw = potential_raw.get(
+        "autocast_dtype", DEFAULT_AUTOCAST_DTYPE
+    )
+    if autocast_dtype_raw is not None and autocast_dtype_raw != "bfloat16":
+        raise ValueError(
+            f"{config_path}: potential.autocast_dtype must be null or 'bfloat16', "
+            f"got {autocast_dtype_raw!r}."
+        )
+    autocast_dtype = autocast_dtype_raw
+    if autocast_dtype is not None:
+        if default_dtype != "float32":
+            raise ValueError(
+                f"{config_path}: BF16 autocast requires the checkpoint and graph inputs "
+                f"to use default_dtype='float32', got {default_dtype!r}."
+            )
+        if not device.startswith("cuda"):
+            raise ValueError(
+                f"{config_path}: BF16 autocast requires potential.device='cuda' or an "
+                f"explicit CUDA index, got {device!r}."
+            )
     enable_cueq = _required(potential_raw, "enable_cueq", "potential", config_path)
     if not isinstance(enable_cueq, bool):
         raise TypeError(
@@ -1361,6 +1397,17 @@ def load_config(path: str | Path) -> GeneratorConfig:
             f"{config_path}: potential.md_property_mode must be one of "
             f"{sorted(SUPPORTED_MD_PROPERTY_MODES)}, got {md_property_mode!r}."
         )
+    nvt_md_property_mode = potential_raw.get(
+        "nvt_md_property_mode", DEFAULT_NVT_MD_PROPERTY_MODE
+    )
+    if nvt_md_property_mode is not None and (
+        not isinstance(nvt_md_property_mode, str)
+        or nvt_md_property_mode != "forces"
+    ):
+        raise ValueError(
+            f"{config_path}: potential.nvt_md_property_mode must be null or 'forces', "
+            f"got {nvt_md_property_mode!r}."
+        )
     neighbor_skin_A = _positive_float(
         _required(potential_raw, "neighbor_skin_A", "potential", config_path),
         "potential.neighbor_skin_A",
@@ -1414,6 +1461,12 @@ def load_config(path: str | Path) -> GeneratorConfig:
         raise ValueError(
             f"{config_path}: potential.usage_mode must be 'exploratory' or "
             f"'quantitative', got {usage_mode!r}."
+        )
+    if usage_mode == "quantitative" and nvt_md_property_mode is not None:
+        raise RuntimeError(
+            f"{config_path}: potential.nvt_md_property_mode={nvt_md_property_mode!r} "
+            "is an exploratory floating-point execution path. Set it to null until an "
+            "exact force-only-NVT qualification report contract is implemented."
         )
     validation_report_raw = _required(
         potential_raw, "validation_report", "potential", config_path
@@ -1504,6 +1557,7 @@ def load_config(path: str | Path) -> GeneratorConfig:
             qualification=qualification,
             device=device,
             default_dtype=default_dtype,
+            autocast_dtype=autocast_dtype,
             enable_cueq=enable_cueq,
             enable_oeq=enable_oeq,
             compile_mode=compile_mode,
@@ -1511,6 +1565,7 @@ def load_config(path: str | Path) -> GeneratorConfig:
             pad_num_atoms=pad_num_atoms,
             pad_num_edges=pad_num_edges,
             md_property_mode=md_property_mode,
+            nvt_md_property_mode=nvt_md_property_mode,
             neighbor_skin_A=neighbor_skin_A,
         ),
         dynamics=DynamicsConfig(

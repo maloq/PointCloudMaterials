@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 import traceback
+from bisect import bisect_right
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Callable
@@ -20,6 +21,7 @@ import numpy as np
 from ase import Atoms
 from ase.io import write
 
+from .config import GeneratorConfig
 from .homogeneous_analysis import (
     HomogeneousCrystallizationAnalysis,
     ReplicaObservation,
@@ -45,6 +47,7 @@ from .homogeneous_campaign_queue import (
     fail_md_task,
     initialize_campaign_queue,
 )
+from .homogeneous_config import trajectory_sample_steps
 from .homogeneous_generator import _load_source_liquid, _runtime_generator_config
 from .homogeneous_online import (
     OnlineCrystallinityDetector,
@@ -53,6 +56,7 @@ from .homogeneous_online import (
     online_observations_to_arrays,
 )
 from .homogeneous_resumable import (
+    ResumableReplicaCheckpoint,
     ResumableReplicaCheckpointStore,
     ThermodynamicTraceBuffer,
     build_mtk_dynamics,
@@ -83,6 +87,16 @@ RAW_REPLICA_ARTIFACTS = (
     "trajectory.npz",
     "online_crystallinity.npz",
 )
+CALCULATOR_PERFORMANCE_SCHEMA_VERSION = 1
+CALCULATOR_GRAPH_COUNTER_FIELDS = (
+    "requests",
+    "rebuilds",
+    "compiled_buffer_refills",
+    "reuses",
+    "model_evaluations",
+    "force_evaluations",
+    "stress_evaluations",
+)
 
 
 @dataclass(frozen=True)
@@ -91,6 +105,15 @@ class CampaignReplicaRunResult:
     raw_directory: Path
     run_metadata_sha256: str
     online_threshold_event: dict[str, object]
+
+
+@dataclass(frozen=True)
+class _CalculatorPerformanceSession:
+    started_at: float
+    coverage_start_global_step: int
+    prior_elapsed_seconds: float
+    prior_replica_counters: dict[str, int] | None
+    worker_metrics_at_session_start: dict[str, float | int] | None
 
 
 def _write_json_atomic(path: Path, value: object) -> None:
@@ -508,12 +531,173 @@ def _termination_target(
     )
 
 
+def _calculator_class_name(calculator: object) -> str:
+    calculator_type = type(calculator)
+    return f"{calculator_type.__module__}.{calculator_type.__qualname__}"
+
+
+def _calculator_graph_cache_metrics(
+    calculator: object,
+) -> dict[str, float | int] | None:
+    metrics_method = getattr(calculator, "graph_cache_metrics", None)
+    if metrics_method is None:
+        return None
+    # This is a repository-owned MACE method with a fixed schema. Access the
+    # concrete producer directly so a schema regression fails loudly at the key.
+    return metrics_method()
+
+
+def _begin_calculator_performance_session(
+    calculator: object,
+    *,
+    checkpoint: ResumableReplicaCheckpoint | None,
+) -> _CalculatorPerformanceSession:
+    started_at = time.perf_counter()
+    worker_metrics = _calculator_graph_cache_metrics(calculator)
+    if checkpoint is None:
+        return _CalculatorPerformanceSession(
+            started_at=started_at,
+            coverage_start_global_step=0,
+            prior_elapsed_seconds=0.0,
+            prior_replica_counters=(
+                None
+                if worker_metrics is None
+                else {field: 0 for field in CALCULATOR_GRAPH_COUNTER_FIELDS}
+            ),
+            worker_metrics_at_session_start=worker_metrics,
+        )
+
+    metadata = checkpoint.metadata
+    completed_global_step = int(checkpoint.integrator_state.nsteps)
+    prior_performance = metadata.get("calculator_performance")
+    if prior_performance is None:
+        # Checkpoints created before performance persistence cannot reconstruct past
+        # calculator counters or elapsed time. Start an explicitly partial measurement.
+        return _CalculatorPerformanceSession(
+            started_at=started_at,
+            coverage_start_global_step=completed_global_step,
+            prior_elapsed_seconds=0.0,
+            prior_replica_counters=(
+                None
+                if worker_metrics is None
+                else {field: 0 for field in CALCULATOR_GRAPH_COUNTER_FIELDS}
+            ),
+            worker_metrics_at_session_start=worker_metrics,
+        )
+    if prior_performance["schema_version"] != CALCULATOR_PERFORMANCE_SCHEMA_VERSION:
+        raise RuntimeError(
+            f"Checkpoint calculator_performance schema_version="
+            f"{prior_performance['schema_version']!r}; expected "
+            f"{CALCULATOR_PERFORMANCE_SCHEMA_VERSION}."
+        )
+    current_available = worker_metrics is not None
+    if prior_performance["graph_cache_metrics_available"] != current_available:
+        raise RuntimeError(
+            "Calculator graph-cache metric availability changed across exact checkpoint "
+            f"resume: checkpoint={prior_performance['graph_cache_metrics_available']}, current="
+            f"{current_available}."
+        )
+    coverage_start = int(prior_performance["coverage_start_global_step"])
+    if prior_performance["completed_global_step"] != completed_global_step:
+        raise RuntimeError(
+            "Checkpoint calculator performance endpoint differs from its MTK state: "
+            f"performance={prior_performance['completed_global_step']}, "
+            f"MTK={completed_global_step}."
+        )
+    if current_available:
+        prior_counters = {
+            field: int(prior_performance["graph_cache"]["replica_counters"][field])
+            for field in CALCULATOR_GRAPH_COUNTER_FIELDS
+        }
+    else:
+        prior_counters = None
+    return _CalculatorPerformanceSession(
+        started_at=started_at,
+        coverage_start_global_step=coverage_start,
+        prior_elapsed_seconds=float(prior_performance["elapsed_seconds"]),
+        prior_replica_counters=prior_counters,
+        worker_metrics_at_session_start=worker_metrics,
+    )
+
+
+def _calculator_performance_snapshot(
+    calculator: object,
+    *,
+    session: _CalculatorPerformanceSession,
+    completed_global_step: int,
+) -> dict[str, object]:
+    worker_current_metrics = _calculator_graph_cache_metrics(calculator)
+    worker_start_metrics = session.worker_metrics_at_session_start
+    if (worker_current_metrics is None) != (worker_start_metrics is None):
+        raise RuntimeError(
+            "Calculator graph-cache metric availability changed within one replica "
+            "execution session."
+        )
+    elapsed_seconds = session.prior_elapsed_seconds + (
+        time.perf_counter() - session.started_at
+    )
+    measured_global_steps = (
+        completed_global_step - session.coverage_start_global_step
+    )
+    calculator_class = _calculator_class_name(calculator)
+    available = worker_current_metrics is not None
+    graph_cache: dict[str, object] | None
+    if available:
+        if worker_start_metrics is None or session.prior_replica_counters is None:
+            raise RuntimeError(
+                "Available calculator graph-cache metrics lack the required session "
+                "baseline or prior replica counters."
+            )
+        session_delta: dict[str, int] = {}
+        replica_cumulative: dict[str, int] = {}
+        for field in CALCULATOR_GRAPH_COUNTER_FIELDS:
+            current_value = int(worker_current_metrics[field])
+            start_value = int(worker_start_metrics[field])
+            if current_value < start_value:
+                raise RuntimeError(
+                    f"Calculator worker-lifetime counter {field!r} decreased within "
+                    f"replica execution: start={start_value}, current={current_value}."
+                )
+            delta = current_value - start_value
+            session_delta[field] = delta
+            replica_cumulative[field] = (
+                session.prior_replica_counters[field] + delta
+            )
+        replica_requests = replica_cumulative["requests"]
+        replica_reuse_fraction = (
+            float(replica_cumulative["reuses"] / replica_requests)
+            if replica_requests
+            else 0.0
+        )
+        graph_cache = {
+            "replica_counters": replica_cumulative,
+            "replica_reuse_fraction": replica_reuse_fraction,
+            "session_counter_delta": session_delta,
+            "worker_metrics_at_session_start": worker_start_metrics,
+            "worker_metrics_at_snapshot": worker_current_metrics,
+        }
+    else:
+        graph_cache = None
+    return {
+        "schema_version": CALCULATOR_PERFORMANCE_SCHEMA_VERSION,
+        "calculator_class": calculator_class,
+        "graph_cache_metrics_available": available,
+        "coverage_start_global_step": session.coverage_start_global_step,
+        "completed_global_step": completed_global_step,
+        "measured_global_steps": measured_global_steps,
+        "elapsed_seconds": elapsed_seconds,
+        "measured_steps_per_second": float(measured_global_steps / elapsed_seconds),
+        "graph_cache": graph_cache,
+    }
+
+
 def _checkpoint_metadata(
     config: HomogeneousCampaignConfig,
     *,
     task: CampaignReplicaTask,
     completed_global_step: int,
     tracker: OnlineThresholdTracker,
+    calculator_performance: dict[str, object],
 ) -> dict[str, object]:
     event = tracker.event
     return {
@@ -533,6 +717,7 @@ def _checkpoint_metadata(
             }
         ),
         "source_evidence": config.source_evidence,
+        "calculator_performance": calculator_performance,
     }
 
 
@@ -562,6 +747,22 @@ def _replica_initial_state_design(
             "configuration; it is not an independently sampled configuration ensemble"
         ),
     }
+
+
+def _campaign_runtime_generator_config(
+    config: HomogeneousCampaignConfig,
+) -> GeneratorConfig:
+    runtime_generator = config.runtime_generator
+    if runtime_generator is None:
+        return _runtime_generator_config(config.homogeneous)
+    return replace(
+        runtime_generator,
+        dynamics=replace(
+            runtime_generator.dynamics,
+            target_temperature_K=config.homogeneous.temperature_K,
+            sample_interval=config.homogeneous.sample_interval,
+        ),
+    )
 
 
 def _load_existing_raw_result(
@@ -629,6 +830,7 @@ def _write_raw_replica(
     tracker: OnlineThresholdTracker,
     outcome: str,
     diagnostics: SystemDiagnostics,
+    calculator_performance: dict[str, object],
 ) -> CampaignReplicaRunResult:
     replicas_root = config.output_root / "replicas"
     replicas_root.mkdir(parents=True, exist_ok=True)
@@ -663,6 +865,7 @@ def _write_raw_replica(
             "execution_provenance": execution_provenance.to_dict(),
             "source_evidence": config.source_evidence,
             "replica_initial_state_design": _replica_initial_state_design(config),
+            "calculator_performance": calculator_performance,
             "raw_artifacts_sha256": raw_artifacts_sha256,
             "outcome": outcome,
             "observation_label": {
@@ -678,6 +881,25 @@ def _write_raw_replica(
             "actual_measurement_duration_ps": float(
                 measurement_trace.step[-1] * timestep_fs / 1000.0
             ),
+            "trajectory_sampling": {
+                "coordinate_samples_per_ps": (
+                    config.homogeneous.trajectory_samples_per_ps
+                    if config.homogeneous.trajectory_samples_per_ps is not None
+                    else 1000.0
+                    / (
+                        config.homogeneous.sample_interval
+                        * config.homogeneous.generator.dynamics.timestep_fs
+                    )
+                ),
+                "schedule": (
+                    "nearest_integer_md_step_rational_ps_grid"
+                    if config.homogeneous.trajectory_samples_per_ps is not None
+                    else "fixed_sample_interval_steps"
+                ),
+                "event_definition_sample_interval_steps": (
+                    config.homogeneous.sample_interval
+                ),
+            },
             "online_threshold_event": {
                 "observed": event is not None,
                 "observable_name": "online_persistent_crystalline_cluster_threshold_event",
@@ -788,6 +1010,10 @@ def run_campaign_replica(
         random_seed=task.random_seed,
     )
     checkpoint = checkpoints.load()
+    performance_session = _begin_calculator_performance_session(
+        calculator,
+        checkpoint=checkpoint,
+    )
     homogeneous = config.homogeneous
     if checkpoint is None:
         atoms = source_atoms.copy()
@@ -866,6 +1092,11 @@ def run_campaign_replica(
                 task=task,
                 completed_global_step=completed_step,
                 tracker=tracker,
+                calculator_performance=_calculator_performance_snapshot(
+                    calculator,
+                    session=performance_session,
+                    completed_global_step=completed_step,
+                ),
             ),
         )
         last_committed_step = completed_step
@@ -875,7 +1106,10 @@ def run_campaign_replica(
         )
 
     natural_end = homogeneous.equilibration_steps + homogeneous.steps
-    sample_interval = homogeneous.sample_interval
+    coordinate_sample_steps = trajectory_sample_steps(
+        homogeneous,
+        final_global_step=natural_end,
+    )
     event_interval = config.execution.event_check_interval
     while dynamics.nsteps < _termination_target(config, tracker):
         chunk_end = min(
@@ -884,9 +1118,12 @@ def run_campaign_replica(
         )
         while dynamics.nsteps < min(chunk_end, _termination_target(config, tracker)):
             current_step = int(dynamics.nsteps)
+            next_sample_index = bisect_right(coordinate_sample_steps, current_step)
             next_sample_step = (
-                current_step // sample_interval + 1
-            ) * sample_interval
+                coordinate_sample_steps[next_sample_index]
+                if next_sample_index < len(coordinate_sample_steps)
+                else natural_end
+            )
             next_event_step = (
                 homogeneous.equilibration_steps
                 + len(tracker.observations) * event_interval
@@ -968,9 +1205,14 @@ def run_campaign_replica(
     diagnostics = diagnose_system(
         atoms,
         measurement_trace,
-        _runtime_generator_config(homogeneous),
+        _campaign_runtime_generator_config(config),
         name=f"{task.replica_name}_optimized_homogeneous_crystallization",
         require_pressure_convergence=True,
+    )
+    calculator_performance = _calculator_performance_snapshot(
+        calculator,
+        session=performance_session,
+        completed_global_step=completed_global_step,
     )
     return _write_raw_replica(
         config,
@@ -982,6 +1224,7 @@ def run_campaign_replica(
         tracker=tracker,
         outcome=outcome,
         diagnostics=diagnostics,
+        calculator_performance=calculator_performance,
     )
 
 
@@ -995,8 +1238,13 @@ def run_md_worker(
 ) -> bool:
     """Run a dynamic seed queue while retaining one calculator/model in memory."""
     source = _load_source_liquid(config.homogeneous)
+    runtime_generator = (
+        config.homogeneous.generator
+        if config.runtime_generator is None
+        else config.runtime_generator
+    )
     selected_calculator, execution_provenance = select_calculator(
-        config.homogeneous.generator,
+        runtime_generator,
         calculator=calculator,
         injected_calculator_identity=injected_calculator_identity,
     )

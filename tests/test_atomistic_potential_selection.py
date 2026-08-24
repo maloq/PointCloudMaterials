@@ -14,8 +14,12 @@ from src.data_utils.synthetic.atomistic.config import (
 )
 from src.data_utils.synthetic.atomistic.potential_performance import (
     PotentialPerformanceConfig,
+    _combined_cuda_peaks,
     _numerical_parity,
+    _runtime_generator_config,
+    graph_cache_metrics_delta,
     load_potential_performance_config,
+    require_numerical_parity,
     summarize_block_timings,
 )
 from src.data_utils.synthetic.atomistic.potential_selection import (
@@ -37,6 +41,16 @@ CANDIDATE_CONFIG = (
 PRODUCTION_PERFORMANCE_CONFIG = (
     REPOSITORY_ROOT
     / "configs/simulation/atomistic/al/potential_performance.yaml"
+)
+PRODUCTION_RUNTIME_VARIANTS_CONFIG = (
+    REPOSITORY_ROOT
+    / "configs/simulation/atomistic/al/potential_runtime_variants.yaml"
+)
+PRODUCTION_RUNTIME_70304_CONFIGS = tuple(
+    REPOSITORY_ROOT
+    / "configs/simulation/atomistic/al"
+    / f"potential_runtime_70304_cueq_nocudagraphs_skin0{skin}.yaml"
+    for skin in (3, 4, 5)
 )
 PRODUCTION_SELECTION_CONFIG = (
     REPOSITORY_ROOT
@@ -70,6 +84,127 @@ def test_production_performance_gate_uses_model_specific_sources_and_long_blocks
         "mace-mpa-0-medium",
         "mace-mh-1-omat-pbe",
     }
+
+
+def test_runtime_sweep_is_one_exact_model_workload_with_explicit_controls() -> None:
+    config = load_potential_performance_config(PRODUCTION_RUNTIME_VARIANTS_CONFIG)
+    sweep = config.runtime_sweep
+
+    assert config.model_configs == ()
+    assert sweep is not None
+    assert len(sweep.variants) == 9
+    assert sweep.reference_kernel_backend == "e3nn"
+    assert sweep.baseline_variant == "cueq_reduce_overhead_skin03_edges1200k"
+    assert sweep.model_config == (
+        REPOSITORY_ROOT
+        / "configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml"
+    )
+    assert sweep.initial_homogeneous_config == (
+        REPOSITORY_ROOT
+        / "configs/simulation/atomistic/al/homogeneous_16384_mpa.yaml"
+    )
+    assert {variant.kernel_backend for variant in sweep.variants} == {
+        "cueq",
+        "oeq",
+        "hybrid_cueq_oeq",
+    }
+    assert {variant.compile_mode for variant in sweep.variants} == {
+        "reduce-overhead",
+        "max-autotune",
+        "max-autotune-no-cudagraphs",
+    }
+    assert {variant.neighbor_skin_A for variant in sweep.variants} == {
+        0.3,
+        0.5,
+    }
+    assert {variant.pad_num_edges for variant in sweep.variants} == {
+        1_100_000,
+        1_150_000,
+        1_200_000,
+    }
+    assert all(len(variant.canonical_sha256) == 64 for variant in sweep.variants)
+
+
+def test_70304_runtime_candidates_have_explicit_cueq_reference_and_edge_envelopes() -> None:
+    expected = {
+        0.3: 4_600_000,
+        0.4: 4_800_000,
+        0.5: 5_100_000,
+    }
+    for path in PRODUCTION_RUNTIME_70304_CONFIGS:
+        config = load_potential_performance_config(path)
+        sweep = config.runtime_sweep
+        assert sweep is not None
+        assert sweep.reference_kernel_backend == "cueq"
+        assert len(sweep.variants) == 2
+        baseline = next(
+            variant for variant in sweep.variants if variant.compile_mode is None
+        )
+        assert sweep.baseline_variant == baseline.name
+        assert baseline.kernel_backend == "cueq"
+        assert baseline.pad_num_atoms == 0
+        assert baseline.pad_num_edges == 0
+
+        variant = next(
+            variant for variant in sweep.variants if variant.compile_mode is not None
+        )
+        assert variant.pad_num_atoms == 70_304
+        assert variant.pad_num_edges == expected[variant.neighbor_skin_A]
+        assert variant.kernel_backend == "cueq"
+        assert variant.compile_mode == "max-autotune-no-cudagraphs"
+
+        base = load_config(sweep.model_config)
+        reference = _runtime_generator_config(
+            base,
+            variant,
+            numerical_reference=True,
+            reference_kernel_backend=sweep.reference_kernel_backend,
+        )
+        reference_settings = potential_calculator_settings(reference.potential)
+        assert reference_settings["kernel_backend"] == "cueq"
+        assert reference_settings["compile_mode"] is None
+        assert reference_settings["pad_num_atoms"] == 0
+        assert reference_settings["pad_num_edges"] == 0
+
+
+def test_runtime_variant_and_reference_keep_checkpoint_but_change_only_controls() -> None:
+    config = load_potential_performance_config(PRODUCTION_RUNTIME_VARIANTS_CONFIG)
+    assert config.runtime_sweep is not None
+    variant = next(
+        item
+        for item in config.runtime_sweep.variants
+        if item.name == "oeq_max_autotune_no_cudagraphs_skin03_edges1200k"
+    )
+    base = load_config(config.runtime_sweep.model_config)
+
+    production = _runtime_generator_config(
+        base, variant, numerical_reference=False
+    )
+    reference = _runtime_generator_config(
+        base, variant, numerical_reference=True
+    )
+
+    assert production.potential.sha256 == reference.potential.sha256
+    assert production.potential.model_path == reference.potential.model_path
+    assert production.potential.head == reference.potential.head
+    assert potential_calculator_settings(production.potential) == {
+        "device": "cuda",
+        "default_dtype": "float32",
+        "kernel_backend": "oeq",
+        "enable_cueq": False,
+        "enable_oeq": True,
+        "compile_mode": "max-autotune-no-cudagraphs",
+        "compile_fullgraph": False,
+        "pad_num_atoms": 16384,
+        "pad_num_edges": 1200000,
+        "md_property_mode": "forces_stress",
+        "neighbor_skin_A": 0.3,
+    }
+    reference_settings = potential_calculator_settings(reference.potential)
+    assert reference_settings["kernel_backend"] == "e3nn"
+    assert reference_settings["compile_mode"] is None
+    assert reference_settings["pad_num_atoms"] == 0
+    assert reference_settings["pad_num_edges"] == 0
 
 
 def test_production_selection_records_two_worker_runtime_projection() -> None:
@@ -127,6 +262,83 @@ def test_compiled_reference_parity_uses_per_atom_energy_and_component_rmse(
     assert result["metrics"]["maximum_stress_difference_GPa"] == pytest.approx(
         0.002
     )
+
+    bad_force_shape = dict(production)
+    bad_force_shape["forces_eV_per_A"] = np.zeros((6,), dtype=np.float64)
+    with pytest.raises(ValueError, match="exact force arrays"):
+        _numerical_parity(
+            reference,
+            bad_force_shape,
+            atom_count=2,
+            config=config,
+        )
+
+
+def test_failed_runtime_parity_is_a_hard_error() -> None:
+    with pytest.raises(RuntimeError, match="force_rmse_eV_per_A=0.2 exceeds 0.1"):
+        require_numerical_parity(
+            {
+                "passed": False,
+                "failures": ["force_rmse_eV_per_A=0.2 exceeds 0.1"],
+            },
+            runtime_name="oeq_test",
+        )
+
+
+def test_graph_metrics_report_only_measurement_interval_deltas() -> None:
+    before = {
+        "requests": 10,
+        "rebuilds": 2,
+        "compiled_buffer_refills": 1,
+        "reuses": 8,
+        "model_evaluations": 10,
+        "force_evaluations": 10,
+        "stress_evaluations": 10,
+        "real_edge_count": 900,
+        "maximum_real_edge_count": 950,
+        "maximum_edge_budget_fraction": 0.95,
+        "pad_num_edges": 1000,
+        "neighbor_skin_A": 0.5,
+    }
+    after = {
+        **before,
+        "requests": 30,
+        "rebuilds": 4,
+        "compiled_buffer_refills": 3,
+        "reuses": 26,
+        "model_evaluations": 30,
+        "force_evaluations": 30,
+        "stress_evaluations": 30,
+        "real_edge_count": 920,
+        "maximum_real_edge_count": 980,
+        "maximum_edge_budget_fraction": 0.98,
+    }
+
+    result = graph_cache_metrics_delta(before, after)
+
+    assert result["requests"] == 20
+    assert result["rebuilds"] == 2
+    assert result["reuses"] == 18
+    assert result["reuse_fraction"] == pytest.approx(0.9)
+    assert result["maximum_real_edge_count"] == 980
+    assert result["maximum_edge_budget_fraction"] == pytest.approx(0.98)
+
+
+def test_cuda_peak_aggregation_preserves_compile_or_measurement_maximum() -> None:
+    result = _combined_cuda_peaks(
+        {
+            "peak_allocated_bytes": 8 * 1024**3,
+            "peak_reserved_bytes": 10 * 1024**3,
+        },
+        {
+            "peak_allocated_bytes": 9 * 1024**3,
+            "peak_reserved_bytes": 9 * 1024**3,
+        },
+    )
+
+    assert result is not None
+    assert result["peak_allocated_bytes"] == 9 * 1024**3
+    assert result["peak_reserved_bytes"] == 10 * 1024**3
 
 
 def _scientific_result(

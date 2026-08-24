@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -19,6 +20,7 @@ from src.data_utils.synthetic.atomistic.config import (
 )
 from src.data_utils.synthetic.atomistic.generator import select_calculator
 from src.data_utils.synthetic.atomistic.homogeneous_campaign import (
+    CALCULATOR_GRAPH_COUNTER_FIELDS,
     RAW_REPLICA_ARTIFACTS,
     analyze_campaign_replica,
     finalize_campaign,
@@ -26,6 +28,7 @@ from src.data_utils.synthetic.atomistic.homogeneous_campaign import (
     run_md_worker,
 )
 from src.data_utils.synthetic.atomistic.homogeneous_campaign_config import (
+    campaign_config_is_monotonic_measurement_extension,
     campaign_config_matches_after_path_relocation,
     load_homogeneous_campaign_config,
 )
@@ -37,12 +40,17 @@ from src.data_utils.synthetic.atomistic.homogeneous_campaign_queue import (
 from src.data_utils.synthetic.atomistic.homogeneous_liquid_source import (
     generate_homogeneous_liquid_source,
 )
+from src.data_utils.synthetic.atomistic.homogeneous_config import (
+    trajectory_sample_steps,
+)
 from src.data_utils.synthetic.atomistic.homogeneous_online import (
     OnlineCrystallinityObservation,
     OnlineThresholdTracker,
 )
 from src.data_utils.synthetic.atomistic.homogeneous_resumable import (
     ResumableReplicaCheckpointStore,
+    _campaign_identity,
+    _checkpoint_runtime_is_portable,
     _compatible_checkpoint_identity_migration,
     build_mtk_dynamics,
     capture_mtk_state,
@@ -52,7 +60,13 @@ from src.data_utils.synthetic.atomistic.potential_selection import (
     POTENTIAL_SELECTION_SCHEMA_VERSION,
 )
 from src.data_utils.synthetic.atomistic.provenance import (
+    ExecutionProvenance,
+    GENERIC_PRODUCER_FILES,
+    TRANSITION_CAMPAIGN_MD_PRODUCER_FILES,
+    _producer_code_provenance,
+    bind_transition_campaign_execution_provenance,
     homogeneous_liquid_source_producer_code_provenance,
+    producer_code_is_compatible,
 )
 from src.data_utils.synthetic.atomistic.simulation import (
     set_maxwell_boltzmann_velocities,
@@ -70,6 +84,117 @@ COMPILED_SOURCE_CONFIGS = (
     REPOSITORY_ROOT
     / "configs/simulation/atomistic/al/liquid_source_16384_mh1.yaml",
 )
+H100_CAMPAIGN_CONFIG = (
+    REPOSITORY_ROOT
+    / "configs/simulation/atomistic/al/campaign_16384_mpa_110ps_multiseed_h100.yaml"
+)
+
+
+class GraphMetricsEMT(EMT):
+    """Small deterministic calculator metric producer for campaign tests."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.metric_requests = 0
+        self.metric_rebuilds = 0
+        self.metric_reuses = 0
+        self.metric_model_evaluations = 0
+        self.metric_force_evaluations = 0
+        self.metric_stress_evaluations = 0
+        self.metric_real_atom_count = 0
+        self.metric_real_edge_count = 0
+        self.metric_maximum_real_edge_count = 0
+
+    def calculate(self, *args: object, **kwargs: object) -> None:
+        super().calculate(*args, **kwargs)
+        self.metric_requests += 1
+        if self.metric_requests % 3 == 1:
+            self.metric_rebuilds += 1
+        else:
+            self.metric_reuses += 1
+        self.metric_model_evaluations += 1
+        properties = kwargs.get("properties")
+        if properties is None and len(args) >= 2:
+            properties = args[1]
+        requested = set(properties or ("energy",))
+        if "forces" in requested:
+            self.metric_force_evaluations += 1
+        if "stress" in requested:
+            self.metric_stress_evaluations += 1
+        if self.atoms is None:
+            raise RuntimeError(
+                "GraphMetricsEMT completed calculate() without ASE atoms."
+            )
+        self.metric_real_atom_count = len(self.atoms)
+        self.metric_real_edge_count = 12 * len(self.atoms) + self.metric_requests
+        self.metric_maximum_real_edge_count = max(
+            self.metric_maximum_real_edge_count,
+            self.metric_real_edge_count,
+        )
+
+    def graph_cache_metrics(self) -> dict[str, float | int]:
+        pad_num_edges = 100_000
+        return {
+            "requests": self.metric_requests,
+            "rebuilds": self.metric_rebuilds,
+            "compiled_buffer_refills": 0,
+            "reuses": self.metric_reuses,
+            "reuse_fraction": (
+                float(self.metric_reuses / self.metric_requests)
+                if self.metric_requests
+                else 0.0
+            ),
+            "neighbor_skin_A": 0.3,
+            "real_atom_count": self.metric_real_atom_count,
+            "real_edge_count": self.metric_real_edge_count,
+            "maximum_real_edge_count": self.metric_maximum_real_edge_count,
+            "maximum_edge_budget_fraction": float(
+                self.metric_maximum_real_edge_count / pad_num_edges
+            ),
+            "pad_num_atoms": 10_000,
+            "pad_num_edges": pad_num_edges,
+            "model_evaluations": self.metric_model_evaluations,
+            "force_evaluations": self.metric_force_evaluations,
+            "stress_evaluations": self.metric_stress_evaluations,
+        }
+
+
+def test_production_h100_campaign_uses_tuned_runtime_without_changing_source() -> None:
+    config = load_homogeneous_campaign_config(H100_CAMPAIGN_CONFIG)
+
+    assert config.homogeneous.generator.config_path == (
+        REPOSITORY_ROOT
+        / "configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml"
+    )
+    assert config.runtime_generator is not None
+    potential = config.runtime_generator.potential
+    assert potential.enable_cueq is True
+    assert potential.enable_oeq is False
+    assert potential.compile_mode == "max-autotune-no-cudagraphs"
+    assert potential.pad_num_atoms == 16_384
+    assert potential.pad_num_edges == 1_200_000
+    assert potential.neighbor_skin_A == 0.5
+
+
+def test_three_coordinate_samples_per_ps_use_exact_rational_schedule(
+    tmp_path: Path,
+) -> None:
+    campaign_path, _ = _write_test_campaign(tmp_path, random_seeds=[101])
+    loaded = load_homogeneous_campaign_config(campaign_path).homogeneous
+    config = replace(
+        loaded,
+        equilibration_steps=5_000,
+        steps=2_000,
+        trajectory_samples_per_ps=3,
+    )
+
+    steps = trajectory_sample_steps(config, final_global_step=7_000)
+
+    assert steps[:7] == (0, 333, 667, 1_000, 1_333, 1_667, 2_000)
+    assert steps[-1] == 7_000
+    assert len(steps) == 7 * 3 + 1
+    assert "trajectory_samples_per_ps" not in loaded.to_dict()
+    assert config.to_dict()["trajectory_samples_per_ps"] == 3
 
 
 def _identity_with_digest(payload: dict[str, object]) -> dict[str, object]:
@@ -130,6 +255,47 @@ def test_checkpoint_identity_migration_allows_only_certified_producer_change(
     assert _compatible_checkpoint_identity_migration(observed, changed_seed) is None
 
 
+def test_generic_and_transition_md_producer_scopes_are_explicit_and_disjoint() -> None:
+    generic = _producer_code_provenance()
+    assert generic["files"] == list(GENERIC_PRODUCER_FILES)
+    assert len(generic["files"]) == 31
+
+    _, generic_execution = select_calculator(
+        load_config(BASE_GENERATOR_CONFIG),
+        calculator=EMT(),
+        injected_calculator_identity="scope-test EMT",
+    )
+    transition_execution = bind_transition_campaign_execution_provenance(
+        generic_execution
+    )
+    assert transition_execution.producer_code["files"] == list(
+        TRANSITION_CAMPAIGN_MD_PRODUCER_FILES
+    )
+    for required in (
+        "transition_campaign.py",
+        "transition_campaign_config.py",
+        "transition_campaign_queue.py",
+        "transition_resumable.py",
+    ):
+        assert required in transition_execution.producer_code["files"]
+        assert required not in generic["files"]
+
+
+def test_extant_34bc_generic_producer_digest_has_one_exact_certificate() -> None:
+    active = _producer_code_provenance()
+    observed = {
+        **active,
+        "sha256": "34bc51f14396cf99e28e965e579a69c4fb0f04892591b61acbae33fe8d151413",
+    }
+    assert active["sha256"] == (
+        "a02a83f55d044ec1d41b0a0de0a78e2f1d6817b4a49e30738424a58661f63a56"
+    )
+    assert producer_code_is_compatible(observed, active)
+    assert not producer_code_is_compatible(
+        {**observed, "sha256": "0" * 64}, active
+    )
+
+
 def test_campaign_config_relocation_changes_only_config_file_locations() -> None:
     observed = {
         "config_path": "/repo/configs/data/campaign.yaml",
@@ -161,6 +327,140 @@ def test_campaign_config_relocation_changes_only_config_file_locations() -> None
     assert not campaign_config_matches_after_path_relocation(
         observed, changed_physics
     )
+
+
+def _minimal_extension_campaign_config(*, steps: int) -> dict[str, object]:
+    return {
+        "config_path": "/repo/configs/campaign.yaml",
+        "homogeneous_config": "/repo/configs/homogeneous.yaml",
+        "homogeneous": {
+            "config_path": "/repo/configs/homogeneous.yaml",
+            "dataset_name": "campaign_110ps",
+            "steps": steps,
+            "generator": {
+                "config_path": "/repo/configs/source.yaml",
+                "dataset_name": "immutable_source",
+            },
+            "output": {
+                "root_dir": "/repo/output/unused_110ps",
+                "overwrite": False,
+            },
+        },
+        "output_root": "/repo/output/campaign_110ps",
+        "execution": {"stop_on_event": False, "chunk_steps": 1000},
+    }
+
+
+def test_monotonic_measurement_extension_changes_only_endpoint_and_labels() -> None:
+    observed = _minimal_extension_campaign_config(steps=110_000)
+    expected = json.loads(json.dumps(observed))
+    expected["config_path"] = "/repo/configs/campaign_130ps.yaml"
+    expected["homogeneous_config"] = "/repo/configs/homogeneous_130ps.yaml"
+    expected_homogeneous = expected["homogeneous"]
+    expected_homogeneous["config_path"] = expected["homogeneous_config"]
+    expected_homogeneous["dataset_name"] = "campaign_130ps"
+    expected_homogeneous["steps"] = 130_000
+    expected_homogeneous["output"]["root_dir"] = "/repo/output/unused_130ps"
+    expected["output_root"] = "/repo/output/campaign_130ps"
+    assert campaign_config_is_monotonic_measurement_extension(observed, expected)
+
+    equal_endpoint = json.loads(json.dumps(expected))
+    equal_endpoint["homogeneous"]["steps"] = 110_000
+    assert not campaign_config_is_monotonic_measurement_extension(
+        observed, equal_endpoint
+    )
+    changed_temperature = json.loads(json.dumps(expected))
+    changed_temperature["homogeneous"]["temperature_K"] = 600.0
+    assert not campaign_config_is_monotonic_measurement_extension(
+        observed, changed_temperature
+    )
+    event_stopped = json.loads(json.dumps(expected))
+    event_stopped["execution"]["stop_on_event"] = True
+    assert not campaign_config_is_monotonic_measurement_extension(
+        observed, event_stopped
+    )
+
+
+def test_checkpoint_identity_migration_allows_only_portable_h100_extension() -> None:
+    observed_campaign = _minimal_extension_campaign_config(steps=110_000)
+    expected_campaign = json.loads(json.dumps(observed_campaign))
+    expected_campaign["homogeneous"]["steps"] = 130_000
+    expected_campaign["homogeneous"]["dataset_name"] = "campaign_130ps"
+    expected_campaign["homogeneous"]["output"]["root_dir"] = (
+        "/repo/output/unused_130ps"
+    )
+    expected_campaign["output_root"] = "/repo/output/campaign_130ps"
+    shared_runtime = {
+        "python": "3.12.13",
+        "numpy": "1.26.4",
+        "ase": "3.28.0",
+        "torch": "2.11.0+cu128",
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "machine": "x86_64",
+        "mace_torch": "0.3.16",
+        "torch_cuda": "12.8",
+        "cudnn": 91900,
+        "cuequivariance": "0.10.0",
+        "cuequivariance_torch": "0.10.0",
+        "cuequivariance_ops_torch_cu12": "0.10.0",
+        "cuda_device_index": 0,
+        "cuda_device_name": "NVIDIA H100 NVL",
+    }
+    expected_runtime = {
+        **shared_runtime,
+        "platform": "Linux-6.12.0-211.el10-x86_64-with-glibc2.39",
+        "cuda_device_index": 3,
+        "cuda_device_name": "NVIDIA H100 80GB HBM3",
+    }
+    producer = {
+        "algorithm": "sha256",
+        "scope": "/repository/atomistic",
+        "files": ["calculator.py"],
+        "sha256": "same",
+    }
+    shared = {
+        "schema_version": 1,
+        "replica_name": "replica_000",
+        "random_seed": 35831,
+    }
+    observed = _identity_with_digest(
+        {
+            **shared,
+            "campaign_config": observed_campaign,
+            "execution_provenance": {
+                "calculator": {"identity": "same model and settings"},
+                "runtime": shared_runtime,
+                "producer_code": producer,
+            },
+        }
+    )
+    expected = _identity_with_digest(
+        {
+            **shared,
+            "campaign_config": expected_campaign,
+            "execution_provenance": {
+                "calculator": {"identity": "same model and settings"},
+                "runtime": expected_runtime,
+                "producer_code": producer,
+            },
+        }
+    )
+    assert _checkpoint_runtime_is_portable(shared_runtime, expected_runtime)
+    assert _compatible_checkpoint_identity_migration(observed, expected) == expected
+
+    changed_torch = json.loads(json.dumps(expected_runtime))
+    changed_torch["torch"] = "different"
+    assert not _checkpoint_runtime_is_portable(shared_runtime, changed_torch)
+    changed_gpu = json.loads(json.dumps(expected_runtime))
+    changed_gpu["cuda_device_name"] = "NVIDIA H200"
+    assert not _checkpoint_runtime_is_portable(shared_runtime, changed_gpu)
+
+    shortened_payload = {
+        key: value for key, value in expected.items() if key != "identity_sha256"
+    }
+    shortened_payload["campaign_config"]["homogeneous"]["steps"] = 100_000
+    shortened = _identity_with_digest(shortened_payload)
+    assert _compatible_checkpoint_identity_migration(observed, shortened) is None
 
 
 def _write_test_campaign(
@@ -364,6 +664,135 @@ def _write_test_campaign(
     return campaign_path, atom_count
 
 
+def test_real_shape_34bc_checkpoint_identity_migrates_to_current_scope(
+    tmp_path: Path,
+) -> None:
+    campaign_path, _ = _write_test_campaign(tmp_path, random_seeds=[89])
+    config = load_homogeneous_campaign_config(campaign_path)
+    _, execution = select_calculator(
+        config.homogeneous.generator,
+        calculator=EMT(),
+        injected_calculator_identity="legacy identity migration EMT",
+    )
+    expected = _campaign_identity(
+        config,
+        execution,
+        replica_name="replica_000",
+        random_seed=config.homogeneous.random_seeds[0],
+    )
+    observed_payload = json.loads(
+        json.dumps(
+            {
+                key: value
+                for key, value in expected.items()
+                if key != "identity_sha256"
+            }
+        )
+    )
+    observed_payload["execution_provenance"]["producer_code"]["sha256"] = (
+        "34bc51f14396cf99e28e965e579a69c4fb0f04892591b61acbae33fe8d151413"
+    )
+    observed = _identity_with_digest(observed_payload)
+    assert _compatible_checkpoint_identity_migration(observed, expected) == expected
+
+    checkpoint_directory = (
+        config.output_root / "checkpoints" / "replica_000"
+    )
+    checkpoint_directory.mkdir(parents=True)
+    manifest_path = checkpoint_directory / "manifest.json"
+    manifest_path.write_text(json.dumps(observed), encoding="utf-8")
+    store = ResumableReplicaCheckpointStore(
+        config,
+        execution,
+        replica_name="replica_000",
+        random_seed=config.homogeneous.random_seeds[0],
+    )
+    assert store.identity == expected
+    assert json.loads(manifest_path.read_text(encoding="utf-8")) == expected
+    migration_paths = list(
+        (checkpoint_directory / "identity_migrations").glob("*.json")
+    )
+    assert len(migration_paths) == 1
+    migration = json.loads(migration_paths[0].read_text(encoding="utf-8"))
+    assert migration["migration"] == "certified_checkpoint_identity_migration_v2"
+    assert migration["observed_producer_code"]["sha256"] == (
+        "34bc51f14396cf99e28e965e579a69c4fb0f04892591b61acbae33fe8d151413"
+    )
+    assert migration["active_producer_code"] == (
+        expected["execution_provenance"]["producer_code"]
+    )
+
+
+def test_checkpoint_identity_records_multiple_h100_node_transitions(
+    tmp_path: Path,
+) -> None:
+    campaign_path, _ = _write_test_campaign(tmp_path, random_seeds=[97])
+    config = load_homogeneous_campaign_config(campaign_path)
+    _, base_execution = select_calculator(
+        config.homogeneous.generator,
+        calculator=EMT(),
+        injected_calculator_identity="multi-node identity migration EMT",
+    )
+    runtime_nvl = {
+        **base_execution.runtime,
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "machine": "x86_64",
+        "cuda_device_index": 0,
+        "cuda_device_name": "NVIDIA H100 NVL",
+    }
+    runtime_sxm = {
+        **runtime_nvl,
+        "platform": "Linux-6.12.0-211.el10-x86_64-with-glibc2.39",
+        "cuda_device_index": 2,
+        "cuda_device_name": "NVIDIA H100 80GB HBM3",
+    }
+
+    def store(runtime: dict[str, object]) -> ResumableReplicaCheckpointStore:
+        return ResumableReplicaCheckpointStore(
+            config,
+            ExecutionProvenance(
+                calculator=base_execution.calculator,
+                runtime=runtime,
+                producer_code=base_execution.producer_code,
+            ),
+            replica_name="replica_000",
+            random_seed=97,
+        )
+
+    store(runtime_nvl)
+    store(runtime_sxm)
+    store(runtime_nvl)
+    migration_paths = list(
+        (
+            config.output_root
+            / "checkpoints"
+            / "replica_000"
+            / "identity_migrations"
+        ).glob("*.json")
+    )
+    assert len(migration_paths) == 2
+
+
+def _bind_runtime_generator(
+    campaign_path: Path,
+    *,
+    potential_updates: dict[str, object],
+) -> Path:
+    campaign_raw = yaml.safe_load(campaign_path.read_text(encoding="utf-8"))
+    homogeneous_path = Path(campaign_raw["homogeneous_config"])
+    homogeneous_raw = yaml.safe_load(homogeneous_path.read_text(encoding="utf-8"))
+    source_generator_path = Path(homogeneous_raw["source_generator_config"])
+    runtime_raw = yaml.safe_load(
+        source_generator_path.read_text(encoding="utf-8")
+    )
+    runtime_raw["potential"].update(potential_updates)
+    runtime_path = campaign_path.parent / "runtime_generator.yaml"
+    runtime_path.write_text(yaml.safe_dump(runtime_raw), encoding="utf-8")
+    campaign_raw["runtime_generator_config"] = str(runtime_path)
+    campaign_path.write_text(yaml.safe_dump(campaign_raw), encoding="utf-8")
+    return runtime_path
+
+
 def _bind_test_selection_report(
     campaign_path: Path,
     *,
@@ -454,6 +883,18 @@ def test_campaign_config_binds_source_and_preserves_persistence_span(
     campaign_path, _ = _write_test_campaign(tmp_path)
     config = load_homogeneous_campaign_config(campaign_path)
     assert config.execution.online_persistence_frames == 2
+    assert config.runtime_generator is None
+    assert list(config.to_dict()) == [
+        "homogeneous_config",
+        "homogeneous",
+        "output_root",
+        "execution",
+        "potential_selection_report",
+        "potential_selection_report_sha256",
+        "potential_selection_runtime_controls",
+        "source_evidence",
+        "config_path",
+    ]
     assert set(config.source_evidence) == {
         "manifest",
         "metadata",
@@ -476,6 +917,86 @@ def test_campaign_config_binds_source_and_preserves_persistence_span(
     campaign_path.write_text(yaml.safe_dump(raw), encoding="utf-8")
     with pytest.raises(FileNotFoundError, match="will not fall back"):
         load_homogeneous_campaign_config(campaign_path)
+
+
+def test_optional_runtime_generator_is_exact_except_approved_potential_fields(
+    tmp_path: Path,
+) -> None:
+    campaign_path, _ = _write_test_campaign(tmp_path, random_seeds=[79])
+    runtime_path = _bind_runtime_generator(
+        campaign_path,
+        potential_updates={"neighbor_skin_A": 0.5},
+    )
+    config = load_homogeneous_campaign_config(campaign_path)
+    assert config.runtime_generator is not None
+    assert config.homogeneous.generator.potential.neighbor_skin_A == 0.3
+    assert config.runtime_generator.potential.neighbor_skin_A == 0.5
+    serialized = config.to_dict()
+    assert serialized["runtime_generator_config"] == str(runtime_path)
+    assert serialized["runtime_generator"] == config.runtime_generator.to_dict()
+
+    relocated = json.loads(json.dumps(serialized))
+    relocated["runtime_generator_config"] = "/relocated/runtime_generator.yaml"
+    relocated["runtime_generator"]["config_path"] = (
+        "/relocated/runtime_generator.yaml"
+    )
+    assert campaign_config_matches_after_path_relocation(relocated, serialized)
+
+    runtime_raw = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))
+    runtime_raw["potential"]["default_dtype"] = "float64"
+    runtime_path.write_text(yaml.safe_dump(runtime_raw), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="Only .*neighbor_skin_A"):
+        load_homogeneous_campaign_config(campaign_path)
+
+
+def test_md_worker_uses_runtime_generator_but_source_loader_uses_source_config(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    campaign_path, _ = _write_test_campaign(tmp_path, random_seeds=[83])
+    _bind_runtime_generator(
+        campaign_path,
+        potential_updates={"neighbor_skin_A": 0.5},
+    )
+    config = load_homogeneous_campaign_config(campaign_path)
+    assert config.runtime_generator is not None
+    initialize_campaign_queue(config, retry_failed=False)
+    import src.data_utils.synthetic.atomistic.homogeneous_campaign as campaign_module
+
+    real_load_source = campaign_module._load_source_liquid
+    real_select = campaign_module.select_calculator
+    real_diagnose = campaign_module.diagnose_system
+    source_generators = []
+    selected_generators = []
+    diagnostic_generators = []
+
+    def captured_load_source(homogeneous):
+        source_generators.append(homogeneous.generator)
+        return real_load_source(homogeneous)
+
+    def captured_select(generator, *args: object, **kwargs: object):
+        selected_generators.append(generator)
+        return real_select(generator, *args, **kwargs)
+
+    def captured_diagnose(atoms, trace, generator, *args: object, **kwargs: object):
+        diagnostic_generators.append(generator)
+        return real_diagnose(atoms, trace, generator, *args, **kwargs)
+
+    monkeypatch.setattr(campaign_module, "_load_source_liquid", captured_load_source)
+    monkeypatch.setattr(campaign_module, "select_calculator", captured_select)
+    monkeypatch.setattr(campaign_module, "diagnose_system", captured_diagnose)
+    run_md_worker(
+        config,
+        worker_name="test_runtime_generator_worker",
+        calculator=EMT(),
+        injected_calculator_identity="test-only runtime-generator EMT",
+        progress=lambda _message: None,
+    )
+    assert source_generators == [config.homogeneous.generator]
+    assert selected_generators == [config.runtime_generator]
+    assert len(diagnostic_generators) == 1
+    assert diagnostic_generators[0].potential == config.runtime_generator.potential
+    assert diagnostic_generators[0].config_path == config.runtime_generator.config_path
 
 
 def test_campaign_binds_schema4_selection_with_advisory_runtime_projection(
@@ -711,12 +1232,147 @@ def test_dynamic_worker_reuses_calculator_and_offline_analysis(
             (replica / "full_analysis.json").read_text(encoding="utf-8")
         )
         assert set(metadata["raw_artifacts_sha256"]) == set(RAW_REPLICA_ARTIFACTS)
+        assert metadata["calculator_performance"]["graph_cache_metrics_available"] is False
+        assert metadata["calculator_performance"]["graph_cache"] is None
+        assert metadata["calculator_performance"]["coverage_start_global_step"] == 0
         assert analysis["raw_artifacts_sha256"] == metadata[
             "raw_artifacts_sha256"
         ]
         assert analysis["run_metadata_sha256"] == row["run_metadata_sha256"]
         assert analysis["queue_outcome"] == row["outcome"]
         assert analysis["online_offline_shared_frame_audit"]["status"] == "exact_match"
+
+
+def test_persistent_calculator_metrics_are_checkpointed_as_replica_deltas(
+    tmp_path: Path,
+) -> None:
+    campaign_path, _ = _write_test_campaign(tmp_path)
+    config = load_homogeneous_campaign_config(campaign_path)
+    initialize_campaign_queue(config, retry_failed=False)
+    calculator = GraphMetricsEMT()
+    run_md_worker(
+        config,
+        worker_name="test_metric_worker",
+        calculator=calculator,
+        injected_calculator_identity="test-only persistent graph-metric EMT",
+        progress=lambda _message: None,
+    )
+
+    replica_metrics: list[dict[str, object]] = []
+    checkpoint_metrics: list[dict[str, object]] = []
+    for replica_name in ("replica_000", "replica_001"):
+        metadata = json.loads(
+            (
+                config.output_root
+                / "replicas"
+                / replica_name
+                / "run_metadata.json"
+            ).read_text(encoding="utf-8")
+        )
+        performance = metadata["calculator_performance"]
+        assert performance["graph_cache_metrics_available"] is True
+        assert performance["coverage_start_global_step"] == 0
+        assert performance["completed_global_step"] == 4
+        assert performance["measured_global_steps"] == 4
+        assert performance["elapsed_seconds"] > 0.0
+        assert performance["measured_steps_per_second"] > 0.0
+        replica_metrics.append(performance["graph_cache"])
+
+        checkpoint_directory = config.output_root / "checkpoints" / replica_name
+        latest = (checkpoint_directory / "LATEST").read_text(encoding="utf-8").strip()
+        checkpoint_metadata = json.loads(
+            (checkpoint_directory / latest / "metadata.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        checkpoint_performance = checkpoint_metadata["calculator_performance"]
+        assert checkpoint_performance["completed_global_step"] == 4
+        checkpoint_metrics.append(checkpoint_performance["graph_cache"])
+
+    for graph_cache in replica_metrics:
+        start = graph_cache["worker_metrics_at_session_start"]
+        end = graph_cache["worker_metrics_at_snapshot"]
+        delta = graph_cache["session_counter_delta"]
+        cumulative = graph_cache["replica_counters"]
+        for field in CALCULATOR_GRAPH_COUNTER_FIELDS:
+            assert delta[field] == end[field] - start[field]
+            assert cumulative[field] == delta[field]
+        assert graph_cache["replica_reuse_fraction"] == (
+            cumulative["reuses"] / cumulative["requests"]
+        )
+
+    first_end = replica_metrics[0]["worker_metrics_at_snapshot"]
+    second_start = replica_metrics[1]["worker_metrics_at_session_start"]
+    assert second_start == first_end
+    assert replica_metrics[1]["replica_counters"]["requests"] < replica_metrics[1][
+        "worker_metrics_at_snapshot"
+    ]["requests"]
+    for raw_graph_cache, checkpoint_graph_cache in zip(
+        replica_metrics, checkpoint_metrics, strict=True
+    ):
+        assert raw_graph_cache["replica_counters"] == checkpoint_graph_cache[
+            "replica_counters"
+        ]
+
+
+def test_calculator_metrics_accumulate_across_checkpoint_resume(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    campaign_path, _ = _write_test_campaign(tmp_path, random_seeds=[73])
+    config = load_homogeneous_campaign_config(campaign_path)
+    initialize_campaign_queue(config, retry_failed=False)
+    real_save = ResumableReplicaCheckpointStore.save
+    save_calls = 0
+
+    def save_then_interrupt(
+        store: ResumableReplicaCheckpointStore,
+        **kwargs: object,
+    ) -> None:
+        nonlocal save_calls
+        real_save(store, **kwargs)
+        save_calls += 1
+        if save_calls == 1:
+            raise RuntimeError("intentional interruption after committed checkpoint")
+
+    monkeypatch.setattr(ResumableReplicaCheckpointStore, "save", save_then_interrupt)
+    with pytest.raises(RuntimeError, match="full traceback was persisted"):
+        run_md_worker(
+            config,
+            worker_name="test_interrupted_metric_worker",
+            calculator=GraphMetricsEMT(),
+            injected_calculator_identity="test-only resumable graph-metric EMT",
+            progress=lambda _message: None,
+        )
+    assert save_calls == 1
+
+    monkeypatch.setattr(ResumableReplicaCheckpointStore, "save", real_save)
+    initialize_campaign_queue(config, retry_failed=True)
+    run_md_worker(
+        config,
+        worker_name="test_resumed_metric_worker",
+        calculator=GraphMetricsEMT(),
+        injected_calculator_identity="test-only resumable graph-metric EMT",
+        progress=lambda _message: None,
+    )
+    metadata = json.loads(
+        (
+            config.output_root
+            / "replicas"
+            / "replica_000"
+            / "run_metadata.json"
+        ).read_text(encoding="utf-8")
+    )
+    performance = metadata["calculator_performance"]
+    assert performance["coverage_start_global_step"] == 0
+    assert performance["completed_global_step"] == 4
+    assert performance["measured_global_steps"] == 4
+    graph_cache = performance["graph_cache"]
+    session_delta = graph_cache["session_counter_delta"]
+    cumulative = graph_cache["replica_counters"]
+    assert graph_cache["worker_metrics_at_session_start"]["requests"] == 0
+    assert cumulative["requests"] > session_delta["requests"] > 0
+    assert cumulative["model_evaluations"] > session_delta["model_evaluations"] > 0
 
 
 def test_finalize_rejects_run_metadata_outcome_event_tampering(

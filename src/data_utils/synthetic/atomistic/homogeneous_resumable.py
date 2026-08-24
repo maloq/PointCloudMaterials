@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import shutil
 import tempfile
 from copy import deepcopy
@@ -15,6 +16,7 @@ from ase.md.nose_hoover_chain import IsotropicMTKNPT
 
 from .homogeneous_campaign_config import (
     HomogeneousCampaignConfig,
+    campaign_config_is_monotonic_measurement_extension,
     campaign_config_matches_after_path_relocation,
 )
 from .homogeneous_online import (
@@ -338,11 +340,170 @@ def _campaign_identity(
     return {**identity, "identity_sha256": hashlib.sha256(encoded).hexdigest()}
 
 
+def _normalized_portable_linux_platform(
+    value: object,
+    *,
+    machine: object,
+) -> tuple[str, str, str] | None:
+    if not isinstance(value, str) or not isinstance(machine, str):
+        return None
+    if "-with-" not in value:
+        return None
+    kernel_and_machine, libc = value.rsplit("-with-", maxsplit=1)
+    if (
+        not kernel_and_machine.startswith("Linux-")
+        or not kernel_and_machine.endswith(f"-{machine}")
+        or not libc.startswith("glibc")
+    ):
+        return None
+    return ("Linux", machine, libc)
+
+
+def _checkpoint_runtime_is_portable(
+    observed: object,
+    expected: object,
+) -> bool:
+    """Allow only host placement changes within one exact H100 software stack."""
+
+    if observed == expected:
+        return True
+    if (
+        not isinstance(observed, dict)
+        or not isinstance(expected, dict)
+        or set(observed) != set(expected)
+    ):
+        return False
+    portable_fields = {"platform", "cuda_device_index", "cuda_device_name"}
+    for name in set(observed) - portable_fields:
+        if observed[name] != expected[name]:
+            return False
+
+    if observed.get("platform") != expected.get("platform"):
+        observed_platform = _normalized_portable_linux_platform(
+            observed.get("platform"), machine=observed.get("machine")
+        )
+        expected_platform = _normalized_portable_linux_platform(
+            expected.get("platform"), machine=expected.get("machine")
+        )
+        if observed_platform is None or observed_platform != expected_platform:
+            return False
+
+    cuda_host_fields = {"cuda_device_index", "cuda_device_name"}
+    if cuda_host_fields & set(observed):
+        if not cuda_host_fields <= set(observed):
+            return False
+        for runtime, name in ((observed, "observed"), (expected, "expected")):
+            device_index = runtime["cuda_device_index"]
+            if (
+                not isinstance(device_index, int)
+                or isinstance(device_index, bool)
+                or device_index < 0
+            ):
+                raise RuntimeError(
+                    f"Checkpoint {name} cuda_device_index must be a non-negative "
+                    f"integer, got {device_index!r}."
+                )
+        observed_name = observed["cuda_device_name"]
+        expected_name = expected["cuda_device_name"]
+        if observed_name != expected_name:
+            h100_name = re.compile(r"^NVIDIA H100(?:\s|$)", flags=re.IGNORECASE)
+            if (
+                not isinstance(observed_name, str)
+                or not isinstance(expected_name, str)
+                or h100_name.match(observed_name) is None
+                or h100_name.match(expected_name) is None
+            ):
+                return False
+    return True
+
+
+def _checkpoint_identity_migration_record(
+    observed: dict[str, object],
+    expected: dict[str, object],
+) -> dict[str, object]:
+    observed_execution = observed["execution_provenance"]
+    expected_execution = expected["execution_provenance"]
+    observed_campaign = observed["campaign_config"]
+    expected_campaign = expected["campaign_config"]
+    if (
+        not isinstance(observed_execution, dict)
+        or not isinstance(expected_execution, dict)
+        or not isinstance(observed_campaign, dict)
+        or not isinstance(expected_campaign, dict)
+    ):
+        raise TypeError("Checkpoint identity migration inputs must contain mappings.")
+    observed_runtime = observed_execution["runtime"]
+    expected_runtime = expected_execution["runtime"]
+    if not isinstance(observed_runtime, dict) or not isinstance(expected_runtime, dict):
+        raise TypeError("Checkpoint identity migration runtime records must be mappings.")
+    runtime_host_changes = {
+        field: {"observed": observed_runtime.get(field), "active": expected_runtime.get(field)}
+        for field in ("platform", "cuda_device_index", "cuda_device_name")
+        if observed_runtime.get(field) != expected_runtime.get(field)
+    }
+    observed_homogeneous = observed_campaign["homogeneous"]
+    expected_homogeneous = expected_campaign["homogeneous"]
+    if not isinstance(observed_homogeneous, dict) or not isinstance(
+        expected_homogeneous, dict
+    ):
+        raise TypeError("Checkpoint campaign homogeneous records must be mappings.")
+    return {
+        "schema_version": 2,
+        "migration": "certified_checkpoint_identity_migration_v2",
+        "observed_identity_sha256": observed["identity_sha256"],
+        "active_identity_sha256": expected["identity_sha256"],
+        "observed_producer_code": observed_execution["producer_code"],
+        "active_producer_code": expected_execution["producer_code"],
+        "runtime_host_changes": runtime_host_changes,
+        "campaign_extension": {
+            "observed_measurement_steps": observed_homogeneous["steps"],
+            "active_measurement_steps": expected_homogeneous["steps"],
+            "observed_output_root": observed_campaign["output_root"],
+            "active_output_root": expected_campaign["output_root"],
+        },
+        "equivalence_basis": (
+            "The model, calculator settings, source evidence, integration state, "
+            "software stack, CUDA toolkit, cuDNN, and CuEq versions are exact. Only "
+            "the Linux kernel placement, logical CUDA index, H100 product name, "
+            "repository output labels/locations, and a strictly longer full-duration "
+            "measurement endpoint may differ. The next segment resumes the hashed "
+            "MTK-NPT state without reconstructing or modifying checkpoint tensors."
+        ),
+    }
+
+
+def _write_checkpoint_identity_migration(
+    directory: Path,
+    *,
+    observed: dict[str, object],
+    expected: dict[str, object],
+) -> None:
+    migration_directory = directory / "identity_migrations"
+    migration_directory.mkdir(exist_ok=True)
+    migration_path = migration_directory / (
+        f"{observed['identity_sha256']}_to_{expected['identity_sha256']}.json"
+    )
+    record = _checkpoint_identity_migration_record(observed, expected)
+    if migration_path.exists():
+        with migration_path.open("r", encoding="utf-8") as handle:
+            existing = json.load(handle)
+        if existing != record:
+            raise RuntimeError(
+                f"{migration_path}: existing checkpoint identity migration differs "
+                "from the exact requested transition."
+            )
+        return
+    temporary = migration_path.with_suffix(".json.tmp")
+    with temporary.open("w", encoding="utf-8") as handle:
+        json.dump(record, handle, indent=2, sort_keys=True)
+    temporary.replace(migration_path)
+
+
 def _compatible_checkpoint_identity_migration(
     observed: object,
     expected: dict[str, object],
 ) -> dict[str, object] | None:
-    """Migrate certified producer code and repository config-file locations only."""
+    """Migrate only certified code, portable H100 host fields, and a longer endpoint."""
 
     if not isinstance(observed, dict) or set(observed) != set(expected):
         return None
@@ -364,6 +525,14 @@ def _compatible_checkpoint_identity_migration(
         expected_execution, dict
     ):
         return None
+    if set(observed_execution) != set(expected_execution):
+        return None
+    if observed_execution.get("calculator") != expected_execution.get("calculator"):
+        return None
+    if not _checkpoint_runtime_is_portable(
+        observed_execution.get("runtime"), expected_execution.get("runtime")
+    ):
+        return None
     if not producer_code_is_compatible(
         observed_execution.get("producer_code"),
         expected_execution["producer_code"],
@@ -373,12 +542,20 @@ def _compatible_checkpoint_identity_migration(
     migrated["execution_provenance"]["producer_code"] = deepcopy(
         expected_execution["producer_code"]
     )
+    migrated["execution_provenance"]["runtime"] = deepcopy(
+        expected_execution["runtime"]
+    )
     observed_campaign_config = migrated.get("campaign_config")
     expected_campaign_config = expected.get("campaign_config")
     if not isinstance(expected_campaign_config, dict):
         return None
-    if not campaign_config_matches_after_path_relocation(
-        observed_campaign_config, expected_campaign_config
+    if not (
+        campaign_config_matches_after_path_relocation(
+            observed_campaign_config, expected_campaign_config
+        )
+        or campaign_config_is_monotonic_measurement_extension(
+            observed_campaign_config, expected_campaign_config
+        )
     ):
         return None
     migrated["campaign_config"] = deepcopy(expected_campaign_config)
@@ -421,32 +598,11 @@ class ResumableReplicaCheckpointStore:
                         "campaign, potential/runtime, replica name, or random seed. "
                         "Refusing an ambiguous resume."
                     )
-                migration_record = {
-                    "schema_version": 1,
-                    "migration": "exact_compiled_graph_buffer_refill_v1",
-                    "observed_identity_sha256": observed["identity_sha256"],
-                    "active_identity_sha256": self.identity["identity_sha256"],
-                    "observed_producer_code": observed["execution_provenance"][
-                        "producer_code"
-                    ],
-                    "active_producer_code": self.identity["execution_provenance"][
-                        "producer_code"
-                    ],
-                }
-                migration_path = self.directory / "identity_migration.json"
-                if migration_path.exists():
-                    with migration_path.open("r", encoding="utf-8") as handle:
-                        existing_migration = json.load(handle)
-                    if existing_migration != migration_record:
-                        raise RuntimeError(
-                            f"{migration_path}: existing checkpoint migration record "
-                            "does not match the active exact migration."
-                        )
-                else:
-                    temporary_migration = migration_path.with_suffix(".json.tmp")
-                    with temporary_migration.open("w", encoding="utf-8") as handle:
-                        json.dump(migration_record, handle, indent=2, sort_keys=True)
-                    temporary_migration.replace(migration_path)
+                _write_checkpoint_identity_migration(
+                    self.directory,
+                    observed=observed,
+                    expected=self.identity,
+                )
                 temporary_manifest = manifest_path.with_suffix(".json.tmp")
                 with temporary_manifest.open("w", encoding="utf-8") as handle:
                     json.dump(self.identity, handle, indent=2)
@@ -542,6 +698,11 @@ class ResumableReplicaCheckpointStore:
             )
         with required["metadata"].open("r", encoding="utf-8") as handle:
             metadata = json.load(handle)
+        if not isinstance(metadata, dict):
+            raise RuntimeError(
+                f"{required['metadata']}: checkpoint metadata must be a JSON mapping, "
+                f"got {type(metadata).__name__}."
+            )
         if state.nsteps != metadata.get("completed_global_step"):
             raise RuntimeError(
                 f"{snapshot}: MTK nsteps={state.nsteps} differs from metadata "
@@ -573,6 +734,11 @@ class ResumableReplicaCheckpointStore:
         metadata: dict[str, object],
     ) -> None:
         completed_step = integrator_state.nsteps
+        if not isinstance(metadata, dict):
+            raise TypeError(
+                "Checkpoint metadata must be a mapping, got "
+                f"{type(metadata).__name__}."
+            )
         if metadata.get("completed_global_step") != completed_step:
             raise RuntimeError(
                 "Checkpoint metadata completed_global_step must equal the captured MTK "

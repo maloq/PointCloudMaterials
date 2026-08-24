@@ -1,0 +1,25 @@
+dataset_name: al_homogeneous_crystallization_mpa_70304_110ps_source12346_seed35831
+source_generator_config: configs/simulation/atomistic/al/liquid_source_70304_mpa_seed12346_500K.yaml
+source_dataset: output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K
+source_environment: replica_000_bulk_liquid
+source_frame_step: 3000
+random_seeds: [35831]
+
+temperature_K: 500.0
+equilibration_steps: 5000
+steps: 110000
+sample_interval: 1000
+
+analysis:
+  ptm_rmsd_cutoff: 0.10
+  crystalline_cluster_cutoff_A: 3.5
+  nucleus_size_threshold_atoms: 100
+  threshold_persistence_frames: 3
+  rdf_cutoff_A: 8.0
+  rdf_bins: 160
+
+output:
+  root_dir: output/synthetic_data/al_homogeneous_70304_mpa_110ps_source12346_seed35831/unoptimized_placeholder
+  overwrite: false
+  save_extxyz: false
+  create_visualizations: false

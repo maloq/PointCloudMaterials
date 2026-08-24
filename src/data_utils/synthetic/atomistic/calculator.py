@@ -37,6 +37,33 @@ SUPPORTED_FAST_PROPERTIES = {
 }
 
 
+def _bf16_outputs_to_float32(value: Any) -> Any:
+    if torch.is_tensor(value):
+        return value.float() if value.dtype == torch.bfloat16 else value
+    if isinstance(value, tuple):
+        return tuple(_bf16_outputs_to_float32(item) for item in value)
+    if isinstance(value, list):
+        return [_bf16_outputs_to_float32(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            key: _bf16_outputs_to_float32(item) for key, item in value.items()
+        }
+    return value
+
+
+class _BF16InteractionAutocast(torch.nn.Module):
+    """Run the selected MACE interaction block in BF16 and return FP32 features."""
+
+    def __init__(self, interaction: torch.nn.Module) -> None:
+        super().__init__()
+        self.interaction = interaction
+
+    def forward(self, *args: Any, **kwargs: Any) -> Any:
+        with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+            output = self.interaction(*args, **kwargs)
+        return _bf16_outputs_to_float32(output)
+
+
 class VerletSkinMACECalculator(MACECalculator):
     """MACE calculator optimized for the repository's fixed-composition MD.
 
@@ -58,6 +85,7 @@ class VerletSkinMACECalculator(MACECalculator):
         *args: object,
         neighbor_skin_A: float,
         md_property_mode: str,
+        autocast_dtype: str | None = None,
         compile_mode: str | None = None,
         fullgraph: bool = False,
         enable_cueq: bool = False,
@@ -96,6 +124,36 @@ class VerletSkinMACECalculator(MACECalculator):
                 f"md_property_mode={md_property_mode!r} is unsupported; expected one of "
                 f"{sorted(SUPPORTED_MD_PROPERTY_MODES)}."
             )
+        if autocast_dtype not in {None, "bfloat16"}:
+            raise ValueError(
+                "autocast_dtype must be null or 'bfloat16', got "
+                f"{autocast_dtype!r}."
+            )
+        configured_default_dtype = kwargs.get("default_dtype")
+        configured_device = kwargs.get("device", "cpu")
+        if autocast_dtype == "bfloat16":
+            if configured_default_dtype != "float32":
+                raise ValueError(
+                    "BF16 autocast requires default_dtype='float32', got "
+                    f"{configured_default_dtype!r}."
+                )
+            if not isinstance(configured_device, str) or not configured_device.startswith(
+                "cuda"
+            ):
+                raise ValueError(
+                    "BF16 autocast requires a CUDA device, got "
+                    f"device={configured_device!r}."
+                )
+            if not enable_cueq or enable_oeq:
+                raise ValueError(
+                    "BF16 autocast is implemented only for the CuEq backend: set "
+                    "enable_cueq=true and enable_oeq=false."
+                )
+            if compile_mode is not None:
+                raise ValueError(
+                    "BF16 interaction autocast has not been qualified with torch.compile; "
+                    "set compile_mode=null."
+                )
         if compile_mode is not None and (
             not isinstance(compile_mode, str)
             or compile_mode not in SUPPORTED_COMPILE_MODES
@@ -148,6 +206,7 @@ class VerletSkinMACECalculator(MACECalculator):
         if legacy_uncompiled and (
             compile_mode is not None
             or enable_oeq
+            or autocast_dtype is not None
             or pad_num_atoms != 0
             or pad_num_edges != 0
         ):
@@ -168,6 +227,7 @@ class VerletSkinMACECalculator(MACECalculator):
 
         self.neighbor_skin_A = float(neighbor_skin_A)
         self.md_property_mode = md_property_mode
+        self.autocast_dtype = autocast_dtype
         if legacy_uncompiled:
             super().__init__(
                 *args,
@@ -193,6 +253,25 @@ class VerletSkinMACECalculator(MACECalculator):
                 pad_num_edges=pad_num_edges,
                 **kwargs,
             )
+        if self.autocast_dtype == "bfloat16" and not torch.cuda.is_bf16_supported():
+            raise RuntimeError(
+                f"CUDA device {self.device} does not report native BF16 support. "
+                "Refusing to label an emulated or unsupported execution as BF16."
+            )
+        if self.autocast_dtype == "bfloat16":
+            for model in self.models:
+                interactions = getattr(model, "interactions", None)
+                if not isinstance(interactions, torch.nn.ModuleList):
+                    raise TypeError(
+                        "BF16 interaction autocast requires a MACE model with an explicit "
+                        f"ModuleList of interaction blocks, got {type(interactions).__name__}."
+                    )
+                if len(interactions) != 2:
+                    raise ValueError(
+                        "The reviewed BF16 policy is specific to the two-interaction "
+                        f"MACE-MPA-0-medium checkpoint, got {len(interactions)} interactions."
+                    )
+                interactions[1] = _BF16InteractionAutocast(interactions[1])
         if self.model_type != "MACE":
             raise TypeError(
                 "VerletSkinMACECalculator supports the repository's energy/force/stress "
@@ -245,7 +324,7 @@ class VerletSkinMACECalculator(MACECalculator):
 
     def graph_cache_metrics(self) -> dict[str, float | int]:
         requests = self.graph_request_count
-        return {
+        metrics: dict[str, float | int] = {
             "requests": requests,
             "rebuilds": self.graph_rebuild_count,
             "compiled_buffer_refills": self.compiled_graph_refill_count,
@@ -267,7 +346,28 @@ class VerletSkinMACECalculator(MACECalculator):
             "model_evaluations": self.model_evaluation_count,
             "force_evaluations": self.force_evaluation_count,
             "stress_evaluations": self.stress_evaluation_count,
+            "bfloat16_second_interaction_autocast_enabled": int(
+                self.autocast_dtype == "bfloat16"
+            ),
         }
+        if self.device.type == "cuda":
+            metrics.update(
+                {
+                    "cuda_memory_allocated_bytes": int(
+                        torch.cuda.memory_allocated(self.device)
+                    ),
+                    "cuda_memory_reserved_bytes": int(
+                        torch.cuda.memory_reserved(self.device)
+                    ),
+                    "cuda_max_memory_allocated_bytes": int(
+                        torch.cuda.max_memory_allocated(self.device)
+                    ),
+                    "cuda_max_memory_reserved_bytes": int(
+                        torch.cuda.max_memory_reserved(self.device)
+                    ),
+                }
+            )
+        return metrics
 
     def clear_neighbor_cache(self) -> None:
         self._cached_batch = None
@@ -333,12 +433,16 @@ class VerletSkinMACECalculator(MACECalculator):
             current_pbc, self._reference_pbc
         ):
             return self._rebuild_graph(atoms, positions_A, cell_A)
-        if self._cached_batch is None or not self._graph_is_valid(positions_A, cell_A):
+        if self._cached_batch is None:
+            return self._rebuild_graph(atoms, positions_A, cell_A)
+        canonical_positions_A = self._canonical_positions_if_graph_valid(
+            positions_A, cell_A
+        )
+        if canonical_positions_A is None:
             return self._rebuild_graph(atoms, positions_A, cell_A)
 
         self.graph_reuse_count += 1
         batch = self._cached_batch
-        canonical_positions_A = self._canonical_positions(positions_A, cell_A)
         position_tensor = torch.as_tensor(
             canonical_positions_A,
             dtype=batch["positions"].dtype,
@@ -383,13 +487,15 @@ class VerletSkinMACECalculator(MACECalculator):
         )
         return positions_A - image_offsets @ cell_A
 
-    def _graph_is_valid(self, positions_A: np.ndarray, cell_A: np.ndarray) -> bool:
+    def _canonical_positions_if_graph_valid(
+        self, positions_A: np.ndarray, cell_A: np.ndarray
+    ) -> np.ndarray | None:
         reference_cell_A = self._reference_cell_A
         reference_scaled_positions = self._reference_scaled_positions
         if reference_cell_A is None or reference_scaled_positions is None:
-            return False
+            return None
         if positions_A.shape != reference_scaled_positions.shape:
-            return False
+            return None
 
         try:
             deformation = np.linalg.solve(reference_cell_A, cell_A)
@@ -416,7 +522,17 @@ class VerletSkinMACECalculator(MACECalculator):
         shortest_omitted_distance_A = minimum_stretch * (
             self.r_max + self.neighbor_skin_A
         ) - 2.0 * maximum_nonaffine_displacement_A
-        return shortest_omitted_distance_A > self.r_max
+        if shortest_omitted_distance_A > self.r_max:
+            return canonical_positions_A
+        return None
+
+    def _graph_is_valid(self, positions_A: np.ndarray, cell_A: np.ndarray) -> bool:
+        """Retain the Boolean cache-validity interface used by diagnostics/tests."""
+
+        return (
+            self._canonical_positions_if_graph_valid(positions_A, cell_A)
+            is not None
+        )
 
     def _refill_compiled_graph(
         self,
@@ -731,7 +847,10 @@ class VerletSkinMACECalculator(MACECalculator):
                     "MACE model returned no node_energy for a per-atom energy request."
                 )
             node_energy = node_energy[: self._real_atom_count]
-            total_node_energy = node_energy.detach().cpu().numpy() * energy_conversion
+            total_node_energy = (
+                node_energy.detach().to(dtype=torch.float32).cpu().numpy()
+                * energy_conversion
+            )
             node_heads = batch["head"][batch["batch"]][: self._real_atom_count]
             atom_indices = torch.arange(
                 self._real_atom_count,
@@ -742,6 +861,7 @@ class VerletSkinMACECalculator(MACECalculator):
                     atom_indices, node_heads
                 ]
                 .detach()
+                .to(dtype=torch.float32)
                 .cpu()
                 .numpy()
                 * energy_conversion
@@ -761,7 +881,8 @@ class VerletSkinMACECalculator(MACECalculator):
                     f"expected={expected_force_shape}."
                 )
             results["forces"] = (
-                real_forces.detach().cpu().numpy() * force_conversion
+                real_forces.detach().to(dtype=torch.float32).cpu().numpy()
+                * force_conversion
             )
 
         if "stress" in missing:
@@ -775,7 +896,10 @@ class VerletSkinMACECalculator(MACECalculator):
                     f"MACE stress output must have real shape=(3, 3), got "
                     f"shape={tuple(stress.shape)}."
                 )
-            stress_matrix = stress.detach().cpu().numpy() * stress_conversion
+            stress_matrix = (
+                stress.detach().to(dtype=torch.float32).cpu().numpy()
+                * stress_conversion
+            )
             results["stress"] = full_3x3_to_voigt_6_stress(stress_matrix)
 
         self.results = results

@@ -1,0 +1,17 @@
+# H100-tuned execution of the existing source-bound nine-replica workload.
+# Source coordinates and all scientific controls come from homogeneous_config;
+# runtime_generator_config changes only measured calculator implementation knobs.
+
+homogeneous_config: configs/simulation/atomistic/al/homogeneous_16384_mpa_110ps_multiseed.yaml
+runtime_generator_config: configs/simulation/atomistic/al/runtime_16384_mpa_h100.yaml
+output_root: output/synthetic_data/al_homogeneous_campaign_16384_mpa_110ps_multiseed_h100
+potential_selection_report: null
+
+execution:
+  chunk_steps: 2000
+  event_check_interval: 250
+  stop_on_event: false
+  post_event_steps: 0
+  analysis_mode: deferred
+  analysis_workers: 0
+  checkpoint_retention: 2

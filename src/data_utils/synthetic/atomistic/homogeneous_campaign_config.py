@@ -10,7 +10,7 @@ from typing import Any
 
 import yaml
 
-from .config import REPOSITORY_ROOT, load_config
+from .config import GeneratorConfig, REPOSITORY_ROOT, load_config
 from .homogeneous_config import (
     HomogeneousCrystallizationConfig,
     load_homogeneous_crystallization_config,
@@ -22,6 +22,16 @@ from .potential_selection import (
 
 
 ANALYSIS_MODES = ("asynchronous", "deferred")
+RUNTIME_POTENTIAL_FIELDS = {
+    "autocast_dtype",
+    "enable_cueq",
+    "enable_oeq",
+    "compile_mode",
+    "compile_fullgraph",
+    "pad_num_atoms",
+    "pad_num_edges",
+    "neighbor_skin_A",
+}
 
 
 def campaign_config_matches_after_path_relocation(
@@ -52,9 +62,81 @@ def campaign_config_matches_after_path_relocation(
         ):
             return False
         relocated_generator["config_path"] = expected_generator["config_path"]
+        if "runtime_generator_config" in expected:
+            relocated["runtime_generator_config"] = expected[
+                "runtime_generator_config"
+            ]
+            relocated_runtime = relocated["runtime_generator"]
+            expected_runtime = expected["runtime_generator"]
+            if not isinstance(relocated_runtime, dict) or not isinstance(
+                expected_runtime, dict
+            ):
+                return False
+            relocated_runtime["config_path"] = expected_runtime["config_path"]
     except KeyError:
         return False
     return relocated == expected
+
+
+def campaign_config_is_monotonic_measurement_extension(
+    observed: object,
+    expected: dict[str, Any],
+) -> bool:
+    """Accept a longer full-duration campaign with explicit output relabeling.
+
+    This predicate is intentionally separate from
+    :func:`campaign_config_matches_after_path_relocation`.  Raw/final campaign
+    artifacts remain bound to their original endpoint.  Only checkpoint resume may
+    use this predicate to continue an exact trajectory into a new output root.
+    """
+
+    if not isinstance(observed, dict) or set(observed) != set(expected):
+        return False
+    extended = deepcopy(observed)
+    try:
+        observed_homogeneous = extended["homogeneous"]
+        expected_homogeneous = expected["homogeneous"]
+        observed_execution = extended["execution"]
+        expected_execution = expected["execution"]
+        if (
+            not isinstance(observed_homogeneous, dict)
+            or not isinstance(expected_homogeneous, dict)
+            or not isinstance(observed_execution, dict)
+            or not isinstance(expected_execution, dict)
+        ):
+            return False
+        observed_steps = observed_homogeneous["steps"]
+        expected_steps = expected_homogeneous["steps"]
+        if (
+            not isinstance(observed_steps, int)
+            or isinstance(observed_steps, bool)
+            or not isinstance(expected_steps, int)
+            or isinstance(expected_steps, bool)
+            or expected_steps <= observed_steps
+        ):
+            return False
+        if (
+            observed_execution.get("stop_on_event") is not False
+            or expected_execution.get("stop_on_event") is not False
+        ):
+            return False
+
+        observed_output = observed_homogeneous["output"]
+        expected_output = expected_homogeneous["output"]
+        if not isinstance(observed_output, dict) or not isinstance(
+            expected_output, dict
+        ):
+            return False
+
+        # These are labels/locations only.  Every physical, numerical, source,
+        # potential, cadence, and stopping-policy field remains exact below.
+        observed_homogeneous["steps"] = expected_steps
+        observed_homogeneous["dataset_name"] = expected_homogeneous["dataset_name"]
+        observed_output["root_dir"] = expected_output["root_dir"]
+        extended["output_root"] = expected["output_root"]
+    except KeyError:
+        return False
+    return campaign_config_matches_after_path_relocation(extended, expected)
 
 
 @dataclass(frozen=True)
@@ -79,9 +161,10 @@ class HomogeneousCampaignConfig:
     potential_selection_runtime_controls: dict[str, int | float | bool] | None
     source_evidence: dict[str, dict[str, str]]
     config_path: Path
+    runtime_generator: GeneratorConfig | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        result = {
             "homogeneous_config": str(self.homogeneous.config_path),
             "homogeneous": self.homogeneous.to_dict(),
             "output_root": str(self.output_root),
@@ -100,6 +183,12 @@ class HomogeneousCampaignConfig:
             "source_evidence": self.source_evidence,
             "config_path": str(self.config_path),
         }
+        if self.runtime_generator is not None:
+            result["runtime_generator_config"] = str(
+                self.runtime_generator.config_path
+            )
+            result["runtime_generator"] = self.runtime_generator.to_dict()
+        return result
 
 
 def _repo_path(value: Any) -> Path:
@@ -124,6 +213,44 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _validate_runtime_generator(
+    source: GeneratorConfig,
+    runtime: GeneratorConfig,
+    *,
+    path: Path,
+) -> None:
+    source_document = source.to_dict()
+    runtime_document = runtime.to_dict()
+    mismatches = {
+        field: {
+            "source": source_document[field],
+            "runtime": runtime_document[field],
+        }
+        for field in source_document
+        if field not in {"potential", "config_path"}
+        and source_document[field] != runtime_document[field]
+    }
+    source_potential = source_document["potential"]
+    runtime_potential = runtime_document["potential"]
+    potential_mismatches = {
+        field: {
+            "source": source_potential[field],
+            "runtime": runtime_potential[field],
+        }
+        for field in source_potential
+        if field not in RUNTIME_POTENTIAL_FIELDS
+        and source_potential[field] != runtime_potential[field]
+    }
+    if potential_mismatches:
+        mismatches["potential"] = potential_mismatches
+    if mismatches:
+        raise RuntimeError(
+            f"{path}: runtime_generator_config differs from the immutable source "
+            f"generator outside the approved runtime potential fields: {mismatches}. "
+            f"Only {sorted(RUNTIME_POTENTIAL_FIELDS)} may differ."
+        )
 
 
 def _validate_potential_selection_report(
@@ -376,12 +503,14 @@ def load_homogeneous_campaign_config(
         "execution",
         "potential_selection_report",
     }
-    unknown_root = sorted(set(raw) - expected_root_keys)
+    optional_root_keys = {"runtime_generator_config"}
+    unknown_root = sorted(set(raw) - expected_root_keys - optional_root_keys)
     missing_root = sorted(expected_root_keys - set(raw))
     if unknown_root or missing_root:
         raise KeyError(
-            f"{config_path}: campaign root keys must be exactly "
-            f"{sorted(expected_root_keys)}; missing={missing_root}, unsupported={unknown_root}."
+            f"{config_path}: campaign root requires keys={sorted(expected_root_keys)} "
+            f"and permits optional keys={sorted(optional_root_keys)}; "
+            f"missing={missing_root}, unsupported={unknown_root}."
         )
     execution_raw = raw["execution"]
     if not isinstance(execution_raw, dict):
@@ -409,6 +538,23 @@ def load_homogeneous_campaign_config(
     homogeneous = load_homogeneous_crystallization_config(
         _repo_path(raw["homogeneous_config"])
     )
+    runtime_generator = None
+    if "runtime_generator_config" in raw:
+        runtime_generator_value = raw["runtime_generator_config"]
+        if (
+            not isinstance(runtime_generator_value, str)
+            or not runtime_generator_value.strip()
+        ):
+            raise TypeError(
+                f"{config_path}: runtime_generator_config must be a non-empty path "
+                f"string, got {runtime_generator_value!r}."
+            )
+        runtime_generator = load_config(_repo_path(runtime_generator_value))
+        _validate_runtime_generator(
+            homogeneous.generator,
+            runtime_generator,
+            path=config_path,
+        )
     source_evidence = _bind_source_evidence(
         homogeneous, config_path=config_path
     )
@@ -531,4 +677,5 @@ def load_homogeneous_campaign_config(
         potential_selection_runtime_controls=selection_runtime_controls,
         source_evidence=source_evidence,
         config_path=config_path,
+        runtime_generator=runtime_generator,
     )

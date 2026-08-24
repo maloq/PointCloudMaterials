@@ -72,6 +72,7 @@ def build_calculator(config: GeneratorConfig) -> object:
         model_paths=str(config.potential.model_path),
         device=config.potential.device,
         default_dtype=config.potential.default_dtype,
+        autocast_dtype=config.potential.autocast_dtype,
         enable_cueq=config.potential.enable_cueq,
         enable_oeq=config.potential.enable_oeq,
         compile_mode=config.potential.compile_mode,
@@ -120,6 +121,11 @@ def build_calculator(config: GeneratorConfig) -> object:
         raise RuntimeError(
             f"MACE calculator use_compile={calculator.use_compile!r} does not match "
             f"configured compile_mode={config.potential.compile_mode!r}."
+        )
+    if calculator.autocast_dtype != config.potential.autocast_dtype:
+        raise RuntimeError(
+            f"MACE calculator initialized autocast_dtype={calculator.autocast_dtype!r}, "
+            f"but config requires {config.potential.autocast_dtype!r}."
         )
     return calculator
 

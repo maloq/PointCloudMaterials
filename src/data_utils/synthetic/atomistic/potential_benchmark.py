@@ -1949,7 +1949,45 @@ def _melting_evidence(
                 "not match the canonical parsed transition config "
                 f"{canonical_config_sha256!r}."
             )
-        transition_potential = transition_config.generator.potential
+        runtime_generator_record = result.get("runtime_generator")
+        if runtime_generator_record is None:
+            transition_potential = transition_config.generator.potential
+        else:
+            if not isinstance(runtime_generator_record, dict) or set(
+                runtime_generator_record
+            ) != {"config_file", "config_file_sha256", "config_sha256"}:
+                raise TypeError(
+                    f"{path}: runtime_generator must contain exactly config_file, "
+                    "config_file_sha256, and config_sha256."
+                )
+            runtime_generator_path = verify_file_digest(
+                runtime_generator_record["config_file"],
+                runtime_generator_record["config_file_sha256"],
+                context="transition runtime generator config_file",
+                summary_path=path,
+            )
+            from .config import load_config
+            from .transition_campaign_config import _validate_runtime_generator
+
+            runtime_generator = load_config(runtime_generator_path)
+            runtime_config_sha256 = hashlib.sha256(
+                json.dumps(
+                    runtime_generator.to_dict(),
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+            ).hexdigest()
+            if runtime_generator_record["config_sha256"] != runtime_config_sha256:
+                raise RuntimeError(
+                    f"{path}: runtime_generator.config_sha256 does not match the "
+                    "canonical parsed runtime generator configuration."
+                )
+            _validate_runtime_generator(
+                transition_config.generator,
+                runtime_generator,
+                path=runtime_generator_path,
+            )
+            transition_potential = runtime_generator.potential
         if (
             transition_potential.sha256 != model_sha256
             or transition_potential.head != head
@@ -1961,6 +1999,19 @@ def _melting_evidence(
                 "setting than the benchmarked production potential."
             )
         prepared_interface = _load_prepared_interface(transition_config)
+        campaign_source_evidence = result.get("campaign_source_evidence")
+        if campaign_source_evidence is not None:
+            from .transition_campaign_config import transition_source_evidence
+
+            _, observed_source_evidence = transition_source_evidence(
+                transition_config,
+                prepared=prepared_interface,
+            )
+            if campaign_source_evidence != observed_source_evidence:
+                raise RuntimeError(
+                    f"{path}: campaign_source_evidence differs from the currently "
+                    "hash-verified prepared source."
+                )
         serialized_analysis = asdict(transition_config.analysis)
         expected_protocol = {
             "config_sha256": canonical_config_sha256,

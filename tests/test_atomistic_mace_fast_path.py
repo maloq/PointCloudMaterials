@@ -67,6 +67,8 @@ def _property_calculator(mode: str) -> tuple[VerletSkinMACECalculator, _Property
     model = _PropertyModel()
     calculator.models = [model]
     calculator.md_property_mode = mode
+    calculator.autocast_dtype = None
+    calculator.device = torch.device("cpu")
     calculator.use_compile = False
     calculator._enable_oeq = False
     calculator._enable_cueq = True
@@ -169,6 +171,22 @@ def test_periodic_image_crossing_preserves_cached_force_and_stress() -> None:
         edge_index=torch.tensor([[0], [1]], dtype=torch.long),
     )
     calculator._cached_batch = cached_batch
+    canonicalization_calls = 0
+    canonical_positions = calculator._canonical_positions
+
+    def counted_canonical_positions(
+        _self: VerletSkinMACECalculator,
+        positions_A: np.ndarray,
+        cell_A: np.ndarray,
+    ) -> np.ndarray:
+        nonlocal canonicalization_calls
+        canonicalization_calls += 1
+        return canonical_positions(positions_A, cell_A)
+
+    calculator._canonical_positions = MethodType(
+        counted_canonical_positions,
+        calculator,
+    )
     calculator._rebuild_graph = MethodType(
         lambda _self, _atoms, _positions, _cell: pytest.fail(
             "a pure periodic image crossing must not rebuild the graph"
@@ -192,9 +210,25 @@ def test_periodic_image_crossing_preserves_cached_force_and_stress() -> None:
     cached_forces, cached_stress = _pair_outputs(reused_batch)
     fresh_forces, fresh_stress = _pair_outputs(fresh_batch)
     assert calculator.graph_reuse_count == 1
+    assert canonicalization_calls == 1
     assert reused_batch["positions"][0, 0].item() == pytest.approx(10.1)
     assert np.allclose(cached_forces, fresh_forces, atol=1.0e-6)
     assert np.allclose(cached_stress, fresh_stress, atol=1.0e-6)
+
+
+def test_graph_cache_rebuilds_at_exact_skin_boundary() -> None:
+    calculator = object.__new__(VerletSkinMACECalculator)
+    calculator.r_max = 1.0
+    calculator.neighbor_skin_A = 0.4
+    calculator._reference_cell_A = np.eye(3)
+    calculator._reference_scaled_positions = np.zeros((1, 3))
+    calculator._reference_pbc = np.array([False, False, False])
+
+    # The maximum displacement is skin / 2, so the shortest possible omitted
+    # distance equals r_max. The strict bound must reject this cached graph.
+    positions_A = np.array([[0.2, 0.0, 0.0]])
+
+    assert not calculator._graph_is_valid(positions_A, np.eye(3))
 
 
 def _al_atomic_data(*, cell_scale: float):
@@ -372,6 +406,73 @@ def test_compile_and_kernel_controls_are_explicit_and_strict(tmp_path) -> None:
     invalid_path.write_text(yaml.safe_dump(raw), encoding="utf-8")
     with pytest.raises(ValueError, match="requires explicit positive fixed-shape"):
         load_config(invalid_path)
+
+
+def test_bfloat16_autocast_is_explicit_and_identity_bound(tmp_path) -> None:
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+    )
+    raw = yaml.safe_load(source.read_text(encoding="utf-8"))
+    raw["potential"]["autocast_dtype"] = "bfloat16"
+    bf16_path = tmp_path / "bf16.yaml"
+    bf16_path.write_text(yaml.safe_dump(raw), encoding="utf-8")
+
+    config = load_config(bf16_path)
+
+    assert config.potential.default_dtype == "float32"
+    assert config.potential.autocast_dtype == "bfloat16"
+    assert config.to_dict()["potential"]["autocast_dtype"] == "bfloat16"
+
+    raw["potential"]["autocast_dtype"] = "float16"
+    invalid_path = tmp_path / "invalid-autocast.yaml"
+    invalid_path.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    with pytest.raises(ValueError, match="must be null or 'bfloat16'"):
+        load_config(invalid_path)
+
+
+def test_default_precision_keeps_legacy_serialized_identity() -> None:
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+    )
+
+    config = load_config(source)
+
+    assert config.potential.autocast_dtype is None
+    assert "autocast_dtype" not in config.to_dict()["potential"]
+
+
+def test_force_only_nvt_mode_is_explicit_and_identity_bound(tmp_path) -> None:
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+    )
+    raw = yaml.safe_load(source.read_text(encoding="utf-8"))
+
+    legacy = load_config(source)
+    assert legacy.potential.nvt_md_property_mode is None
+    assert "nvt_md_property_mode" not in legacy.to_dict()["potential"]
+
+    raw["potential"]["nvt_md_property_mode"] = "forces"
+    optimized_path = tmp_path / "force-only-nvt.yaml"
+    optimized_path.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    optimized = load_config(optimized_path)
+    assert optimized.potential.nvt_md_property_mode == "forces"
+    assert optimized.to_dict()["potential"]["nvt_md_property_mode"] == "forces"
+
+    raw["potential"]["nvt_md_property_mode"] = "forces_stress"
+    invalid_path = tmp_path / "invalid-nvt-mode.yaml"
+    invalid_path.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    with pytest.raises(ValueError, match="must be null or 'forces'"):
+        load_config(invalid_path)
+
+    raw["potential"]["nvt_md_property_mode"] = "forces"
+    raw["potential"]["usage_mode"] = "quantitative"
+    quantitative_path = tmp_path / "unqualified-force-only-nvt.yaml"
+    quantitative_path.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="exploratory floating-point execution path"):
+        load_config(quantitative_path)
 
 
 def test_mace_0315_rejects_every_compiled_or_oeq_request(monkeypatch) -> None:

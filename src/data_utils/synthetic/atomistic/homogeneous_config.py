@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -43,6 +44,7 @@ class HomogeneousCrystallizationConfig:
     equilibration_steps: int
     steps: int
     sample_interval: int
+    trajectory_samples_per_ps: int | None
     analysis: HomogeneousAnalysisConfig
     output: HomogeneousOutputConfig
     generator: GeneratorConfig
@@ -50,8 +52,28 @@ class HomogeneousCrystallizationConfig:
 
     def to_dict(self) -> dict[str, Any]:
         value = asdict(self)
+        if self.trajectory_samples_per_ps is None:
+            del value["trajectory_samples_per_ps"]
         value["generator"] = self.generator.to_dict()
         return _serialize(value)
+
+
+def trajectory_sample_steps(
+    config: HomogeneousCrystallizationConfig,
+    *,
+    final_global_step: int,
+) -> tuple[int, ...]:
+    """Return the regular trajectory-write schedule through a global MD step."""
+
+    if config.trajectory_samples_per_ps is None:
+        return tuple(range(0, final_global_step + 1, config.sample_interval))
+    steps_per_ps = round(1000.0 / config.generator.dynamics.timestep_fs)
+    samples_per_ps = config.trajectory_samples_per_ps
+    sample_count = final_global_step * samples_per_ps // steps_per_ps
+    return tuple(
+        (sample_index * steps_per_ps + samples_per_ps // 2) // samples_per_ps
+        for sample_index in range(sample_count + 1)
+    )
 
 
 def _serialize(value: Any) -> Any:
@@ -120,6 +142,7 @@ def load_homogeneous_crystallization_config(
             "equilibration_steps",
             "steps",
             "sample_interval",
+            "trajectory_samples_per_ps",
             "analysis",
             "output",
         },
@@ -177,6 +200,16 @@ def load_homogeneous_crystallization_config(
     sample_interval = _positive_int(
         raw["sample_interval"], "sample_interval", config_path
     )
+    trajectory_samples_per_ps_raw = raw.get("trajectory_samples_per_ps")
+    trajectory_samples_per_ps = (
+        None
+        if trajectory_samples_per_ps_raw is None
+        else _positive_int(
+            trajectory_samples_per_ps_raw,
+            "trajectory_samples_per_ps",
+            config_path,
+        )
+    )
     if steps % sample_interval != 0:
         raise ValueError(
             f"{config_path}: steps={steps} must be divisible by sample_interval="
@@ -212,6 +245,26 @@ def load_homogeneous_crystallization_config(
         )
 
     generator = load_config(_repo_path(raw["source_generator_config"]))
+    if trajectory_samples_per_ps is not None:
+        exact_steps_per_ps = 1000.0 / generator.dynamics.timestep_fs
+        steps_per_ps = round(exact_steps_per_ps)
+        if not math.isclose(exact_steps_per_ps, steps_per_ps, abs_tol=1.0e-12):
+            raise ValueError(
+                f"{config_path}: trajectory_samples_per_ps requires an integer number "
+                f"of MD steps per ps, but timestep_fs="
+                f"{generator.dynamics.timestep_fs} gives {exact_steps_per_ps}."
+            )
+        if trajectory_samples_per_ps > steps_per_ps:
+            raise ValueError(
+                f"{config_path}: trajectory_samples_per_ps="
+                f"{trajectory_samples_per_ps} exceeds {steps_per_ps} MD steps per ps."
+            )
+        if equilibration_steps % steps_per_ps or steps % steps_per_ps:
+            raise ValueError(
+                f"{config_path}: exact trajectory_samples_per_ps scheduling requires "
+                f"equilibration_steps={equilibration_steps} and steps={steps} to be "
+                f"whole-ps multiples of {steps_per_ps} MD steps."
+            )
     config = HomogeneousCrystallizationConfig(
         dataset_name=str(raw["dataset_name"]),
         source_dataset=_repo_path(raw["source_dataset"]),
@@ -222,6 +275,7 @@ def load_homogeneous_crystallization_config(
         equilibration_steps=equilibration_steps,
         steps=steps,
         sample_interval=sample_interval,
+        trajectory_samples_per_ps=trajectory_samples_per_ps,
         analysis=HomogeneousAnalysisConfig(
             ptm_rmsd_cutoff=ptm_rmsd_cutoff,
             crystalline_cluster_cutoff_A=_positive_float(

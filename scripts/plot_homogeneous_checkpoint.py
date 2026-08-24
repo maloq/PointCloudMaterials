@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -26,6 +27,7 @@ from src.data_utils.synthetic.atomistic.homogeneous_analysis import (  # noqa: E
     first_persistent_threshold_run,
 )
 from src.data_utils.synthetic.atomistic.homogeneous_campaign_config import (  # noqa: E402
+    HomogeneousCampaignConfig,
     load_homogeneous_campaign_config,
 )
 from src.data_utils.synthetic.atomistic.homogeneous_resumable import (  # noqa: E402
@@ -70,6 +72,32 @@ def _arguments() -> argparse.Namespace:
         help=(
             "PNG path. By default, write <campaign output>/visualizations/"
             "<replica>_checkpoint_dashboard.png."
+        ),
+    )
+    parser.add_argument(
+        "--include-structure-slices",
+        action="store_true",
+        help=(
+            "Also render PTM-colored initial/middle/latest structure slices from the "
+            "same hash-verified checkpoint."
+        ),
+    )
+    parser.add_argument(
+        "--structure-output",
+        type=Path,
+        default=None,
+        help=(
+            "Structure-slice PNG path. Supplying this option implies "
+            "--include-structure-slices. By default, write <campaign output>/"
+            "visualizations/<replica>_checkpoint_structure_slices.png."
+        ),
+    )
+    parser.add_argument(
+        "--step-stamped",
+        action="store_true",
+        help=(
+            "Additionally preserve immutable copies whose names include the verified "
+            "global checkpoint step."
         ),
     )
     return parser.parse_args()
@@ -421,8 +449,14 @@ def _plot_dashboard(
         ha="center",
         color="#495057",
     )
+    run_state = (
+        "completed"
+        if completed_global_step
+        >= equilibration_steps + planned_measurement_steps
+        else "in-progress"
+    )
     figure.suptitle(
-        f"{replica_name}: verified in-progress homogeneous-crystallization dashboard\n"
+        f"{replica_name}: verified {run_state} homogeneous-crystallization dashboard\n"
         f"{model_name} | checkpoint step {completed_global_step:,} "
         f"({completed_time_ps:.2f} ps global; {100.0 * completion_fraction:.1f}% of "
         f"planned measurement)\n{event_summary}",
@@ -456,17 +490,42 @@ def _plot_dashboard(
     temporary.replace(output)
 
 
-def main() -> None:
-    args = _arguments()
-    config = load_homogeneous_campaign_config(args.campaign_config)
-    checkpoint_directory = config.output_root / "checkpoints" / args.replica_name
+def _resolved_output(path: Path) -> Path:
+    return path if path.is_absolute() else (REPOSITORY_ROOT / path).resolve()
+
+
+def _step_stamped_path(path: Path, completed_global_step: int) -> Path:
+    return path.with_name(
+        f"{path.stem}_step_{completed_global_step:012d}{path.suffix}"
+    )
+
+
+def _copy_atomic(source: Path, destination: Path) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(f".{destination.stem}.tmp{destination.suffix}")
+    shutil.copy2(source, temporary)
+    temporary.replace(destination)
+
+
+def render_checkpoint_visualizations(
+    config: HomogeneousCampaignConfig,
+    *,
+    replica_name: str = "replica_000",
+    dashboard_output: Path | None = None,
+    include_structure_slices: bool = False,
+    structure_output: Path | None = None,
+    step_stamped: bool = False,
+) -> tuple[Path, int, tuple[Path, ...]]:
+    """Render requested views from one hash-verified checkpoint snapshot."""
+
+    checkpoint_directory = config.output_root / "checkpoints" / replica_name
     snapshot, completed_global_step = _latest_verified_snapshot(checkpoint_directory)
     trace = _load_trace(snapshot)
     online = _load_online_arrays(snapshot)
     with (snapshot / "metadata.json").open("r", encoding="utf-8") as handle:
         metadata = json.load(handle)
     expected_metadata = {
-        "replica_name": args.replica_name,
+        "replica_name": replica_name,
         "completed_global_step": completed_global_step,
         "equilibration_steps": config.homogeneous.equilibration_steps,
         "planned_measurement_steps": config.homogeneous.steps,
@@ -481,24 +540,23 @@ def main() -> None:
             f"{snapshot / 'metadata.json'}: checkpoint metadata differs from the "
             f"campaign: {mismatches}."
         )
-    output = args.output
-    if output is None:
-        output = (
+    if dashboard_output is None:
+        dashboard_output = (
             config.output_root
             / "visualizations"
-            / f"{args.replica_name}_checkpoint_dashboard.png"
+            / f"{replica_name}_checkpoint_dashboard.png"
         )
-    elif not output.is_absolute():
-        output = (REPOSITORY_ROOT / output).resolve()
+    else:
+        dashboard_output = _resolved_output(dashboard_output)
 
     homogeneous = config.homogeneous
     _plot_dashboard(
-        output,
+        dashboard_output,
         trace=trace,
         online=online,
         checkpoint_steps=_retained_checkpoint_steps(checkpoint_directory),
         completed_global_step=completed_global_step,
-        replica_name=args.replica_name,
+        replica_name=replica_name,
         model_name=homogeneous.generator.potential.model_name,
         chemical_symbol=homogeneous.generator.system.chemical_symbol,
         timestep_fs=homogeneous.generator.dynamics.timestep_fs,
@@ -517,10 +575,68 @@ def main() -> None:
             homogeneous.analysis.threshold_persistence_frames
         ),
     )
-    print(
-        f"Wrote {output} from verified checkpoint {snapshot.name} "
-        f"(global step {completed_global_step})."
+    outputs = [dashboard_output]
+
+    if include_structure_slices or structure_output is not None:
+        from src.data_utils.synthetic.atomistic.transition_analysis import (
+            write_structure_slice_visualization,
+        )
+
+        if structure_output is None:
+            structure_output = (
+                config.output_root
+                / "visualizations"
+                / f"{replica_name}_checkpoint_structure_slices.png"
+            )
+        else:
+            structure_output = _resolved_output(structure_output)
+        structure_output.parent.mkdir(parents=True, exist_ok=True)
+        temporary_structure_output = structure_output.with_name(
+            f".{structure_output.stem}.tmp{structure_output.suffix}"
+        )
+        write_structure_slice_visualization(
+            temporary_structure_output,
+            trace=trace,
+            chemical_symbol=homogeneous.generator.system.chemical_symbol,
+            timestep_fs=homogeneous.generator.dynamics.timestep_fs,
+            reference_planes_fractional=(),
+            simulation_name=(
+                f"{trace.positions_A.shape[1]:,}-atom crystallization {replica_name} "
+                f"(checkpoint step {completed_global_step})"
+            ),
+            temperature_K=homogeneous.temperature_K,
+            ptm_rmsd_cutoff=homogeneous.analysis.ptm_rmsd_cutoff,
+        )
+        temporary_structure_output.replace(structure_output)
+        outputs.append(structure_output)
+
+    if step_stamped:
+        stamped_outputs = []
+        for output in outputs:
+            stamped_output = _step_stamped_path(output, completed_global_step)
+            _copy_atomic(output, stamped_output)
+            stamped_outputs.append(stamped_output)
+        outputs.extend(stamped_outputs)
+
+    return snapshot, completed_global_step, tuple(outputs)
+
+
+def main() -> None:
+    args = _arguments()
+    config = load_homogeneous_campaign_config(args.campaign_config)
+    snapshot, completed_global_step, outputs = render_checkpoint_visualizations(
+        config,
+        replica_name=args.replica_name,
+        dashboard_output=args.output,
+        include_structure_slices=args.include_structure_slices,
+        structure_output=args.structure_output,
+        step_stamped=args.step_stamped,
     )
+    for output in outputs:
+        print(
+            f"Wrote {output} from verified checkpoint {snapshot.name} "
+            f"(global step {completed_global_step})."
+        )
 
 
 if __name__ == "__main__":

@@ -34,6 +34,42 @@ PRODUCER_COMPATIBILITY_PATH = (
     REPOSITORY_ROOT
     / "configs/simulation/atomistic/al/producer_compatibility.json"
 )
+# This exact historical scope is part of every generic and homogeneous checkpoint
+# identity. New workflow modules must use their own explicit producer scope instead
+# of silently widening this tuple and making extant checkpoints incomparable.
+GENERIC_PRODUCER_FILES = (
+    "__init__.py",
+    "artifacts.py",
+    "calculator.py",
+    "checkpoints.py",
+    "config.py",
+    "generator.py",
+    "homogeneous_analysis.py",
+    "homogeneous_campaign.py",
+    "homogeneous_campaign_config.py",
+    "homogeneous_campaign_queue.py",
+    "homogeneous_config.py",
+    "homogeneous_generator.py",
+    "homogeneous_liquid_source.py",
+    "homogeneous_online.py",
+    "homogeneous_resumable.py",
+    "jumpy_ffs.py",
+    "jumpy_ffs_config.py",
+    "jumpy_ffs_engine.py",
+    "jumpy_ffs_runner.py",
+    "potential_benchmark.py",
+    "potential_performance.py",
+    "potential_selection.py",
+    "provenance.py",
+    "simulation.py",
+    "transition_analysis.py",
+    "transition_config.py",
+    "transition_generator.py",
+    "transition_rdf.py",
+    "transition_slices.py",
+    "validation.py",
+    "visualization.py",
+)
 HOMOGENEOUS_LIQUID_SOURCE_PRODUCER_FILES = (
     "artifacts.py",
     "calculator.py",
@@ -43,6 +79,35 @@ HOMOGENEOUS_LIQUID_SOURCE_PRODUCER_FILES = (
     "homogeneous_liquid_source.py",
     "provenance.py",
     "simulation.py",
+    "validation.py",
+)
+TRANSITION_CAMPAIGN_MD_PRODUCER_FILES = (
+    "artifacts.py",
+    "calculator.py",
+    "config.py",
+    "generator.py",
+    "homogeneous_resumable.py",
+    "provenance.py",
+    "simulation.py",
+    "transition_campaign.py",
+    "transition_campaign_config.py",
+    "transition_campaign_queue.py",
+    "transition_config.py",
+    "transition_generator.py",
+    "transition_resumable.py",
+    "validation.py",
+)
+TRANSITION_DEFERRED_ANALYSIS_PRODUCER_FILES = (
+    "artifacts.py",
+    "config.py",
+    "provenance.py",
+    "simulation.py",
+    "transition_analysis.py",
+    "transition_campaign.py",
+    "transition_campaign_config.py",
+    "transition_campaign_queue.py",
+    "transition_config.py",
+    "transition_generator.py",
     "validation.py",
 )
 
@@ -83,6 +148,18 @@ class ExecutionProvenance:
     def to_dict(self) -> dict[str, object]:
         return {
             "calculator": self.calculator.to_dict(),
+            "runtime": self.runtime,
+            "producer_code": self.producer_code,
+        }
+
+
+@dataclass(frozen=True)
+class DeferredAnalysisExecutionProvenance:
+    runtime: dict[str, object]
+    producer_code: dict[str, object]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
             "runtime": self.runtime,
             "producer_code": self.producer_code,
         }
@@ -273,11 +350,10 @@ def _runtime_provenance(calculator: CalculatorProvenance) -> dict[str, object]:
 def _producer_code_provenance(
     relative_paths: tuple[str, ...] | None = None,
 ) -> dict[str, object]:
-    source_paths = (
-        sorted(ATOMISTIC_PACKAGE_ROOT.glob("*.py"))
-        if relative_paths is None
-        else [ATOMISTIC_PACKAGE_ROOT / name for name in relative_paths]
+    selected_paths = (
+        GENERIC_PRODUCER_FILES if relative_paths is None else relative_paths
     )
+    source_paths = [ATOMISTIC_PACKAGE_ROOT / name for name in selected_paths]
     if not source_paths:
         raise RuntimeError(
             f"No Python producer sources found below {ATOMISTIC_PACKAGE_ROOT}."
@@ -306,6 +382,51 @@ def _producer_code_provenance(
 
 def homogeneous_liquid_source_producer_code_provenance() -> dict[str, object]:
     return _producer_code_provenance(HOMOGENEOUS_LIQUID_SOURCE_PRODUCER_FILES)
+
+
+def bind_transition_campaign_execution_provenance(
+    provenance: ExecutionProvenance,
+) -> ExecutionProvenance:
+    transition_provenance = ExecutionProvenance(
+        calculator=provenance.calculator,
+        runtime=provenance.runtime,
+        producer_code=_producer_code_provenance(
+            TRANSITION_CAMPAIGN_MD_PRODUCER_FILES
+        ),
+    )
+    json.dumps(
+        transition_provenance.to_dict(),
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    return transition_provenance
+
+
+def build_transition_deferred_analysis_provenance(
+) -> DeferredAnalysisExecutionProvenance:
+    provenance = DeferredAnalysisExecutionProvenance(
+        runtime={
+            "python": platform.python_version(),
+            "numpy": np.__version__,
+            "ase": ase.__version__,
+            "ovito": version("ovito"),
+            "scipy": version("scipy"),
+            "matplotlib": version("matplotlib"),
+            "platform": platform.platform(),
+            "machine": platform.machine(),
+        },
+        producer_code=_producer_code_provenance(
+            TRANSITION_DEFERRED_ANALYSIS_PRODUCER_FILES
+        ),
+    )
+    json.dumps(
+        provenance.to_dict(),
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    return provenance
 
 
 def producer_code_is_compatible(
@@ -393,6 +514,8 @@ def _normalized_schema4_calculator_settings(
     allowed = {
         "device",
         "default_dtype",
+        "autocast_dtype",
+        "autocast_scope",
         "kernel_backend",
         "enable_cueq",
         "enable_oeq",
@@ -401,6 +524,7 @@ def _normalized_schema4_calculator_settings(
         "pad_num_atoms",
         "pad_num_edges",
         "md_property_mode",
+        "nvt_md_property_mode",
         "neighbor_skin_A",
     }
     unknown = sorted(set(value) - allowed)
