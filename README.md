@@ -33,7 +33,7 @@ pip install -r requirements.txt
 jupyter lab notebooks/synthetic_motif_demo.ipynb
 ```
 
-Run the notebook from top to bottom. It generates randomized BCC, FCC, and amorphous neighborhoods in memory, trains the encoder without motif labels, clusters held-out embeddings, and repeats inference after independent random SO(3) rotations.
+Run the notebook from top to bottom. It generates randomized BCC, FCC, and amorphous neighborhoods in memory, trains the encoder without motif labels, clusters held-out embeddings, and repeats inference after independent random SO(3) rotations. Interactive 3D views let you rotate and inspect both the atomic neighborhoods and the learned embedding space.
 
 The executed reference run stored in the notebook reaches approximately `0.97` clustering accuracy and `0.90` adjusted Rand index. Its mean rotation-relative embedding error is below `1e-6`. The code selects CUDA when available and otherwise runs unchanged on CPU.
 
