@@ -3,12 +3,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from src.training_methods.contrastive_learning.config_warnings import (
-    warn_common_view_sampler_ignored_fields,
-    warn_disabled_radial_fields,
-    warn_fixed_invariant_fields,
-)
-from src.training_methods.contrastive_learning.invariant_utils import NormInvariantHead
 from src.utils.pointcloud_ops import (
     crop_to_num_points,
     crop_to_num_points_with_indices,
@@ -208,17 +202,11 @@ class VICRegLoss(nn.Module):
                     f"got {self.overlap_coeff}."
                 )
 
-        self.invariant_head = None
         projector_input_dim = int(input_dim) if input_dim is not None else None
-        if projector_input_dim is not None:
-            self.invariant_head = NormInvariantHead(
-                channels=projector_input_dim,
-                eps=1e-6,
-            )
-            projector_input_dim = int(self.invariant_head.output_dim)
-
         self.projector = None
         needs_projector = self.enabled and self.weight > 0
+        if needs_projector and projector_input_dim is None:
+            raise ValueError("VICReg requires the encoder invariant output dimension.")
         if projector_input_dim is not None and needs_projector:
             if self.projector_mode == "identity":
                 if projector_input_dim != self.embed_dim:
@@ -248,158 +236,13 @@ class VICRegLoss(nn.Module):
             if self.projector is None:
                 raise ValueError(
                     "overlap_vicreg requires a projector, but the encoder output dimension "
-                    "could not be resolved from the config."
+                    "could not be resolved from the encoder."
                 )
             self.overlap_predictor = nn.Sequential(
                 nn.Linear(3 * self.embed_dim, self.overlap_hidden_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(self.overlap_hidden_dim, 1),
             )
-
-    @classmethod
-    def from_config(cls, cfg, *, input_dim):
-        data_cfg = getattr(cfg, "data", None)
-        view_points = getattr(cfg, "vicreg_view_points", None)
-        if view_points is None and data_cfg is not None:
-            view_points = getattr(data_cfg, "model_points", None)
-        if view_points is None and data_cfg is not None:
-            view_points = getattr(data_cfg, "num_points", None)
-
-        jitter_mode = str(getattr(cfg, "vicreg_jitter_mode", "absolute")).lower()
-        jitter_scale_cfg = getattr(cfg, "vicreg_jitter_scale", None)
-        jitter_scale = cls._resolve_jitter_scale(cfg, jitter_mode=jitter_mode, jitter_scale=jitter_scale_cfg)
-        radial_m = getattr(cfg, "vicreg_radial_m", None)
-        if radial_m is not None:
-            radial_m = int(radial_m)
-            if radial_m <= 0:
-                radial_m = None
-        raw_objective = getattr(cfg, "vicreg_objective", None)
-        if raw_objective is None:
-            raw_objective = getattr(cfg, "contrastive_objective", None)
-        if raw_objective is None:
-            model_type = str(getattr(cfg, "model_type", "")).strip().lower()
-            raw_objective = "visreg" if model_type == "visreg" else "vicreg"
-        objective = str(raw_objective).strip().lower()
-        enabled = bool(getattr(cfg, "vicreg_enabled", False))
-        weight = float(getattr(cfg, "vicreg_weight", 0.0))
-        sim_coeff = float(getattr(cfg, "vicreg_sim_coeff", 25.0))
-        std_coeff = float(getattr(cfg, "vicreg_std_coeff", 25.0))
-        cov_coeff = float(getattr(cfg, "vicreg_cov_coeff", 1.0))
-        embed_dim = int(getattr(cfg, "vicreg_embed_dim", 8192))
-        start_epoch = int(getattr(cfg, "vicreg_start_epoch", 0))
-        jitter_std = float(getattr(cfg, "vicreg_jitter_std", 0.01))
-        drop_ratio = float(getattr(cfg, "vicreg_drop_ratio", 0.2))
-        resolved_view_points = int(view_points) if view_points is not None else None
-        neighbor_view = bool(getattr(cfg, "vicreg_neighbor_view", False))
-        neighbor_view_mode = str(getattr(cfg, "vicreg_neighbor_view_mode", "both"))
-        neighbor_k = int(getattr(cfg, "vicreg_neighbor_k", 8))
-        neighbor_max_relative_distance = float(
-            getattr(cfg, "vicreg_neighbor_max_relative_distance", 0.0)
-        )
-        drop_apply_to_both = bool(getattr(cfg, "vicreg_drop_apply_to_both", True))
-        rotation_mode = str(getattr(cfg, "vicreg_rotation_mode", "none"))
-        rotation_deg = float(getattr(cfg, "vicreg_rotation_deg", 0.0))
-        mirror_prob = float(getattr(cfg, "vicreg_mirror_prob", 0.0))
-        strain_std = float(getattr(cfg, "vicreg_strain_std", 0.0))
-        strain_volume_preserve = bool(getattr(cfg, "vicreg_strain_volume_preserve", True))
-        occlusion_mode = str(getattr(cfg, "vicreg_occlusion_mode", "none"))
-        occlusion_view = str(getattr(cfg, "vicreg_occlusion_view", "second"))
-        occlusion_slab_frac = float(getattr(cfg, "vicreg_occlusion_slab_frac", 0.4))
-        occlusion_cone_deg = float(getattr(cfg, "vicreg_occlusion_cone_deg", 20.0))
-        occlusion_prob = float(getattr(cfg, "vicreg_occlusion_prob", 1.0))
-        std_eps = float(getattr(cfg, "vicreg_std_eps", 1e-4))
-        std_target = float(getattr(cfg, "vicreg_std_target", 1.0))
-        radial_enabled = bool(getattr(cfg, "vicreg_radial_enabled", False))
-        radial_beta1 = float(getattr(cfg, "vicreg_radial_beta1", 1.0))
-        radial_beta2 = float(getattr(cfg, "vicreg_radial_beta2", 0.1))
-        radial_eps = float(getattr(cfg, "vicreg_radial_eps", 1e-8))
-        visreg_lambda = float(getattr(cfg, "visreg_lambda", 0.9))
-        visreg_num_projections = int(getattr(cfg, "visreg_num_projections", 4096))
-        visreg_scale_coeff = float(getattr(cfg, "visreg_scale_coeff", 1.0))
-        visreg_shape_coeff = float(getattr(cfg, "visreg_shape_coeff", 1.0))
-        visreg_center_coeff = float(getattr(cfg, "visreg_center_coeff", 1.0))
-        visreg_std_eps = float(getattr(cfg, "visreg_std_eps", 1e-6))
-        overlap_hidden_dim = getattr(cfg, "vicreg_overlap_hidden_dim", None)
-        if overlap_hidden_dim is not None:
-            overlap_hidden_dim = int(overlap_hidden_dim)
-        overlap_coeff = getattr(cfg, "vicreg_overlap_coeff", None)
-        if overlap_coeff is not None:
-            overlap_coeff = float(overlap_coeff)
-        projector_bn_eval_batch_stats = bool(
-            getattr(cfg, "vicreg_projector_bn_eval_batch_stats", False)
-        )
-        projector_mode = str(getattr(cfg, "vicreg_projector_mode", "mlp"))
-
-        warn_common_view_sampler_ignored_fields(
-            cfg,
-            prefix="vicreg",
-            jitter_std=jitter_std,
-            jitter_mode=jitter_mode,
-            neighbor_view=neighbor_view,
-            neighbor_view_mode=neighbor_view_mode,
-            drop_ratio=drop_ratio,
-            rotation_mode=rotation_mode,
-            strain_std=strain_std,
-            occlusion_mode=occlusion_mode,
-        )
-        warn_fixed_invariant_fields(
-            cfg,
-            prefix="vicreg",
-        )
-        warn_disabled_radial_fields(
-            cfg,
-            prefix="vicreg",
-            radial_enabled=radial_enabled,
-        )
-
-        return cls(
-            enabled=enabled,
-            weight=weight,
-            sim_coeff=sim_coeff,
-            std_coeff=std_coeff,
-            cov_coeff=cov_coeff,
-            embed_dim=embed_dim,
-            start_epoch=start_epoch,
-            jitter_std=jitter_std,
-            jitter_mode=jitter_mode,
-            jitter_scale=jitter_scale,
-            drop_ratio=drop_ratio,
-            view_points=resolved_view_points,
-            neighbor_view=neighbor_view,
-            neighbor_view_mode=neighbor_view_mode,
-            neighbor_k=neighbor_k,
-            neighbor_max_relative_distance=neighbor_max_relative_distance,
-            drop_apply_to_both=drop_apply_to_both,
-            rotation_mode=rotation_mode,
-            rotation_deg=rotation_deg,
-            mirror_prob=mirror_prob,
-            strain_std=strain_std,
-            strain_volume_preserve=strain_volume_preserve,
-            occlusion_mode=occlusion_mode,
-            occlusion_view=occlusion_view,
-            occlusion_slab_frac=occlusion_slab_frac,
-            occlusion_cone_deg=occlusion_cone_deg,
-            occlusion_prob=occlusion_prob,
-            std_eps=std_eps,
-            std_target=std_target,
-            input_dim=input_dim,
-            objective=objective,
-            visreg_lambda=visreg_lambda,
-            visreg_num_projections=visreg_num_projections,
-            visreg_scale_coeff=visreg_scale_coeff,
-            visreg_shape_coeff=visreg_shape_coeff,
-            visreg_center_coeff=visreg_center_coeff,
-            visreg_std_eps=visreg_std_eps,
-            radial_enabled=radial_enabled,
-            radial_beta1=radial_beta1,
-            radial_beta2=radial_beta2,
-            radial_m=radial_m,
-            radial_eps=radial_eps,
-            overlap_hidden_dim=overlap_hidden_dim,
-            overlap_coeff=overlap_coeff,
-            projector_bn_eval_batch_stats=projector_bn_eval_batch_stats,
-            projector_mode=projector_mode,
-        )
 
     def should_run(self, *, current_epoch: int) -> bool:
         return bool(
@@ -453,12 +296,7 @@ class VICRegLoss(nn.Module):
             y_a = views["y_a"]
             y_b = views["y_b"]
 
-        # Fuse the two encoder forwards into a single concatenated pass. This
-        # halves kernel-launch overhead for the patch encoder + transformer
-        # relative to the old two-separate-forwards path. The per-view
-        # invariant transform is applied after splitting the result. See
-        # hot-path fusion note in the SSL module (#1).
-        batch_size = int(y_a.shape[0])
+        # Encode both views in one shared forward pass.
         fused_input = torch.cat([y_a, y_b], dim=0)
         enc_fused = encoder(prepare_input(fused_input))
         inv_fused, eq_fused = split_output(enc_fused)
@@ -486,12 +324,7 @@ class VICRegLoss(nn.Module):
         current_epoch: int,
         overlap_target: torch.Tensor | None = None,
     ):
-        """Compute VICReg on already-encoded invariant features.
-
-        Used by the SSL step when the encoder forward is shared with SwAV or
-        another head (#1 encoder fusion). Skipping the encoder call here lets
-        the caller run one forward for both losses instead of two.
-        """
+        """Compute VICReg on already-encoded invariant features."""
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
         if z_a_feat is None or z_b_feat is None:
@@ -616,9 +449,7 @@ class VICRegLoss(nn.Module):
         return mask
 
     def _apply_masked_occlusion(self, x: torch.Tensor, *, apply_mask: torch.Tensor) -> torch.Tensor:
-        # Short-circuit on the cheap Python attribute first so the `.item()`
-        # sync below is only paid when occlusion is actually enabled (#3
-        # hot-path cleanup).
+        # Avoid a device synchronization unless occlusion is enabled.
         if self.occlusion_mode == "none":
             return x
         if not bool(apply_mask.any().item()):
@@ -693,33 +524,6 @@ class VICRegLoss(nn.Module):
                 drop_mask = ~use_neighbor_mask
         x = self._apply_masked_drop(x, apply_mask=drop_mask)
         return x
-
-    @staticmethod
-    def _resolve_jitter_scale(cfg, *, jitter_mode: str, jitter_scale):
-        if jitter_mode != "physical":
-            return 1.0
-        base_scale = None
-        if jitter_scale is not None:
-            base_scale = float(jitter_scale)
-        else:
-            data_cfg = getattr(cfg, "data", None)
-            if data_cfg is not None:
-                base_scale = getattr(data_cfg, "avg_nn_dist", None)
-                if base_scale is None:
-                    global_cfg = getattr(data_cfg, "global", None)
-                    if global_cfg is not None:
-                        base_scale = getattr(global_cfg, "avg_nn_dist", None)
-        if base_scale is None or base_scale <= 0:
-            return 1.0
-        phys_to_model = 1.0
-        data_cfg = getattr(cfg, "data", None)
-        if data_cfg is not None:
-            normalize = getattr(data_cfg, "normalize", False)
-            radius = getattr(data_cfg, "radius", None)
-            if normalize and radius:
-                normalization_scale = getattr(data_cfg, "normalization_scale", 1.0)
-                phys_to_model = float(normalization_scale) / float(radius)
-        return float(base_scale) * phys_to_model
 
     def _should_occlude(self, use_neighbor: bool) -> bool:
         if self.occlusion_mode == "none":
@@ -1163,25 +967,13 @@ class VICRegLoss(nn.Module):
         return self._vicreg_loss(z_a, z_b)
 
     def _invariant(self, inv_z, eq_z):
-        if self.invariant_head is None:
-            if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
-                import warnings
-                warnings.warn(
-                    "No invariant_head: reinterpreting inv_z (3D, last_dim=3) as eq_z "
-                    f"and reducing via norm. Shape: {tuple(inv_z.shape)}. "
-                    "Contrastive training is norms-only, so equivariant tensors are reduced channel-wise.",
-                )
-                eq_z = inv_z
-                inv_z = None
-            if eq_z is not None:
-                return eq_z.norm(dim=-1)
-            if inv_z is None:
-                raise ValueError(
-                    "Both inv_z and eq_z are None after invariant processing. "
-                    "Encoder must return at least one non-None latent."
-                )
-            return inv_z
-        if eq_z is None and inv_z is not None and inv_z.dim() == 2:
-            if inv_z.shape[1] == int(self.invariant_head.output_dim):
-                return inv_z
-        return self.invariant_head(inv_z, eq_z)
+        if inv_z is None:
+            raise ValueError(
+                "VICReg requires the encoder's declared invariant output; got None."
+            )
+        if inv_z.dim() != 2:
+            raise ValueError(
+                "VICReg invariant embeddings must have shape (B, D), "
+                f"got {tuple(inv_z.shape)}."
+            )
+        return inv_z

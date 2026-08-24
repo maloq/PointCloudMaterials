@@ -11,7 +11,6 @@
 \usepackage{subcaption, wrapfig}
 \usepackage{multirow}
 \usepackage{hyperref}
-\hypersetup{hidelinks}
 \usepackage{svg}
 \usepackage[normalem]{ulem}
 \newcommand{\corr}{(\Letter)}
@@ -22,13 +21,17 @@
 
 \titlerunning{Unsupervised Clustering of Local Atomic Environments}
 
-\author{Vsevolod Morozov\inst{1,2} \and
+\author{Vsevolod Morozov\inst{1,2} \corr \and
 Emilie Devijver\inst{1} \and
 Charlotte Laclau\inst{3} \and
 Paul Krzakala\inst{3} \and
 Noel Jakse\inst{2}}
 
 \authorrunning{V. Morozov et al.}
+
+\toctitle{Self-Supervised Rotation-Invariant Representations for Unsupervised Motif Discovery in Molecular Dynamics}
+
+\tocauthor{Vsevolod Morozov, Emilie Devijver, Charlotte Laclau, Paul Krzakala, and Noel Jakse}
 
 \institute{
 Université Grenoble Alpes, CNRS, Grenoble INP, LIG, Grenoble, France\\
@@ -231,7 +234,7 @@ When labels are available, we report ACC, NMI, and ARI on the resulting assignme
 \section{Experiments on the Synthetic Polycrystal Benchmark}
 \label{sec:experiments}
 
-We compare our method to state-of-the-art baselines on a novel synthetic polycrystal benchmark that will be released upon acceptance.
+We compare our method to state-of-the-art methods on a novel synthetic polycrystal benchmark. The code and configuration files required to reproduce the benchmark dataset are included in the paper’s linked code repository.
 
 \subsection{Synthetic polycrystal benchmark}
 \label{sec:synth_dataset}

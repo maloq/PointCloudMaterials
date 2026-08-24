@@ -1,29 +1,15 @@
-numpy==1.26.4  # MACE/matscipy atomistic stack; NumPy 2.x is not supported here
-torch==2.11.0  # compiled MACE kernels and CUDA-graph behavior are version-sensitive
-e3nn==0.4.4  # required by the repository-owned MACE checkpoint serialization
-mace-torch==0.3.16  # fixed-shape compile and calculator internals are version-sensitive
-cuequivariance==0.10.0
-cuequivariance-torch==0.10.0
-cuequivariance-ops-torch-cu12==0.10.0
-openequivariance==0.6.8
-matscipy==1.1.1  # latest release compatible with the pinned NumPy 1.x stack
-pytorch-lightning
-omegaconf
-hydra-core
-tensorboard
-torchmetrics
-wandb
-plotly
-matplotlib
-nbformat
-scikit-learn
+# Executable paper demonstration and tests
+numpy==1.26.4
+torch==2.11.0
 scipy
-deeptime
-dscribe
-ase==3.28.0  # fixes the exact MTK/Langevin implementation recorded by atomistic provenance
-ovito
-hdbscan
-seaborn
-umap-learn
+scikit-learn
+matplotlib
+jupyterlab
+ipykernel
+nbformat
 pytest
-geomloss
+
+# Descriptor baselines reported in the paper (Steinhardt/CNA are SciPy-only;
+# SOAP uses ASE + DScribe).
+ase
+dscribe

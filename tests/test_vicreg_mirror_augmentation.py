@@ -2,27 +2,44 @@ from __future__ import annotations
 
 import pytest
 import torch
-from omegaconf import OmegaConf
 
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 
 
 def _vicreg_with_mirror_probability(probability: float) -> VICRegLoss:
-    cfg = OmegaConf.create(
-        {
-            "vicreg_enabled": True,
-            "vicreg_weight": 1.0,
-            "vicreg_embed_dim": 3,
-            "vicreg_projector_mode": "identity",
-            "vicreg_mirror_prob": probability,
-            "vicreg_jitter_std": 0.0,
-            "vicreg_drop_ratio": 0.0,
-            "vicreg_rotation_mode": "none",
-            "vicreg_strain_std": 0.0,
-            "vicreg_occlusion_mode": "none",
-        }
+    return VICRegLoss(
+        enabled=True,
+        weight=1.0,
+        sim_coeff=25.0,
+        std_coeff=25.0,
+        cov_coeff=1.0,
+        embed_dim=3,
+        start_epoch=0,
+        jitter_std=0.0,
+        jitter_mode="absolute",
+        jitter_scale=1.0,
+        drop_ratio=0.0,
+        view_points=None,
+        neighbor_view=False,
+        neighbor_view_mode="none",
+        neighbor_k=4,
+        neighbor_max_relative_distance=0.0,
+        drop_apply_to_both=True,
+        rotation_mode="none",
+        rotation_deg=0.0,
+        mirror_prob=probability,
+        strain_std=0.0,
+        strain_volume_preserve=True,
+        occlusion_mode="none",
+        occlusion_view="second",
+        occlusion_slab_frac=0.2,
+        occlusion_cone_deg=20.0,
+        occlusion_prob=1.0,
+        std_eps=1e-4,
+        std_target=1.0,
+        input_dim=3,
+        projector_mode="identity",
     )
-    return VICRegLoss.from_config(cfg, input_dim=3)
 
 
 def test_vicreg_view_mirror_flips_exactly_one_axis_and_preserves_distances() -> None:
@@ -62,20 +79,3 @@ def test_vicreg_view_mirror_probability_zero_is_identity() -> None:
 def test_vicreg_rejects_invalid_mirror_probability() -> None:
     with pytest.raises(ValueError, match="vicreg_mirror_prob must be in \\[0, 1\\]"):
         _vicreg_with_mirror_probability(1.01)
-
-
-@pytest.mark.parametrize(
-    "config_path",
-    [
-        "configs/vicreg_vn_molecular.yaml",
-        "configs/vicreg_vn_molecular_multi.yaml",
-        "configs/vicreg_geo_frame_multi.yaml",
-        "configs/vicreg_mace_molecular.yaml",
-        "configs/vicreg_nequip_molecular.yaml",
-        "configs/line_jepa_geo_frame_simple.yaml",
-        "configs/line_jepa_static_hybrid.yaml",
-    ],
-)
-def test_active_vicreg_configs_enable_mirror_views(config_path: str) -> None:
-    cfg = OmegaConf.load(config_path)
-    assert float(cfg.vicreg_mirror_prob) == 0.5

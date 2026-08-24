@@ -1,4 +1,4 @@
-"""Metrics used by the current supervised representation cache."""
+"""Clustering and embedding metrics for paper-method comparisons."""
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -40,7 +40,7 @@ def compute_cluster_metrics(
     acc_eval_runs_by_method: dict[str, int],
     acc_random_seed: int,
 ) -> dict[str, float]:
-    """Compute KMeans ARI/NMI and configured k-means++ Hungarian accuracy."""
+    """Compute KMeans ARI/NMI and repeated k-means++ Hungarian accuracy."""
     if latents.ndim != 2 or labels.ndim != 1 or latents.shape[0] != labels.shape[0]:
         raise ValueError(
             "Cluster metrics require latents (N, D) and labels (N,), "
@@ -50,7 +50,7 @@ def compute_cluster_metrics(
         raise ValueError(f"stage must be 'train', 'val', or 'test', got {stage!r}.")
     if any(method != "kmeans++" for method in acc_eval_methods):
         raise ValueError(
-            "The repository config supports only the 'kmeans++' ACC evaluator, "
+            "The paper evaluation supports only the 'kmeans++' ACC evaluator, "
             f"got {acc_eval_methods}."
         )
     if acc_eval_runs < 1:

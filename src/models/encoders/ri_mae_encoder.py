@@ -86,7 +86,7 @@ class Group(nn.Module):
         self.sorting_mode = sorting_mode
         if self.sorting_mode not in {"nearest", "none"}:
             raise ValueError(f"Unsupported sorting_mode={sorting_mode!r}.")
-        # #9: opt-in random group-center selection during training. FPS
+        # Optional random group-center selection during training. FPS
         # iterates `num_group` times and dispatches many small CUDA kernels
         # even for small `num_points` (80); `random` replaces the loop with
         # a single vectorised `topk` of random scores. In eval mode we
@@ -251,7 +251,7 @@ class RIAttentionBlock(nn.Module):
         )
 
     def _attention(self, x: torch.Tensor, attn_bias: torch.Tensor | None) -> torch.Tensor:
-        # Fused SDPA path (#6): delegates to FlashAttention / mem-efficient
+        # Fused SDPA path delegates to FlashAttention or memory-efficient
         # attention kernels when the inputs satisfy their shape and dtype
         # preconditions. Falls back to the math backend automatically when
         # they do not, so we get a speedup without losing correctness on
@@ -298,7 +298,7 @@ class RITransformer(nn.Module):
         self.use_gradient_checkpointing = bool(use_gradient_checkpointing)
 
     def forward(self, x: torch.Tensor, attn_bias: torch.Tensor | None = None) -> torch.Tensor:
-        # Per-layer activation checkpointing (#5) re-runs each attention
+        # Per-layer activation checkpointing re-runs each attention
         # block in backward instead of holding its intermediate activations.
         # Off by default; opt in via the encoder kwarg on memory-tight runs.
         if self.use_gradient_checkpointing and self.training and x.requires_grad:

@@ -1,142 +1,114 @@
-# Pytorch Implementation of PointNet
+# Self-supervised motif discovery in molecular dynamics
 
-## Installation
+Reference implementation and runnable demonstration for **“Self-Supervised Rotation-Invariant Representations for Unsupervised Motif Discovery in Molecular Dynamics”** by Vsevolod Morozov, Emilie Devijver, Charlotte Laclau, Paul Krzakala, and Noel Jakse.
 
-### Create a new uv environment
+The method learns clusterable representations of local atomic neighborhoods directly from coordinates. A rotation-equivariant Vector Neuron encoder is trained with VICReg on overlapping views; K-Means then discovers structural motifs without using labels during representation learning.
 
-```bash
-uv pip install torch torchvision \
-  --index-url https://download.pytorch.org/whl/cu130
+[Read the paper](paper/paper.pdf) · [Open the executed demo](notebooks/synthetic_motif_demo.ipynb)
+
+## Method
+
+```mermaid
+flowchart LR
+    A[Atomic neighborhood] --> B[Two overlapping views]
+    B --> C[Shared VN encoder]
+    C --> D[Invariant embeddings]
+    D --> E[VICReg training]
+    D --> F[K-Means motifs]
 ```
-### Install all other requirements
+
+The encoder keeps directional information in equivariant vector features and derives rotation-invariant scalar embeddings for the self-supervised objective and clustering. Labels are used only after training to report evaluation metrics.
+
+## Quick start
 
 ```bash
+git clone https://github.com/maloq/PointCloudMaterials.git
+cd PointCloudMaterials
+git switch paper_demo
+
+conda create -n pointnet python=3.12 -y
+conda activate pointnet
 pip install -r requirements.txt
+
+jupyter lab notebooks/synthetic_motif_demo.ipynb
 ```
 
----
+Run the notebook from top to bottom. It generates randomized BCC, FCC, and amorphous neighborhoods in memory, trains the encoder without motif labels, clusters held-out embeddings, and repeats inference after independent random SO(3) rotations.
 
-## Post-training analysis
+The executed reference run stored in the notebook reaches approximately `0.97` clustering accuracy and `0.90` adjusted Rand index. Its mean rotation-relative embedding error is below `1e-6`. The code selects CUDA when available and otherwise runs unchanged on CPU.
 
-`src/training_methods/contrastive_learning/predict_and_visualize.py` runs a
-comprehensive post-training analysis on a trained checkpoint. It produces
-latent-space visualisations, clustering diagnostics, MD-space cluster figures,
-equivariance evaluation, and more.
+## What the demo represents
 
-### Configuration-driven usage
+The notebook is a compact check of the full method, not a reproduction of the paper's numerical tables.
 
-```bash
-python src/training_methods/contrastive_learning/predict_and_visualize.py
+| | Notebook | Paper benchmark |
+|---|---:|---:|
+| Motifs | BCC, FCC, amorphous | BCC, FCC, HCP, amorphous |
+| Raw neighborhood | 80 atoms | 128 atoms |
+| Encoder view | 56 atoms | 80 atoms |
+| Default encoder | compact `VN_REVNET_Atomic` | full VN-RevNet |
+| Evaluation | one fixed train/test seed | five independent runs |
+
+HCP is intentionally omitted from the small example because reliable FCC/HCP separation depends on stacking information across larger neighbor shells.
+
+## Encoder alternatives
+
+Set `ENCODER_VARIANT` near the top of the notebook to test the retained paper architectures and controls:
+
+| Value | Encoder | Purpose |
+|---|---|---|
+| `vn_atomic` | Atomic VN-RevNet | recommended invariant demonstration |
+| `vn_dgcnn` | VN-DGCNN | equivariant backbone alternative |
+| `vn_pointnet` | VN-PointNet | simpler equivariant alternative |
+| `dgcnn` | DGCNN | rotation-sensitive control |
+| `pointnet` | PointNet | rotation-sensitive control |
+
+The regular DGCNN and PointNet controls intentionally do not guarantee rotation-invariant embeddings, so their rotation check is expected to differ from the VN models. The registry also retains the RI-MAE invariant encoder and additional sizes/backbones used during model exploration. Hand-crafted Steinhardt, common-neighbor-analysis, and SOAP baselines are available in `src/baselines/descriptor_baselines.py`.
+
+## Repository layout
+
+```text
+.
+├── notebooks/synthetic_motif_demo.ipynb  # executed end-to-end example
+├── paper/                                # manuscript source and PDF
+├── src/
+│   ├── baselines/                        # structural descriptor baselines
+│   ├── models/encoders/                  # paper encoders and runtime adapter
+│   ├── training_methods/contrastive_learning/
+│   │   └── vicreg.py                     # self-supervised objective
+│   └── utils/                            # point-cloud and evaluation helpers
+├── tests/                                # symmetry, encoder, and VICReg checks
+└── requirements.txt
 ```
 
-All checkpoint-analysis settings now live in
-`configs/analysis/checkpoint_analysis.yaml`. Edit that file to choose:
+This demonstration branch is deliberately narrow. Post-submission simulation campaigns, temporal model stacks, infrastructure-specific launch scripts, and their configuration trees are excluded.
 
-- `checkpoint.path`, `checkpoint.output_dir`, and `checkpoint.cuda_device`
-- data overrides under `inputs`
-- clustering/t-SNE/HDBSCAN under `clustering`, `md`, and `tsne`
-- fixed-k figure rendering under `figure_set`
-- real-MD qualitative outputs under `real_md`
-- inference cache and equivariance settings under `cache` and `equivariance`
+## Branches and provenance
 
-`predict_and_visualize.py` no longer accepts CLI flags. If arguments are passed,
-it raises an error and points back to the analysis config.
+- `paper_demo` is the cleaned, notebook-first public demonstration.
+- `paper_version` preserves the implementation and configurations used at submission time.
+- `main` contains later research development from which the maintained encoder code was selected.
 
-Training-side auto-analysis uses the same config file and only overrides the
-runtime checkpoint/output paths after training finishes.
+Use `paper_version` to audit the exact submission-era implementation. Use `paper_demo` for the shortest runnable path through the current method.
 
-### Output files
+## Reproducibility
 
-The script writes the following into the output directory:
+- NumPy, PyTorch, dataset, DataLoader, and K-Means seeds are fixed in the notebook.
+- Motif labels never enter optimization.
+- Clustering accuracy uses Hungarian matching because K-Means cluster identifiers are arbitrary.
+- Rotation robustness is measured after independently rotating every held-out cloud.
+- The notebook records its environment, training history, metrics, and plots directly in the committed output cells.
 
-| File | Description |
-|---|---|
-| `analysis_metrics.json` | All numerical metrics |
-| `latent_tsne_clusters.png` | t-SNE coloured by cluster labels |
-| `latent_tsne_ground_truth.png` | t-SNE coloured by ground-truth phases (if available) |
-| `latent_pca_analysis.png` | PCA projection and explained variance |
-| `latent_pca_3d.png` | 3D PCA projection |
-| `latent_statistics.png` | Comprehensive latent statistics |
-| `equivariance.png` | Equivariant latent error distribution |
-| `md_space_clusters.png` | 3D MD-space cluster scatter |
-| `md_space_clusters.html` | Interactive 3D Plotly version |
-| `cluster_figure_set_k<K>/` | Fixed-k figure set (see below) |
-| `real_md_qualitative/` | Real-data qualitative analysis bundle: representatives, time series, spatial views, descriptors, transitions, report |
+## Citation
 
-#### Cluster figure set (`cluster_figure_set_k<K>/`)
+If you use this repository, please cite:
 
-Every MD cluster view is produced as a standard matplotlib render. An optional
-Blender Cycles raytraced render (`*_raytrace.png`) can also be enabled.
-
-| File | Description |
-|---|---|
-| `01_md_clusters_all_k<K>.png` | MD space with all clusters (view 1) |
-| `01_md_clusters_all_k<K>_view2.png` | Same, rotated 90 degrees |
-| `01_md_clusters_all_k<K>_view3.png` | Same, rotated 180 degrees |
-| `01_md_clusters_all_k<K>_view4.png` | Same, rotated 270 degrees |
-| `01_*_raytrace.png` | Blender Cycles raytraced renders (when enabled) |
-| `02_md_clusters_set_<IDS>_k<K>.png` | Selected cluster subset (if `figure_set.visible_cluster_sets` is set) |
-| `02_*_raytrace.png` | Blender Cycles raytraced subset renders (when enabled) |
-| `03_cluster_count_icl_k<K>.png` | ICL curve vs number of clusters |
-| `04_cluster_representatives_k<K>*.png` | Representative variants with reciprocal-shell edges and aligned/PCA reference views |
-| `04_cluster_representatives_k<K>*_raytrace/cluster_*.png` | Blender ball-and-stick representative renders (when enabled) |
-
-### Cluster subset views
-
-To render only selected clusters, set `figure_set.visible_cluster_sets` in
-`configs/analysis/checkpoint_analysis.yaml`, for example:
-
-```yaml
-figure_set:
-  visible_cluster_sets:
-    - [0, 1, 2]
-    - [3, 4, 5]
+```bibtex
+@misc{morozov2026motif,
+  title  = {Self-Supervised Rotation-Invariant Representations for
+            Unsupervised Motif Discovery in Molecular Dynamics},
+  author = {Morozov, Vsevolod and Devijver, Emilie and Laclau, Charlotte and
+            Krzakala, Paul and Jakse, Noel},
+  year   = {2026}
+}
 ```
-
-Raytrace options live under `figure_set.raytrace`.
-
-The raytraced renderer estimates physically consistent ball size from the full
-labeled MD-space cloud, not the sampled render subset. The sphere-size flag acts
-as a multiplicative scale on that estimate.
-
-Raytraced outputs require a working Blender executable (`blender`) in PATH
-or an explicit absolute path via `figure_set.raytrace.blender_executable`.
-
-### Real MD qualitative workflow
-
-For the real crystallization trajectory, edit the analysis config directly. A
-minimal example looks like:
-
-```yaml
-checkpoint:
-  path: output/2026-03-02/17-22-18/VICREG_FT_l512_N128_M80_RI_MAE_Invariant-epoch=11.ckpt
-  output_dir: outputs/real_md_qualitative_example
-
-inputs:
-  data_config: configs/data/loaders/static_al_80.yaml
-  real_data_files: [166ps.npy, 170ps.npy, 174ps.npy, 175ps.npy, 177ps.npy, 240ps.npy]
-
-real_md:
-  selected_k: 6
-  cluster_groups:
-    ordered: [0, 1]
-    intermediate: [2, 3]
-    liquid_like: [4, 5]
-  spatial:
-    zoom_specs:
-      - name: nucleus
-        frame: 240ps.npy
-        cluster_ids: [0, 1]
-        half_extent: [18.0, 18.0, 18.0]
-```
-
-The qualitative bundle is written to `real_md_qualitative/` inside the analysis
-directory and includes:
-
-- representative-neighbourhood galleries by cluster
-- frame-wise cluster proportion tables and stacked plots
-- filtered and zoomed spatial renders
-- 2D latent projections coloured by cluster, frame, and optional physical scalar
-- per-cluster descriptor summaries
-- transition flow diagrams between consecutive frames
-- `summary.json` and `README.md` for paper reuse

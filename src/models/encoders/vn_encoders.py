@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -755,9 +757,6 @@ __all__ = [
 # - ZCA-based normalization for VN features
 # - Channel-wise subtraction attention (CWSA) on anchor tokens
 # See REVNET Sec. 3.1.2, 3.2, 3.4. (arXiv:2601.08558v1)
-
-import math
-
 
 class VNZCALayerNorm(nn.Module):
     """ZCA-whitening LayerNorm for VN features (B, C, 3, ...)."""
