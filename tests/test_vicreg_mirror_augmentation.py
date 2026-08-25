@@ -72,8 +72,6 @@ def test_vicreg_rejects_invalid_mirror_probability() -> None:
         "configs/vicreg_geo_frame_multi.yaml",
         "configs/vicreg_mace_molecular.yaml",
         "configs/vicreg_nequip_molecular.yaml",
-        "configs/line_jepa_geo_frame_simple.yaml",
-        "configs/line_jepa_static_hybrid.yaml",
     ],
 )
 def test_active_vicreg_configs_enable_mirror_views(config_path: str) -> None:

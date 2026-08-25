@@ -5,13 +5,11 @@ import os
 import pytest
 import torch
 from hydra import compose, initialize_config_dir
-from omegaconf import OmegaConf
 
 from src.models.encoders.factory import available_encoder_names
 from src.models.encoders.geo_frame_transformer import GeoFrameTransformerEncoder
 from src.models.encoders.ri_mae_encoder import RIMAEBackbone
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
-from src.training_methods.line_jepa.line_jepa_module import LineJEPAModule
 
 
 def _small_encoder(frame_builder: str = "triad") -> GeoFrameTransformerEncoder:
@@ -135,40 +133,14 @@ def test_geo_frame_vicreg_regularizes_exported_representation_directly() -> None
     assert module.vicreg.embed_dim == module.encoder.invariant_dim == 64
 
 
-def test_geo_frame_multiscale_vicreg_config_enables_two_scales_without_gating() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="vicreg_geo_frame_multiscale")
-    module = VICRegModule(cfg)
-
-    assert module.encoder.token_encoder.patch_sizes == (12, 24)
-    assert module.encoder.token_encoder.scale_embeddings is not None
-    assert not module.encoder.token_encoder.use_frame_gating
-    assert module.vicreg.enabled
-    assert isinstance(module.vicreg.projector, torch.nn.Identity)
-
-
-def test_line_jepa_multiscale_config_matches_pretraining_architecture() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="line_jepa_geo_frame_multiscale")
-    module = LineJEPAModule(cfg)
-
-    assert module.encoder.token_encoder.patch_sizes == (12, 24)
-    assert module.encoder.token_encoder.scale_embeddings is not None
-    assert not module.encoder.token_encoder.use_frame_gating
-    assert str(cfg.init_from_checkpoint).endswith(
-        "VICREG_GEOFRAME_MULTISCALE_12_24_l64_N160_M80_"
-        "GeoFrameTransformer-epoch=49.ckpt"
-    )
-
-
 def test_vicreg_paper_multiscale_config() -> None:
     with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="vicreg_geo_frame_multiscale_8_12_l128")
+        cfg = compose(config_name="vicreg_geo_frame_multiscale_8_16_l128")
     module = VICRegModule(cfg)
 
     assert cfg.latent_size == 128
     assert module.encoder.invariant_dim == 128
-    assert module.encoder.token_encoder.patch_sizes == (8, 12)
+    assert module.encoder.token_encoder.patch_sizes == (8, 16)
     assert module.encoder.token_encoder.scale_embeddings is not None
     assert not module.encoder.token_encoder.use_frame_gating
     assert isinstance(module.vicreg.projector, torch.nn.Sequential)
@@ -177,61 +149,4 @@ def test_vicreg_paper_multiscale_config() -> None:
     assert module.vicreg.std_coeff == 25.0
     assert module.vicreg.cov_coeff == 1.0
     assert cfg.decay_rate == 0.04
-    assert cfg.epochs == 200
-
-
-def test_line_jepa_uses_paper_vicreg_l128_encoder() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="line_jepa_geo_frame_multiscale_8_12_l128")
-    module = LineJEPAModule(cfg)
-
-    assert cfg.latent_size == 128
-    assert module.encoder.invariant_dim == 128
-    assert module.encoder.token_encoder.patch_sizes == (8, 12)
-    assert module.semantic_dim == 128
-    assert isinstance(module.vicreg.projector, torch.nn.Sequential)
-    assert module.vicreg.embed_dim == 128
-    assert module.vicreg.cov_coeff == 1.0
-    assert str(cfg.init_from_checkpoint).endswith(
-        "VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_"
-        "GeoFrameTransformer-epoch=199.ckpt"
-    )
-
-
-def test_line_jepa_consumes_cached_patch_geometry() -> None:
-    cfg = OmegaConf.load("configs/line_jepa_geo_frame.yaml")
-    cfg.compile_encoder = False
-    cfg.latent_size = 64
-    cfg.encoder.kwargs.latent_size = 64
-    cfg.encoder.kwargs.num_group = 8
-    cfg.encoder.kwargs.patch_sizes = [6, 12]
-    cfg.encoder.kwargs.encoder_dims = 32
-    cfg.encoder.kwargs.trans_dim = 32
-    cfg.encoder.kwargs.depth = 2
-    cfg.encoder.kwargs.num_heads = 4
-    cfg.encoder.kwargs.ray_feature_dim = 16
-    cfg.encoder.kwargs.mask_predictor_depth = 1
-    cfg.encoder.kwargs.deterministic_fps = True
-    cfg.encoder.kwargs.group_sampling = "fps"
-    cfg.line_jepa_target_encoder = "online"
-    cfg.line_jepa_semantic_dim = 16
-    cfg.line_jepa_semantic_anchor_coeff = 0.0
-    cfg.line_jepa_semantic_relation_coeff = 0.0
-    cfg.line_jepa_prototype_coeff = 0.0
-    cfg.data.num_points = 24
-    cfg.data.model_points = 24
-
-    module = LineJEPAModule(cfg)
-    batch_size = 2
-    points = torch.randn(batch_size * module.line_atoms, 24, 3)
-    feature_blocks, geometry_blocks = module._encode_prepared_feature_blocks([points])
-    rays = torch.randn(batch_size * 2, 3)
-    directional = module._encoder_directional_features_from_line_state(
-        line_state=geometry_blocks[0],
-        batch_size=batch_size,
-        target_indices=[0, module.line_atoms - 1],
-        task_ray_direction=rays,
-    )
-
-    assert feature_blocks[0].shape == (batch_size * module.line_atoms, 64)
-    assert directional.shape == (batch_size * 2, module.line_atoms - 1, 16)
+    assert cfg.epochs == 100

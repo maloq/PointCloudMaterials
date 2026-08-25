@@ -5,4 +5,4 @@ def normalize_data_kind(kind: str) -> str:
 
 
 def is_static_data_kind(kind: str) -> bool:
-    return normalize_data_kind(kind) in {"static", "line_static"}
+    return normalize_data_kind(kind) == "static"

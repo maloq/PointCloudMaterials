@@ -1,7 +1,4 @@
 from src.data_utils.data_modules import (
-    LineJEPADataModule,
-    LineLAMMPSDataModule,
-    LineStaticDataModule,
     PointCloudDataModule,
     RealPointCloudDataModule,
     StaticPointCloudDataModule,
@@ -16,9 +13,6 @@ from src.data_utils.data_modules.temporal_window import TemporalWindowBatchSampl
 
 __all__ = [
     "PointCloudDataModule",
-    "LineJEPADataModule",
-    "LineLAMMPSDataModule",
-    "LineStaticDataModule",
     "RealPointCloudDataModule",
     "StaticPointCloudDataModule",
     "SynthPointCloudDataModule",

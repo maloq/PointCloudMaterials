@@ -22,33 +22,6 @@ cache:
   force_recompute: false
   file: analysis_inference_cache.npz
 
-# Optional Line-JEPA novelty analysis that retains error(atom, direction).
-# The stage supports static/line_static checkpoints and runs in both runtime
-# profiles (figure_set.figure_only must be false).
-directional_line_jepa:
-  enabled: false
-  num_directions: 64
-  # 0 evaluates every inference-cache center; use a cap for exploratory runs.
-  max_atoms_total: 0
-  # Bounds candidate geometry and environment-feature memory during the full sweep.
-  atom_chunk_size: 128
-  task_batch_size: 512
-  selection_seed: 123
-  # checkpoint: endpoints -> one-sided ray; center/all/cycle -> centered line.
-  target_position: checkpoint
-  # Caps only the relative-error field when the true residual is nearly zero.
-  relative_error_clip: 100.0
-  # Per-snapshot Plotly report written under directional_line_jepa_report/.
-  visualize_3d: true
-  joint_weights:
-    mean_error: 1.0
-    max_error: 1.0
-    relative_residual_error: 1.0
-    residual_norm: 0.5
-    anisotropy: 0.5
-    cluster_surprise: 0.5
-    phase_conditioned_z: 0.5
-
 swav:
   enabled: false
   assignment_method: sinkhorn
@@ -81,10 +54,6 @@ runtime:
     tsne_max_samples: null
     equivariance_enabled: false
     real_md_projection_method: pca
-    # Fast Line-JEPA runs automatically enable the configured directional sweep.
-    directional_line_jepa_enabled: true
-    directional_max_directions: null
-    directional_max_atoms_total: null
 
 clustering:
   # Unified selected clustering k used by figure_set and real_md outputs.

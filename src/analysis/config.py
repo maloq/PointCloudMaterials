@@ -539,7 +539,7 @@ def _resolve_analysis_files(
     model_cfg: DictConfig,
     input_settings: InputSettings,
 ) -> list[str] | None:
-    if str(model_cfg.data.kind).strip().lower() not in {"static", "line_static"}:
+    if str(model_cfg.data.kind).strip().lower() != "static":
         return None
     if input_settings.static_data_files:
         return input_settings.static_data_files

@@ -19,9 +19,6 @@ class AnalysisRuntimeProfile:
     tsne_max_samples: int | None
     equivariance_enabled: bool
     real_md_projection_method: str | None
-    directional_line_jepa_enabled: bool | None
-    directional_max_directions: int | None
-    directional_max_atoms_total: int | None
 
     @property
     def is_fast(self) -> bool:
@@ -29,14 +26,13 @@ class AnalysisRuntimeProfile:
 
 
 _DEFAULTS = {
-    "full": (None, None, None, True, None, True, None, None, None, None),
-    "fast": (None, None, None, False, None, False, "pca", True, None, None),
+    "full": (None, None, None, True, None, True, None),
+    "fast": (None, None, None, False, None, False, "pca"),
 }
 _FIELDS = (
     "clustering_fit_max_samples", "snapshot_figure_limit", "md_num_views",
     "raytrace_enabled", "tsne_max_samples", "equivariance_enabled",
-    "real_md_projection_method", "directional_line_jepa_enabled",
-    "directional_max_directions", "directional_max_atoms_total",
+    "real_md_projection_method",
 )
 
 
@@ -71,16 +67,6 @@ def resolve_analysis_runtime_profile(analysis_cfg: DictConfig) -> AnalysisRuntim
         tsne_max_samples=_positive_or_none(values["tsne_max_samples"], "tsne_max_samples"),
         equivariance_enabled=bool(values["equivariance_enabled"]),
         real_md_projection_method=projection,
-        directional_line_jepa_enabled=(
-            None if values["directional_line_jepa_enabled"] is None
-            else bool(values["directional_line_jepa_enabled"])
-        ),
-        directional_max_directions=_positive_or_none(
-            values["directional_max_directions"], "directional_max_directions"
-        ),
-        directional_max_atoms_total=_positive_or_none(
-            values["directional_max_atoms_total"], "directional_max_atoms_total"
-        ),
     )
 
 

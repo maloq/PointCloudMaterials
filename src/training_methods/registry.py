@@ -31,7 +31,6 @@ _MODEL_TYPE_ALIASES = {
     "contrastive": "contrastive",
     "temporal_vicreg": "temporal_ssl",
     "temporal_ssl": "temporal_ssl",
-    "line_jepa": "line_jepa",
 }
 
 
@@ -105,14 +104,6 @@ register_training_method(
         module_path="src.training_methods.temporal_ssl.temporal_ssl_module",
         class_name="TemporalSSLModule",
         default_config="temporal_vicreg_lammps.yaml",
-    )
-)
-register_training_method(
-    TrainingMethodSpec(
-        name="line_jepa",
-        module_path="src.training_methods.line_jepa.line_jepa_module",
-        class_name="LineJEPAModule",
-        default_config="line_jepa_static_Al6_pure.yaml",
     )
 )
 __all__ = [

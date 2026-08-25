@@ -44,12 +44,6 @@ from .gateway_phase import (
     run_gateway_phase_analysis,
 )
 from .dynamic_motif import run_dynamic_motif_analysis
-from .directional_line_jepa import (
-    apply_directional_runtime_limits,
-    disable_directional_for_non_line_jepa,
-    resolve_directional_line_jepa_settings,
-    run_directional_line_jepa_analysis,
-)
 from .figure_sets import (
     build_shared_cluster_color_map, filter_snapshot_figure_layout, print_figure_set_summary,
     render_cluster_figure_outputs, resolve_snapshot_figure_layout, write_figure_only_metrics,
@@ -325,41 +319,11 @@ def run_post_training_analysis(
             else min(figure_settings.md_num_views, runtime_profile.md_num_views)
         ),
     )
-    directional_line_jepa_settings = resolve_directional_line_jepa_settings(analysis_cfg)
-    directional_line_jepa_settings, directional_skip_reason = (
-        disable_directional_for_non_line_jepa(
-            directional_line_jepa_settings,
-            model_type=getattr(cfg, "model_type", None),
-        )
-    )
-    if directional_skip_reason is not None:
-        print(f"[analysis][directional-line-jepa] Skipping: {directional_skip_reason}.")
     connected_regime_settings = resolve_connected_regime_settings(
         analysis_cfg,
         default_random_state=int(analysis_settings.seed_base),
     )
     gateway_phase_settings = resolve_gateway_phase_settings(analysis_cfg)
-    directional_eligible = (
-        str(getattr(cfg, "model_type", "")).strip().lower() == "line_jepa"
-        and str(cfg.data.kind).strip().lower() in {"static", "line_static"}
-    )
-    if directional_eligible:
-        directional_line_jepa_settings = apply_directional_runtime_limits(
-            directional_line_jepa_settings,
-            enabled=(
-                None
-                if figure_settings.figure_only
-                else runtime_profile.directional_line_jepa_enabled
-            ),
-            max_directions=runtime_profile.directional_max_directions,
-            max_atoms=runtime_profile.directional_max_atoms_total,
-        )
-    if directional_line_jepa_settings.enabled and figure_settings.figure_only:
-        raise ValueError(
-            "directional_line_jepa.enabled=true is incompatible with "
-            "figure_set.figure_only=true because directional profiles require model inference. "
-            "Run the full analysis with figure_set.figure_only=false."
-        )
     if connected_regime_settings.enabled and figure_settings.figure_only:
         raise ValueError(
             "clustering.connected_regimes.enabled=true is incompatible with "
@@ -396,7 +360,7 @@ def run_post_training_analysis(
     normalized_data_kind = str(cfg.data.kind).strip().lower()
     if (
         not temporal_real_mode
-        and normalized_data_kind in {"static", "line_static"}
+        and normalized_data_kind == "static"
         and analysis_settings.inference_cache_enabled
         and not analysis_settings.inference_cache_force_recompute
     ):
@@ -426,13 +390,6 @@ def run_post_training_analysis(
     runtime_metrics = asdict(runtime_profile)
     runtime_metrics.update(md_num_views=figure_settings.md_num_views,
                            raytrace_enabled=figure_settings.raytrace_enabled)
-    runtime_metrics["directional_line_jepa"] = {
-        "enabled": directional_line_jepa_settings.enabled,
-        "num_directions": directional_line_jepa_settings.num_directions,
-        "max_atoms_total": directional_line_jepa_settings.max_atoms_total,
-        "atom_chunk_size": directional_line_jepa_settings.atom_chunk_size,
-        "skip_reason": directional_skip_reason,
-    }
     all_metrics: Dict[str, Any] = {"runtime_profile": runtime_metrics}
     dm = None
     if temporal_real_mode:
@@ -485,7 +442,7 @@ def run_post_training_analysis(
         use_lazy_static_dataset = bool(
             preloaded_cache is not None
             and runtime_profile.lazy_static_dataset_on_cache_hit
-            and normalized_data_kind in {"static", "line_static"}
+            and normalized_data_kind == "static"
         )
         if use_lazy_static_dataset:
             _step("Building lazy cache-backed static dataset")
@@ -1257,22 +1214,6 @@ def run_post_training_analysis(
         else snapshot_cluster_labels_by_k_for_outputs
     )
     figure_output_cluster_labels = figure_output_labels_by_k[int(primary_k)]
-
-    # ── Directional Line-JEPA uncertainty / novelty ───────────────────
-    directional_line_jepa_metrics = run_directional_line_jepa_analysis(
-        model=model,
-        model_cfg=cfg,
-        analysis_cfg=analysis_cfg,
-        cache=cache,
-        source_groups=snapshot_layout_inference.source_groups,
-        fitted_clustering_model=clustering_models_by_k.get(primary_k),
-        primary_k=primary_k,
-        out_dir=out_dir,
-        step=_step,
-        settings=directional_line_jepa_settings,
-    )
-    if directional_line_jepa_metrics:
-        all_metrics["directional_line_jepa"] = directional_line_jepa_metrics
 
     # ── Shared cluster color maps ──────────────────────────────────────
     _step("Building shared cluster color maps")

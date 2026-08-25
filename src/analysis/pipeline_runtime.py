@@ -52,7 +52,7 @@ def _build_analysis_dataloader(
     inference_batch_size: int,
     dataloader_num_workers: int,
 ) -> torch.utils.data.DataLoader:
-    if str(cfg.data.kind).strip().lower() in {"temporal_lammps", "line_lammps"}:
+    if str(cfg.data.kind).strip().lower() == "temporal_lammps":
         data_cfg = cfg.data
         dump_file = getattr(data_cfg, "dump_file", None)
         cache_dir = getattr(data_cfg, "cache_dir", None)
@@ -430,7 +430,7 @@ def _configure_static_analysis_inputs(
     cfg: DictConfig,
     analysis_files: list[str],
 ) -> list[str]:
-    if str(cfg.data.kind).strip().lower() not in {"static", "line_static"}:
+    if str(cfg.data.kind).strip().lower() != "static":
         raise ValueError(
             "_configure_static_analysis_inputs can only be used for static datasets, "
             f"got kind={getattr(cfg.data, 'kind', None)!r}."
@@ -509,14 +509,10 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
         )
 
         return TemporalMotifFieldModule
-    if model_type == "line_jepa":
-        from src.training_methods.line_jepa.line_jepa_module import LineJEPAModule
-
-        return LineJEPAModule
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
         "Expected one of ['vicreg', 'visreg', 'temporal_vicreg', "
-        "'temporal_motif_field', 'line_jepa'], "
+        "'temporal_motif_field'], "
         f"got {model_type!r}."
     )
 
@@ -532,9 +528,9 @@ def build_datamodule(
     data_kind = str(cfg.data.kind).strip().lower()
     if data_kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
-    elif data_kind in {"temporal_lammps", "line_lammps"}:
+    elif data_kind == "temporal_lammps":
         dm = TemporalLAMMPSDataModule(cfg)
-    elif data_kind in {"static", "line_static"}:
+    elif data_kind == "static":
         dm = StaticPointCloudDataModule(
             cfg,
             return_coords=bool(require_coords_for_static),
@@ -542,7 +538,7 @@ def build_datamodule(
     else:
         raise ValueError(
             "Unsupported data.kind. Expected one of "
-            "['static', 'synthetic', 'temporal_lammps', 'line_lammps', 'line_static'], "
+            "['static', 'synthetic', 'temporal_lammps'], "
             f"got {cfg.data.kind!r}."
         )
     return dm

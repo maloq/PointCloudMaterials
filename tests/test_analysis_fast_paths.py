@@ -19,20 +19,7 @@ def test_fast_runtime_profile_preserves_analysis_counts() -> None:
     assert not profile.raytrace_enabled
     assert not profile.equivariance_enabled
     assert profile.real_md_projection_method == "pca"
-    assert profile.directional_line_jepa_enabled
     assert profile.tsne_max_samples is None
-    assert profile.directional_max_directions is None
-    assert profile.directional_max_atoms_total is None
-
-
-def test_full_runtime_profile_does_not_override_directional_settings() -> None:
-    profile = resolve_analysis_runtime_profile(
-        OmegaConf.create({"runtime": {"profile": "full"}})
-    )
-
-    assert profile.directional_line_jepa_enabled is None
-    assert profile.directional_max_directions is None
-    assert profile.directional_max_atoms_total is None
 
 
 def test_lazy_static_file_counts_come_from_sample_cache_metadata(tmp_path) -> None:
