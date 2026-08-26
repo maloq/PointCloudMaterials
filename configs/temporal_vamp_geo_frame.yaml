@@ -1,0 +1,93 @@
+# Frozen GeoFrameTransformer + linear VAMP proof-of-concept.
+# This checkpoint is the strongest GeoFrameTransformer selected by the current
+# static and crystallization analysis configs (configs/analysis/*.yaml).
+output_dir: outputs/temporal_vamp_geo_frame
+
+encoder:
+  checkpoint: output/2026-07-13/18-40-11/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=95.ckpt
+
+embedding:
+  device: auto
+  batch_size: 512
+  num_workers: 4
+  seed: 123
+  # The selected checkpoint has deterministic eval-time FPS. For a checkpoint
+  # without deterministic FPS, set repeats > 1 to average stochastic encodings.
+  repeats: 1
+
+data:
+  trajectories:
+    - run_id: replica_000
+      path: output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/accepted_measurement_trajectory.lammpstrj
+      cache_dir: output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/cache
+  # Reuse the fixed first-frame cutoff and PBC neighborhood settings from
+  # configs/analysis/temporal_crystallization_step187800.yaml.
+  radius: 9.152203468820938
+  num_points: 160
+  frame_start: 0
+  frame_stop: null
+  window_stride: 1
+  normalize: true
+  center_neighborhoods: true
+  selection_method: closest
+  rebuild_cache: false
+  tree_cache_size: 4
+  precompute_neighbor_indices: true
+  center_selection:
+    mode: regular_grid
+    atom_ids: null
+    atom_stride: null
+    max_atoms: null
+    seed: 0
+    grid_overlap: 0.75
+    grid_reference_frame: 0
+
+lags:
+  # Alternatively set frames: null and timesteps: [1000, 2000, ...]. Physical
+  # lags must align exactly with the trajectory's stored LAMMPS timesteps.
+  frames: [1, 2, 4, 8]
+  timesteps: null
+
+split:
+  # auto uses independent runs when >1 trajectory is supplied, otherwise a
+  # contiguous time-block split with no pair crossing the boundary.
+  mode: auto
+  train_ratio: 0.8
+  boundary_gap_frames: 0
+  seed: 123
+
+cache:
+  force_recompute: false
+
+vamp:
+  dimensions: [2, 3, 4, 6, 8]
+  # Relative ridge: regularization * largest covariance eigenvalue.
+  regularization: 1.0e-6
+  # Discard covariance eigenmodes below this fraction of the largest mode.
+  eigenvalue_cutoff: 1.0e-10
+  covariance_batch_size: 65536
+
+evaluation:
+  seed: 123
+  spectrum_modes: 20
+  plot_max_points: 30000
+  future_neighbors:
+    k: 10
+    max_queries: 5000
+    # Excluding the same tracked atom prevents trivial adjacent-time retrieval.
+    exclude_same_atom: true
+  future_state:
+    enabled: true
+    clusters: 6
+    max_fit_samples: 100000
+  future_probe:
+    enabled: true
+    max_train_samples: 100000
+  trajectories:
+    atom_ids: null
+    count: 6
+  sanity:
+    enabled: true
+    samples: 64
+    dimension: 4
+    regularizations: [1.0e-8, 1.0e-6, 1.0e-4]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import numpy as np
@@ -184,3 +185,67 @@ def render_interactive_md_clusters(
         aspect_mode=aspect_mode,
     )
     return Path(output)
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Render an interactive MD cluster plot from an analysis directory."
+    )
+    parser.add_argument(
+        "analysis_dir",
+        type=Path,
+        help="Directory containing local_structure_coords_clusters.npz.",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Output HTML file (default: <analysis_dir>/md_space_clusters.html).",
+    )
+    parser.add_argument(
+        "--palette",
+        default="Set3",
+        help="Plotly qualitative palette name (default: Set3).",
+    )
+    parser.add_argument(
+        "--max-points",
+        "--max_points",
+        dest="max_points",
+        type=int,
+        default=None,
+        help="Optional cap on points in the interactive plot.",
+    )
+    parser.add_argument(
+        "--marker-size",
+        "--marker_size",
+        dest="marker_size",
+        type=float,
+        default=3.0,
+        help="Marker size (default: 3.0).",
+    )
+    parser.add_argument(
+        "--marker-line-width",
+        "--marker_line_width",
+        dest="marker_line_width",
+        type=float,
+        default=0.0,
+        help="Marker outline width in pixels (default: 0.0).",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = _parse_args()
+    output = render_interactive_md_clusters(
+        args.analysis_dir,
+        out_file=args.out,
+        palette=args.palette,
+        max_points=args.max_points,
+        marker_size=args.marker_size,
+        marker_line_width=args.marker_line_width,
+    )
+    print(f"Saved interactive plot to {output}")
+
+
+if __name__ == "__main__":
+    main()

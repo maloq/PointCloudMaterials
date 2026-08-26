@@ -56,9 +56,8 @@ conda run -n pointnet python -m src.data_utils.synthetic.atomistic_homogeneous_c
   --workers 4
 ```
 
-The 70,304-atom Slurm wrappers run deferred analysis and checkpoint
-visualization automatically after the final MD segment succeeds. To refresh
-the images manually from the latest hash-verified checkpoint without rerunning
+After the final MD segment succeeds, run deferred analysis through the campaign
+CLI. To refresh images from the latest hash-verified checkpoint without rerunning
 MACE:
 
 ```bash
@@ -166,12 +165,9 @@ trajectory, never a continuation of an FP32 checkpoint. The two campaigns
 reuse the completed replicas' source and velocity seeds and save three
 coordinate/cell states per ps.
 
-From a Slurm login host, submit the full-size FP32/BF16 force-and-stress parity
-gate, both four-allocation replica chains, and the final matched comparison with:
-
-```bash
-scripts/submit_al_homogeneous_70304_mpa_bf16.sh
-```
+The dated Slurm submission, checkpoint-comparison, and final-comparison helpers
+were removed after this experiment completed. The campaign configs and immutable
+output artifacts retain the experimental inputs and results.
 
 The parity gate records force, stress, energy, time, and peak H100 memory under
 `output/synthetic_data/al_mpa_70304_bf16_validation_20260724/`. The campaigns

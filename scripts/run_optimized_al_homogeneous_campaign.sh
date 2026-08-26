@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-REPOSITORY_ROOT=/home/infres/vmorozov/PointCloudMaterials
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPOSITORY_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PYTHON=${PYTHON:?PYTHON must point to the isolated MACE 0.3.16 runtime}
 SELECTION_REPORT=output/synthetic_data/al_potential_benchmark/selection.json
 DEVICES=${DEVICES:-0,1}

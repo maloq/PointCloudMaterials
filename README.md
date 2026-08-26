@@ -1,5 +1,10 @@
 # Pytorch Implementation of PointNet
 
+The frozen-encoder temporal predictive-representation prototype is documented in
+[docs/temporal_vamp.md](docs/temporal_vamp.md). Its reference configuration uses the
+current pretrained `GeoFrameTransformer` and fits a linear VAMP/kinetic map on
+tracked-atom temporal pairs.
+
 ## Installation
 
 ### Create a new uv environment
