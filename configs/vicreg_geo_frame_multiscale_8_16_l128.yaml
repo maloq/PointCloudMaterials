@@ -18,9 +18,7 @@ encoder:
     num_heads: 8
     mlp_ratio: 4.0
     dropout: 0.0
-    mask_ratio: 0.6
-    mask_predictor_depth: 2
-    ema_decay: 0.996
+    enable_masked_token_objective: false
     deterministic_fps: true
     sorting_mode: none
     group_sampling: random
@@ -30,7 +28,7 @@ encoder:
     use_frame_gating: false
     geometry_bias_mode: orientation
     pooling_mode: max_mean
-    ray_feature_dim: 64
+    enable_ray_head: false
 
 # Paper VICReg objective: lambda=25, mu=25, nu=1, applied after the
 # three-layer BatchNorm/ReLU projector rather than directly to encoder output.

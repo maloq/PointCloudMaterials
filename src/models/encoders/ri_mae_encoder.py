@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import copy
 import math
-import warnings
 
 import torch
 import torch.nn as nn
@@ -554,18 +553,6 @@ class RIMAEBackbone(nn.Module):
         frame_builder: str,
         frame_eps: float,
     ) -> torch.Tensor:
-        patch_radii = torch.linalg.vector_norm(neighborhood, dim=-1).amax(dim=-1)
-        fully_collapsed = patch_radii <= frame_eps
-        if bool(fully_collapsed.any().item()):
-            collapsed_count = int(fully_collapsed.sum().item())
-            warnings.warn(
-                "Patch-frame construction encountered "
-                f"{collapsed_count} fully collapsed patch(es), where every neighbor "
-                f"is within frame_eps={frame_eps:.3e} of its group center. "
-                "Continuing with an arbitrary valid orientation for those patches.",
-                RuntimeWarning,
-                stacklevel=2,
-            )
         if frame_builder == "triad":
             return RIMAEBackbone._estimate_patch_frames_triad(
                 neighborhood,

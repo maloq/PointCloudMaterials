@@ -535,23 +535,31 @@ def _read_thermodynamic_log(path: Path) -> dict[int, tuple[float, float, float, 
         raise RuntimeError(
             f"{path}: did not find the configured thermo columns {header_fields}."
         )
-    start = header_indices[-1] + 1
     rows: dict[int, tuple[float, float, float, float]] = {}
-    for line in lines[start:]:
-        stripped = line.strip()
-        if stripped.startswith("Loop time of"):
-            break
-        fields = stripped.split()
-        if len(fields) != 5:
-            continue
-        try:
-            step = int(fields[0])
-            values = tuple(float(value) for value in fields[1:])
-        except ValueError:
-            continue
-        rows[step] = values  # type: ignore[assignment]
+    for header_index in header_indices:
+        for line in lines[header_index + 1 :]:
+            stripped = line.strip()
+            if stripped.startswith("Loop time of"):
+                break
+            fields = stripped.split()
+            if len(fields) != 5:
+                continue
+            try:
+                step = int(fields[0])
+                values = tuple(float(value) for value in fields[1:])
+            except ValueError:
+                continue
+            previous = rows.get(step)
+            if previous is not None and not np.allclose(
+                previous, values, rtol=1.0e-12, atol=1.0e-9
+            ):
+                raise RuntimeError(
+                    f"{path}: conflicting thermo samples for step {step}: "
+                    f"{previous} and {values}."
+                )
+            rows[step] = values  # type: ignore[assignment]
     if not rows:
-        raise RuntimeError(f"{path}: thermo block contains no numeric samples.")
+        raise RuntimeError(f"{path}: thermo blocks contain no numeric samples.")
     return rows
 
 

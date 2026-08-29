@@ -32,6 +32,13 @@ environment embedding.
 | `encoder.kwargs.patch_sizes` | `[12]` | Neighbor counts for the configured patch scales. |
 | `encoder.kwargs.trans_dim` | `64` | Patch-token width. |
 | `encoder.kwargs.latent_size` | `64` | Exported environment dimension. |
+| `encoder.kwargs.enable_ray_head` | `false` | Allocate the directional ray-conditioning head. |
+| `encoder.kwargs.enable_masked_token_objective` | `false` | Allocate the masked predictor and its frozen EMA teacher. |
+
+The VICReg configurations disable both auxiliary branches because their training
+loop uses neither objective. They remain explicit opt-ins for experiments that call
+`directional_features_from_geometry` or `masked_token_loss`; disabled methods raise
+an actionable error instead of silently falling back to another representation.
 
 The reference configuration uses `batch_size: 8192`, mixed BF16 precision, and
 compiled encoder execution. If memory is fragmented or another process shares the

@@ -219,9 +219,10 @@ def _plot_dashboard(
     sample_interval: int,
     target_temperature_K: float,
     target_pressure_GPa: float,
-    maximum_liquid_crystalline_fraction: float,
+    maximum_liquid_crystalline_fraction: float | None,
     nucleus_size_threshold_atoms: int,
     threshold_persistence_frames: int,
+    simulation_kind: str = "homogeneous crystallization",
 ) -> None:
     global_time_ps = trace.step * timestep_fs / 1000.0
     measurement_global_steps = equilibration_steps + online["measurement_step"]
@@ -337,27 +338,28 @@ def _plot_dashboard(
     observed_crystalline_percent = 100.0 * float(
         np.max(online["crystalline_fraction"])
     )
-    liquid_limit_percent = 100.0 * maximum_liquid_crystalline_fraction
     fraction_y_max = max(1.0, 1.15 * observed_crystalline_percent)
-    if observed_crystalline_percent >= 0.5 * liquid_limit_percent:
-        fraction_y_max = max(fraction_y_max, 1.05 * liquid_limit_percent)
-        fraction_axis.axhline(
-            liquid_limit_percent,
-            color="#d62828",
-            linestyle="--",
-            linewidth=1.0,
-            label="source liquid limit",
-        )
-    else:
-        fraction_axis.text(
-            0.99,
-            0.96,
-            f"source liquid limit: {liquid_limit_percent:g}% (off-scale)",
-            transform=fraction_axis.transAxes,
-            ha="right",
-            va="top",
-            color="#d62828",
-        )
+    if maximum_liquid_crystalline_fraction is not None:
+        liquid_limit_percent = 100.0 * maximum_liquid_crystalline_fraction
+        if observed_crystalline_percent >= 0.5 * liquid_limit_percent:
+            fraction_y_max = max(fraction_y_max, 1.05 * liquid_limit_percent)
+            fraction_axis.axhline(
+                liquid_limit_percent,
+                color="#d62828",
+                linestyle="--",
+                linewidth=1.0,
+                label="source liquid limit",
+            )
+        else:
+            fraction_axis.text(
+                0.99,
+                0.96,
+                f"source liquid limit: {liquid_limit_percent:g}% (off-scale)",
+                transform=fraction_axis.transAxes,
+                ha="right",
+                va="top",
+                color="#d62828",
+            )
     fraction_axis.set(
         ylabel="crystalline atoms (%)",
         ylim=(0.0, fraction_y_max),
@@ -456,7 +458,7 @@ def _plot_dashboard(
         else "in-progress"
     )
     figure.suptitle(
-        f"{replica_name}: verified {run_state} homogeneous-crystallization dashboard\n"
+        f"{replica_name}: verified {run_state} {simulation_kind} dashboard\n"
         f"{model_name} | checkpoint step {completed_global_step:,} "
         f"({completed_time_ps:.2f} ps global; {100.0 * completion_fraction:.1f}% of "
         f"planned measurement)\n{event_summary}",

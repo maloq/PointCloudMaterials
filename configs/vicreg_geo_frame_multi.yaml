@@ -30,9 +30,7 @@ encoder:
     num_heads: 8
     mlp_ratio: 4.0
     dropout: 0.0
-    mask_ratio: 0.6
-    mask_predictor_depth: 2
-    ema_decay: 0.996
+    enable_masked_token_objective: false
     deterministic_fps: true
     sorting_mode: none
     # Random centers avoid the 24-step sequential FPS kernel loop during training.
@@ -44,10 +42,12 @@ encoder:
     use_frame_gating: false
     geometry_bias_mode: orientation
     pooling_mode: max_mean
-    ray_feature_dim: 32
+    enable_ray_head: false
 
 compile_encoder: true
 encoder_compile_mode: reduce-overhead
+encoder_compile_fullgraph: true
+encoder_compile_dynamic: false
 
 # encoder:
 #   name: REVNET_InvariantFast
@@ -91,7 +91,7 @@ run_test_after_training: true
 
 gpu: True
 devices: [0, 1]
-ddp_find_unused_parameters: True
+ddp_find_unused_parameters: false
 log_every_n_steps: 5
 num_workers: 12
 scheduler_name: Cosine

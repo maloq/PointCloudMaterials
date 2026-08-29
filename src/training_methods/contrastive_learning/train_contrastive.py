@@ -27,7 +27,7 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="vicreg_vn_molecular.yaml",
+    config_name="vicreg_geo_frame_multiscale_8_16_l128",
 )
 def main(cfg: DictConfig):
     train(cfg)

@@ -1,0 +1,31 @@
+defaults:
+  - vicreg_geo_frame_multiscale_8_16_l128
+  - _self_
+
+# Controlled follow-up to the 100-epoch GeoFrame run:
+# - preserve the compact 128-dimensional encoder and the same balanced dataset;
+# - restore the spatial-neighbor positive view used by the stronger RI-MAE run;
+# - train for approximately 50k optimizer steps (61 steps/epoch on the current
+#   1,009,002-sample, two-GPU, batch_size=8192 setup);
+# - select checkpoints using the fixed-k=7 validation representation probe.
+experiment_name: VICREG_GEOFRAME_MULTISCALE_8_16_l${latent_size}_NEIGHBOR_K7_50K_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+epochs: 820
+
+vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: second
+vicreg_neighbor_k: 8
+vicreg_neighbor_max_relative_distance: 0.0
+
+probe_metric_stages:
+  - val
+  - test
+probe_k: 7
+probe_best_k_min: 7
+probe_best_k_max: 7
+max_supervised_samples: 8192
+
+checkpoint_monitor: clustering/val_silhouette
+checkpoint_mode: max
+checkpoint_save_top_k: 3
+checkpoint_save_last: true

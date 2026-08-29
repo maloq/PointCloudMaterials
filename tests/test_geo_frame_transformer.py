@@ -21,7 +21,9 @@ def _small_encoder(frame_builder: str = "triad") -> GeoFrameTransformerEncoder:
         trans_dim=32,
         depth=2,
         num_heads=4,
+        enable_ray_head=True,
         ray_feature_dim=16,
+        enable_masked_token_objective=True,
         mask_predictor_depth=1,
         deterministic_fps=True,
         group_sampling="fps",
@@ -73,12 +75,16 @@ def test_triad_frame_completion_handles_collapsed_and_collinear_patches() -> Non
     collinear[0, 0, :, 0] = torch.linspace(-2.0, 2.0, 6)
     neighborhoods = torch.cat([collapsed, collinear], dim=1)
 
-    with pytest.warns(RuntimeWarning, match="1 fully collapsed patch"):
-        frames = RIMAEBackbone._estimate_patch_frames(
-            neighborhoods,
-            frame_builder="triad",
-            frame_eps=1.0e-6,
-        )
+    compiled_frame_builder = torch.compile(
+        RIMAEBackbone._estimate_patch_frames,
+        backend="eager",
+        fullgraph=True,
+    )
+    frames = compiled_frame_builder(
+        neighborhoods,
+        frame_builder="triad",
+        frame_eps=1.0e-6,
+    )
     gram = frames.transpose(-1, -2) @ frames
 
     assert torch.isfinite(frames).all()
@@ -124,6 +130,37 @@ def test_masked_token_objective_has_gradients_and_updates_ema_teacher() -> None:
         torch.testing.assert_close(student, teacher)
 
 
+def test_disabled_auxiliary_heads_allocate_no_parameters_and_fail_loudly() -> None:
+    encoder = GeoFrameTransformerEncoder(
+        latent_size=32,
+        num_group=8,
+        patch_sizes=(6, 12),
+        encoder_dims=32,
+        trans_dim=32,
+        depth=2,
+        num_heads=4,
+        enable_ray_head=False,
+        enable_masked_token_objective=False,
+    )
+
+    parameter_names = set(dict(encoder.named_parameters()))
+    assert not any("ray_" in name for name in parameter_names)
+    assert not any("mask_" in name for name in parameter_names)
+    assert encoder.ray_token_mlp is None
+    assert encoder.ray_attention is None
+    assert encoder.ray_output is None
+    assert encoder.mask_predictor is None
+    assert encoder.mask_prediction_head is None
+    assert encoder.mask_teacher is None
+
+    with pytest.raises(RuntimeError, match="ray head is disabled"):
+        encoder.directional_features_from_geometry({}, torch.randn(2, 3))
+    with pytest.raises(RuntimeError, match="masked-token objective is disabled"):
+        encoder.masked_token_loss(torch.randn(2, 24, 3))
+    with pytest.raises(RuntimeError, match="EMA teacher is disabled"):
+        encoder.update_mask_teacher()
+
+
 def test_geo_frame_vicreg_regularizes_exported_representation_directly() -> None:
     with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
         cfg = compose(config_name="vicreg_geo_frame_multi")
@@ -138,11 +175,20 @@ def test_vicreg_paper_multiscale_config() -> None:
         cfg = compose(config_name="vicreg_geo_frame_multiscale_8_16_l128")
     module = VICRegModule(cfg)
 
+    assert cfg.compile_encoder
+    assert cfg.encoder_compile_mode == "reduce-overhead"
+    assert cfg.encoder_compile_fullgraph
+    assert not cfg.encoder_compile_dynamic
+    assert isinstance(module.encoder, torch._dynamo.eval_frame.OptimizedModule)
     assert cfg.latent_size == 128
     assert module.encoder.invariant_dim == 128
     assert module.encoder.token_encoder.patch_sizes == (8, 16)
     assert module.encoder.token_encoder.scale_embeddings is not None
     assert not module.encoder.token_encoder.use_frame_gating
+    assert not module.encoder.enable_ray_head
+    assert not module.encoder.enable_masked_token_objective
+    assert module.encoder.ray_token_mlp is None
+    assert module.encoder.mask_teacher is None
     assert isinstance(module.vicreg.projector, torch.nn.Sequential)
     assert module.vicreg.embed_dim == 128
     assert module.vicreg.sim_coeff == 25.0
@@ -150,3 +196,6 @@ def test_vicreg_paper_multiscale_config() -> None:
     assert module.vicreg.cov_coeff == 1.0
     assert cfg.decay_rate == 0.04
     assert cfg.epochs == 100
+    assert not cfg.ddp_find_unused_parameters
+    assert sum(parameter.numel() for parameter in module.parameters()) == 1_703_689
+    assert all(parameter.requires_grad for parameter in module.parameters())

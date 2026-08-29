@@ -2,6 +2,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.distributed.nn.functional import all_gather as all_gather_with_grad
 
 from src.training_methods.contrastive_learning.config_warnings import (
     warn_common_view_sampler_ignored_fields,
@@ -932,11 +933,13 @@ class VICRegLoss(nn.Module):
             z_padded = z
         z_padded = z_padded.contiguous()
 
-        gathered = [z_padded.new_zeros((max_size, *z.shape[1:])) for _ in range(world_size)]
-        torch.distributed.all_gather(gathered, z_padded)
-
-        rank = torch.distributed.get_rank()
-        gathered[rank] = z_padded
+        # The autograd-aware collective reduces every rank's loss gradient back
+        # to the rank that produced each embedding. DDP then averages parameter
+        # gradients across ranks, yielding the same gradient as VICReg on the
+        # single-process global batch. A plain distributed.all_gather followed
+        # by restoring only the local tensor's graph would introduce an extra
+        # 1 / world_size factor.
+        gathered = all_gather_with_grad(z_padded)
 
         trimmed = [chunk[:size] for chunk, size in zip(gathered, sizes)]
         return torch.cat(trimmed, dim=0)

@@ -527,7 +527,9 @@ class GeoFrameTransformerEncoder(Encoder):
         num_rbf: int = 16,
         pool_queries: int = 2,
         pooling_mode: str = "attention",
+        enable_ray_head: bool = True,
         ray_feature_dim: int = 64,
+        enable_masked_token_objective: bool = True,
         mask_ratio: float = 0.6,
         mask_predictor_depth: int = 2,
         ema_decay: float = 0.996,
@@ -539,7 +541,9 @@ class GeoFrameTransformerEncoder(Encoder):
         self.output_dim = self.latent_size
         self.trans_dim = int(trans_dim)
         self.center_input = bool(center_input)
+        self.enable_ray_head = bool(enable_ray_head)
         self.directional_feature_dim = int(ray_feature_dim)
+        self.enable_masked_token_objective = bool(enable_masked_token_objective)
         self.mask_ratio = float(mask_ratio)
         self.ema_decay = float(ema_decay)
         self.pooling_mode = pooling_mode
@@ -552,18 +556,20 @@ class GeoFrameTransformerEncoder(Encoder):
                 "GeoFrameTransformer trans_dim must be positive and divisible by num_heads. "
                 f"Got trans_dim={self.trans_dim}, num_heads={int(num_heads)}."
             )
-        if self.directional_feature_dim <= 0:
+        if self.enable_ray_head and self.directional_feature_dim <= 0:
             raise ValueError(
-                "GeoFrameTransformer ray_feature_dim must be > 0, "
+                "GeoFrameTransformer ray_feature_dim must be > 0 when enable_ray_head=true, "
                 f"got {self.directional_feature_dim}."
             )
-        if not (0.0 < self.mask_ratio < 1.0):
+        if self.enable_masked_token_objective and not (0.0 < self.mask_ratio < 1.0):
             raise ValueError(
-                f"GeoFrameTransformer mask_ratio must be in (0, 1), got {self.mask_ratio}."
+                "GeoFrameTransformer mask_ratio must be in (0, 1) when "
+                f"enable_masked_token_objective=true, got {self.mask_ratio}."
             )
-        if not (0.0 <= self.ema_decay < 1.0):
+        if self.enable_masked_token_objective and not (0.0 <= self.ema_decay < 1.0):
             raise ValueError(
-                f"GeoFrameTransformer ema_decay must be in [0, 1), got {self.ema_decay}."
+                "GeoFrameTransformer ema_decay must be in [0, 1) when "
+                f"enable_masked_token_objective=true, got {self.ema_decay}."
             )
         if self.pooling_mode not in {"attention", "max_mean"}:
             raise ValueError(
@@ -609,53 +615,76 @@ class GeoFrameTransformerEncoder(Encoder):
             else None
         )
 
-        self.ray_token_mlp = nn.Sequential(
-            nn.Linear(9, self.trans_dim),
-            nn.GELU(),
-            nn.Linear(self.trans_dim, self.trans_dim),
-        )
-        self.ray_query = nn.Parameter(torch.empty(1, 1, self.trans_dim))
-        nn.init.trunc_normal_(self.ray_query, std=0.02)
-        self.ray_attention = nn.MultiheadAttention(
-            embed_dim=self.trans_dim,
-            num_heads=int(num_heads),
-            dropout=float(dropout),
-            batch_first=True,
-        )
-        self.ray_output = nn.Sequential(
-            nn.LayerNorm(self.trans_dim),
-            nn.Linear(self.trans_dim, self.directional_feature_dim),
-        )
+        if self.enable_ray_head:
+            self.ray_token_mlp = nn.Sequential(
+                nn.Linear(9, self.trans_dim),
+                nn.GELU(),
+                nn.Linear(self.trans_dim, self.trans_dim),
+            )
+            self.ray_query = nn.Parameter(torch.empty(1, 1, self.trans_dim))
+            nn.init.trunc_normal_(self.ray_query, std=0.02)
+            self.ray_attention = nn.MultiheadAttention(
+                embed_dim=self.trans_dim,
+                num_heads=int(num_heads),
+                dropout=float(dropout),
+                batch_first=True,
+            )
+            self.ray_output = nn.Sequential(
+                nn.LayerNorm(self.trans_dim),
+                nn.Linear(self.trans_dim, self.directional_feature_dim),
+            )
+        else:
+            self.ray_token_mlp = None
+            self.register_parameter("ray_query", None)
+            self.ray_attention = None
+            self.ray_output = None
 
-        self.mask_token = nn.Parameter(torch.empty(1, 1, self.trans_dim))
-        nn.init.trunc_normal_(self.mask_token, std=0.02)
-        self.mask_predictor = RITransformer(
-            embed_dim=self.trans_dim,
-            num_heads=int(num_heads),
-            depth=int(mask_predictor_depth),
-            mlp_ratio=float(mlp_ratio),
-            dropout=float(dropout),
-            use_gradient_checkpointing=bool(use_gradient_checkpointing),
-        )
-        self.mask_prediction_head = nn.Linear(self.trans_dim, self.trans_dim)
+        if self.enable_masked_token_objective:
+            self.mask_token = nn.Parameter(torch.empty(1, 1, self.trans_dim))
+            nn.init.trunc_normal_(self.mask_token, std=0.02)
+            self.mask_predictor = RITransformer(
+                embed_dim=self.trans_dim,
+                num_heads=int(num_heads),
+                depth=int(mask_predictor_depth),
+                mlp_ratio=float(mlp_ratio),
+                dropout=float(dropout),
+                use_gradient_checkpointing=bool(use_gradient_checkpointing),
+            )
+            self.mask_prediction_head = nn.Linear(self.trans_dim, self.trans_dim)
 
-        self.mask_teacher = copy.deepcopy(self.token_encoder)
-        for parameter in self.mask_teacher.parameters():
-            parameter.requires_grad_(False)
-        self.mask_teacher.eval()
+            self.mask_teacher = copy.deepcopy(self.token_encoder)
+            for parameter in self.mask_teacher.parameters():
+                parameter.requires_grad_(False)
+            self.mask_teacher.eval()
+        else:
+            self.register_parameter("mask_token", None)
+            self.mask_predictor = None
+            self.mask_prediction_head = None
+            self.mask_teacher = None
 
     def train(self, mode: bool = True):
         super().train(mode)
-        self.enforce_frozen_teacher()
+        if self.enable_masked_token_objective:
+            self.enforce_frozen_teacher()
         return self
 
     def enforce_frozen_teacher(self) -> None:
+        if not self.enable_masked_token_objective or self.mask_teacher is None:
+            raise RuntimeError(
+                "GeoFrameTransformer EMA teacher is disabled. Set "
+                "encoder.kwargs.enable_masked_token_objective=true to use it."
+            )
         for parameter in self.mask_teacher.parameters():
             parameter.requires_grad_(False)
         self.mask_teacher.eval()
 
     @torch.no_grad()
     def reset_mask_teacher_from_student(self) -> None:
+        if not self.enable_masked_token_objective or self.mask_teacher is None:
+            raise RuntimeError(
+                "GeoFrameTransformer EMA teacher is disabled. Set "
+                "encoder.kwargs.enable_masked_token_objective=true before resetting it."
+            )
         self.mask_teacher.load_state_dict(self.token_encoder.state_dict(), strict=True)
         self.enforce_frozen_teacher()
 
@@ -680,6 +709,17 @@ class GeoFrameTransformerEncoder(Encoder):
         state: dict[str, torch.Tensor],
         ray_direction: torch.Tensor,
     ) -> torch.Tensor:
+        if (
+            not self.enable_ray_head
+            or self.ray_token_mlp is None
+            or self.ray_query is None
+            or self.ray_attention is None
+            or self.ray_output is None
+        ):
+            raise RuntimeError(
+                "GeoFrameTransformer ray head is disabled. Set "
+                "encoder.kwargs.enable_ray_head=true to compute directional features."
+            )
         required = {"tokens", "centers", "frames", "confidence"}
         missing = sorted(required.difference(state))
         if missing:
@@ -726,6 +766,17 @@ class GeoFrameTransformerEncoder(Encoder):
         return self.ray_output(attended.squeeze(1))
 
     def masked_token_loss(self, points: torch.Tensor) -> torch.Tensor:
+        if (
+            not self.enable_masked_token_objective
+            or self.mask_token is None
+            or self.mask_predictor is None
+            or self.mask_prediction_head is None
+            or self.mask_teacher is None
+        ):
+            raise RuntimeError(
+                "GeoFrameTransformer masked-token objective is disabled. Set "
+                "encoder.kwargs.enable_masked_token_objective=true to compute its loss."
+            )
         centered = self._center_points(points)
         neighborhood, centers = self.token_encoder.group_points(centered)
         student_input, _, student_state = self.token_encoder.prepare_tokens(
@@ -768,6 +819,11 @@ class GeoFrameTransformerEncoder(Encoder):
 
     @torch.no_grad()
     def update_mask_teacher(self) -> None:
+        if not self.enable_masked_token_objective or self.mask_teacher is None:
+            raise RuntimeError(
+                "GeoFrameTransformer EMA teacher is disabled. Set "
+                "encoder.kwargs.enable_masked_token_objective=true before updating it."
+            )
         student_parameters = dict(self.token_encoder.named_parameters())
         teacher_parameters = dict(self.mask_teacher.named_parameters())
         if student_parameters.keys() != teacher_parameters.keys():

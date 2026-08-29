@@ -306,6 +306,7 @@ def write_homogeneous_progress_visualization(
     analysis: HomogeneousCrystallizationAnalysis,
     temperature_K: float,
     pressure_GPa: float,
+    simulation_title: str = "Homogeneous crystallization from supercooled liquid",
 ) -> None:
     figure, axes = plt.subplots(2, 2, figsize=(13.0, 9.0), constrained_layout=True)
     for structure_name, color, fractions in zip(
@@ -379,7 +380,7 @@ def write_homogeneous_progress_visualization(
     else:
         result_text = "no persistent threshold-sized crystalline cluster observed"
     figure.suptitle(
-        f"Homogeneous crystallization from supercooled liquid at {temperature_K:.0f} K\n"
+        f"{simulation_title} at {temperature_K:.0f} K\n"
         f"{result_text}"
     )
     figure.savefig(path, dpi=180)
