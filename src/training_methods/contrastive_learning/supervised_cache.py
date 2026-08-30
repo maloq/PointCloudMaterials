@@ -1092,6 +1092,15 @@ def init_supervised_cache(module, cfg) -> None:
     module.enable_supervised_metrics = bool(getattr(cfg, "enable_supervised_metrics", True))
     module.enable_embedding_metrics = bool(getattr(cfg, "enable_embedding_metrics", False))
     module.enable_probe_metrics = bool(getattr(cfg, "enable_probe_metrics", True))
+    module.representation_source = str(
+        getattr(cfg, "representation_source", "encoder")
+    ).strip().lower()
+    valid_representation_sources = {"encoder", "vicreg_projector"}
+    if module.representation_source not in valid_representation_sources:
+        raise ValueError(
+            "representation_source must be one of "
+            f"{sorted(valid_representation_sources)}, got {module.representation_source!r}."
+        )
     valid_metric_stages = {"train", "val", "test"}
     for field_name in (
         "supervised_metric_stages",

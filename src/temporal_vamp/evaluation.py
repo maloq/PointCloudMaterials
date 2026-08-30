@@ -20,7 +20,11 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from src.temporal_vamp.data import TemporalPairDataset
-from src.temporal_vamp.embeddings import EmbeddingCache, FrozenEncoder
+from src.temporal_vamp.embeddings import (
+    EmbeddingCache,
+    FrozenEncoder,
+    encode_spatial_context_state,
+)
 from src.temporal_vamp.linear_vamp import LinearVAMP
 
 
@@ -83,6 +87,47 @@ class CovariancePCA:
             )
 
 
+@dataclass(frozen=True)
+class FutureNeighborCandidateFilter:
+    """Metadata constraints for confound-controlled held-out retrieval."""
+
+    exclude_same_run: bool
+    match_temperature: bool
+    relative_time_tolerance_ps: float | None = None
+    crystalline_fraction_tolerance: float | None = None
+
+    def __post_init__(self) -> None:
+        if not self.exclude_same_run:
+            raise ValueError(
+                "Confound-controlled future-neighbor retrieval requires "
+                "exclude_same_run=true."
+            )
+        if (
+            self.relative_time_tolerance_ps is not None
+            and self.relative_time_tolerance_ps < 0.0
+        ):
+            raise ValueError(
+                "relative_time_tolerance_ps must be non-negative, got "
+                f"{self.relative_time_tolerance_ps}."
+            )
+        if (
+            self.crystalline_fraction_tolerance is not None
+            and self.crystalline_fraction_tolerance < 0.0
+        ):
+            raise ValueError(
+                "crystalline_fraction_tolerance must be non-negative, got "
+                f"{self.crystalline_fraction_tolerance}."
+            )
+
+    def to_dict(self) -> dict[str, bool | float | None]:
+        return {
+            "exclude_same_run": self.exclude_same_run,
+            "match_temperature": self.match_temperature,
+            "relative_time_tolerance_ps": self.relative_time_tolerance_ps,
+            "crystalline_fraction_tolerance": self.crystalline_fraction_tolerance,
+        }
+
+
 def _group_codes(cache: EmbeddingCache) -> np.ndarray:
     pairs = np.stack(
         [np.asarray(cache.run_index, dtype=np.int64), np.asarray(cache.atom_id, dtype=np.int64)],
@@ -120,6 +165,144 @@ def _random_reference_indices(
     return result
 
 
+def _relative_event_times(cache: EmbeddingCache) -> np.ndarray:
+    if cache.time_ps0 is None:
+        raise ValueError(
+            "Relative-event-time matching requires cached physical times (time_ps0)."
+        )
+    run_metadata = cache.manifest.get("run_metadata")
+    if not isinstance(run_metadata, list) or len(run_metadata) != len(cache.run_ids):
+        raise ValueError(
+            "Relative-event-time matching requires one run_metadata entry per run; "
+            f"got metadata={type(run_metadata).__name__}, runs={len(cache.run_ids)}."
+        )
+    nucleation_time_values = [metadata["nucleation_time_ps"] for metadata in run_metadata]
+    if any(value is None for value in nucleation_time_values):
+        missing_runs = [
+            cache.run_ids[index]
+            for index, value in enumerate(nucleation_time_values)
+            if value is None
+        ]
+        raise ValueError(
+            "Relative-event-time matching requires a detected nucleation time for "
+            f"every cached run; missing for {missing_runs}."
+        )
+    nucleation_times = np.asarray(nucleation_time_values, dtype=np.float64)
+    return np.asarray(cache.time_ps0, dtype=np.float64) - nucleation_times[
+        np.asarray(cache.run_index, dtype=np.int64)
+    ]
+
+
+def _filtered_neighbor_indices(
+    present: np.ndarray,
+    cache: EmbeddingCache,
+    *,
+    query_indices: np.ndarray,
+    neighbors: int,
+    candidate_filter: FutureNeighborCandidateFilter,
+    seed: int,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Return exact neighbors and matched random references for eligible queries."""
+    run_index = np.asarray(cache.run_index, dtype=np.int64)
+    if candidate_filter.match_temperature and cache.temperature_K is None:
+        raise ValueError(
+            "Temperature-matched retrieval requires cached temperature_K metadata."
+        )
+    temperature = (
+        None
+        if not candidate_filter.match_temperature
+        else np.asarray(cache.temperature_K)
+    )
+    relative_time = (
+        None
+        if candidate_filter.relative_time_tolerance_ps is None
+        else _relative_event_times(cache)
+    )
+    if (
+        candidate_filter.crystalline_fraction_tolerance is not None
+        and cache.crystalline_fraction0 is None
+    ):
+        raise ValueError(
+            "Crystallinity-matched retrieval requires cached crystalline_fraction0 metadata."
+        )
+    crystallinity = (
+        None
+        if candidate_filter.crystalline_fraction_tolerance is None
+        else np.asarray(cache.crystalline_fraction0)
+    )
+
+    grouped_queries: dict[tuple[int, float | None, float | None, float | None], list[int]] = {}
+    for query_position, query_index in enumerate(query_indices.tolist()):
+        key = (
+            int(run_index[query_index]),
+            None if temperature is None else float(temperature[query_index]),
+            None if relative_time is None else float(relative_time[query_index]),
+            None if crystallinity is None else float(crystallinity[query_index]),
+        )
+        grouped_queries.setdefault(key, []).append(query_position)
+
+    k = int(neighbors)
+    rng = np.random.default_rng(int(seed))
+    candidate_counts = np.zeros(query_indices.size, dtype=np.int64)
+    eligible_positions: list[np.ndarray] = []
+    neighbor_blocks: list[np.ndarray] = []
+    random_blocks: list[np.ndarray] = []
+    for key, positions_list in grouped_queries.items():
+        query_run, query_temperature, query_relative_time, query_crystallinity = key
+        eligible = run_index != query_run
+        if temperature is not None:
+            assert query_temperature is not None
+            eligible &= temperature == query_temperature
+        if relative_time is not None:
+            assert query_relative_time is not None
+            assert candidate_filter.relative_time_tolerance_ps is not None
+            eligible &= (
+                np.abs(relative_time - query_relative_time)
+                <= candidate_filter.relative_time_tolerance_ps
+            )
+        if crystallinity is not None:
+            assert query_crystallinity is not None
+            assert candidate_filter.crystalline_fraction_tolerance is not None
+            eligible &= (
+                np.abs(crystallinity - query_crystallinity)
+                <= candidate_filter.crystalline_fraction_tolerance
+            )
+        candidates = np.flatnonzero(eligible)
+        positions = np.asarray(positions_list, dtype=np.int64)
+        candidate_counts[positions] = candidates.size
+        if candidates.size < k:
+            continue
+        search = NearestNeighbors(
+            n_neighbors=k,
+            metric="euclidean",
+            algorithm="brute",
+        )
+        search.fit(present[candidates])
+        local_neighbors = search.kneighbors(
+            present[query_indices[positions]], return_distance=False
+        )
+        eligible_positions.append(positions)
+        neighbor_blocks.append(candidates[local_neighbors])
+        random_blocks.append(
+            np.stack(
+                [rng.choice(candidates, size=k, replace=False) for _ in positions_list],
+                axis=0,
+            )
+        )
+
+    if not eligible_positions:
+        raise RuntimeError(
+            "No requested query has enough candidates for confound-controlled retrieval. "
+            f"required_neighbors={k}, filter={candidate_filter.to_dict()}."
+        )
+    output_positions = np.concatenate(eligible_positions)
+    order = np.argsort(output_positions)
+    eligible_queries = query_indices[output_positions][order]
+    selected = np.concatenate(neighbor_blocks, axis=0)[order]
+    random_indices = np.concatenate(random_blocks, axis=0)[order]
+    return eligible_queries, selected, random_indices, candidate_counts
+
+
 def future_neighbor_consistency(
     present_space: np.ndarray,
     future_embeddings: np.ndarray,
@@ -130,6 +313,7 @@ def future_neighbor_consistency(
     exclude_same_atom: bool,
     seed: int,
     future_labels: np.ndarray | None = None,
+    candidate_filter: FutureNeighborCandidateFilter | None = None,
 ) -> dict[str, float | int]:
     present = np.asarray(present_space)
     future = np.asarray(future_embeddings)
@@ -144,49 +328,80 @@ def future_neighbor_consistency(
             f"neighbors must satisfy 1 <= k < sample_count, got k={k}, n={present.shape[0]}."
         )
     group_codes = _group_codes(cache)
-    query_indices = _select_query_indices(present.shape[0], int(max_queries), int(seed))
-    if query_indices.size < 2:
-        raise ValueError(
-            f"Future-neighbor evaluation requires at least two queries, got {query_indices.size}."
-        )
-    if exclude_same_atom and np.unique(group_codes).size < 2:
-        raise ValueError(
-            "exclude_same_atom=true requires at least two distinct (run, atom) groups."
-        )
-    max_group_count = int(np.bincount(group_codes).max()) if exclude_same_atom else 1
-    candidate_count = min(present.shape[0], k + max_group_count + 1)
-    search = NearestNeighbors(n_neighbors=candidate_count, metric="euclidean")
-    search.fit(present)
-    candidate_indices = search.kneighbors(
-        present[query_indices], return_distance=False
+    requested_query_indices = _select_query_indices(
+        present.shape[0], int(max_queries), int(seed)
     )
-    selected = np.empty((query_indices.size, k), dtype=np.int64)
-    for row, query_index in enumerate(query_indices.tolist()):
-        candidates = candidate_indices[row]
-        keep = candidates != query_index
-        if exclude_same_atom:
-            keep &= group_codes[candidates] != group_codes[query_index]
-        valid = candidates[keep]
-        if valid.size < k:
-            raise RuntimeError(
-                "Nearest-neighbor filtering left too few candidates. "
-                f"query_index={query_index}, required={k}, available={valid.size}, "
-                f"candidate_count={candidate_count}, exclude_same_atom={exclude_same_atom}."
+    if requested_query_indices.size < 2:
+        raise ValueError(
+            "Future-neighbor evaluation requires at least two queries, got "
+            f"{requested_query_indices.size}."
+        )
+    candidate_counts: np.ndarray | None = None
+    if candidate_filter is not None:
+        query_indices, selected, random_indices, candidate_counts = (
+            _filtered_neighbor_indices(
+                present,
+                cache,
+                query_indices=requested_query_indices,
+                neighbors=k,
+                candidate_filter=candidate_filter,
+                seed=int(seed) + 7919,
             )
-        selected[row] = valid[:k]
+        )
+        if exclude_same_atom:
+            selected_group_codes = group_codes[selected]
+            query_group_codes = group_codes[query_indices, None]
+            if np.any(selected_group_codes == query_group_codes):
+                raise RuntimeError(
+                    "Cross-run candidate filtering unexpectedly retained a same-(run, atom) "
+                    "neighbor."
+                )
+    else:
+        query_indices = requested_query_indices
+        if exclude_same_atom and np.unique(group_codes).size < 2:
+            raise ValueError(
+                "exclude_same_atom=true requires at least two distinct (run, atom) groups."
+            )
+        max_group_count = int(np.bincount(group_codes).max()) if exclude_same_atom else 1
+        candidate_count = min(present.shape[0], k + max_group_count + 1)
+        search = NearestNeighbors(n_neighbors=candidate_count, metric="euclidean")
+        search.fit(present)
+        candidate_indices = search.kneighbors(
+            present[query_indices], return_distance=False
+        )
+        selected = np.empty((query_indices.size, k), dtype=np.int64)
+        for row, query_index in enumerate(query_indices.tolist()):
+            candidates = candidate_indices[row]
+            keep = candidates != query_index
+            if exclude_same_atom:
+                keep &= group_codes[candidates] != group_codes[query_index]
+            valid = candidates[keep]
+            if valid.size < k:
+                raise RuntimeError(
+                    "Nearest-neighbor filtering left too few candidates. "
+                    f"query_index={query_index}, required={k}, available={valid.size}, "
+                    f"candidate_count={candidate_count}, "
+                    f"exclude_same_atom={exclude_same_atom}."
+                )
+            selected[row] = valid[:k]
+        random_indices = _random_reference_indices(
+            query_indices=query_indices,
+            group_codes=group_codes,
+            exclude_same_atom=exclude_same_atom,
+            seed=int(seed) + 7919,
+        )
 
     future_delta = future[selected] - future[query_indices, None, :]
     future_distances = np.linalg.norm(future_delta, axis=2)
     per_query = future_distances.mean(axis=1)
-    random_indices = _random_reference_indices(
-        query_indices=query_indices,
-        group_codes=group_codes,
-        exclude_same_atom=exclude_same_atom,
-        seed=int(seed) + 7919,
-    )
-    random_distances = np.linalg.norm(
-        future[random_indices] - future[query_indices], axis=1
-    )
+    if random_indices.ndim == 1:
+        random_distances = np.linalg.norm(
+            future[random_indices] - future[query_indices], axis=1
+        )
+    else:
+        random_distances = np.linalg.norm(
+            future[random_indices] - future[query_indices, None, :], axis=2
+        ).mean(axis=1)
     result: dict[str, float | int] = {
         "queries": int(query_indices.size),
         "neighbors": k,
@@ -197,10 +412,27 @@ def future_neighbor_consistency(
         "random_mean_future_embedding_distance": float(random_distances.mean()),
         "distance_over_random": float(per_query.mean() / random_distances.mean()),
     }
+    if candidate_counts is not None:
+        eligible_counts = candidate_counts[candidate_counts >= k]
+        result.update(
+            {
+                "requested_queries": int(requested_query_indices.size),
+                "query_coverage": float(query_indices.size / requested_query_indices.size),
+                "candidate_count_min": int(candidate_counts.min()),
+                "candidate_count_median": float(np.median(candidate_counts)),
+                "candidate_count_max": int(candidate_counts.max()),
+                "eligible_candidate_count_min": int(eligible_counts.min()),
+                "eligible_candidate_count_median": float(np.median(eligible_counts)),
+                "eligible_candidate_count_max": int(eligible_counts.max()),
+            }
+        )
     if future_labels is not None:
         labels = np.asarray(future_labels)
         agreement = labels[selected] == labels[query_indices, None]
-        random_agreement = labels[random_indices] == labels[query_indices]
+        if random_indices.ndim == 1:
+            random_agreement = labels[random_indices] == labels[query_indices]
+        else:
+            random_agreement = labels[random_indices] == labels[query_indices, None]
         result["future_state_neighbor_agreement"] = float(agreement.mean())
         result["random_future_state_agreement"] = float(random_agreement.mean())
     return result
@@ -263,14 +495,31 @@ def encoder_sanity_checks(
     *,
     samples: int,
     dimension: int,
+    spatial_context_aggregation: str = "mean_std",
+    point_cloud_batch_size: int = 2048,
 ) -> dict[str, float | int]:
     count = min(int(samples), len(dataset))
     if count <= 0:
         raise ValueError(f"Sanity-check samples must be > 0, got {samples}.")
     batch = dataset.__getitems__(range(count))
     points = batch["points0"]
-    encoded_a = encoder.encode(points).cpu().numpy()
-    encoded_b = encoder.encode(points).cpu().numpy()
+    context = batch.get("context_points0")
+    encoded_a_tensor, _ = encode_spatial_context_state(
+        encoder,
+        points,
+        context_points=context,
+        aggregation=spatial_context_aggregation,
+        point_cloud_batch_size=point_cloud_batch_size,
+    )
+    encoded_b_tensor, _ = encode_spatial_context_state(
+        encoder,
+        points,
+        context_points=context,
+        aggregation=spatial_context_aggregation,
+        point_cloud_batch_size=point_cloud_batch_size,
+    )
+    encoded_a = encoded_a_tensor.numpy()
+    encoded_b = encoded_b_tensor.numpy()
     deterministic_delta = encoded_b - encoded_a
 
     rotation = np.asarray(
@@ -282,7 +531,17 @@ def encoder_sanity_checks(
         dtype=np.float32,
     )
     rotated_points = points @ torch.from_numpy(rotation)
-    rotated_embedding = encoder.encode(rotated_points).cpu().numpy()
+    rotated_context = (
+        None if context is None else context @ torch.from_numpy(rotation)
+    )
+    rotated_embedding_tensor, _ = encode_spatial_context_state(
+        encoder,
+        rotated_points,
+        context_points=rotated_context,
+        aggregation=spatial_context_aggregation,
+        point_cloud_batch_size=point_cloud_batch_size,
+    )
+    rotated_embedding = rotated_embedding_tensor.numpy()
     rotated_delta = rotated_embedding - encoded_a
     kinetic = vamp.transform(encoded_a, int(dimension))
     rotated_kinetic = vamp.transform(rotated_embedding, int(dimension))
@@ -359,6 +618,26 @@ def save_coordinate_archive(
         "coords1": np.asarray(cache.coords1),
         "run_ids": np.asarray(cache.run_ids),
     }
+    if cache.local_z0 is not None:
+        assert cache.local_z1 is not None
+        payload["local_embedding"] = np.asarray(cache.local_z0, dtype=np.float32)
+        payload["local_future_embedding"] = np.asarray(
+            cache.local_z1, dtype=np.float32
+        )
+    for name in (
+        "time_ps0",
+        "time_ps1",
+        "temperature_K",
+        "pressure_GPa",
+        "velocity_seed",
+        "crystalline_fraction0",
+        "crystalline_fraction1",
+        "largest_crystalline_cluster_atoms0",
+        "largest_crystalline_cluster_atoms1",
+    ):
+        values = getattr(cache, name)
+        if values is not None:
+            payload[name] = np.asarray(values)
     if future_state is not None:
         payload["future_state"] = np.asarray(future_state, dtype=np.int32)
     np.savez(Path(path), **payload)
@@ -397,9 +676,29 @@ def plot_kinetic_coordinates(
         return
     indices = _select_query_indices(coords.shape[0], int(max_points), int(seed))
     if color == "time":
-        values = np.asarray(cache.timestep0)[indices]
-        color_label = "simulation timestep"
+        values = (
+            np.asarray(cache.time_ps0)[indices]
+            if cache.time_ps0 is not None
+            else np.asarray(cache.timestep0)[indices]
+        )
+        color_label = (
+            "simulation time (ps)"
+            if cache.time_ps0 is not None
+            else "simulation timestep"
+        )
         cmap = "viridis"
+    elif color == "temperature":
+        if cache.temperature_K is None:
+            return
+        values = np.asarray(cache.temperature_K)[indices]
+        color_label = "temperature (K)"
+        cmap = "plasma"
+    elif color == "crystallinity":
+        if cache.crystalline_fraction0 is None:
+            return
+        values = np.asarray(cache.crystalline_fraction0)[indices]
+        color_label = "global crystalline fraction"
+        cmap = "cividis"
     elif color == "run":
         values = np.asarray(cache.run_index)[indices]
         color_label = "run index"
@@ -501,6 +800,7 @@ def write_json(path: str | Path, value: Any) -> None:
 
 __all__ = [
     "CovariancePCA",
+    "FutureNeighborCandidateFilter",
     "encoder_sanity_checks",
     "fit_future_state_labels",
     "future_neighbor_consistency",

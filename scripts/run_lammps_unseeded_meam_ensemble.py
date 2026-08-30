@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import shutil
 import sys
@@ -52,6 +53,9 @@ def _arguments() -> argparse.Namespace:
     )
     parser.add_argument("--target-temperature-K", type=float, default=500.0)
     parser.add_argument("--measurement-steps", type=int, default=200000)
+    parser.add_argument("--timestep-fs", type=float, default=3.0)
+    parser.add_argument("--equilibration-steps", type=int, default=5000)
+    parser.add_argument("--sample-interval-steps", type=int, default=1000)
     return parser.parse_args()
 
 
@@ -68,6 +72,9 @@ def _template_settings(
     velocity_seed: int,
     measurement_steps: int,
     target_temperature_K: float,
+    timestep_fs: float,
+    equilibration_steps: int,
+    sample_interval_steps: int,
 ) -> Settings:
     return Settings(
         output_root=output_root,
@@ -78,21 +85,26 @@ def _template_settings(
         target_temperature_K=target_temperature_K,
         melt_temperature_K=1325.0,
         pressure_GPa=0.0,
-        timestep_fs=3.0,
+        timestep_fs=timestep_fs,
         thermostat_time_fs=300.0,
         barostat_time_fs=3000.0,
         lattice_constant_A=4.05,
         repetitions=26,
         melt_steps=100000,
-        equilibration_steps=5000,
+        equilibration_steps=equilibration_steps,
         measurement_steps=measurement_steps,
-        sample_interval=1000,
+        sample_interval=sample_interval_steps,
         mpi_ranks=48,
     )
 
 
 def _validate_controls(
-    seeds: tuple[int, ...], measurement_steps: int, target_temperature_K: float
+    seeds: tuple[int, ...],
+    measurement_steps: int,
+    target_temperature_K: float,
+    timestep_fs: float,
+    equilibration_steps: int,
+    sample_interval_steps: int,
 ) -> None:
     if not seeds or len(set(seeds)) != len(seeds):
         raise ValueError(
@@ -100,11 +112,39 @@ def _validate_controls(
         )
     if any(seed <= 0 for seed in seeds):
         raise ValueError(f"Velocity seeds must be positive, got {seeds}.")
-    if measurement_steps != 200000:
+    if timestep_fs <= 0.0:
+        raise ValueError(f"timestep_fs must be positive, got {timestep_fs}.")
+    if measurement_steps <= 0 or equilibration_steps <= 0:
         raise ValueError(
-            f"A 600 ps run at 3 fs requires measurement_steps=200000, got "
-            f"{measurement_steps}."
+            "measurement_steps and equilibration_steps must be positive, got "
+            f"{measurement_steps} and {equilibration_steps}."
         )
+    measurement_duration_ps = measurement_steps * timestep_fs / 1000.0
+    if not math.isclose(measurement_duration_ps, 600.0, abs_tol=1.0e-12):
+        raise ValueError(
+            "This campaign requires exactly 600 ps of measurement, got "
+            f"{measurement_duration_ps} ps from measurement_steps={measurement_steps} "
+            f"and timestep_fs={timestep_fs}."
+        )
+    equilibration_duration_ps = equilibration_steps * timestep_fs / 1000.0
+    if not math.isclose(equilibration_duration_ps, 15.0, abs_tol=1.0e-12):
+        raise ValueError(
+            "This campaign requires exactly 15 ps of equilibration, got "
+            f"{equilibration_duration_ps} ps."
+        )
+    if sample_interval_steps <= 0:
+        raise ValueError(
+            f"sample_interval_steps must be positive, got {sample_interval_steps}."
+        )
+    for name, steps in (
+        ("measurement_steps", measurement_steps),
+        ("equilibration_steps", equilibration_steps),
+    ):
+        if steps % sample_interval_steps != 0:
+            raise ValueError(
+                f"{name}={steps} must be divisible by sample_interval_steps="
+                f"{sample_interval_steps}."
+            )
     if target_temperature_K <= 0.0:
         raise ValueError(
             f"target_temperature_K must be positive, got {target_temperature_K}."
@@ -117,6 +157,9 @@ def prepare(
     seeds: tuple[int, ...],
     measurement_steps: int,
     target_temperature_K: float,
+    timestep_fs: float,
+    equilibration_steps: int,
+    sample_interval_steps: int,
 ) -> None:
     if output_root.exists():
         raise FileExistsError(
@@ -197,13 +240,23 @@ def prepare(
                 "velocity_seeds": list(seeds),
                 "temperature_K": target_temperature_K,
                 "pressure_GPa": 0.0,
-                "timestep_fs": 3.0,
-                "equilibration_steps": 5000,
-                "equilibration_duration_ps": 15.0,
+                "timestep_fs": timestep_fs,
+                "equilibration_steps": equilibration_steps,
+                "equilibration_duration_ps": equilibration_steps
+                * timestep_fs
+                / 1000.0,
                 "measurement_steps": measurement_steps,
-                "measurement_duration_ps": 600.0,
-                "sample_interval_steps": 1000,
-                "sample_interval_ps": 3.0,
+                "measurement_duration_ps": measurement_steps
+                * timestep_fs
+                / 1000.0,
+                "sample_interval_steps": sample_interval_steps,
+                "sample_interval_ps": sample_interval_steps
+                * timestep_fs
+                / 1000.0,
+                "per_atom_frame_fields": {
+                    "positions_A": "angstrom",
+                    "velocities_A_per_ps": "angstrom/picosecond",
+                },
             },
             "execution": {
                 "strictly_sequential_replicas": True,
@@ -218,6 +271,9 @@ def prepare(
         seeds[0],
         measurement_steps,
         target_temperature_K,
+        timestep_fs,
+        equilibration_steps,
+        sample_interval_steps,
     )
     _write_status(
         template,
@@ -313,6 +369,9 @@ def run(
     measurement_steps: int,
     wait_for_status: Path | None,
     target_temperature_K: float,
+    timestep_fs: float,
+    equilibration_steps: int,
+    sample_interval_steps: int,
 ) -> None:
     required = (
         output_root / "manifest.json",
@@ -330,6 +389,9 @@ def run(
         seeds[0],
         measurement_steps,
         target_temperature_K,
+        timestep_fs,
+        equilibration_steps,
+        sample_interval_steps,
     )
     _wait_for_prior_campaign(template, wait_for_status)
 
@@ -416,7 +478,12 @@ def main() -> None:
     )
     seeds = tuple(args.velocity_seeds)
     _validate_controls(
-        seeds, args.measurement_steps, args.target_temperature_K
+        seeds,
+        args.measurement_steps,
+        args.target_temperature_K,
+        args.timestep_fs,
+        args.equilibration_steps,
+        args.sample_interval_steps,
     )
     try:
         if args.action == "prepare":
@@ -426,6 +493,9 @@ def main() -> None:
                 seeds,
                 args.measurement_steps,
                 args.target_temperature_K,
+                args.timestep_fs,
+                args.equilibration_steps,
+                args.sample_interval_steps,
             )
         else:
             run(
@@ -434,6 +504,9 @@ def main() -> None:
                 args.measurement_steps,
                 wait_for_status,
                 args.target_temperature_K,
+                args.timestep_fs,
+                args.equilibration_steps,
+                args.sample_interval_steps,
             )
     except BaseException:
         if output_root.is_dir():
@@ -443,6 +516,9 @@ def main() -> None:
                 seeds[0],
                 args.measurement_steps,
                 args.target_temperature_K,
+                args.timestep_fs,
+                args.equilibration_steps,
+                args.sample_interval_steps,
             )
             _write_status(settings, "failed", traceback=traceback.format_exc())
         raise

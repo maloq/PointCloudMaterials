@@ -4,6 +4,7 @@ import numpy as np
 from omegaconf import OmegaConf
 
 from src.analysis.lazy_static_dataset import LazyStaticAnalysisDataset
+from src.analysis.config import _apply_analysis_inference_overrides
 from src.analysis.runtime_profile import resolve_analysis_runtime_profile
 from src.analysis.figure_sets import write_figure_only_metrics
 
@@ -20,6 +21,21 @@ def test_fast_runtime_profile_preserves_analysis_counts() -> None:
     assert not profile.equivariance_enabled
     assert profile.real_md_projection_method == "pca"
     assert profile.tsne_max_samples is None
+
+
+def test_analysis_replaces_unsafe_reduce_overhead_compile_mode() -> None:
+    cfg = OmegaConf.create(
+        {
+            "compile_encoder": True,
+            "encoder_compile_mode": "reduce-overhead",
+            "encoder": {"kwargs": {"deterministic_fps": False}},
+        }
+    )
+
+    _apply_analysis_inference_overrides(cfg)
+
+    assert cfg.encoder_compile_mode == "default"
+    assert cfg.encoder.kwargs.deterministic_fps is True
 
 
 def test_lazy_static_file_counts_come_from_sample_cache_metadata(tmp_path) -> None:

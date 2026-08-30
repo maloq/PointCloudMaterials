@@ -3,14 +3,44 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import torch
 
 from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
 from src.temporal_vamp.data import (
     TemporalPairDataset,
     contiguous_temporal_split,
+    event_aligned_frame_interval,
     resolve_lag_frame_offset,
 )
+
+
+def test_event_aligned_frame_interval_includes_bounds_and_clips() -> None:
+    times = np.arange(0.0, 603.0, 3.0)
+    assert event_aligned_frame_interval(
+        times,
+        event_time_ps=87.0,
+        start_offset_ps=-24.0,
+        stop_offset_ps=96.0,
+        clip_to_trajectory=True,
+    ) == (21, 62)
+    assert event_aligned_frame_interval(
+        times,
+        event_time_ps=570.0,
+        start_offset_ps=-24.0,
+        stop_offset_ps=96.0,
+        clip_to_trajectory=True,
+    ) == (182, 201)
 from src.temporal_vamp.linear_vamp import LinearVAMP
+from src.temporal_vamp.embeddings import (
+    EmbeddingCache,
+    encode_spatial_context_state,
+    extract_embedding_cache,
+)
+from src.temporal_vamp.evaluation import (
+    FutureNeighborCandidateFilter,
+    _filtered_neighbor_indices,
+    future_neighbor_consistency,
+)
 
 
 def _write_small_lammps_dump(path: Path) -> None:
@@ -74,6 +104,119 @@ def test_temporal_pair_tracks_same_atom_and_requested_lag(tmp_path: Path) -> Non
     np.testing.assert_allclose(first["points1"][0].numpy(), 0.0, atol=1.0e-6)
 
 
+def test_temporal_pair_builds_deterministic_satellite_context(tmp_path: Path) -> None:
+    dump_path = tmp_path / "trajectory.lammpstrj"
+    _write_small_lammps_dump(dump_path)
+    base = TemporalLAMMPSDumpDataset(
+        dump_file=dump_path,
+        cache_dir=tmp_path / "cache",
+        sequence_length=2,
+        num_points=4,
+        radius=3.0,
+        frame_stride=1,
+        anchor_frame_indices=[0],
+        center_selection_mode="atom_ids",
+        center_atom_ids=[2],
+        normalize=True,
+        center_neighborhoods=True,
+        selection_method="closest",
+        precompute_neighbor_indices=False,
+        spatial_context_center_count=2,
+    )
+    pairs = TemporalPairDataset(base, run_id="test_context")
+    first = pairs[0]
+    repeated = pairs[0]
+    assert first["context_points0"].shape == (2, 4, 3)
+    assert first["context_offsets0"].shape == (2, 3)
+    assert 2 not in first["context_atom_ids0"].tolist()
+    torch.testing.assert_close(first["context_points0"], repeated["context_points0"])
+    torch.testing.assert_close(first["context_offsets0"], repeated["context_offsets0"])
+
+
+def test_context_embedding_appends_permutation_invariant_mean_and_std() -> None:
+    class FakeEncoder:
+        @staticmethod
+        def encode(points: torch.Tensor) -> torch.Tensor:
+            radii = torch.linalg.vector_norm(points, dim=-1)
+            return torch.stack([radii.mean(dim=1), radii.amax(dim=1)], dim=1)
+
+    points = torch.tensor(
+        [[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]]], dtype=torch.float32
+    )
+    context = torch.tensor(
+        [
+            [
+                [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+                [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]],
+            ]
+        ],
+        dtype=torch.float32,
+    )
+    contextual, local = encode_spatial_context_state(
+        FakeEncoder(),
+        points,
+        context_points=context,
+        aggregation="mean_std",
+        point_cloud_batch_size=1,
+    )
+    assert contextual.shape == (1, 6)
+    torch.testing.assert_close(contextual[:, :2], local)
+    permutation = torch.tensor([1, 0])
+    permuted, _ = encode_spatial_context_state(
+        FakeEncoder(),
+        points,
+        context_points=context[:, permutation],
+        aggregation="mean_std",
+        point_cloud_batch_size=2,
+    )
+    torch.testing.assert_close(contextual, permuted)
+
+
+def test_context_embedding_cache_preserves_local_baseline(tmp_path: Path) -> None:
+    class FakeEncoder:
+        device = torch.device("cpu")
+        output_dim = 2
+
+        @staticmethod
+        def encode(points: torch.Tensor) -> torch.Tensor:
+            radii = torch.linalg.vector_norm(points, dim=-1)
+            return torch.stack([radii.mean(dim=1), radii.amax(dim=1)], dim=1)
+
+    dump_path = tmp_path / "trajectory.lammpstrj"
+    _write_small_lammps_dump(dump_path)
+    base = TemporalLAMMPSDumpDataset(
+        dump_file=dump_path,
+        cache_dir=tmp_path / "trajectory_cache",
+        sequence_length=2,
+        num_points=4,
+        radius=3.0,
+        frame_stride=1,
+        anchor_frame_indices=[0],
+        center_selection_mode="atom_ids",
+        center_atom_ids=[2],
+        normalize=True,
+        center_neighborhoods=True,
+        selection_method="closest",
+        spatial_context_center_count=2,
+    )
+    cache = extract_embedding_cache(
+        [TemporalPairDataset(base, run_id="context_cache")],
+        encoder=FakeEncoder(),
+        cache_path=tmp_path / "embeddings",
+        cache_spec={"test": "context"},
+        batch_size=1,
+        point_cloud_batch_size=2,
+        num_workers=0,
+        force_recompute=False,
+        spatial_context_aggregation="mean_std",
+    )
+    assert cache.z0.shape == (1, 6)
+    assert cache.local_z0 is not None and cache.local_z0.shape == (1, 2)
+    assert cache.local_z1 is not None and cache.local_z1.shape == (1, 2)
+    np.testing.assert_allclose(cache.z0[:, :2], cache.local_z0)
+    assert cache.manifest["spatial_context_center_count"] == 2
+
+
 def test_contiguous_temporal_split_prevents_cross_boundary_pairs() -> None:
     split = contiguous_temporal_split(
         frame_count=100,
@@ -125,3 +268,82 @@ def test_linear_vamp_recovers_slow_subspace_and_handles_redundancy(tmp_path: Pat
         restored.transform(z0[:100], dimension=2),
         model.transform(z0[:100], dimension=2),
     )
+
+
+def _matched_neighbor_test_cache(tmp_path: Path) -> EmbeddingCache:
+    run_index = np.repeat(np.arange(4, dtype=np.int64), 2)
+    relative_times = np.tile(np.asarray([-9.0, 0.0]), 4)
+    nucleation_times = np.asarray([100.0, 200.0, 300.0, 400.0])
+    time_ps0 = relative_times + nucleation_times[run_index]
+    crystallinity = np.asarray([0.10, 0.20, 0.11, 0.50, 0.70, 0.80, 0.71, 0.40])
+    values = np.arange(8, dtype=np.float32)[:, None]
+    return EmbeddingCache(
+        path=tmp_path,
+        manifest={
+            "run_ids": ["run0", "run1", "run2", "run3"],
+            "run_metadata": [
+                {"nucleation_time_ps": float(value)} for value in nucleation_times
+            ],
+        },
+        z0=values,
+        z1=values,
+        atom_id=np.arange(8, dtype=np.int64),
+        run_index=run_index,
+        frame0=np.tile(np.arange(2, dtype=np.int64), 4),
+        frame1=np.tile(np.arange(2, dtype=np.int64) + 1, 4),
+        timestep0=np.arange(8, dtype=np.int64),
+        timestep1=np.arange(8, dtype=np.int64) + 1,
+        coords0=np.zeros((8, 3), dtype=np.float32),
+        coords1=np.zeros((8, 3), dtype=np.float32),
+        time_ps0=time_ps0,
+        time_ps1=time_ps0 + 3.0,
+        temperature_K=np.repeat(np.asarray([400.0, 400.0, 450.0, 450.0]), 2),
+        crystalline_fraction0=crystallinity,
+        crystalline_fraction1=crystallinity,
+    )
+
+
+def test_filtered_neighbors_match_cross_run_temperature_event_time_and_crystallinity(
+    tmp_path: Path,
+) -> None:
+    cache = _matched_neighbor_test_cache(tmp_path)
+    candidate_filter = FutureNeighborCandidateFilter(
+        exclude_same_run=True,
+        match_temperature=True,
+        relative_time_tolerance_ps=1.0,
+        crystalline_fraction_tolerance=0.05,
+    )
+    queries, neighbors, random_references, candidate_counts = _filtered_neighbor_indices(
+        np.asarray(cache.z0),
+        cache,
+        query_indices=np.asarray([0, 1], dtype=np.int64),
+        neighbors=1,
+        candidate_filter=candidate_filter,
+        seed=7,
+    )
+    np.testing.assert_array_equal(queries, np.asarray([0]))
+    np.testing.assert_array_equal(neighbors, np.asarray([[2]]))
+    np.testing.assert_array_equal(random_references, np.asarray([[2]]))
+    np.testing.assert_array_equal(candidate_counts, np.asarray([1, 0]))
+
+
+def test_matched_future_neighbor_metric_reports_query_coverage(tmp_path: Path) -> None:
+    cache = _matched_neighbor_test_cache(tmp_path)
+    metrics = future_neighbor_consistency(
+        np.asarray(cache.z0),
+        np.asarray(cache.z1),
+        cache,
+        neighbors=1,
+        max_queries=0,
+        exclude_same_atom=True,
+        seed=7,
+        candidate_filter=FutureNeighborCandidateFilter(
+            exclude_same_run=True,
+            match_temperature=True,
+            relative_time_tolerance_ps=1.0,
+            crystalline_fraction_tolerance=0.05,
+        ),
+    )
+    assert metrics["requested_queries"] == 8
+    assert metrics["queries"] == 4
+    assert metrics["query_coverage"] == 0.5

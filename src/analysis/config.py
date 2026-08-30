@@ -1083,6 +1083,19 @@ def build_runtime_model_config(
 
 
 def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
+    compile_enabled = bool(OmegaConf.select(model_cfg, "compile_encoder", default=False))
+    compile_mode = str(
+        OmegaConf.select(model_cfg, "encoder_compile_mode", default="default")
+    )
+    if compile_enabled and compile_mode == "reduce-overhead":
+        print(
+            "[analysis] Replacing encoder_compile_mode='reduce-overhead' with "
+            "'default': the CUDA-graph mode is not numerically stable for "
+            "GeoFrame inference on this PyTorch/H100 stack."
+        )
+        with open_dict(model_cfg):
+            model_cfg.encoder_compile_mode = "default"
+
     encoder_kwargs = OmegaConf.select(model_cfg, "encoder.kwargs", default=None)
     if encoder_kwargs is None:
         return

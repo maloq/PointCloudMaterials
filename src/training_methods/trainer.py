@@ -607,6 +607,12 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     checkpoint_save_top_k = int(getattr(cfg, "checkpoint_save_top_k", 3))
     checkpoint_save_top_k = max(1, checkpoint_save_top_k)
     checkpoint_save_last = bool(getattr(cfg, "checkpoint_save_last", False))
+    checkpoint_every_n_epochs = int(getattr(cfg, "checkpoint_every_n_epochs", 0))
+    if checkpoint_every_n_epochs < 0:
+        raise ValueError(
+            "checkpoint_every_n_epochs must be >= 0, "
+            f"got {checkpoint_every_n_epochs}."
+        )
 
     # Set up checkpoint callbacks
     if checkpoint_callbacks is None:
@@ -618,6 +624,16 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             save_last=checkpoint_save_last,
             mode=checkpoint_mode,
         )]
+        if checkpoint_every_n_epochs > 0:
+            checkpoint_callbacks.append(ModelCheckpoint(
+                dirpath=run_dir,
+                monitor=None,
+                filename=f'{cfg.experiment_name}-periodic-{{epoch:03d}}',
+                save_top_k=-1,
+                save_last=False,
+                every_n_epochs=checkpoint_every_n_epochs,
+                save_on_train_epoch_end=True,
+            ))
 
     lr_monitor = LearningRateMonitor(logging_interval='step')
 

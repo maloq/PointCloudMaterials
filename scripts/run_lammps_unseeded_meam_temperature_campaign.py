@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,6 +34,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("action", choices=("prepare", "run"))
     parser.add_argument("--source-root", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
+    parser.add_argument("--wait-for-status", type=Path)
     parser.add_argument(
         "--temperatures-K", type=float, nargs="+", default=(400.0, 450.0, 550.0, 600.0)
     )
@@ -43,6 +45,9 @@ def _arguments() -> argparse.Namespace:
         default=(35831, 35839, 35851, 35863, 35869, 35879),
     )
     parser.add_argument("--measurement-steps", type=int, default=200000)
+    parser.add_argument("--timestep-fs", type=float, default=3.0)
+    parser.add_argument("--equilibration-steps", type=int, default=5000)
+    parser.add_argument("--sample-interval-steps", type=int, default=1000)
     return parser.parse_args()
 
 
@@ -65,22 +70,30 @@ def _validate_campaign(
     temperatures_K: tuple[float, ...],
     seeds: tuple[int, ...],
     measurement_steps: int,
+    timestep_fs: float,
+    equilibration_steps: int,
+    sample_interval_steps: int,
 ) -> None:
-    if len(temperatures_K) != 4 or len(set(temperatures_K)) != 4:
+    if not temperatures_K or len(set(temperatures_K)) != len(temperatures_K):
         raise ValueError(
-            f"Exactly four unique temperatures are required, got {temperatures_K}."
-        )
-    if not any(value < 500.0 for value in temperatures_K) or not any(
-        value > 500.0 for value in temperatures_K
-    ):
-        raise ValueError(
-            f"Temperatures must bracket the current 500 K condition, got "
+            f"A non-empty sequence of unique temperatures is required, got "
             f"{temperatures_K}."
+        )
+    if any(value <= 0.0 for value in temperatures_K):
+        raise ValueError(
+            f"Temperatures must be positive, got {temperatures_K}."
         )
     if len(seeds) != 6:
         raise ValueError(f"Exactly six velocity seeds are required, got {seeds}.")
     for temperature_K in temperatures_K:
-        _validate_controls(seeds, measurement_steps, temperature_K)
+        _validate_controls(
+            seeds,
+            measurement_steps,
+            temperature_K,
+            timestep_fs,
+            equilibration_steps,
+            sample_interval_steps,
+        )
         _temperature_name(temperature_K)
 
 
@@ -96,12 +109,51 @@ def _write_status(output_root: Path, state: str, **details: object) -> None:
     )
 
 
+def _wait_for_prior_campaign(
+    output_root: Path, status_path: Path | None
+) -> None:
+    if status_path is None:
+        return
+    if not status_path.is_file():
+        raise FileNotFoundError(f"Wait status file is absent: {status_path}.")
+    last_reported_at = 0.0
+    while True:
+        with status_path.open(encoding="utf-8") as handle:
+            document = json.load(handle)
+        state = document["state"]
+        if state == "complete":
+            print(f"Prior campaign is complete: {status_path}", flush=True)
+            return
+        if state in {"failed", "superseded"}:
+            raise RuntimeError(
+                f"Prior campaign ended with state={state}; refusing to start the "
+                f"queued temperature campaign: {status_path}; status={document}."
+            )
+        now = time.monotonic()
+        if now - last_reported_at >= 600.0 or last_reported_at == 0.0:
+            print(
+                f"Waiting for prior temperature campaign; current state={state}",
+                flush=True,
+            )
+            last_reported_at = now
+        _write_status(
+            output_root,
+            "waiting_for_prior_campaign",
+            prior_status=str(status_path),
+            prior_state=state,
+        )
+        time.sleep(30.0)
+
+
 def prepare(
     source_root: Path,
     output_root: Path,
     temperatures_K: tuple[float, ...],
     seeds: tuple[int, ...],
     measurement_steps: int,
+    timestep_fs: float,
+    equilibration_steps: int,
+    sample_interval_steps: int,
 ) -> None:
     if output_root.exists():
         raise FileExistsError(
@@ -127,8 +179,17 @@ def prepare(
             "paired_velocity_seed_design": True,
             "replicas_per_temperature": len(seeds),
             "total_replica_count": len(temperatures_K) * len(seeds),
-            "measurement_duration_ps": 600.0,
-            "coordinate_sample_interval_ps": 3.0,
+            "timestep_fs": timestep_fs,
+            "measurement_duration_ps": measurement_steps
+            * timestep_fs
+            / 1000.0,
+            "coordinate_sample_interval_ps": sample_interval_steps
+            * timestep_fs
+            / 1000.0,
+            "per_atom_frame_fields": {
+                "positions_A": "angstrom",
+                "velocities_A_per_ps": "angstrom/picosecond",
+            },
             "execution": {
                 "temperature_order": list(temperatures_K),
                 "strictly_sequential_all_replicas": True,
@@ -143,6 +204,9 @@ def prepare(
             seeds,
             measurement_steps,
             temperature_K,
+            timestep_fs,
+            equilibration_steps,
+            sample_interval_steps,
         )
     _write_status(
         output_root,
@@ -174,12 +238,17 @@ def run(
     temperatures_K: tuple[float, ...],
     seeds: tuple[int, ...],
     measurement_steps: int,
+    timestep_fs: float,
+    equilibration_steps: int,
+    sample_interval_steps: int,
+    wait_for_status: Path | None,
 ) -> None:
     manifest_path = output_root / "manifest.json"
     if not manifest_path.is_file():
         raise FileNotFoundError(
             f"Temperature campaign is not prepared; missing {manifest_path}."
         )
+    _wait_for_prior_campaign(output_root, wait_for_status)
     completed_temperatures: list[float] = []
     temperature_summaries: list[dict[str, object]] = []
     for temperature_K in temperatures_K:
@@ -204,6 +273,9 @@ def run(
             measurement_steps,
             None,
             temperature_K,
+            timestep_fs,
+            equilibration_steps,
+            sample_interval_steps,
         )
         completed_temperatures.append(temperature_K)
         temperature_summaries.append(
@@ -230,9 +302,19 @@ def main() -> None:
     args = _arguments()
     source_root = _resolve(args.source_root)
     output_root = _resolve(args.output_root)
+    wait_for_status = (
+        _resolve(args.wait_for_status) if args.wait_for_status is not None else None
+    )
     temperatures_K = tuple(args.temperatures_K)
     seeds = tuple(args.velocity_seeds)
-    _validate_campaign(temperatures_K, seeds, args.measurement_steps)
+    _validate_campaign(
+        temperatures_K,
+        seeds,
+        args.measurement_steps,
+        args.timestep_fs,
+        args.equilibration_steps,
+        args.sample_interval_steps,
+    )
     try:
         if args.action == "prepare":
             prepare(
@@ -241,9 +323,21 @@ def main() -> None:
                 temperatures_K,
                 seeds,
                 args.measurement_steps,
+                args.timestep_fs,
+                args.equilibration_steps,
+                args.sample_interval_steps,
             )
         else:
-            run(output_root, temperatures_K, seeds, args.measurement_steps)
+            run(
+                output_root,
+                temperatures_K,
+                seeds,
+                args.measurement_steps,
+                args.timestep_fs,
+                args.equilibration_steps,
+                args.sample_interval_steps,
+                wait_for_status,
+            )
     except BaseException:
         if output_root.is_dir():
             _write_status(output_root, "failed", traceback=traceback.format_exc())

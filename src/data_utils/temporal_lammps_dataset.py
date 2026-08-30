@@ -197,6 +197,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
     Returned sample keys:
         - "points": float32 tensor of shape (T, N, 3)
+        - "spatial_context_points": optional float32 tensor of shape (T, K, N, 3)
         - "center_positions": float32 tensor of shape (T, 3)
         - "timesteps": int64 tensor of shape (T,)
         - "frame_indices": int64 tensor of shape (T,)
@@ -234,6 +235,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         rebuild_cache: bool = False,
         tree_cache_size: int = 4,
         precompute_neighbor_indices: bool = False,
+        spatial_context_center_count: int = 0,
         build_lock_timeout_sec: float = 7200.0,
         build_lock_stale_sec: float = 86400.0,
     ) -> None:
@@ -267,6 +269,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         )
         self.tree_cache_size = int(tree_cache_size)
         self.precompute_neighbor_indices = bool(precompute_neighbor_indices)
+        self.spatial_context_center_count = int(spatial_context_center_count)
         self.build_lock_timeout_sec = float(build_lock_timeout_sec)
         self.build_lock_stale_sec = float(build_lock_stale_sec)
 
@@ -289,6 +292,17 @@ class TemporalLAMMPSDumpDataset(Dataset):
             raise ValueError(f"frame_start must be >= 0, got {self.frame_start}")
         if self.tree_cache_size <= 0:
             raise ValueError(f"tree_cache_size must be > 0, got {self.tree_cache_size}")
+        if self.spatial_context_center_count < 0:
+            raise ValueError(
+                "spatial_context_center_count must be >= 0, "
+                f"got {self.spatial_context_center_count}."
+            )
+        if self.spatial_context_center_count >= self.num_points:
+            raise ValueError(
+                "spatial_context_center_count must leave at least the central atom out of "
+                f"the {self.num_points}-point candidate neighborhood, got "
+                f"{self.spatial_context_center_count}."
+            )
         if (
             self.center_grid_overlap is not None
             and self.center_grid_overlap >= 2.0
@@ -418,6 +432,14 @@ class TemporalLAMMPSDumpDataset(Dataset):
             "anchor_timestep": batch["anchor_timestep"][0],
             "source_path": batch["source_path"][0],
         }
+        if "spatial_context_points" in batch:
+            sample["spatial_context_points"] = batch["spatial_context_points"][0]
+            sample["spatial_context_center_atom_ids"] = batch[
+                "spatial_context_center_atom_ids"
+            ][0]
+            sample["spatial_context_center_offsets"] = batch[
+                "spatial_context_center_offsets"
+            ][0]
         return sample
 
     def __getitems__(self, indices: Sequence[int]) -> dict[str, Any]:
@@ -1440,6 +1462,66 @@ class TemporalLAMMPSDumpDataset(Dataset):
         rel = rel - box_lengths[None, None, :] * np.round(rel / box_lengths[None, None, :])
         return rel.astype(np.float32, copy=False)
 
+    def _select_spatial_context_center_indices(
+        self,
+        *,
+        frame_idx: int,
+        centers: np.ndarray,
+        center_atom_indices: np.ndarray,
+        central_neighbor_indices: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Select deterministic, spatially separated satellite atoms around each center."""
+        context_count = self.spatial_context_center_count
+        if context_count <= 0:
+            raise RuntimeError("Spatial context center selection was called with context disabled.")
+        frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+        candidate_points = np.asarray(frame_points[central_neighbor_indices], dtype=np.float32)
+        candidate_offsets = self._to_local_coordinates_batch(
+            frame_idx=frame_idx,
+            points=candidate_points,
+            centers=centers,
+        )
+        available = central_neighbor_indices != center_atom_indices[:, None]
+        if np.any(available.sum(axis=1) < context_count):
+            raise RuntimeError(
+                "Central neighborhoods contain too few non-central atoms for spatial context: "
+                f"required={context_count}, available={available.sum(axis=1).tolist()}."
+            )
+
+        # Farthest-point selection initialized with the central atom. This spreads
+        # satellites over the full local neighborhood rather than selecting another
+        # set of first-shell atoms.
+        minimum_distance_squared = np.sum(candidate_offsets.astype(np.float64) ** 2, axis=2)
+        minimum_distance_squared[~available] = -np.inf
+        batch_rows = np.arange(centers.shape[0], dtype=np.int64)
+        selected_slots = np.empty((centers.shape[0], context_count), dtype=np.int64)
+        box_lengths = np.asarray(self.box_lengths[frame_idx], dtype=np.float64)
+        offsets64 = candidate_offsets.astype(np.float64)
+        for context_slot in range(context_count):
+            chosen = np.argmax(minimum_distance_squared, axis=1).astype(np.int64)
+            chosen_scores = minimum_distance_squared[batch_rows, chosen]
+            if np.any(~np.isfinite(chosen_scores)):
+                raise RuntimeError(
+                    "Deterministic spatial-context FPS exhausted its candidates at "
+                    f"context_slot={context_slot}, frame_idx={frame_idx}."
+                )
+            selected_slots[:, context_slot] = chosen
+            selected_offset = offsets64[batch_rows, chosen]
+            delta = offsets64 - selected_offset[:, None, :]
+            delta -= box_lengths[None, None, :] * np.round(
+                delta / box_lengths[None, None, :]
+            )
+            separation_squared = np.sum(delta**2, axis=2)
+            minimum_distance_squared = np.minimum(
+                minimum_distance_squared, separation_squared
+            )
+            minimum_distance_squared[~available] = -np.inf
+            minimum_distance_squared[batch_rows, chosen] = -np.inf
+
+        selected_indices = central_neighbor_indices[batch_rows[:, None], selected_slots]
+        selected_offsets = candidate_offsets[batch_rows[:, None], selected_slots]
+        return selected_indices.astype(np.int64, copy=False), selected_offsets
+
     def _normalize_point_cloud_batch(self, points: np.ndarray) -> np.ndarray:
         if self.radius is None:
             raise RuntimeError(
@@ -1468,6 +1550,33 @@ class TemporalLAMMPSDumpDataset(Dataset):
             dtype=np.int64,
         )
         center_positions = np.empty((batch_size, self.sequence_length, 3), dtype=np.float32)
+        spatial_context_points: np.ndarray | None = None
+        spatial_context_center_atom_ids: np.ndarray | None = None
+        spatial_context_center_offsets: np.ndarray | None = None
+        if self.spatial_context_center_count > 0:
+            spatial_context_points = np.empty(
+                (
+                    batch_size,
+                    self.sequence_length,
+                    self.spatial_context_center_count,
+                    self.num_points,
+                    3,
+                ),
+                dtype=np.float32,
+            )
+            spatial_context_center_atom_ids = np.empty(
+                (batch_size, self.sequence_length, self.spatial_context_center_count),
+                dtype=np.int64,
+            )
+            spatial_context_center_offsets = np.empty(
+                (
+                    batch_size,
+                    self.sequence_length,
+                    self.spatial_context_center_count,
+                    3,
+                ),
+                dtype=np.float32,
+            )
         timesteps_batch = np.empty((batch_size, self.sequence_length), dtype=np.int64)
         frame_indices_batch = np.empty((batch_size, self.sequence_length), dtype=np.int64)
         center_atom_ids = np.empty((batch_size,), dtype=np.int64)
@@ -1524,6 +1633,52 @@ class TemporalLAMMPSDumpDataset(Dataset):
                     dtype=np.int64,
                 )
                 center_positions[batch_positions, local_frame_idx] = centers + self.box_low[frame_idx]
+                if spatial_context_points is not None:
+                    assert spatial_context_center_atom_ids is not None
+                    assert spatial_context_center_offsets is not None
+                    context_indices, context_offsets = self._select_spatial_context_center_indices(
+                        frame_idx=frame_idx,
+                        centers=centers,
+                        center_atom_indices=center_atom_indices,
+                        central_neighbor_indices=selected,
+                    )
+                    context_centers = np.asarray(
+                        frame_points[context_indices.reshape(-1)], dtype=np.float32
+                    )
+                    context_neighbor_indices = self._query_local_structures(
+                        frame_idx=frame_idx,
+                        centers=context_centers,
+                    )
+                    context_local_points = self._to_local_coordinates_batch(
+                        frame_idx=frame_idx,
+                        points=np.asarray(
+                            frame_points[context_neighbor_indices], dtype=np.float32
+                        ),
+                        centers=context_centers,
+                    )
+                    if self.normalize:
+                        context_local_points = self._normalize_point_cloud_batch(
+                            context_local_points
+                        ).astype(np.float32, copy=False)
+                    spatial_context_points[batch_positions, local_frame_idx] = (
+                        context_local_points.reshape(
+                            batch_positions.size,
+                            self.spatial_context_center_count,
+                            self.num_points,
+                            3,
+                        )
+                    )
+                    spatial_context_center_atom_ids[batch_positions, local_frame_idx] = (
+                        np.asarray(self.atom_ids[context_indices], dtype=np.int64)
+                    )
+                    normalized_offsets = (
+                        context_offsets
+                        if not self.normalize
+                        else self._normalize_point_cloud_batch(context_offsets)
+                    )
+                    spatial_context_center_offsets[batch_positions, local_frame_idx] = (
+                        normalized_offsets.astype(np.float32, copy=False)
+                    )
 
         batch = {
             "points": torch.from_numpy(sequence_points),
@@ -1538,6 +1693,16 @@ class TemporalLAMMPSDumpDataset(Dataset):
             "anchor_timestep": torch.from_numpy(anchor_timesteps),
             "source_path": [str(self.dump_file)] * batch_size,
         }
+        if spatial_context_points is not None:
+            assert spatial_context_center_atom_ids is not None
+            assert spatial_context_center_offsets is not None
+            batch["spatial_context_points"] = torch.from_numpy(spatial_context_points)
+            batch["spatial_context_center_atom_ids"] = torch.from_numpy(
+                spatial_context_center_atom_ids
+            )
+            batch["spatial_context_center_offsets"] = torch.from_numpy(
+                spatial_context_center_offsets
+            )
         return batch
 
     @staticmethod

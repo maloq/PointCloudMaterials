@@ -45,7 +45,10 @@ encoder:
     enable_ray_head: false
 
 compile_encoder: true
-encoder_compile_mode: reduce-overhead
+# CUDA-graph-oriented reduce-overhead produced call-order-dependent GeoFrame
+# outputs on the H100/PyTorch 2.11 stack. Default compilation retains Inductor
+# acceleration and matches eager execution.
+encoder_compile_mode: default
 encoder_compile_fullgraph: true
 encoder_compile_dynamic: false
 

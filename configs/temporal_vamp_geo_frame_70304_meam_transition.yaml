@@ -1,0 +1,100 @@
+# Event-focused frozen GeoFrameTransformer + linear VAMP experiment.
+# Nucleation time is used only to select a common physical window; labels never enter
+# covariance estimation or the fitted kinetic coordinates.
+output_dir: output/detached/temporal_vamp_geoframe_70304_meam_transition_20260830
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_corrected_h100_20260829_220250/VICREG_GEOFRAME_MULTISCALE_8_16_l128_CORRECTED_H100_N160_M80_GeoFrameTransformer-epoch=159.ckpt
+  representation_source: checkpoint
+
+embedding:
+  device: cuda
+  batch_size: 2048
+  num_workers: 4
+  seed: 123
+  repeats: 1
+
+data:
+  catalog:
+    root: output/synthetic_data
+    campaign_globs:
+      - al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K
+      - al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K
+      - al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827
+      - al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827
+    cache_root: output/temporal_cache/al_unseeded_2nn_meam_70304
+    required_atom_count: 70304
+    required_potential_parameter_sha256: b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a
+    required_crystal_seed: null
+    require_periodic: true
+  radius: 9.192189
+  num_points: 160
+  frame_start: 0
+  frame_stop: null
+  event_window:
+    enabled: true
+    reference: nucleation
+    start_offset_ps: -24.0
+    stop_offset_ps: 96.0
+    clip_to_trajectory: true
+  window_stride: 1
+  normalize: true
+  center_neighborhoods: true
+  selection_method: closest
+  rebuild_cache: false
+  tree_cache_size: 4
+  precompute_neighbor_indices: true
+  center_selection:
+    mode: random_subset
+    atom_ids: null
+    atom_stride: null
+    max_atoms: 128
+    seed: 123
+    grid_overlap: null
+    grid_reference_frame: null
+
+lags:
+  frames: null
+  timesteps: null
+  picoseconds: [3, 6, 12, 24, 48]
+
+split:
+  mode: run
+  train_ratio: 0.7
+  boundary_gap_frames: 0
+  seed: 123
+  group_by: velocity_seed
+  validation_groups: [35869, 35879]
+
+cache:
+  force_recompute: false
+
+vamp:
+  dimensions: [2, 3, 4, 6, 8, 12, 16]
+  regularization: 1.0e-6
+  eigenvalue_cutoff: 1.0e-10
+  covariance_batch_size: 65536
+
+evaluation:
+  seed: 123
+  spectrum_modes: 30
+  plot_max_points: 40000
+  future_neighbors:
+    k: 10
+    max_queries: 5000
+    exclude_same_atom: true
+  future_state:
+    enabled: true
+    clusters: 6
+    max_fit_samples: 100000
+  future_probe:
+    enabled: true
+    max_train_samples: 100000
+  trajectories:
+    atom_ids: null
+    count: 8
+  sanity:
+    enabled: true
+    samples: 64
+    dimension: 6
+    regularizations: [1.0e-8, 1.0e-6, 1.0e-4]

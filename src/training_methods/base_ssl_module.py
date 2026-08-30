@@ -16,6 +16,26 @@ from src.utils.pointcloud_ops import crop_to_num_points
 from src.utils.training_utils import cached_sample_count, get_optimizers_and_scheduler
 
 
+def _validate_encoder_compile_mode(
+    *,
+    encoder_name: str,
+    compile_enabled: bool,
+    compile_mode: str,
+) -> None:
+    if (
+        bool(compile_enabled)
+        and str(encoder_name) == "GeoFrameTransformer"
+        and str(compile_mode) == "reduce-overhead"
+    ):
+        raise ValueError(
+            "encoder_compile_mode='reduce-overhead' is disabled for "
+            "GeoFrameTransformer. Its CUDA-graph path produced call-order-dependent "
+            "encoder outputs on the H100/PyTorch 2.11 stack, including different "
+            "embeddings for identical point clouds before and after warm-up. Use "
+            "encoder_compile_mode='default' or set compile_encoder=false."
+        )
+
+
 class BaseSSLModule(pl.LightningModule):
     """Shared Lightning mechanics for point-cloud SSL modules."""
 
@@ -40,6 +60,13 @@ class BaseSSLModule(pl.LightningModule):
         self._encoder_compile_mode = str(getattr(cfg, "encoder_compile_mode", "default"))
         self._encoder_compile_fullgraph = bool(getattr(cfg, "encoder_compile_fullgraph", False))
         self._encoder_compile_dynamic = bool(getattr(cfg, "encoder_compile_dynamic", False))
+        encoder_cfg = getattr(cfg, "encoder", None)
+        encoder_name = str(getattr(encoder_cfg, "name", ""))
+        _validate_encoder_compile_mode(
+            encoder_name=encoder_name,
+            compile_enabled=self._compile_encoder,
+            compile_mode=self._encoder_compile_mode,
+        )
         if self._compile_encoder:
             self.encoder = torch.compile(
                 self.encoder,
@@ -165,13 +192,30 @@ class BaseSSLModule(pl.LightningModule):
             encoded.invariant,
             encoded.equivariant,
         )
-        features = z_inv_contrastive if z_inv_contrastive is not None else encoded.invariant
-        if features is None:
+        encoder_features = (
+            z_inv_contrastive if z_inv_contrastive is not None else encoded.invariant
+        )
+        if encoder_features is None:
             return None, None
-        return features.detach().to(torch.float32), class_id
+        output_representation = self._output_representation(encoder_features)
+        return output_representation.detach().to(torch.float32), class_id
 
     def _contrastive_invariant_latent(self, z_inv_model, eq_z):
         return self._shared_invariant(z_inv_model, eq_z)
+
+    def _output_representation(self, encoder_features: torch.Tensor) -> torch.Tensor:
+        if self.representation_source == "encoder":
+            return encoder_features
+        if self.representation_source == "vicreg_projector":
+            if self.vicreg.projector is None:
+                raise RuntimeError(
+                    "representation_source='vicreg_projector' requires an active VICReg "
+                    "projector, but this model has no projector."
+                )
+            return self.vicreg(encoder_features)
+        raise AssertionError(
+            f"Unhandled representation_source={self.representation_source!r}."
+        )
 
     def _contrastive_invariant_from_eq_latent(
         self,
@@ -216,6 +260,7 @@ class BaseSSLModule(pl.LightningModule):
         stage: str,
         meta: dict,
         embeddings: torch.Tensor | None,
+        encoder_features: torch.Tensor | None = None,
     ) -> None:
         if embeddings is None:
             return
@@ -228,7 +273,7 @@ class BaseSSLModule(pl.LightningModule):
             stage,
             embeddings,
             meta,
-            encoder_features=embeddings,
+            encoder_features=encoder_features,
         )
 
     def _weighted_total_loss(self, losses: dict[str, torch.Tensor]) -> torch.Tensor:

@@ -1,0 +1,48 @@
+defaults:
+  - vicreg_geo_frame_multiscale_8_16_l128
+  - _self_
+
+# Clean single-H100 retraining after rejecting the numerically incorrect
+# reduce-overhead CUDA-graph execution path. No weights are inherited from the
+# affected GeoFrame runs.
+experiment_name: VICREG_GEOFRAME_MULTISCALE_8_16_l${latent_size}_CORRECTED_H100_N${data.num_points}_M${data.model_points}_${encoder.name}
+init_from_checkpoint: null
+resume_from_checkpoint: null
+
+devices: [0]
+batch_size: 8192
+ddp_find_unused_parameters: false
+
+compile_encoder: true
+encoder_compile_mode: default
+encoder_compile_fullgraph: true
+encoder_compile_dynamic: false
+
+# Use the trained VICReg head consistently for validation and downstream
+# analysis. The head is still applied exactly once by the VICReg objective.
+representation_source: vicreg_projector
+vicreg_projector_mode: mlp
+vicreg_neighbor_view: false
+
+# From-scratch optimization on the full multi-material training split.
+learning_rate: 1.0e-3
+epochs: 240
+warmup_enabled: true
+warmup_epochs: 10
+warmup_start_factor: 0.05
+check_val_every_n_epoch: 10
+checkpoint_monitor: loss/val
+checkpoint_mode: min
+checkpoint_save_top_k: 1
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 10
+
+probe_metric_stages: [val, test]
+probe_k: 7
+probe_best_k_min: 7
+probe_best_k_max: 7
+max_supervised_samples: 8192
+
+seed_everything: 123
+run_post_training_analysis: false
+run_test_after_training: false

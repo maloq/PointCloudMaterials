@@ -1,0 +1,51 @@
+defaults:
+  - vicreg_geo_frame_multiscale_8_16_l128
+  - _self_
+
+# Single-H100 recovery from the strongest no-neighbor GeoFrame checkpoint.
+# This is weights-only initialization: epoch, optimizer, and cosine scheduler
+# state are reset instead of extending the completed 100-epoch schedule.
+experiment_name: VICREG_GEOFRAME_MULTISCALE_8_16_l${latent_size}_RECOVERY_PROJECTED_H100_N${data.num_points}_M${data.model_points}_${encoder.name}
+init_from_checkpoint: output/detached/vicreg_geoframe_20260828_221907/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=91.ckpt
+init_from_checkpoint_strict: true
+resume_from_checkpoint: null
+
+# One 96 GB H100. Lightning interprets batch_size per process, so 8192 on one
+# GPU matches the old successful run's 4096 x 2 global batch.
+devices: [0]
+batch_size: 8192
+ddp_find_unused_parameters: false
+
+# Retain the empirically strong learned head as part of the final
+# representation. Forward inference, validation probes, and later analysis all
+# consume projector(encoder(x)); VICReg training still applies the head once.
+representation_source: vicreg_projector
+vicreg_projector_mode: mlp
+vicreg_neighbor_view: false
+
+# Conservative weights-only fine-tuning schedule. Periodic checkpoints are the
+# source of truth for subsequent static-Al selection; the mixed-material loss
+# checkpoint is retained only as a general training diagnostic.
+learning_rate: 3.0e-4
+epochs: 240
+warmup_enabled: true
+warmup_epochs: 5
+warmup_start_factor: 0.05
+check_val_every_n_epoch: 10
+checkpoint_monitor: loss/val
+checkpoint_mode: min
+checkpoint_save_top_k: 1
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 10
+
+# Projected-space validation diagnostics. This validation split is still
+# multi-material and therefore is not used to select the static-Al checkpoint.
+probe_metric_stages: [val, test]
+probe_k: 7
+probe_best_k_min: 7
+probe_best_k_max: 7
+max_supervised_samples: 8192
+
+seed_everything: 123
+run_post_training_analysis: false
+run_test_after_training: false

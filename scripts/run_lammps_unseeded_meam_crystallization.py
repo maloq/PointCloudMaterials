@@ -342,6 +342,8 @@ print \"UNSEEDED_UNDERCOOLING_EQUILIBRATION_BEGIN\"
 run {settings.equilibration_steps}
 dump trajectory all custom {settings.sample_interval} trajectory.lammpstrj id type x y z
 dump_modify trajectory sort id format line \"%d %d %.9g %.9g %.9g\"
+dump velocities all custom {settings.sample_interval} velocities.lammpstrj id type vx vy vz
+dump_modify velocities sort id format line \"%d %d %.9g %.9g %.9g\"
 print \"UNSEEDED_HOMOGENEOUS_MEASUREMENT_BEGIN\"
 run {settings.measurement_steps}
 print \"UNSEEDED_HOMOGENEOUS_MEASUREMENT_COMPLETE\"
@@ -543,6 +545,75 @@ def _load_full_trace(settings: Settings, replica_dir: Path) -> ThermodynamicTrac
     return trace
 
 
+def _read_lammps_velocities(path: Path) -> tuple[np.ndarray, np.ndarray]:
+    steps: list[int] = []
+    velocities: list[np.ndarray] = []
+    expected_ids = np.arange(1, EXPECTED_ATOM_COUNT + 1, dtype=np.int64)
+    with path.open("r", encoding="utf-8") as handle:
+        while True:
+            marker = handle.readline()
+            if not marker:
+                break
+            if marker != "ITEM: TIMESTEP\n":
+                raise RuntimeError(
+                    f"{path}: expected 'ITEM: TIMESTEP', got {marker.rstrip()!r}."
+                )
+            step = int(handle.readline())
+            if handle.readline() != "ITEM: NUMBER OF ATOMS\n":
+                raise RuntimeError(f"{path}: missing atom-count header at step {step}.")
+            atom_count = int(handle.readline())
+            if atom_count != EXPECTED_ATOM_COUNT:
+                raise RuntimeError(
+                    f"{path}: step {step} has {atom_count} atoms, expected "
+                    f"{EXPECTED_ATOM_COUNT}."
+                )
+            bounds_header = handle.readline()
+            if bounds_header != "ITEM: BOX BOUNDS pp pp pp\n":
+                raise RuntimeError(
+                    f"{path}: unsupported box header at step {step}: "
+                    f"{bounds_header.rstrip()!r}."
+                )
+            bounds = np.asarray(
+                [[float(value) for value in handle.readline().split()] for _ in range(3)],
+                dtype=np.float64,
+            )
+            if bounds.shape != (3, 2) or not np.isfinite(bounds).all():
+                raise RuntimeError(
+                    f"{path}: invalid orthorhombic bounds at step {step}: "
+                    f"shape={bounds.shape}, values={bounds.tolist()}."
+                )
+            atom_header = handle.readline()
+            if atom_header != "ITEM: ATOMS id type vx vy vz\n":
+                raise RuntimeError(
+                    f"{path}: expected velocity columns 'id type vx vy vz' at step "
+                    f"{step}, got {atom_header.rstrip()!r}."
+                )
+            table = np.loadtxt(handle, max_rows=atom_count)
+            if table.shape != (atom_count, 5):
+                raise RuntimeError(
+                    f"{path}: step {step} velocity table has shape {table.shape}, "
+                    f"expected ({atom_count}, 5)."
+                )
+            ids = table[:, 0].astype(np.int64)
+            if not np.array_equal(ids, expected_ids):
+                raise RuntimeError(
+                    f"{path}: atom IDs are not the exact sorted sequence "
+                    f"1..{atom_count} at step {step}."
+                )
+            frame_velocities = table[:, 2:5]
+            if not np.isfinite(frame_velocities).all():
+                bad_indices = np.argwhere(~np.isfinite(frame_velocities))
+                raise RuntimeError(
+                    f"{path}: non-finite velocities at step {step}, indices="
+                    f"{bad_indices[:10].tolist()}."
+                )
+            steps.append(step)
+            velocities.append(frame_velocities.astype(np.float32))
+    if not steps:
+        raise RuntimeError(f"{path}: velocity trajectory contains no frames.")
+    return np.asarray(steps, dtype=np.int64), np.stack(velocities)
+
+
 def _measurement_trace(settings: Settings, full: ThermodynamicTrace) -> ThermodynamicTrace:
     return ThermodynamicTrace(
         step=full.step - settings.equilibration_steps,
@@ -611,6 +682,19 @@ def _analysis_document(
 def analyze(settings: Settings, replica_dir: Path) -> dict[str, object]:
     full = _load_full_trace(settings, replica_dir)
     trace = _measurement_trace(settings, full)
+    velocity_step, velocities_A_per_ps = _read_lammps_velocities(
+        replica_dir / "velocities.lammpstrj"
+    )
+    if not np.array_equal(velocity_step, full.step):
+        raise RuntimeError(
+            f"{replica_dir}: coordinate steps {full.step.tolist()} do not match "
+            f"velocity steps {velocity_step.tolist()}."
+        )
+    if velocities_A_per_ps.shape != trace.positions_A.shape:
+        raise RuntimeError(
+            f"{replica_dir}: velocities_A_per_ps has shape "
+            f"{velocities_A_per_ps.shape}, expected {trace.positions_A.shape}."
+        )
     analysis = analyze_homogeneous_crystallization(
         trace,
         chemical_symbol=CHEMICAL_SYMBOL,
@@ -643,6 +727,7 @@ def analyze(settings: Settings, replica_dir: Path) -> dict[str, object]:
             volume_A3=trace.volume_A3,
             potential_energy_eV_per_atom=trace.potential_energy_eV_per_atom,
             positions_A=trace.positions_A,
+            velocities_A_per_ps=velocities_A_per_ps,
             cell_vectors_A=trace.cell_vectors_A,
         )
     with (replica_dir / "crystallization_progress.npz").open("wb") as handle:

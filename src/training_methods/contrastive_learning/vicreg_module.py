@@ -81,16 +81,17 @@ class VICRegModule(BaseSSLModule):
             encoded.invariant,
             encoded.equivariant,
         )
+        output_representation = self._output_representation(z_inv_contrastive)
         if include_ssl_heads:
             return (
-                z_inv_contrastive,
+                output_representation,
                 encoded.invariant,
                 encoded.equivariant,
                 self._forward_ssl_heads_for_summary(z_inv_contrastive),
             )
         # Forward returns both invariant branches explicitly:
         # (z_inv_contrastive, z_inv_model, eq_z).
-        return z_inv_contrastive, encoded.invariant, encoded.equivariant
+        return output_representation, encoded.invariant, encoded.equivariant
 
     def _step(self, batch, batch_idx, stage: str):
         pc_raw, meta = self._unpack_batch(batch)
@@ -154,8 +155,18 @@ class VICRegModule(BaseSSLModule):
         if self._should_cache_supervised_stage(stage):
             with torch.no_grad():
                 encoded = self.encoder_io.encode(pc)
-                z_inv = self._contrastive_invariant_from_eq_latent(encoded.equivariant, z_inv_model=encoded.invariant, stage=stage)
-            self._cache_supervised_embeddings_if_needed(stage=stage, meta=meta, embeddings=z_inv)
+                encoder_features = self._contrastive_invariant_from_eq_latent(
+                    encoded.equivariant,
+                    z_inv_model=encoded.invariant,
+                    stage=stage,
+                )
+                output_representation = self._output_representation(encoder_features)
+            self._cache_supervised_embeddings_if_needed(
+                stage=stage,
+                meta=meta,
+                embeddings=output_representation,
+                encoder_features=encoder_features,
+            )
 
         return self._finish_ssl_step(stage=stage, batch_idx=batch_idx, batch_size=batch_size, losses=losses)
 
