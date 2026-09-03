@@ -1,6 +1,7 @@
 __all__ = [
     "VICRegModule",
     "VICRegLoss",
+    "FactorVAELoss",
     "SwAVLoss",
 ]
 
@@ -10,6 +11,10 @@ def __getattr__(name):
         from .vicreg_module import VICRegModule
 
         return VICRegModule
+    if name == "FactorVAELoss":
+        from .vicreg_module import FactorVAELoss
+
+        return FactorVAELoss
     if name == "VICRegLoss":
         from .vicreg import VICRegLoss
 

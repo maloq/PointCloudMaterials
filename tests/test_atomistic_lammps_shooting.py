@@ -28,6 +28,32 @@ def test_lammps_command_uses_slurm_pmi_without_hydra(monkeypatch) -> None:
     assert all("mpiexec" not in argument for argument in command)
 
 
+def test_lammps_command_uses_local_mpiexec_outside_slurm(monkeypatch) -> None:
+    monkeypatch.delenv("SLURM_JOB_ID", raising=False)
+    monkeypatch.setattr(
+        "src.data_utils.synthetic.atomistic.lammps_shooting.shutil.which",
+        lambda executable: "/pointnet/bin/mpiexec" if executable == "mpiexec" else None,
+    )
+    command = _lammps_command(mpi_ranks=48, launcher="local_mpiexec")
+    assert command[:5] == [
+        "/pointnet/bin/mpiexec",
+        "-n",
+        "48",
+        "-bind-to",
+        "core",
+    ]
+    assert command[5].endswith("/bin/lmp")
+    assert command[-2:] == ["-in", "in.lammps"]
+
+
+def test_local_mpiexec_refuses_slurm_allocation(monkeypatch) -> None:
+    monkeypatch.setenv("SLURM_JOB_ID", "456")
+    with np.testing.assert_raises_regex(
+        RuntimeError, "refuses to run inside a Slurm allocation"
+    ):
+        _lammps_command(mpi_ranks=48, launcher="local_mpiexec")
+
+
 def test_missing_branch_input_is_reconstructed_from_manifest(tmp_path) -> None:
     branch = {
         "branch_dir": "branches/branch_0002",

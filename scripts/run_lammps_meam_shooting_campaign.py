@@ -17,6 +17,7 @@ from src.data_utils.synthetic.atomistic.lammps_shooting import (  # noqa: E402
     load_shooting_config,
     prepare_campaign,
     run_branch,
+    run_local_campaign,
     submit_next_wave,
     summarize_campaign,
 )
@@ -40,6 +41,9 @@ def _arguments() -> argparse.Namespace:
     submit_wave = subparsers.add_parser("submit-next-wave")
     submit_wave.add_argument("--campaign-root", required=True, type=Path)
     submit_wave.add_argument("--start-index", required=True, type=int)
+    local = subparsers.add_parser("run-local")
+    local.add_argument("--campaign-root", required=True, type=Path)
+    local.add_argument("--start-index", default=0, type=int)
     return parser.parse_args()
 
 
@@ -54,6 +58,8 @@ def main() -> None:
         summarize_campaign(args.campaign_root)
     elif args.action == "submit-next-wave":
         submit_next_wave(args.campaign_root, args.start_index)
+    elif args.action == "run-local":
+        run_local_campaign(args.campaign_root, args.start_index)
     else:
         raise AssertionError(f"Unhandled action {args.action!r}.")
 

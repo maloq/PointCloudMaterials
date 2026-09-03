@@ -18,6 +18,7 @@ def _ensure_registry_loaded() -> None:
         dgcnn,
         egnn_encoder,
         geo_frame_transformer,
+        geo_frame_transformer_v2,
         mace_encoder,
         mlp,
         nequip_encoder,

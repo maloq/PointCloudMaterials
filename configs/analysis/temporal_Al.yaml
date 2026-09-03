@@ -145,8 +145,6 @@ latent_stats:
 figure_set:
   enabled: true
   figure_only: false
-  visible_cluster_sets:
-    - [0, 1, 2, 3, 4, 5]
   color_assignment: {}
   color_assignment_file: null
   profile_point_scale_enabled: false
@@ -159,6 +157,7 @@ figure_set:
     saturation_boost: 1.18
     view_elev: 24.0
     view_azim: 35.0
+    num_views: 2
   icl:
     enabled: false
     k_min: 2
@@ -180,17 +179,17 @@ figure_set:
   raytrace:
     enabled: false
     blender_executable: blender
-    resolution: 1600
+    high_quality: false
+    resolution: 1200
     max_points: null
-    samples: 64
+    samples: 32
+    denoise: true
     projection: perspective
     fov_deg: 34.0
     camera_distance_factor: 2.8
     sphere_radius_fraction: 0.0105
     timeout_sec: 1200
     use_gpu: true
-    parallel_views: false
-    parallel_max_workers: 1
 
 real_md:
   enabled: true

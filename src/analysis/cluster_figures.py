@@ -6,8 +6,6 @@ the top-level orchestrator ``_save_fixed_k_cluster_figure_set``.
 
 from __future__ import annotations
 
-import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -26,9 +24,10 @@ from .cluster_rendering import (
     _save_md_cluster_snapshot,
 )
 from .cluster_blender import (
-    _save_md_cluster_snapshot_raytrace_blender,
+    _save_md_cluster_snapshots_raytrace_blender,
 )
 from .output_layout import write_json
+from .representative_structures import detect_crystal_like_cluster_ids
 
 # Re-export public symbols used by predict_and_visualize.py
 __all__ = [
@@ -74,22 +73,21 @@ def _save_fixed_k_cluster_figure_set(
     representative_center_atom_tolerance: float,
     representative_shell_min_neighbors: int,
     representative_shell_max_neighbors: int,
-    visible_cluster_sets: list[list[int]] | None = None,
     cluster_color_assignment: dict[int, Any] | None = None,
     random_state: int = 42,
     raytrace_render_enabled: bool = False,
     raytrace_blender_executable: str = "blender",
-    raytrace_render_resolution: int = 1600,
+    raytrace_render_resolution: int = 1200,
     raytrace_render_max_points: int | None = None,
-    raytrace_render_samples: int = 64,
+    raytrace_render_samples: int = 32,
+    raytrace_render_denoise: bool = True,
+    raytrace_render_high_quality: bool = False,
     raytrace_render_projection: str = "perspective",
     raytrace_render_fov_deg: float = 34.0,
     raytrace_render_camera_distance_factor: float = 2.8,
     raytrace_render_sphere_radius_fraction: float = 0.0105,
     raytrace_render_timeout_sec: int = 1200,
     raytrace_render_use_gpu: bool = False,
-    raytrace_parallel_views: bool = False,
-    raytrace_parallel_max_workers: int | None = None,
     representative_render_cache: dict[str, Any] | None = None,
     representative_selection_features: np.ndarray | None = None,
     representative_selection_info: dict[str, Any] | None = None,
@@ -102,9 +100,7 @@ def _save_fixed_k_cluster_figure_set(
         "01_md_clusters_all_k*.png",
         "01_md_clusters_all_k*_raytrace.png",
         "01_md_clusters_all_k*_raytrace_gallery.png",
-        "02_md_clusters_set_*_k*.png",
-        "02_md_clusters_set_*_k*_raytrace.png",
-        "02_md_clusters_set_*_k*_raytrace_gallery.png",
+        "02_md_clusters_*_k*.png",
         "03_cluster_count_icl_k*.png",
         "04_cluster_representatives_k*.png",
         "05_cluster_representatives_fcc_shell_k*.png",
@@ -190,6 +186,7 @@ def _save_fixed_k_cluster_figure_set(
         "sphere_radius_fraction": raytrace_render_sphere_radius_fraction,
         "blender_executable": str(raytrace_blender_executable),
         "cycles_samples": raytrace_render_samples,
+        "use_denoise": bool(raytrace_render_denoise),
         "use_gpu": bool(raytrace_render_use_gpu),
         "timeout_seconds": raytrace_render_timeout_sec,
         "wireframe_enabled": True,
@@ -220,9 +217,19 @@ def _save_fixed_k_cluster_figure_set(
         selection_features=representative_selection_features,
         selection_info=representative_selection_info,
     )
+    structure_analysis = panel_reps["structure_analysis"]
+    if structure_analysis is None:
+        raise RuntimeError(
+            "Automatic crystal-like cluster rendering requires representative PTM "
+            "analysis. Set figure_set.representatives.ptm_enabled=true."
+        )
+    crystal_like_cluster_ids = detect_crystal_like_cluster_ids(structure_analysis)
+    print(
+        "[analysis] PTM crystal-like clusters "
+        f"(FCC/HCP/BCC) for k={k_value}: {crystal_like_cluster_ids}"
+    )
 
     raytrace_pending_jobs: list[dict[str, Any]] = []
-    raytrace_parallel_workers_used = 0
 
     def _render_cluster_view(
         *,
@@ -245,81 +252,50 @@ def _save_fixed_k_cluster_figure_set(
             **md_snapshot_kwargs,
         )
         if bool(raytrace_render_enabled):
-            if bool(raytrace_parallel_views):
-                raytrace_pending_jobs.append(
-                    {
-                        "snapshot_path": Path(snapshot_path),
-                        "snapshot_title": str(snapshot_title),
-                        "visible_cluster_ids": (
-                            None
-                            if visible_cluster_ids is None
-                            else [int(v) for v in visible_cluster_ids]
-                        ),
-                        "elev": float(elev),
-                        "azim": float(azim),
-                        "panel_view": panel_view,
-                    }
-                )
-            else:
-                raytrace_path = snapshot_path.with_stem(snapshot_path.stem + "_raytrace")
-                raytrace_info = _save_md_cluster_snapshot_raytrace_blender(
-                    coords_arr,
-                    labels,
-                    color_map,
-                    raytrace_path,
-                    title=snapshot_title,
-                    visible_cluster_ids=visible_cluster_ids,
-                    view_elev=float(elev),
-                    view_azim=float(azim),
-                    **raytrace_render_kwargs,
-                )
-                panel_view["raytrace_render"] = raytrace_info
+            raytrace_pending_jobs.append(
+                {
+                    "out_file": Path(snapshot_path).with_stem(
+                        Path(snapshot_path).stem + "_raytrace"
+                    ),
+                    "title": str(snapshot_title),
+                    "visible_cluster_ids": (
+                        None
+                        if visible_cluster_ids is None
+                        else [int(v) for v in visible_cluster_ids]
+                    ),
+                    "view_elev": float(elev),
+                    "view_azim": float(azim),
+                    "panel_view": panel_view,
+                }
+            )
         panel_view["view_name"] = str(view_name)
         return panel_view
 
-    def _run_pending_parallel_raytrace_jobs() -> None:
-        nonlocal raytrace_parallel_workers_used
+    def _run_pending_raytrace_batch() -> None:
         if not raytrace_pending_jobs:
             return
         if not bool(raytrace_render_enabled):
             raise RuntimeError(
                 "Internal error: pending raytrace jobs exist while raytrace rendering is disabled."
             )
-        requested_workers = raytrace_parallel_max_workers
-        if requested_workers is None:
-            max_workers = min(len(raytrace_pending_jobs), max(1, int(os.cpu_count() or 1)))
-        else:
-            max_workers = int(requested_workers)
-            if max_workers <= 0:
-                raise ValueError(
-                    "raytrace_parallel_max_workers must be a positive integer when provided, "
-                    f"got {requested_workers!r}."
-                )
-            max_workers = min(max_workers, len(raytrace_pending_jobs))
-        raytrace_parallel_workers_used = int(max_workers)
-        with ThreadPoolExecutor(max_workers=int(max_workers)) as executor:
-            future_to_job_idx = {}
-            for job_idx, job in enumerate(raytrace_pending_jobs):
-                raytrace_path = Path(job["snapshot_path"]).with_stem(
-                    Path(job["snapshot_path"]).stem + "_raytrace"
-                )
-                future = executor.submit(
-                    _save_md_cluster_snapshot_raytrace_blender,
-                    coords_arr,
-                    labels,
-                    color_map,
-                    raytrace_path,
-                    title=str(job["snapshot_title"]),
-                    visible_cluster_ids=job["visible_cluster_ids"],
-                    view_elev=float(job["elev"]),
-                    view_azim=float(job["azim"]),
-                    **raytrace_render_kwargs,
-                )
-                future_to_job_idx[future] = int(job_idx)
-            for future in as_completed(future_to_job_idx):
-                job_idx = future_to_job_idx[future]
-                raytrace_info = future.result()
-                raytrace_pending_jobs[job_idx]["panel_view"]["raytrace_render"] = raytrace_info
+        blender_jobs = [
+            {key: value for key, value in job.items() if key != "panel_view"}
+            for job in raytrace_pending_jobs
+        ]
+        raytrace_results = _save_md_cluster_snapshots_raytrace_blender(
+            coords_arr,
+            labels,
+            color_map,
+            blender_jobs,
+            **raytrace_render_kwargs,
+        )
+        if len(raytrace_results) != len(raytrace_pending_jobs):
+            raise RuntimeError(
+                "Blender raytrace batch returned an unexpected result count: "
+                f"expected={len(raytrace_pending_jobs)}, got={len(raytrace_results)}."
+            )
+        for job, raytrace_info in zip(raytrace_pending_jobs, raytrace_results, strict=True):
+            job["panel_view"]["raytrace_render"] = raytrace_info
 
     # -- 01  All-clusters rotation views with optional raytrace ---------------
     all_view_specs = _build_rotation_view_specs(
@@ -348,52 +324,44 @@ def _save_fixed_k_cluster_figure_set(
             panel_all_views.append(panel_view)
         panel_all = panel_all_views[0]
 
-    # -- 02  Selected cluster-subset views ------------------------------------
+    # -- 02  Automatically detected crystal-like cluster views ----------------
 
-    panel_selected_sets: list[dict[str, Any]] = []
-    panel_subset_views_by_set: dict[str, list[dict[str, Any]]] = {}
-    if visible_cluster_sets:
-        for set_idx, id_set in enumerate(visible_cluster_sets):
-            ids = sorted(int(v) for v in id_set)
-            unknown = [c for c in ids if c not in cluster_ids]
-            if unknown:
-                raise ValueError(
-                    f"visible_cluster_sets[{set_idx}] references cluster IDs "
-                    f"{unknown} which do not exist.  Available: {cluster_ids}."
-                )
-            tag = "-".join(str(c) for c in ids)
-            set_title = f"MD space clusters (k={k_value}, clusters {tag})"
-            panel_set_views: list[dict[str, Any]] = []
-            for view_name, elev, azim in all_view_specs:
-                out_name = (
-                    f"02_md_clusters_set_{tag}_k{k_value}.png"
-                    if view_name == "view1"
-                    else f"02_md_clusters_set_{tag}_k{k_value}_{view_name}.png"
-                )
-                set_path = out_dir / out_name
-                panel_view = _render_cluster_view(
-                    snapshot_path=set_path,
-                    snapshot_title=f"{set_title} ({view_name})",
-                    view_name=str(view_name),
-                    elev=float(elev),
-                    azim=float(azim),
-                    visible_cluster_ids=ids,
-                )
-                panel_set_views.append(panel_view)
-            panel_set = dict(panel_set_views[0])
-            panel_set["views"] = panel_set_views
-            panel_set["cluster_ids_shown"] = ids
-            panel_selected_sets.append(panel_set)
-            panel_subset_views_by_set[tag] = panel_set_views
+    panel_crystal_like: dict[str, Any] | None = None
+    panel_crystal_like_views: list[dict[str, Any]] = []
+    if crystal_like_cluster_ids:
+        for view_name, elev, azim in all_view_specs:
+            out_name = (
+                f"02_md_clusters_crystal_like_k{k_value}.png"
+                if view_name == "view1"
+                else f"02_md_clusters_crystal_like_k{k_value}_{view_name}.png"
+            )
+            panel_view = _render_cluster_view(
+                snapshot_path=out_dir / out_name,
+                snapshot_title=(
+                    f"MD space PTM crystal-like clusters "
+                    f"(k={k_value}, {view_name})"
+                ),
+                view_name=str(view_name),
+                elev=float(elev),
+                azim=float(azim),
+                visible_cluster_ids=crystal_like_cluster_ids,
+            )
+            panel_crystal_like_views.append(panel_view)
+        panel_crystal_like = dict(panel_crystal_like_views[0])
+        panel_crystal_like["views"] = panel_crystal_like_views
+        panel_crystal_like["cluster_ids_shown"] = crystal_like_cluster_ids
+    else:
+        print(
+            "[analysis] No PTM crystal-like cluster representatives were detected for "
+            f"k={k_value}; no 02_md_clusters_crystal_like image will be written."
+        )
 
-    if bool(raytrace_render_enabled) and bool(raytrace_parallel_views):
-        _run_pending_parallel_raytrace_jobs()
-        for panel_set in panel_selected_sets:
-            views = panel_set.get("views")
-            if isinstance(views, list) and views:
-                first_view = views[0]
-                if isinstance(first_view, dict) and "raytrace_render" in first_view:
-                    panel_set["raytrace_render"] = first_view["raytrace_render"]
+    if bool(raytrace_render_enabled):
+        _run_pending_raytrace_batch()
+        if panel_crystal_like is not None:
+            panel_crystal_like["raytrace_render"] = panel_crystal_like_views[0][
+                "raytrace_render"
+            ]
 
     # -- 03  ICL curve --------------------------------------------------------
 
@@ -462,8 +430,9 @@ def _save_fixed_k_cluster_figure_set(
         "random_state": int(random_state),
         "panel_all_clusters": panel_all,
         "panel_all_clusters_views": panel_all_views,
-        "panel_selected_sets": panel_selected_sets,
-        "panel_subset_views_by_set": panel_subset_views_by_set,
+        "crystal_like_cluster_ids": crystal_like_cluster_ids,
+        "panel_crystal_like": panel_crystal_like,
+        "panel_crystal_like_views": panel_crystal_like_views,
         "icl_enabled": bool(icl_enabled),
         "panel_icl": panel_icl,
         "panel_representatives": panel_reps,
@@ -488,23 +457,19 @@ def _save_fixed_k_cluster_figure_set(
                 None if raytrace_render_max_points is None else int(raytrace_render_max_points)
             ),
             "samples": int(raytrace_render_samples),
+            "denoise": bool(raytrace_render_denoise),
+            "high_quality": bool(raytrace_render_high_quality),
             "projection": str(raytrace_projection_norm),
             "fov_deg": float(raytrace_render_fov_deg),
             "camera_distance_factor": float(raytrace_render_camera_distance_factor),
             "sphere_radius_fraction": float(raytrace_render_sphere_radius_fraction),
             "timeout_sec": int(raytrace_render_timeout_sec),
             "use_gpu": bool(raytrace_render_use_gpu),
-            "parallel_views": bool(raytrace_parallel_views),
-            "parallel_max_workers": (
-                None
-                if raytrace_parallel_max_workers is None
-                else int(raytrace_parallel_max_workers)
+            "blender_processes_per_snapshot": int(
+                bool(raytrace_render_enabled) and bool(raytrace_pending_jobs)
             ),
-            "parallel_workers_used": int(raytrace_parallel_workers_used),
+            "renders_per_blender_process": int(len(raytrace_pending_jobs)),
         },
-        "visible_cluster_sets": [
-            sorted(int(v) for v in s) for s in (visible_cluster_sets or [])
-        ],
         "icl_curve_raw": {
             int(k): {key: float(val) for key, val in metrics.items()}
             for k, metrics in icl_curve.items()

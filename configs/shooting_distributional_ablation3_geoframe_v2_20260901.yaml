@@ -1,0 +1,42 @@
+# Ranked ablation 3: same invariant context transformer, distributional target.
+output_dir: /home/ids/vmorozov/experiments/shooting_distributional_ablation3_geoframe_v2_20260901
+base_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+device: cuda:0
+
+data:
+  radius: 9.192189
+
+context:
+  radial_scales_angstrom: [3.5, 6.0, 9.192189]
+
+target:
+  horizons_ps: [6, 12, 24]
+  change_pca_dim: 16
+  rff_features_per_bandwidth: 128
+  bandwidth_multipliers: [0.5, 1.0, 2.0]
+  seed: 123
+
+split:
+  selection_source_velocity_seeds: [35863]
+
+model:
+  hidden_dim: 128
+  heads: 4
+  blocks: 2
+  rbf_dim: 16
+  representation_dim: 64
+  dropout: 0.15
+
+training:
+  learning_rate: 0.0005
+  weight_decay: 0.001
+  batch_size: 128
+  maximum_epochs: 1000
+  patience: 120
+  seeds: [11, 22, 33]
+
+evaluation:
+  static_pca_dim: 32
+  neighbors: 10
+  seed: 123

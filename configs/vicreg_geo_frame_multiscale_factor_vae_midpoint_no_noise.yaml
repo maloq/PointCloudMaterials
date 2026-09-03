@@ -1,0 +1,13 @@
+defaults:
+  - vicreg_geo_frame_multiscale_factor_vae_balanced_no_noise
+  - _self_
+
+# Midpoint between the saturated and underfit discriminator experiments.
+# Latent Gaussian instance noise remains explicitly disabled.
+experiment_name: VICREG_G_MULT_8_16_FACTORVAE_MIDPOINT_NO_NOISE_G${factor_vae_gamma}_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+
+factor_vae_discriminator_hidden_dim: 128
+factor_vae_discriminator_num_hidden_layers: 2
+factor_vae_latent_noise_std: 0.0
+factor_vae_discriminator_learning_rate: 3.0e-6
+factor_vae_discriminator_update_interval: 2

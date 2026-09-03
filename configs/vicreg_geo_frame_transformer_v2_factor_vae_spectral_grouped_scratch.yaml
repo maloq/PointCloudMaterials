@@ -1,0 +1,43 @@
+defaults:
+  - vicreg_geo_frame_transformer_v2
+  - _self_
+
+# Train V2 from random initialization. Epochs 0-4 optimize VICReg only;
+# FactorVAE begins at epoch 5 and ramps to its full weight over five epochs.
+experiment_name: GF_V2_FACTOR_SN_GROUPED_SCRATCH_G${factor_vae_gamma}_N${factor_vae_latent_noise_std}_B${batch_size}
+
+load_supervised_checkpoint: null
+init_from_checkpoint: null
+resume_from_checkpoint: null
+
+batch_size: 16384
+epochs: 160
+check_val_every_n_epoch: 5
+checkpoint_monitor: clustering/val_silhouette
+checkpoint_mode: max
+checkpoint_save_top_k: 1
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 20
+run_post_training_analysis: false
+run_test_after_training: false
+
+factor_vae_enabled: true
+factor_vae_gamma: 0.1
+factor_vae_start_epoch: 5
+factor_vae_discriminator_warmup_epochs: 0
+factor_vae_gamma_warmup_epochs: 5
+
+# Each update randomly partitions the 128 projected coordinates into four
+# 32-coordinate groups. A shared spectrally-normalized discriminator evaluates
+# every group through a compact 16-dimensional bottleneck.
+factor_vae_discriminator_spectral_norm: true
+factor_vae_discriminator_coordinate_group_size: 32
+factor_vae_discriminator_bottleneck_dim: 16
+factor_vae_discriminator_hidden_dim: 64
+factor_vae_discriminator_num_hidden_layers: 2
+factor_vae_latent_noise_std: 0.1
+factor_vae_discriminator_learning_rate: 3.0e-6
+factor_vae_discriminator_update_interval: 1
+factor_vae_discriminator_betas: [0.5, 0.9]
+factor_vae_model_gradient_clip_val: 1.0
+factor_vae_discriminator_gradient_clip_val: 1.0

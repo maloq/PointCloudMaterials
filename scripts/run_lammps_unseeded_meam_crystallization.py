@@ -233,11 +233,32 @@ def _lammps_environment() -> dict[str, str]:
 
 
 def _lammps_command(settings: Settings, input_name: str) -> list[str]:
-    mpiexec = Path(sys.prefix) / "bin" / "mpiexec"
     lmp = Path(sys.prefix) / "bin" / "lmp"
-    for path in (mpiexec, lmp):
-        if not path.is_file():
-            raise FileNotFoundError(f"Required pointnet executable is absent: {path}.")
+    if not lmp.is_file():
+        raise FileNotFoundError(f"Required pointnet executable is absent: {lmp}.")
+    if "SLURM_JOB_ID" in os.environ:
+        srun = shutil.which("srun")
+        if srun is None:
+            raise FileNotFoundError(
+                "A Slurm allocation is active but the required srun executable "
+                "is absent from PATH."
+            )
+        return [
+            srun,
+            "--mpi=pmi2",
+            "--nodes=1",
+            f"--ntasks={settings.mpi_ranks}",
+            f"--ntasks-per-node={settings.mpi_ranks}",
+            "--cpus-per-task=1",
+            "--threads-per-core=1",
+            "--cpu-bind=cores",
+            str(lmp),
+            "-in",
+            input_name,
+        ]
+    mpiexec = Path(sys.prefix) / "bin" / "mpiexec"
+    if not mpiexec.is_file():
+        raise FileNotFoundError(f"Required pointnet executable is absent: {mpiexec}.")
     return [
         str(mpiexec),
         "-n",

@@ -1,0 +1,38 @@
+campaign:
+  output_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+  branches_per_parent: 2
+  campaign_seed: 20260901
+  validation_source_velocity_seeds: [35869, 35879]
+
+sources:
+  root: output/synthetic_data
+  campaign_globs:
+    - al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828
+    - al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827
+    - al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827
+  temperatures_K: [400.0, 450.0, 500.0]
+  expected_source_counts:
+    "400": 6
+    "450": 6
+    "500": 8
+  parent_offsets_ps: [-12.0, -3.0]
+
+potential:
+  library_file: datasets/potentials/Lee2003_Al.library.meam
+  parameter_file: datasets/potentials/Lee2003_Al.meam
+  library_sha256: f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e
+  parameter_sha256: b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a
+
+dynamics:
+  timestep_fs: 3.0
+  duration_ps: 48.0
+  sample_interval_steps: 100
+  thermostat_time_fs: 300.0
+
+execution:
+  mpi_ranks: 48
+  launcher: local_mpiexec
+  partition: CPU
+  time_limit: "04:00:00"
+  memory: 24G
+  array_concurrency: 1

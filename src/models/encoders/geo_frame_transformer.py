@@ -17,6 +17,15 @@ from .ri_mae_encoder import (
 )
 
 
+def _relative_frame_products(frames: torch.Tensor) -> torch.Tensor:
+    frames_float = frames.float()
+    return torch.einsum(
+        "bgca,bhcd->bghad",
+        frames_float,
+        frames_float,
+    )
+
+
 class PatchPointEncoder(nn.Module):
     """Batch-independent point MLP for one patch scale."""
 
@@ -164,10 +173,7 @@ class PairwisePatchGeometryBias(nn.Module):
         confidence_j = confidence.float().unsqueeze(1)
         pair_confidence = torch.sqrt((confidence_i * confidence_j).clamp_min(0.0))
 
-        relative_frame = torch.matmul(
-            frames.float().unsqueeze(2).transpose(-1, -2),
-            frames.float().unsqueeze(1),
-        ).reshape(*delta.shape[:3], 9)
+        relative_frame = _relative_frame_products(frames).reshape(*delta.shape[:3], 9)
         geometry = torch.cat(
             [
                 rbf,
@@ -182,7 +188,6 @@ class PairwisePatchGeometryBias(nn.Module):
         )
         geometry = geometry.to(dtype=self.mlp[0].weight.dtype)
         bias = self.mlp(geometry).permute(0, 3, 1, 2).contiguous()
-        bias = bias - bias.mean(dim=-1, keepdim=True)
         return bias * self.scale.to(dtype=bias.dtype)
 
 
@@ -205,13 +210,14 @@ class RelativeFrameOrientationBias(nn.Module):
         confidence: torch.Tensor,
     ) -> torch.Tensor:
         del centers, confidence
-        relative_frame = torch.matmul(
-            frames.float().unsqueeze(2).transpose(-1, -2),
-            frames.float().unsqueeze(1),
-        ).reshape(frames.shape[0], frames.shape[1], frames.shape[1], 9)
+        relative_frame = _relative_frame_products(frames).reshape(
+            frames.shape[0],
+            frames.shape[1],
+            frames.shape[1],
+            9,
+        )
         relative_frame = relative_frame.to(dtype=self.mlp[0].weight.dtype)
         bias = self.mlp(relative_frame).permute(0, 3, 1, 2).contiguous()
-        bias = bias - bias.mean(dim=-1, keepdim=True)
         return bias * self.scale.to(dtype=bias.dtype)
 
 
@@ -416,23 +422,36 @@ class GeoFrameTokenEncoder(nn.Module):
             confidence.to(device=neighborhood.device, dtype=neighborhood.dtype),
         )
 
-    def prepare_tokens(
+    def _prepare_tokens(
         self,
         neighborhood: torch.Tensor,
         centers: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor | None, dict[str, torch.Tensor]]:
+        *,
+        return_state: bool,
+    ) -> tuple[
+        torch.Tensor,
+        torch.Tensor | None,
+        dict[str, torch.Tensor],
+    ]:
         frames, confidence = self._frames_and_confidence(neighborhood)
-        frame_weight = (
-            self.frame_confidence_floor
-            + (1.0 - self.frame_confidence_floor) * confidence
-            if self.use_frame_gating
-            else torch.ones_like(confidence)
+        if self.use_frame_gating:
+            frame_weight = self.frame_confidence_floor + (
+                1.0 - self.frame_confidence_floor
+            ) * confidence
+            frame_weight_token = frame_weight.unsqueeze(-1)
+        else:
+            frame_weight = torch.ones_like(confidence) if return_state else None
+            frame_weight_token = None
+
+        canonical_neighborhood = torch.einsum(
+            "bgsc,bgcd->bgsd",
+            neighborhood,
+            frames,
         )
-        frame_weight_token = frame_weight.unsqueeze(-1)
         scale_tokens = []
         for scale_index, patch_size in enumerate(self.patch_sizes):
             patch = neighborhood[:, :, :patch_size]
-            canonical = torch.einsum("bgsc,bgcd->bgsd", patch, frames)
+            canonical = canonical_neighborhood[:, :, :patch_size]
             canonical_token = self.patch_projections[scale_index](
                 self.patch_encoders[scale_index](canonical)
             )
@@ -451,18 +470,28 @@ class GeoFrameTokenEncoder(nn.Module):
 
         local_centers = torch.einsum("bgc,bgcd->bgd", centers, frames)
         frame_position = self.pos_embed(local_centers)
-        center_radius = torch.linalg.vector_norm(centers.float(), dim=-1, keepdim=True).to(
-            dtype=centers.dtype
-        )
-        radial_position_tokens = self.radial_position(center_radius)
-        position_tokens = (
-            frame_weight_token * frame_position
-            + (1.0 - frame_weight_token) * radial_position_tokens
-        )
+        radial_position_tokens = None
+        if self.use_frame_gating or return_state:
+            center_radius = torch.linalg.vector_norm(
+                centers.float(),
+                dim=-1,
+                keepdim=True,
+            ).to(dtype=centers.dtype)
+            radial_position_tokens = self.radial_position(center_radius)
+        if self.use_frame_gating:
+            position_tokens = (
+                frame_weight_token * frame_position
+                + (1.0 - frame_weight_token) * radial_position_tokens
+            )
+        else:
+            position_tokens = frame_position
         encoder_input = patch_tokens + position_tokens
         attention_bias = self.build_attention_bias(centers, frames, confidence)
         if attention_bias is not None:
             attention_bias = attention_bias.to(dtype=encoder_input.dtype)
+        if not return_state:
+            return encoder_input, attention_bias, {}
+
         state = {
             "centers": centers,
             "frames": frames,
@@ -471,6 +500,18 @@ class GeoFrameTokenEncoder(nn.Module):
             "position_tokens": position_tokens,
             "radial_position_tokens": radial_position_tokens,
         }
+        return encoder_input, attention_bias, state
+
+    def prepare_tokens(
+        self,
+        neighborhood: torch.Tensor,
+        centers: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor | None, dict[str, torch.Tensor]]:
+        encoder_input, attention_bias, state = self._prepare_tokens(
+            neighborhood,
+            centers,
+            return_state=True,
+        )
         return encoder_input, attention_bias, state
 
     def build_attention_bias(
@@ -492,6 +533,18 @@ class GeoFrameTokenEncoder(nn.Module):
         tokens = self.transformer(encoder_input, attention_bias)
         state["tokens"] = tokens
         return tokens, state
+
+    def encode_grouped_features(
+        self,
+        neighborhood: torch.Tensor,
+        centers: torch.Tensor,
+    ) -> torch.Tensor:
+        encoder_input, attention_bias, _ = self._prepare_tokens(
+            neighborhood,
+            centers,
+            return_state=False,
+        )
+        return self.transformer(encoder_input, attention_bias)
 
 
 @register_encoder("GeoFrameTransformer")
@@ -694,15 +747,30 @@ class GeoFrameTransformerEncoder(Encoder):
             points = points - points.mean(dim=1, keepdim=True)
         return points
 
-    def forward(self, points: torch.Tensor):
+    def _pool_tokens(self, tokens: torch.Tensor) -> torch.Tensor:
+        if self.pool is None:
+            return 0.5 * (tokens.max(dim=1).values + tokens.mean(dim=1))
+        return self.pool(tokens)
+
+    def forward_features(self, points: torch.Tensor) -> torch.Tensor:
+        centered = self._center_points(points)
+        neighborhood, centers = self.token_encoder.group_points(centered)
+        tokens = self.token_encoder.encode_grouped_features(neighborhood, centers)
+        return self._pool_tokens(tokens)
+
+    def forward_with_state(
+        self,
+        points: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
         centered = self._center_points(points)
         neighborhood, centers = self.token_encoder.group_points(centered)
         tokens, state = self.token_encoder.encode_grouped(neighborhood, centers)
-        if self.pool is None:
-            features = 0.5 * (tokens.max(dim=1).values + tokens.mean(dim=1))
-        else:
-            features = self.pool(tokens)
-        return features, state
+        return self._pool_tokens(tokens), state
+
+    def forward(self, points: torch.Tensor):
+        if not self.enable_ray_head and not self.enable_masked_token_objective:
+            return self.forward_features(points), {}
+        return self.forward_with_state(points)
 
     def directional_features_from_geometry(
         self,

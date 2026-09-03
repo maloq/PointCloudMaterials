@@ -30,21 +30,6 @@ def crop_to_num_points(points: torch.Tensor, num_points: int | None) -> torch.Te
     return points.gather(1, indices.unsqueeze(-1).expand(-1, -1, 3))
 
 
-def crop_to_num_points_with_indices(
-    points: torch.Tensor,
-    num_points: int | None,
-) -> tuple[torch.Tensor, torch.Tensor]:
-    """Keep points nearest the origin and return their input indices."""
-    if points.dim() != 3 or points.size(-1) != 3:
-        raise ValueError(f"points must have shape (B, N, 3), got {tuple(points.shape)}")
-    batch_size, input_points, _ = points.shape
-    indices = _crop_to_num_points_indices(points, num_points)
-    if indices is None:
-        indices = torch.arange(input_points, device=points.device).unsqueeze(0).expand(batch_size, -1)
-        return points, indices
-    return points.gather(1, indices.unsqueeze(-1).expand(-1, -1, 3)), indices
-
-
 def shift_to_neighbor(
     points: torch.Tensor,
     *,
@@ -52,21 +37,6 @@ def shift_to_neighbor(
     max_relative_distance: float,
 ) -> torch.Tensor:
     """Shift each point cloud to a configured near-origin neighbor."""
-    shifted, _ = shift_to_neighbor_with_indices(
-        points,
-        neighbor_k=neighbor_k,
-        max_relative_distance=max_relative_distance,
-    )
-    return shifted
-
-
-def shift_to_neighbor_with_indices(
-    points: torch.Tensor,
-    *,
-    neighbor_k: int,
-    max_relative_distance: float,
-) -> tuple[torch.Tensor, torch.Tensor]:
-    """Shift point clouds and return the selected point index per sample."""
     if points.dim() != 3 or points.size(-1) != 3:
         raise ValueError(f"points must have shape (B, N, 3), got {tuple(points.shape)}")
     batch_size, input_points, _ = points.shape
@@ -119,4 +89,4 @@ def shift_to_neighbor_with_indices(
             f"points_shape={tuple(points.shape)}, neighbor_k={neighbor_k}, "
             f"max_relative_distance={max_relative_distance}."
         )
-    return points - offsets.unsqueeze(1), neighbor_index
+    return points - offsets.unsqueeze(1)

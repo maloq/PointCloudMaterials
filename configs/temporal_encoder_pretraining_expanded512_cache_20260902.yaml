@@ -1,0 +1,40 @@
+output_dir: /home/ids/vmorozov/experiments/temporal_encoder_pretraining_expanded512_cache_20260902
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 4096
+  environment_batch_size: 2
+  environment_num_workers: 8
+
+ordinary:
+  center_atom_reference_cache: /home/ids/vmorozov/experiments/predictive_atlas_expanded512_cache_geoframe_v2_20260902/embeddings
+  horizons_ps: [6, 12, 24]
+  # 3 ps stored frames; stride 4 gives 12 ps-spaced overlapping anchors.
+  anchor_stride_frames: 4
+  trajectory_cache_size: 2
+  included_velocity_seeds: [35803, 35831, 35839, 35851, 35863, 35897]
+  expected_run_count: 18
+  catalog:
+    root: output/synthetic_data
+    campaign_globs:
+      - al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828
+      - al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827
+      - al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827
+    cache_root: output/temporal_cache/al_unseeded_2nn_meam_70304
+    required_atom_count: 70304
+    required_potential_parameter_sha256: b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a
+    required_crystal_seed: null
+    require_periodic: true
+
+data:
+  radius: 9.192189
+  num_points: 160
+  steinhardt_shell_min_neighbors: 8
+  steinhardt_shell_max_neighbors: 24
+
+cache:
+  force_recompute: false

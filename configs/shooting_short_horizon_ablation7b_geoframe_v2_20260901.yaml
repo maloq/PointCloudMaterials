@@ -1,0 +1,86 @@
+# Short-horizon control for ablation 7. The 0.3--3 ps targets span one to ten
+# Langevin damping times and therefore test the velocity pathway before the
+# 6--24 ps structural-propensity benchmark forgets its initial momentum.
+output_dir: /home/ids/vmorozov/experiments/shooting_short_horizon_ablation7b_geoframe_v2_20260901
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 2048
+  environment_batch_size: 2
+  environment_num_workers: 4
+
+initialization:
+  ordinary_pretrained_backbones: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/ordinary_pretrained_backbones.pt
+
+shooting:
+  reference_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+  context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+  dynamical_feature_cache: /home/ids/vmorozov/experiments/shooting_dynamical_ablation7_geoframe_v2_20260901/dynamical_features
+
+data:
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+  temperatures_K: [400, 450, 500]
+  minimum_complete_branches_per_parent: 11
+  expected_parent_count: 40
+  expected_branch_count: 440
+  center_atom_count: 64
+  center_selection_seed: 123
+  radius: 9.192189
+  num_points: 160
+
+context:
+  radial_scales_angstrom: [3.5, 6.0, 9.192189]
+
+target:
+  horizons_ps: [0.3, 0.6, 1.2, 3.0]
+  change_pca_dim: 16
+  rff_features_per_bandwidth: 128
+  bandwidth_multipliers: [0.5, 1.0, 2.0]
+  seed: 123
+
+split:
+  selection_source_velocity_seeds: [35863]
+
+model:
+  hidden_dim: 128
+  heads: 4
+  blocks: 2
+  rbf_dim: 16
+  representation_dim: 64
+  dropout: 0.15
+
+training:
+  learning_rate: 0.0005
+  weight_decay: 0.001
+  batch_size: 128
+  maximum_epochs: 1000
+  patience: 120
+  seeds: [11, 22, 33]
+
+ridge:
+  velocity_pca_dimensions: [8, 16, 32, 64, 75]
+  ballistic_pca_dimensions: [8, 16, 32, 64, 128, 256]
+  alphas: [0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]
+
+evaluation:
+  static_pca_dim: 32
+  neighbors: 10
+  seed: 123
+
+outcomes:
+  path: /home/ids/vmorozov/experiments/shooting_short_horizon_ablation7b_geoframe_v2_20260901/endpoint_outcomes
+  persistence_frames: 3
+  ptm_rmsd_cutoff: 0.10
+  crystal_cluster_threshold_atoms: 100
+  maximum_liquid_crystalline_fraction: 0.01
+  workers: 16
+
+cache:
+  force_recompute: false

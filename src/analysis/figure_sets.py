@@ -162,44 +162,8 @@ def _build_unique_snapshot_output_names(source_names: list[str]) -> dict[str, st
     return output_names
 
 
-def _resolve_visible_cluster_sets_for_labels(
-    labels: np.ndarray,
-    visible_cluster_sets: list[list[int]] | None,
-    *,
-    context: str,
-) -> list[list[int]] | None:
-    if not visible_cluster_sets:
-        return None
-
-    available = {
-        int(v)
-        for v in np.unique(np.asarray(labels, dtype=int).reshape(-1))
-        if int(v) >= 0
-    }
-    resolved: list[list[int]] = []
-    for set_idx, cluster_set in enumerate(visible_cluster_sets):
-        normalized = [int(v) for v in cluster_set]
-        present = [cluster_id for cluster_id in normalized if cluster_id in available]
-        missing = [cluster_id for cluster_id in normalized if cluster_id not in available]
-        if missing and present:
-            print(
-                f"[analysis] {context}: visible_cluster_sets[{set_idx}] "
-                f"drops missing cluster IDs {missing}; using {present}."
-            )
-        elif missing:
-            print(
-                f"[analysis] {context}: skipping visible_cluster_sets[{set_idx}]={normalized} "
-                "because none of those clusters are present in this snapshot."
-            )
-        if present:
-            resolved.append(present)
-    return resolved or None
-
-
 def _save_snapshot_raytrace_galleries_by_view(
     snapshot_figure_sets: dict[str, Any],
-    *,
-    requested_visible_cluster_sets: list[list[int]] | None,
 ) -> dict[str, Any]:
     snapshots = list(snapshot_figure_sets.get("snapshots") or [])
     if not snapshots:
@@ -217,7 +181,7 @@ def _save_snapshot_raytrace_galleries_by_view(
     stale_paths: set[Path] = set()
     for pattern in (
         "01_md_clusters_all_k*_view*_raytrace_gallery.png",
-        "02_md_clusters_set_*_k*_view*_raytrace_gallery.png",
+        "02_md_clusters_*_k*_view*_raytrace_gallery.png",
     ):
         stale_paths.update(gallery_root.glob(pattern))
     for stale_path in stale_paths:
@@ -271,117 +235,6 @@ def _save_snapshot_raytrace_galleries_by_view(
             "output_name": output_name,
         }
 
-    def _get_subset_views_by_set(
-        figure_set_info: dict[str, Any],
-        *,
-        context: str,
-    ) -> dict[str, list[dict[str, Any]]]:
-        subset_views = figure_set_info.get("panel_subset_views_by_set")
-        if subset_views is not None:
-            if not isinstance(subset_views, dict):
-                raise RuntimeError(
-                    f"{context}: panel_subset_views_by_set must be a dict, "
-                    f"got {type(subset_views)!r}."
-                )
-            return subset_views
-
-        selected_sets = figure_set_info.get("panel_selected_sets")
-        if not isinstance(selected_sets, list):
-            return {}
-
-        derived: dict[str, list[dict[str, Any]]] = {}
-        for set_idx, panel_set in enumerate(selected_sets):
-            if not isinstance(panel_set, dict):
-                raise RuntimeError(
-                    f"{context}: panel_selected_sets[{set_idx}] must be a dict, "
-                    f"got {type(panel_set)!r}."
-                )
-            cluster_ids_shown = panel_set.get("cluster_ids_shown")
-            views = panel_set.get("views")
-            if not isinstance(cluster_ids_shown, list):
-                raise RuntimeError(
-                    f"{context}: panel_selected_sets[{set_idx}] is missing "
-                    "'cluster_ids_shown' list."
-                )
-            if not isinstance(views, list):
-                raise RuntimeError(
-                    f"{context}: panel_selected_sets[{set_idx}] is missing 'views' list."
-                )
-            tag = "-".join(str(int(v)) for v in cluster_ids_shown)
-            derived[tag] = views
-        return derived
-
-    def _resolve_snapshot_subset_views(
-        snapshot_entry: dict[str, Any],
-        *,
-        requested_cluster_ids: list[int],
-    ) -> dict[str, Any] | None:
-        identity = _snapshot_identity(snapshot_entry)
-        figure_set_info = snapshot_entry.get("figure_set")
-        if not isinstance(figure_set_info, dict):
-            raise RuntimeError(
-                f"Snapshot {identity['source_name']} is missing figure_set metadata."
-            )
-        subset_views = _get_subset_views_by_set(
-            figure_set_info,
-            context=f"snapshot={identity['source_name']}",
-        )
-        requested_tag = "-".join(str(int(v)) for v in requested_cluster_ids)
-        resolved_cluster_ids = [int(v) for v in requested_cluster_ids]
-        resolved_tag = requested_tag
-        set_views = subset_views.get(resolved_tag)
-        if set_views is None:
-            cluster_ids_raw = figure_set_info.get("cluster_ids")
-            if not isinstance(cluster_ids_raw, list):
-                raise RuntimeError(
-                    f"snapshot={identity['source_name']}: figure_set.cluster_ids must be a list, "
-                    f"got {type(cluster_ids_raw)!r}."
-                )
-            available_cluster_ids = {int(v) for v in cluster_ids_raw}
-            resolved_cluster_ids = [
-                cluster_id
-                for cluster_id in requested_cluster_ids
-                if cluster_id in available_cluster_ids
-            ]
-            missing_cluster_ids = [
-                cluster_id
-                for cluster_id in requested_cluster_ids
-                if cluster_id not in available_cluster_ids
-            ]
-            if not resolved_cluster_ids:
-                print(
-                    f"[analysis] snapshot={identity['source_name']}: skipping raytrace gallery "
-                    f"for requested cluster set {requested_cluster_ids} because none of those "
-                    "clusters are present in this snapshot."
-                )
-                return None
-            resolved_tag = "-".join(str(int(v)) for v in resolved_cluster_ids)
-            set_views = subset_views.get(resolved_tag)
-            if set_views is None:
-                raise RuntimeError(
-                    f"snapshot={identity['source_name']}: requested cluster set "
-                    f"{requested_cluster_ids} resolves to {resolved_cluster_ids}, but subset "
-                    f"view metadata for tag {resolved_tag!r} is missing. "
-                    f"Available subset tags={sorted(subset_views)}."
-                )
-            print(
-                f"[analysis] snapshot={identity['source_name']}: raytrace gallery for requested "
-                f"cluster set {requested_cluster_ids} uses resolved cluster IDs "
-                f"{resolved_cluster_ids}; absent cluster IDs={missing_cluster_ids}."
-            )
-        view_lookup = _build_view_lookup(
-            set_views,
-            context=(
-                f"snapshot={identity['source_name']} panel_subset_views_by_set[{resolved_tag}]"
-            ),
-        )
-        return {
-            "identity": identity,
-            "resolved_cluster_ids": resolved_cluster_ids,
-            "resolved_tag": resolved_tag,
-            "view_lookup": view_lookup,
-        }
-
     first_identity = _snapshot_identity(snapshots[0])
     first_figure_set = snapshots[0].get("figure_set")
     if not isinstance(first_figure_set, dict):
@@ -402,7 +255,11 @@ def _save_snapshot_raytrace_galleries_by_view(
         "gallery_root": str(gallery_root),
         "k_value": k_value,
         "all_clusters": [],
-        "visible_cluster_sets": [],
+        "crystal_like": {
+            "ptm_structure_types": ["FCC", "HCP", "BCC"],
+            "snapshots": [],
+            "views": [],
+        },
     }
 
     for view_name in ordered_view_names:
@@ -446,98 +303,78 @@ def _save_snapshot_raytrace_galleries_by_view(
             }
         )
 
-    for cluster_set in requested_visible_cluster_sets or []:
-        requested_cluster_ids = [int(v) for v in cluster_set]
-        tag = "-".join(str(int(v)) for v in requested_cluster_ids)
-        resolved_snapshot_sets: list[dict[str, Any]] = []
-        skip_requested_set = False
-        for snapshot_entry in snapshots:
-            resolved_snapshot = _resolve_snapshot_subset_views(
-                snapshot_entry,
-                requested_cluster_ids=requested_cluster_ids,
-            )
-            if resolved_snapshot is None:
-                skip_requested_set = True
-                break
-            resolved_snapshot_sets.append(resolved_snapshot)
-        if skip_requested_set:
-            continue
-        subset_view_names = list(ordered_view_names)
-        if not subset_view_names:
-            subset_view_names = list(resolved_snapshot_sets[0]["view_lookup"].keys())
-        if not subset_view_names:
-            raise RuntimeError(
-                f"Cannot determine subset raytrace views for requested cluster set "
-                f"{requested_cluster_ids}."
-            )
-        per_view_entries: list[dict[str, Any]] = []
-        for view_name in subset_view_names:
-            panel_paths = []
-            panel_titles = []
-            resolved_cluster_ids_by_snapshot: list[dict[str, Any]] = []
-            for resolved_snapshot in resolved_snapshot_sets:
-                identity = resolved_snapshot["identity"]
-                view_lookup = resolved_snapshot["view_lookup"]
-                if view_name not in view_lookup:
-                    raise RuntimeError(
-                        f"snapshot={identity['source_name']}: missing subset view {view_name!r} "
-                        f"for requested cluster set {requested_cluster_ids}. "
-                        f"Resolved cluster IDs={resolved_snapshot['resolved_cluster_ids']}. "
-                        f"Available views={list(view_lookup)}."
-                    )
-                panel_paths.append(
-                    _extract_raytrace_path(
-                        view_lookup[view_name],
+    rendered_crystal_snapshots: list[dict[str, Any]] = []
+    for snapshot_entry in snapshots:
+        identity = _snapshot_identity(snapshot_entry)
+        figure_set_info = snapshot_entry["figure_set"]
+        crystal_ids = [int(v) for v in figure_set_info["crystal_like_cluster_ids"]]
+        snapshot_record = {
+            **identity,
+            "cluster_ids": crystal_ids,
+            "rendered": bool(crystal_ids),
+        }
+        summary["crystal_like"]["snapshots"].append(snapshot_record)
+        if crystal_ids:
+            rendered_crystal_snapshots.append(
+                {
+                    "identity": identity,
+                    "cluster_ids": crystal_ids,
+                    "view_lookup": _build_view_lookup(
+                        figure_set_info["panel_crystal_like_views"],
                         context=(
                             f"snapshot={identity['source_name']} "
-                            f"requested_cluster_set={requested_cluster_ids} "
-                            f"resolved_cluster_set={resolved_snapshot['resolved_cluster_ids']} "
-                            f"view={view_name}"
+                            "panel_crystal_like_views"
                         ),
-                    )
-                )
-                panel_titles.append(identity["output_name"])
-                resolved_cluster_ids_by_snapshot.append(
-                    {
-                        "source_name": identity["source_name"],
-                        "output_name": identity["output_name"],
-                        "cluster_ids": [
-                            int(v) for v in resolved_snapshot["resolved_cluster_ids"]
-                        ],
-                    }
-                )
-
-            out_file = (
-                gallery_root / f"02_md_clusters_set_{tag}_k{k_value}_{view_name}_raytrace_gallery.png"
-            )
-            _save_horizontal_image_gallery(
-                panel_paths,
-                out_file=out_file,
-                panel_titles=panel_titles,
-            )
-            per_view_entries.append(
-                {
-                    "cluster_ids": [int(v) for v in requested_cluster_ids],
-                    "view_name": view_name,
-                    "out_file": str(out_file),
-                    "panel_titles": panel_titles,
-                    "resolved_cluster_ids_by_snapshot": resolved_cluster_ids_by_snapshot,
+                    ),
                 }
             )
-        summary["visible_cluster_sets"].append(
+
+    for view_name in ordered_view_names:
+        if not rendered_crystal_snapshots:
+            break
+        panel_paths: list[Path] = []
+        panel_titles: list[str] = []
+        cluster_ids_by_snapshot: list[dict[str, Any]] = []
+        for crystal_snapshot in rendered_crystal_snapshots:
+            identity = crystal_snapshot["identity"]
+            view_lookup = crystal_snapshot["view_lookup"]
+            if view_name not in view_lookup:
+                raise RuntimeError(
+                    f"snapshot={identity['source_name']}: missing crystal-like view "
+                    f"{view_name!r}. Available views={list(view_lookup)}."
+                )
+            panel_paths.append(
+                _extract_raytrace_path(
+                    view_lookup[view_name],
+                    context=(
+                        f"snapshot={identity['source_name']} "
+                        f"crystal_like_clusters={crystal_snapshot['cluster_ids']} "
+                        f"view={view_name}"
+                    ),
+                )
+            )
+            panel_titles.append(identity["output_name"])
+            cluster_ids_by_snapshot.append(
+                {
+                    **identity,
+                    "cluster_ids": crystal_snapshot["cluster_ids"],
+                }
+            )
+
+        out_file = gallery_root / (
+            f"02_md_clusters_crystal_like_k{k_value}_{view_name}_raytrace_gallery.png"
+        )
+        _save_horizontal_image_gallery(
+            panel_paths,
+            out_file=out_file,
+            panel_titles=panel_titles,
+        )
+        summary["crystal_like"]["views"].append(
             {
-                "cluster_ids": [int(v) for v in requested_cluster_ids],
-                "resolved_cluster_ids_by_snapshot": [
-                    {
-                        "source_name": resolved_snapshot["identity"]["source_name"],
-                        "output_name": resolved_snapshot["identity"]["output_name"],
-                        "cluster_ids": [
-                            int(v) for v in resolved_snapshot["resolved_cluster_ids"]
-                        ],
-                    }
-                    for resolved_snapshot in resolved_snapshot_sets
-                ],
-                "views": per_view_entries,
+                "view_name": view_name,
+                "out_file": str(out_file),
+                "panel_titles": panel_titles,
+                "cluster_ids_by_snapshot": cluster_ids_by_snapshot,
             }
         )
     return summary
@@ -635,8 +472,6 @@ def render_cluster_figure_outputs(
     representative_selection_features: np.ndarray | None = None,
     representative_selection_info: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
-    visible_cluster_sets_unset = object()
-
     def _run_figure_set(
         labels_subset: np.ndarray,
         *,
@@ -645,7 +480,6 @@ def render_cluster_figure_outputs(
         latents_override: np.ndarray | None = None,
         coords_override: np.ndarray | None = None,
         cluster_color_assignment_override: dict[int, int | str] | None = None,
-        visible_cluster_sets_override: Any = visible_cluster_sets_unset,
         representative_render_cache_override: dict[str, Any] | None = None,
         representative_selection_features_override: np.ndarray | None = None,
         include_all_cluster_panels_override: bool | None = None,
@@ -665,8 +499,6 @@ def render_cluster_figure_outputs(
             run_kwargs["coords"] = coords_override
         if cluster_color_assignment_override is not None:
             run_kwargs["cluster_color_assignment"] = cluster_color_assignment_override
-        if visible_cluster_sets_override is not visible_cluster_sets_unset:
-            run_kwargs["visible_cluster_sets"] = visible_cluster_sets_override
         if representative_render_cache_override is not None:
             run_kwargs["representative_render_cache"] = representative_render_cache_override
         if representative_selection_features_override is not None:
@@ -723,10 +555,7 @@ def render_cluster_figure_outputs(
     snapshot_summary: dict[str, Any] = {
         "root_dir": str(snapshot_root),
         "k_value": int(figure_settings.k),
-        "requested_visible_cluster_sets": [
-            sorted(int(v) for v in cluster_set)
-            for cluster_set in (figure_settings.visible_cluster_sets or [])
-        ],
+        "crystal_like_detection": "representative_center_ptm_fcc_hcp_bcc",
         "snapshots": [],
     }
     ordered_snapshot_groups = list(snapshot_layout.source_groups)
@@ -759,11 +588,6 @@ def render_cluster_figure_outputs(
             dataset_obj,
             [int(v) for v in indices.tolist()],
         )
-        snapshot_visible_sets = _resolve_visible_cluster_sets_for_labels(
-            labels_for_k[indices],
-            figure_settings.visible_cluster_sets,
-            context=f"snapshot={source_name}",
-        )
         figure_info = _run_figure_set(
             labels_for_k[indices],
             figure_out_dir=snapshot_dir,
@@ -771,7 +595,6 @@ def render_cluster_figure_outputs(
             latents_override=latents[indices],
             coords_override=coords[indices],
             cluster_color_assignment_override=global_color_map,
-            visible_cluster_sets_override=snapshot_visible_sets,
             representative_selection_features_override=(
                 None
                 if representative_selection_features is None
@@ -790,7 +613,6 @@ def render_cluster_figure_outputs(
     if bool(figure_settings.raytrace_enabled):
         snapshot_summary["raytrace_galleries_by_view"] = _save_snapshot_raytrace_galleries_by_view(
             snapshot_summary,
-            requested_visible_cluster_sets=figure_settings.visible_cluster_sets,
         )
     return None, snapshot_summary
 
@@ -854,12 +676,13 @@ def print_figure_set_summary(
             if fs.get("panel_all_clusters_views"):
                 print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}[_view*]_raytrace.png")
                 print(f"  - cluster_figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}_raytrace_gallery.png")
-        for s in fs.get("visible_cluster_sets", []):
-            tag = "-".join(str(c) for c in s)
-            print(f"  - cluster_figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}[_view*].png")
+        if fs.get("crystal_like_cluster_ids"):
+            print(
+                f"  - cluster_figure_set_k{k_fig}/"
+                f"02_md_clusters_crystal_like_k{k_fig}[_view*].png"
+            )
             if raytrace_on:
-                print(f"  - ..._{tag}_k{k_fig}[_view*]_raytrace.png")
-                print(f"  - ..._{tag}_k{k_fig}_raytrace_gallery.png")
+                print(f"  - ..._crystal_like_k{k_fig}[_view*]_raytrace.png")
         print(f"  - cluster_figure_set_k{k_fig}/04_cluster_representatives_k{k_fig}*.png")
         rep_analysis = fs.get("panel_representatives_structure_analysis")
         if isinstance(rep_analysis, dict):
@@ -880,13 +703,10 @@ def print_figure_set_summary(
                 "  - snapshots/_galleries_by_view/"
                 f"figure_set_k{k_fig}/01_md_clusters_all_k{k_fig}_view*_raytrace_gallery.png"
             )
-            visible_gallery_sets = snapshot_gallery_sets.get("visible_cluster_sets", [])
-            for entry in visible_gallery_sets:
-                cluster_ids = entry.get("cluster_ids", []) if isinstance(entry, dict) else []
-                tag = "-".join(str(int(c)) for c in cluster_ids)
-                if not tag:
-                    continue
+            crystal_gallery = snapshot_gallery_sets.get("crystal_like", {})
+            if isinstance(crystal_gallery, dict) and crystal_gallery.get("views"):
                 print(
                     "  - snapshots/_galleries_by_view/"
-                    f"figure_set_k{k_fig}/02_md_clusters_set_{tag}_k{k_fig}_view*_raytrace_gallery.png"
+                    f"figure_set_k{k_fig}/"
+                    f"02_md_clusters_crystal_like_k{k_fig}_view*_raytrace_gallery.png"
                 )

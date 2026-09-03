@@ -170,10 +170,12 @@ def load_frozen_encoder(
     cfg = OmegaConf.load(config_path)
     OmegaConf.resolve(cfg)
     encoder_name = str(cfg.encoder.name)
-    if encoder_name != "GeoFrameTransformer":
+    supported_encoder_names = {"GeoFrameTransformer", "GeoFrameTransformerV2"}
+    if encoder_name not in supported_encoder_names:
         raise ValueError(
-            "The temporal VAMP prototype is configured to use GeoFrameTransformer, "
-            f"but checkpoint {checkpoint} declares encoder.name={encoder_name!r}."
+            "The temporal predictive pipeline requires a GeoFrame encoder, but "
+            f"checkpoint {checkpoint} declares encoder.name={encoder_name!r}; "
+            f"supported={sorted(supported_encoder_names)}."
         )
     if int(repeats) <= 0:
         raise ValueError(f"embedding repeats must be > 0, got {repeats}.")

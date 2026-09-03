@@ -118,6 +118,14 @@ vicreg_radial_beta2: 0.1
 vicreg_radial_m: null
 vicreg_radial_eps: 1e-8
 
+# FactorVAE total-correlation regularization on projected VICReg embeddings.
+factor_vae_enabled: false
+factor_vae_gamma: 10.0
+factor_vae_discriminator_hidden_dim: 1000
+factor_vae_discriminator_num_hidden_layers: 6
+factor_vae_discriminator_learning_rate: 1.0e-4
+factor_vae_discriminator_betas: [0.5, 0.9]
+
 
 augmentation:
   rotation_scale: 0.0

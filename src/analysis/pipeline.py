@@ -933,47 +933,6 @@ def run_post_training_analysis(
         for cache_key in ("inv_latents", "eq_latents", "phases", "instance_ids"):
             temporal_md_space_animation_cache.pop(cache_key, None)
 
-    def _resolve_visible_cluster_sets_for_k(
-        labels_for_k: np.ndarray,
-        requested_visible_cluster_sets: list[list[int]] | None,
-        *,
-        context: str,
-    ) -> list[list[int]] | None:
-        if not requested_visible_cluster_sets:
-            return None
-        available_cluster_ids = {
-            int(v)
-            for v in np.unique(np.asarray(labels_for_k, dtype=int).reshape(-1))
-            if int(v) >= 0
-        }
-        resolved_visible_sets: list[list[int]] = []
-        for set_idx, cluster_set in enumerate(requested_visible_cluster_sets):
-            normalized_cluster_ids = [int(v) for v in cluster_set]
-            present_cluster_ids = [
-                cluster_id
-                for cluster_id in normalized_cluster_ids
-                if cluster_id in available_cluster_ids
-            ]
-            missing_cluster_ids = [
-                cluster_id
-                for cluster_id in normalized_cluster_ids
-                if cluster_id not in available_cluster_ids
-            ]
-            if missing_cluster_ids and present_cluster_ids:
-                print(
-                    f"[analysis] {context}: visible_cluster_sets[{set_idx}] drops missing "
-                    f"cluster IDs {missing_cluster_ids}; using {present_cluster_ids}."
-                )
-            elif missing_cluster_ids:
-                print(
-                    f"[analysis] {context}: skipping visible_cluster_sets[{set_idx}]="
-                    f"{normalized_cluster_ids} because none of those cluster IDs are "
-                    "present for this k."
-                )
-            if present_cluster_ids:
-                resolved_visible_sets.append(present_cluster_ids)
-        return resolved_visible_sets or None
-
     representative_selection_cache: dict[tuple[str, int], tuple[np.ndarray, dict[str, Any]]] = {}
 
     def _representative_selection_for(
@@ -1033,11 +992,6 @@ def run_post_training_analysis(
             figure_settings_for_k = replace(
                 figure_settings,
                 k=int(k_value),
-                visible_cluster_sets=_resolve_visible_cluster_sets_for_k(
-                    figure_output_labels_by_k[int(k_value)],
-                    figure_settings.visible_cluster_sets,
-                    context=f"figure_only k={int(k_value)}",
-                ),
             )
             representative_selection_features_for_k, representative_selection_info_for_k = (
                 _representative_selection_for(
@@ -1361,11 +1315,6 @@ def run_post_training_analysis(
             figure_settings_for_k = replace(
                 figure_settings,
                 k=int(k_value),
-                visible_cluster_sets=_resolve_visible_cluster_sets_for_k(
-                    figure_output_labels_by_k[int(k_value)],
-                    figure_settings.visible_cluster_sets,
-                    context=f"k={int(k_value)}",
-                ),
             )
             representative_render_cache_for_k = (
                 shared_representative_render_cache

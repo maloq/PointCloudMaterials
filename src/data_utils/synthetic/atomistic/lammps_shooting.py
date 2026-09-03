@@ -10,6 +10,7 @@ the original NPT path.
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import math
@@ -51,6 +52,7 @@ class ShootingConfig:
     temperatures_K: tuple[float, ...]
     expected_source_counts: dict[str, int]
     parent_offsets_ps: tuple[float, ...]
+    parent_indices: tuple[int, ...] | None
     branches_per_parent: int
     campaign_seed: int
     validation_source_velocity_seeds: tuple[int, ...]
@@ -160,7 +162,13 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
     execution = _mapping(raw, "execution", config_path)
     _reject_unknown(
         campaign,
-        {"output_root", "branches_per_parent", "campaign_seed", "validation_source_velocity_seeds"},
+        {
+            "output_root",
+            "parent_indices",
+            "branches_per_parent",
+            "campaign_seed",
+            "validation_source_velocity_seeds",
+        },
         context="campaign",
         path=config_path,
     )
@@ -200,6 +208,7 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
     temperatures = sources.get("temperatures_K")
     source_counts = sources.get("expected_source_counts")
     offsets = sources.get("parent_offsets_ps")
+    parent_indices_value = campaign.get("parent_indices")
     validation_seeds = campaign.get("validation_source_velocity_seeds")
     if not isinstance(campaign_globs, list) or not all(
         isinstance(value, str) and value for value in campaign_globs
@@ -236,6 +245,24 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
         )
     if len(set(parent_offsets_ps)) != len(parent_offsets_ps):
         raise ValueError(f"{config_path}: sources.parent_offsets_ps must be unique.")
+    if parent_indices_value is None:
+        parent_indices = None
+    else:
+        if (
+            not isinstance(parent_indices_value, list)
+            or not parent_indices_value
+            or not all(
+                isinstance(value, int) and not isinstance(value, bool) and value >= 0
+                for value in parent_indices_value
+            )
+        ):
+            raise TypeError(
+                f"{config_path}: campaign.parent_indices must be a non-empty list "
+                f"of nonnegative integers when provided."
+            )
+        parent_indices = tuple(parent_indices_value)
+        if len(set(parent_indices)) != len(parent_indices):
+            raise ValueError(f"{config_path}: campaign.parent_indices must be unique.")
     if not isinstance(validation_seeds, list) or not validation_seeds or not all(
         isinstance(value, int) and not isinstance(value, bool) for value in validation_seeds
     ):
@@ -256,10 +283,11 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
         if not isinstance(value, str) or not value:
             raise TypeError(f"{config_path}: execution.{key} must be a non-empty string.")
     launcher = execution.get("launcher")
-    if launcher != "srun_pmi2":
+    supported_launchers = {"srun_pmi2", "local_mpiexec"}
+    if launcher not in supported_launchers:
         raise ValueError(
-            f"{config_path}: execution.launcher must be 'srun_pmi2' for the cluster's "
-            f"Slurm-managed conda MPICH launch, got {launcher!r}."
+            f"{config_path}: execution.launcher must be one of "
+            f"{sorted(supported_launchers)}, got {launcher!r}."
         )
 
     result = ShootingConfig(
@@ -270,6 +298,7 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
         temperatures_K=temperatures_K,
         expected_source_counts=expected_source_counts,
         parent_offsets_ps=parent_offsets_ps,
+        parent_indices=parent_indices,
         branches_per_parent=_positive_integer(campaign.get("branches_per_parent"), context="campaign.branches_per_parent", path=config_path),
         campaign_seed=_positive_integer(campaign.get("campaign_seed"), context="campaign.campaign_seed", path=config_path),
         validation_source_velocity_seeds=tuple(int(value) for value in validation_seeds),
@@ -395,7 +424,7 @@ print \"SHOOTING_COMPLETE {branch_id} PARENT {parent_id}\"
 
 
 def _source_npz(entry: CatalogEntry) -> Path:
-    path = entry.trajectory_path.with_suffix(".npz")
+    path = entry.trajectory_path.parent / "trajectory.npz"
     if not path.is_file():
         raise FileNotFoundError(
             f"Catalog trajectory has no repository-produced coordinate archive: {path}."
@@ -462,6 +491,20 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             )
 
     sources = _selected_sources(config)
+    possible_parent_count = len(sources) * len(config.parent_offsets_ps)
+    requested_parent_indices = (
+        set(range(possible_parent_count))
+        if config.parent_indices is None
+        else set(config.parent_indices)
+    )
+    invalid_parent_indices = sorted(
+        index for index in requested_parent_indices if index >= possible_parent_count
+    )
+    if invalid_parent_indices:
+        raise IndexError(
+            f"Requested campaign.parent_indices are outside [0, {possible_parent_count}): "
+            f"{invalid_parent_indices}."
+        )
     config.output_root.mkdir(parents=True)
     for name in ("parents", "branches", "potential", "slurm"):
         (config.output_root / name).mkdir()
@@ -472,6 +515,12 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
     parents: list[dict[str, Any]] = []
     source_documents: list[dict[str, Any]] = []
     for source_index, entry in enumerate(sources):
+        source_parent_start = source_index * len(config.parent_offsets_ps)
+        if not any(
+            source_parent_start + offset_index in requested_parent_indices
+            for offset_index in range(len(config.parent_offsets_ps))
+        ):
+            continue
         metadata = entry.metadata
         assert metadata.nucleation_time_ps is not None
         frame_indices = select_parent_frame_indices(
@@ -494,6 +543,9 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             for offset_index, (offset_ps, frame_index) in enumerate(
                 zip(config.parent_offsets_ps, frame_indices)
             ):
+                parent_index = source_parent_start + offset_index
+                if parent_index not in requested_parent_indices:
+                    continue
                 positions_A = np.asarray(archive["positions_A"][frame_index], dtype=np.float64)
                 cell_A = np.asarray(archive["cell_vectors_A"][frame_index], dtype=np.float64)
                 if positions_A.shape != (EXPECTED_ATOM_COUNT, 3) or cell_A.shape != (3, 3):
@@ -508,7 +560,6 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
                         f"{archive_path}: LAMMPS shooting currently requires the repository's "
                         f"orthogonal cells; got cell={cell_A.tolist()}."
                     )
-                parent_index = len(parents)
                 phase = f"pre_nucleation_{abs(offset_ps):g}ps"
                 parent_id = (
                     f"parent_{parent_index:03d}_T{metadata.temperature_K:g}_"
@@ -636,6 +687,9 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             "campaign_globs": list(config.source_campaign_globs),
             "temperatures_K": list(config.temperatures_K),
             "parent_offsets_ps": list(config.parent_offsets_ps),
+            "parent_indices": (
+                None if config.parent_indices is None else list(config.parent_indices)
+            ),
             "validation_source_velocity_seeds": list(config.validation_source_velocity_seeds),
         },
         "potential": {
@@ -688,7 +742,8 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             "branch_count": len(branches),
         },
     )
-    _write_slurm_script(config, len(branches))
+    if config.launcher == "srun_pmi2":
+        _write_slurm_script(config, len(branches))
     return manifest
 
 
@@ -791,29 +846,53 @@ def _lammps_command(*, mpi_ranks: int, launcher: str) -> list[str]:
     lmp = Path(sys.prefix) / "bin" / "lmp"
     if not lmp.is_file():
         raise FileNotFoundError(f"Required pointnet LAMMPS executable is absent: {lmp}.")
-    if launcher != "srun_pmi2":
-        raise ValueError(f"Unsupported LAMMPS launcher {launcher!r}; expected 'srun_pmi2'.")
-    if "SLURM_JOB_ID" not in os.environ:
-        raise RuntimeError(
-            "The srun_pmi2 launcher requires a Slurm allocation, but SLURM_JOB_ID is absent. "
-            "Submit slurm/run_branch.sbatch instead of running a production branch locally."
-        )
-    srun = shutil.which("srun")
-    if srun is None:
-        raise FileNotFoundError("The configured srun_pmi2 launcher requires srun on PATH.")
-    return [
-        srun,
-        "--mpi=pmi2",
-        "--nodes=1",
-        f"--ntasks={mpi_ranks}",
-        f"--ntasks-per-node={mpi_ranks}",
-        "--cpus-per-task=1",
-        "--cpu-bind=cores",
-        "--kill-on-bad-exit=1",
-        str(lmp),
-        "-in",
-        "in.lammps",
-    ]
+    if launcher == "srun_pmi2":
+        if "SLURM_JOB_ID" not in os.environ:
+            raise RuntimeError(
+                "The srun_pmi2 launcher requires a Slurm allocation, but SLURM_JOB_ID is absent. "
+                "Submit slurm/run_branch.sbatch instead of running a production branch locally."
+            )
+        srun = shutil.which("srun")
+        if srun is None:
+            raise FileNotFoundError("The configured srun_pmi2 launcher requires srun on PATH.")
+        return [
+            srun,
+            "--mpi=pmi2",
+            "--nodes=1",
+            f"--ntasks={mpi_ranks}",
+            f"--ntasks-per-node={mpi_ranks}",
+            "--cpus-per-task=1",
+            "--cpu-bind=cores",
+            "--kill-on-bad-exit=1",
+            str(lmp),
+            "-in",
+            "in.lammps",
+        ]
+    if launcher == "local_mpiexec":
+        if "SLURM_JOB_ID" in os.environ:
+            raise RuntimeError(
+                "The local_mpiexec launcher refuses to run inside a Slurm allocation. "
+                f"Detected SLURM_JOB_ID={os.environ['SLURM_JOB_ID']!r}."
+            )
+        mpiexec = shutil.which("mpiexec")
+        if mpiexec is None:
+            raise FileNotFoundError(
+                "The local_mpiexec launcher requires the pointnet mpiexec executable on PATH."
+            )
+        return [
+            mpiexec,
+            "-n",
+            str(mpi_ranks),
+            "-bind-to",
+            "core",
+            str(lmp),
+            "-in",
+            "in.lammps",
+        ]
+    raise ValueError(
+        f"Unsupported LAMMPS launcher {launcher!r}; expected 'srun_pmi2' or "
+        "'local_mpiexec'."
+    )
 
 
 def _materialize_missing_branch_input(
@@ -976,6 +1055,8 @@ def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
 
 
 def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
+    from src.data_utils.shooting_dataset import validate_complete_shooting_branch
+
     root = Path(campaign_root).expanduser().resolve()
     manifest = _load_json(root / "manifest.json")
     outcomes: list[dict[str, Any]] = []
@@ -988,6 +1069,7 @@ def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
         outcome = _load_json(path)
         if outcome.get("state") != "complete":
             raise RuntimeError(f"Branch outcome is not complete: {path}.")
+        validate_complete_shooting_branch(root, manifest, branch, outcome)
         outcomes.append(outcome)
     if missing:
         raise RuntimeError(
@@ -1015,13 +1097,121 @@ def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
             "sum": float(elapsed.sum()),
         },
         "trajectory_size_bytes": int(
-            sum(outcome["trajectory_size_bytes"] for outcome in outcomes)
+            sum(
+                outcome.get("trajectory_artifact", {}).get(
+                    "size_bytes", outcome["trajectory_size_bytes"]
+                )
+                for outcome in outcomes
+            )
         ),
+        "source_trajectory_size_bytes": int(
+            sum(
+                outcome.get("trajectory_artifact", {})
+                .get("source_lammpstrj", {})
+                .get("size_bytes", outcome["trajectory_size_bytes"])
+                for outcome in outcomes
+            )
+        ),
+        "trajectory_format_counts": {
+            "lammps_text": sum(
+                "trajectory_artifact" not in outcome for outcome in outcomes
+            ),
+            "pointcloudmaterials_shooting_binary_float32": sum(
+                outcome.get("trajectory_artifact", {}).get("format")
+                == "pointcloudmaterials.shooting_trajectory"
+                and outcome.get("trajectory_artifact", {}).get("storage_dtype")
+                == "float32"
+                for outcome in outcomes
+            ),
+        },
     }
     _write_json_atomic(root / "summary.json", summary)
     _write_json_atomic(root / "status.json", summary)
     print(json.dumps(summary, indent=2))
     return summary
+
+
+def run_local_campaign(
+    campaign_root: str | Path, start_index: int = 0
+) -> dict[str, Any]:
+    """Run a local-MPI shooting campaign sequentially under an exclusive file lock."""
+    root = Path(campaign_root).expanduser().resolve()
+    manifest = _load_json(root / "manifest.json")
+    if manifest["execution"]["launcher"] != "local_mpiexec":
+        raise RuntimeError(
+            f"Local campaign execution requires launcher='local_mpiexec', got "
+            f"{manifest['execution']['launcher']!r} in {root / 'manifest.json'}."
+        )
+    if "SLURM_JOB_ID" in os.environ:
+        raise RuntimeError(
+            "Local campaign execution refuses to run inside Slurm; "
+            f"detected SLURM_JOB_ID={os.environ['SLURM_JOB_ID']!r}."
+        )
+    branches = manifest["branches"]
+    if not isinstance(branches, list) or not branches:
+        raise TypeError(f"{root / 'manifest.json'}: branches must be a non-empty list.")
+    start = int(start_index)
+    if start < 0 or start > len(branches):
+        raise IndexError(f"start_index={start} is outside [0, {len(branches)}].")
+
+    lock_path = root / "local_campaign.lock"
+    with lock_path.open("a+", encoding="utf-8") as lock:
+        try:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            raise RuntimeError(
+                f"Another local campaign driver holds the execution lock: {lock_path}."
+            ) from error
+        started_at = datetime.now(timezone.utc).isoformat()
+        lock.seek(0)
+        lock.truncate()
+        lock.write(
+            json.dumps(
+                {
+                    "pid": os.getpid(),
+                    "hostname": os.uname().nodename,
+                    "started_at": started_at,
+                    "start_index": start,
+                },
+                sort_keys=True,
+            )
+            + "\n"
+        )
+        lock.flush()
+        _write_json_atomic(
+            root / "status.json",
+            {
+                "schema_version": SCHEMA_VERSION,
+                "state": "running",
+                "updated_at": started_at,
+                "execution_mode": "local_mpiexec",
+                "hostname": os.uname().nodename,
+                "pid": os.getpid(),
+                "branch_count": len(branches),
+                "start_index": start,
+            },
+        )
+        current_index = start
+        try:
+            for current_index in range(start, len(branches)):
+                run_branch(root, current_index)
+            return summarize_campaign(root)
+        except Exception as error:
+            _write_json_atomic(
+                root / "status.json",
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "state": "failed",
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "execution_mode": "local_mpiexec",
+                    "hostname": os.uname().nodename,
+                    "pid": os.getpid(),
+                    "failed_branch_index": current_index,
+                    "error_type": type(error).__name__,
+                    "error": str(error),
+                },
+            )
+            raise
 
 
 def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, Any]:
@@ -1115,6 +1305,7 @@ __all__ = [
     "prepare_campaign",
     "render_lammps_input",
     "run_branch",
+    "run_local_campaign",
     "select_parent_frame_indices",
     "submit_next_wave",
     "summarize_campaign",

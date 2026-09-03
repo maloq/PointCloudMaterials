@@ -768,6 +768,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         check_val_every_n_epoch=check_val_every_n_epoch,
         num_sanity_val_steps=num_sanity_val_steps,
         accumulate_grad_batches=accumulate_grad_batches,
+        enable_model_summary=bool(getattr(cfg, "enable_model_summary", True)),
     )
 
     if accumulate_grad_batches > 1:
@@ -777,8 +778,15 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         )
 
     if hasattr(cfg, 'gradient_clip_val'):
-        trainer_kwargs['gradient_clip_val'] = cfg.gradient_clip_val
-        trainer_kwargs['gradient_clip_algorithm'] = 'norm'
+        if model.automatic_optimization:
+            trainer_kwargs['gradient_clip_val'] = cfg.gradient_clip_val
+            trainer_kwargs['gradient_clip_algorithm'] = 'norm'
+        elif float(cfg.gradient_clip_val) > 0.0:
+            logger.print(
+                "Manual optimization is active; the Lightning module applies "
+                f"gradient_clip_val={float(cfg.gradient_clip_val)} independently "
+                "inside each optimizer step."
+            )
 
     if ddp_strategy is not None:
         trainer_kwargs["strategy"] = ddp_strategy
@@ -846,7 +854,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
                 benchmark=True,
                 log_every_n_steps=cfg.log_every_n_steps,
             )
-            if hasattr(cfg, 'gradient_clip_val'):
+            if hasattr(cfg, 'gradient_clip_val') and model.automatic_optimization:
                 test_trainer_kwargs['gradient_clip_val'] = cfg.gradient_clip_val
                 test_trainer_kwargs['gradient_clip_algorithm'] = 'norm'
             test_trainer = pl.Trainer(**test_trainer_kwargs)

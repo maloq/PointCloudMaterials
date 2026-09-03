@@ -1264,28 +1264,6 @@ def _save_cluster_representatives_in_prototypes(
     return result
 
 
-def _visible_prototype_sets_from_cluster_sets(
-    *,
-    requested_cluster_sets: list[list[int]] | None,
-    prototype_to_cluster: dict[int, int],
-    available_prototype_ids: list[int],
-) -> list[list[int]] | None:
-    if not requested_cluster_sets or not prototype_to_cluster:
-        return None
-    available = {int(v) for v in available_prototype_ids}
-    resolved: list[list[int]] = []
-    for cluster_set in requested_cluster_sets:
-        cluster_ids = {int(v) for v in cluster_set}
-        prototype_ids = sorted(
-            int(proto_id)
-            for proto_id, cluster_id in prototype_to_cluster.items()
-            if int(proto_id) in available and int(cluster_id) in cluster_ids
-        )
-        if prototype_ids:
-            resolved.append(prototype_ids)
-    return resolved or None
-
-
 def _render_swav_prototype_figure_set(
     *,
     model: Any,
@@ -1303,7 +1281,6 @@ def _render_swav_prototype_figure_set(
     figure_snapshot_layout: Any | None,
     figure_analysis_source_names: list[str] | None,
     prototype_color_map: dict[int, str],
-    prototype_to_cluster: dict[int, int],
     step: Any,
 ) -> dict[str, Any]:
     enabled = _cfg_bool(swav_cfg, "figure_set", True)
@@ -1334,16 +1311,9 @@ def _render_swav_prototype_figure_set(
 
     prototype_labels = np.asarray(figure_assignments["labels"], dtype=int).reshape(-1)
     num_prototypes = int(np.asarray(figure_assignments["probs"]).shape[1])
-    available_prototype_ids = sorted(int(v) for v in np.unique(prototype_labels) if int(v) >= 0)
-    visible_prototype_sets = _visible_prototype_sets_from_cluster_sets(
-        requested_cluster_sets=getattr(figure_settings, "visible_cluster_sets", None),
-        prototype_to_cluster=prototype_to_cluster,
-        available_prototype_ids=available_prototype_ids,
-    )
     figure_settings_for_prototypes = replace(
         figure_settings,
         k=int(num_prototypes),
-        visible_cluster_sets=visible_prototype_sets,
         cluster_color_assignment={
             int(proto_id): str(color) for proto_id, color in prototype_color_map.items()
         },
@@ -1353,7 +1323,6 @@ def _render_swav_prototype_figure_set(
     prototype_run_kwargs["cluster_color_assignment"] = {
         int(proto_id): str(color) for proto_id, color in prototype_color_map.items()
     }
-    prototype_run_kwargs["visible_cluster_sets"] = visible_prototype_sets
     cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
         out_dir=out_root,
         dataloader=figure_dataloader,
@@ -1374,7 +1343,7 @@ def _render_swav_prototype_figure_set(
         "prototype_color_map": {
             int(proto_id): str(color) for proto_id, color in prototype_color_map.items()
         },
-        "visible_prototype_sets": visible_prototype_sets,
+        "crystal_like_detection": "representative_center_ptm_fcc_hcp_bcc",
         "cluster_figure_set": cluster_figure_set,
         "cluster_figure_sets_by_snapshot": snapshot_figure_sets,
     }
@@ -1596,7 +1565,6 @@ def run_swav_prototype_evaluation(
         figure_snapshot_layout=figure_snapshot_layout,
         figure_analysis_source_names=figure_analysis_source_names,
         prototype_color_map=prototype_color_map,
-        prototype_to_cluster=prototype_to_cluster,
         step=step,
     )
 

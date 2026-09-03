@@ -1,0 +1,39 @@
+# Re-encode the fixed 512-center shooting snapshot with the ordinary-MD temporal
+# GeoFrame checkpoint.  Training/evaluation uses a separate fixed teacher cache.
+output_dir: /home/ids/vmorozov/experiments/predictive_atlas_temporal_encoder_input_cache_20260902
+device: cuda:0
+
+encoder:
+  checkpoint: /home/ids/vmorozov/experiments/temporal_encoder_pretraining_geoframe_v2_29824_20260902/temporal_geoframe_v2.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 4096
+  environment_batch_size: 1
+  environment_num_workers: 8
+
+data:
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901
+  temperatures_K: [400, 450, 500]
+  minimum_complete_branches_per_parent: 12
+  expected_parent_count: 40
+  expected_branch_count: 480
+  horizons_ps: [6, 12, 24, 48]
+  center_atom_count: 512
+  center_selection_seed: 20260902
+  radius: 9.192189
+  num_points: 160
+  legacy_context_center_count: 8
+
+context:
+  center_count: 16
+  radial_scales_angstrom: [3.5, 6.0, 9.192189]
+  steinhardt_shell_min_neighbors: 8
+  steinhardt_shell_max_neighbors: 16
+
+cache:
+  force_recompute: false

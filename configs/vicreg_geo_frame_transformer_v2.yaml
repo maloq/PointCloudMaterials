@@ -1,0 +1,160 @@
+defaults:
+  - data: loaders/static_multi_material
+  - _self_
+
+# GeoFrameTransformerV2 adds an explicit edge representation to the optimized
+# static GeoFrame baseline. It is trained from scratch: V1 and V2 are separate
+# registry entries and their checkpoints are never loaded implicitly.
+project_name: pointnet
+experiment_name: VICREG_GEOFRAME_V2_EDGE_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+wandb_mode: online
+
+model_type: vicreg
+latent_size: 128
+
+load_supervised_checkpoint: null
+init_from_checkpoint: null
+resume_from_checkpoint: null
+
+encoder:
+  name: GeoFrameTransformerV2
+  kwargs:
+    latent_size: ${latent_size}
+    num_group: 24
+    patch_sizes: [8, 16]
+    encoder_dims: 128
+    trans_dim: 128
+    depth: 6
+    num_heads: 8
+    mlp_ratio: 4.0
+    dropout: 0.0
+    deterministic_fps: true
+    sorting_mode: none
+    group_sampling: random
+    center_input: true
+    frame_builder: triad
+    frame_eps: 1.0e-6
+    use_frame_gating: false
+    frame_confidence_floor: 0.25
+    num_rbf: 12
+    rbf_max_distance: 3.0
+    edge_dim: 16
+    edge_value_rank: 2
+    # Preserve parity-odd/chiral channels inside V2. The 50% mirror augmentation
+    # below teaches reflection consistency statistically for these materials;
+    # use vicreg_geo_frame_transformer_v2_o3 for exact architectural O(3)
+    # invariance at additional compute cost.
+    parity_mode: sensitive
+    use_signed_chirality: true
+    pool_queries: 2
+    pooling_mode: max_mean
+    use_gradient_checkpointing: false
+
+compile_encoder: true
+encoder_compile_mode: default
+encoder_compile_fullgraph: true
+encoder_compile_dynamic: false
+
+# Keep validation and downstream analysis on the representation trained by
+# VICReg, applying the projector exactly once.
+representation_source: vicreg_projector
+
+learning_rate: 1.0e-3
+batch_size: 8192
+precision: bf16-mixed
+gradient_clip_val: 1.0
+accumulate_grad_batches: 1
+auto_batch_size_search: false
+auto_batch_size_mode: power
+auto_batch_size_init_val: null
+auto_batch_size_max_trials: 12
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: true
+auto_batch_size_target_effective_batch: null
+auto_batch_size_strict: false
+
+enable_swa: false
+swa_epoch_start: 1000
+epochs: 240
+max_samples: 0
+check_val_every_n_epoch: 10
+checkpoint_monitor: loss/val
+checkpoint_mode: min
+checkpoint_save_top_k: 1
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 10
+run_post_training_analysis: false
+run_test_after_training: false
+
+gpu: true
+devices: [0]
+ddp_find_unused_parameters: false
+log_every_n_steps: 5
+num_workers: 12
+scheduler_name: Cosine
+scheduler_min_lr: 1.0e-6
+warmup_enabled: true
+warmup_epochs: 10
+warmup_start_factor: 0.05
+decay_rate: 0.04
+
+seed_everything: 123
+
+enable_embedding_metrics: false
+enable_svm_accuracy: false
+enable_probe_metrics: true
+supervised_metric_stages: [test]
+embedding_metric_stages: [test]
+probe_metric_stages: [val, test]
+probe_k: 7
+probe_max_samples: 8192
+probe_pca_max_components: 128
+probe_silhouette_samples: 5000
+probe_kmeans_seed_count: 3
+probe_kmeans_n_init: 5
+probe_seed: 0
+probe_best_k_min: 7
+probe_best_k_max: 7
+max_supervised_samples: 8192
+
+idec_enabled: false
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: true
+idec_normalize_z: true
+idec_init_kmeans: true
+
+vicreg_enabled: true
+vicreg_weight: 1.0
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+vicreg_embed_dim: 128
+vicreg_projector_mode: mlp
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.01
+vicreg_jitter_mode: physical
+vicreg_drop_ratio: 0.0
+vicreg_neighbor_view: false
+vicreg_view_points: ${data.model_points}
+vicreg_rotation_mode: none
+vicreg_mirror_prob: 0.5
+vicreg_strain_std: 0.0
+vicreg_occlusion_mode: none
+vicreg_std_eps: 1.0e-4
+vicreg_std_target: 1.0
+vicreg_radial_enabled: false
+
+# V2 is evaluated first as a pure VICReg encoder ablation.
+factor_vae_enabled: false
+
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false

@@ -11,7 +11,15 @@ from typing import Any
 import numpy as np
 
 from src.baselines.descriptor_baselines import CNADescriptorBaseline, infer_center_shell
+from src.data_utils.synthetic.atomistic.transition_analysis import (
+    CRYSTALLINE_STRUCTURE_TYPES,
+)
 from .output_layout import write_json
+
+
+_CRYSTALLINE_PTM_STRUCTURE_TYPE_IDS = frozenset(
+    int(value) for value in CRYSTALLINE_STRUCTURE_TYPES
+)
 
 
 def _format_cna_signature(signature: str) -> str:
@@ -271,6 +279,7 @@ def _write_structure_analysis_csv(
         "cna_other_fraction",
         "adaptive_cna_center_structure_type",
         "ptm_center_structure_type",
+        "ptm_center_is_crystal_like",
         "ptm_center_rmsd",
         "ptm_center_interatomic_distance",
         "ptm_center_ordering_type",
@@ -319,6 +328,9 @@ def _write_structure_analysis_csv(
                     adaptive_cna.get("center_structure_type", "")
                 ),
                 "ptm_center_structure_type": str(ptm.get("center_structure_type", "")),
+                "ptm_center_is_crystal_like": bool(
+                    ptm.get("center_is_crystal_like", False)
+                ),
                 "ptm_center_rmsd": (
                     ""
                     if "center_rmsd" not in ptm
@@ -334,6 +346,23 @@ def _write_structure_analysis_csv(
             for signature, column in zip(cna_signature_vocab, signature_columns):
                 row[column] = float(fractions.get(signature, 0.0))
             writer.writerow(row)
+
+
+def detect_crystal_like_cluster_ids(
+    structure_analysis_summary: dict[str, Any],
+) -> list[int]:
+    """Return clusters whose representative center is PTM FCC, HCP, or BCC."""
+    if not bool(structure_analysis_summary["ptm_enabled"]):
+        raise RuntimeError(
+            "Automatic crystal-like cluster detection requires representative PTM "
+            "analysis. Set figure_set.representatives.ptm_enabled=true."
+        )
+    return sorted(
+        int(record["cluster_id"])
+        for record in structure_analysis_summary["representatives"]
+        if int(record["ptm"]["center_structure_type_id"])
+        in _CRYSTALLINE_PTM_STRUCTURE_TYPE_IDS
+    )
 
 
 def _build_cluster_representative_analysis_summary(
@@ -460,14 +489,19 @@ def _build_cluster_representative_analysis_summary(
             record["cna"] = cna_record
 
         if bool(ptm_enabled):
-            record["ptm"] = _run_ovito_ptm_analysis(
+            ptm_record = _run_ovito_ptm_analysis(
                 local_points,
                 center_atom_tolerance=float(center_atom_tolerance),
             )
+            ptm_record["center_is_crystal_like"] = bool(
+                int(ptm_record["center_structure_type_id"])
+                in _CRYSTALLINE_PTM_STRUCTURE_TYPE_IDS
+            )
+            record["ptm"] = ptm_record
 
         representative_records.append(record)
 
-    return {
+    summary = {
         "ptm_enabled": bool(ptm_enabled),
         "cna_enabled": bool(cna_enabled),
         "analysis_points_source": "local_points",
@@ -478,7 +512,11 @@ def _build_cluster_representative_analysis_summary(
         "ovito_available": True,
         "cna_signature_vocab": list(cna_signature_vocab),
         "representatives": representative_records,
+        "crystal_like_cluster_ids": [],
     }
+    if bool(ptm_enabled):
+        summary["crystal_like_cluster_ids"] = detect_crystal_like_cluster_ids(summary)
+    return summary
 
 
 def materialize_cluster_representative_analysis_summary(
@@ -518,6 +556,9 @@ def materialize_cluster_representative_analysis_summary(
         "cna_max_signatures": int(structure_analysis_summary["cna_max_signatures"]),
         "ovito_available": bool(structure_analysis_summary["ovito_available"]),
         "cna_signature_vocab": [str(v) for v in cna_signature_vocab],
+        "crystal_like_cluster_ids": [
+            int(v) for v in structure_analysis_summary["crystal_like_cluster_ids"]
+        ],
         "representatives": [dict(record) for record in representatives],
     }
     write_json(json_path, payload)

@@ -6,6 +6,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from src.data_utils.temporal_lammps_binary import (
+    binary_path_for_dump,
+    write_temporal_lammps_binary,
+)
 from src.temporal_vamp.simulation_catalog import (
     discover_simulation_catalog,
     load_simulation_metadata,
@@ -118,3 +122,50 @@ def test_catalog_rejects_manifest_lammps_disagreement(tmp_path: Path) -> None:
     trajectory = _write_simulation(campaign, analysis_velocity_seed=99999)
     with pytest.raises(ValueError, match="velocity_seed"):
         load_simulation_metadata(trajectory, campaign)
+
+
+def test_catalog_discovers_binary_replacement_without_text(tmp_path: Path) -> None:
+    root = tmp_path / "synthetic_data"
+    campaign = root / "al_meam_campaign"
+    trajectory = _write_simulation(campaign)
+    stat = trajectory.stat()
+    write_temporal_lammps_binary(
+        binary_path_for_dump(trajectory),
+        positions=np.zeros((3, 4, 3), dtype=np.float32),
+        timesteps=np.asarray([5, 15, 25], dtype=np.int64),
+        box_low=np.zeros((3, 3), dtype=np.float32),
+        box_high=np.ones((3, 3), dtype=np.float32),
+        atom_ids=np.arange(1, 5, dtype=np.int64),
+        atom_types=np.ones(4, dtype=np.int32),
+        atom_columns=("id", "type", "x", "y", "z"),
+        source={
+            "trajectory_lammpstrj": {
+                "path": str(trajectory.resolve()),
+                "size_bytes": stat.st_size,
+                "mtime_ns": stat.st_mtime_ns,
+                "sha256": "0" * 64,
+                "deleted": False,
+                "deleted_at": None,
+            },
+            "coordinate_archive": {
+                "path": str((trajectory.parent / "trajectory.npz").resolve()),
+                "size_bytes": 0,
+                "sha256": "1" * 64,
+                "positions_float32_sha256": "2" * 64,
+            },
+        },
+        provenance={"test": True},
+    )
+    trajectory.unlink()
+
+    entries = discover_simulation_catalog(
+        root,
+        campaign_globs=["al_meam_*"],
+        cache_root=tmp_path / "cache",
+        required_atom_count=4,
+        required_potential_parameter_sha256="parameter-hash",
+        required_crystal_seed=None,
+        require_periodic=True,
+    )
+    assert len(entries) == 1
+    assert entries[0].trajectory_path.name == "trajectory_binary_float32"

@@ -1,0 +1,49 @@
+defaults:
+  - vicreg_geo_frame_transformer_v2
+  - _self_
+
+# Common V2 half of the queued V1/V2 FactorVAE sweep. The queue supplies the
+# freshly trained V2 checkpoint and the individual FactorVAE settings.
+experiment_name: GF_FACTOR_SWEEP_V2_G${factor_vae_gamma}_N${factor_vae_latent_noise_std}_S${seed_everything}
+
+init_from_checkpoint: null
+init_from_checkpoint_strict: false
+resume_from_checkpoint: null
+
+learning_rate: 1.0e-4
+batch_size: 8192
+epochs: 100
+warmup_enabled: true
+warmup_epochs: 2
+warmup_start_factor: 0.1
+
+devices: [0]
+ddp_find_unused_parameters: false
+num_sanity_val_steps: 0
+enable_model_summary: false
+check_val_every_n_epoch: 2
+checkpoint_monitor: clustering/val_silhouette
+checkpoint_mode: max
+checkpoint_save_top_k: 1
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 25
+run_post_training_analysis: false
+run_test_after_training: false
+
+seed_everything: 123
+
+vicreg_projector_bn_eval_batch_stats: false
+
+factor_vae_enabled: true
+factor_vae_gamma: 0.1
+factor_vae_start_epoch: 5
+factor_vae_discriminator_warmup_epochs: 5
+factor_vae_gamma_warmup_epochs: 20
+factor_vae_discriminator_hidden_dim: 128
+factor_vae_discriminator_num_hidden_layers: 2
+factor_vae_latent_noise_std: 0.0
+factor_vae_discriminator_learning_rate: 3.0e-6
+factor_vae_discriminator_update_interval: 2
+factor_vae_discriminator_betas: [0.5, 0.9]
+factor_vae_model_gradient_clip_val: 1.0
+factor_vae_discriminator_gradient_clip_val: 1.0

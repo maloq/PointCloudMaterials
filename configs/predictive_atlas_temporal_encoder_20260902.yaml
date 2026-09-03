@@ -1,0 +1,60 @@
+output_dir: /home/ids/vmorozov/experiments/predictive_atlas_temporal_encoder_20260902
+device: cuda:0
+
+input:
+  student_cache_run: /home/ids/vmorozov/experiments/predictive_atlas_temporal_encoder_input_cache_20260902
+  student_history_run: /home/ids/vmorozov/experiments/predictive_atlas_temporal_encoder_history_20260902
+  teacher_cache_run: /home/ids/vmorozov/experiments/predictive_atlas_expanded512_cache_geoframe_v2_20260902
+  teacher_history_run: /home/ids/vmorozov/experiments/predictive_atlas_expanded512_history_finetune_geoframe_v2_20260902
+  fixed_path_kernel: /home/ids/vmorozov/experiments/predictive_atlas_geoframe_v2_480branches_20260902/path_kernel.npz
+  previous_coordinates: /home/ids/vmorozov/experiments/predictive_atlas_expanded512_history_finetune_geoframe_v2_20260902/coordinates_and_predictions.npz
+
+initialization:
+  previous_atlas_checkpoint: /home/ids/vmorozov/experiments/predictive_atlas_expanded512_history_finetune_geoframe_v2_20260902/model_expanded_frozen_encoder.pt
+
+data:
+  radius: 9.192189
+
+context:
+  radial_scales_angstrom: [3.5, 6.0, 9.192189]
+
+target:
+  rff_batch_size: 8192
+
+split:
+  selection_source_velocity_seeds: [35863]
+
+model:
+  hidden_dim: 128
+  heads: 4
+  blocks: 2
+  rbf_dim: 16
+  latent_dim: 32
+  decoder_hidden_dim: 256
+  dropout: 0.15
+
+training:
+  learning_rate: 0.0001
+  weight_decay: 0.001
+  variance_weight: 0.02
+  covariance_weight: 0.001
+  batch_size: 1024
+  maximum_epochs: 1600
+  patience: 240
+  seeds: [11, 22, 33]
+
+evaluation:
+  static_pca_dim: 32
+  neighbors: 10
+  static_caliper_candidates: 64
+  crystalline_fraction_tolerance: 0.002
+  pairwise_samples: 20000
+  exact_mmd_pairs: 512
+  bootstrap_samples: 5000
+  witness_count: 8
+  seed: 123
+  vamp:
+    horizon_ps: 12
+    dimension: 32
+    regularization: 0.000001
+    eigenvalue_cutoff: 0.0000000001

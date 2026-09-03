@@ -1,0 +1,60 @@
+# First position-conditioned ensemble run. The 400 K block is the only currently
+# complete temperature with full parent ensembles in both source splits.
+output_dir: /home/ids/vmorozov/experiments/shooting_predictive_geo_frame_70304_400K_20260831
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_corrected_h100_20260829_220250/VICREG_GEOFRAME_MULTISCALE_8_16_l128_CORRECTED_H100_N160_M80_GeoFrameTransformer-epoch=159.ckpt
+  representation_source: checkpoint
+
+embedding:
+  device: cuda
+  seed: 123
+  repeats: 1
+  point_cloud_batch_size: 2048
+  environment_batch_size: 2
+  environment_num_workers: 4
+
+data:
+  campaign_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+  temperatures_K: [400]
+  minimum_complete_branches_per_parent: 8
+  horizons_ps: [6, 12, 24, 48]
+  center_atom_count: 64
+  center_selection_seed: 123
+  radius: 9.192189
+  num_points: 160
+  spatial_context:
+    center_count: 8
+    aggregation: mean_std
+
+split:
+  # This source seed is removed from optimization and used only for early stopping.
+  # Official source_split=validation parents remain untouched until final evaluation.
+  selection_source_velocity_seeds: [35863]
+
+cache:
+  force_recompute: false
+
+model:
+  hidden_dim: 64
+  bottleneck_dim: 16
+  # Eight future modes were selected on source seed 35863; larger targets mostly
+  # model branch noise with the currently available number of parent states.
+  target_pca_dim: 8
+  dropout: 0.20
+
+training:
+  learning_rate: 0.001
+  weight_decay: 0.001
+  geometry_weight: 0.50
+  batch_size: 128
+  maximum_epochs: 1000
+  patience: 120
+  seeds: [11, 22, 33]
+
+evaluation:
+  seed: 123
+  input_pca_dim: 16
+  ridge_alphas: [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+  future_neighbors:
+    k: 10

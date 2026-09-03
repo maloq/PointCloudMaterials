@@ -56,6 +56,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--timestep-fs", type=float, default=3.0)
     parser.add_argument("--equilibration-steps", type=int, default=5000)
     parser.add_argument("--sample-interval-steps", type=int, default=1000)
+    parser.add_argument("--mpi-ranks", type=int, default=48)
     return parser.parse_args()
 
 
@@ -75,6 +76,7 @@ def _template_settings(
     timestep_fs: float,
     equilibration_steps: int,
     sample_interval_steps: int,
+    mpi_ranks: int = 48,
 ) -> Settings:
     return Settings(
         output_root=output_root,
@@ -94,7 +96,7 @@ def _template_settings(
         equilibration_steps=equilibration_steps,
         measurement_steps=measurement_steps,
         sample_interval=sample_interval_steps,
-        mpi_ranks=48,
+        mpi_ranks=mpi_ranks,
     )
 
 
@@ -105,6 +107,7 @@ def _validate_controls(
     timestep_fs: float,
     equilibration_steps: int,
     sample_interval_steps: int,
+    mpi_ranks: int = 48,
 ) -> None:
     if not seeds or len(set(seeds)) != len(seeds):
         raise ValueError(
@@ -149,6 +152,8 @@ def _validate_controls(
         raise ValueError(
             f"target_temperature_K must be positive, got {target_temperature_K}."
         )
+    if mpi_ranks <= 0:
+        raise ValueError(f"mpi_ranks must be positive, got {mpi_ranks}.")
 
 
 def prepare(
@@ -160,6 +165,7 @@ def prepare(
     timestep_fs: float,
     equilibration_steps: int,
     sample_interval_steps: int,
+    mpi_ranks: int = 48,
 ) -> None:
     if output_root.exists():
         raise FileExistsError(
@@ -260,8 +266,8 @@ def prepare(
             },
             "execution": {
                 "strictly_sequential_replicas": True,
-                "mpi_ranks_per_replica": 48,
-                "physical_cores_per_replica": 48,
+                "mpi_ranks_per_replica": mpi_ranks,
+                "physical_cores_per_replica": mpi_ranks,
             },
         },
     )
@@ -274,6 +280,7 @@ def prepare(
         timestep_fs,
         equilibration_steps,
         sample_interval_steps,
+        mpi_ranks,
     )
     _write_status(
         template,
@@ -348,13 +355,14 @@ def _write_summary(
     seeds: tuple[int, ...],
     completed: list[dict[str, object]],
     elapsed_seconds: dict[str, float],
+    mpi_ranks: int = 48,
 ) -> None:
     _write_json_atomic(
         output_root / "campaign_summary.json",
         {
             "schema_version": SCHEMA_VERSION,
             "strictly_sequential_replicas": True,
-            "physical_cores_per_replica": 48,
+            "physical_cores_per_replica": mpi_ranks,
             "requested_velocity_seeds": list(seeds),
             "completed_replica_count": len(completed),
             "md_elapsed_seconds": elapsed_seconds,
@@ -372,6 +380,7 @@ def run(
     timestep_fs: float,
     equilibration_steps: int,
     sample_interval_steps: int,
+    mpi_ranks: int = 48,
 ) -> None:
     required = (
         output_root / "manifest.json",
@@ -392,6 +401,7 @@ def run(
         timestep_fs,
         equilibration_steps,
         sample_interval_steps,
+        mpi_ranks,
     )
     _wait_for_prior_campaign(template, wait_for_status)
 
@@ -437,7 +447,8 @@ def run(
                 pending_velocity_seeds=list(seeds[index:]),
             )
             print(
-                f"{replica_name}: starting 600 ps unseeded run on all 48 cores",
+                f"{replica_name}: starting 600 ps unseeded run on all "
+                f"{mpi_ranks} physical cores",
                 flush=True,
             )
             elapsed_seconds[replica_name] = _run_lammps(
@@ -457,10 +468,10 @@ def run(
         document["replica_name"] = replica_name
         _write_json_atomic(analysis_path, document)
         completed.append(document)
-        _write_summary(output_root, seeds, completed, elapsed_seconds)
+        _write_summary(output_root, seeds, completed, elapsed_seconds, mpi_ranks)
         print(f"{replica_name}: MD, analysis, and plots complete", flush=True)
 
-    _write_summary(output_root, seeds, completed, elapsed_seconds)
+    _write_summary(output_root, seeds, completed, elapsed_seconds, mpi_ranks)
     _write_status(
         template,
         "complete",
@@ -484,6 +495,7 @@ def main() -> None:
         args.timestep_fs,
         args.equilibration_steps,
         args.sample_interval_steps,
+        args.mpi_ranks,
     )
     try:
         if args.action == "prepare":
@@ -496,6 +508,7 @@ def main() -> None:
                 args.timestep_fs,
                 args.equilibration_steps,
                 args.sample_interval_steps,
+                args.mpi_ranks,
             )
         else:
             run(
@@ -507,6 +520,7 @@ def main() -> None:
                 args.timestep_fs,
                 args.equilibration_steps,
                 args.sample_interval_steps,
+                args.mpi_ranks,
             )
     except BaseException:
         if output_root.is_dir():
@@ -519,6 +533,7 @@ def main() -> None:
                 args.timestep_fs,
                 args.equilibration_steps,
                 args.sample_interval_steps,
+                args.mpi_ranks,
             )
             _write_status(settings, "failed", traceback=traceback.format_exc())
         raise

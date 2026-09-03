@@ -1,5 +1,5 @@
 campaign:
-  output_root: output/synthetic_data/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+  output_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
   branches_per_parent: 8
   campaign_seed: 20260830
   # Every descendant of these source momentum seeds remains in validation.

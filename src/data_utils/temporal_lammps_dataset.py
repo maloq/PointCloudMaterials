@@ -17,6 +17,11 @@ from numpy.lib.format import open_memmap
 from scipy.spatial import cKDTree
 from torch.utils.data import Dataset
 
+from src.data_utils.temporal_lammps_binary import (
+    TemporalLAMMPSBinaryTrajectory,
+    resolve_temporal_lammps_artifact,
+)
+
 
 def _setup_logger() -> logging.Logger:
     logger = logging.getLogger("temporal_lammps_dataset")
@@ -83,13 +88,9 @@ _SCAN_RESULT_PROCESS_CACHE: dict[tuple[str, int, int], _DumpScanResult] = {}
 
 
 def _resolve_dump_path(dump_file: str | Path) -> Path:
-    """Resolve a dump-file path and assert it exists as a regular file."""
-    dump_path = Path(dump_file).expanduser().resolve()
-    if not dump_path.is_file():
-        raise FileNotFoundError(
-            f"LAMMPS dump file missing or not a regular file: {dump_path}"
-        )
-    return dump_path
+    """Resolve a text dump or its verified binary replacement."""
+
+    return resolve_temporal_lammps_artifact(dump_file)
 
 
 def inspect_lammps_dump_file(dump_file: str | Path) -> dict[str, Any]:
@@ -240,7 +241,13 @@ class TemporalLAMMPSDumpDataset(Dataset):
         build_lock_stale_sec: float = 86400.0,
     ) -> None:
         super().__init__()
-        self.dump_file = _resolve_dump_path(dump_file)
+        self.dump_file = Path(dump_file).expanduser().resolve()
+        self.trajectory_artifact = _resolve_dump_path(self.dump_file)
+        self._binary_trajectory = (
+            TemporalLAMMPSBinaryTrajectory.load(self.trajectory_artifact)
+            if self.trajectory_artifact.is_dir()
+            else None
+        )
 
         self.sequence_length = int(sequence_length)
         self.num_points = int(num_points)
@@ -453,16 +460,26 @@ class TemporalLAMMPSDumpDataset(Dataset):
         return state
 
     def _neighbor_index_cache_spec(self) -> dict[str, Any]:
-        source_stat = self.dump_file.stat()
+        if self._binary_trajectory is None:
+            source_path = str(self.dump_file)
+            source_size_bytes = int(self.dump_file.stat().st_size)
+            source_mtime_ns = int(self.dump_file.stat().st_mtime_ns)
+        else:
+            source_record = self._binary_trajectory.manifest["source"][
+                "trajectory_lammpstrj"
+            ]
+            source_path = str(source_record["path"])
+            source_size_bytes = int(source_record["size_bytes"])
+            source_mtime_ns = int(source_record["mtime_ns"])
         center_atom_indices_bytes = np.asarray(
             self._center_atom_indices,
             dtype=np.int64,
         ).tobytes()
         return {
             "neighbor_index_cache_version": self.neighbor_index_cache_version,
-            "source_path": str(self.dump_file),
-            "source_size_bytes": int(source_stat.st_size),
-            "source_mtime_ns": int(source_stat.st_mtime_ns),
+            "source_path": source_path,
+            "source_size_bytes": source_size_bytes,
+            "source_mtime_ns": source_mtime_ns,
             "frame_count": int(self.frame_count),
             "num_atoms": int(self.num_atoms),
             "center_count": int(self.center_count),
@@ -629,6 +646,13 @@ class TemporalLAMMPSDumpDataset(Dataset):
         return int(self._manifest["num_atoms"])
 
     def _prepare_cache(self, *, rebuild_cache: bool) -> None:
+        if self._binary_trajectory is not None:
+            if rebuild_cache:
+                raise ValueError(
+                    "rebuild_cache=True is invalid for a canonical temporal binary "
+                    f"trajectory: {self.trajectory_artifact}."
+                )
+            return
         lock_path = self.cache_dir / ".build.lock"
         self._acquire_build_lock(lock_path)
         try:
@@ -727,7 +751,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
 
     @classmethod
     def _scan_cache_key(cls, dump_path: Path) -> tuple[str, int, int]:
-        stat = dump_path.stat()
+        stat_path = dump_path / "manifest.json" if dump_path.is_dir() else dump_path
+        stat = stat_path.stat()
         return str(dump_path), int(stat.st_size), int(stat.st_mtime_ns)
 
     @classmethod
@@ -812,6 +837,17 @@ class TemporalLAMMPSDumpDataset(Dataset):
         cache_dir: str | Path | None = None,
     ) -> _DumpScanResult:
         dump_path = _resolve_dump_path(dump_file)
+
+        if dump_path.is_dir():
+            binary = TemporalLAMMPSBinaryTrajectory.load(dump_path)
+            return _DumpScanResult(
+                frame_count=binary.frame_count,
+                num_atoms=binary.atom_count,
+                atom_columns=tuple(str(name) for name in binary.manifest["atom_columns"]),
+                timesteps=binary.timesteps,
+                box_low=binary.box_low,
+                box_high=binary.box_high,
+            )
 
         cache_key = cls._scan_cache_key(dump_path)
         cached_scan = _SCAN_RESULT_PROCESS_CACHE.get(cache_key)
@@ -913,6 +949,24 @@ class TemporalLAMMPSDumpDataset(Dataset):
         dump_path = _resolve_dump_path(dump_file)
         if frame_index < 0:
             raise ValueError(f"frame_index must be >= 0, got {frame_index}.")
+
+        if dump_path.is_dir():
+            binary = TemporalLAMMPSBinaryTrajectory.load(dump_path)
+            if frame_index >= binary.frame_count:
+                raise IndexError(
+                    "Requested frame_index exceeds the number of frames in the temporal binary. "
+                    f"frame_index={frame_index}, frame_count={binary.frame_count}, "
+                    f"source_path={dump_path}."
+                )
+            box_lengths = (
+                np.asarray(binary.box_high[frame_index], dtype=np.float32)
+                - np.asarray(binary.box_low[frame_index], dtype=np.float32)
+            )
+            return (
+                np.asarray(binary.positions[frame_index], dtype=np.float32),
+                box_lengths,
+                int(binary.timesteps[frame_index]),
+            )
 
         with dump_path.open("r", encoding="utf-8") as handle:
             for current_frame_index in range(int(frame_index) + 1):
@@ -1073,6 +1127,18 @@ class TemporalLAMMPSDumpDataset(Dataset):
             json.dump(manifest, handle, indent=2)
 
     def _load_cache(self) -> None:
+        if self._binary_trajectory is not None:
+            binary = self._binary_trajectory
+            self._manifest = dict(binary.manifest)
+            self._manifest["num_atoms"] = binary.atom_count
+            self.positions = binary.positions
+            self.atom_ids = binary.atom_ids
+            self.atom_types = binary.atom_types
+            self.timesteps = binary.timesteps
+            self.box_low = binary.box_low
+            self.box_high = binary.box_high
+            self.box_lengths = self.box_high - self.box_low
+            return
         with (self.cache_dir / "manifest.json").open("r", encoding="utf-8") as handle:
             self._manifest = json.load(handle)
 

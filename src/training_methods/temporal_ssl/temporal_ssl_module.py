@@ -66,11 +66,6 @@ class TemporalSSLModule(BaseSSLModule):
                 f"got vicreg_view_points={self.vicreg.view_points} and "
                 f"swav_view_points={self.swav.view_points}."
             )
-        if self.vicreg.requires_overlap_target:
-            raise ValueError(
-                "Temporal fused views do not produce the sampled-index overlap target "
-                "required by overlap_vicreg."
-            )
         if self.vicreg.neighbor_view and self.vicreg.neighbor_view_mode not in {
             "none",
             "second",

@@ -1,0 +1,100 @@
+# Joint future-path conditional mean-embedding atlas on every completed compatible
+# fixed-duration shooting branch available on 2026-09-02.
+output_dir: /home/ids/vmorozov/experiments/predictive_atlas_geoframe_v2_480branches_20260902
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 2048
+  environment_batch_size: 2
+  environment_num_workers: 4
+
+data:
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901
+  temperatures_K: [400, 450, 500]
+  minimum_complete_branches_per_parent: 12
+  expected_parent_count: 40
+  expected_branch_count: 480
+  horizons_ps: [6, 12, 24, 48]
+  center_atom_count: 64
+  center_selection_seed: 123
+  radius: 9.192189
+  num_points: 160
+  legacy_context_center_count: 8
+
+context:
+  center_count: 16
+  radial_scales_angstrom: [3.5, 6.0, 9.192189]
+  steinhardt_shell_min_neighbors: 8
+  steinhardt_shell_max_neighbors: 16
+
+target:
+  horizons_ps: [6, 12, 24]
+  horizon_weights: [1, 1, 1]
+  rff_features_per_bandwidth: 256
+  bandwidth_multipliers: [0.5, 1.0, 2.0]
+  rff_batch_size: 4096
+  seed: 123
+
+marginal_baseline:
+  horizons_ps: [6, 12, 24]
+  change_pca_dim: 16
+  rff_features_per_bandwidth: 128
+  bandwidth_multipliers: [0.5, 1.0, 2.0]
+  representation_dim: 64
+  seed: 123
+
+initialization:
+  pretrained_backbones: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/ordinary_pretrained_backbones.pt
+
+split:
+  selection_source_velocity_seeds: [35863]
+
+model:
+  hidden_dim: 128
+  heads: 4
+  blocks: 2
+  rbf_dim: 16
+  latent_dim: 32
+  decoder_hidden_dim: 256
+  dropout: 0.15
+
+training:
+  learning_rate: 0.0005
+  weight_decay: 0.001
+  variance_weight: 0.02
+  covariance_weight: 0.001
+  batch_size: 128
+  maximum_epochs: 600
+  patience: 80
+  seeds: [11, 22, 33]
+
+evaluation:
+  static_pca_dim: 32
+  neighbors: 10
+  static_caliper_candidates: 32
+  crystalline_fraction_tolerance: 0.002
+  pairwise_samples: 10000
+  exact_mmd_pairs: 512
+  bootstrap_samples: 5000
+  witness_count: 6
+  seed: 123
+  vamp:
+    horizon_ps: 12
+    dimension: 32
+    regularization: 1.0e-6
+    eigenvalue_cutoff: 1.0e-10
+  pullback:
+    maximum_states: 128
+    batch_size: 16
+    relative_eigenvalue_cutoff: 1.0e-4
+
+cache:
+  force_recompute: false

@@ -24,12 +24,12 @@ def _validate_encoder_compile_mode(
 ) -> None:
     if (
         bool(compile_enabled)
-        and str(encoder_name) == "GeoFrameTransformer"
+        and str(encoder_name) in {"GeoFrameTransformer", "GeoFrameTransformerV2"}
         and str(compile_mode) == "reduce-overhead"
     ):
         raise ValueError(
             "encoder_compile_mode='reduce-overhead' is disabled for "
-            "GeoFrameTransformer. Its CUDA-graph path produced call-order-dependent "
+            f"{encoder_name}. Its CUDA-graph path produced call-order-dependent "
             "encoder outputs on the H100/PyTorch 2.11 stack, including different "
             "embeddings for identical point clouds before and after warm-up. Use "
             "encoder_compile_mode='default' or set compile_encoder=false."
@@ -211,6 +211,14 @@ class BaseSSLModule(pl.LightningModule):
                 raise RuntimeError(
                     "representation_source='vicreg_projector' requires an active VICReg "
                     "projector, but this model has no projector."
+                )
+            if not self.training and self.vicreg.projector_bn_eval_batch_stats:
+                raise RuntimeError(
+                    "Refusing to export representation_source='vicreg_projector' while "
+                    "vicreg_projector_bn_eval_batch_stats=true in eval mode. The same "
+                    "sample would receive different embeddings depending on its batch "
+                    "companions. Set vicreg_projector_bn_eval_batch_stats=false and "
+                    "reload the checkpoint, or export representation_source='encoder'."
                 )
             return self.vicreg(encoder_features)
         raise AssertionError(

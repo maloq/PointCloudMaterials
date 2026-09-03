@@ -1,0 +1,98 @@
+# Long temporal-atlas training on 8x more overlapping local environments,
+# followed by last-block fine-tuning of the present GeoFrame encoder only.
+output_dir: /home/ids/vmorozov/experiments/predictive_atlas_expanded512_history_finetune_geoframe_v2_20260902
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 4096
+  environment_batch_size: 1
+  environment_num_workers: 8
+
+initialization:
+  position_atlas_run: /home/ids/vmorozov/experiments/predictive_atlas_expanded512_cache_geoframe_v2_20260902
+  temporal_atlas_checkpoint: /home/ids/vmorozov/experiments/predictive_atlas_history4_geoframe_v2_480branches_20260902/model.pt
+  fixed_path_kernel: /home/ids/vmorozov/experiments/predictive_atlas_geoframe_v2_480branches_20260902/path_kernel.npz
+
+data:
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901
+  temperatures_K: [400, 450, 500]
+  minimum_complete_branches_per_parent: 12
+  expected_parent_count: 40
+  expected_branch_count: 480
+  radius: 9.192189
+  num_points: 160
+
+context:
+  center_count: 16
+  radial_scales_angstrom: [3.5, 6.0, 9.192189]
+
+history:
+  source_trajectory_root: output/synthetic_data
+  source_sample_interval_ps: 3.0
+  lag_frames: [4, 3, 2, 1]
+  lag_times_ps: [12, 9, 6, 3]
+
+target:
+  rff_batch_size: 8192
+
+split:
+  selection_source_velocity_seeds: [35863]
+
+model:
+  hidden_dim: 128
+  heads: 4
+  blocks: 2
+  rbf_dim: 16
+  latent_dim: 32
+  decoder_hidden_dim: 256
+  dropout: 0.15
+
+training:
+  learning_rate: 0.0002
+  weight_decay: 0.001
+  variance_weight: 0.02
+  covariance_weight: 0.001
+  batch_size: 512
+  maximum_epochs: 1200
+  patience: 180
+  seeds: [11, 22, 33]
+
+fine_tuning:
+  atlas_learning_rate: 0.00005
+  encoder_learning_rate: 0.000002
+  weight_decay: 0.001
+  variance_weight: 0.02
+  covariance_weight: 0.001
+  batch_size: 256
+  maximum_epochs: 500
+  patience: 100
+  gradient_clip_norm: 1.0
+  mixed_precision: false
+  seeds: [41, 42, 43]
+
+evaluation:
+  static_pca_dim: 32
+  neighbors: 10
+  static_caliper_candidates: 64
+  crystalline_fraction_tolerance: 0.002
+  pairwise_samples: 20000
+  exact_mmd_pairs: 512
+  bootstrap_samples: 5000
+  witness_count: 8
+  seed: 123
+  vamp:
+    horizon_ps: 12
+    dimension: 32
+    regularization: 0.000001
+    eigenvalue_cutoff: 0.0000000001
+
+cache:
+  force_recompute: false

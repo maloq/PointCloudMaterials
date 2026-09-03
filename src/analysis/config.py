@@ -137,7 +137,6 @@ class FigureSetSettings:
     md_view_elev: float
     md_view_azim: float
     md_num_views: int
-    visible_cluster_sets: list[list[int]] | None
     cluster_color_assignment: dict[int, int | str] | None
     profile_point_scale_enabled: bool
     icl_enabled: bool
@@ -212,7 +211,6 @@ class FigureSetSettings:
             "representative_shell_max_neighbors": int(
                 self.representative_shell_max_neighbors
             ),
-            "visible_cluster_sets": self.visible_cluster_sets,
             "cluster_color_assignment": self.cluster_color_assignment,
             "random_state": int(random_state),
             "raytrace_render_enabled": bool(self.raytrace_enabled),
@@ -309,32 +307,6 @@ def _load_dict_config_from_path(path: str | Path, *, field_name: str) -> DictCon
             f"{field_name} must load to a mapping, got {type(loaded_cfg)!r} from {resolved}."
         )
     return loaded_cfg
-
-
-def _normalize_visible_cluster_sets(value: Any) -> list[list[int]] | None:
-    raw = _to_plain(value)
-    if raw is None:
-        return None
-    if not isinstance(raw, list):
-        raise TypeError(
-            "figure_set.visible_cluster_sets must be a list of cluster-ID lists, "
-            f"got {type(raw)!r}."
-        )
-    normalized: list[list[int]] = []
-    for set_idx, cluster_set in enumerate(raw):
-        if not isinstance(cluster_set, list):
-            raise TypeError(
-                "figure_set.visible_cluster_sets entries must be lists of cluster IDs. "
-                f"Invalid entry at index {set_idx}: {cluster_set!r}."
-            )
-        tokens = list(cluster_set)
-        if not tokens:
-            raise ValueError(
-                "figure_set.visible_cluster_sets entries must be non-empty. "
-                f"Invalid entry at index {set_idx}: {cluster_set!r}."
-            )
-        normalized.append([int(v) for v in tokens])
-    return normalized
 
 
 def _parse_color_value(value: Any) -> int | str:
@@ -814,9 +786,41 @@ def _resolve_figure_set_settings(
     representative_shell_max_neighbors = int(
         getattr(figure_representatives_cfg, "shell_max_neighbors", 24)
     )
-    md_num_views = int(_cfg_select(figure_md_cfg, "num_views", default=4))
+    representative_ptm_enabled = bool(
+        _cfg_select(rep_cfg, "ptm_enabled", default=False)
+    )
+    if enabled and not representative_ptm_enabled:
+        raise ValueError(
+            "figure_set.representatives.ptm_enabled must be true when figure_set is "
+            "enabled because crystal-like cluster snapshots are selected from PTM "
+            "FCC/HCP/BCC representative-center assignments."
+        )
+    md_num_views = int(_cfg_select(figure_md_cfg, "num_views", default=2))
     if md_num_views < 1:
         raise ValueError("figure_set.md.num_views must be >= 1.")
+    raytrace_high_quality = bool(
+        _cfg_select(raytrace_cfg, "high_quality", default=False)
+    )
+    raytrace_resolution = (
+        1600
+        if raytrace_high_quality
+        else int(_cfg_select(raytrace_cfg, "resolution", default=1200))
+    )
+    raytrace_samples = (
+        64
+        if raytrace_high_quality
+        else int(_cfg_select(raytrace_cfg, "samples", default=32))
+    )
+    if raytrace_resolution <= 0:
+        raise ValueError(
+            "figure_set.raytrace.resolution must be positive, "
+            f"got {raytrace_resolution}."
+        )
+    if raytrace_samples <= 0:
+        raise ValueError(
+            "figure_set.raytrace.samples must be positive, "
+            f"got {raytrace_samples}."
+        )
 
     return FigureSetSettings(
         enabled=enabled,
@@ -835,9 +839,6 @@ def _resolve_figure_set_settings(
         md_view_elev=float(_cfg_select(figure_md_cfg, "view_elev", default=24.0)),
         md_view_azim=float(_cfg_select(figure_md_cfg, "view_azim", default=35.0)),
         md_num_views=md_num_views,
-        visible_cluster_sets=_normalize_visible_cluster_sets(
-            _cfg_select(figure_cfg, "visible_cluster_sets", default=None)
-        ),
         cluster_color_assignment=_merge_cluster_color_assignments(
             cluster_color_assignment_cfg_file,
             cluster_color_assignment_cfg,
@@ -858,9 +859,7 @@ def _resolve_figure_set_settings(
         representative_projection=str(
             _cfg_select(rep_cfg, "projection", default="ortho")
         ).strip().lower(),
-        representative_ptm_enabled=bool(
-            _cfg_select(rep_cfg, "ptm_enabled", default=False)
-        ),
+        representative_ptm_enabled=representative_ptm_enabled,
         representative_cna_enabled=bool(
             _cfg_select(rep_cfg, "cna_enabled", default=False)
         ),
@@ -891,15 +890,15 @@ def _resolve_figure_set_settings(
             "raytrace_blender_executable": str(
                 _cfg_select(raytrace_cfg, "blender_executable", default="blender")
             ).strip(),
-            "raytrace_render_resolution": int(
-                _cfg_select(raytrace_cfg, "resolution", default=1600)
-            ),
+            "raytrace_render_resolution": int(raytrace_resolution),
             "raytrace_render_max_points": _positive_int_or_none(
                 _cfg_select(raytrace_cfg, "max_points", default=None)
             ),
-            "raytrace_render_samples": int(
-                _cfg_select(raytrace_cfg, "samples", default=64)
+            "raytrace_render_samples": int(raytrace_samples),
+            "raytrace_render_denoise": bool(
+                _cfg_select(raytrace_cfg, "denoise", default=True)
             ),
+            "raytrace_render_high_quality": bool(raytrace_high_quality),
             "raytrace_render_projection": str(
                 _cfg_select(raytrace_cfg, "projection", default="perspective")
             ).strip().lower(),
@@ -917,12 +916,6 @@ def _resolve_figure_set_settings(
             ),
             "raytrace_render_use_gpu": bool(
                 _cfg_select(raytrace_cfg, "use_gpu", default=False)
-            ),
-            "raytrace_parallel_views": bool(
-                _cfg_select(raytrace_cfg, "parallel_views", default=False)
-            ),
-            "raytrace_parallel_max_workers": _positive_int_or_none(
-                _cfg_select(raytrace_cfg, "parallel_max_workers", default=None)
             ),
         },
     )
@@ -974,7 +967,7 @@ def _print_resolved_analysis_settings(
         f"enabled={figure_settings.enabled}, "
         f"figure_only={figure_settings.figure_only}, "
         f"k={figure_settings.k}, "
-        f"visible_sets={figure_settings.visible_cluster_sets or []}, "
+        "crystal_like_detection=representative_ptm_fcc_hcp_bcc, "
         f"md_saturation={figure_settings.md_saturation_boost:.2f}, "
         f"raytrace_enabled={figure_settings.raytrace_enabled}, "
         f"raytrace_projection={figure_settings.raytrace_kwargs['raytrace_render_projection']}, "
@@ -982,9 +975,10 @@ def _print_resolved_analysis_settings(
         f"raytrace_res={figure_settings.raytrace_kwargs['raytrace_render_resolution']}, "
         f"raytrace_max_points={figure_settings.raytrace_kwargs['raytrace_render_max_points']}, "
         f"raytrace_gpu={figure_settings.raytrace_kwargs['raytrace_render_use_gpu']}, "
-        f"raytrace_parallel_views={figure_settings.raytrace_kwargs['raytrace_parallel_views']}, "
-        "raytrace_parallel_max_workers="
-        f"{figure_settings.raytrace_kwargs['raytrace_parallel_max_workers']}, "
+        f"raytrace_denoise={figure_settings.raytrace_kwargs['raytrace_render_denoise']}, "
+        "raytrace_high_quality="
+        f"{figure_settings.raytrace_kwargs['raytrace_render_high_quality']}, "
+        "raytrace_process_model=one_blender_process_per_snapshot, "
         f"icl_enabled={figure_settings.icl_enabled}, "
         f"profile_point_scale_enabled={figure_settings.profile_point_scale_enabled}, "
         f"rep_orientation={figure_settings.representative_orientation}, "
@@ -1083,6 +1077,21 @@ def build_runtime_model_config(
 
 
 def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
+    if bool(
+        OmegaConf.select(
+            model_cfg,
+            "vicreg_projector_bn_eval_batch_stats",
+            default=False,
+        )
+    ):
+        print(
+            "[analysis] Replacing vicreg_projector_bn_eval_batch_stats=true with "
+            "false: exported projector embeddings must use checkpoint running "
+            "statistics so they do not depend on inference-batch composition."
+        )
+        with open_dict(model_cfg):
+            model_cfg.vicreg_projector_bn_eval_batch_stats = False
+
     compile_enabled = bool(OmegaConf.select(model_cfg, "compile_encoder", default=False))
     compile_mode = str(
         OmegaConf.select(model_cfg, "encoder_compile_mode", default="default")

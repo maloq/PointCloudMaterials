@@ -8,6 +8,8 @@ from typing import Any, Sequence
 
 import numpy as np
 
+from src.data_utils.temporal_lammps_binary import BINARY_SUFFIX
+
 
 @dataclass(frozen=True)
 class SimulationMetadata:
@@ -388,9 +390,24 @@ def discover_simulation_catalog(
     entries: list[CatalogEntry] = []
     seen_trajectories: set[Path] = set()
     for campaign in unique_campaigns:
-        trajectories = sorted(campaign.glob("**/trajectory.lammpstrj"))
+        text_trajectories = sorted(campaign.glob("**/trajectory.lammpstrj"))
+        binary_trajectories = sorted(
+            path
+            for path in campaign.glob(f"**/trajectory{BINARY_SUFFIX}")
+            if path.is_dir()
+        )
+        by_replica: dict[Path, Path] = {
+            trajectory.parent.resolve(): trajectory.resolve()
+            for trajectory in text_trajectories
+        }
+        for trajectory in binary_trajectories:
+            by_replica[trajectory.parent.resolve()] = trajectory.resolve()
+        trajectories = [by_replica[replica] for replica in sorted(by_replica)]
         if not trajectories:
-            raise FileNotFoundError(f"Campaign contains no trajectory.lammpstrj files: {campaign}")
+            raise FileNotFoundError(
+                f"Campaign contains no trajectory.lammpstrj files or verified "
+                f"trajectory{BINARY_SUFFIX} directories: {campaign}"
+            )
         for trajectory in trajectories:
             trajectory = trajectory.resolve()
             if trajectory in seen_trajectories:

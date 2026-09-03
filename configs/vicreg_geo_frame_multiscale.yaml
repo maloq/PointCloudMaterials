@@ -5,12 +5,12 @@ defaults:
 # Clean single-H100 retraining after rejecting the numerically incorrect
 # reduce-overhead CUDA-graph execution path. No weights are inherited from the
 # affected GeoFrame runs.
-experiment_name: VICREG_GEOFRAME_MULTISCALE_8_16_l${latent_size}_CORRECTED_H100_N${data.num_points}_M${data.model_points}_${encoder.name}
+experiment_name: VICREG_G_MULT_8_16_l${latent_size}_CORRECTED_H100_N${data.num_points}_M${data.model_points}_${encoder.name}
 init_from_checkpoint: null
 resume_from_checkpoint: null
 
-devices: [0]
-batch_size: 8192
+devices: [0, 1]
+batch_size: 4096
 ddp_find_unused_parameters: false
 
 compile_encoder: true

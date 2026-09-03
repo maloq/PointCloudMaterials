@@ -7,8 +7,11 @@ import torch
 from hydra import compose, initialize_config_dir
 
 from src.models.encoders.factory import available_encoder_names
-from src.models.encoders.geo_frame_transformer import GeoFrameTransformerEncoder
-from src.models.encoders.ri_mae_encoder import RIMAEBackbone
+from src.models.encoders.geo_frame_transformer import (
+    GeoFrameTransformerEncoder,
+    _relative_frame_products,
+)
+from src.models.encoders.ri_mae_encoder import RIMAEBackbone, _farthest_point_sample
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 
 
@@ -38,10 +41,112 @@ def _rotation() -> torch.Tensor:
     return matrix
 
 
+def _reference_farthest_point_sample(
+    xyz: torch.Tensor,
+    npoint: int,
+    *,
+    deterministic: bool,
+) -> torch.Tensor:
+    xyz_float = xyz.float()
+    batch_size, num_points, _ = xyz.shape
+    centroids = torch.zeros(
+        (batch_size, npoint),
+        dtype=torch.long,
+        device=xyz.device,
+    )
+    distance = torch.full(
+        (batch_size, num_points),
+        1.0e10,
+        dtype=torch.float32,
+        device=xyz.device,
+    )
+    if deterministic:
+        farthest = torch.zeros((batch_size,), dtype=torch.long, device=xyz.device)
+    else:
+        farthest = torch.randint(0, num_points, (batch_size,), device=xyz.device)
+    batch_indices = torch.arange(batch_size, device=xyz.device)
+    for sample_index in range(npoint):
+        centroids[:, sample_index] = farthest
+        centroid = xyz_float[batch_indices, farthest].unsqueeze(1)
+        candidate = (xyz_float - centroid).square().sum(dim=-1)
+        update = candidate < distance
+        distance[update] = candidate[update]
+        farthest = distance.max(dim=-1).indices
+    return centroids
+
+
 def test_new_and_ablation_encoders_are_both_registered() -> None:
     names = available_encoder_names()
     assert "GeoFrameTransformer" in names
     assert "RI_MAE_Invariant" in names
+
+
+def test_packed_relative_frame_products_match_broadcasted_matmul() -> None:
+    torch.manual_seed(3)
+    frames = torch.randn(5, 8, 3, 3)
+    reference = torch.matmul(
+        frames.unsqueeze(2).transpose(-1, -2),
+        frames.unsqueeze(1),
+    )
+    actual = _relative_frame_products(frames)
+    torch.testing.assert_close(actual, reference, atol=1.0e-6, rtol=1.0e-6)
+
+
+@pytest.mark.parametrize("deterministic", [False, True])
+def test_vectorized_fps_update_preserves_selected_centers(deterministic: bool) -> None:
+    points = torch.randn(7, 31, 3)
+    torch.manual_seed(19)
+    reference = _reference_farthest_point_sample(
+        points,
+        12,
+        deterministic=deterministic,
+    )
+    torch.manual_seed(19)
+    actual = _farthest_point_sample(
+        points,
+        12,
+        deterministic=deterministic,
+    )
+    torch.testing.assert_close(actual, reference, atol=0, rtol=0)
+
+
+def test_feature_only_path_matches_stateful_path_and_skips_radial_state() -> None:
+    torch.manual_seed(23)
+    encoder = GeoFrameTransformerEncoder(
+        latent_size=32,
+        num_group=8,
+        patch_sizes=(6, 12),
+        encoder_dims=32,
+        trans_dim=32,
+        depth=2,
+        num_heads=4,
+        deterministic_fps=True,
+        group_sampling="fps",
+        use_frame_gating=False,
+        geometry_bias_mode="orientation",
+        pooling_mode="max_mean",
+        enable_ray_head=False,
+        enable_masked_token_objective=False,
+    ).eval()
+    points = torch.randn(4, 24, 3)
+    radial_calls = 0
+
+    def count_radial_call(_module, _inputs, _output):
+        nonlocal radial_calls
+        radial_calls += 1
+
+    hook = encoder.token_encoder.radial_position.register_forward_hook(count_radial_call)
+    with torch.no_grad():
+        fast_features = encoder.forward_features(points)
+        output_features, output_state = encoder(points)
+        stateful_features, state = encoder.forward_with_state(points)
+    hook.remove()
+
+    assert output_state == {}
+    assert radial_calls == 1
+    assert state["radial_position_tokens"].shape == (4, 8, 32)
+    torch.testing.assert_close(fast_features, stateful_features, atol=1.0e-6, rtol=1.0e-6)
+    torch.testing.assert_close(output_features, stateful_features, atol=1.0e-6, rtol=1.0e-6)
 
 
 @pytest.mark.parametrize("frame_builder", ["triad", "pca"])

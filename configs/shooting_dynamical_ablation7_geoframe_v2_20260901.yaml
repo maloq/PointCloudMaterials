@@ -1,0 +1,62 @@
+# Ranked ablation 7: distinguish structural history from momentum-conditioned
+# individual-future predictability. The accepted ablation-5 prediction is the
+# fixed base for every residual model.
+output_dir: /home/ids/vmorozov/experiments/shooting_dynamical_ablation7_geoframe_v2_20260901
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 2048
+
+initialization:
+  ablation5_coordinates_and_predictions: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/coordinates_and_predictions.npz
+
+shooting:
+  base_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+  context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+
+data:
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+  temperatures_K: [400, 450, 500]
+  minimum_complete_branches_per_parent: 11
+  expected_parent_count: 40
+  expected_branch_count: 440
+  radius: 9.192189
+  num_points: 160
+
+context:
+  center_count: 16
+
+history:
+  source_trajectory_root: output/synthetic_data
+  source_sample_interval_ps: 3.0
+  lag_frames: 1
+  lag_ps: 3.0
+
+target:
+  horizons_ps: [6, 12, 24]
+  change_pca_dim: 16
+  rff_features_per_bandwidth: 128
+  bandwidth_multipliers: [0.5, 1.0, 2.0]
+  seed: 123
+
+split:
+  selection_source_velocity_seeds: [35863]
+
+ridge:
+  history_pca_dimensions: [8, 16, 32, 64, 128]
+  velocity_pca_dimensions: [8, 16, 32, 64, 75]
+  alphas: [0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]
+
+evaluation:
+  neighbors: 10
+  seed: 123
+
+cache:
+  force_recompute: false

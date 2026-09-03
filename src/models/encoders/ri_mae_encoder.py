@@ -39,8 +39,7 @@ def _farthest_point_sample(xyz: torch.Tensor, npoint: int, *, deterministic: boo
         centroids[:, i] = farthest
         centroid = xyz_f[batch_idx, farthest, :].view(bsz, 1, 3)
         dist = ((xyz_f - centroid) ** 2).sum(dim=-1)
-        update = dist < distance
-        distance[update] = dist[update]
+        distance = torch.minimum(distance, dist)
         farthest = distance.max(dim=-1).indices
     return centroids
 
@@ -450,7 +449,7 @@ class RIMAEBackbone(nn.Module):
 
     @staticmethod
     def _apply_axis_sign_convention(patches: torch.Tensor, axis: torch.Tensor) -> torch.Tensor:
-        projections = torch.einsum("bpc,bc->bp", patches, axis)
+        projections = (patches * axis.unsqueeze(1)).sum(dim=-1)
         batch_idx = torch.arange(axis.shape[0], device=axis.device)
         pivot_idx = projections.abs().argmax(dim=1)
         pivot_val = projections[batch_idx, pivot_idx]
@@ -510,7 +509,7 @@ class RIMAEBackbone(nn.Module):
         patches = neighborhood.reshape(batch_size * num_group, group_size, 3).contiguous()
         batch_idx = torch.arange(patches.shape[0], device=patches.device)
 
-        radial_sq = torch.einsum("bpc,bpc->bp", patches, patches)
+        radial_sq = patches.square().sum(dim=-1)
         primary_idx = radial_sq.argmax(dim=1)
         axis1_raw = patches[batch_idx, primary_idx]
         axis1_raw = RIMAEBackbone._replace_unorientable_vectors(
@@ -521,9 +520,9 @@ class RIMAEBackbone(nn.Module):
         axis1 = RIMAEBackbone._normalize_frame_vectors(axis1_raw, eps=frame_eps)
         axis1 = RIMAEBackbone._apply_axis_sign_convention(patches, axis1)
 
-        axis1_proj = torch.einsum("bpc,bc->bp", patches, axis1).unsqueeze(-1)
+        axis1_proj = (patches * axis1.unsqueeze(1)).sum(dim=-1, keepdim=True)
         residual = patches - axis1_proj * axis1.unsqueeze(1)
-        residual_sq = torch.einsum("bpc,bpc->bp", residual, residual)
+        residual_sq = residual.square().sum(dim=-1)
         secondary_idx = residual_sq.argmax(dim=1)
         axis2_raw = residual[batch_idx, secondary_idx]
         axis2_raw = RIMAEBackbone._replace_unorientable_vectors(

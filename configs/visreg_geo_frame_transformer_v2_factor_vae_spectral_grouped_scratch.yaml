@@ -1,0 +1,19 @@
+defaults:
+  - vicreg_geo_frame_transformer_v2_factor_vae_spectral_grouped_scratch
+  - _self_
+
+# Matched objective ablation of the VICReg + grouped FactorVAE scratch run.
+# Architecture, seed, data, batch size, augmentations, optimizer schedule, and
+# FactorVAE settings are inherited unchanged; only VICReg is replaced by VISReg.
+experiment_name: VISREG_GF_V2_FACTOR_SN_GROUPED_SCRATCH_L${visreg_lambda}_K${visreg_num_projections}_G${factor_vae_gamma}_B${batch_size}
+model_type: visreg
+vicreg_objective: visreg
+
+# VISReg = (1-lambda) * paired-view prediction + lambda * distribution
+# regularization. The latter combines scale, sliced-Gaussian shape, and center.
+visreg_lambda: 0.4
+visreg_num_projections: 4096
+visreg_scale_coeff: 1.0
+visreg_shape_coeff: 0.5
+visreg_center_coeff: 0.1
+visreg_std_eps: 1.0e-6

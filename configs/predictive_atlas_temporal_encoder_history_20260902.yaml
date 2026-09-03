@@ -1,0 +1,38 @@
+# Four-frame input history encoded by the ordinary-MD temporally trained encoder.
+output_dir: /home/ids/vmorozov/experiments/predictive_atlas_temporal_encoder_history_20260902
+device: cuda:0
+
+encoder:
+  checkpoint: /home/ids/vmorozov/experiments/temporal_encoder_pretraining_geoframe_v2_29824_20260902/temporal_geoframe_v2.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 4096
+
+initialization:
+  position_atlas_run: /home/ids/vmorozov/experiments/predictive_atlas_temporal_encoder_input_cache_20260902
+
+data:
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901
+  temperatures_K: [400, 450, 500]
+  minimum_complete_branches_per_parent: 12
+  expected_parent_count: 40
+  expected_branch_count: 480
+  radius: 9.192189
+  num_points: 160
+
+context:
+  center_count: 16
+
+history:
+  source_trajectory_root: output/synthetic_data
+  source_sample_interval_ps: 3.0
+  lag_frames: [4, 3, 2, 1]
+  lag_times_ps: [12, 9, 6, 3]
+
+cache:
+  force_recompute: false

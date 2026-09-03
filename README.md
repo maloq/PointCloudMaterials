@@ -77,28 +77,27 @@ Blender Cycles raytraced render (`*_raytrace.png`) can also be enabled.
 |---|---|
 | `01_md_clusters_all_k<K>.png` | MD space with all clusters (view 1) |
 | `01_md_clusters_all_k<K>_view2.png` | Same, rotated 90 degrees |
-| `01_md_clusters_all_k<K>_view3.png` | Same, rotated 180 degrees |
-| `01_md_clusters_all_k<K>_view4.png` | Same, rotated 270 degrees |
 | `01_*_raytrace.png` | Blender Cycles raytraced renders (when enabled) |
-| `02_md_clusters_set_<IDS>_k<K>.png` | Selected cluster subset (if `figure_set.visible_cluster_sets` is set) |
-| `02_*_raytrace.png` | Blender Cycles raytraced subset renders (when enabled) |
+| `02_md_clusters_crystal_like_k<K>.png` | Clusters whose representative center is PTM FCC, HCP, or BCC |
+| `02_*_raytrace.png` | Blender Cycles raytraced crystal-like renders (when enabled) |
 | `03_cluster_count_icl_k<K>.png` | ICL curve vs number of clusters |
 | `04_cluster_representatives_k<K>*.png` | Representative variants with reciprocal-shell edges and aligned/PCA reference views |
 | `04_cluster_representatives_k<K>*_raytrace/cluster_*.png` | Blender ball-and-stick representative renders (when enabled) |
 
-### Cluster subset views
+### Crystal-like cluster views
 
-To render only selected clusters, set `figure_set.visible_cluster_sets` in
-`configs/analysis/checkpoint_analysis.yaml`, for example:
+The analysis detects crystal-like clusters independently for every snapshot.
+It runs PTM on each cluster representative and renders only clusters whose
+representative center is FCC, HCP, or BCC. The detected IDs are stored in the
+figure-set metadata as `crystal_like_cluster_ids`; they are not configured
+manually and may differ between snapshots. If a snapshot has no crystal-like
+representative, no `02_md_clusters_crystal_like_*` image is written for it.
 
-```yaml
-figure_set:
-  visible_cluster_sets:
-    - [0, 1, 2]
-    - [3, 4, 5]
-```
-
-Raytrace options live under `figure_set.raytrace`.
+Raytrace options live under `figure_set.raytrace`. The standard preset uses
+two views, 1200 px, 32 Cycles samples, and denoising. Blender is launched once
+per snapshot; that process reuses the cluster scene for every all-cluster and
+crystal-like view. Set `figure_set.raytrace.high_quality: true` to override the
+render size and sample count with the 1600 px / 64-sample quality preset.
 
 The raytraced renderer estimates physically consistent ball size from the full
 labeled MD-space cloud, not the sampled render subset. The sphere-size flag acts

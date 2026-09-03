@@ -32,7 +32,7 @@ def _build_inference_cache_spec(
             f"got {type(data_config)!r}."
         )
     return {
-        "version": 7,
+        "version": 8,
         "collector_contract": {
             "latent_array": "model_forward_output_0_z_inv_contrastive",
             "sample_order": "dataloader_order_preallocated_v3",
@@ -48,6 +48,21 @@ def _build_inference_cache_spec(
             "mtime_ns": int(checkpoint_stat.st_mtime_ns),
         },
         "model_type": str(cfg.model_type),
+        "representation": {
+            "source": str(
+                OmegaConf.select(cfg, "representation_source", default="encoder")
+            ).strip().lower(),
+            "vicreg_projector_mode": str(
+                OmegaConf.select(cfg, "vicreg_projector_mode", default="mlp")
+            ).strip().lower(),
+            "vicreg_projector_bn_eval_batch_stats": bool(
+                OmegaConf.select(
+                    cfg,
+                    "vicreg_projector_bn_eval_batch_stats",
+                    default=False,
+                )
+            ),
+        },
         "data_config": data_config,
         "checkpoint_batch_size": int(cfg.batch_size),
         "inference_batch_size": int(inference_batch_size),

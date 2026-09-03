@@ -1,0 +1,63 @@
+# Controlled full-data rerun of the original epoch-159 GeoFrame representation.
+output_dir: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v1_440branches_20260901
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_corrected_h100_20260829_220250/VICREG_GEOFRAME_MULTISCALE_8_16_l128_CORRECTED_H100_N160_M80_GeoFrameTransformer-epoch=159.ckpt
+  representation_source: checkpoint
+
+embedding:
+  device: cuda
+  seed: 123
+  repeats: 1
+  point_cloud_batch_size: 2048
+  environment_batch_size: 2
+  environment_num_workers: 4
+
+data:
+  # These three campaigns have identical parent coordinate hashes and protocol,
+  # and disjoint branch velocity/thermostat seed pairs.
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+  temperatures_K: [400, 450, 500]
+  minimum_complete_branches_per_parent: 11
+  expected_parent_count: 40
+  expected_branch_count: 440
+  horizons_ps: [6, 12, 24, 48]
+  center_atom_count: 64
+  center_selection_seed: 123
+  radius: 9.192189
+  num_points: 160
+  spatial_context:
+    center_count: 8
+    aggregation: mean_std
+
+split:
+  # One complete source run per temperature is used for model selection.
+  selection_source_velocity_seeds: [35863]
+
+cache:
+  force_recompute: false
+
+model:
+  hidden_dim: 64
+  bottleneck_dim: 16
+  target_pca_dim: 8
+  dropout: 0.20
+
+training:
+  learning_rate: 0.001
+  weight_decay: 0.001
+  geometry_weight: 0.50
+  batch_size: 128
+  maximum_epochs: 1000
+  patience: 120
+  seeds: [11, 22, 33]
+
+evaluation:
+  seed: 123
+  input_pca_dim: 16
+  ridge_alphas: [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+  future_neighbors:
+    k: 10

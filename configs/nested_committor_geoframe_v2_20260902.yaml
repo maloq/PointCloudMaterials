@@ -1,0 +1,36 @@
+# First-passage committor test on the transition-balanced nested shooting pilot.
+# The final-validation source runs are untouched until the last reported fit.
+output_dir: /home/ids/vmorozov/experiments/nested_committor_geoframe_v2_20260902
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 2048
+
+data:
+  campaign_root: /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902
+  expected_parent_count: 36
+  expected_branch_count: 144
+  require_complete_campaign: true
+  num_points: 160
+  radius: 9.192189
+
+regions:
+  nucleus_center_count: 64
+  interface_center_count: 128
+  background_center_count: 128
+  selection_seed: 20260902
+
+model:
+  geoframe_pca_dimensions: [4, 8, 16]
+  velocity_pca_dimensions: [4, 8, 16]
+  logistic_C_values: [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+  grouped_source_run_folds: 5
+
+cache:
+  path: /home/ids/vmorozov/experiments/nested_committor_geoframe_v2_20260902/features
+  force_recompute: false
+

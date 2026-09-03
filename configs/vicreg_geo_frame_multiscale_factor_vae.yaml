@@ -1,0 +1,165 @@
+defaults:
+  - data: loaders/static_multi_material
+  - _self_
+
+# Self-contained FactorVAE variant of vicreg_geo_frame_multiscale.yaml. The
+# inherited GeoFrame configs used by that file are absent from this worktree,
+# so their resolved model/training values are recorded explicitly here.
+project_name: pointnet
+experiment_name: VICREG_G_MULT_8_16_FACTORVAE_G${factor_vae_gamma}_l${latent_size}_N${data.num_points}_M${data.model_points}_${encoder.name}
+wandb_mode: online
+
+model_type: vicreg
+latent_size: 128
+
+load_supervised_checkpoint: null
+init_from_checkpoint: null
+resume_from_checkpoint: null
+
+encoder:
+  name: GeoFrameTransformer
+  kwargs:
+    latent_size: ${latent_size}
+    num_group: 24
+    patch_sizes: [8, 16]
+    encoder_dims: 256
+    trans_dim: 128
+    depth: 6
+    num_heads: 8
+    mlp_ratio: 4.0
+    dropout: 0.0
+    enable_masked_token_objective: false
+    deterministic_fps: true
+    sorting_mode: none
+    group_sampling: random
+    center_input: true
+    frame_builder: triad
+    frame_eps: 1.0e-6
+    use_frame_gating: false
+    geometry_bias_mode: orientation
+    pooling_mode: max_mean
+    enable_ray_head: false
+
+compile_encoder: true
+encoder_compile_mode: default
+encoder_compile_fullgraph: true
+encoder_compile_dynamic: false
+
+representation_source: vicreg_projector
+
+# Training
+learning_rate: 1.0e-3
+batch_size: 4096
+precision: bf16-mixed
+gradient_clip_val: 1.0
+accumulate_grad_batches: 1
+auto_batch_size_search: false
+auto_batch_size_mode: power
+auto_batch_size_init_val: null
+auto_batch_size_max_trials: 12
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: true
+auto_batch_size_target_effective_batch: null
+auto_batch_size_strict: false
+
+enable_swa: false
+swa_epoch_start: 1000
+epochs: 240
+max_samples: 0
+check_val_every_n_epoch: 10
+checkpoint_monitor: loss/val
+checkpoint_mode: min
+checkpoint_save_top_k: 1
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 10
+run_post_training_analysis: false
+run_test_after_training: false
+
+gpu: true
+devices: [0, 1]
+ddp_find_unused_parameters: true
+log_every_n_steps: 5
+num_workers: 12
+scheduler_name: Cosine
+scheduler_min_lr: 1.0e-6
+warmup_enabled: true
+warmup_epochs: 10
+warmup_start_factor: 0.05
+decay_rate: 0.04
+
+seed_everything: 123
+
+# Evaluation and probes
+enable_embedding_metrics: false
+enable_svm_accuracy: false
+enable_probe_metrics: true
+supervised_metric_stages: [test]
+embedding_metric_stages: [test]
+probe_metric_stages: [val, test]
+probe_k: 7
+probe_max_samples: 8192
+probe_pca_max_components: 128
+probe_silhouette_samples: 5000
+probe_kmeans_seed_count: 3
+probe_kmeans_n_init: 5
+probe_seed: 0
+probe_best_k_min: 7
+probe_best_k_max: 7
+max_supervised_samples: 8192
+
+# IDEC clustering remains disabled during pretraining.
+idec_enabled: false
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: true
+idec_normalize_z: true
+idec_init_kmeans: true
+
+# VICReg on the projected 128-dimensional representation.
+vicreg_enabled: true
+vicreg_weight: 1.0
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+vicreg_embed_dim: 128
+vicreg_projector_mode: mlp
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.01
+vicreg_jitter_mode: physical
+vicreg_drop_ratio: 0.0
+vicreg_neighbor_view: false
+vicreg_view_points: ${data.model_points}
+vicreg_rotation_mode: none
+vicreg_mirror_prob: 0.5
+vicreg_strain_std: 0.0
+vicreg_occlusion_mode: none
+vicreg_std_eps: 1.0e-4
+vicreg_std_target: 1.0
+vicreg_radial_enabled: false
+
+# FactorVAE total correlation. These discriminator defaults follow the paper:
+# six 1000-unit LeakyReLU layers, two output logits, and Adam betas (0.5, 0.9).
+factor_vae_enabled: true
+factor_vae_gamma: 10.0
+factor_vae_start_epoch: 0
+factor_vae_discriminator_warmup_epochs: 0
+factor_vae_gamma_warmup_epochs: 0
+factor_vae_discriminator_hidden_dim: 1000
+factor_vae_discriminator_num_hidden_layers: 6
+factor_vae_latent_noise_std: 0.0
+factor_vae_discriminator_learning_rate: 1.0e-4
+factor_vae_discriminator_update_interval: 1
+factor_vae_discriminator_betas: [0.5, 0.9]
+factor_vae_model_gradient_clip_val: 1.0
+factor_vae_discriminator_gradient_clip_val: 1.0
+
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false

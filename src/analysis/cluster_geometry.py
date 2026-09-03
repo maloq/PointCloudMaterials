@@ -14,7 +14,7 @@ def _build_rotation_view_specs(
     *,
     base_elev: float,
     base_azim: float,
-    num_views: int = 4,
+    num_views: int = 2,
 ) -> list[tuple[str, float, float]]:
     return [
         (

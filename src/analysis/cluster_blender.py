@@ -18,16 +18,19 @@ from .cluster_geometry import _estimate_ball_radius_world, _sample_indices_strat
 from .output_layout import log_saved_figure as _log_saved_figure
 
 
-def _run_blender_render(
+def _run_blender_render_batch(
     blender_exec: str,
     blender_script: str,
     payload: dict,
-    out_file: Path,
+    out_files: list[Path],
     *,
     timeout_seconds: int,
     tmp_prefix: str = "blender_render_",
 ) -> None:
-    """Run an inline Blender script with a JSON payload and verify output."""
+    """Run one inline Blender process and verify every requested output."""
+    if not out_files:
+        raise ValueError("A Blender render batch must contain at least one output file.")
+    output_summary = ", ".join(str(path) for path in out_files)
     with tempfile.TemporaryDirectory(prefix=tmp_prefix) as tmp_dir:
         tmp_root = Path(tmp_dir)
         payload_path = tmp_root / "payload.json"
@@ -47,25 +50,29 @@ def _run_blender_render(
             )
         except subprocess.TimeoutExpired as exc:
             raise TimeoutError(
-                f"Blender render timed out after {timeout_seconds}s for {out_file}."
+                "Blender render batch timed out after "
+                f"{timeout_seconds}s for outputs [{output_summary}]."
             ) from exc
         if proc.returncode != 0:
             raise RuntimeError(
-                f"Blender render failed (exit {proc.returncode}) for {out_file}.\n"
+                "Blender render batch failed "
+                f"(exit {proc.returncode}) for outputs [{output_summary}].\n"
                 f"STDOUT:\n{proc.stdout[-4000:]}\nSTDERR:\n{proc.stderr[-4000:]}"
             )
         if "Traceback (most recent call last):" in proc.stderr:
             raise RuntimeError(
-                f"Blender script raised an exception for {out_file}.\n"
+                "Blender script raised an exception for outputs "
+                f"[{output_summary}].\n"
                 f"STDOUT:\n{proc.stdout[-4000:]}\nSTDERR:\n{proc.stderr[-4000:]}"
             )
 
-    if not out_file.exists():
-        candidates = sorted(out_file.parent.glob(f"{out_file.stem}*{out_file.suffix}"))
-        raise FileNotFoundError(
-            f"Blender render succeeded but output missing: {out_file}, "
-            f"candidates={[str(p) for p in candidates]}."
-        )
+    for out_file in out_files:
+        if not out_file.exists():
+            candidates = sorted(out_file.parent.glob(f"{out_file.stem}*{out_file.suffix}"))
+            raise FileNotFoundError(
+                f"Blender render batch succeeded but output is missing: {out_file}, "
+                f"candidates={[str(p) for p in candidates]}."
+            )
 
 
 def _resolve_blender_executable(blender_executable: str) -> str:
@@ -88,36 +95,34 @@ def _resolve_blender_executable(blender_executable: str) -> str:
     return str(resolved)
 
 
-def _save_md_cluster_snapshot_raytrace_blender(
+def _save_md_cluster_snapshots_raytrace_blender(
     coords: np.ndarray,
     cluster_labels: np.ndarray,
     color_map: dict[int, str],
-    out_file: Path,
+    render_jobs: list[dict[str, Any]],
     *,
-    title: str,
-    visible_cluster_ids: list[int] | None = None,
     max_points: int | None = None,
-    view_elev: float = 24.0,
-    view_azim: float = 35.0,
-    image_width: int = 1600,
-    image_height: int = 1600,
+    image_width: int = 1200,
+    image_height: int = 1200,
     projection: str = "perspective",
     perspective_fov_deg: float = 34.0,
     camera_distance_factor: float = 2.8,
     sphere_radius_fraction: float = 0.0105,
     blender_executable: str = "blender",
-    cycles_samples: int = 64,
+    cycles_samples: int = 32,
     use_denoise: bool = True,
     use_gpu: bool = False,
     timeout_seconds: int = 1200,
     wireframe_enabled: bool = True,
     wireframe_width_fraction: float = 0.0017,
-) -> dict[str, Any]:
-    """Render a raytraced MD snapshot with Blender Cycles.
+) -> list[dict[str, Any]]:
+    """Render every requested view of one MD snapshot in one Blender process.
 
     This is an additive renderer used alongside the existing matplotlib
     outputs. It requires a Blender executable.
     """
+    if not render_jobs:
+        raise ValueError("Raytracing requires at least one render job.")
     coords_arr = np.asarray(coords, dtype=np.float32)
     labels = np.asarray(cluster_labels, dtype=int)
     if coords_arr.ndim != 2 or coords_arr.shape[1] != 3:
@@ -134,18 +139,22 @@ def _save_md_cluster_snapshot_raytrace_blender(
             f"['perspective', 'persp', 'orthographic', 'ortho'], got {projection!r}."
         )
 
-    mask = labels >= 0
-    if visible_cluster_ids is not None:
-        visible = np.asarray(sorted(set(int(v) for v in visible_cluster_ids)), dtype=int)
-        mask &= np.isin(labels, visible)
-    if not np.any(mask):
-        raise ValueError("No points remained after applying cluster visibility filters.")
+    if int(image_width) <= 0 or int(image_height) <= 0:
+        raise ValueError(
+            "Raytrace image dimensions must be positive, "
+            f"got width={image_width}, height={image_height}."
+        )
+    if int(cycles_samples) <= 0:
+        raise ValueError(f"cycles_samples must be positive, got {cycles_samples}.")
 
-    coords_use = coords_arr[mask]
-    labels_use = labels[mask]
-    sample_indices = _sample_indices_stratified(labels_use, max_points, random_seed=0)
-    coords_plot = coords_use[sample_indices]
-    labels_plot = labels_use[sample_indices]
+    labeled_mask = labels >= 0
+    if not np.any(labeled_mask):
+        raise ValueError("Raytracing requires at least one non-noise cluster point.")
+    coords_labeled = coords_arr[labeled_mask]
+    labels_labeled = labels[labeled_mask]
+    sample_indices = _sample_indices_stratified(labels_labeled, max_points, random_seed=0)
+    coords_plot = coords_labeled[sample_indices]
+    labels_plot = labels_labeled[sample_indices]
     unique_labels = sorted(int(v) for v in np.unique(labels_plot) if int(v) >= 0)
     missing_colors = [cluster_id for cluster_id in unique_labels if cluster_id not in color_map]
     if missing_colors:
@@ -196,12 +205,77 @@ def _save_md_cluster_snapshot_raytrace_blender(
                 "points": np.round(pts.astype(np.float64), 6).tolist(),
             }
         )
+    normalized_jobs: list[dict[str, Any]] = []
+    render_metadata: list[dict[str, Any]] = []
+    out_files: list[Path] = []
+    for job_index, job in enumerate(render_jobs):
+        missing_keys = [
+            key
+            for key in ("out_file", "title", "view_elev", "view_azim")
+            if key not in job
+        ]
+        if missing_keys:
+            raise KeyError(
+                f"Raytrace render job {job_index} is missing required keys {missing_keys}."
+            )
+        out_file = Path(job["out_file"])
+        out_file.parent.mkdir(parents=True, exist_ok=True)
+        visible_value = job.get("visible_cluster_ids")
+        visible_ids = (
+            None
+            if visible_value is None
+            else sorted(set(int(cluster_id) for cluster_id in visible_value))
+        )
+        if visible_ids is None:
+            visible_mask = labeled_mask
+            rendered_mask = np.ones(labels_plot.shape[0], dtype=bool)
+        else:
+            visible_arr = np.asarray(visible_ids, dtype=int)
+            visible_mask = labeled_mask & np.isin(labels, visible_arr)
+            rendered_mask = np.isin(labels_plot, visible_arr)
+        if not np.any(visible_mask):
+            raise ValueError(
+                f"Raytrace render job {job_index} ({out_file}) has no visible points; "
+                f"visible_cluster_ids={visible_ids}."
+            )
+        if not np.any(rendered_mask):
+            raise ValueError(
+                f"Raytrace sampling removed every visible point for job {job_index} "
+                f"({out_file}); visible_cluster_ids={visible_ids}, max_points={max_points}."
+            )
+        clusters_rendered = sorted(
+            int(cluster_id) for cluster_id in np.unique(labels_plot[rendered_mask])
+        )
+        normalized_jobs.append(
+            {
+                "out_file": str(out_file),
+                "title": str(job["title"]),
+                "visible_cluster_ids": visible_ids,
+                "view_elev": float(job["view_elev"]),
+                "view_azim": float(job["view_azim"]),
+            }
+        )
+        render_metadata.append(
+            {
+                "out_file": str(out_file),
+                "num_points_total": int(coords_arr.shape[0]),
+                "num_points_visible": int(np.count_nonzero(visible_mask)),
+                "num_points_rendered": int(np.count_nonzero(rendered_mask)),
+                "clusters_rendered": clusters_rendered,
+                "view_elev": float(job["view_elev"]),
+                "view_azim": float(job["view_azim"]),
+            }
+        )
+        out_files.append(out_file)
+    if len(set(out_files)) != len(out_files):
+        raise ValueError(
+            "Raytrace render jobs must use distinct output files, "
+            f"got {[str(path) for path in out_files]}."
+        )
+
     blender_exec = _resolve_blender_executable(blender_executable)
-    out_file = Path(out_file)
-    out_file.parent.mkdir(parents=True, exist_ok=True)
 
     payload = {
-        "title": str(title),
         "bbox_min": [float(v) for v in bbox_min],
         "bbox_max": [float(v) for v in bbox_max],
         "clusters": clusters_payload,
@@ -209,8 +283,6 @@ def _save_md_cluster_snapshot_raytrace_blender(
             "image_width": int(image_width),
             "image_height": int(image_height),
             "projection": str(projection_norm),
-            "view_elev": float(view_elev),
-            "view_azim": float(view_azim),
             "perspective_fov_deg": float(perspective_fov_deg),
             "camera_distance_factor": float(camera_distance_factor),
             "sphere_radius_world": float(sphere_radius_world),
@@ -223,7 +295,7 @@ def _save_md_cluster_snapshot_raytrace_blender(
             "background_color": [1.0, 1.0, 1.0, 1.0],
             "background_strength": 1.0,
         },
-        "out_file": str(out_file),
+        "renders": normalized_jobs,
     }
 
     blender_script = textwrap.dedent(
@@ -336,6 +408,29 @@ def _save_md_cluster_snapshot_raytrace_blender(
             return obj
 
 
+        def _position_camera(camera_obj, center, span, bbox_corners, cfg, render_spec):
+            elev = math.radians(float(render_spec["view_elev"]))
+            azim = math.radians(float(render_spec["view_azim"]))
+            cam_dir = Vector(
+                (
+                    math.cos(elev) * math.cos(azim),
+                    math.cos(elev) * math.sin(azim),
+                    math.sin(elev),
+                )
+            )
+            camera_obj.location = (
+                center + cam_dir * float(cfg["camera_distance_factor"]) * span
+            )
+            camera_obj.rotation_euler = (
+                center - camera_obj.location
+            ).to_track_quat("-Z", "Y").to_euler()
+            max_corner_distance = max(
+                float((corner - camera_obj.location).length)
+                for corner in bbox_corners
+            )
+            camera_obj.data.clip_end = max(1000.0, 1.1 * max_corner_distance)
+
+
         def main():
             args = _parse_args()
             payload_path = Path(args.payload_json)
@@ -352,14 +447,15 @@ def _save_md_cluster_snapshot_raytrace_blender(
             scene.render.resolution_percentage = 100
             scene.render.image_settings.file_format = "PNG"
             scene.render.film_transparent = False
-            out_path = Path(str(payload["out_file"])).expanduser()
-            out_path.parent.mkdir(parents=True, exist_ok=True)
-            scene.render.filepath = str(out_path)
+            scene.render.use_persistent_data = True
             scene.cycles.samples = int(cfg["cycles_samples"])
             if hasattr(scene.cycles, "use_adaptive_sampling"):
                 scene.cycles.use_adaptive_sampling = True
-            if hasattr(scene.cycles, "use_denoising"):
-                scene.cycles.use_denoising = bool(cfg["use_denoise"])
+            if not hasattr(scene.cycles, "use_denoising"):
+                raise RuntimeError(
+                    "This Blender Cycles version does not expose use_denoising."
+                )
+            scene.cycles.use_denoising = bool(cfg["use_denoise"])
             scene.view_settings.view_transform = "Standard"
             scene.view_settings.look = "None"
             scene.view_settings.exposure = 0.0
@@ -430,18 +526,6 @@ def _save_md_cluster_snapshot_raytrace_blender(
             scene.collection.objects.link(camera_obj)
             scene.camera = camera_obj
 
-            elev = math.radians(float(cfg["view_elev"]))
-            azim = math.radians(float(cfg["view_azim"]))
-            cam_dir = Vector(
-                (
-                    math.cos(elev) * math.cos(azim),
-                    math.cos(elev) * math.sin(azim),
-                    math.sin(elev),
-                )
-            )
-            cam_dist = float(cfg["camera_distance_factor"]) * span
-            camera_obj.location = center + cam_dir * cam_dist
-            camera_obj.rotation_euler = (center - camera_obj.location).to_track_quat("-Z", "Y").to_euler()
             proj = str(cfg["projection"]).lower()
             if proj in {"perspective", "persp"}:
                 camera_data.type = "PERSP"
@@ -459,11 +543,6 @@ def _save_md_cluster_snapshot_raytrace_blender(
                 for y in (bbox_min.y, bbox_max.y)
                 for z in (bbox_min.z, bbox_max.z)
             ]
-            max_corner_distance = max(
-                float((corner - camera_obj.location).length)
-                for corner in bbox_corners
-            )
-            camera_data.clip_end = max(1000.0, 1.1 * max_corner_distance)
 
             light_size = 0.65 * span
             _add_area_light(
@@ -488,6 +567,7 @@ def _save_md_cluster_snapshot_raytrace_blender(
                 size=0.8 * light_size,
             )
 
+            cluster_render_objects = {}
             pointcloud_add_supported = False
             if hasattr(bpy.data, "pointclouds"):
                 probe_pc = bpy.data.pointclouds.new("MDPointCloudProbe")
@@ -511,6 +591,7 @@ def _save_md_cluster_snapshot_raytrace_blender(
                     scene.collection.objects.link(obj)
                     mat = _build_material(f"Cluster_{cid:02d}_Mat", cluster["color"])
                     obj.data.materials.append(mat)
+                    cluster_render_objects[cid] = [obj]
             else:
                 # Blender 5.x removed PointCloud.points.add(). Use fast
                 # vertex-instancing fallback that works in Cycles.
@@ -560,6 +641,7 @@ def _save_md_cluster_snapshot_raytrace_blender(
 
                     mat = _build_material(f"Cluster_{cid:02d}_Mat", cluster["color"])
                     sphere_obj.data.materials.append(mat)
+                    cluster_render_objects[cid] = [instancer, sphere_obj]
 
             if bool(cfg.get("wireframe_enabled", True)) and float(cfg.get("wireframe_width_world", 0.0)) > 0.0:
                 _add_wireframe_box(
@@ -569,34 +651,59 @@ def _save_md_cluster_snapshot_raytrace_blender(
                     cfg["wireframe_color"],
                 )
 
-            result = bpy.ops.render.render(write_still=True)
-            if "FINISHED" not in set(result):
-                raise RuntimeError(
-                    "Blender render operator did not finish successfully: "
-                    f"result={result}."
+            for render_index, render_spec in enumerate(payload["renders"]):
+                visible_value = render_spec.get("visible_cluster_ids")
+                visible_ids = (
+                    None
+                    if visible_value is None
+                    else set(int(cluster_id) for cluster_id in visible_value)
                 )
-
-            # Blender may resolve output path with frame tokens depending on
-            # internal render settings/version. Ensure requested output exists.
-            expected = out_path
-            if not expected.exists():
-                resolved = Path(
-                    bpy.path.abspath(scene.render.frame_path(frame=scene.frame_current))
-                )
-                if resolved.exists():
-                    shutil.copy2(resolved, expected)
-                else:
-                    candidates = sorted(
-                        expected.parent.glob(f"{expected.stem}*{expected.suffix}")
+                for cluster_id, objects in cluster_render_objects.items():
+                    hide_cluster = (
+                        visible_ids is not None and cluster_id not in visible_ids
                     )
-                    if len(candidates) == 1 and candidates[0].exists():
-                        shutil.copy2(candidates[0], expected)
+                    for obj in objects:
+                        obj.hide_render = bool(hide_cluster)
+
+                _position_camera(
+                    camera_obj,
+                    center,
+                    span,
+                    bbox_corners,
+                    cfg,
+                    render_spec,
+                )
+                out_path = Path(str(render_spec["out_file"])).expanduser()
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+                scene.render.filepath = str(out_path)
+                result = bpy.ops.render.render(write_still=True)
+                if "FINISHED" not in set(result):
+                    raise RuntimeError(
+                        "Blender render operator did not finish successfully for "
+                        f"render {render_index} ({out_path}): result={result}."
+                    )
+
+                # Blender may resolve output paths with frame tokens depending
+                # on its version. Ensure the requested output exists.
+                if not out_path.exists():
+                    resolved = Path(
+                        bpy.path.abspath(scene.render.frame_path(frame=scene.frame_current))
+                    )
+                    if resolved.exists():
+                        shutil.copy2(resolved, out_path)
                     else:
-                        raise FileNotFoundError(
-                            "Blender render finished but output is missing. "
-                            f"expected={expected}, resolved={resolved}, "
-                            f"candidates={[str(p) for p in candidates]}."
+                        candidates = sorted(
+                            out_path.parent.glob(f"{out_path.stem}*{out_path.suffix}")
                         )
+                        if len(candidates) == 1 and candidates[0].exists():
+                            shutil.copy2(candidates[0], out_path)
+                        else:
+                            raise FileNotFoundError(
+                                "Blender render finished but output is missing. "
+                                f"render_index={render_index}, expected={out_path}, "
+                                f"resolved={resolved}, "
+                                f"candidates={[str(p) for p in candidates]}."
+                            )
 
 
         if __name__ == "__main__":
@@ -604,31 +711,31 @@ def _save_md_cluster_snapshot_raytrace_blender(
         """
     )
 
-    _run_blender_render(
-        blender_exec, blender_script, payload, out_file,
+    _run_blender_render_batch(
+        blender_exec, blender_script, payload, out_files,
         timeout_seconds=int(timeout_seconds),
         tmp_prefix="md_raytrace_blender_",
     )
-    _log_saved_figure(out_file)
+    for out_file in out_files:
+        _log_saved_figure(out_file)
 
-    return {
-        "out_file": str(out_file),
-        "num_points_total": int(coords_arr.shape[0]),
-        "num_points_visible": int(coords_use.shape[0]),
-        "num_points_rendered": int(coords_plot.shape[0]),
-        "clusters_rendered": unique_labels,
-        "view_elev": float(view_elev),
-        "view_azim": float(view_azim),
-        "projection": str(projection_norm),
-        "image_size": (int(image_width), int(image_height)),
-        "cycles_samples": int(cycles_samples),
-        "use_gpu": bool(use_gpu),
-        "sphere_radius_reference_points": int(radius_ref_points.shape[0]),
-        "sphere_radius_world_auto": float(auto_radius_world),
-        "sphere_radius_user_scale": float(user_radius_scale),
-        "sphere_radius_world": float(sphere_radius_world),
-        "color_saturation_boost": 1.0,
-        "color_contrast_boost": 1.0,
-        "blender_executable": str(blender_exec),
-        "render_mode": "raytrace_blender",
-    }
+    for metadata in render_metadata:
+        metadata.update(
+            {
+                "projection": str(projection_norm),
+                "image_size": (int(image_width), int(image_height)),
+                "cycles_samples": int(cycles_samples),
+                "use_denoise": bool(use_denoise),
+                "use_gpu": bool(use_gpu),
+                "sphere_radius_reference_points": int(radius_ref_points.shape[0]),
+                "sphere_radius_world_auto": float(auto_radius_world),
+                "sphere_radius_user_scale": float(user_radius_scale),
+                "sphere_radius_world": float(sphere_radius_world),
+                "color_saturation_boost": 1.0,
+                "color_contrast_boost": 1.0,
+                "blender_executable": str(blender_exec),
+                "render_mode": "raytrace_blender_batch",
+                "batch_size": int(len(render_jobs)),
+            }
+        )
+    return render_metadata
