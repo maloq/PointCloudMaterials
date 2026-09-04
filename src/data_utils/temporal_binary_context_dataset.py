@@ -153,13 +153,21 @@ class TemporalBinaryContextDataset(Dataset[dict[str, object]]):
     def _frame(
         trajectory: TemporalLAMMPSBinaryTrajectory, frame_index: int
     ) -> ShootingPositionFrame:
+        box_low = np.asarray(trajectory.box_low[int(frame_index)], dtype=np.float32)
+        box_high = np.asarray(trajectory.box_high[int(frame_index)], dtype=np.float32)
+        box_lengths = box_high - box_low
+        positions = np.asarray(trajectory.positions[int(frame_index)], dtype=np.float32)
+        upper = np.nextafter(box_lengths, np.zeros_like(box_lengths))
+        if np.any(positions < 0.0) or np.any(positions >= box_lengths[None, :]):
+            positions = np.array(positions, copy=True)
+            np.clip(positions, 0.0, upper[None, :], out=positions)
         return ShootingPositionFrame(
             timestep=int(trajectory.timesteps[int(frame_index)]),
             atom_ids=trajectory.atom_ids,
             atom_types=trajectory.atom_types,
-            positions=trajectory.positions[int(frame_index)],
-            box_low=trajectory.box_low[int(frame_index)],
-            box_high=trajectory.box_high[int(frame_index)],
+            positions=positions,
+            box_low=box_low,
+            box_high=box_high,
         )
 
     def __getitem__(self, index: int) -> dict[str, object]:

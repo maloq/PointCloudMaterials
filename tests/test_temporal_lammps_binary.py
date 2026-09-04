@@ -83,3 +83,41 @@ def test_binary_replaces_missing_text_path_for_dataset(tmp_path: Path) -> None:
     assert dataset.frame_count == 2
     assert dataset.num_atoms == 4
     np.testing.assert_array_equal(dataset.positions, positions)
+
+
+def test_float16_binary_decodes_to_valid_periodic_float32_positions(tmp_path: Path) -> None:
+    source = tmp_path / "trajectory.lammpstrj"
+    source.write_text("conversion provenance only\n", encoding="utf-8")
+    positions = np.asarray(
+        [
+            [[1.001, 1.0, 1.0], [2.003, 1.0, 1.0], [1.0, 2.005, 1.0], [9.999, 1.0, 1.0]],
+            [[1.101, 1.0, 1.0], [2.103, 1.0, 1.0], [1.1, 2.105, 1.0], [9.998, 1.0, 1.0]],
+        ],
+        dtype=np.float32,
+    )
+    target = binary_path_for_dump(source, storage_dtype="float16")
+    binary = write_temporal_lammps_binary(
+        target,
+        positions=positions,
+        timesteps=np.asarray([5, 15], dtype=np.int64),
+        box_low=np.zeros((2, 3), dtype=np.float32),
+        box_high=np.full((2, 3), 10.0, dtype=np.float32),
+        atom_ids=np.arange(1, 5, dtype=np.int64),
+        atom_types=np.ones(4, dtype=np.int32),
+        atom_columns=("id", "type", "x", "y", "z"),
+        source={"trajectory_lammpstrj": str(source.resolve())},
+        provenance={"test": True},
+        storage_dtype="float16",
+    )
+    assert binary.positions.dtype == np.dtype("float16")
+    assert binary.manifest["storage_dtype"] == "float16"
+    assert binary.manifest["quantization"]["maximum_absolute_error_A"] > 0.0
+    binary.verify_checksums()
+
+    frame, box_lengths, timestep = TemporalLAMMPSDumpDataset.load_dump_frame_positions(
+        target, frame_index=0
+    )
+    assert frame.dtype == np.dtype("float32")
+    assert np.all(frame >= 0.0)
+    assert np.all(frame < box_lengths[None, :])
+    assert timestep == 5

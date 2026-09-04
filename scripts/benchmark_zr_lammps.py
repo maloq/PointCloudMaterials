@@ -1,0 +1,365 @@
+#!/usr/bin/env python3
+"""Standalone MPI/LAMMPS throughput benchmark for a Zr dump configuration.
+
+The script has no PointCloudMaterials Python imports.  It generates a temporary
+LAMMPS input, performs an NVE warm-up and timed NVE run, checks the LAMMPS output,
+and extrapolates the measured loop rate to a requested physical duration.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+
+SCRIPT_PATH = Path(__file__).resolve()
+REPOSITORY_ROOT = SCRIPT_PATH.parents[1]
+DEFAULT_CONFIGURATION = REPOSITORY_ROOT / "datasets/Zr/initial_configurations/160ps.pos"
+DEFAULT_LIBRARY_POTENTIAL = REPOSITORY_ROOT / "datasets/potentials/Becker2020_Zr.library.meam"
+DEFAULT_PARAMETER_POTENTIAL = REPOSITORY_ROOT / "datasets/potentials/Becker2020_Zr.meam"
+EXPECTED_ATOM_COLUMNS = ("id", "type", "x", "y", "z")
+LAMMPS_ERROR_RE = re.compile(r"^ERROR(?: on proc \d+)?:", flags=re.MULTILINE)
+LOOP_RE = re.compile(
+    r"Loop time of\s+(?P<seconds>[0-9.eE+-]+)\s+on\s+(?P<ranks>\d+)\s+procs\s+"
+    r"for\s+(?P<steps>\d+)\s+steps\s+with\s+(?P<atoms>\d+)\s+atoms"
+)
+PERFORMANCE_RE = re.compile(
+    r"Performance:\s+(?P<ns_per_day>[0-9.eE+-]+)\s+ns/day,\s+"
+    r"(?P<hours_per_ns>[0-9.eE+-]+)\s+hours/ns,\s+"
+    r"(?P<steps_per_second>[0-9.eE+-]+)\s+timesteps/s"
+)
+
+
+def _positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError(f"Expected a positive integer, got {value!r}.")
+    return parsed
+
+
+def _nonnegative_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 0:
+        raise argparse.ArgumentTypeError(f"Expected a non-negative integer, got {value!r}.")
+    return parsed
+
+
+def _positive_float(value: str) -> float:
+    parsed = float(value)
+    if not math.isfinite(parsed) or parsed <= 0.0:
+        raise argparse.ArgumentTypeError(f"Expected a finite positive number, got {value!r}.")
+    return parsed
+
+
+def _resolve_executable(requested: str | None, environment_name: str) -> Path:
+    if requested:
+        candidate = Path(requested).expanduser()
+        resolved = candidate.resolve() if candidate.is_file() else shutil.which(requested)
+    else:
+        environment_candidate = Path(sys.prefix) / "bin" / environment_name
+        resolved = environment_candidate if environment_candidate.is_file() else shutil.which(environment_name)
+    if resolved is None or not Path(resolved).is_file():
+        raise FileNotFoundError(
+            f"Could not resolve executable {requested or environment_name!r}. "
+            f"Activate the LAMMPS environment or pass --{environment_name}."
+        )
+    return Path(resolved).resolve()
+
+
+def _read_dump_header(path: Path) -> dict[str, object]:
+    if not path.is_file():
+        raise FileNotFoundError(f"LAMMPS dump configuration is missing: {path}.")
+    with path.open("r", encoding="utf-8") as handle:
+        header = [handle.readline().rstrip("\n") for _ in range(9)]
+    if header[0] != "ITEM: TIMESTEP":
+        raise ValueError(f"{path}: expected 'ITEM: TIMESTEP', got {header[0]!r}.")
+    if header[2] != "ITEM: NUMBER OF ATOMS":
+        raise ValueError(f"{path}: expected 'ITEM: NUMBER OF ATOMS', got {header[2]!r}.")
+    if header[4] != "ITEM: BOX BOUNDS pp pp pp":
+        raise ValueError(f"{path}: expected a periodic orthorhombic box, got {header[4]!r}.")
+    timestep = int(header[1])
+    atom_count = int(header[3])
+    if atom_count <= 0:
+        raise ValueError(f"{path}: atom count must be positive, got {atom_count}.")
+    bounds = [[float(value) for value in row.split()] for row in header[5:8]]
+    if any(len(axis) != 2 or axis[1] <= axis[0] for axis in bounds):
+        raise ValueError(f"{path}: invalid box bounds {bounds!r}.")
+    columns = tuple(header[8].split()[2:])
+    if columns != EXPECTED_ATOM_COLUMNS:
+        raise ValueError(
+            f"{path}: expected atom columns {EXPECTED_ATOM_COLUMNS}, got {columns}."
+        )
+    return {
+        "timestep": timestep,
+        "atom_count": atom_count,
+        "box_bounds_A": bounds,
+        "atom_columns": list(columns),
+    }
+
+
+def _lammps_path(path: Path) -> str:
+    resolved = path.expanduser().resolve()
+    if not resolved.is_file():
+        raise FileNotFoundError(f"Required LAMMPS input file is missing: {resolved}.")
+    if any(character.isspace() for character in str(resolved)):
+        raise ValueError(
+            f"LAMMPS benchmark paths cannot contain whitespace: {resolved}."
+        )
+    return str(resolved)
+
+
+def _render_input(
+    *,
+    configuration: Path,
+    source_timestep: int,
+    library_potential: Path,
+    parameter_potential: Path,
+    pair_style: str,
+    temperature_K: float,
+    timestep_fs: float,
+    warmup_steps: int,
+    benchmark_steps: int,
+    velocity_seed: int,
+) -> str:
+    return f"""# Generated by {SCRIPT_PATH.name}; temporary benchmark input.
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+
+region placeholder block 0 1 0 1 0 1 units box
+create_box 1 placeholder
+read_dump {_lammps_path(configuration)} {source_timestep} x y z box yes add yes replace no trim no scaled no wrapped yes
+reset_timestep 0
+
+mass 1 91.224
+pair_style {pair_style}
+pair_coeff * * {_lammps_path(library_potential)} Zr {_lammps_path(parameter_potential)} Zr
+neighbor 2.0 bin
+neigh_modify delay 0 every 1 check yes
+
+timestep {timestep_fs / 1000.0:.12g}
+velocity all create {temperature_K:.12g} {velocity_seed} mom yes rot no dist gaussian loop all
+fix integrate all nve
+
+thermo {max(benchmark_steps, 1)}
+thermo_style custom step time atoms temp press pe ke etotal
+thermo_modify format float %.16g flush yes
+
+print "ZR_BENCHMARK_WARMUP_BEGIN"
+run {warmup_steps}
+reset_timestep 0
+print "ZR_BENCHMARK_TIMED_BEGIN"
+run {benchmark_steps}
+print "ZR_BENCHMARK_COMPLETE"
+"""
+
+
+def _environment() -> dict[str, str]:
+    environment = os.environ.copy()
+    environment["OMP_NUM_THREADS"] = "1"
+    environment["OMP_DYNAMIC"] = "FALSE"
+    environment["MPIR_CVAR_CH4_NETMOD"] = "ofi"
+    environment["FI_PROVIDER"] = "tcp"
+    environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
+        f":{environment['LD_LIBRARY_PATH']}" if environment.get("LD_LIBRARY_PATH") else ""
+    )
+    return environment
+
+
+def _parse_last_thermo_pair(output: str, benchmark_steps: int) -> tuple[list[float], list[float]]:
+    rows: list[list[float]] = []
+    for line in output.splitlines():
+        fields = line.split()
+        if len(fields) != 8:
+            continue
+        try:
+            row = [float(field) for field in fields]
+        except ValueError:
+            continue
+        step = int(row[0])
+        if step in {0, benchmark_steps}:
+            rows.append(row)
+    if len(rows) < 2 or int(rows[-2][0]) != 0 or int(rows[-1][0]) != benchmark_steps:
+        raise RuntimeError(
+            "Could not identify the timed run's initial/final thermo rows in LAMMPS output. "
+            f"benchmark_steps={benchmark_steps}, matching_rows={rows[-4:]}."
+        )
+    return rows[-2], rows[-1]
+
+
+def _parse_report(
+    *,
+    output: str,
+    wall_seconds: float,
+    dump: dict[str, object],
+    mpi_ranks: int,
+    timestep_fs: float,
+    benchmark_steps: int,
+    target_duration_ps: float,
+) -> dict[str, object]:
+    if LAMMPS_ERROR_RE.search(output):
+        errors = [line for line in output.splitlines() if line.startswith("ERROR")]
+        raise RuntimeError(f"LAMMPS reported an error despite its process return code: {errors}.")
+    if "ZR_BENCHMARK_COMPLETE" not in output:
+        raise RuntimeError("LAMMPS output is missing the ZR_BENCHMARK_COMPLETE marker.")
+    loops = list(LOOP_RE.finditer(output))
+    performances = list(PERFORMANCE_RE.finditer(output))
+    if not loops or not performances:
+        raise RuntimeError("LAMMPS output contains no parseable loop/performance summary.")
+    loop = loops[-1]
+    performance = performances[-1]
+    observed_steps = int(loop.group("steps"))
+    observed_atoms = int(loop.group("atoms"))
+    observed_ranks = int(loop.group("ranks"))
+    if observed_steps != benchmark_steps or observed_atoms != int(dump["atom_count"]):
+        raise RuntimeError(
+            "LAMMPS benchmark summary does not match the requested workload: "
+            f"steps={observed_steps}/{benchmark_steps}, atoms={observed_atoms}/{dump['atom_count']}."
+        )
+    if observed_ranks != mpi_ranks:
+        raise RuntimeError(f"LAMMPS used {observed_ranks} MPI ranks, expected {mpi_ranks}.")
+
+    initial, final = _parse_last_thermo_pair(output, benchmark_steps)
+    steps_per_second = float(performance.group("steps_per_second"))
+    target_steps_float = target_duration_ps * 1000.0 / timestep_fs
+    target_steps = int(round(target_steps_float))
+    if not math.isclose(target_steps_float, target_steps, rel_tol=0.0, abs_tol=1.0e-9):
+        raise ValueError(
+            f"Target duration {target_duration_ps} ps is not an integer number of "
+            f"{timestep_fs} fs steps ({target_steps_float})."
+        )
+    estimated_seconds = target_steps / steps_per_second
+    total_energy_drift_eV = final[7] - initial[7]
+    energy_drift_per_atom_eV = total_energy_drift_eV / observed_atoms
+    return {
+        "dump": dump,
+        "mpi_ranks": mpi_ranks,
+        "benchmark_steps": benchmark_steps,
+        "benchmark_physical_time_ps": benchmark_steps * timestep_fs / 1000.0,
+        "lammps_loop_seconds": float(loop.group("seconds")),
+        "process_wall_seconds": wall_seconds,
+        "steps_per_second": steps_per_second,
+        "million_atom_steps_per_second": steps_per_second * observed_atoms / 1.0e6,
+        "ns_per_day": float(performance.group("ns_per_day")),
+        "hours_per_ns": float(performance.group("hours_per_ns")),
+        "initial_temperature_K": initial[3],
+        "final_temperature_K": final[3],
+        "initial_pressure_bar": initial[4],
+        "final_pressure_bar": final[4],
+        "total_energy_drift_eV": total_energy_drift_eV,
+        "energy_drift_per_atom_eV": energy_drift_per_atom_eV,
+        "target_duration_ps": target_duration_ps,
+        "target_steps": target_steps,
+        "estimated_target_seconds": estimated_seconds,
+        "estimated_target_minutes": estimated_seconds / 60.0,
+        "estimated_target_hours": estimated_seconds / 3600.0,
+    }
+
+
+def _arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--configuration", type=Path, default=DEFAULT_CONFIGURATION)
+    parser.add_argument("--library-potential", type=Path, default=DEFAULT_LIBRARY_POTENTIAL)
+    parser.add_argument("--parameter-potential", type=Path, default=DEFAULT_PARAMETER_POTENTIAL)
+    parser.add_argument("--pair-style", choices=("meam", "meam/c"), default="meam/c")
+    parser.add_argument("--temperature-k", type=_positive_float, default=1150.0)
+    parser.add_argument("--timestep-fs", type=_positive_float, default=2.0)
+    parser.add_argument("--warmup-steps", type=_nonnegative_int, default=20)
+    parser.add_argument("--benchmark-steps", type=_positive_int, default=100)
+    parser.add_argument("--target-duration-ps", type=_positive_float, default=10.0)
+    parser.add_argument("--mpi-ranks", type=_positive_int, default=32)
+    parser.add_argument("--velocity-seed", type=_positive_int, default=160013)
+    parser.add_argument("--lmp", default=None, help="LAMMPS executable name or path.")
+    parser.add_argument("--mpiexec", default=None, help="MPI launcher name or path.")
+    parser.add_argument("--json-output", type=Path, default=None)
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs and print the generated command/input without executing LAMMPS.",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = _arguments()
+    configuration = args.configuration.expanduser().resolve()
+    library_potential = args.library_potential.expanduser().resolve()
+    parameter_potential = args.parameter_potential.expanduser().resolve()
+    dump = _read_dump_header(configuration)
+    lammps = _resolve_executable(args.lmp, "lmp")
+    mpiexec = _resolve_executable(args.mpiexec, "mpiexec")
+    lammps_input = _render_input(
+        configuration=configuration,
+        source_timestep=int(dump["timestep"]),
+        library_potential=library_potential,
+        parameter_potential=parameter_potential,
+        pair_style=args.pair_style,
+        temperature_K=args.temperature_k,
+        timestep_fs=args.timestep_fs,
+        warmup_steps=args.warmup_steps,
+        benchmark_steps=args.benchmark_steps,
+        velocity_seed=args.velocity_seed,
+    )
+    command = [str(mpiexec), "-n", str(args.mpi_ranks), str(lammps), "-in", "benchmark.in"]
+    if args.dry_run:
+        print("Command:")
+        print(" ".join(command))
+        print("\nGenerated benchmark.in:\n")
+        print(lammps_input, end="")
+        return
+
+    with tempfile.TemporaryDirectory(prefix="zr_lammps_benchmark_") as temporary:
+        workdir = Path(temporary)
+        (workdir / "benchmark.in").write_text(lammps_input, encoding="utf-8")
+        started = time.perf_counter()
+        completed = subprocess.run(
+            command,
+            cwd=workdir,
+            env=_environment(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=False,
+        )
+        wall_seconds = time.perf_counter() - started
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"LAMMPS benchmark failed with return code {completed.returncode}.\n"
+            f"--- LAMMPS output ---\n{completed.stdout}"
+        )
+    report = _parse_report(
+        output=completed.stdout,
+        wall_seconds=wall_seconds,
+        dump=dump,
+        mpi_ranks=args.mpi_ranks,
+        timestep_fs=args.timestep_fs,
+        benchmark_steps=args.benchmark_steps,
+        target_duration_ps=args.target_duration_ps,
+    )
+    if args.json_output is not None:
+        target = args.json_output.expanduser().resolve()
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("x", encoding="utf-8") as handle:
+            json.dump(report, handle, indent=2)
+            handle.write("\n")
+    print(json.dumps(report, indent=2))
+    print(
+        f"\nEstimated {args.target_duration_ps:g} ps runtime: "
+        f"{report['estimated_target_minutes']:.1f} min "
+        f"({report['estimated_target_hours']:.2f} h) at "
+        f"{report['steps_per_second']:.3f} steps/s."
+    )
+
+
+if __name__ == "__main__":
+    main()

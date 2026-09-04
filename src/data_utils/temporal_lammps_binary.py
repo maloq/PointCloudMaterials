@@ -17,6 +17,11 @@ from numpy.lib.format import open_memmap
 FORMAT_NAME = "pointcloudmaterials.temporal_lammps_trajectory"
 SCHEMA_VERSION = 1
 BINARY_SUFFIX = "_binary_float32"
+STORAGE_DTYPES = ("float32", "float16")
+_BINARY_SUFFIX_BY_DTYPE = {
+    "float32": BINARY_SUFFIX,
+    "float16": "_binary_float16",
+}
 _ARRAY_FILES = {
     "positions": "positions.npy",
     "timesteps": "timesteps.npy",
@@ -27,13 +32,20 @@ _ARRAY_FILES = {
 }
 
 
-def binary_path_for_dump(path: str | Path) -> Path:
+def binary_path_for_dump(
+    path: str | Path, *, storage_dtype: str = "float32"
+) -> Path:
     dump_path = Path(path).expanduser().resolve()
     if dump_path.suffix != ".lammpstrj":
         raise ValueError(
             f"Expected a .lammpstrj path when deriving a temporal binary path, got {dump_path}."
         )
-    return dump_path.parent / f"{dump_path.stem}{BINARY_SUFFIX}"
+    dtype_name = str(storage_dtype)
+    if dtype_name not in STORAGE_DTYPES:
+        raise ValueError(
+            f"storage_dtype must be one of {STORAGE_DTYPES}, got {storage_dtype!r}."
+        )
+    return dump_path.parent / f"{dump_path.stem}{_BINARY_SUFFIX_BY_DTYPE[dtype_name]}"
 
 
 def resolve_temporal_lammps_artifact(path: str | Path) -> Path:
@@ -53,12 +65,21 @@ def resolve_temporal_lammps_artifact(path: str | Path) -> Path:
             f"Directory is not a temporal LAMMPS binary trajectory: {requested}"
         )
     if requested.suffix == ".lammpstrj":
-        replacement = binary_path_for_dump(requested)
-        if replacement.is_dir():
-            return replacement
+        replacements = [
+            binary_path_for_dump(requested, storage_dtype=dtype_name)
+            for dtype_name in STORAGE_DTYPES
+        ]
+        existing = [replacement for replacement in replacements if replacement.is_dir()]
+        if len(existing) == 1:
+            return existing[0]
+        if len(existing) > 1:
+            raise RuntimeError(
+                "LAMMPS text trajectory is absent and multiple binary replacements exist; "
+                f"request one binary directory explicitly: candidates={existing}."
+            )
         raise FileNotFoundError(
             "LAMMPS trajectory is absent in both supported forms: "
-            f"text={requested}, binary={replacement}."
+            f"text={requested}, binary_candidates={replacements}."
         )
     raise FileNotFoundError(f"Temporal LAMMPS trajectory artifact is missing: {requested}")
 
@@ -118,9 +139,11 @@ class TemporalLAMMPSBinaryTrajectory:
                 f"Temporal binary trajectory is not complete: root={root}, "
                 f"state={manifest.get('state')!r}."
             )
-        if manifest.get("storage_dtype") != "float32":
+        storage_dtype = str(manifest.get("storage_dtype"))
+        if storage_dtype not in STORAGE_DTYPES:
             raise ValueError(
-                f"Temporal binary storage must be float32, got {manifest.get('storage_dtype')!r}."
+                f"Unsupported temporal binary storage_dtype={storage_dtype!r}; "
+                f"expected one of {STORAGE_DTYPES}."
             )
 
         descriptions = manifest.get("arrays")
@@ -165,7 +188,7 @@ class TemporalLAMMPSBinaryTrajectory:
                     f"expected={expected_shape}, observed={arrays[name].shape}, root={root}."
                 )
         expected_dtypes = {
-            "positions": np.dtype("float32"),
+            "positions": np.dtype(storage_dtype),
             "timesteps": np.dtype("int64"),
             "box_low": np.dtype("float32"),
             "box_high": np.dtype("float32"),
@@ -225,8 +248,9 @@ def write_temporal_lammps_binary(
     atom_columns: tuple[str, ...],
     source: dict[str, Any],
     provenance: dict[str, Any],
+    storage_dtype: str = "float32",
 ) -> TemporalLAMMPSBinaryTrajectory:
-    """Atomically write one repository trajectory as verified float32 arrays."""
+    """Atomically write one repository trajectory with float32 consumer semantics."""
 
     target = Path(output_dir).expanduser().resolve()
     if target.exists():
@@ -235,6 +259,11 @@ def write_temporal_lammps_binary(
         raise ValueError(
             f"positions must be repository-produced float32 (frames, atoms, 3), got "
             f"shape={positions.shape}, dtype={positions.dtype}."
+        )
+    dtype_name = str(storage_dtype)
+    if dtype_name not in STORAGE_DTYPES:
+        raise ValueError(
+            f"storage_dtype must be one of {STORAGE_DTYPES}, got {storage_dtype!r}."
         )
     frame_count, atom_count, _ = positions.shape
     typed_arrays = {
@@ -257,8 +286,6 @@ def write_temporal_lammps_binary(
                 f"Temporal binary input {name!r} has shape={typed_arrays[name].shape}, "
                 f"expected={expected_shape}."
             )
-    if not np.all(np.isfinite(positions)):
-        raise ValueError("Temporal binary positions contain non-finite values.")
     if not np.array_equal(
         typed_arrays["atom_ids"], np.arange(1, atom_count + 1, dtype=np.int64)
     ):
@@ -266,11 +293,6 @@ def write_temporal_lammps_binary(
     box_lengths = typed_arrays["box_high"] - typed_arrays["box_low"]
     if np.any(box_lengths <= 0.0):
         raise ValueError("Temporal binary box bounds contain a non-positive length.")
-    if np.any(positions < 0.0) or np.any(positions >= box_lengths[:, None, :]):
-        raise ValueError(
-            "Temporal binary positions must use wrapped coordinates relative to box_low in [0, L)."
-        )
-
     target.parent.mkdir(parents=True, exist_ok=True)
     building = target.parent / f".{target.name}.building-{os.getpid()}"
     if building.exists():
@@ -279,11 +301,40 @@ def write_temporal_lammps_binary(
     stored_positions = open_memmap(
         building / _ARRAY_FILES["positions"],
         mode="w+",
-        dtype=np.float32,
+        dtype=np.dtype(dtype_name),
         shape=positions.shape,
     )
+    source_float32_digest = hashlib.sha256()
+    squared_error_sum = 0.0
+    absolute_error_sum = 0.0
+    maximum_absolute_error = 0.0
+    value_count = 0
     for frame_index in range(frame_count):
-        stored_positions[frame_index] = positions[frame_index]
+        frame = np.asarray(positions[frame_index], dtype=np.float32)
+        if not np.all(np.isfinite(frame)):
+            raise ValueError(
+                f"Temporal binary positions contain non-finite values at frame={frame_index}."
+            )
+        if np.any(frame < 0.0) or np.any(frame >= box_lengths[frame_index][None, :]):
+            raise ValueError(
+                "Temporal binary positions must use wrapped coordinates relative to box_low "
+                f"in [0, L): frame={frame_index}."
+            )
+        source_float32_digest.update(np.ascontiguousarray(frame).tobytes())
+        if dtype_name == "float16":
+            encoded = frame.astype(np.float16)
+            decoded = encoded.astype(np.float32)
+            error = decoded - frame
+            absolute_error = np.abs(error)
+            squared_error_sum += float(np.sum(error * error, dtype=np.float64))
+            absolute_error_sum += float(np.sum(absolute_error, dtype=np.float64))
+            maximum_absolute_error = max(
+                maximum_absolute_error, float(np.max(absolute_error))
+            )
+            value_count += int(error.size)
+            stored_positions[frame_index] = encoded
+        else:
+            stored_positions[frame_index] = frame
     stored_positions.flush()
     del stored_positions
     for name in ("timesteps", "box_low", "box_high", "atom_ids", "atom_types"):
@@ -301,10 +352,10 @@ def write_temporal_lammps_binary(
         "schema_version": SCHEMA_VERSION,
         "state": "complete",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "storage_dtype": "float32",
+        "storage_dtype": dtype_name,
         "coordinate_convention": (
-            "positions are wrapped Cartesian coordinates in angstrom relative to box_low "
-            "in the half-open periodic interval [0, box_high-box_low)"
+            "positions decode to float32 wrapped Cartesian coordinates in angstrom relative "
+            "to box_low in the half-open periodic interval [0, box_high-box_low)"
         ),
         "atom_count": atom_count,
         "frame_count": frame_count,
@@ -313,6 +364,22 @@ def write_temporal_lammps_binary(
         "atom_columns": list(atom_columns),
         "source": source,
         "provenance": provenance,
+        "semantic_float32_sha256": source_float32_digest.hexdigest(),
+        "quantization": (
+            {
+                "value_count": value_count,
+                "mean_absolute_error_A": absolute_error_sum / value_count,
+                "rmse_A": float(np.sqrt(squared_error_sum / value_count)),
+                "maximum_absolute_error_A": maximum_absolute_error,
+            }
+            if dtype_name == "float16"
+            else {
+                "value_count": int(positions.size),
+                "mean_absolute_error_A": 0.0,
+                "rmse_A": 0.0,
+                "maximum_absolute_error_A": 0.0,
+            }
+        ),
         "arrays": arrays,
     }
     with (building / "manifest.json").open("w", encoding="utf-8") as handle:
@@ -339,6 +406,7 @@ __all__ = [
     "BINARY_SUFFIX",
     "FORMAT_NAME",
     "SCHEMA_VERSION",
+    "STORAGE_DTYPES",
     "TemporalLAMMPSBinaryTrajectory",
     "binary_directory_sizes",
     "binary_path_for_dump",

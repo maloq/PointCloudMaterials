@@ -609,7 +609,10 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 shape=(self.frame_count, self.center_count, self.num_points),
             )
             for frame_idx in range(self.frame_count):
-                frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+                frame_points = _sanitize_periodic_points(
+                    np.asarray(self.positions[frame_idx], dtype=np.float32),
+                    self.box_lengths[frame_idx],
+                )
                 centers = np.asarray(frame_points[self._center_atom_indices], dtype=np.float32)
                 selected = self._query_local_structures(frame_idx=frame_idx, centers=centers)
                 expected_shape = (self.center_count, self.num_points)
@@ -963,7 +966,10 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 - np.asarray(binary.box_low[frame_index], dtype=np.float32)
             )
             return (
-                np.asarray(binary.positions[frame_index], dtype=np.float32),
+                _sanitize_periodic_points(
+                    np.asarray(binary.positions[frame_index], dtype=np.float32),
+                    box_lengths,
+                ),
                 box_lengths,
                 int(binary.timesteps[frame_index]),
             )
@@ -1540,7 +1546,10 @@ class TemporalLAMMPSDumpDataset(Dataset):
         context_count = self.spatial_context_center_count
         if context_count <= 0:
             raise RuntimeError("Spatial context center selection was called with context disabled.")
-        frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+        frame_points = _sanitize_periodic_points(
+            np.asarray(self.positions[frame_idx], dtype=np.float32),
+            self.box_lengths[frame_idx],
+        )
         candidate_points = np.asarray(frame_points[central_neighbor_indices], dtype=np.float32)
         candidate_offsets = self._to_local_coordinates_batch(
             frame_idx=frame_idx,
@@ -1676,7 +1685,10 @@ class TemporalLAMMPSDumpDataset(Dataset):
             anchor_timesteps[batch_positions] = int(timesteps[0])
 
             for local_frame_idx, frame_idx in enumerate(frame_indices.tolist()):
-                frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
+                frame_points = _sanitize_periodic_points(
+                    np.asarray(self.positions[frame_idx], dtype=np.float32),
+                    self.box_lengths[frame_idx],
+                )
                 centers = np.asarray(frame_points[center_atom_indices], dtype=np.float32)
                 if precomputed_neighbor_indices is None:
                     selected = self._query_local_structures(frame_idx=frame_idx, centers=centers)
