@@ -462,6 +462,25 @@ class VICRegLoss(nn.Module):
         loss = torch.nan_to_num(loss, nan=0.0, posinf=0.0, neginf=0.0)
         return loss, metrics
 
+    def compute_spatiotemporal_loss(self, *, features, temporal_weight: float):
+        """Anchor/spatial and anchor/same-atom temporal VICReg, sharing the anchor."""
+        anchor, spatial, temporal = (self.project_features(value) for value in features)
+        spatial_loss, spatial_metrics = self._loss(anchor, spatial)
+        temporal_loss, temporal_metrics = self._loss(anchor, temporal)
+        loss = (spatial_loss + temporal_weight * temporal_loss) / (1.0 + temporal_weight)
+        if not torch.isfinite(loss):
+            raise FloatingPointError("Non-finite spatial/temporal VICReg loss; refusing to replace it with zero.")
+        metrics = {f"spatial_{key}": value for key, value in spatial_metrics.items()}
+        metrics.update({f"temporal_{key}": value for key, value in temporal_metrics.items()})
+        metrics.update(spatial_loss=spatial_loss, temporal_loss=temporal_loss)
+        # Also monitor the encoder before the projector; stability there is the goal.
+        a, s, t = (value.detach().float() for value in features)
+        metrics["encoder_temporal_mse"] = (a - t).square().mean()
+        metrics["encoder_spatial_mse"] = (a - s).square().mean()
+        metrics["encoder_std"] = a.std(dim=0).mean()
+        metrics["encoder_temporal_relative_mse"] = (a - t).square().mean() / a.var(dim=0).mean().clamp_min(1.e-8)
+        return loss, metrics
+
     def _resolve_neighbor_flags(self, *, device) -> tuple[bool, bool]:
         if not self.neighbor_view:
             return False, False

@@ -214,6 +214,8 @@ def build_static_coords_dataloader(
         normalize=getattr(data_cfg, "normalize", True),
         sampling_method=getattr(data_cfg, "sampling_method", "drop_farthest"),
         auto_cutoff_config=auto_cutoff_cfg,
+        sample_cache_config=OmegaConf.to_container(data_cfg.sample_cache, resolve=True) if "sample_cache" in data_cfg else None,
+        atomic_context=OmegaConf.to_container(data_cfg.atomic_context, resolve=True) if "atomic_context" in data_cfg else None,
     )
 
     full_dataset: PointCloudDataset | None = None

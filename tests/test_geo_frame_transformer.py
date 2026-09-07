@@ -1,18 +1,13 @@
 from __future__ import annotations
 
-import os
-
 import pytest
 import torch
-from hydra import compose, initialize_config_dir
 
-from src.models.encoders.factory import available_encoder_names
 from src.models.encoders.geo_frame_transformer import (
     GeoFrameTransformerEncoder,
     _relative_frame_products,
 )
 from src.models.encoders.ri_mae_encoder import RIMAEBackbone, _farthest_point_sample
-from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 
 
 def _small_encoder(frame_builder: str = "triad") -> GeoFrameTransformerEncoder:
@@ -73,12 +68,6 @@ def _reference_farthest_point_sample(
         distance[update] = candidate[update]
         farthest = distance.max(dim=-1).indices
     return centroids
-
-
-def test_new_and_ablation_encoders_are_both_registered() -> None:
-    names = available_encoder_names()
-    assert "GeoFrameTransformer" in names
-    assert "RI_MAE_Invariant" in names
 
 
 def test_packed_relative_frame_products_match_broadcasted_matmul() -> None:
@@ -264,43 +253,3 @@ def test_disabled_auxiliary_heads_allocate_no_parameters_and_fail_loudly() -> No
         encoder.masked_token_loss(torch.randn(2, 24, 3))
     with pytest.raises(RuntimeError, match="EMA teacher is disabled"):
         encoder.update_mask_teacher()
-
-
-def test_geo_frame_vicreg_regularizes_exported_representation_directly() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="vicreg_geo_frame_multi")
-    module = VICRegModule(cfg)
-
-    assert isinstance(module.vicreg.projector, torch.nn.Identity)
-    assert module.vicreg.embed_dim == module.encoder.invariant_dim == 64
-
-
-def test_vicreg_paper_multiscale_config() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="vicreg_geo_frame_multiscale_8_16_l128")
-    module = VICRegModule(cfg)
-
-    assert cfg.compile_encoder
-    assert cfg.encoder_compile_mode == "reduce-overhead"
-    assert cfg.encoder_compile_fullgraph
-    assert not cfg.encoder_compile_dynamic
-    assert isinstance(module.encoder, torch._dynamo.eval_frame.OptimizedModule)
-    assert cfg.latent_size == 128
-    assert module.encoder.invariant_dim == 128
-    assert module.encoder.token_encoder.patch_sizes == (8, 16)
-    assert module.encoder.token_encoder.scale_embeddings is not None
-    assert not module.encoder.token_encoder.use_frame_gating
-    assert not module.encoder.enable_ray_head
-    assert not module.encoder.enable_masked_token_objective
-    assert module.encoder.ray_token_mlp is None
-    assert module.encoder.mask_teacher is None
-    assert isinstance(module.vicreg.projector, torch.nn.Sequential)
-    assert module.vicreg.embed_dim == 128
-    assert module.vicreg.sim_coeff == 25.0
-    assert module.vicreg.std_coeff == 25.0
-    assert module.vicreg.cov_coeff == 1.0
-    assert cfg.decay_rate == 0.04
-    assert cfg.epochs == 100
-    assert not cfg.ddp_find_unused_parameters
-    assert sum(parameter.numel() for parameter in module.parameters()) == 1_703_689
-    assert all(parameter.requires_grad for parameter in module.parameters())

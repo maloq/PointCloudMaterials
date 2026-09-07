@@ -225,13 +225,13 @@ conda activate pointnet
 python scripts/evaluate_shooting_ablation0.py \
   --experiment-dir /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901 \
   --output-dir /home/ids/vmorozov/experiments/shooting_ablation0_future_change_geoframe_v2_20260901
-python scripts/run_shooting_multiscale_ablation.py \
+python scripts/run_shooting_ablation.py multiscale \
   --config configs/shooting_multiscale_ablation1_geoframe_v2_20260901.yaml
-python scripts/run_shooting_spatial_ablation.py \
+python scripts/run_shooting_ablation.py spatial \
   --config configs/shooting_spatial_ablation2_geoframe_v2_20260901.yaml
-python scripts/run_shooting_distributional_ablation.py \
+python scripts/run_shooting_ablation.py distributional \
   --config configs/shooting_distributional_ablation3_geoframe_v2_20260901.yaml
-python scripts/run_shooting_geometry_ablation.py \
+python scripts/run_shooting_ablation.py geometry \
   --config configs/shooting_geometry_ablation4_fixed_geoframe_v2_20260901.yaml
 ```
 

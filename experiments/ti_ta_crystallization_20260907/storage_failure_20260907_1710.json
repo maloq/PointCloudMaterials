@@ -1,0 +1,40 @@
+{
+  "observed_at_utc": "2026-09-07T15:30:07.049152+00:00",
+  "service_failed_at_local": "2026-09-07T17:10:43+02:00",
+  "cause": "EDQUOT: storage quota exceeded, confirmed by write probe",
+  "verified_complete_branches": [
+    "2.7ns",
+    "2.8ns",
+    "2.9ns"
+  ],
+  "dynamics_complete_conversion_incomplete": "3.0ns",
+  "not_started": [
+    "Ta/3.60ns",
+    "Ti source and branches"
+  ],
+  "prior_statuses": {
+    "sequence_status.json": {
+      "state": "running",
+      "order": [
+        "Ta",
+        "Ti"
+      ],
+      "pid": 3816156,
+      "started_at_utc": "2026-09-07T09:58:27.520251+00:00",
+      "completed_campaigns": [],
+      "current_campaign": "Ta"
+    },
+    "Ta/status.json": {
+      "state": "running",
+      "host": "lamedell11",
+      "pid": 3816164,
+      "started_at_utc": "2026-09-07T09:58:27.634961+00:00",
+      "completed_branches": [
+        "2.7ns",
+        "2.8ns",
+        "2.9ns"
+      ],
+      "current_branch": "3.0ns"
+    }
+  }
+}

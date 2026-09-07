@@ -1,0 +1,35 @@
+{
+  "output": "output/mace_topology_nuances_20260907/comparison",
+  "allocation": "983527",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 900,
+  "predecessor": {
+    "status": "output/pretrained_mace_80_dt01_cosine_20260906/status.json",
+    "pid": 813983,
+    "process_identity": "290179482"
+  },
+  "prepared_output": "output/pretrained_mace_80_dt01_cosine_20260906",
+  "expected_steps": 5632,
+  "estimated_training_seconds": 5100,
+  "estimated_probe_seconds": 180,
+  "estimated_analysis_seconds": 900,
+  "probe_seed": 20260907,
+  "probe_anchors_per_material": 2048,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": true,
+  "runs": [
+    {
+      "name": "all_objectives",
+      "config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives.json"
+    },
+    {
+      "name": "no_temporal_partial",
+      "config": "experiments/pretrained_mace_ablations_lr5_20260907/no_temporal.json"
+    },
+    {
+      "name": "topology_aware",
+      "config": "experiments/mace_topology_nuances_20260907/training.json"
+    }
+  ],
+  "protocol_description": "Descriptive comparison, not matched ablations: completed four-epoch all-objective model; interrupted no-temporal checkpoint; topology-aware continuation with doubled batch/peak LRs and changed losses. Same 80-point inputs, 0.1 ps pairs and common probe data. Single seed; static frames overlap training ancestors."
+}

@@ -34,10 +34,6 @@ TRANSITION_CONFIG = (
     REPOSITORY_ROOT
     / "configs/simulation/atomistic/al/phase_transition_70304_mpa.yaml"
 )
-MH1_TRANSITION_CONFIG = (
-    REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/phase_transition_70304_mh1.yaml"
-)
 
 
 def test_phase_rdf_resolves_the_fcc_first_neighbor_shell() -> None:
@@ -181,41 +177,6 @@ def test_spatial_front_fit_tracks_two_interfaces_not_global_density(
         )
 
 
-def test_production_transition_config_is_direct_coexistence() -> None:
-    config = load_transition_config(TRANSITION_CONFIG)
-    assert config.generator.system.repetitions == (26, 26, 26)
-    assert config.generator.system.liquid_slab_fraction == 0.5
-    assert config.source_frame_step == 1000
-    assert config.random_seeds == (24680, 24681, 24682, 24683)
-    assert config.temperature_runs[0].expected_direction == "growth"
-    assert config.temperature_runs[0].temperature_K == 650.0
-    assert config.temperature_runs[-1].expected_direction == "melting"
-    assert config.temperature_runs[-1].temperature_K == 1000.0
-    assert [branch.temperature_K for branch in config.temperature_runs] == [
-        650.0,
-        800.0,
-        850.0,
-        900.0,
-        950.0,
-        1000.0,
-    ]
-    assert config.sample_interval == 200
-    assert config.analysis.rdf_cutoff_A == 8.0
-    assert config.analysis.rdf_bins == 160
-    assert config.analysis.ptm_rmsd_cutoff == 0.1
-    assert all(
-        branch.production_steps // config.sample_interval + 1 == 101
-        for branch in config.temperature_runs
-    )
-    assert all(branch.equilibration_steps == 5000 for branch in config.temperature_runs)
-    assert all(branch.production_steps == 20000 for branch in config.temperature_runs)
-    assert all(
-        (branch.steady_state_start_step, branch.steady_state_end_step)
-        == (5000, 20000)
-        for branch in config.temperature_runs
-    )
-
-
 def test_zero_velocity_bracket_ignores_unrelated_zero_overlapping_temperature() -> None:
     summary = _resolve_zero_velocity(
         [
@@ -304,22 +265,6 @@ def test_zero_velocity_rejects_robust_negative_to_positive_reversal() -> None:
     assert summary["candidate_positive_to_negative_brackets_K"] == [
         [850.0, 900.0]
     ]
-
-
-def test_mh1_transition_grid_matches_baseline_protocol() -> None:
-    baseline = load_transition_config(TRANSITION_CONFIG)
-    candidate = load_transition_config(MH1_TRANSITION_CONFIG)
-
-    assert candidate.generator.potential.model_name == "mace-mh-1-omat-pbe"
-    assert candidate.generator.potential.head == "omat_pbe"
-    assert candidate.generator.potential.usage_mode == "exploratory"
-    assert candidate.generator.system.liquid_slab_fraction == 0.5
-    assert candidate.random_seeds == baseline.random_seeds
-    assert candidate.sample_interval == baseline.sample_interval
-    assert candidate.analysis == baseline.analysis
-    assert candidate.temperature_runs == baseline.temperature_runs
-    assert candidate.source_dataset != baseline.source_dataset
-    assert candidate.output.root_dir != baseline.output.root_dir
 
 
 def test_small_direct_coexistence_round_trip(

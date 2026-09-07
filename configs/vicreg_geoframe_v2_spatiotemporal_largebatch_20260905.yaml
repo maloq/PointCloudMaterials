@@ -1,0 +1,8 @@
+defaults:
+  - vicreg_geoframe_v2_spatiotemporal_corrected_20260905
+  - _self_
+
+experiment_name: GFv2_SPATIOTEMPORAL_VICReg_B8192_20260905
+batch_size: 8192
+# Keep the previous fixed validation batches and their statistics.
+spatiotemporal_validation_batch_size: 2048

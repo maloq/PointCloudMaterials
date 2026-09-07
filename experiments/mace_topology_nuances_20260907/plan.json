@@ -1,0 +1,25 @@
+{
+  "output": "output/mace_topology_nuances_20260907",
+  "source_config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives.json",
+  "seed": 20260907,
+  "audit_anchors_per_material": 128,
+  "audit_workers": 4,
+  "perturbation_sigmas_A": [
+    0.001,
+    0.005,
+    0.02
+  ],
+  "reliability_sigma_A": 0.005,
+  "noise_penalty": 4,
+  "decoder_anchors_per_material": 4096,
+  "decoder_epochs": 100,
+  "decoder_lr": 0.001,
+  "allocation": "983527",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 900,
+  "training_config": "experiments/mace_topology_nuances_20260907/training.json",
+  "prepared_output": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives",
+  "partial_config": "experiments/pretrained_mace_ablations_lr5_20260907/no_temporal.json",
+  "partial_checkpoint": "/tmp/vmorozov_mace_ablations_lr5_20260907/no_temporal/checkpoints/last.pt",
+  "comparison_plan": "experiments/mace_topology_nuances_20260907/comparison.json"
+}

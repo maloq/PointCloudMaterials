@@ -1,0 +1,22 @@
+output_dir: output/geoframe_encoder_temporal_stability_finest_30fs_20260904
+
+data:
+  campaign_root: /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902
+  timesteps: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  center_atom_count: 32
+  center_selection_seed: 123
+  num_points: 160
+  radius_A: 9.192189
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: encoder
+  device: cpu
+  repeats: 1
+  seed: 123
+  batch_size: 256
+
+evaluation:
+  control_cloud_count: 512
+  cross_state_samples: 100000
+  seed: 123

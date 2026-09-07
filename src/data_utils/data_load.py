@@ -204,7 +204,8 @@ class PointCloudDataset(Dataset):
                  normalize=True,
                  sampling_method="drop_farthest",
                  auto_cutoff_config: dict[str, Any] | None = None,
-                 sample_cache_config: dict[str, Any] | None = None):
+                 sample_cache_config: dict[str, Any] | None = None,
+                 atomic_context: dict[str, Any] | None = None):
         """Initialize the dataset with samples from point cloud files.
 
         Supports the two repository configuration modes:
@@ -271,8 +272,13 @@ class PointCloudDataset(Dataset):
                 overlap_fraction=overlap_fraction,
                 n_samples=n_samples,
             )
+            if atomic_context is not None:
+                from src.data_utils.atomic_context import attach_atomic_context
+                attach_atomic_context(self, atomic_context, cache_cfg["cache_dir"])
             return
 
+        if atomic_context is not None:
+            raise ValueError("atomic_context requires an existing static sample cache with coordinates")
         all_sample_radii: list[float] = []
         all_samples: list = []
 

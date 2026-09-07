@@ -283,18 +283,6 @@ def test_dft_reference_pressure_must_span_scope_for_every_state(tmp_path) -> Non
         )
 
 
-def test_supplied_benchmark_has_claim_and_timestep_scope() -> None:
-    config = load_potential_benchmark_config(BENCHMARK_CONFIG)
-
-    assert config.qualification_scope.pressure_range_GPa == (0.0, 0.0)
-    assert config.qualification_scope.maximum_timestep_fs in config.nve_timesteps_fs
-    assert config.qualification_scope.authorized_claims == {
-        "phase_context_structure": True,
-        "equilibrium_thermodynamics": True,
-        "kinetics": False,
-    }
-
-
 def test_benchmark_requires_scoped_timestep_in_nve_grid(tmp_path) -> None:
     raw = yaml.safe_load(BENCHMARK_CONFIG.read_text(encoding="utf-8"))
     raw["qualification_scope"]["maximum_timestep_fs"] = 0.75

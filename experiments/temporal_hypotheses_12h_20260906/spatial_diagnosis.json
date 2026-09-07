@@ -1,0 +1,8 @@
+{
+  "output": "output/temporal_hypotheses_12h_20260906/spatial_diagnosis",
+  "analyses": {
+    "old_geoframe_projector": "output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/analysis_best_static",
+    "density_raw": "output/temporal_hypotheses_12h_20260906/static_pipeline_encoder_only"
+  },
+  "projected_analysis": "output/temporal_hypotheses_12h_20260906/full_static_Al"
+}

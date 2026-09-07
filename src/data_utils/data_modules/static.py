@@ -75,6 +75,7 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
             sampling_method=_cfg_get(data_cfg, "sampling_method", default="drop_farthest", context=ctx),
             auto_cutoff_config=auto_cutoff_cfg,
             sample_cache_config=sample_cache_cfg,
+            atomic_context=_to_container(_cfg_get(data_cfg, "atomic_context", default=None, context=ctx)),
         )
 
         if data_sources_raw is not None:

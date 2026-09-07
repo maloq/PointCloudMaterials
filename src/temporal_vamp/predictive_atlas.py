@@ -1228,12 +1228,46 @@ def _candidate_sets(
     crystalline_fraction_tolerance: float,
     static_caliper_candidates: int,
     neighbors: int,
+    validation_temperatures_K: Sequence[float] | None = None,
+    validation_phases: Sequence[str] | None = None,
 ) -> tuple[np.ndarray, list[np.ndarray], list[tuple[str, float, str]]]:
     parent_indices = targets.parent_splits["validation"]
+    allowed_temperatures = (
+        None
+        if validation_temperatures_K is None
+        else {float(value) for value in validation_temperatures_K}
+    )
+    allowed_phases = (
+        None
+        if validation_phases is None
+        else {str(value) for value in validation_phases}
+    )
+    parents = cache.manifest["snapshot"]["parents"]
+    parent_indices = np.asarray(
+        [
+            int(index)
+            for index in parent_indices.tolist()
+            if (
+                allowed_temperatures is None
+                or float(parents[int(index)]["temperature_K"])
+                in allowed_temperatures
+            )
+            and (
+                allowed_phases is None
+                or str(parents[int(index)]["phase"]) in allowed_phases
+            )
+        ],
+        dtype=np.int64,
+    )
+    if parent_indices.size == 0:
+        raise RuntimeError(
+            "Predictive-atlas evaluation filters removed every final-validation "
+            f"parent: temperatures={validation_temperatures_K}, "
+            f"phases={validation_phases}."
+        )
     center_count = int(cache.parent_z.shape[1])
     selected_rows = _rows_for_parents(parent_indices, center_count)
     parent_for_position = np.repeat(parent_indices, center_count)
-    parents = cache.manifest["snapshot"]["parents"]
     keys = [
         (
             str(parents[parent_index]["source_run_id"]),
@@ -1451,6 +1485,8 @@ def evaluate_predictive_atlas(
     exact_mmd_pairs: int,
     bootstrap_samples: int,
     seed: int,
+    validation_temperatures_K: Sequence[float] | None = None,
+    validation_phases: Sequence[str] | None = None,
 ) -> tuple[dict[str, Any], dict[str, np.ndarray], list[np.ndarray]]:
     if static_space_name not in spaces:
         raise KeyError(
@@ -1464,6 +1500,8 @@ def evaluate_predictive_atlas(
         crystalline_fraction_tolerance=float(crystalline_fraction_tolerance),
         static_caliper_candidates=int(static_caliper_candidates),
         neighbors=int(neighbors),
+        validation_temperatures_K=validation_temperatures_K,
+        validation_phases=validation_phases,
     )
     teacher = np.asarray(targets.empirical_mean_embedding)[selected_rows]
     rng = np.random.default_rng(int(seed))

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from scripts.run_lammps_independent_meam_source_campaign import (
+from src.simulation.campaigns.independent_meam_source import (
     MEASUREMENT_STEPS,
     RUNS_PER_TEMPERATURE,
     SAMPLE_INTERVAL_STEPS,

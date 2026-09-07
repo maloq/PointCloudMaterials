@@ -62,11 +62,11 @@ source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 export PYTHONPATH=.
 
-python scripts/run_predictive_atlas.py \
+python scripts/run_predictive_atlas.py frozen \
   --config configs/predictive_atlas_geoframe_v2_480branches_20260902.yaml \
   --stage extract
 
-python scripts/run_predictive_atlas.py \
+python scripts/run_predictive_atlas.py frozen \
   --config configs/predictive_atlas_geoframe_v2_480branches_20260902.yaml \
   --stage train
 ```
@@ -190,7 +190,7 @@ unchanged epoch -1 model is an explicit candidate in model selection.
 Reproduce it with:
 
 ```bash
-python scripts/run_predictive_atlas_expanded_finetune.py \
+python scripts/run_predictive_atlas.py finetune \
   --config configs/predictive_atlas_expanded512_history_finetune_geoframe_v2_20260902.yaml \
   --stage all
 ```
@@ -297,3 +297,119 @@ The main artifacts are under
 `/home/ids/vmorozov/experiments/temporal_encoder_pretraining_geoframe_v2_468480_20260902`
 and
 `/home/ids/vmorozov/experiments/predictive_atlas_temporal_encoder_scaled_20260902`.
+
+## Transition-balanced fixed-horizon rerun (2026-09-03)
+
+The fixed-horizon compatibility campaign at
+`/home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible`
+is now strict-complete: 36 parents, four futures per parent, 144 paths, and exact
+6/12/24 ps targets. Of these, 104 paths required physical LAMMPS continuation
+after first passage and 40 already contained 24 ps. A worker-finalization bug had
+left the 104 composed, checksum-valid 81-frame binaries without `outcome.json`:
+numpy memmaps were still open when an NFS intermediate directory was deleted.
+`recover-completed-compositions` now accepts only that exact cleanup failure,
+verifies the composed binary and immutable source outcome, and records that no
+frames were reconstructed and LAMMPS was not rerun. The campaign then passed its
+strict summarizer. Future workers preserve the small intermediate binary and
+delete only the large text dump.
+
+The atlas loader now consumes this producer directly and preserves its explicit
+source-run splits: 26 parents for optimization, four for model selection, and six
+for final validation. All experiments use 512 deterministic central atoms, 17
+spatial tokens, the original frozen GeoFrameV2 checkpoint, and the fixed RFF
+kernel from the 480-branch experiment. This makes the future-law distance scale
+comparable while moving to substantially harder, transition-balanced parents.
+
+The 36-parent position-only atlas reaches final-validation target R2 = 0.629. On
+the valid matched-retrieval subset--the two independent 400 K transition parents--
+its future-law distance is 0.45545 versus 0.45712 for static PCA, a +0.364% gain.
+VAMP is 3.676% worse than static PCA, whereas the empirical conditional-law oracle
+is +20.07% better. The RFF approximation remains accurate (Spearman 0.990 against
+exact biased MMD over 512 sampled pairs). The uncertainty estimate is narrow over
+local states but has only two independent source runs, so it must not be read as a
+broad source-population confidence interval.
+
+Past context is unavailable for the six liquid/crystal controls because those
+controls were deliberately selected at source frame zero. The fair history
+comparison therefore uses exactly the 30 transition parents: 22 optimization,
+four model-selection, and four final-validation parents, with 120 future paths.
+The position-only target distance is 0.45662; adding the same 17 token identities
+at t-12, t-9, t-6, and t-3 ps reduces it to 0.45515. This is a +0.320% direct gain
+over the identical position model (source bootstrap +0.295% to +0.346%) and a
++0.437% gain over static PCA. Pairwise future-law Spearman improves from 0.3310
+to 0.3351. The accepted new result is therefore the frozen-encoder history atlas,
+not the position-only or VAMP representation.
+
+Exposing the final GeoFrame block (198,970 parameters) directly to the repeated-
+shooting conditional-law target does not improve model-selection loss: all three
+seeds choose epoch -1. Its held-out retrieval is 0.45527, a -0.025% change versus
+the frozen history atlas (95% interval -0.070% to +0.019%). This experimental
+encoder is rejected. The remaining +20% oracle gap and split-shot correlation of
+only 0.723 show that four futures per parent are still a noisy conditional-law
+target; more compute cannot substitute for more independent futures and parents.
+
+Reproduction configurations are:
+
+- `configs/predictive_atlas_nested_fixed24_geoframe_v2_20260903.yaml`
+- `configs/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903.yaml`
+- `configs/predictive_atlas_nested_fixed24_history_geoframe_v2_20260903.yaml`
+- `configs/predictive_atlas_nested_fixed24_transition_encoder_finetune_geoframe_v2_20260903.yaml`
+
+The accepted model and metrics are under
+`/home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_history_geoframe_v2_20260903`.
+The independent-source campaign is not yet admissible: at the final scan only 16
+of 90 runs were complete, all in the 400 K optimization split, and no strict
+`summary.json` existed.
+
+## Finest-timestep GeoFrame stability audit (2026-09-04)
+
+To determine whether the frozen teacher itself provides a smooth instantaneous
+state, the original nested shooting campaign was re-encoded at its finest stored
+cadence. LAMMPS integrates at 3 fs, but the trajectory stores the early segment
+every 10 steps, so the finest observable interval is 30 fs. The exact audit uses
+36 parents, all 144 four-sibling branches, 32 fixed atom IDs, and 11 frames from
+0 to 0.30 ps: 50,688 local environments in total.
+
+Both the checkpoint's VICReg-projector output and its direct GeoFrame encoder
+output are exactly deterministic under repeat encoding and point permutation.
+Independent rotations change either representation by less than 3e-6 of its
+median cross-state distance. The temporal changes below are therefore physical.
+
+| Representation | Lag | Mean cosine | Median drift / cross-state median | Same-atom top-1 |
+|---|---:|---:|---:|---:|
+| VICReg projector | 0.03 ps | 0.9284 | 0.773 | 8.57% |
+| GeoFrame encoder output | 0.03 ps | 0.9910 | 0.841 | 18.27% |
+| VICReg projector | 0.30 ps | 0.9013 | 0.919 | 5.10% |
+| GeoFrame encoder output | 0.30 ps | 0.9882 | 0.954 | 6.60% |
+
+Same-atom retrieval searches among 32 within-branch candidates, so chance is
+3.125%. Cross-state distances use different transition parents matched by
+temperature. The direct encoder has high cosine because the entire representation
+is angularly concentrated: even different-parent states have mean cosine 0.987.
+Its high absolute cosine therefore does not imply strong dynamical identity.
+
+At 30 fs, atom-matched local coordinates have moved by 0.249 A RMS while 98.1%
+of the initial nearest-160 atom set remains. At 0.30 ps the corresponding values
+are 0.640 A and 95.3%. Median embedding drift reaches approximately 90--95% of
+the cross-state scale by 0.09--0.15 ps, and sibling futures diverge nearly as
+quickly as a branch moves away from its parent. The frozen teacher is invariant
+and numerically reproducible, but one-frame embeddings retain substantial fast
+thermal motion and should not be assumed to form a smooth dynamical coordinate.
+
+This motivates short-history pooling or a shooting-law-aware thermal-denoising
+objective as the next controlled ablation. Smoothness alone is not the selection
+criterion; the stabilized representation must improve held-out conditional
+future-law prediction and retrieval.
+
+Artifacts are in:
+
+- `output/geoframe_temporal_stability_comparison_finest_30fs_20260904/`;
+- `output/geoframe_temporal_stability_finest_30fs_20260904/`;
+- `output/geoframe_encoder_temporal_stability_finest_30fs_20260904/`.
+
+The runner, comparison, configurations, and core metrics are respectively in
+`scripts/analyze_geoframe.py stability`,
+`scripts/analyze_geoframe.py compare-representations`,
+`configs/geoframe_temporal_stability_finest_30fs_20260904.yaml`,
+`configs/geoframe_encoder_temporal_stability_finest_30fs_20260904.yaml`, and
+`src/temporal_vamp/geoframe_stability.py`.

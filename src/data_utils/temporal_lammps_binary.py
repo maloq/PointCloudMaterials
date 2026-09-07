@@ -54,8 +54,12 @@ def resolve_temporal_lammps_artifact(path: str | Path) -> Path:
         )
     if requested.suffix == ".lammpstrj":
         replacement = binary_path_for_dump(requested)
-        if replacement.is_dir():
-            return replacement
+        half = requested.parent / f"{requested.stem}_binary_float16"
+        candidates = {p.resolve() for p in (replacement, half) if p.is_dir()}
+        if len(candidates) == 1:
+            return candidates.pop()
+        if len(candidates) > 1:
+            raise RuntimeError(f"Ambiguous binary replacements for {requested}: {candidates}")
         raise FileNotFoundError(
             "LAMMPS trajectory is absent in both supported forms: "
             f"text={requested}, binary={replacement}."
@@ -84,6 +88,12 @@ def _array_description(values: np.ndarray, filename: str) -> dict[str, Any]:
 
 @dataclass(frozen=True)
 class TemporalLAMMPSBinaryTrajectory:
+    """Memory maps retain their declared storage dtype, including imported float16.
+
+    Before periodic neighbor search, decode float16 frames to float32 and wrap
+    into [0, L): quantization can round a boundary coordinate up to L.
+    """
+
     root: Path
     manifest: dict[str, Any]
     positions: np.ndarray
@@ -118,9 +128,9 @@ class TemporalLAMMPSBinaryTrajectory:
                 f"Temporal binary trajectory is not complete: root={root}, "
                 f"state={manifest.get('state')!r}."
             )
-        if manifest.get("storage_dtype") != "float32":
+        if manifest.get("storage_dtype") not in {"float32", "float16"}:
             raise ValueError(
-                f"Temporal binary storage must be float32, got {manifest.get('storage_dtype')!r}."
+                f"Temporal binary storage must be float32 or float16, got {manifest.get('storage_dtype')!r}."
             )
 
         descriptions = manifest.get("arrays")
@@ -165,7 +175,7 @@ class TemporalLAMMPSBinaryTrajectory:
                     f"expected={expected_shape}, observed={arrays[name].shape}, root={root}."
                 )
         expected_dtypes = {
-            "positions": np.dtype("float32"),
+            "positions": np.dtype(manifest["storage_dtype"]),
             "timesteps": np.dtype("int64"),
             "box_low": np.dtype("float32"),
             "box_high": np.dtype("float32"),
@@ -225,15 +235,20 @@ def write_temporal_lammps_binary(
     atom_columns: tuple[str, ...],
     source: dict[str, Any],
     provenance: dict[str, Any],
+    consume_positions_file: Path | None = None,
 ) -> TemporalLAMMPSBinaryTrajectory:
-    """Atomically write one repository trajectory as verified float32 arrays."""
+    """Publish float32 or float16 arrays, optionally consuming the producer's scratch NPY.
+
+    Consuming an existing positions memmap avoids a second full-size disk copy.
+    The scratch file is moved only after the ordinary input validation passes.
+    """
 
     target = Path(output_dir).expanduser().resolve()
     if target.exists():
         raise FileExistsError(f"Refusing to overwrite temporal binary trajectory: {target}")
-    if positions.dtype != np.dtype("float32") or positions.ndim != 3 or positions.shape[2] != 3:
+    if positions.dtype not in (np.dtype("float32"), np.dtype("float16")) or positions.ndim != 3 or positions.shape[2] != 3:
         raise ValueError(
-            f"positions must be repository-produced float32 (frames, atoms, 3), got "
+            f"positions must be repository-produced float32/float16 (frames, atoms, 3), got "
             f"shape={positions.shape}, dtype={positions.dtype}."
         )
     frame_count, atom_count, _ = positions.shape
@@ -257,8 +272,6 @@ def write_temporal_lammps_binary(
                 f"Temporal binary input {name!r} has shape={typed_arrays[name].shape}, "
                 f"expected={expected_shape}."
             )
-    if not np.all(np.isfinite(positions)):
-        raise ValueError("Temporal binary positions contain non-finite values.")
     if not np.array_equal(
         typed_arrays["atom_ids"], np.arange(1, atom_count + 1, dtype=np.int64)
     ):
@@ -266,26 +279,40 @@ def write_temporal_lammps_binary(
     box_lengths = typed_arrays["box_high"] - typed_arrays["box_low"]
     if np.any(box_lengths <= 0.0):
         raise ValueError("Temporal binary box bounds contain a non-positive length.")
-    if np.any(positions < 0.0) or np.any(positions >= box_lengths[:, None, :]):
-        raise ValueError(
-            "Temporal binary positions must use wrapped coordinates relative to box_low in [0, L)."
-        )
+    # Trajectories can be tens of GiB memmaps. Validate a frame at a time rather
+    # than allocating boolean arrays covering every frame at once.
+    for frame_index, frame in enumerate(positions):
+        if not np.all(np.isfinite(frame)):
+            raise ValueError(f"Temporal binary positions contain non-finite values at frame {frame_index}.")
+        upper = box_lengths[frame_index]
+        outside = (frame > upper.astype(np.float16)) if positions.dtype == np.float16 else (frame >= upper)
+        if np.any(frame < 0.0) or np.any(outside):
+            raise ValueError(
+                f"Temporal binary positions at frame {frame_index} must use wrapped "
+                "coordinates relative to box_low in [0, L)."
+            )
 
     target.parent.mkdir(parents=True, exist_ok=True)
     building = target.parent / f".{target.name}.building-{os.getpid()}"
     if building.exists():
         raise FileExistsError(f"Interrupted temporal binary build already exists: {building}")
     building.mkdir()
-    stored_positions = open_memmap(
-        building / _ARRAY_FILES["positions"],
-        mode="w+",
-        dtype=np.float32,
-        shape=positions.shape,
-    )
-    for frame_index in range(frame_count):
-        stored_positions[frame_index] = positions[frame_index]
-    stored_positions.flush()
-    del stored_positions
+    if consume_positions_file is not None:
+        if not isinstance(positions, np.memmap) or Path(positions.filename).resolve() != consume_positions_file.resolve():
+            raise ValueError('Consumed positions file must be the supplied positions memmap')
+        positions.flush()
+        os.replace(consume_positions_file, building / _ARRAY_FILES["positions"])
+    else:
+        stored_positions = open_memmap(
+            building / _ARRAY_FILES["positions"],
+            mode="w+",
+            dtype=positions.dtype,
+            shape=positions.shape,
+        )
+        for frame_index in range(frame_count):
+            stored_positions[frame_index] = positions[frame_index]
+        stored_positions.flush()
+        del stored_positions
     for name in ("timesteps", "box_low", "box_high", "atom_ids", "atom_types"):
         np.save(building / _ARRAY_FILES[name], typed_arrays[name], allow_pickle=False)
     for filename in _ARRAY_FILES.values():
@@ -301,10 +328,10 @@ def write_temporal_lammps_binary(
         "schema_version": SCHEMA_VERSION,
         "state": "complete",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "storage_dtype": "float32",
+        "storage_dtype": positions.dtype.name,
         "coordinate_convention": (
             "positions are wrapped Cartesian coordinates in angstrom relative to box_low "
-            "in the half-open periodic interval [0, box_high-box_low)"
+            "in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again"
         ),
         "atom_count": atom_count,
         "frame_count": frame_count,

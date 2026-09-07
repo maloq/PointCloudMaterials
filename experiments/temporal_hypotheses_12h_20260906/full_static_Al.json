@@ -1,0 +1,13 @@
+{
+  "output": "output/temporal_hypotheses_12h_20260906/full_static_Al",
+  "hypothesis": "density_predictive",
+  "centers_cache": "datasets/cache/data_ae_Al_80_analysis_coords",
+  "reference_static": "output/smooth_temporal_encoder_20260905/full_static_Al",
+  "batch_size": 8192,
+  "workers": 4,
+  "clusters": 7,
+  "seed": 123,
+  "assay_per_frame": 512,
+  "slice_half_width_A": 7.6,
+  "html_max_points": 50000
+}

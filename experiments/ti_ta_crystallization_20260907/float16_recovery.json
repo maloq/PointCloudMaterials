@@ -1,0 +1,7 @@
+{
+  "date": "2026-09-07T17:37:13.909456",
+  "removed": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/conversion_positions.npy",
+  "size": 28921220552,
+  "allocated_bytes": 17407701504,
+  "reason": "Incomplete derived float32 memmap after quota failure at 17:10 CEST; complete raw trajectory and final restart retained for float16 reconversion."
+}

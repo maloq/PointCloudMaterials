@@ -1,0 +1,44 @@
+defaults:
+  - vicreg_geo_frame_transformer_v2
+  - override data: loaders/spatiotemporal_almgta
+  - _self_
+
+experiment_name: GF_V2_SPATIOTEMPORAL_Al_Mg_Ta_20260905
+wandb_mode: offline
+init_from_checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+# All current encoder/projector tensors must be restored. The old auxiliary
+# FactorVAE discriminator is excluded by the trainer's weights-only loader.
+init_from_checkpoint_strict: true
+resume_from_checkpoint: null
+
+vicreg_temporal_view: true
+vicreg_temporal_weight: 1.0
+vicreg_neighbor_view: true
+vicreg_neighbor_view_mode: second
+vicreg_neighbor_k: 8
+factor_vae_enabled: false
+swav_enabled: false
+
+learning_rate: 0.0001
+batch_size: 2048
+epochs: 60
+warmup_epochs: 3
+warmup_start_factor: 0.1
+num_workers: 8
+devices: [0]
+precision: bf16-mixed
+compile_encoder: true
+encoder_compile_mode: default
+enable_model_summary: false
+check_val_every_n_epoch: 1
+checkpoint_monitor: loss/val
+checkpoint_mode: min
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 10
+num_sanity_val_steps: 2
+enable_probe_metrics: false
+supervised_metric_stages: []
+embedding_metric_stages: []
+probe_metric_stages: []
+run_post_training_analysis: false
+run_test_after_training: false

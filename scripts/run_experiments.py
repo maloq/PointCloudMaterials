@@ -6,19 +6,19 @@ multi-stage checkpoint chaining, and automated result aggregation.
 
 Examples:
     # Submit to SLURM (default):
-    python scripts/run_experiments.py --plan experiments/vicreg_encoders.yaml
+    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml
 
     # Run locally (no SLURM):
-    python scripts/run_experiments.py --plan experiments/vicreg_encoders.yaml --local
+    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --local
 
     # Dry run (preview commands without executing):
-    python scripts/run_experiments.py --plan experiments/vicreg_encoders.yaml --dry-run
+    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --dry-run
 
     # Resume a previously interrupted run:
-    python scripts/run_experiments.py --plan experiments/vicreg_encoders.yaml --resume output/experiments/vicreg_encoders_20260219_120000
+    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --resume output/experiments/vicreg_encoders_polycrystalline_20260219_120000
 
     # Re-collect results from an existing output directory:
-    python scripts/run_experiments.py --plan experiments/vicreg_encoders.yaml --collect output/experiments/vicreg_encoders_20260219_120000
+    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --collect output/experiments/vicreg_encoders_polycrystalline_20260219_120000
 """
 
 from __future__ import annotations
@@ -161,18 +161,22 @@ def main(argv: list[str] | None = None) -> int:
     print()
 
     try:
-        run_plan(
-            plan,
-            output_dir=output_dir,
-            repo_root=REPO_ROOT,
-            local=args.local,
-            parallel=args.parallel,
-            dry_run=args.dry_run,
-            continue_on_error=args.continue_on_error,
-            resume_state=resume_state,
-            nan_restart_max_retries=args.nan_restart_max_retries,
-            nan_restart_lr_factor=args.nan_restart_lr_factor,
-        )
+        from src.experiment_runner.tracking import tracked_run
+        with tracked_run(output_dir, kind='training', configs=[plan_path],
+                         command=[sys.executable, *sys.argv], question=plan.name,
+                         success_state='dry_run' if args.dry_run else 'command_succeeded'):
+            run_plan(
+                plan,
+                output_dir=output_dir,
+                repo_root=REPO_ROOT,
+                local=args.local,
+                parallel=args.parallel,
+                dry_run=args.dry_run,
+                continue_on_error=args.continue_on_error,
+                resume_state=resume_state,
+                nan_restart_max_retries=args.nan_restart_max_retries,
+                nan_restart_lr_factor=args.nan_restart_lr_factor,
+            )
     except RuntimeError as exc:
         print(f"\nError: {exc}", file=sys.stderr)
         return 1

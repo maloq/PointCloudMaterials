@@ -1,0 +1,45 @@
+# Target/horizon/noise map on the harder four-shot transition-parent campaign.
+output_dir: /home/ids/vmorozov/experiments/predictability_map_nested_transition_geoframe_v2_20260903_135104
+device: cuda:0
+
+data:
+  embedding_cache: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903/embeddings
+  context_token_cache: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903/context_tokens
+  history_embeddings: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_history_geoframe_v2_20260903/history_embeddings/history_z.npy
+
+target:
+  horizons_ps: [6, 12, 24]
+  change_pca_dim: 32
+  rff_features_per_bandwidth: 128
+  bandwidth_multipliers: [0.5, 1.0, 2.0]
+  joint_path_kernel: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903/path_kernel.npz
+  rff_batch_size: 16384
+  seed: 123
+
+split:
+  selection_source_velocity_seeds: []
+
+model:
+  hidden_dim: 256
+  latent_dim: 32
+  dropout: 0.10
+
+training:
+  learning_rate: 0.0005
+  weight_decay: 0.001
+  batch_size: 1024
+  maximum_epochs: 320
+  patience: 45
+  seeds: [11, 22, 33]
+
+evaluation:
+  shot_split_repetitions: 300
+  bootstrap_samples: 2000
+  pair_samples: 20000
+  vector_field_horizon_ps: 12
+  seed: 123
+
+accepted_atlas:
+  coordinates: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903/coordinates_and_predictions.npz
+  position_metrics: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903/metrics.json
+  history_metrics: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_history_geoframe_v2_20260903/metrics.json

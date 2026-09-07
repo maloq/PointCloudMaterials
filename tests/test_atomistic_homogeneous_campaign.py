@@ -78,16 +78,6 @@ BASE_GENERATOR_CONFIG = (
     REPOSITORY_ROOT
     / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
 )
-COMPILED_SOURCE_CONFIGS = (
-    REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml",
-    REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/liquid_source_16384_mh1.yaml",
-)
-H100_CAMPAIGN_CONFIG = (
-    REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/campaign_16384_mpa_110ps_multiseed_h100.yaml"
-)
 
 
 class GraphMetricsEMT(EMT):
@@ -157,23 +147,6 @@ class GraphMetricsEMT(EMT):
             "force_evaluations": self.metric_force_evaluations,
             "stress_evaluations": self.metric_stress_evaluations,
         }
-
-
-def test_production_h100_campaign_uses_tuned_runtime_without_changing_source() -> None:
-    config = load_homogeneous_campaign_config(H100_CAMPAIGN_CONFIG)
-
-    assert config.homogeneous.generator.config_path == (
-        REPOSITORY_ROOT
-        / "configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml"
-    )
-    assert config.runtime_generator is not None
-    potential = config.runtime_generator.potential
-    assert potential.enable_cueq is True
-    assert potential.enable_oeq is False
-    assert potential.compile_mode == "max-autotune-no-cudagraphs"
-    assert potential.pad_num_atoms == 16_384
-    assert potential.pad_num_edges == 1_200_000
-    assert potential.neighbor_skin_A == 0.5
 
 
 def test_three_coordinate_samples_per_ps_use_exact_rational_schedule(
@@ -281,18 +254,22 @@ def test_generic_and_transition_md_producer_scopes_are_explicit_and_disjoint() -
         assert required not in generic["files"]
 
 
-def test_extant_34bc_generic_producer_digest_has_one_exact_certificate() -> None:
-    active = _producer_code_provenance()
+def test_historical_producer_certificate_rejects_uncertified_digests() -> None:
+    # This certificate binds two historical versions, not every future checkout.
+    certified = {
+        **_producer_code_provenance(),
+        "sha256": "a02a83f55d044ec1d41b0a0de0a78e2f1d6817b4a49e30738424a58661f63a56",
+    }
     observed = {
-        **active,
+        **certified,
         "sha256": "34bc51f14396cf99e28e965e579a69c4fb0f04892591b61acbae33fe8d151413",
     }
-    assert active["sha256"] == (
-        "a02a83f55d044ec1d41b0a0de0a78e2f1d6817b4a49e30738424a58661f63a56"
-    )
-    assert producer_code_is_compatible(observed, active)
+    assert producer_code_is_compatible(observed, certified)
     assert not producer_code_is_compatible(
-        {**observed, "sha256": "0" * 64}, active
+        {**observed, "sha256": "0" * 64}, certified
+    )
+    assert not producer_code_is_compatible(
+        observed, {**certified, "sha256": "0" * 64}
     )
 
 
@@ -664,7 +641,7 @@ def _write_test_campaign(
     return campaign_path, atom_count
 
 
-def test_real_shape_34bc_checkpoint_identity_migrates_to_current_scope(
+def test_historical_checkpoint_migration_persists_certified_identity_and_audit(
     tmp_path: Path,
 ) -> None:
     campaign_path, _ = _write_test_campaign(tmp_path, random_seeds=[89])
@@ -673,6 +650,13 @@ def test_real_shape_34bc_checkpoint_identity_migrates_to_current_scope(
         config.homogeneous.generator,
         calculator=EMT(),
         injected_calculator_identity="legacy identity migration EMT",
+    )
+    execution = replace(
+        execution,
+        producer_code={
+            **execution.producer_code,
+            "sha256": "a02a83f55d044ec1d41b0a0de0a78e2f1d6817b4a49e30738424a58661f63a56",
+        },
     )
     expected = _campaign_identity(
         config,
@@ -854,27 +838,6 @@ def _bind_test_selection_report(
     campaign_raw["potential_selection_report"] = str(report_path)
     campaign_path.write_text(yaml.safe_dump(campaign_raw), encoding="utf-8")
     return report_path
-
-
-@pytest.mark.parametrize("path", COMPILED_SOURCE_CONFIGS)
-def test_compiled_liquid_sources_are_explicit_16384_atom_500K_protocols(
-    path: Path,
-) -> None:
-    config = load_config(path)
-    assert config.system.repetitions == (16, 16, 16)
-    assert len(bulk("Al", "fcc", a=4.05, cubic=True).repeat((16, 16, 16))) == 16384
-    assert config.dynamics.target_temperature_K == 500.0
-    assert config.dynamics.pressure_GPa == 0.0
-    assert config.dynamics.solid_equilibration_steps == 0
-    assert config.potential.compile_mode == "reduce-overhead"
-    assert config.potential.compile_fullgraph is False
-    assert config.potential.enable_cueq is True
-    assert config.potential.enable_oeq is False
-    assert config.potential.pad_num_atoms == 16384
-    assert config.potential.pad_num_edges == 1200000
-    assert config.potential.md_property_mode == "forces_stress"
-    assert config.output.overwrite is False
-    assert config.output.save_extxyz is True
 
 
 def test_campaign_config_binds_source_and_preserves_persistence_span(

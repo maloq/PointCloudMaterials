@@ -65,6 +65,7 @@ class ShootingFrame(ShootingPositionFrame):
 @dataclass(frozen=True)
 class PeriodicEnvironmentBatch:
     points: torch.Tensor
+    neighbor_atom_ids: np.ndarray
     context_points: torch.Tensor | None
     center_positions: np.ndarray
     context_center_offsets: np.ndarray | None
@@ -94,7 +95,7 @@ def resolve_shooting_trajectory_path(
         raise RuntimeError(
             "Complete shooting branch has not been migrated to the required float32 "
             f"binary format: branch={branch['branch_id']}, outcome={branch_dir / 'outcome.json'}. "
-            "Run scripts/migrate_lammps_shooting_float32.py for this campaign."
+            f"Run python scripts/convert_trajectory.py shooting --campaign-root {str(root)!r}."
         )
     if not isinstance(artifact, dict):
         raise TypeError(
@@ -479,6 +480,218 @@ def load_shooting_campaigns_snapshot(
     )
 
 
+def load_fixed_horizon_compatibility_snapshot(
+    campaign_root: str | Path,
+    *,
+    temperatures_K: Sequence[float],
+    minimum_complete_branches_per_parent: int,
+    basin_roles: Sequence[str] | None = None,
+) -> ShootingCampaignSnapshot:
+    """Load the repository's completed nested-shooting 24 ps compatibility set."""
+
+    root = Path(campaign_root).expanduser().resolve()
+    manifest = _load_json(root / "manifest.json")
+    campaign_type = "fixed_horizon_compatibility_from_nested_first_passage"
+    if manifest.get("campaign_type") != campaign_type:
+        raise ValueError(
+            f"Expected campaign_type={campaign_type!r}, got "
+            f"{manifest.get('campaign_type')!r} in {root / 'manifest.json'}."
+        )
+    summary = _load_json(root / "summary.json")
+    status = _load_json(root / "status.json")
+    if summary.get("state") != "complete" or status.get("state") != "complete":
+        raise RuntimeError(
+            "Fixed-horizon compatibility data must pass strict campaign "
+            f"summarization before training: root={root}, "
+            f"summary_state={summary.get('state')!r}, "
+            f"status_state={status.get('state')!r}."
+        )
+    protocol = manifest["protocol"]
+    if (
+        tuple(protocol["dump_columns"]) != _SHOOTING_COLUMNS
+        or int(protocol["run_steps"]) != 8000
+        or int(protocol["sample_interval_steps"]) != 100
+        or float(protocol["timestep_fs"]) != 3.0
+        or tuple(float(value) for value in protocol["fixed_horizons_ps"])
+        != (6.0, 12.0, 24.0)
+    ):
+        raise RuntimeError(
+            f"Fixed-horizon compatibility protocol changed: {root / 'manifest.json'}."
+        )
+    if (
+        int(summary["parent_count"]) != len(manifest["parents"])
+        or int(summary["branch_count"]) != len(manifest["branches"])
+    ):
+        raise RuntimeError(
+            f"Fixed-horizon summary counts disagree with its manifest: root={root}."
+        )
+
+    selected_temperatures = {float(value) for value in temperatures_K}
+    selected_roles = (
+        None if basin_roles is None else {str(value) for value in basin_roles}
+    )
+    minimum = int(minimum_complete_branches_per_parent)
+    if not selected_temperatures or minimum <= 0:
+        raise ValueError(
+            "Compatibility snapshot requires nonempty temperatures and a positive "
+            f"branch threshold, got temperatures={sorted(selected_temperatures)}, "
+            f"minimum={minimum}."
+        )
+    manifest_parents = {
+        str(parent["parent_id"]): parent for parent in manifest["parents"]
+    }
+    complete_by_parent: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    complete_count = 0
+    for branch in manifest["branches"]:
+        outcome_path = root / str(branch["branch_dir"]) / "outcome.json"
+        outcome = _load_json(outcome_path)
+        if outcome.get("state") != "complete":
+            raise RuntimeError(
+                f"Compatibility branch outcome is not complete: {outcome_path}."
+            )
+        for key in (
+            "branch_index",
+            "branch_id",
+            "parent_index",
+            "parent_id",
+            "source_run_id",
+            "source_split",
+            "temperature_K",
+            "momentum_index",
+            "momentum_seed",
+            "thermostat_index",
+            "thermostat_seed",
+        ):
+            if outcome.get(key) != branch[key]:
+                raise RuntimeError(
+                    "Compatibility outcome disagrees with its manifest: "
+                    f"branch={branch['branch_id']}, key={key!r}, "
+                    f"manifest={branch[key]!r}, outcome={outcome.get(key)!r}."
+                )
+        if (
+            int(outcome["frame_count"]) != 81
+            or int(outcome["first_timestep"]) != 0
+            or int(outcome["last_timestep"]) != 8000
+        ):
+            raise RuntimeError(
+                f"Compatibility branch temporal contract changed: {outcome_path}."
+            )
+        complete_count += 1
+        if float(branch["temperature_K"]) in selected_temperatures:
+            complete_by_parent[str(branch["parent_id"])].append(branch)
+
+    selected_parents: list[dict[str, Any]] = []
+    selected_branches: list[dict[str, Any]] = []
+    for parent_id, branches in complete_by_parent.items():
+        if len(branches) < minimum:
+            continue
+        source_parent = manifest_parents[parent_id]
+        if (
+            selected_roles is not None
+            and str(source_parent["basin_role"]) not in selected_roles
+        ):
+            continue
+        parent = dict(source_parent)
+        parent["phase"] = str(source_parent["basin_role"])
+        selected_parents.append(parent)
+        for source_branch in sorted(
+            branches,
+            key=lambda value: (
+                int(value["momentum_index"]), int(value["thermostat_index"])
+            ),
+        ):
+            branch = dict(source_branch)
+            branch["phase"] = str(source_branch["basin_role"])
+            branch["source_velocity_seed"] = int(parent["source_velocity_seed"])
+            branch["shot_index"] = (
+                2 * int(source_branch["momentum_index"])
+                + int(source_branch["thermostat_index"])
+            )
+            branch["velocity_seed"] = int(source_branch["momentum_seed"])
+            selected_branches.append(branch)
+    selected_parents.sort(key=lambda value: int(value["parent_index"]))
+    selected_parent_ids = {str(parent["parent_id"]) for parent in selected_parents}
+    selected_branches = sorted(
+        (
+            branch
+            for branch in selected_branches
+            if str(branch["parent_id"]) in selected_parent_ids
+        ),
+        key=lambda value: int(value["branch_index"]),
+    )
+    if not selected_parents:
+        counts = {key: len(value) for key, value in complete_by_parent.items()}
+        raise RuntimeError(
+            "No fixed-horizon parent satisfies the complete-future threshold: "
+            f"minimum={minimum}, counts={counts}."
+        )
+    observed_splits = {str(parent["source_split"]) for parent in selected_parents}
+    required_splits = {"optimization", "model_selection", "final_validation"}
+    if observed_splits != required_splits:
+        raise RuntimeError(
+            "Fixed-horizon training requires all source-run splits: "
+            f"expected={sorted(required_splits)}, observed={sorted(observed_splits)}."
+        )
+    normalized_manifest = dict(manifest)
+    normalized_manifest["parents"] = selected_parents
+    normalized_manifest["branches"] = selected_branches
+    return ShootingCampaignSnapshot(
+        root=root,
+        campaign_roots=(root,),
+        manifest=normalized_manifest,
+        parents=tuple(selected_parents),
+        branches=tuple(selected_branches),
+        complete_outcome_count=complete_count,
+        ignored_incomplete_count=0,
+    )
+
+
+def load_predictive_shooting_snapshot(
+    campaign_roots: Sequence[str | Path],
+    *,
+    temperatures_K: Sequence[float],
+    minimum_complete_branches_per_parent: int,
+    basin_roles: Sequence[str] | None = None,
+) -> ShootingCampaignSnapshot:
+    """Route the two repository-owned fixed-duration shooting producers."""
+
+    roots = tuple(Path(value).expanduser().resolve() for value in campaign_roots)
+    if not roots:
+        raise ValueError("Predictive shooting data requires at least one campaign root.")
+    campaign_types = tuple(
+        str(_load_json(root / "manifest.json").get("campaign_type")) for root in roots
+    )
+    compatibility_type = "fixed_horizon_compatibility_from_nested_first_passage"
+    if campaign_types == (compatibility_type,):
+        return load_fixed_horizon_compatibility_snapshot(
+            roots[0],
+            temperatures_K=temperatures_K,
+            minimum_complete_branches_per_parent=minimum_complete_branches_per_parent,
+            basin_roles=basin_roles,
+        )
+    if set(campaign_types) == {"position_conditioned_langevin_nvt_shooting"}:
+        if basin_roles is not None:
+            raise ValueError(
+                "data.basin_roles applies only to the repository nested-shooting "
+                "compatibility producer."
+            )
+        if len(roots) == 1:
+            return load_shooting_campaign_snapshot(
+                roots[0],
+                temperatures_K=temperatures_K,
+                minimum_complete_branches_per_parent=minimum_complete_branches_per_parent,
+            )
+        return load_shooting_campaigns_snapshot(
+            roots,
+            temperatures_K=temperatures_K,
+            minimum_complete_branches_per_parent=minimum_complete_branches_per_parent,
+        )
+    raise ValueError(
+        "Predictive shooting roots must come from one supported producer; "
+        f"observed campaign_types={campaign_types}."
+    )
+
+
 def shooting_snapshot_sha256(snapshot: ShootingCampaignSnapshot) -> str:
     payload = json.dumps(
         {
@@ -571,6 +784,9 @@ def build_periodic_environment_batch(
 
     return PeriodicEnvironmentBatch(
         points=torch.from_numpy(local),
+        neighbor_atom_ids=frame.atom_ids[neighbor_indices].astype(
+            np.int64, copy=False
+        ),
         context_points=context_points,
         center_positions=centers + frame.box_low[None, :],
         context_center_offsets=context_center_offsets,

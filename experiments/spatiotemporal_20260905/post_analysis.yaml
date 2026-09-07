@@ -1,0 +1,11 @@
+# Paths are relative to --root, the saved structural-analysis run directory.
+analysis_jobs:
+  - name: Al
+    config: configs/analysis_Al.yaml
+    metrics: Al/analysis_metrics.json
+  - name: Mg
+    config: configs/analysis_Mg.yaml
+    metrics: Mg/analysis_metrics.json
+  - name: Ta
+    config: configs/analysis_Ta.yaml
+    metrics: Ta/analysis_metrics.json

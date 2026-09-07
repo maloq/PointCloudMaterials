@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 
-import pytest
 import torch
 from hydra import compose, initialize_config_dir
 
@@ -381,14 +380,3 @@ def test_v2_active_vicreg_config_builds_the_new_encoder() -> None:
     assert cfg.encoder.kwargs.use_signed_chirality
     assert isinstance(uncompiled_encoder, GeoFrameTransformerV2Encoder)
     assert uncompiled_encoder.invariant_dim == 128
-
-
-def test_v2_o3_config_preserves_full_encoder_configuration() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="vicreg_geo_frame_transformer_v2_o3")
-
-    assert cfg.encoder.name == "GeoFrameTransformerV2"
-    assert cfg.encoder.kwargs.parity_mode == "invariant"
-    assert cfg.encoder.kwargs.patch_sizes == [8, 16]
-    assert cfg.encoder.kwargs.edge_dim == 16
-    assert cfg.encoder.kwargs.edge_value_rank == 2

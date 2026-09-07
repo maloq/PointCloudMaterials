@@ -15,12 +15,15 @@ class PointCloudDataModule(pl.LightningDataModule):
             self.impl = SyntheticPointCloudDataModule(cfg)
         elif kind == "temporal_lammps":
             self.impl = TemporalLAMMPSDataModule(cfg)
+        elif kind == "spatiotemporal_binary":
+            from src.data_utils.spatiotemporal_views import SpatiotemporalViewDataModule
+            self.impl = SpatiotemporalViewDataModule(cfg)
         elif kind == "static":
             self.impl = StaticPointCloudDataModule(cfg)
         else:
             raise ValueError(
                 "Unsupported data.kind. Expected one of "
-                "['static', 'synthetic', 'temporal_lammps'] "
+                "['static', 'synthetic', 'temporal_lammps', 'spatiotemporal_binary'] "
                 f"got {cfg.data.kind!r}."
             )
 

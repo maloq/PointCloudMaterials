@@ -146,6 +146,21 @@ def extract_shooting_history_embedding_cache(
         )
 
     snapshot_hash = shooting_snapshot_sha256(snapshot)
+    campaign_type = str(snapshot.manifest["campaign_type"])
+    if campaign_type == "position_conditioned_langevin_nvt_shooting":
+        source_position_tolerance = 1.0e-4
+    elif campaign_type == "fixed_horizon_compatibility_from_nested_first_passage":
+        if str(snapshot.manifest["protocol"]["storage_dtype"]) != "float16":
+            raise RuntimeError(
+                "Nested fixed-horizon history expects its repository-produced "
+                "float16 trajectory contract."
+            )
+        # Coordinates near 100 A have a float16 half-ULP of 0.03125 A.
+        source_position_tolerance = 0.04
+    else:
+        raise ValueError(
+            f"Unsupported shooting history campaign_type={campaign_type!r}."
+        )
     for name, manifest in (
         ("base", base_cache.manifest),
         ("context", context_cache.manifest),
@@ -164,6 +179,7 @@ def extract_shooting_history_embedding_cache(
         "lag_frames_oldest_to_newest": frame_offsets.tolist(),
         "lag_times_ps_oldest_to_newest": lag_ps.tolist(),
         "source_sample_interval_ps": float(source_sample_interval_ps),
+        "source_position_tolerance_A": source_position_tolerance,
         "checkpoint": str(encoder.checkpoint_path),
         "checkpoint_size_bytes": int(checkpoint_stat.st_size),
         "checkpoint_mtime_ns": int(checkpoint_stat.st_mtime_ns),
@@ -231,11 +247,17 @@ def extract_shooting_history_embedding_cache(
                 )
             continue
 
-        source_path = (
-            source_root
-            / str(parent["source_run_id"])
-            / "trajectory_binary_float32"
-        )
+        if "source_coordinate_archive" in parent:
+            source_path = (
+                Path(str(parent["source_coordinate_archive"])).expanduser().resolve().parent
+                / "trajectory_binary_float32"
+            )
+        else:
+            source_path = (
+                source_root
+                / str(parent["source_run_id"])
+                / "trajectory_binary_float32"
+            )
         source = TemporalLAMMPSBinaryTrajectory.load(source_path)
         current_index = int(parent["source_frame_index"])
         if current_index < int(frame_offsets.max()):
@@ -261,10 +283,11 @@ def extract_shooting_history_embedding_cache(
         maximum_source_position_error = max(
             maximum_source_position_error, source_position_error
         )
-        if source_position_error > 1.0e-4:
+        if source_position_error > source_position_tolerance:
             raise RuntimeError(
                 f"Shooting parent does not match source history for "
-                f"parent={parent['parent_id']}: max_abs_error={source_position_error}."
+                f"parent={parent['parent_id']}: max_abs_error={source_position_error}, "
+                f"tolerance_A={source_position_tolerance}."
             )
 
         current = build_periodic_environment_batch(

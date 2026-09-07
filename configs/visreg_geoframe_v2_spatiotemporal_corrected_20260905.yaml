@@ -1,0 +1,14 @@
+defaults:
+  - vicreg_geoframe_v2_spatiotemporal_corrected_20260905
+  - _self_
+
+experiment_name: GFv2_SPATIOTEMPORAL_VISReg_CORRECTED_20260905
+model_type: visreg
+vicreg_objective: visreg
+# Match the existing GFv2 VISReg objective ablation.
+visreg_lambda: 0.4
+visreg_num_projections: 4096
+visreg_scale_coeff: 1.0
+visreg_shape_coeff: 0.5
+visreg_center_coeff: 0.1
+visreg_std_eps: 0.000001

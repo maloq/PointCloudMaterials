@@ -1,0 +1,8 @@
+result_root: /home/ids/vmorozov/experiments/predictability_map_nested_transition_geoframe_v2_20260903_135104
+embedding_cache: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903/embeddings
+device: cuda:0
+temperatures_K: [400, 450, 500]
+frame_stride: 2
+fps: 8
+point_batch_size: 1024
+probe_batch_size: 4096

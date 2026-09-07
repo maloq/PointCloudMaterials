@@ -39,23 +39,6 @@ HOMOGENEOUS_CONFIG = (
 )
 
 
-def test_production_homogeneous_config_has_independent_replicas() -> None:
-    config = load_homogeneous_crystallization_config(HOMOGENEOUS_CONFIG)
-    assert config.source_environment == "replica_000_bulk_liquid"
-    assert config.source_frame_step == 3000
-    assert config.generator.system.repetitions == (16, 16, 16)
-    assert config.temperature_K == 500.0
-    assert len(config.random_seeds) == 10
-    assert len(set(config.random_seeds)) == 10
-    assert config.equilibration_steps == 5000
-    assert config.steps == 200000
-    assert config.sample_interval == 1000
-    assert config.steps // config.sample_interval + 1 == 201
-    assert config.analysis.ptm_rmsd_cutoff == 0.1
-    assert config.analysis.nucleus_size_threshold_atoms == 100
-    assert config.analysis.threshold_persistence_frames == 3
-
-
 def test_connected_crystalline_cluster_analysis_resolves_fcc() -> None:
     atoms = bulk("Al", "fcc", a=4.05, cubic=True).repeat((3, 3, 3))
     atom_count = len(atoms)

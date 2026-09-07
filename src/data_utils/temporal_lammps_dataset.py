@@ -62,7 +62,8 @@ def _sanitize_periodic_points(points: np.ndarray, box_lengths: np.ndarray) -> np
     sanitized = np.asarray(points, dtype=np.float32)
     if np.any(sanitized < 0.0) or np.any(sanitized >= box_lengths[None, :]):
         sanitized = np.array(sanitized, dtype=np.float32, copy=True)
-        np.clip(sanitized, 0.0, upper[None, :], out=sanitized)
+        np.remainder(sanitized, box_lengths[None, :], out=sanitized)
+        np.minimum(sanitized, upper[None, :], out=sanitized)
     return sanitized
 
 
@@ -963,7 +964,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 - np.asarray(binary.box_low[frame_index], dtype=np.float32)
             )
             return (
-                np.asarray(binary.positions[frame_index], dtype=np.float32),
+                _sanitize_periodic_points(binary.positions[frame_index], box_lengths),
                 box_lengths,
                 int(binary.timesteps[frame_index]),
             )

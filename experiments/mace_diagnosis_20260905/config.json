@@ -1,0 +1,10 @@
+{
+  "pilot": "output/smooth_temporal_encoder_20260905",
+  "output": "output/mace_diagnosis_20260905",
+  "seed": 20260906,
+  "static_samples_per_source": 2048,
+  "static_probe_train_sources": [0, 2],
+  "static_probe_val_sources": [1],
+  "static_probe_test_sources": [3, 4, 5],
+  "objective_audit": {"seeds": [123, 456, 789], "epochs": 30, "learning_rate": 0.0003, "batch_size": 4096, "conditions": ["continued_control", "no_spatial", "separate_projector"]}
+}

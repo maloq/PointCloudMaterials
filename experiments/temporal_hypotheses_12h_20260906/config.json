@@ -1,0 +1,160 @@
+{
+  "output": "output/temporal_hypotheses_12h_20260906",
+  "cache": "/home/ids/vmorozov/experiments/temporal_hypotheses_12h_20260906/cache",
+  "checkpoint_cache": "/home/ids/vmorozov/experiments/temporal_hypotheses_12h_20260906/checkpoints",
+  "benchmark": "output/liquid_sro_benchmark_20260905",
+  "pilot": "output/smooth_temporal_encoder_20260905",
+  "shooting_campaign": "/home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+  "geoframe_config_checkpoint": "output/geoframe_v2_spatiotemporal_analysis_20260905/vicreg/GFv2-spatiotemporal-epoch=048.ckpt",
+  "geoframe_radii_A": [
+    9.192189,
+    10.169428,
+    9.388275
+  ],
+  "data_seed": 20260906,
+  "workers": 8,
+  "neighbors": 768,
+  "centers": {
+    "train": 2048,
+    "val": 512
+  },
+  "ordinary_centers": {
+    "train": 2048,
+    "val": 512
+  },
+  "duration_seconds": 43200,
+  "preparation_seconds": 3600,
+  "evaluation_reserve_seconds": 1800,
+  "screen_seconds": 900,
+  "learning_rates": [
+    0.0003,
+    0.001
+  ],
+  "confirmation_finalists": 3,
+  "confirmation_seeds": [
+    456,
+    789
+  ],
+  "weight_decay": 0.0001,
+  "ema_decay": 0.995,
+  "gradient_clip": 5.0,
+  "jitter_std_A": 0.01,
+  "jitter_clip_A": 0.03,
+  "latent_dim": 128,
+  "validation_every_seconds": 120,
+  "validation_batches": 12,
+  "validation_batch_size": 128,
+  "batch_sizes": {
+    "DensityMLP": 8192,
+    "SchNet": 1024,
+    "GeoFrame": 2048,
+    "MACE": 512,
+    "MACE_wide_halo": 128,
+    "MACE_capacity": 512
+  },
+  "hypotheses": [
+    {
+      "name": "density_static",
+      "model": "DensityMLP",
+      "mode": "static",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "density_temporal",
+      "model": "DensityMLP",
+      "mode": "temporal",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "density_predictive",
+      "model": "DensityMLP",
+      "mode": "predictive",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "density_motion",
+      "model": "DensityMLP",
+      "mode": "motion",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "density_smooth",
+      "model": "DensityMLP",
+      "mode": "smooth",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "density_small_data",
+      "model": "DensityMLP",
+      "mode": "predictive",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 0.0625
+    },
+    {
+      "name": "mace_static",
+      "model": "MACE",
+      "mode": "static",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "mace_predictive",
+      "model": "MACE",
+      "mode": "predictive",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "mace_wide_halo",
+      "model": "MACE",
+      "mode": "predictive",
+      "cutoff_A": 6.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "mace_capacity",
+      "model": "MACE",
+      "mode": "predictive",
+      "cutoff_A": 4.0,
+      "channels": 128,
+      "fraction": 1.0
+    },
+    {
+      "name": "schnet_predictive",
+      "model": "SchNet",
+      "mode": "predictive",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    },
+    {
+      "name": "geoframe_predictive",
+      "model": "GeoFrame",
+      "mode": "predictive",
+      "cutoff_A": 4.0,
+      "channels": 64,
+      "fraction": 1.0
+    }
+  ],
+  "condition_fields": [
+    "Al_shooting_temperature_div600",
+    "log1p_lag_ps",
+    "is_Al",
+    "is_Mg",
+    "is_Ta"
+  ]
+}

@@ -452,6 +452,15 @@ class VICRegModule(BaseSSLModule):
                 "so it requires ddp_find_unused_parameters=true."
             )
         self.automatic_optimization = not self.factor_vae.enabled
+        self.temporal_view = bool(getattr(cfg, "vicreg_temporal_view", False))
+        if self.temporal_view:
+            if self.data_kind != "spatiotemporal_binary" or not self.vicreg.neighbor_view:
+                raise ValueError("Temporal VICReg requires spatiotemporal_binary data and a spatial neighbor view.")
+            if self.factor_vae.enabled or self.swav.enabled or not self.vicreg.enabled:
+                raise ValueError("The three-view objective requires VICReg enabled and FactorVAE/SwAV disabled.")
+            self.temporal_weight = float(cfg.vicreg_temporal_weight)
+            if self.temporal_weight <= 0:
+                raise ValueError("vicreg_temporal_weight must be positive.")
 
         self.factor_vae_discriminator_learning_rate = float(
             getattr(cfg, "factor_vae_discriminator_learning_rate", 1.0e-4)
@@ -568,6 +577,8 @@ class VICRegModule(BaseSSLModule):
         return total_loss
 
     def _unpack_batch(self, batch):
+        if self.data_kind == "spatiotemporal_binary":
+            return batch["points"], {}
         if self.data_kind == "static":
             return batch["points"], {}
         if self.data_kind == "synthetic":
@@ -654,6 +665,8 @@ class VICRegModule(BaseSSLModule):
         *,
         compute_factor_vae_discriminator: bool = True,
     ):
+        if self.temporal_view:
+            return self._spatiotemporal_step(batch, batch_idx, stage)
         pc_raw, meta = self._unpack_batch(batch)
         batch_size = int(pc_raw.shape[0])
         pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
@@ -778,6 +791,29 @@ class VICRegModule(BaseSSLModule):
             batch_idx=batch_idx,
             batch_size=batch_size,
             losses=losses,
+        )
+
+    def _spatiotemporal_step(self, batch, batch_idx: int, stage: str):
+        views = []
+        for key in ("points", "spatial_points", "temporal_points"):
+            points = batch[key].to(device=self.device, dtype=self.dtype, non_blocking=True)
+            if stage == "train":
+                # Centers and their complete neighborhoods come from the trajectory;
+                # do not shift the already-centered spatial view a second time.
+                points = self.vicreg.apply_view_postprocessing(
+                    points, use_neighbor=(key == "spatial_points"), apply_occlusion=False,
+                )
+            views.append(points)
+        encoded = self.encoder_io.encode(torch.cat(views, dim=0))
+        features = self._shared_invariant(encoded.invariant, encoded.equivariant).chunk(3, dim=0)
+        loss, metrics = self.vicreg.compute_spatiotemporal_loss(
+            features=features, temporal_weight=self.temporal_weight,
+        )
+        for name, value in metrics.items():
+            self._log_metric(stage, name, value, batch_size=views[0].shape[0])
+        return self._finish_ssl_step(
+            stage=stage, batch_idx=batch_idx, batch_size=views[0].shape[0],
+            losses={self.vicreg.metric_prefix: loss},
         )
 
     def training_step(self, batch, batch_idx, dataloader_idx: int = 0):

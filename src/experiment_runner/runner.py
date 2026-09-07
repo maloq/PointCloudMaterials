@@ -666,7 +666,7 @@ def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path
         return []
 
     try:
-        plot_module = import_module("scripts.plot_experiment_summary")
+        plot_module = import_module("src.analysis.plots.plot_experiment_summary")
     except Exception as exc:
         raise RuntimeError(
             "Automatic plot generation was enabled in the plan, but the plotting "
@@ -676,7 +676,7 @@ def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path
     if not hasattr(plot_module, "render_summary_plots"):
         raise RuntimeError(
             "Automatic plot generation was enabled in the plan, but "
-            "scripts.plot_experiment_summary.render_summary_plots is missing."
+            "src.analysis.plots.plot_experiment_summary.render_summary_plots is missing."
         )
 
     render_summary_plots = plot_module.render_summary_plots

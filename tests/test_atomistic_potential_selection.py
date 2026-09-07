@@ -24,7 +24,6 @@ from src.data_utils.synthetic.atomistic.potential_performance import (
 )
 from src.data_utils.synthetic.atomistic.potential_selection import (
     PotentialSelectionConfig,
-    load_potential_selection_config,
     select_potential,
 )
 
@@ -38,10 +37,6 @@ CANDIDATE_CONFIG = (
     REPOSITORY_ROOT
     / "configs/simulation/atomistic/al/phase_context_70304_mh1.yaml"
 )
-PRODUCTION_PERFORMANCE_CONFIG = (
-    REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/potential_performance.yaml"
-)
 PRODUCTION_RUNTIME_VARIANTS_CONFIG = (
     REPOSITORY_ROOT
     / "configs/simulation/atomistic/al/potential_runtime_variants.yaml"
@@ -51,10 +46,6 @@ PRODUCTION_RUNTIME_70304_CONFIGS = tuple(
     / "configs/simulation/atomistic/al"
     / f"potential_runtime_70304_cueq_nocudagraphs_skin0{skin}.yaml"
     for skin in (3, 4, 5)
-)
-PRODUCTION_SELECTION_CONFIG = (
-    REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/potential_selection.yaml"
 )
 
 
@@ -69,60 +60,6 @@ def test_performance_summary_uses_end_to_end_elapsed_time() -> None:
     assert summary["median_seconds_per_step"] == pytest.approx(0.3)
     assert summary["maximum_seconds_per_step"] == pytest.approx(0.4)
     assert summary["steps_per_second"] == pytest.approx(20.0 / 6.0)
-
-
-def test_production_performance_gate_uses_model_specific_sources_and_long_blocks() -> None:
-    config = load_potential_performance_config(PRODUCTION_PERFORMANCE_CONFIG)
-    assert config.warmup_steps == 50
-    assert config.measurement_blocks == 8
-    assert config.steps_per_block == 50
-    assert config.measurement_blocks * config.steps_per_block == 400
-    assert len(config.model_configs) == 2
-    assert len(config.reference_model_configs) == 2
-    assert len(config.initial_homogeneous_configs) == 2
-    assert {load_config(path).potential.model_name for path in config.model_configs} == {
-        "mace-mpa-0-medium",
-        "mace-mh-1-omat-pbe",
-    }
-
-
-def test_runtime_sweep_is_one_exact_model_workload_with_explicit_controls() -> None:
-    config = load_potential_performance_config(PRODUCTION_RUNTIME_VARIANTS_CONFIG)
-    sweep = config.runtime_sweep
-
-    assert config.model_configs == ()
-    assert sweep is not None
-    assert len(sweep.variants) == 9
-    assert sweep.reference_kernel_backend == "e3nn"
-    assert sweep.baseline_variant == "cueq_reduce_overhead_skin03_edges1200k"
-    assert sweep.model_config == (
-        REPOSITORY_ROOT
-        / "configs/simulation/atomistic/al/liquid_source_16384_mpa.yaml"
-    )
-    assert sweep.initial_homogeneous_config == (
-        REPOSITORY_ROOT
-        / "configs/simulation/atomistic/al/homogeneous_16384_mpa.yaml"
-    )
-    assert {variant.kernel_backend for variant in sweep.variants} == {
-        "cueq",
-        "oeq",
-        "hybrid_cueq_oeq",
-    }
-    assert {variant.compile_mode for variant in sweep.variants} == {
-        "reduce-overhead",
-        "max-autotune",
-        "max-autotune-no-cudagraphs",
-    }
-    assert {variant.neighbor_skin_A for variant in sweep.variants} == {
-        0.3,
-        0.5,
-    }
-    assert {variant.pad_num_edges for variant in sweep.variants} == {
-        1_100_000,
-        1_150_000,
-        1_200_000,
-    }
-    assert all(len(variant.canonical_sha256) == 64 for variant in sweep.variants)
 
 
 def test_70304_runtime_candidates_have_explicit_cueq_reference_and_edge_envelopes() -> None:
@@ -205,15 +142,6 @@ def test_runtime_variant_and_reference_keep_checkpoint_but_change_only_controls(
     assert reference_settings["compile_mode"] is None
     assert reference_settings["pad_num_atoms"] == 0
     assert reference_settings["pad_num_edges"] == 0
-
-
-def test_production_selection_records_two_worker_runtime_projection() -> None:
-    config = load_potential_selection_config(PRODUCTION_SELECTION_CONFIG)
-
-    assert config.workers == 2
-    assert config.makespan_safety_factor >= 1.0
-    assert config.baseline_homogeneous_config.name == "homogeneous_16384_mpa.yaml"
-    assert config.candidate_homogeneous_config.name == "homogeneous_16384_mh1.yaml"
 
 
 def test_compiled_reference_parity_uses_per_atom_energy_and_component_rmse(

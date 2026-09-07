@@ -1,0 +1,95 @@
+# Fair position-only baseline for the 30 transition parents that possess history.
+output_dir: /home/ids/vmorozov/experiments/predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: checkpoint
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 4096
+  environment_batch_size: 1
+  environment_num_workers: 8
+
+data:
+  campaign_roots:
+    - /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible
+  temperatures_K: [400, 450, 500]
+  basin_roles: [transition_candidate]
+  minimum_complete_branches_per_parent: 4
+  expected_parent_count: 30
+  expected_branch_count: 120
+  horizons_ps: [6, 12, 24]
+  center_atom_count: 512
+  center_selection_seed: 123
+  radius: 9.192189
+  num_points: 160
+  legacy_context_center_count: 8
+
+context:
+  center_count: 16
+  radial_scales_angstrom: [3.5, 6.0, 9.192189]
+  steinhardt_shell_min_neighbors: 8
+  steinhardt_shell_max_neighbors: 16
+
+target:
+  fixed_path_kernel: /home/ids/vmorozov/experiments/predictive_atlas_geoframe_v2_480branches_20260902/path_kernel.npz
+  rff_batch_size: 8192
+
+marginal_baseline:
+  horizons_ps: [6, 12, 24]
+  change_pca_dim: 16
+  rff_features_per_bandwidth: 128
+  bandwidth_multipliers: [0.5, 1.0, 2.0]
+  representation_dim: 64
+  seed: 123
+
+initialization:
+  pretrained_backbones: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/ordinary_pretrained_backbones.pt
+
+split:
+  selection_source_velocity_seeds: []
+
+model:
+  hidden_dim: 128
+  heads: 4
+  blocks: 2
+  rbf_dim: 16
+  latent_dim: 32
+  decoder_hidden_dim: 256
+  dropout: 0.15
+
+training:
+  learning_rate: 0.0005
+  weight_decay: 0.001
+  variance_weight: 0.02
+  covariance_weight: 0.001
+  batch_size: 1024
+  maximum_epochs: 900
+  patience: 120
+  seeds: [11, 22, 33]
+
+evaluation:
+  static_pca_dim: 32
+  neighbors: 10
+  static_caliper_candidates: 64
+  crystalline_fraction_tolerance: 0.003
+  validation_temperatures_K: [400]
+  validation_phases: [transition_candidate]
+  pairwise_samples: 10000
+  exact_mmd_pairs: 512
+  bootstrap_samples: 5000
+  witness_count: 8
+  seed: 123
+  vamp:
+    horizon_ps: 12
+    dimension: 32
+    regularization: 0.000001
+    eigenvalue_cutoff: 0.0000000001
+  pullback:
+    maximum_states: 128
+    batch_size: 16
+    relative_eigenvalue_cutoff: 0.0001
+
+cache:
+  force_recompute: false

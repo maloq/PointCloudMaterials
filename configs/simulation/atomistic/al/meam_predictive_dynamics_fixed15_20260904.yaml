@@ -1,0 +1,100 @@
+campaign:
+  campaign_seed: 20260904
+  storage_root: /home/ids/vmorozov/simulations
+  topup_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904
+  smoke_root: /home/ids/vmorozov/simulations/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904
+  production_root: /home/ids/vmorozov/simulations/al_meam_predictive_dynamics_fixed15_160parents_2560branches_float32_20260904
+
+existing_ensemble:
+  authoritative_snapshot: /home/ids/vmorozov/experiments/predictive_atlas_geoframe_v2_480branches_20260902/dataset_snapshot.json
+  parents: 40
+  existing_futures_per_parent: 12
+  added_futures_per_parent: 4
+  added_canonical_shot_indices: [12, 13, 14, 15]
+
+new_parent_design:
+  temperatures_K: [400, 450, 500, 510, 520]
+  independent_source_roots:
+    temperatures_400_450_500: /home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902
+    temperatures_510_520: /home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903
+  parents_per_temperature:
+    transition_candidate: {optimization: 10, model_selection: 2, final_validation: 4}
+    liquid_control: {optimization: 4, model_selection: 2, final_validation: 2}
+    crystal_control: {optimization: 4, model_selection: 2, final_validation: 2}
+  futures:
+    momentum_samples_per_parent: 8
+    thermostat_futures_per_momentum: 2
+  paired_temperature_base_configurations:
+    transition_candidate: 4
+    liquid_control: 2
+    crystal_control: 2
+
+history:
+  duration_ps: 12.0
+  sample_interval_ps: 0.3
+  required_relative_times_ps: [-12.0, -9.0, -6.0, -3.0, 0.0]
+
+windows:
+  primary_horizons_ps: [3.0, 6.0, 12.0]
+  auxiliary_horizons_ps: [1.2, 9.0]
+  latest_complete_12ps_start_ps: 3.0
+  stride_ps: 0.6
+  loader_ablation_stride_ps: 1.2
+
+basins:
+  A_max_cluster_atoms:
+    "400": 19
+    "450": 20
+    "500": 16
+    # Calibrate these from the independent metastable-liquid histories.
+    "510": null
+    "520": null
+  B_min_cluster_atoms: 100
+  persistence_frames: 3
+  ptm_rmsd_cutoff: 0.10
+  cluster_connectivity_cutoff_A: 3.5
+
+dynamics:
+  ensemble: fixed-cell stochastic canonical NVT
+  thermostat_style: temp/csld
+  timestep_fs: 3.0
+  mandatory_duration_ps: 15.0
+  prediction_duration_ps: 12.0
+  augmentation_buffer_ps: 3.0
+  run_steps: 5000
+  sample_interval_steps: 100
+  expected_frames: 51
+  thermostat_time_fs: 300.0
+  storage_dtype: float32
+  continuation:
+    first_extension_stop_ps: 24.0
+    first_extension_additional_steps: 3000
+    require_same_mpi_ranks: true
+    required_mpi_ranks: 24
+    exact_rng_restart_required: true
+
+potential:
+  library_file: datasets/potentials/Lee2003_Al.library.meam
+  parameter_file: datasets/potentials/Lee2003_Al.meam
+  library_sha256: f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e
+  parameter_sha256: b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a
+
+execution:
+  partition: CPU
+  mpi_ranks_per_branch: 24
+  memory: 24G
+  time_limit: "01:00:00"
+  smoke_wave_size: 2
+  production_wave_size_while_source_campaigns_and_accelerators_are_active: 1
+  normal_qos_max_submitted_jobs: 10
+
+acceptance:
+  atom_count: 70304
+  expected_frames: 51
+  first_timestep: 0
+  last_timestep: 5000
+  conditional_futures_per_parent: 16
+  require_nonempty_restart: true
+  require_checksums: true
+  require_lineage_split_integrity: true
+  require_continuation_smoke_before_production: true

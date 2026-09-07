@@ -1,0 +1,58 @@
+{
+  "state": "passed",
+  "conversion_tests": "8 passed",
+  "workflow_smoke": {
+    "state": "complete",
+    "host": "lamedell11",
+    "pid": 3706799,
+    "started_at_utc": "2026-09-06T22:22:48.590539+00:00",
+    "completed_branches": [
+      "parent_000000000",
+      "parent_000000100",
+      "parent_000000300",
+      "parent_000000400",
+      "parent_000000500",
+      "parent_000000600"
+    ],
+    "current_branch": "parent_000000600",
+    "completed_at_utc": "2026-09-06T22:23:19.838308+00:00"
+  },
+  "ti_liquid_ptm": {
+    "atom_count": 3456,
+    "ptm_rmsd_cutoff": 0.17,
+    "fractions": {
+      "other": 0.9942129629629629,
+      "fcc": 0.0008680555555555555,
+      "hcp": 0.004918981481481482,
+      "bcc": 0.0
+    },
+    "crystal_fraction": 0.005787037037037037
+  },
+  "ti_hot_crystal_ptm": {
+    "atom_count": 3456,
+    "ptm_rmsd_cutoff": 0.17,
+    "fractions": {
+      "other": 0.028935185185185185,
+      "fcc": 0.008969907407407407,
+      "hcp": 0.06452546296296297,
+      "bcc": 0.8975694444444444
+    },
+    "crystal_fraction": 0.9710648148148148
+  },
+  "Ti": {
+    "log": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/Ti_full/log.lammps",
+    "log_sha256": "13d77775a957a11249be57f68672e8b92a76319139584f756bc808fc6a0bc505",
+    "loop_seconds": 80.0674,
+    "mpi_ranks": 24,
+    "steps": 100,
+    "atom_count": 1024000
+  },
+  "Ta": {
+    "log": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/Ta/log.lammps",
+    "log_sha256": "3f184a62a166df519e9d97b96d7ed7962d9ada82bbadfe0af79b87834096c24c",
+    "loop_seconds": 77.2458,
+    "mpi_ranks": 24,
+    "steps": 100,
+    "atom_count": 10000422
+  }
+}

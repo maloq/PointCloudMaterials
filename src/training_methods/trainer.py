@@ -588,12 +588,15 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             dm = SyntheticPointCloudDataModule(cfg)
         elif data_kind == "temporal_lammps":
             dm = TemporalLAMMPSDataModule(cfg)
+        elif data_kind == "spatiotemporal_binary":
+            from src.data_utils.spatiotemporal_views import SpatiotemporalViewDataModule
+            dm = SpatiotemporalViewDataModule(cfg)
         elif data_kind == "static":
             dm = StaticPointCloudDataModule(cfg)
         else:
             raise ValueError(
                 "Unsupported data.kind. Expected one of "
-                "['static', 'synthetic', 'temporal_lammps'] "
+                "['static', 'synthetic', 'temporal_lammps', 'spatiotemporal_binary'] "
                 f"got {cfg.data.kind!r}."
             )
     model = model_class(cfg)

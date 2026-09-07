@@ -1,0 +1,52 @@
+{
+  "output": "output/pretrained_mace_ablations_lr5_20260907",
+  "allocation": "983527",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 900,
+  "predecessor": {
+    "status": "output/pretrained_mace_80_dt01_cosine_20260906/status.json",
+    "pid": 813983,
+    "process_identity": "290179482"
+  },
+  "prepared_output": "output/pretrained_mace_80_dt01_cosine_20260906",
+  "expected_steps": 5632,
+  "estimated_training_seconds": 5100,
+  "estimated_probe_seconds": 180,
+  "estimated_analysis_seconds": 900,
+  "probe_seed": 20260907,
+  "probe_anchors_per_material": 2048,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": true,
+  "runs": [
+    {
+      "name": "all_objectives",
+      "config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives.json",
+      "removed_weight": null,
+      "wandb_id": "017c16f5"
+    },
+    {
+      "name": "no_temporal",
+      "config": "experiments/pretrained_mace_ablations_lr5_20260907/no_temporal.json",
+      "removed_weight": "temporal_weight",
+      "wandb_id": "7da635c5"
+    },
+    {
+      "name": "no_tda",
+      "config": "experiments/pretrained_mace_ablations_lr5_20260907/no_tda.json",
+      "removed_weight": "tda_weight",
+      "wandb_id": "37b3a85c"
+    },
+    {
+      "name": "no_forecast",
+      "config": "experiments/pretrained_mace_ablations_lr5_20260907/no_forecast.json",
+      "removed_weight": "prediction_weight",
+      "wandb_id": "c0655f5b"
+    },
+    {
+      "name": "no_spatial",
+      "config": "experiments/pretrained_mace_ablations_lr5_20260907/no_spatial.json",
+      "removed_weight": "spatial_weight",
+      "wandb_id": "869f81e4"
+    }
+  ]
+}

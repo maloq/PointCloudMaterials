@@ -24,7 +24,7 @@ from src.data_utils.shooting_dataset import (
 from src.data_utils.shooting_text_conversion import (
     load_lammps_shooting_frames_for_conversion,
 )
-from scripts.migrate_lammps_shooting_float32 import _migrate_campaign
+from src.data_utils.conversion.shooting import convert_campaign
 
 
 def _write_shooting_dump(
@@ -163,8 +163,9 @@ def test_shooting_binary_composition_prefers_original_restart_frame(
     composed.verify_checksums()
 
 
-def test_complete_campaign_migration_deletes_only_branch_root_text(
-    tmp_path: Path,
+@pytest.mark.parametrize("delete_source", [False, True])
+def test_complete_campaign_conversion_preserves_or_deletes_only_branch_root_text(
+    tmp_path: Path, delete_source: bool,
 ) -> None:
     parents: list[dict[str, object]] = []
     branches: list[dict[str, object]] = []
@@ -245,12 +246,12 @@ def test_complete_campaign_migration_deletes_only_branch_root_text(
 
     with pytest.raises(RuntimeError, match="has not been migrated"):
         resolve_shooting_trajectory_path(tmp_path, branches[0])
-    report = _migrate_campaign(tmp_path, workers=2)
+    report = convert_campaign(tmp_path, workers=2, delete_source=delete_source)
     assert report["migrated_complete_branch_count"] == 2
     assert report["incomplete_branch_count"] == 0
     for branch in branches:
         branch_dir = tmp_path / str(branch["branch_dir"])
-        assert not (branch_dir / "trajectory.lammpstrj").exists()
+        assert (branch_dir / "trajectory.lammpstrj").exists() is (not delete_source)
         binary = ShootingBinaryTrajectory.load(
             branch_dir / "trajectory_binary_float32"
         )
@@ -260,7 +261,7 @@ def test_complete_campaign_migration_deletes_only_branch_root_text(
         outcome = json.loads(
             (branch_dir / "outcome.json").read_text(encoding="utf-8")
         )
-        assert outcome["trajectory_artifact"]["source_lammpstrj"]["deleted"]
+        assert outcome["trajectory_artifact"]["source_lammpstrj"]["deleted"] is delete_source
     assert archived_partial.read_bytes() == b"partial archive must remain"
 
     snapshot = load_shooting_campaign_snapshot(
@@ -300,6 +301,22 @@ def test_complete_campaign_migration_deletes_only_branch_root_text(
     )
     repeated = environment_dataset[0]
     torch.testing.assert_close(environment_batch["points"][0], repeated["points"])
-    repeated = _migrate_campaign(tmp_path)
+    repeated = convert_campaign(tmp_path)
     assert repeated["migrated_complete_branch_count"] == 2
     assert repeated["migrated_now_count"] == 0
+
+    from src.data_utils.conversion.cli import main as conversion_main
+    from src.data_utils.conversion.audit_shooting import audit_campaign
+
+    assert audit_campaign(tmp_path)["retained_sources"] == (0 if delete_source else 2)
+    if not delete_source:
+        source = tmp_path / "branches/branch_0/trajectory.lammpstrj"
+        original = source.read_bytes()
+        source.write_bytes(original.replace(b"0 0 3", b"0 0 9", 1))
+        with pytest.raises(RuntimeError, match="checksum changed"):
+            conversion_main(["shooting", "--campaign-root", str(tmp_path), "--delete-source"])
+        assert source.exists()
+        source.write_bytes(original)
+        conversion_main(["shooting", "--campaign-root", str(tmp_path), "--delete-source"])
+        assert audit_campaign(tmp_path, require_source_deleted=True)["retained_sources"] == 0
+        assert archived_partial.read_bytes() == b"partial archive must remain"

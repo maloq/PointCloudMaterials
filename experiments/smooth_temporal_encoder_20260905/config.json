@@ -1,0 +1,25 @@
+{
+  "output": "output/smooth_temporal_encoder_20260905",
+  "views_manifest": "/home/ids/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/manifest.json",
+  "continuity_root": "output/geoframe_continuity_20260905",
+  "geoframe_checkpoint": "output/geoframe_v2_spatiotemporal_analysis_20260905/vicreg/GFv2-spatiotemporal-epoch=048.ckpt",
+  "full_static_cache": "datasets/cache/data_ae_Al_80_analysis_coords",
+  "seed": 20260905,
+  "workers": 4,
+  "cutoff_factor": 0.75,
+  "candidate_neighbors": 192,
+  "jitter_std_A": 0.02,
+  "jitter_clip_A": 0.06,
+  "ptm_rmsd_cutoff": 0.15,
+  "splits": {
+    "train": {"first_frame": 20, "last_frame": 140, "centers_per_Al_Mg_branch": 64},
+    "val": {"first_frame": 150, "last_frame": 180, "centers_per_Al_Mg_branch": 16},
+    "test": {"first_frame": 200, "last_frame": 240, "centers_per_Al_Mg_branch": 32}
+  },
+  "density": {"radial_channels": 8, "max_ell": 6, "radial_width": 0.12, "density_scale": 12.0},
+  "encoder": {"channels": 32, "product_ell": 4, "correlation": 3, "latent_dim": 128, "hidden_dim": 256},
+  "training": {"seeds": [123, 456, 789], "epochs": 40, "batch_size": 4096, "learning_rate": 0.001, "weight_decay": 0.0001, "spatial_weight": 0.25},
+  "temporal": {"cadence_ps": 0.1, "tau_ps": [0.1, 0.5, 2.0], "epsilon": [0.001, 0.01, 0.05], "history_frames": 5, "horizons_frames": [1, 5, 10, 20], "ridge_alpha": [0.001, 0.1, 10.0, 1000.0]},
+  "temporal_training": {"epochs": 25, "batch_size": 2048, "learning_rate": 0.001, "weight_decay": 0.0001, "state_variance_weight": 0.05, "state_covariance_weight": 0.001, "state_update_weight": 0.05, "current_reconstruction_weight": 0.05, "modes": ["gru", "gated_no_transport", "gated_kabsch", "gated_smooth"]},
+  "inference_batch_size": 1024
+}

@@ -276,7 +276,7 @@ actually creates the gain.
 ### Ablation 5 implementation
 
 The ordinary-trajectory pretraining ablation is implemented by
-`scripts/run_shooting_temporal_pretraining_ablation.py` with
+`scripts/run_shooting_ablation.py temporal-pretraining` with
 `configs/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901.yaml`.
 It reads the migrated `trajectory_binary_float32` arrays by memory map, tracks the
 same 64 shooting center atom IDs, and caches GeoFrameV2 tokens for a central local
@@ -296,7 +296,7 @@ Run the complete experiment with:
 source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 cd /home/infres/vmorozov/PointCloudMaterials
-PYTHONPATH=. python scripts/run_shooting_temporal_pretraining_ablation.py \
+PYTHONPATH=. python scripts/run_shooting_ablation.py temporal-pretraining \
   --config configs/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901.yaml \
   --stage all
 ```
@@ -320,7 +320,7 @@ but is not by itself the large predictive breakthrough sought here.
 
 ### Ablation 6 result: final GeoFrameV2 block fine-tuning
 
-`scripts/run_shooting_encoder_finetune_ablation.py` implements the next controlled
+`scripts/run_shooting_ablation.py encoder-finetune` implements the next controlled
 test. It caches the float32 outputs of frozen GeoFrameV2 layers 0--4 and the fixed
 pair-geometry tensors for all 40 shooting parents, then trains only transformer
 layer 5 and the final transformer normalization together with the same
@@ -340,7 +340,7 @@ than useful predictive information.
 
 ### Ablation 7 result: two-frame history and branch velocity
 
-`scripts/run_shooting_dynamical_ablation.py` evaluates three additions on top of
+`scripts/run_shooting_ablation.py dynamical` evaluates three additions on top of
 the accepted ablation-5 predictor without changing its target or split:
 
 - a frozen GeoFrameV2 encoding of the same central and 16 satellite atom IDs 3 ps
@@ -387,7 +387,7 @@ Run or reproduce this ablation with:
 source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 cd /home/infres/vmorozov/PointCloudMaterials
-PYTHONPATH=. python scripts/run_shooting_dynamical_ablation.py \
+PYTHONPATH=. python scripts/run_shooting_ablation.py dynamical \
   --config configs/shooting_dynamical_ablation7_geoframe_v2_20260901.yaml \
   --stage all
 ```
@@ -397,7 +397,7 @@ The complete result is stored under
 
 ### Ablation 7b result: short-horizon momentum and ballistic controls
 
-The follow-up `scripts/run_shooting_short_horizon_ablation.py` uses the same 440
+The follow-up `scripts/run_shooting_ablation.py short-horizon` uses the same 440
 branches, source-run split, 64 centers, frozen GeoFrameV2 checkpoint, and
 ordinary-pretrained spatial architecture, but extracts futures at 0.3, 0.6, 1.2,
 and 3 ps. These horizons span one to ten Langevin damping times. A new output head
@@ -443,7 +443,7 @@ changing the encoder architecture.
 Run the completed short-horizon and outcome analyses with:
 
 ```bash
-PYTHONPATH=. python scripts/run_shooting_short_horizon_ablation.py \
+PYTHONPATH=. python scripts/run_shooting_ablation.py short-horizon \
   --config configs/shooting_short_horizon_ablation7b_geoframe_v2_20260901.yaml \
   --stage all
 PYTHONPATH=. python scripts/analyze_shooting_branch_outcomes.py \

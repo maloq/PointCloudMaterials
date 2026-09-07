@@ -109,7 +109,7 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
                 raise RuntimeError(
                     "Shooting training requires a completed binary trajectory artifact. "
                     f"branch={branch['branch_id']}, resolved_path={path}. Run "
-                    "scripts/migrate_lammps_shooting_float32.py for this campaign first."
+                    "src/data_utils/conversion/shooting.py for this campaign first."
                 )
             paths.append(path)
         self.trajectory_paths = tuple(paths)
@@ -165,7 +165,6 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
             "trajectory_path": str(self.trajectory_paths[index]),
             "parent_id": str(branch["parent_id"]),
             "parent_index": int(branch["parent_index"]),
-            "source_index": int(parent["source_index"]),
             "source_run_id": str(branch["source_run_id"]),
             "source_split": str(branch["source_split"]),
             "source_velocity_seed": int(branch["source_velocity_seed"]),
@@ -174,8 +173,6 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
             "shot_index": int(branch["shot_index"]),
             "velocity_seed": int(branch["velocity_seed"]),
             "thermostat_seed": int(branch["thermostat_seed"]),
-            "nucleation_time_ps": float(parent["nucleation_time_ps"]),
-            "parent_offset_ps": float(parent["parent_offset_ps"]),
             "source_frame_index": int(parent["source_frame_index"]),
             "source_frame_step": int(parent["source_frame_step"]),
             "source_frame_time_ps": float(parent["source_frame_time_ps"]),
@@ -208,6 +205,23 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
                 np.stack([value.center_positions for value in environments], axis=0)
             ),
         }
+        campaign_type = str(self.snapshot.manifest["campaign_type"])
+        if campaign_type == "position_conditioned_langevin_nvt_shooting":
+            sample.update(
+                source_index=int(parent["source_index"]),
+                nucleation_time_ps=float(parent["nucleation_time_ps"]),
+                parent_offset_ps=float(parent["parent_offset_ps"]),
+            )
+        elif campaign_type == "fixed_horizon_compatibility_from_nested_first_passage":
+            sample.update(
+                basin_role=str(parent["basin_role"]),
+                basin_a_max_cluster_atoms=int(parent["basin_a_max_cluster_atoms"]),
+                basin_b_min_cluster_atoms=int(parent["basin_b_min_cluster_atoms"]),
+            )
+        else:
+            raise ValueError(
+                f"Unsupported shooting dataset campaign_type={campaign_type!r}."
+            )
         if self.spatial_context_center_count > 0:
             context_points = [value.context_points for value in environments]
             context_offsets = [value.context_center_offsets for value in environments]

@@ -77,3 +77,13 @@ def get_optimizers_and_scheduler(hparams, parameters):
 def cached_sample_count(cache: dict[str, list[torch.Tensor]]) -> int:
     """Count samples in a repository supervised-metric cache."""
     return sum(latents.shape[0] for latents in cache["latents"])
+
+
+def build_step_cosine_scheduler(optimizer,*,total_steps,warmup_steps,start_factor,min_lr):
+    """The repository linear-warmup/cosine shape measured in optimizer updates."""
+    if not 0<=warmup_steps<total_steps:
+        raise ValueError(f'Warmup must leave cosine steps: warmup={warmup_steps}, total={total_steps}')
+    cosine=torch.optim.lr_scheduler.CosineAnnealingLR(optimizer,T_max=total_steps-warmup_steps,eta_min=min_lr)
+    if warmup_steps==0:return cosine
+    warmup=torch.optim.lr_scheduler.LinearLR(optimizer,start_factor=start_factor,end_factor=1.,total_iters=warmup_steps)
+    return torch.optim.lr_scheduler.SequentialLR(optimizer,schedulers=[warmup,cosine],milestones=[warmup_steps])

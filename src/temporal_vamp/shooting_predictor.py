@@ -115,8 +115,16 @@ def _parent_split_indices(
     for index, parent in enumerate(parents):
         source_split = str(parent["source_split"])
         source_seed = int(parent["source_velocity_seed"])
-        if source_split == "validation":
+        if source_split in {"validation", "final_validation"}:
             validation.append(index)
+        elif source_split == "model_selection":
+            selection.append(index)
+        elif source_split == "optimization":
+            optimization.append(index)
+        elif source_split != "train":
+            raise ValueError(
+                f"Unsupported repository shooting source_split={source_split!r}."
+            )
         elif source_seed in selection_seeds:
             selection.append(index)
         else:

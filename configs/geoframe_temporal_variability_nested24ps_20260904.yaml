@@ -1,0 +1,34 @@
+output_dir: output/geoframe_temporal_variability_nested24ps_0p3ps_20260904
+device: cuda:0
+
+encoder:
+  checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
+  representation_source: vicreg_projector
+  repeats: 1
+  seed: 123
+  point_cloud_batch_size: 4096
+  environment_batch_size: 1
+  environment_num_workers: 8
+
+data:
+  campaign_root: /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible
+  temperatures_K: [400, 450, 500]
+  basin_roles: [transition_candidate, liquid_control, crystal_control]
+  minimum_complete_branches_per_parent: 4
+  expected_parent_count: 36
+  expected_branch_count: 144
+  center_atom_count: 64
+  center_selection_seed: 123
+  radius: 9.192189
+  num_points: 160
+
+analysis:
+  lag_frames: [1, 2, 3, 4, 5, 10, 20, 30, 40, 60, 80]
+  smoothing_windows_frames: [1, 3, 5, 9]
+  pca_dimension: 128
+  scatter_maximum_points: 50000
+  seed: 123
+
+cache:
+  force_recompute: false
+  remove_extraction_shards: true

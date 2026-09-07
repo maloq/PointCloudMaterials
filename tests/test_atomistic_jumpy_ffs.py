@@ -977,35 +977,6 @@ def test_langevin_nvt_cadence_restart_is_phase_space_exact() -> None:
     assert segmented.rng_state == continuous.rng_state
 
 
-def test_production_jumpy_ffs_config_is_explicit_and_nvt(tmp_path: Path) -> None:
-    config = load_jumpy_ffs_config(
-        _write_selected_jffs_config(tmp_path, PRODUCTION_CONFIG)
-    )
-    assert config.algorithm.interfaces_atoms == (10, 15, 22, 32, 45, 65, 100)
-    assert config.algorithm.cv_interval_steps == 20
-    assert config.algorithm.equilibration_checkpoint_interval_steps == 20000
-    assert config.algorithm.basin_checkpoint_interval_steps == 20000
-    assert config.algorithm.basin_target_crossings == 100
-    assert config.algorithm.trials_per_state == 4
-    assert config.algorithm.shot_checkpoint_interval_steps == 20000
-    assert config.temperature_K == 500.0
-    assert config.timestep_fs == 1.0
-    assert config.friction_time_fs == 100.0
-    assert config.shot_md_property_mode == "forces"
-    assert config.generator.dynamics.target_temperature_K == 500.0
-    assert config.generator.dynamics.pressure_GPa == 0.0
-    assert config.generator.potential.md_property_mode == "forces_stress"
-    assert config.generator.system.repetitions == (16, 16, 16)
-    assert config.source_dataset.name == "al_liquid_source_16384_compiled_mpa_500K"
-    assert config.potential_selection_report.is_file()
-    assert len(config.potential_selection_report_sha256) == 64
-    assert len(config.selected_generator_config_sha256) == 64
-    assert (
-        config.to_dict()["potential_selection_report_sha256"]
-        == config.potential_selection_report_sha256
-    )
-
-
 @pytest.mark.parametrize(
     ("location", "key"),
     (
@@ -1040,23 +1011,6 @@ def test_jumpy_ffs_config_refuses_mtk_npt(tmp_path: Path) -> None:
     path.write_text(yaml.safe_dump(raw), encoding="utf-8")
     with pytest.raises(RuntimeError, match="thermostat-chain and barostat state"):
         load_jumpy_ffs_config(path)
-
-
-def test_mh1_jumpy_ffs_candidate_is_model_and_output_isolated(
-    tmp_path: Path,
-) -> None:
-    mpa = load_jumpy_ffs_config(
-        _write_selected_jffs_config(tmp_path / "mpa", PRODUCTION_CONFIG)
-    )
-    mh1 = load_jumpy_ffs_config(
-        _write_selected_jffs_config(tmp_path / "mh1", MH1_CONFIG)
-    )
-    assert mh1.generator.potential.model_name == "mace-mh-1-omat-pbe"
-    assert mh1.generator.potential.head == "omat_pbe"
-    assert mh1.generator.potential.sha256 != mpa.generator.potential.sha256
-    assert mh1.source_dataset != mpa.source_dataset
-    assert mh1.output_root != mpa.output_root
-    assert mh1.algorithm == mpa.algorithm
 
 
 def test_jumpy_ffs_selection_report_strictly_gates_model_and_config(

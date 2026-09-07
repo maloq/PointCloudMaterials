@@ -1,0 +1,18 @@
+{
+  "primary_population": "Al shooting centers with fewer than 7 initial coherent bonds at q6 dot threshold 0.70",
+  "primary_target": "mean across 8 shooting futures, horizons 12/24/48 ps",
+  "nuisance_features": ["temperature one-hot", "current q4", "current q6", "current w4", "current w6", "current qbar6", "current mean_q6_coherence", "current density_r12", "current smooth_coordination"],
+  "future_order_columns": [0,1,2,3,4,5],
+  "future_topology": "16 PCA scores of future persistence images; PCA and score scales fitted only on train targets; equal weight per retained component and horizon",
+  "readout": "ridge with intercept; per-family, per-horizon alpha selected on validation sources from [0.1,10,1000,100000]; never retrain on validation",
+  "encoder_checkpoint": "Before physical probes, compare the two retained candidates (legacy best and epoch-60 final) using projected VICReg over the entire 2304-center validation set and the same fixed noise views. This avoids evaluating variance on ordered single-source batches. No physical outcomes enter this selection.",
+  "primary_score": "100 * (1 - test MSE / coarse-order-and-temperature baseline test MSE), equal component and horizon weighting",
+  "negative_control": "SOAP representations independently shuffled within each split, material and temperature; coarse bond order and temperature covariates stay attached to their original environments",
+  "architecture_control": "Three untrained reference MACE initializations with the same seeds and architecture, frozen and evaluated through the same supervised ridge probes; these distinguish architectural expressivity from VICReg pretraining",
+  "neighbor_test": {"candidate_count": 64, "neighbor_count": 10, "candidates": "training inputs at the same temperature, closest in standardized current 8 bond-order measurements", "score": "future-target distance of representation-selected neighbors relative to 10 nearest coarse-order neighbors; three continuous target families have equal weight"},
+  "uncertainty": "1000 paired source-cluster bootstrap resamples of 6 independent test sources; learned model scores average errors across three independent training seeds, not predictions",
+  "secondary_event": "48 ps probability that at least 7 bonds are coherent throughout the last three saved frames (0.6 ps); thresholds 0.65,0.70,0.75; clipped ridge; shot-level Brier skill, not classification accuracy",
+  "auxiliary_fidelity": "per-material current continuous order and persistence images on supplemental held-out snapshots/times; TDA self-reconstruction is explicitly excluded",
+  "forbidden_predictors": ["PTM classes", "source identity", "parent identity", "pre-nucleation offset", "future outcomes in encoder pretraining"],
+  "interpretation": "Operational geometric and dynamical assays; no descriptor is ground truth for a new phase. Finite horizons and eight shots do not define a committor."
+}

@@ -1,1 +1,1 @@
-"""Repository helper scripts."""
+"""Maintained repository command entry points."""

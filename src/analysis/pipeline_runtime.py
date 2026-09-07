@@ -497,6 +497,13 @@ def load_vicreg_model(
 
 def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
+    if model_type == "pretrained_mace_encoder":
+        from .pretrained_mace_adapter import PretrainedMACEAnalysis
+        return PretrainedMACEAnalysis
+    if model_type == "density_encoder":
+        from .density_encoder_adapter import DensityEncoderAnalysis
+
+        return DensityEncoderAnalysis
     if model_type in {"vicreg", "visreg"}:
         return VICRegModule
     if model_type == "temporal_vicreg":
@@ -512,7 +519,7 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
         "Expected one of ['vicreg', 'visreg', 'temporal_vicreg', "
-        "'temporal_motif_field'], "
+        "'temporal_motif_field', 'density_encoder', 'pretrained_mace_encoder'], "
         f"got {model_type!r}."
     )
 

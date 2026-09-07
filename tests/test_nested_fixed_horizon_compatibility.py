@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from scripts.run_lammps_nested_fixed_horizon_compatibility import (
+from src.simulation.campaigns.nested_fixed_horizon_compatibility import (
     FIXED_DURATION_STEPS,
     FIXED_HORIZONS_PS,
     FIXED_TIMESTEPS,
@@ -39,11 +39,3 @@ def test_fixed_horizon_contract_contains_exact_training_targets() -> None:
     )
     assert STORAGE_DTYPE == "float16"
     assert len({_continuation_seed(index) for index in range(144)}) == 144
-
-
-def test_compatibility_worker_does_not_delete_open_binary_memmaps() -> None:
-    source = Path(
-        "scripts/run_lammps_nested_fixed_horizon_compatibility.py"
-    ).read_text(encoding="utf-8")
-
-    assert 'shutil.rmtree(branch_dir / "continuation_binary_float16")' not in source

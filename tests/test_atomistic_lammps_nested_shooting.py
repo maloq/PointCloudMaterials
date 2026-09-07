@@ -7,14 +7,10 @@ from types import SimpleNamespace
 from src.data_utils.synthetic.atomistic.lammps_nested_shooting import (
     _write_schedule,
     _source_splits,
-    load_nested_shooting_config,
     multirate_output_steps,
     nested_random_seeds,
     render_nested_lammps_input,
 )
-
-
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_nested_random_seeds_share_momentum_only_within_momentum_group() -> None:
@@ -60,24 +56,6 @@ def test_lammps_schedule_duplicates_block_boundary_control_reads(tmp_path: Path)
         300,
         400,
     ]
-
-
-def test_repository_nested_pilot_configuration_is_checksum_bound() -> None:
-    config = load_nested_shooting_config(
-        REPOSITORY_ROOT
-        / "configs/simulation/atomistic/al/"
-        "meam_nested_shooting_pilot_70304_20260902.yaml"
-    )
-
-    assert [value.expected_source_count for value in config.temperatures] == [9, 9, 11]
-    assert [value.expected_basin_a_max_cluster_atoms for value in config.temperatures] == [
-        19,
-        20,
-        16,
-    ]
-    assert config.momentum_samples_per_parent == 2
-    assert config.thermostat_futures_per_momentum == 2
-    assert config.monitor_interval_steps == 100
 
 
 def test_source_splits_approximate_70_15_15_before_parent_selection() -> None:

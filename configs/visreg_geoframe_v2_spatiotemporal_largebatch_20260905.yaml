@@ -1,0 +1,7 @@
+defaults:
+  - visreg_geoframe_v2_spatiotemporal_corrected_20260905
+  - _self_
+
+experiment_name: GFv2_SPATIOTEMPORAL_VISReg_B8192_20260905
+batch_size: 8192
+spatiotemporal_validation_batch_size: 2048

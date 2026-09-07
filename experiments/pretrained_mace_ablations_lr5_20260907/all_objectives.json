@@ -1,0 +1,83 @@
+{
+  "output": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives",
+  "cache": "/home/ids/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/data",
+  "source_cache": "/home/ids/vmorozov/experiments/temporal_hypotheses_12h_20260906/cache",
+  "pretrained_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+  "pretrained_url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mp_0b2/mace-small-density-agnesi-stress.model",
+  "seed": 20260906,
+  "workers": 16,
+  "points": 512,
+  "shooting_shots": [
+    0,
+    1
+  ],
+  "al_centers_train": 1024,
+  "al_centers_val": 128,
+  "ordinary_centers_train": 2048,
+  "ordinary_centers_val": 256,
+  "batch_size": 768,
+  "microbatch_size": 768,
+  "epochs": 4,
+  "patience": 100,
+  "learning_rate": 0.00015000000000000001,
+  "head_learning_rate": 0.0014999999999999998,
+  "weight_decay": 1e-05,
+  "gradient_clip": 5.0,
+  "tda_components": 32,
+  "spatial_weight": 1.0,
+  "temporal_weight": 0.25,
+  "tda_weight": 10.0,
+  "prediction_weight": 5.0,
+  "validation_anchors_per_material": 256,
+  "analysis_config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives_static.yaml",
+  "max_training_seconds": 7200,
+  "model_points": 80,
+  "outer_radius_A": 6.5,
+  "checkpoint_directory": "/tmp/vmorozov_mace_ablations_lr5_20260907/all_objectives/checkpoints",
+  "wandb": {
+    "project": "PointCloudMaterials",
+    "name": "MACE-ablation-LR5-80-dt0.1-all_objectives",
+    "id": "017c16f5"
+  },
+  "reuse_prepared_cache": "/home/ids/vmorozov/experiments/pretrained_mace_spatiotemporal_20260906/uniform_training",
+  "temporal_lag_ps": 0.1,
+  "scheduler": {
+    "name": "cosine_per_step",
+    "warmup_epochs": 1,
+    "warmup_start_factor": 0.05,
+    "min_lr": 1e-06
+  },
+  "al_continuations": {
+    "root": "datasets/zr_al_mg_initial_6x24ps/branches/Al",
+    "source_cache": "/home/ids/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/source_cache",
+    "train_snapshots": [
+      "166ps",
+      "170ps",
+      "174ps",
+      "175ps"
+    ],
+    "val_snapshots": [
+      "177ps"
+    ],
+    "excluded_snapshots": [
+      "240ps"
+    ],
+    "centers": {
+      "train": 4096,
+      "val": 512
+    },
+    "anchors": [
+      20,
+      40,
+      60,
+      80
+    ],
+    "lags": [
+      1,
+      4,
+      20,
+      40
+    ]
+  },
+  "checkpoint_selection": "last"
+}

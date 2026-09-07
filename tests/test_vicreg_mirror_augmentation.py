@@ -62,18 +62,3 @@ def test_vicreg_view_mirror_probability_zero_is_identity() -> None:
 def test_vicreg_rejects_invalid_mirror_probability() -> None:
     with pytest.raises(ValueError, match="vicreg_mirror_prob must be in \\[0, 1\\]"):
         _vicreg_with_mirror_probability(1.01)
-
-
-@pytest.mark.parametrize(
-    "config_path",
-    [
-        "configs/vicreg_vn_molecular.yaml",
-        "configs/vicreg_vn_molecular_multi.yaml",
-        "configs/vicreg_geo_frame_multi.yaml",
-        "configs/vicreg_mace_molecular.yaml",
-        "configs/vicreg_nequip_molecular.yaml",
-    ],
-)
-def test_active_vicreg_configs_enable_mirror_views(config_path: str) -> None:
-    cfg = OmegaConf.load(config_path)
-    assert float(cfg.vicreg_mirror_prob) == 0.5

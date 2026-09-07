@@ -1077,6 +1077,10 @@ def build_runtime_model_config(
 
 
 def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
+    if bool(OmegaConf.select(model_cfg, "vicreg_temporal_view", default=False)) and model_cfg.data.kind != "spatiotemporal_binary":
+        print("[analysis] Disabling training-only temporal view construction for the overridden inference dataset; encoder/projector weights are unchanged.")
+        with open_dict(model_cfg):
+            model_cfg.vicreg_temporal_view = False
     if bool(
         OmegaConf.select(
             model_cfg,

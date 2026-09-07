@@ -1,0 +1,7 @@
+defaults:
+  - vicreg_geoframe_v2_spatiotemporal_almgta_20260905
+  - _self_
+
+experiment_name: GFv2_SPATIOTEMPORAL_VICReg_CORRECTED_20260905
+vicreg_objective: vicreg
+spatiotemporal_mix_validation: true

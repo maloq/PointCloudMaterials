@@ -2,14 +2,14 @@ from pathlib import Path
 
 from hydra.core.override_parser.overrides_parser import OverridesParser
 
-from scripts.run_geoframe_factor_vae_queue import FactorSetting, RunSpec, _run_command
+from experiments.factor_vae_20260901.run_queue import FactorSetting, RunSpec, _run_command
 
 
 def test_checkpoint_path_with_equals_is_quoted_for_hydra(monkeypatch, tmp_path: Path) -> None:
     checkpoint = tmp_path / "GeoFrameTransformer-epoch=159.ckpt"
     checkpoint.touch()
     monkeypatch.setattr(
-        "scripts.run_geoframe_factor_vae_queue.V1_CHECKPOINT", checkpoint
+        "experiments.factor_vae_20260901.run_queue.V1_CHECKPOINT", checkpoint
     )
     spec = RunSpec(
         index=1,

@@ -1,0 +1,20 @@
+{
+  "output": "output/liquid_sro_benchmark_20260905",
+  "shooting_campaign": "/home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+  "pilot": "output/smooth_temporal_encoder_20260905",
+  "seed": 20260907,
+  "workers": 10,
+  "centers_per_parent": 256,
+  "candidate_neighbors": 192,
+  "graph_cutoff_A": 4.0,
+  "graph_skin_A": 0.25,
+  "coordination_radius_A": {"Al": 3.7, "Mg": 4.1, "Ta": 3.8},
+  "horizons_ps": [12.0, 24.0, 48.0],
+  "horizon_frames": [40, 80, 160],
+  "selection_source_velocity_seed": 35863,
+  "supplement_frames": [0, 40, 80, 120],
+  "static_centers_per_source": 256,
+  "training": {"seeds": [123,456,789], "epochs": 60, "batch_size": 512, "learning_rate": 0.001, "weight_decay": 0.0001, "jitter_std_A": 0.02, "jitter_clip_A": 0.06, "projector_dim": 256},
+  "models": {"mace_channels": 64, "mace_ell": 2, "mace_correlation": 3, "interactions": 2, "latent_dim": 128, "radial_basis": 8},
+  "evaluation": {"ridge_alpha": [0.1,10,1000,100000], "bootstrap_replicates": 1000, "future_tda_pca_dim": 16}
+}

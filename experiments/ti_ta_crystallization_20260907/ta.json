@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "lammps": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp",
+  "mpiexec": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/mpiexec",
+  "required_free_bytes": 3000000000000,
+  "pressure_bar": 0,
+  "position_storage_dtype": "float16",
+  "sample_interval_ps": 0.1,
+  "protocol": "ta-position-branches",
+  "material": "Ta",
+  "output_root": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta",
+  "cpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+  ],
+  "pair_commands": [
+    "pair_style eam/alloy",
+    "pair_coeff * * /home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam Ta"
+  ],
+  "potential_files": [
+    {
+      "path": "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+      "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+    }
+  ],
+  "temperature_K": 1900,
+  "timestep_ps": 0.002,
+  "thermostat_ps": 0.2,
+  "barostat_ps": 2.0,
+  "mass_g_mol": 180.95,
+  "dump_every_steps": 50,
+  "checkpoint_steps": 4000,
+  "branch_steps": 12000,
+  "atom_count": 10000422,
+  "branches": [
+    {
+      "name": "2.7ns",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/datasets/Ta/initial_configurations/2.7ns.pos",
+      "source_sha256": "e3eeeccd3b982361947fb427b9f311ff0251c2ee317e21976033f08c32f9fc19",
+      "source_step": 1350000,
+      "velocity_seed": 891071441
+    },
+    {
+      "name": "2.8ns",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/datasets/Ta/initial_configurations/2.8ns.pos",
+      "source_sha256": "7d20d67091eedf2f24a27978a5bc2e33c1755ed12f3ecd37ccfcfafff6b2376a",
+      "source_step": 1400000,
+      "velocity_seed": 891072441
+    },
+    {
+      "name": "2.9ns",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/datasets/Ta/initial_configurations/2.9ns.pos",
+      "source_sha256": "5519012640516f89ddd5a82c7ed00c3c5ca471201610d23576ce47a6fa5bdfc3",
+      "source_step": 1450000,
+      "velocity_seed": 891073441
+    },
+    {
+      "name": "3.0ns",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/datasets/Ta/initial_configurations/3.0ns.pos",
+      "source_sha256": "8e962c9d3d7f584105e22acb13edebfa8dbda3c715936cd85f1b4605e0f4f805",
+      "source_step": 1500000,
+      "velocity_seed": 891074441
+    },
+    {
+      "name": "3.60ns",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/datasets/Ta/initial_configurations/3.60ns.pos",
+      "source_sha256": "d451ebf7f7169e201f6af75ecc42ac17ce1139dc0739c425a8a005ce3bbf421e",
+      "source_step": 1800000,
+      "velocity_seed": 891075441
+    }
+  ],
+  "delete_verified_source_text": true
+}

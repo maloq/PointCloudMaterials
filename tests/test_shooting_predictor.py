@@ -27,7 +27,7 @@ from src.temporal_vamp.shooting_predictor import (
 )
 from src.temporal_vamp.shooting_multiscale import build_multiscale_feature_variants
 from src.temporal_vamp.shooting_spatial import SpatialContextTransformer
-from scripts.migrate_lammps_shooting_float32 import _migrate_campaign
+from src.data_utils.conversion.shooting import convert_campaign
 
 
 def _write_shooting_dump(path: Path) -> None:
@@ -183,8 +183,8 @@ def test_shooting_snapshot_merges_matching_independent_campaigns(
     second = tmp_path / "second"
     _small_campaign(first)
     _small_campaign(second, branch_seed_offset=1000)
-    _migrate_campaign(first)
-    _migrate_campaign(second)
+    convert_campaign(first)
+    convert_campaign(second)
     snapshot = load_shooting_campaigns_snapshot(
         [first, second],
         temperatures_K=[400.0],

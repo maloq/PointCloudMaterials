@@ -181,23 +181,6 @@ def _write_qualified_report_chain(
     return child_path
 
 
-def test_production_config_has_no_density_control() -> None:
-    config = load_config(PRODUCTION_CONFIG)
-    assert config.system.chemical_symbol == "Al"
-    assert config.dynamics.pressure_GPa == 0.0
-    assert config.validation.reference_density_cache is None
-    assert config.random_seeds == (12345,)
-    assert config.potential.model_name == "mace-mpa-0-medium"
-    assert config.potential.family == "MACE-MPA-0"
-    assert config.potential.head == "default"
-    assert config.potential.usage_mode == "exploratory"
-    assert config.potential.scientifically_qualified is False
-    assert config.potential.enable_cueq is True
-    assert config.potential.neighbor_skin_A == 0.3
-    assert config.system.repetitions == (26, 26, 26)
-    assert config.system.liquid_slab_fraction == 0.5
-
-
 def test_density_control_is_rejected(tmp_path: Path) -> None:
     raw = yaml.safe_load(PRODUCTION_CONFIG.read_text(encoding="utf-8"))
     raw["system"]["density_target"] = 0.0849

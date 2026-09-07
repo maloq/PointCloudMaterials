@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -8,16 +7,7 @@ from types import SimpleNamespace
 import numpy as np
 
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPOSITORY_ROOT / "scripts/plot_homogeneous_checkpoint.py"
-SCRIPT_SPEC = importlib.util.spec_from_file_location(
-    "pointcloudmaterials_plot_homogeneous_checkpoint",
-    SCRIPT_PATH,
-)
-if SCRIPT_SPEC is None or SCRIPT_SPEC.loader is None:
-    raise RuntimeError(f"Cannot load checkpoint visualization script from {SCRIPT_PATH}.")
-plot_homogeneous_checkpoint = importlib.util.module_from_spec(SCRIPT_SPEC)
-SCRIPT_SPEC.loader.exec_module(plot_homogeneous_checkpoint)
+from src.analysis.plots import plot_homogeneous_checkpoint
 
 
 def test_render_checkpoint_visualizations_writes_live_and_step_stamped_images(

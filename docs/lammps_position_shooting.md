@@ -22,7 +22,7 @@ Prepare the immutable manifest and inputs with:
 
 ```bash
 conda activate pointnet
-python scripts/run_lammps_meam_shooting_campaign.py prepare \
+python scripts/run_lammps_campaign.py meam-shooting prepare \
   --config configs/simulation/atomistic/al/meam_position_shooting_70304.yaml
 ```
 
@@ -42,7 +42,7 @@ final LAMMPS restart, stdout/logs, immutable branch metadata, and a validated
 overwrite partial output.  Summarize only after every branch completes:
 
 ```bash
-python scripts/run_lammps_meam_shooting_campaign.py summarize --campaign-root "$ROOT"
+python scripts/run_lammps_campaign.py meam-shooting summarize --campaign-root "$ROOT"
 ```
 
 Production branches use Slurm's PMI-2 launcher (`srun --mpi=pmi2`) rather than

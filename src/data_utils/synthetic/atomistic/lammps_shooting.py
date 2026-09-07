@@ -766,7 +766,7 @@ set -euo pipefail
 source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 export PYTHONPATH={REPOSITORY_ROOT}
-python {REPOSITORY_ROOT}/scripts/run_lammps_meam_shooting_campaign.py run-task \\
+python {REPOSITORY_ROOT}/src/simulation/campaigns/meam_shooting.py run-task \\
   --campaign-root {config.output_root} \\
   --task-index "${{SLURM_ARRAY_TASK_ID}}"
 """,
@@ -793,7 +793,7 @@ set -euo pipefail
 source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 export PYTHONPATH={REPOSITORY_ROOT}
-python {REPOSITORY_ROOT}/scripts/run_lammps_meam_shooting_campaign.py summarize \\
+python {REPOSITORY_ROOT}/src/simulation/campaigns/meam_shooting.py summarize \\
   --campaign-root {config.output_root}
 """,
         encoding="utf-8",
@@ -817,7 +817,7 @@ set -euo pipefail
 source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 export PYTHONPATH={REPOSITORY_ROOT}
-python {REPOSITORY_ROOT}/scripts/run_lammps_meam_shooting_campaign.py submit-next-wave \\
+python {REPOSITORY_ROOT}/src/simulation/campaigns/meam_shooting.py submit-next-wave \\
   --campaign-root {config.output_root} \\
   --start-index "${{SHOOT_START}}"
 """,
@@ -828,6 +828,16 @@ python {REPOSITORY_ROOT}/scripts/run_lammps_meam_shooting_campaign.py submit-nex
 
 def _lammps_environment() -> dict[str, str]:
     environment = os.environ.copy()
+    for key in (
+        "CUDA_VISIBLE_DEVICES",
+        "SLURM_GPUS",
+        "SLURM_GPUS_ON_NODE",
+        "SLURM_GPUS_PER_NODE",
+        "SLURM_GPUS_PER_TASK",
+        "SLURM_JOB_GPUS",
+        "SLURM_STEP_GPUS",
+    ):
+        environment.pop(key, None)
     environment.update(
         {
             "MPIR_CVAR_CH4_NETMOD": "ofi",
@@ -930,7 +940,13 @@ def _materialize_missing_branch_input(
     return branch_dir
 
 
-def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
+def run_branch(
+    campaign_root: str | Path,
+    task_index: int,
+    *,
+    launcher_override: str | None = None,
+    mpi_ranks_override: int | None = None,
+) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
     manifest = _load_json(root / "manifest.json")
     branches = manifest["branches"]
@@ -971,11 +987,31 @@ def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
             "slurm_array_task_id": os.environ.get("SLURM_ARRAY_TASK_ID"),
         },
     )
-    mpi_ranks = int(manifest["execution"]["mpi_ranks_per_branch"])
-    launcher = str(manifest["execution"]["launcher"])
+    if (launcher_override is None) != (mpi_ranks_override is None):
+        raise ValueError(
+            "launcher_override and mpi_ranks_override must be provided together."
+        )
+    manifest_mpi_ranks = int(manifest["execution"]["mpi_ranks_per_branch"])
+    manifest_launcher = str(manifest["execution"]["launcher"])
+    if launcher_override is None:
+        mpi_ranks = manifest_mpi_ranks
+        launcher = manifest_launcher
+    else:
+        if launcher_override != "local_mpiexec":
+            raise ValueError(
+                "The explicit execution override is restricted to launcher='local_mpiexec'; "
+                f"got {launcher_override!r}."
+            )
+        mpi_ranks = int(mpi_ranks_override)
+        if mpi_ranks <= 0:
+            raise ValueError(f"mpi_ranks_override must be positive, got {mpi_ranks}.")
+        launcher = launcher_override
     command = _lammps_command(mpi_ranks=mpi_ranks, launcher=launcher)
     running_status = _load_json(status_path)
     running_status["launcher"] = launcher
+    running_status["mpi_ranks"] = mpi_ranks
+    running_status["manifest_launcher"] = manifest_launcher
+    running_status["manifest_mpi_ranks"] = manifest_mpi_ranks
     running_status["command"] = command
     _write_json_atomic(status_path, running_status)
     started = time.monotonic()
@@ -1040,6 +1076,9 @@ def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
         "hostname": os.uname().nodename,
         "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
         "launcher": launcher,
+        "mpi_ranks": mpi_ranks,
+        "manifest_launcher": manifest_launcher,
+        "manifest_mpi_ranks": manifest_mpi_ranks,
         "command": command,
         "elapsed_seconds": elapsed_seconds,
         "frame_count": scan.frame_count,

@@ -1,0 +1,26 @@
+{
+  "checked_at_utc": "2026-09-07T09:11:08.422936+00:00",
+  "state": "blocked_by_storage_quota",
+  "service_failed_at_local": "2026-09-07T02:21:26+02:00",
+  "confirmed_error": "OSError [Errno 122] Disk quota exceeded on /home/ids",
+  "completed_dynamics": [
+    "Ta/2.7ns: 24 ps, 241 frames, final restart saved"
+  ],
+  "finalized_new_branches": 0,
+  "remaining_dynamics": [
+    "Ta/2.8ns",
+    "Ta/2.9ns",
+    "Ta/3.0ns",
+    "Ta/3.60ns",
+    "Ti source and six branches"
+  ],
+  "removed_disposable_partial_binary": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/.trajectory_binary_float32.building-3725716/positions.npy",
+  "reclaimed_allocated_bytes": 17130208256,
+  "preserved": [
+    "trajectory.lammpstrj",
+    "final.restart.bin",
+    "conversion_positions.npy",
+    "logs",
+    "all original snapshots"
+  ]
+}

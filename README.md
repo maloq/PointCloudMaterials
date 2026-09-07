@@ -1,5 +1,10 @@
 # Pytorch Implementation of PointNet
 
+Maintained commands are indexed in [scripts/README.md](scripts/README.md).
+Research-specific recipes live in [experiments/](experiments/README.md).
+Use the [trajectory conversion tool](docs/trajectory_conversion.md) for format changes.
+Test commands and coverage guidelines are in [tests/README.md](tests/README.md).
+
 The frozen-encoder temporal predictive-representation prototype is documented in
 [docs/temporal_vamp.md](docs/temporal_vamp.md). Its reference configuration uses the
 current pretrained `GeoFrameTransformer` and fits a linear VAMP/kinetic map on
