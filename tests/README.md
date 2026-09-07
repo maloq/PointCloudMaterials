@@ -29,6 +29,10 @@ and run record; avoid repeating them in assertions solely to freeze a run.
 Scientific protocol constraints, independence, and destructive-operation safety
 still warrant regression coverage.
 
+`test_experiment_registry.py` covers cleanup preflight and symlink boundaries,
+retained prerequisites, verified recoverable log archives, execution failure logs,
+and immutable provenance across attempts. See [the registry guide](../docs/output_registry.md).
+
 `test_elemental_conversion.py` covers Ti/Ta position-producer conversion,
 periodic coordinate semantics, and rejection of corrupt IDs, cadence, and frame
 counts. The real LAMMPS source/branch smoke and full-size preflights are documented

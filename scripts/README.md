@@ -48,6 +48,13 @@ and IDs alone. See [cache conversion](../docs/trajectory_conversion.md#derived-t
 
 ## Training and predictive analysis
 
+`experiment_registry.py build` refreshes the shared experiment/simulation dashboard
+and ideas view. `run --spec SPEC.json` tracks an explicit maintained command;
+`status --record run_record.json` inspects execution state. `prune --plan PLAN.json`
+previews verified cleanup, and `pack-logs --before ISO_TIMESTAMP` previews lossless
+log archiving; mutations require `--apply`. Implementation: `src/experiment_runner/`.
+See [the registry and run guide](../docs/output_registry.md).
+
 | Command | Purpose / implementation |
 | --- | --- |
 | `run_experiments.py --plan PLAN` | Run/resume/collect local or Slurm experiment plans; `src/experiment_runner/` |

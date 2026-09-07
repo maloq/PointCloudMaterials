@@ -607,7 +607,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         raise ValueError(
             f"checkpoint_mode must be 'min' or 'max', got {checkpoint_mode!r}"
         )
-    checkpoint_save_top_k = int(getattr(cfg, "checkpoint_save_top_k", 3))
+    checkpoint_save_top_k = int(getattr(cfg, "checkpoint_save_top_k", 1))
     checkpoint_save_top_k = max(1, checkpoint_save_top_k)
     checkpoint_save_last = bool(getattr(cfg, "checkpoint_save_last", False))
     checkpoint_every_n_epochs = int(getattr(cfg, "checkpoint_every_n_epochs", 0))
@@ -632,7 +632,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
                 dirpath=run_dir,
                 monitor=None,
                 filename=f'{cfg.experiment_name}-periodic-{{epoch:03d}}',
-                save_top_k=-1,
+                save_top_k=1,
                 save_last=False,
                 every_n_epochs=checkpoint_every_n_epochs,
                 save_on_train_epoch_end=True,

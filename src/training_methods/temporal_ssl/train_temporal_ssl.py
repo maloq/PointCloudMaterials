@@ -28,7 +28,7 @@ def main(cfg: DictConfig):
 
 if __name__ == "__main__":
     if not any(arg.startswith("hydra.run.dir=") for arg in sys.argv):
-        sys.argv.append("hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}")
+        sys.argv.append("hydra.run.dir=output/runs/training/${experiment_name}/${now:%Y%m%d_%H%M%S}")
     main()
 
 

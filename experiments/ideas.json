@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "ideas": [
+    {
+      "id": "slow_structure_vs_predictive_state",
+      "title": "Separate slow structure from predictive state",
+      "state": "proposed",
+      "question": "Does applying temporal invariance only to a compact structural state improve prediction from a richer state?",
+      "next_action": "Specify the matched baseline, independent test split and decision metric before launching a run.",
+      "source": "docs/temporal_hypotheses_review_20260906.md"
+    },
+    {
+      "id": "horizon_skill_and_rollouts",
+      "title": "Validate per-horizon skill and repeated rollouts",
+      "state": "proposed",
+      "question": "Do latent forecasts beat a trained condition-only baseline at each horizon, and remain stable in repeated rollouts?",
+      "next_action": "Define a bounded evaluation using the retained predictive-density and MACE checkpoints.",
+      "source": "docs/temporal_hypotheses_review_20260906.md"
+    },
+    {
+      "id": "independent_ta_validation",
+      "title": "Independent Ta validation data",
+      "state": "needs_review",
+      "question": "Which new Ta trajectories provide independent validation rather than branches of a shared source?",
+      "next_action": "Audit source ancestry in the Ta/Ti campaign before declaring an independent test set.",
+      "source": "experiments/ti_ta_crystallization_20260907/README.md"
+    },
+    {
+      "id": "config_organization",
+      "title": "Consolidate configuration layout",
+      "state": "planned",
+      "question": "How should reusable model/data defaults be separated from immutable run configurations?",
+      "next_action": "Use registry config snapshots and dependency references to plan the configs/ cleanup; preserve Hydra composition.",
+      "source": "docs/output_registry.md"
+    },
+    {
+      "id": "ta_quota_recovery",
+      "title": "Unblock Ta/Ti sequence after quota failure",
+      "state": "blocked",
+      "question": "Can the verified Ta artifacts and retained restart resume after resolving the IDS write quota?",
+      "next_action": "Check IDS quota and runner-log writes, then use the existing explicit --resume-ta protocol; do not repeat completed dynamics.",
+      "source": "docs/output_cleanup_20260907.md"
+    }
+  ]
+}

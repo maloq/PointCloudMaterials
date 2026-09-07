@@ -113,7 +113,7 @@ class ProgressCheckpoint(ModelCheckpoint):
         # saved. Explicitly retain the latest epoch even when validation worsens.
         trainer.save_checkpoint(self.root / "last.ckpt")
         if (trainer.current_epoch + 1) % 10 == 0:
-            trainer.save_checkpoint(self.root / f"epoch-{trainer.current_epoch + 1:03d}.ckpt")
+            trainer.save_checkpoint(self.root / "periodic.ckpt")
 
 
 def main(argv=None):
@@ -130,21 +130,24 @@ def main(argv=None):
     torch.set_float32_matmul_precision("high")
     checkpoint = ProgressCheckpoint(args.run_dir)
     try:
-        trainer, model, _, _ = train_model(cfg, VICRegModule, run_dir=str(args.run_dir), checkpoint_callbacks=[checkpoint], run_test=False)
-        trainer.save_checkpoint(args.run_dir / "final.ckpt")
-        audit = {}
-        for name, path in (("best", Path(checkpoint.best_model_path)), ("last", args.run_dir / "last.ckpt"), ("final", args.run_dir / "final.ckpt")):
-            payload = torch.load(path, map_location="cpu", weights_only=False)
-            audit[name] = dict(path=str(path), epoch=payload["epoch"], global_step=payload["global_step"])
-            if name != "best" and payload["global_step"] != trainer.global_step:
-                raise RuntimeError(f"Stale {name} checkpoint: {audit[name]}, expected step {trainer.global_step}")
-        write_json(args.run_dir / "checkpoint_audit.json", audit)
-        write_json(args.run_dir / "final_checkpoint_stability.json", dict(checkpoint=str(args.run_dir / "final.ckpt"), metrics=stability_probe(model, Path(cfg.data.cache_dir))))
-        best = torch.load(checkpoint.best_model_path, map_location=model.device, weights_only=False)
-        model.load_state_dict(best["state_dict"], strict=True)
-        after = stability_probe(model, Path(cfg.data.cache_dir))
-        write_json(args.run_dir / "best_checkpoint_stability.json", dict(checkpoint=checkpoint.best_model_path, metrics=after))
-        checkpoint.progress(trainer, state="complete")
+        from src.experiment_runner.tracking import tracked_run
+        with tracked_run(args.run_dir, kind='training', configs=[args.run_dir / 'config.yaml'],
+                         command=[sys.executable, *sys.argv]):
+            trainer, model, _, _ = train_model(cfg, VICRegModule, run_dir=str(args.run_dir), checkpoint_callbacks=[checkpoint], run_test=False)
+            trainer.save_checkpoint(args.run_dir / "final.ckpt")
+            audit = {}
+            for name, path in (("best", Path(checkpoint.best_model_path)), ("last", args.run_dir / "last.ckpt"), ("final", args.run_dir / "final.ckpt")):
+                payload = torch.load(path, map_location="cpu", weights_only=False)
+                audit[name] = dict(path=str(path), epoch=payload["epoch"], global_step=payload["global_step"])
+                if name != "best" and payload["global_step"] != trainer.global_step:
+                    raise RuntimeError(f"Stale {name} checkpoint: {audit[name]}, expected step {trainer.global_step}")
+            write_json(args.run_dir / "checkpoint_audit.json", audit)
+            write_json(args.run_dir / "final_checkpoint_stability.json", dict(checkpoint=str(args.run_dir / "final.ckpt"), metrics=stability_probe(model, Path(cfg.data.cache_dir))))
+            best = torch.load(checkpoint.best_model_path, map_location=model.device, weights_only=False)
+            model.load_state_dict(best["state_dict"], strict=True)
+            after = stability_probe(model, Path(cfg.data.cache_dir))
+            write_json(args.run_dir / "best_checkpoint_stability.json", dict(checkpoint=checkpoint.best_model_path, metrics=after))
+            checkpoint.progress(trainer, state="complete")
     except BaseException as error:
         write_json(args.run_dir / "status.json", dict(state="failed", error=repr(error), traceback=traceback.format_exc()))
         raise

@@ -6,9 +6,11 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 import fcntl
 import json
+from importlib import metadata
 import os
 from pathlib import Path
 import socket
+import signal
 import subprocess
 import sys
 import tarfile
@@ -39,6 +41,10 @@ def tracked_run(output: Path, *, kind: str, configs: list[Path], command: list[s
         (attempt / 'working_tree.patch').write_bytes(diff)
         status = subprocess.check_output(['git', 'status', '--porcelain'], cwd=repo, text=True)
         (attempt / 'working_tree_status.txt').write_text(status)
+        write_json(attempt / 'environment.json', {
+            'python': sys.version, 'executable': sys.executable,
+            'packages': sorted([{'name': dist.metadata['Name'], 'version': dist.version}
+                                for dist in metadata.distributions()], key=lambda d: d['name'].lower())})
         # Include untracked research implementation as well as tracked files.
         source_paths = []
         for base in ('src', 'scripts', 'configs', 'experiments'):
@@ -96,13 +102,33 @@ def execute_spec(path: Path) -> None:
         if record['state'] != 'command_succeeded':
             raise RuntimeError(f'Dependency has not succeeded: {dependency}: {record["state"]}')
     output = Path(spec['output']).resolve()
-    if (output / 'run_record.json').exists():
+    execution = output / 'execution'
+    if (execution / 'run_record.json').exists():
         raise FileExistsError(f'Run already tracked at {output}; use a new output or the protocol-specific explicit resume command.')
-    with tracked_run(output, kind=spec['kind'], configs=[path] + [Path(p) for p in spec['configs']],
+    with tracked_run(execution, kind=spec['kind'], configs=[path] + [Path(p) for p in spec['configs']],
                      command=spec['command'], question=spec['question'],
                      success_state='submitted' if spec['completion'] == 'submission_only' else 'command_succeeded'):
         with (output / 'command.log').open('xb') as log:
-            subprocess.run(spec['command'], cwd=spec['cwd'], stdout=log, stderr=subprocess.STDOUT, check=True)
+            child = subprocess.Popen(spec['command'], cwd=spec['cwd'], stdout=log,
+                                     stderr=subprocess.STDOUT, start_new_session=True)
+            received_signal = None
+
+            def forward(signum, frame):
+                nonlocal received_signal
+                received_signal = signum
+                if child.poll() is None:
+                    os.killpg(child.pid, signum)
+
+            previous = {sig: signal.signal(sig, forward) for sig in (signal.SIGTERM, signal.SIGINT)}
+            try:
+                code = child.wait()
+                if received_signal is not None:
+                    raise InterruptedError(f'Run interrupted by signal {received_signal}; forwarded to command process group')
+                if code:
+                    raise subprocess.CalledProcessError(code, spec['command'])
+            finally:
+                for sig, handler in previous.items():
+                    signal.signal(sig, handler)
 
 
 def observed_record(path: Path) -> dict:

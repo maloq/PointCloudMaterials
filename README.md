@@ -1,5 +1,8 @@
 # Pytorch Implementation of PointNet
 
+[Experiment & simulation dashboard](output/registry/index.html) ·
+[Ideas backlog](experiments/ideas.json) · [Run organization guide](docs/output_registry.md)
+
 Maintained commands are indexed in [scripts/README.md](scripts/README.md).
 Research-specific recipes live in [experiments/](experiments/README.md).
 Use the [trajectory conversion tool](docs/trajectory_conversion.md) for format changes.

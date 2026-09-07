@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "storage_roots": [
+    {"id": "simulations", "kind": "simulation", "path": "/home/ids/vmorozov/simulations"},
+    {"id": "training_storage", "kind": "dataset", "path": "/home/ids/vmorozov/experiments"}
+  ]
+}

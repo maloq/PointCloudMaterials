@@ -1,5 +1,11 @@
 # Research experiment records
 
+Start with [the run dashboard](../output/registry/index.html) for results, progress,
+configs, checkpoints and plots across training and simulations. The versioned
+[ideas backlog](ideas.json) records questions and next actions; [registry.json](registry.json)
+lists external storage roots. See [the run/retention guide](../docs/output_registry.md)
+before launching or reorganizing runs.
+
 These directories retain code whose assumptions belong to a particular research
 question. They are not an archive of abandoned scripts. Shared implementation
 belongs in `src/`, and maintained commands are indexed in

@@ -1,7 +1,9 @@
 import os
-import traceback
+from pathlib import Path
+import sys
 
-from omegaconf import DictConfig, ListConfig
+from hydra.core.hydra_config import HydraConfig
+from omegaconf import DictConfig, ListConfig, OmegaConf
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 from src.training_methods.registry import resolve_training_method
@@ -32,9 +34,7 @@ def run_post_training_analysis_safe(
         )
         logger.print("Post-training analysis completed successfully!")
     except Exception as exc:
-        logger.print(f"\nWarning: Post-training analysis failed with error: {exc}")
-        logger.print("Training completed successfully, but analysis could not be run.")
-        traceback.print_exc()
+        raise RuntimeError(f'Training finished, but requested analysis failed for {checkpoint_path}') from exc
 
 
 def _first_cuda_device(cfg: DictConfig) -> int:
@@ -59,14 +59,13 @@ def _run_registered_post_training_analysis(
 
     best_ckpt = checkpoint_callbacks[0].best_model_path if checkpoint_callbacks else ""
     if not best_ckpt or not os.path.exists(best_ckpt):
-        logger.print("Warning: No best checkpoint found, skipping post-training analysis")
-        return
+        raise FileNotFoundError(f'Requested post-training analysis has no retained best checkpoint: {best_ckpt!r}')
 
     output_dir = os.path.join(os.path.dirname(best_ckpt), "analysis")
     run_post_training_analysis_safe(best_ckpt, output_dir, _first_cuda_device(cfg))
 
 
-def train(
+def _train(
     cfg: DictConfig,
     *,
     method_name: str | None = None,
@@ -89,6 +88,19 @@ def train(
         requested=run_analysis,
     )
     return trainer, model, dm, checkpoint_callbacks
+
+
+def train(cfg: DictConfig, *, method_name: str | None = None, run_analysis: bool = True):
+    # Hydra owns these entry points; only rank zero writes shared provenance.
+    if rank_zero_only.rank != 0:
+        return _train(cfg, method_name=method_name, run_analysis=run_analysis)
+    from src.experiment_runner.tracking import tracked_run
+    output = Path(HydraConfig.get().runtime.output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    config = output / 'resolved_config.yaml'
+    OmegaConf.save(cfg, config, resolve=True)
+    with tracked_run(output, kind='training', configs=[config], command=[sys.executable, *sys.argv]):
+        return _train(cfg, method_name=method_name, run_analysis=run_analysis)
 
 
 __all__ = ["run_post_training_analysis_safe", "train"]
