@@ -3,3 +3,4 @@ num_points: 80
 model_points: 80
 cache_dir: /home/ids/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views
 materials: [Al, Mg, Ta]
+temporal_lag_steps: null

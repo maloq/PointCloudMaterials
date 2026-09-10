@@ -1,0 +1,20 @@
+{
+  "kind": "training",
+  "question": "Can shared hot/relaxed 80-atom encodings reconstruct relaxed topology while suppressing thermal fluctuations?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_thermal80_20260909/recovery_20260909_1518",
+  "configs": [
+    "experiments/mace_thermal80_20260909/plan.json",
+    "experiments/mace_thermal80_20260909/training.json",
+    "experiments/mace_thermal80_20260909/static.yaml"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_thermal80_20260909/plan.json"
+  ]
+}

@@ -292,3 +292,95 @@ New `position_storage.py` is maintained conversion implementation exposed throug
 `convert_trajectory.py temporal-storage`; `recover_float16.py` and this audit are
 experiment records. Logs, service receipts and temporary arrays are disposable
 operational files in the output directory.
+
+### Status and recovery — 2026-09-08
+
+All five completed production Ta trajectories (baseline plus 2.7/2.8/2.9/3.0ns)
+finished verified float16 conversion. The subsequent sequence failed at 18:23
+CEST on September 7 while appending a verification message to Ta/runner.log
+(EDQUOT), before starting 3.60ns. Ti did not start. On September 8, a 16 MiB
+write/fsync and an append/fsync to the same log succeeded. The maintained
+`elemental sequence --resume-ta` command was relaunched detached as
+`ta-then-ti-resume-20260908.service`, retaining the same configs and 48-core
+allocation. This rechecks completed branch artifacts and skips their dynamics.
+Logs: `sequence_resume_20260908.log`, `Ta/runner.log`, and the user journal.
+Float32-to-float16 position savings for the four previously binary production
+trajectories total 41.78 GiB. The recovered 3.0ns conversion additionally removed
+70.04 GiB of allocated raw text after verification. These are storage-operation
+measurements, not a measurement of remaining NFS quota.
+
+### Early Ti branches on Slurm — prepared 2026-09-09
+
+Question: how do 240 ps trajectories evolve from stages already sampled while
+the Ti crystallization source continues? `ti_early_parents.json` freezes six
+chronological parents nearest the requested crystalline fractions among currently
+available PTM assessments: source times 0, 8, 32, 40, 56 and 192 ps. This is an
+early-selection protocol, not selection conditioned on the completed source.
+`ti_early_slurm.json` retains the 100000 atoms, potential, temperature, timestep,
+seeds, 240 ps horizon, 0.1 ps sampling and float16 storage from the source campaign.
+Output: `datasets/ti_ta_crystallization_20260907/Ti_early_slurm`.
+
+The maintained command for array task INDEX is:
+
+```bash
+python scripts/run_lammps_campaign.py elemental branch \
+  --config experiments/ti_ta_crystallization_20260907/ti_early_slurm.json \
+  --parents experiments/ti_ta_crystallization_20260907/ti_early_parents.json --index INDEX
+```
+
+Generated `submit.sbatch` lives in the output root: CPU partition, one node,
+48 CPUs and 16 GiB memory per task, 12-hour limit, array indices 0–5. CPU IDs are
+read from the allocated Slurm step, avoiding workstation-specific affinity.
+The source controller is still active on lamedell11; early selection does not
+change its existing source-completion and later branch schedule. Configs and
+parent manifest are experiment records; the generated batch script and job logs
+are disposable operational files. Twelve elemental tests passed, including the
+Slurm binding and duplicate-output rejection test.
+
+Submitted as additional early branches under Slurm array **986438**, tasks 0–5;
+all six entered RUNNING on CPU nodes nodecpu03/04/08/09. The original source and
+its post-source branch schedule remain active. Launch receipt: output-root
+`launch.json`. Four branch logs had reached integration at the first check;
+remaining tasks were initializing. No GPUs were requested.
+
+### Source completion threshold — 2026-09-09
+
+At the user's request, the active Ti source completion threshold was lowered
+from 95% to 94% crystalline, retaining two consecutive assessments 4 ps apart.
+Both `ti.json` and the active `Ti/config.json` were updated atomically. The source
+assessment subprocess rereads the active config at every check, so this change
+applies without restarting MD. The running controller's original config snapshot
+is preserved in tracking; `Ti/completion_threshold_change_20260909.json` records
+the change and original config hashes. The source finishes through its ordinary
+final-restart and verified-conversion path when the revised criterion passes.
+
+### Additional Ti shooting realizations — 2026-09-09 evening
+
+After both previous sets of six branches completed, prepare six more 240 ps
+position-conditioned shots with fresh velocity seeds 917201, 917203, 917207,
+917211, 917217 and 917223. The same original source parents at 0, 8, 32, 40, 56
+and 192 ps are reused; all six parent file SHA256 hashes were checked against
+the original manifest. This samples another velocity realization per parent,
+not an extension of the completed trajectories.
+
+Configs: `ti_shooting_round2_20260909.json` and
+`ti_shooting_round2_parents_20260909.json`. Reuse the maintained command:
+
+```bash
+python scripts/run_lammps_campaign.py elemental branch \
+  --config experiments/ti_ta_crystallization_20260907/ti_shooting_round2_20260909.json \
+  --parents experiments/ti_ta_crystallization_20260907/ti_shooting_round2_parents_20260909.json \
+  --index INDEX
+```
+
+Output: `datasets/ti_ta_crystallization_20260907/Ti_shooting_round2_20260909`.
+The generated `submit.sbatch` requests CPU or cpu-high, 48 CPUs, 16 GiB and
+12 hours per array task, indices 0–5. All physical/scientific settings remain
+100000 atoms, 1250 K, original Kavousi Ti-only mapping, 1 fs timestep, 0.1 ps
+sampling and verified float16 position storage. A 16 MiB write/fsync succeeded;
+this is a writeability check, not an estimate of remaining quota. New JSON files
+are experiment records; generated batch files, receipts and logs are disposable
+run outputs. No maintained code changes were needed.
+
+Submitted as Slurm array **987762**, tasks 0–5. See output-root `launch.json`
+for the submission receipt and `squeue -j 987762` for current scheduling state.

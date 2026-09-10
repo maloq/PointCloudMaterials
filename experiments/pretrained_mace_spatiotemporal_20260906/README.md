@@ -1,5 +1,12 @@
 # Pretrained small MACE with spatial and temporal structure objectives — 2026-09-06
 
+> Completed experiment record — implementation retired on 2026-09-09.
+> Commands, plans, and implementation paths below describe the original run,
+> not the current supported trainer. Reproduction of that protocol requires
+> the run's `tracking/*/source.tar.gz` and recorded configs under `output/`.
+> Existing results/checkpoints are retained. Use the
+> [current 80-atom recipe](../mace_plain80_20260909/README.md) for new training.
+
 **Superseded at the user’s request by the [strict 80-point online-W&B run](../pretrained_mace_spatiotemporal_80_20260906/README.md).** The 512-point training process was stopped; its outputs are retained for audit.
 
 Train a smooth atomic encoder that preserves spatially meaningful variations and

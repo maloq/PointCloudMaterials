@@ -1,5 +1,12 @@
 # MACE: 0.1 ps temporal pairs and per-step cosine — 2026-09-06
 
+> Completed experiment record — implementation retired on 2026-09-09.
+> Commands, plans, and implementation paths below describe the original run,
+> not the current supported trainer. Reproduction of that protocol requires
+> the run's `tracking/*/source.tar.gz` and recorded configs under `output/`.
+> Existing results/checkpoints are retained. Use the
+> [current 80-atom recipe](../mace_plain80_20260909/README.md) for new training.
+
 User-requested continuation of the strict 80-atom MACE experiment: replace
 validation-triggered learning-rate reduction with per-optimizer-step warmup and
 cosine decay, and use the available 0.1 ps Al continuations for temporal VICReg.

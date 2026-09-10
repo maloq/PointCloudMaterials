@@ -1,0 +1,56 @@
+{
+  "pretrained_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+  "pretrained_url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mp_0b2/mace-small-density-agnesi-stress.model",
+  "seed": 20260906,
+  "performance": {
+    "geometry_cache": true,
+    "dense_precision": "highest",
+    "compile_radial_mlp": true,
+    "bf16_mode": "radial_compensated"
+  },
+  "saved_static_reference": {
+    "metrics_csv": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives/static_spatial_comparison.csv",
+    "model_analysis": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives/static_analysis",
+    "coordinate_roots": [
+      "output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/analysis_best_static",
+      "output/temporal_hypotheses_12h_20260906/static_pipeline_encoder_only"
+    ],
+    "protocol": "Archived reference scores with exact original grid/order and shared-center count verification; same neighbor sampling seed and standardization. Reference inference caches were explicitly retired previously."
+  },
+  "protocol": "plain80",
+  "output": "output/mace_plain80_20260909/runs/plain",
+  "cache": "output/mace_plain80_20260909/data",
+  "source_manifest": "/home/ids/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/data/manifest.json",
+  "points": 80,
+  "workers": 16,
+  "batch_size": 1536,
+  "microbatch_size": 512,
+  "epochs": 12,
+  "learning_rate": 0.0001,
+  "head_learning_rate": 0.001,
+  "weight_decay": 1e-05,
+  "gradient_clip": 5.0,
+  "tda_components": 32,
+  "temporal_lag_ps": 0.1,
+  "analysis_config": "experiments/mace_plain80_20260909/static.yaml",
+  "checkpoint_directory": "output/mace_plain80_20260909/checkpoints",
+  "max_training_seconds": 14000,
+  "scheduler": {
+    "warmup_epochs": 1,
+    "head_warmup_epochs": 0.5,
+    "min_lr": 1e-06
+  },
+  "loss": {
+    "invariance": 25.0,
+    "variance": 25.0,
+    "covariance": 1.0,
+    "tda": 1.0,
+    "tda_start_epoch": 6
+  },
+  "wandb": {
+    "project": "PointCloudMaterials",
+    "name": "MACE-plain80-uniform-TDA80-after5",
+    "id": "plain809"
+  },
+  "data_limitations": "Al shooting source groups and Al/Mg continuation validation sources are held out within their campaigns. Ta uses disjoint IDs and later times of one source. Al continuations/Mg/Ta coordinates are float16. Static Al 166/170/174/175 ps frames are ancestors of continuation training data; 177 ps is a validation ancestor and 240 ps is excluded from continuation training. Static analysis is descriptive, not a fully independent test."
+}

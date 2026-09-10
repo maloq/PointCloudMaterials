@@ -49,7 +49,7 @@ def bond_order(vectors, coordination_radius):
 
 
 def persistence_image(points):
-    """144D H0/H1/H2 summary of a center plus 64 nearest neighbors.
+    """144D H0/H1/H2 summary of the supplied 65- or 80-atom neighborhood.
 
     Finite deaths above 3.5 A are excluded to suppress large boundary voids.
     H1/H2 use lifetime-weighted Gaussian surfaces on fixed 8x8 grids. H0 uses
@@ -67,12 +67,12 @@ def persistence_image(points):
         pairs=np.sqrt(np.maximum(pairs,0.))
         pairs=pairs[pairs[:,1]<=3.5]
         if dim==0:
-            result.append(np.exp(-.5*((pairs[:,1,None]-death_grid)/.10)**2).sum(0)/64)
+            result.append(np.exp(-.5*((pairs[:,1,None]-death_grid)/.10)**2).sum(0)/(len(points)-1))
         else:
             lifetime=pairs[:,1]-pairs[:,0]
             birth=np.exp(-.5*((pairs[:,0,None]-birth_grid)/.15)**2)
             life=np.exp(-.5*((lifetime[:,None]-life_grid)/.09)**2)
-            result.append(((birth*lifetime[:,None]).T@life).ravel()/64)
+            result.append(((birth*lifetime[:,None]).T@life).ravel()/(len(points)-1))
     return np.concatenate(result).astype(np.float32)
 
 

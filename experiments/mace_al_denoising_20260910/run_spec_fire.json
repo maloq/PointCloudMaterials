@@ -1,0 +1,20 @@
+{
+  "kind": "training",
+  "question": "Can identity-aligned thermal histories denoise relaxed Al topology after correcting supervision and temporal fusion? Recovery uses uniform FIRE targets after CG stagnation; same sources and force convergence threshold.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_al_denoising_20260910/fire/controller",
+  "configs": [
+    "experiments/mace_al_denoising_20260910/training_fire.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace",
+    "--config",
+    "experiments/mace_al_denoising_20260910/training_fire.json",
+    "--stage",
+    "all"
+  ],
+  "dependencies": []
+}

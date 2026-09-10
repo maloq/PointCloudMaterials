@@ -1,0 +1,139 @@
+{
+  "selected_at": "2026-09-08T22:19:59.770607+00:00",
+  "selection": "Nearest distinct chronological PTM fractions from snapshots available before source completion; frozen for Slurm execution.",
+  "source_cutoff_step": 680000,
+  "branches": [
+    {
+      "name": "parent_000000000",
+      "source": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_0.lammpstrj",
+      "source_sha256": "81683ab43c209b87da5b64a76b39de339116e7467fa269f5b5ac7ef8d85e610c",
+      "source_step": 0,
+      "velocity_seed": 917101,
+      "target_crystal_fraction": 0.0,
+      "observed_structure": {
+        "atom_count": 100000,
+        "ptm_rmsd_cutoff": 0.17,
+        "fractions": {
+          "other": 0.99417,
+          "fcc": 0.00106,
+          "hcp": 0.00432,
+          "bcc": 0.00045
+        },
+        "crystal_fraction": 0.00583,
+        "step": 0,
+        "time_ps": 0.0
+      },
+      "root_lineage": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source"
+    },
+    {
+      "name": "parent_000008000",
+      "source": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_8000.lammpstrj",
+      "source_sha256": "e4b99e0239b1c7e86d4eadb261cc26b819b31d55e74a619336d95e4429a8b7f7",
+      "source_step": 8000,
+      "velocity_seed": 917103,
+      "target_crystal_fraction": 0.1,
+      "observed_structure": {
+        "atom_count": 100000,
+        "ptm_rmsd_cutoff": 0.17,
+        "fractions": {
+          "other": 0.89473,
+          "fcc": 0.01992,
+          "hcp": 0.06984,
+          "bcc": 0.01551
+        },
+        "crystal_fraction": 0.10527,
+        "step": 8000,
+        "time_ps": 8.0
+      },
+      "root_lineage": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source"
+    },
+    {
+      "name": "parent_000032000",
+      "source": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_32000.lammpstrj",
+      "source_sha256": "4463fdec7b5f8da6fdfc3ff16cb637c091633424f23fc67134812b5943621646",
+      "source_step": 32000,
+      "velocity_seed": 917107,
+      "target_crystal_fraction": 0.3,
+      "observed_structure": {
+        "atom_count": 100000,
+        "ptm_rmsd_cutoff": 0.17,
+        "fractions": {
+          "other": 0.74274,
+          "fcc": 0.04942,
+          "hcp": 0.11986,
+          "bcc": 0.08798
+        },
+        "crystal_fraction": 0.25726,
+        "step": 32000,
+        "time_ps": 32.0
+      },
+      "root_lineage": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source"
+    },
+    {
+      "name": "parent_000040000",
+      "source": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_40000.lammpstrj",
+      "source_sha256": "31dfcbd0f818f4d7535ef7b21923f8f88fd90a916742d7cec3c763cce241ec12",
+      "source_step": 40000,
+      "velocity_seed": 917111,
+      "target_crystal_fraction": 0.5,
+      "observed_structure": {
+        "atom_count": 100000,
+        "ptm_rmsd_cutoff": 0.17,
+        "fractions": {
+          "other": 0.54668,
+          "fcc": 0.06812,
+          "hcp": 0.16533,
+          "bcc": 0.21987
+        },
+        "crystal_fraction": 0.45332,
+        "step": 40000,
+        "time_ps": 40.0
+      },
+      "root_lineage": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source"
+    },
+    {
+      "name": "parent_000056000",
+      "source": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_56000.lammpstrj",
+      "source_sha256": "1a4763ae77e9e7dfe3275efcf3a6f97bc2ad5731f5e0569a93ec53c9c4b60e15",
+      "source_step": 56000,
+      "velocity_seed": 917117,
+      "target_crystal_fraction": 0.7,
+      "observed_structure": {
+        "atom_count": 100000,
+        "ptm_rmsd_cutoff": 0.17,
+        "fractions": {
+          "other": 0.29165,
+          "fcc": 0.07607,
+          "hcp": 0.20982,
+          "bcc": 0.42246
+        },
+        "crystal_fraction": 0.70835,
+        "step": 56000,
+        "time_ps": 56.0
+      },
+      "root_lineage": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source"
+    },
+    {
+      "name": "parent_000192000",
+      "source": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_192000.lammpstrj",
+      "source_sha256": "0fb7c99c3ba4b8d80b18bd87e323a5965bfaa206ac0a490c1d6533b2482f945a",
+      "source_step": 192000,
+      "velocity_seed": 917123,
+      "target_crystal_fraction": 0.9,
+      "observed_structure": {
+        "atom_count": 100000,
+        "ptm_rmsd_cutoff": 0.17,
+        "fractions": {
+          "other": 0.10134,
+          "fcc": 0.04067,
+          "hcp": 0.11785,
+          "bcc": 0.74014
+        },
+        "crystal_fraction": 0.89866,
+        "step": 192000,
+        "time_ps": 192.0
+      },
+      "root_lineage": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source"
+    }
+  ]
+}

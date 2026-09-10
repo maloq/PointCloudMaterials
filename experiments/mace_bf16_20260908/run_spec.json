@@ -1,0 +1,20 @@
+{
+  "kind": "analysis",
+  "question": "Does compensated BF16 retain the measured speedup at the production chunk size 1536 with the entire GPU available?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_bf16_20260908/full_batch",
+  "configs": [
+    "experiments/mace_bf16_20260908/plan.json",
+    "experiments/mace_bf16_20260908/full_batch.json",
+    "experiments/mace_bf16_20260908/full_candidate.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_bf16_20260908/plan.json"
+  ]
+}

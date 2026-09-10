@@ -1,0 +1,27 @@
+{
+  "kind": "training",
+  "question": "Can nuisance invariance, physical TDA forecasting, relative topology and periodic gradient projection improve all properties of one MACE embedding together?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_joint_properties_20260908",
+  "configs": [
+    "experiments/mace_joint_properties_20260908/plan.json",
+    "experiments/mace_joint_properties_20260908/control.json",
+    "experiments/mace_joint_properties_20260908/nuisance_future.json",
+    "experiments/mace_joint_properties_20260908/joint_ranking.json",
+    "experiments/mace_joint_properties_20260908/joint_pcgrad.json",
+    "experiments/mace_joint_properties_20260908/control_static.yaml",
+    "experiments/mace_joint_properties_20260908/nuisance_future_static.yaml",
+    "experiments/mace_joint_properties_20260908/joint_ranking_static.yaml",
+    "experiments/mace_joint_properties_20260908/joint_pcgrad_static.yaml",
+    "experiments/mace_joint_properties_20260908/reference.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_joint_properties_20260908/plan.json"
+  ]
+}

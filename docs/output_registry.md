@@ -16,6 +16,25 @@ state, concrete next action, and a link to evidence. Update an existing idea wit
 `experiment_registry.py idea --id ID --state planned --next-action "ACTION"`.
 Updates retain a small decision history. Rebuild the dashboard to display them.
 
+The [variant C pilot](../experiments/mace_thermal80_20260909/README.md) prepares
+matched hot/relaxed full-cell data on node53, then runs 12 epochs and static Al
+analysis through the same maintained MACE queue.
+
+The current MACE recipe restores the [original VICReg pipeline](../experiments/mace_original_vicreg_20260909/README.md):
+pretrained small MACE, normalized 80-point geometry without element inputs,
+the original Lightning module/projector and pure spatial/temporal VICReg.
+It runs 24 epochs followed by the standard static Al analysis.
+The [matched VICReg + TDA run](../experiments/mace_original_vicreg_tda_20260909/README.md)
+is queued after both finish, using the same protocol with TDA from epoch 1 and
+its own static analysis. Its detached dependency wait is visible in
+`output/mace_original_vicreg_tda_20260909/queue_status.json`.
+The baseline completed training but its first analysis hit Dynamo's radial
+recompilation limit. Analysis was restarted with eager radial layers, and the
+TDA queue now waits on that analysis recovery record. Both recoveries use the
+original training/analysis output locations and preserve failed-attempt records.
+The completed [plain80](../experiments/mace_plain80_20260909/README.md) and thermal
+runs retain their results and original execution source/config snapshots.
+
 ## Files and responsibilities
 
 | File / directory | Role |

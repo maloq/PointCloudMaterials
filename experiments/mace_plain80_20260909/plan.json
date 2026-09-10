@@ -1,0 +1,23 @@
+{
+  "output": "output/mace_plain80_20260909",
+  "allocation": "984861",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": null,
+  "expected_steps": 2244,
+  "estimated_training_seconds": 10500,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1800,
+  "probe_seed": 20260907,
+  "probe_train_anchors": 6144,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": true,
+  "runs": [
+    {
+      "name": "plain",
+      "config": "experiments/mace_plain80_20260909/training.json"
+    }
+  ],
+  "protocol_description": "Fresh small MACE MLIP initialization; full 80-atom graph and equal mean pooling, uniform stored-row sampling, 12 epochs. Fixed spatial/0.1 ps temporal VICReg; TDA80 head frozen for five epochs, active from epoch six. No forecast/nuisance loss or balancing. Select lowest fixed validation loss among epochs 6\u201312. Frozen probes and the standard encoder-only static Al analysis follow. Single seed; static Al includes training ancestors."
+}

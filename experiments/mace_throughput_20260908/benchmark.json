@@ -1,0 +1,101 @@
+{
+  "output": "output/mace_throughput_20260908",
+  "training_config": "experiments/mace_target_complete_20260908/training.json",
+  "restart_config": "experiments/mace_throughput_20260908/training.json",
+  "reference_encoder": "output/mace_throughput_20260908/reference_encoder.py",
+  "reference_trainer": "output/mace_throughput_20260908/reference_trainer.py",
+  "warmup_updates": 3,
+  "timed_updates": 24,
+  "max_relative_gradient_error": 0.005,
+  "max_noise_MSE_fraction": 0.01,
+  "variants": [
+    {
+      "name": "baseline",
+      "microbatch_size": 512,
+      "performance": {
+        "gpu_data": false,
+        "geometry_cache": false,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false
+      },
+      "legacy": true
+    },
+    {
+      "name": "micro1024",
+      "microbatch_size": 1024,
+      "performance": {
+        "gpu_data": false,
+        "geometry_cache": false,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false
+      },
+      "legacy": false
+    },
+    {
+      "name": "micro1536",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": false,
+        "geometry_cache": false,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false
+      },
+      "legacy": false
+    },
+    {
+      "name": "gpu_data",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": false,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false
+      },
+      "legacy": false
+    },
+    {
+      "name": "geometry_cache",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false
+      },
+      "legacy": false
+    },
+    {
+      "name": "tf32",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "high",
+        "compile_radial_mlp": false
+      },
+      "legacy": false
+    },
+    {
+      "name": "compiled_fp32",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": true
+      },
+      "legacy": false
+    },
+    {
+      "name": "compiled_tf32",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "high",
+        "compile_radial_mlp": true
+      },
+      "legacy": false
+    }
+  ]
+}

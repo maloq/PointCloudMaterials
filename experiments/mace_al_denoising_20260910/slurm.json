@@ -1,0 +1,14 @@
+{
+  "jobs": {
+    "prepare_full": {
+      "name": "al_relaxed_targets",
+      "partition": "L40S",
+      "cpus": 12,
+      "memory": "80G",
+      "time_hours": 12,
+      "config": "experiments/mace_al_denoising_20260910/training_fire.json",
+      "stage": "prepare",
+      "submission_directory": "output/mace_al_denoising_20260910/fire/slurm/prepare_full"
+    }
+  }
+}

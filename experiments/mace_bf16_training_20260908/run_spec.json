@@ -1,0 +1,21 @@
+{
+  "kind": "training",
+  "question": "Continue the existing MACE budget with numerically qualified compensated BF16 radial matrices while retaining Adam, LR and data position.",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_bf16_training_20260908",
+  "configs": [
+    "experiments/mace_bf16_training_20260908/plan.json",
+    "experiments/mace_bf16_training_20260908/training.json",
+    "experiments/mace_bf16_training_20260908/static.yaml",
+    "experiments/mace_bf16_training_20260908/reference.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_bf16_training_20260908/plan.json"
+  ]
+}

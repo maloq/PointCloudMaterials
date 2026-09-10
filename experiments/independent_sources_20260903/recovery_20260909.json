@@ -1,0 +1,20 @@
+{
+  "prepared_at": "20260909T203221Z",
+  "output": "/home/ids/vmorozov/simulations/al_independent_sources_recovery_20260909T203221Z",
+  "low_start_index": 75,
+  "high_start_index": 23,
+  "dependency": "afterany:987762",
+  "archived_run_indices": {
+    "low": [
+      75
+    ],
+    "high": [
+      23,
+      24
+    ]
+  },
+  "completed_sources_before": 102,
+  "remaining_sources": 48,
+  "recovery_controller_job_id": "987764",
+  "submission_environment": "Inherited SLURM_* and SBATCH_* removed; source submissions execute later inside CPU controller"
+}

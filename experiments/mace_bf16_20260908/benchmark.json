@@ -1,0 +1,73 @@
+{
+  "output": "output/mace_bf16_20260908",
+  "training_config": "experiments/mace_bf16_20260908/candidate.json",
+  "restart_config": "experiments/mace_bf16_20260908/candidate.json",
+  "reference_encoder": "output/mace_throughput_20260908/reference_encoder.py",
+  "reference_trainer": "output/mace_throughput_20260908/reference_trainer.py",
+  "warmup_updates": 2,
+  "timed_updates": 12,
+  "max_relative_gradient_error": 0.005,
+  "max_noise_MSE_fraction": 0.01,
+  "variants": [
+    {
+      "name": "baseline",
+      "microbatch_size": 256,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": true,
+        "bf16_mode": "none"
+      },
+      "legacy": false
+    },
+    {
+      "name": "bf16_radial",
+      "microbatch_size": 256,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": true,
+        "bf16_mode": "radial"
+      },
+      "legacy": false
+    },
+    {
+      "name": "bf16_second",
+      "microbatch_size": 256,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false,
+        "bf16_mode": "second_interaction"
+      },
+      "legacy": false
+    },
+    {
+      "name": "bf16_interactions",
+      "microbatch_size": 256,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false,
+        "bf16_mode": "interactions"
+      },
+      "legacy": false
+    },
+    {
+      "name": "bf16_compensated",
+      "microbatch_size": 256,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": true,
+        "bf16_mode": "radial_compensated"
+      },
+      "legacy": false
+    }
+  ]
+}

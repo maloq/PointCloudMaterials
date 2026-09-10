@@ -1,0 +1,52 @@
+{
+  "output": "output/mace_throughput_20260908",
+  "allocation": "984861",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": null,
+  "prepared_output": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives",
+  "expected_steps": 4224,
+  "estimated_training_seconds": 15000,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1200,
+  "probe_seed": 20260907,
+  "probe_anchors_per_material": 2048,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": true,
+  "runs": [
+    {
+      "name": "optimized",
+      "config": "experiments/mace_throughput_20260908/training.json",
+      "wandb_id": "7eee2176"
+    }
+  ],
+  "joint_review": {
+    "reference_config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives.json",
+    "previous_topology_config": "experiments/mace_topology_nuances_20260907/training.json",
+    "target_stability": "output/mace_topology_nuances_20260907/target_stability.json",
+    "perturbation_sigmas_A": [
+      0.001,
+      0.005,
+      0.02
+    ],
+    "audit_anchors_per_material": 128,
+    "bootstrap_replicates": 500,
+    "reference_evaluation_config": "experiments/mace_throughput_20260908/reference.json"
+  },
+  "protocol_description": "Restart the same six-epoch target-complete MACE protocol from its original initialization, with optimizer and per-step schedule reset. Only measured throughput settings change: graph chunk size, GPU-resident data, geometry reuse, and accepted matrix/compilation settings. Effective batch 1536, seed, objective, 80 atoms, 0.1 ps temporal pairs and physical analysis remain matched.",
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.analysis.mace_joint",
+        "--plan",
+        "experiments/mace_throughput_20260908/plan.json",
+        "--stage",
+        "preflight"
+      ],
+      "log": "preflight.log"
+    }
+  ]
+}

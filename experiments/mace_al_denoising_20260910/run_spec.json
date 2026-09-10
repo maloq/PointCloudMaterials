@@ -1,0 +1,22 @@
+{
+  "kind": "training",
+  "question": "Can identity-aligned thermal histories denoise relaxed Al topology after correcting supervision and temporal fusion?",
+  "completion": "process_exit",
+  "dependencies": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/tracking/20260910T101327.731999Z/run_record.json"
+  ],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_al_denoising_20260910",
+  "configs": [
+    "experiments/mace_al_denoising_20260910/training.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace",
+    "--config",
+    "experiments/mace_al_denoising_20260910/training.json",
+    "--stage",
+    "all"
+  ]
+}

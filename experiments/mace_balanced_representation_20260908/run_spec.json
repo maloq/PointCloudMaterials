@@ -1,0 +1,20 @@
+{
+  "kind": "training",
+  "question": "Can gradient-balanced spatial/temporal VICReg and TDA improve representation jointly when nuisance and forecasting are removed?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_balanced_representation_20260908",
+  "configs": [
+    "experiments/mace_balanced_representation_20260908/plan.json",
+    "experiments/mace_balanced_representation_20260908/training.json",
+    "experiments/mace_balanced_representation_20260908/static.yaml"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_balanced_representation_20260908/plan.json"
+  ]
+}

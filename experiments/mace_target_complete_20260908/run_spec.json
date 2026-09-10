@@ -1,0 +1,21 @@
+{
+  "kind": "training",
+  "question": "Does correcting finite MACE support to include every TDA target atom improve topology, temporal behavior and spatial structure together?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_target_complete_20260908_context",
+  "configs": [
+    "experiments/mace_target_complete_20260908/plan.json",
+    "experiments/mace_target_complete_20260908/training.json",
+    "experiments/mace_target_complete_20260908/static.yaml",
+    "experiments/mace_target_complete_20260908/reference.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_target_complete_20260908/plan.json"
+  ]
+}

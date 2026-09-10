@@ -1,0 +1,41 @@
+{
+  "output": "output/mace_thermal80_tda1_24ep_20260909",
+  "allocation": "986459",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": {
+    "pid": 3735380,
+    "process_identity": "312964873",
+    "status": "output/mace_thermal80_20260909/status.json"
+  },
+  "expected_steps": 432,
+  "estimated_training_seconds": 5200,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1800,
+  "probe_seed": 20260907,
+  "probe_train_anchors": 6144,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": false,
+  "runs": [
+    {
+      "name": "thermal",
+      "config": "experiments/mace_thermal80_tda1_24ep_20260909/training.json"
+    }
+  ],
+  "protocol_description": "Fresh MLIP variant C on the identical shared hot/relaxed Al/Mg/Ta 80-atom pilot cache. TDA active from epoch 1, 24 uniform epochs (432 updates), same loss coefficients and peak LRs. Both TDA onset and total budget change relative to the first C run; this is not an isolated onset ablation. Frozen probes and standard encoder-only static Al analysis follow, subject to allocation time.",
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.training_methods.pretrained_mace",
+        "--config",
+        "experiments/mace_thermal80_tda1_24ep_20260909/training.json",
+        "--stage",
+        "preflight"
+      ],
+      "log": "preflight.log"
+    }
+  ]
+}

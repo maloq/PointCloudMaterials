@@ -1,0 +1,17 @@
+{
+  "training_config": "experiments/mace_plain80_20260909/training.json",
+  "output": "output/mace_vicreg_audit_20260909",
+  "seed": 20260909,
+  "train_anchors": 16384,
+  "batch_size": 1536,
+  "readout_steps": 600,
+  "readout_learning_rate": 0.001,
+  "readout_seeds": [
+    11,
+    29
+  ],
+  "readouts": [
+    "mlp256_conditional",
+    "mlp128_conditional"
+  ]
+}

@@ -1,5 +1,17 @@
 # Topology-sensitive MACE continuation — 2026-09-07
 
+> Completed experiment record — implementation retired on 2026-09-09.
+> Commands, plans, and implementation paths below describe the original run,
+> not the current supported trainer. Reproduction of that protocol requires
+> the run's `tracking/*/source.tar.gz` and recorded configs under `output/`.
+> Existing results/checkpoints are retained. Use the
+> [current 80-atom recipe](../mace_plain80_20260909/README.md) for new training.
+
+Completed training and full static analysis; see the
+[September 8 review](../../output/mace_topology_nuances_20260907/REVIEW_20260908.md).
+Topology geometry and effective rank improved, with worse spatial/temporal
+smoothness. The selected checkpoint is epoch 2; epoch 6 was additionally audited.
+
 User-requested replacement of the remaining ablations: analyze completed work,
 audit topology-target stability, test a larger frozen decoder, then train with
 topology-aware attraction and topology-distance preservation. Actual input stays
@@ -86,4 +98,23 @@ This directory contains experiment records. Maintained implementation is in
 `src/analysis/topology_nuances.py`, `src/training_methods/topology_objective.py`
 and `src/training_methods/topology_campaign.py`; existing MACE training/analysis
 commands are reused. Launch records, logs and generated diagnostics are
-disposable run outputs. Final training findings are pending.
+disposable run outputs. Completed findings are linked in the September 8 review above.
+
+## Completed review reproduction
+
+```bash
+PYTHONPATH=. conda run -n pointnet python \
+  experiments/mace_topology_nuances_20260907/review.py \
+  --plan experiments/mace_topology_nuances_20260907/plan.json \
+  --output output/mace_topology_nuances_20260907/review_20260908 \
+  --last-checkpoint output/mace_topology_nuances_20260907/review_20260908/last_epoch6_weights.pt
+```
+
+`review.py` is versioned experiment-specific analysis. Its generated reports,
+plots and distance-pair arrays are in the output directory. The command evaluates
+fixed models and probes; it does not restart encoder training or replace the
+selected analysis checkpoint.
+
+The review also reproduces raw/whitened TDA temporal-to-shuffled ratios on the
+same 0.1 ps pairs. Its report includes the September 8 follow-up proposal for
+improving all properties in the same embedding; the proposal has not been trained.

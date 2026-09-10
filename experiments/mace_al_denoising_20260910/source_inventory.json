@@ -1,0 +1,682 @@
+{
+  "campaigns": [
+    "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+    "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903"
+  ],
+  "complete_sources": [
+    {
+      "run_id": "source_000_T400_optimization_melt206158192_velocity611147995",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 206158192
+    },
+    {
+      "run_id": "source_001_T400_optimization_melt248699045_velocity607871863",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 248699045
+    },
+    {
+      "run_id": "source_002_T400_optimization_melt235751553_velocity626188066",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 235751553
+    },
+    {
+      "run_id": "source_003_T400_optimization_melt750494487_velocity85653941",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 750494487
+    },
+    {
+      "run_id": "source_004_T400_optimization_melt378118914_velocity845282558",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 378118914
+    },
+    {
+      "run_id": "source_005_T400_optimization_melt387039544_velocity90935429",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 387039544
+    },
+    {
+      "run_id": "source_006_T400_optimization_melt394685168_velocity679140933",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 394685168
+    },
+    {
+      "run_id": "source_007_T400_optimization_melt648456630_velocity770990823",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 648456630
+    },
+    {
+      "run_id": "source_008_T400_optimization_melt392346167_velocity213169955",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 392346167
+    },
+    {
+      "run_id": "source_009_T400_optimization_melt373247889_velocity410965678",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 373247889
+    },
+    {
+      "run_id": "source_010_T400_optimization_melt319035304_velocity823462224",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 319035304
+    },
+    {
+      "run_id": "source_011_T400_optimization_melt40651136_velocity539410229",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 40651136
+    },
+    {
+      "run_id": "source_012_T400_optimization_melt146234076_velocity307931848",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 146234076
+    },
+    {
+      "run_id": "source_013_T400_optimization_melt472193600_velocity748830758",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 472193600
+    },
+    {
+      "run_id": "source_014_T400_optimization_melt63365650_velocity12639796",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 63365650
+    },
+    {
+      "run_id": "source_015_T400_optimization_melt220809849_velocity246598921",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 220809849
+    },
+    {
+      "run_id": "source_016_T400_optimization_melt142641279_velocity50354307",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 142641279
+    },
+    {
+      "run_id": "source_017_T400_optimization_melt262380798_velocity458438655",
+      "temperature_K": 400.0,
+      "source_split": "optimization",
+      "preparation_seed": 262380798
+    },
+    {
+      "run_id": "source_018_T400_model_selection_melt837421620_velocity429482000",
+      "temperature_K": 400.0,
+      "source_split": "model_selection",
+      "preparation_seed": 837421620
+    },
+    {
+      "run_id": "source_019_T400_model_selection_melt553888770_velocity496143316",
+      "temperature_K": 400.0,
+      "source_split": "model_selection",
+      "preparation_seed": 553888770
+    },
+    {
+      "run_id": "source_020_T400_model_selection_melt550189933_velocity371260937",
+      "temperature_K": 400.0,
+      "source_split": "model_selection",
+      "preparation_seed": 550189933
+    },
+    {
+      "run_id": "source_021_T400_model_selection_melt8461095_velocity199324450",
+      "temperature_K": 400.0,
+      "source_split": "model_selection",
+      "preparation_seed": 8461095
+    },
+    {
+      "run_id": "source_022_T400_model_selection_melt197585375_velocity233216864",
+      "temperature_K": 400.0,
+      "source_split": "model_selection",
+      "preparation_seed": 197585375
+    },
+    {
+      "run_id": "source_023_T400_model_selection_melt135035943_velocity328731876",
+      "temperature_K": 400.0,
+      "source_split": "model_selection",
+      "preparation_seed": 135035943
+    },
+    {
+      "run_id": "source_024_T400_final_validation_melt648618511_velocity749822684",
+      "temperature_K": 400.0,
+      "source_split": "final_validation",
+      "preparation_seed": 648618511
+    },
+    {
+      "run_id": "source_025_T400_final_validation_melt760589119_velocity212176498",
+      "temperature_K": 400.0,
+      "source_split": "final_validation",
+      "preparation_seed": 760589119
+    },
+    {
+      "run_id": "source_026_T400_final_validation_melt383124119_velocity163531985",
+      "temperature_K": 400.0,
+      "source_split": "final_validation",
+      "preparation_seed": 383124119
+    },
+    {
+      "run_id": "source_027_T400_final_validation_melt361693553_velocity360119458",
+      "temperature_K": 400.0,
+      "source_split": "final_validation",
+      "preparation_seed": 361693553
+    },
+    {
+      "run_id": "source_028_T400_final_validation_melt699880964_velocity457723800",
+      "temperature_K": 400.0,
+      "source_split": "final_validation",
+      "preparation_seed": 699880964
+    },
+    {
+      "run_id": "source_029_T400_final_validation_melt827953021_velocity11340456",
+      "temperature_K": 400.0,
+      "source_split": "final_validation",
+      "preparation_seed": 827953021
+    },
+    {
+      "run_id": "source_030_T450_optimization_melt607972874_velocity268518899",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 607972874
+    },
+    {
+      "run_id": "source_031_T450_optimization_melt522035807_velocity10275995",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 522035807
+    },
+    {
+      "run_id": "source_032_T450_optimization_melt884700972_velocity640059919",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 884700972
+    },
+    {
+      "run_id": "source_033_T450_optimization_melt134462729_velocity225335578",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 134462729
+    },
+    {
+      "run_id": "source_034_T450_optimization_melt147978527_velocity388842215",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 147978527
+    },
+    {
+      "run_id": "source_035_T450_optimization_melt700628451_velocity337737036",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 700628451
+    },
+    {
+      "run_id": "source_036_T450_optimization_melt843445030_velocity476021957",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 843445030
+    },
+    {
+      "run_id": "source_037_T450_optimization_melt446448988_velocity193573341",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 446448988
+    },
+    {
+      "run_id": "source_038_T450_optimization_melt638959948_velocity822677166",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 638959948
+    },
+    {
+      "run_id": "source_039_T450_optimization_melt23525568_velocity812611706",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 23525568
+    },
+    {
+      "run_id": "source_040_T450_optimization_melt493123960_velocity804501965",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 493123960
+    },
+    {
+      "run_id": "source_041_T450_optimization_melt866573682_velocity843018984",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 866573682
+    },
+    {
+      "run_id": "source_042_T450_optimization_melt580598490_velocity835634312",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 580598490
+    },
+    {
+      "run_id": "source_043_T450_optimization_melt794706897_velocity278036054",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 794706897
+    },
+    {
+      "run_id": "source_044_T450_optimization_melt622811055_velocity137810049",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 622811055
+    },
+    {
+      "run_id": "source_045_T450_optimization_melt15458297_velocity246688848",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 15458297
+    },
+    {
+      "run_id": "source_046_T450_optimization_melt889862759_velocity754724404",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 889862759
+    },
+    {
+      "run_id": "source_047_T450_optimization_melt630014638_velocity275547778",
+      "temperature_K": 450.0,
+      "source_split": "optimization",
+      "preparation_seed": 630014638
+    },
+    {
+      "run_id": "source_048_T450_model_selection_melt419716698_velocity479904344",
+      "temperature_K": 450.0,
+      "source_split": "model_selection",
+      "preparation_seed": 419716698
+    },
+    {
+      "run_id": "source_049_T450_model_selection_melt584489287_velocity528741555",
+      "temperature_K": 450.0,
+      "source_split": "model_selection",
+      "preparation_seed": 584489287
+    },
+    {
+      "run_id": "source_050_T450_model_selection_melt726819917_velocity90250693",
+      "temperature_K": 450.0,
+      "source_split": "model_selection",
+      "preparation_seed": 726819917
+    },
+    {
+      "run_id": "source_051_T450_model_selection_melt468207512_velocity4004358",
+      "temperature_K": 450.0,
+      "source_split": "model_selection",
+      "preparation_seed": 468207512
+    },
+    {
+      "run_id": "source_052_T450_model_selection_melt708791158_velocity451670565",
+      "temperature_K": 450.0,
+      "source_split": "model_selection",
+      "preparation_seed": 708791158
+    },
+    {
+      "run_id": "source_053_T450_model_selection_melt856510393_velocity760212685",
+      "temperature_K": 450.0,
+      "source_split": "model_selection",
+      "preparation_seed": 856510393
+    },
+    {
+      "run_id": "source_054_T450_final_validation_melt60861487_velocity16114127",
+      "temperature_K": 450.0,
+      "source_split": "final_validation",
+      "preparation_seed": 60861487
+    },
+    {
+      "run_id": "source_055_T450_final_validation_melt871840956_velocity879602122",
+      "temperature_K": 450.0,
+      "source_split": "final_validation",
+      "preparation_seed": 871840956
+    },
+    {
+      "run_id": "source_056_T450_final_validation_melt301149348_velocity181016004",
+      "temperature_K": 450.0,
+      "source_split": "final_validation",
+      "preparation_seed": 301149348
+    },
+    {
+      "run_id": "source_057_T450_final_validation_melt427983136_velocity866396535",
+      "temperature_K": 450.0,
+      "source_split": "final_validation",
+      "preparation_seed": 427983136
+    },
+    {
+      "run_id": "source_058_T450_final_validation_melt814816357_velocity758662668",
+      "temperature_K": 450.0,
+      "source_split": "final_validation",
+      "preparation_seed": 814816357
+    },
+    {
+      "run_id": "source_059_T450_final_validation_melt825401364_velocity286175108",
+      "temperature_K": 450.0,
+      "source_split": "final_validation",
+      "preparation_seed": 825401364
+    },
+    {
+      "run_id": "source_060_T500_optimization_melt372484460_velocity806298452",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 372484460
+    },
+    {
+      "run_id": "source_061_T500_optimization_melt505713304_velocity373487202",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 505713304
+    },
+    {
+      "run_id": "source_062_T500_optimization_melt876710010_velocity613916814",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 876710010
+    },
+    {
+      "run_id": "source_063_T500_optimization_melt586618377_velocity777344000",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 586618377
+    },
+    {
+      "run_id": "source_064_T500_optimization_melt66157331_velocity757849612",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 66157331
+    },
+    {
+      "run_id": "source_065_T500_optimization_melt210998254_velocity185157491",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 210998254
+    },
+    {
+      "run_id": "source_066_T500_optimization_melt558747183_velocity123787821",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 558747183
+    },
+    {
+      "run_id": "source_067_T500_optimization_melt850903391_velocity197944870",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 850903391
+    },
+    {
+      "run_id": "source_068_T500_optimization_melt254084297_velocity69386032",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 254084297
+    },
+    {
+      "run_id": "source_069_T500_optimization_melt851781959_velocity227781112",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 851781959
+    },
+    {
+      "run_id": "source_070_T500_optimization_melt433626529_velocity50512900",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 433626529
+    },
+    {
+      "run_id": "source_071_T500_optimization_melt630952489_velocity134706744",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 630952489
+    },
+    {
+      "run_id": "source_072_T500_optimization_melt114745743_velocity70777141",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 114745743
+    },
+    {
+      "run_id": "source_073_T500_optimization_melt324310850_velocity770318060",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 324310850
+    },
+    {
+      "run_id": "source_074_T500_optimization_melt234173051_velocity494374315",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 234173051
+    },
+    {
+      "run_id": "source_075_T500_optimization_melt13937749_velocity810907541",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 13937749
+    },
+    {
+      "run_id": "source_076_T500_optimization_melt725446415_velocity549021711",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 725446415
+    },
+    {
+      "run_id": "source_077_T500_optimization_melt234029248_velocity527101101",
+      "temperature_K": 500.0,
+      "source_split": "optimization",
+      "preparation_seed": 234029248
+    },
+    {
+      "run_id": "source_078_T500_model_selection_melt797323201_velocity390428464",
+      "temperature_K": 500.0,
+      "source_split": "model_selection",
+      "preparation_seed": 797323201
+    },
+    {
+      "run_id": "source_079_T500_model_selection_melt850300441_velocity248312731",
+      "temperature_K": 500.0,
+      "source_split": "model_selection",
+      "preparation_seed": 850300441
+    },
+    {
+      "run_id": "source_080_T500_model_selection_melt83575882_velocity789791883",
+      "temperature_K": 500.0,
+      "source_split": "model_selection",
+      "preparation_seed": 83575882
+    },
+    {
+      "run_id": "source_000_T510_optimization_melt151871197_velocity769248691",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 151871197
+    },
+    {
+      "run_id": "source_001_T510_optimization_melt681943887_velocity226218785",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 681943887
+    },
+    {
+      "run_id": "source_002_T510_optimization_melt655109113_velocity711963353",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 655109113
+    },
+    {
+      "run_id": "source_003_T510_optimization_melt661426236_velocity201750649",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 661426236
+    },
+    {
+      "run_id": "source_004_T510_optimization_melt564513410_velocity693065731",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 564513410
+    },
+    {
+      "run_id": "source_005_T510_optimization_melt603302271_velocity45594483",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 603302271
+    },
+    {
+      "run_id": "source_006_T510_optimization_melt398617878_velocity345519274",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 398617878
+    },
+    {
+      "run_id": "source_007_T510_optimization_melt83132283_velocity86630364",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 83132283
+    },
+    {
+      "run_id": "source_008_T510_optimization_melt87283751_velocity19173877",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 87283751
+    },
+    {
+      "run_id": "source_009_T510_optimization_melt86832792_velocity884581988",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 86832792
+    },
+    {
+      "run_id": "source_010_T510_optimization_melt745135969_velocity775893815",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 745135969
+    },
+    {
+      "run_id": "source_011_T510_optimization_melt442136159_velocity861328542",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 442136159
+    },
+    {
+      "run_id": "source_012_T510_optimization_melt269696945_velocity805734861",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 269696945
+    },
+    {
+      "run_id": "source_013_T510_optimization_melt561573362_velocity192647554",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 561573362
+    },
+    {
+      "run_id": "source_014_T510_optimization_melt729671835_velocity337609745",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 729671835
+    },
+    {
+      "run_id": "source_015_T510_optimization_melt379031575_velocity772545022",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 379031575
+    },
+    {
+      "run_id": "source_016_T510_optimization_melt234122652_velocity874085168",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 234122652
+    },
+    {
+      "run_id": "source_017_T510_optimization_melt746727007_velocity64212989",
+      "temperature_K": 510.0,
+      "source_split": "optimization",
+      "preparation_seed": 746727007
+    },
+    {
+      "run_id": "source_018_T510_model_selection_melt129223029_velocity82017738",
+      "temperature_K": 510.0,
+      "source_split": "model_selection",
+      "preparation_seed": 129223029
+    },
+    {
+      "run_id": "source_019_T510_model_selection_melt740238344_velocity787544456",
+      "temperature_K": 510.0,
+      "source_split": "model_selection",
+      "preparation_seed": 740238344
+    },
+    {
+      "run_id": "source_020_T510_model_selection_melt444631845_velocity44078540",
+      "temperature_K": 510.0,
+      "source_split": "model_selection",
+      "preparation_seed": 444631845
+    },
+    {
+      "run_id": "source_021_T510_model_selection_melt387474214_velocity634528391",
+      "temperature_K": 510.0,
+      "source_split": "model_selection",
+      "preparation_seed": 387474214
+    },
+    {
+      "run_id": "source_022_T510_model_selection_melt773283105_velocity572623480",
+      "temperature_K": 510.0,
+      "source_split": "model_selection",
+      "preparation_seed": 773283105
+    },
+    {
+      "run_id": "source_023_T510_model_selection_melt827732877_velocity62126331",
+      "temperature_K": 510.0,
+      "source_split": "model_selection",
+      "preparation_seed": 827732877
+    },
+    {
+      "run_id": "source_024_T510_final_validation_melt816360514_velocity93893603",
+      "temperature_K": 510.0,
+      "source_split": "final_validation",
+      "preparation_seed": 816360514
+    },
+    {
+      "run_id": "source_025_T510_final_validation_melt653872695_velocity543827511",
+      "temperature_K": 510.0,
+      "source_split": "final_validation",
+      "preparation_seed": 653872695
+    },
+    {
+      "run_id": "source_026_T510_final_validation_melt457811864_velocity566853511",
+      "temperature_K": 510.0,
+      "source_split": "final_validation",
+      "preparation_seed": 457811864
+    },
+    {
+      "run_id": "source_029_T510_final_validation_melt870099266_velocity118047358",
+      "temperature_K": 510.0,
+      "source_split": "final_validation",
+      "preparation_seed": 870099266
+    },
+    {
+      "run_id": "source_057_T520_final_validation_melt259940230_velocity95929037",
+      "temperature_K": 520.0,
+      "source_split": "final_validation",
+      "preparation_seed": 259940230
+    },
+    {
+      "run_id": "source_058_T520_final_validation_melt139885636_velocity553075734",
+      "temperature_K": 520.0,
+      "source_split": "final_validation",
+      "preparation_seed": 139885636
+    },
+    {
+      "run_id": "source_059_T520_final_validation_melt270739820_velocity484920826",
+      "temperature_K": 520.0,
+      "source_split": "final_validation",
+      "preparation_seed": 270739820
+    }
+  ],
+  "selected_sources": 30,
+  "selection": "First completed sources in manifest order within predefined source splits, temperatures 400/450/510 K with completed train/val/test. No crystallization outcomes used; fixed anchor times 30/180/480 ps. 500 K lacks completed final validation and 520 K lacks completed optimization at inventory time."
+}

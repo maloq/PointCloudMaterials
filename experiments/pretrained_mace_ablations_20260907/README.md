@@ -1,5 +1,12 @@
 # Matched pretrained MACE objective ablations — 2026-09-07
 
+> Completed experiment record — implementation retired on 2026-09-09.
+> Commands, plans, and implementation paths below describe the original run,
+> not the current supported trainer. Reproduction of that protocol requires
+> the run's `tracking/*/source.tar.gz` and recorded configs under `output/`.
+> Existing results/checkpoints are retained. Use the
+> [current 80-atom recipe](../mace_plain80_20260909/README.md) for new training.
+
 The control failed at step 2,000 on an `/home/ids` checkpoint quota error.
 The user requested recovery and 5× peak LR; the
 [replacement queue](../pretrained_mace_ablations_lr5_20260907/README.md) preserves

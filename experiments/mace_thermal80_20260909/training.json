@@ -1,0 +1,128 @@
+{
+  "pretrained_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+  "pretrained_url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mp_0b2/mace-small-density-agnesi-stress.model",
+  "seed": 20260906,
+  "performance": {
+    "geometry_cache": true,
+    "dense_precision": "highest",
+    "compile_radial_mlp": true,
+    "bf16_mode": "radial_compensated"
+  },
+  "saved_static_reference": {
+    "metrics_csv": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives/static_spatial_comparison.csv",
+    "model_analysis": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives/static_analysis",
+    "coordinate_roots": [
+      "output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/analysis_best_static",
+      "output/temporal_hypotheses_12h_20260906/static_pipeline_encoder_only"
+    ],
+    "protocol": "Archived reference scores with exact original grid/order and shared-center count verification; same neighbor sampling seed and standardization. Reference inference caches were explicitly retired previously."
+  },
+  "protocol": "thermal80",
+  "output": "output/mace_thermal80_20260909/runs/thermal",
+  "cache": "output/mace_thermal80_20260909/data",
+  "source_manifest": "output/mace_plain80_20260909/data/manifest.json",
+  "points": 80,
+  "workers": 12,
+  "batch_size": 1536,
+  "microbatch_size": 512,
+  "epochs": 12,
+  "learning_rate": 0.0001,
+  "head_learning_rate": 0.001,
+  "weight_decay": 1e-05,
+  "gradient_clip": 5.0,
+  "tda_components": 32,
+  "temporal_lag_ps": 0.1,
+  "analysis_config": "experiments/mace_thermal80_20260909/static.yaml",
+  "checkpoint_directory": "output/mace_thermal80_20260909/checkpoints",
+  "max_training_seconds": 5000,
+  "scheduler": {
+    "warmup_epochs": 1,
+    "head_warmup_epochs": 0.5,
+    "min_lr": 1e-06
+  },
+  "loss": {
+    "invariance": 25.0,
+    "variance": 25.0,
+    "covariance": 1.0,
+    "tda": 1.0,
+    "tda_start_epoch": 6,
+    "thermal": 25.0
+  },
+  "wandb": {
+    "project": "PointCloudMaterials",
+    "name": "MACE-C-hot-relaxed80-TDA6",
+    "id": "therm809"
+  },
+  "data_limitations": "Al shooting source groups and Al/Mg continuation validation sources are held out within their campaigns. Ta uses disjoint IDs and later times of one source. Al continuations/Mg/Ta coordinates are float16. Static Al 166/170/174/175 ps frames are ancestors of continuation training data; 177 ps is a validation ancestor and 240 ps is excluded from continuation training. Static analysis is descriptive, not a fully independent test. Variant C pilot: ordinary Al/Mg/Ta sources only, first stored anchor per source; no Al shooting branches. Reconstructs neighborhoods from current full-frame artifacts to establish exact hot/relaxed neighbor identity correspondence. Source float16 quantization is inherited. Comparison with the full plain80 run does not isolate a causal effect at matched data/budget.",
+  "relaxation": {
+    "output": "output/mace_thermal80_20260909/relaxed_frames",
+    "anchor_frames_per_source": 1,
+    "shards": [
+      "Al_continuation_166ps_train",
+      "Al_continuation_170ps_train",
+      "Al_continuation_174ps_train",
+      "Al_continuation_175ps_train",
+      "Al_continuation_177ps_val",
+      "Mg_1000ps_val",
+      "Mg_940ps_train",
+      "Mg_960ps_train",
+      "Mg_980ps_train",
+      "Mg_990ps_train",
+      "Ta_train",
+      "Ta_val"
+    ],
+    "materials": {
+      "Al": {
+        "mass": 26.9815385,
+        "pair_commands": [
+          "pair_style eam/fs",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs Al"
+        ],
+        "potential_files": [
+          "/home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs"
+        ]
+      },
+      "Mg": {
+        "mass": 24.305,
+        "pair_commands": [
+          "pair_style eam/fs",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs Mg"
+        ],
+        "potential_files": [
+          "/home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs"
+        ]
+      },
+      "Ta": {
+        "mass": 180.95,
+        "pair_commands": [
+          "pair_style eam/alloy",
+          "pair_coeff * * /home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam Ta"
+        ],
+        "potential_files": [
+          "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam"
+        ]
+      }
+    },
+    "controls": {
+      "lammps_command": [
+        "/home/infres/vmorozov/PointCloudMaterials/output/mace_thermal80_20260909/bin/lmp",
+        "-k",
+        "on",
+        "g",
+        "1",
+        "-sf",
+        "kk",
+        "-pk",
+        "kokkos",
+        "newton",
+        "on",
+        "neigh",
+        "half"
+      ],
+      "force_tolerance": 0.01,
+      "max_iterations": 100000,
+      "max_evaluations": 500000,
+      "frame_timeout_seconds": 3600
+    }
+  }
+}

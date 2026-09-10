@@ -1,11 +1,10 @@
-"""Serial MACE ablations gated on a completed workflow in an existing allocation."""
+"""Serial MACE training, frozen probes and static analysis within an allocation."""
 import argparse
 from datetime import datetime
 import fcntl
 import json
 import os
 from pathlib import Path
-import shutil
 import signal
 import subprocess
 import sys
@@ -77,40 +76,48 @@ def run(plan):
     def interrupted(signum,frame):raise InterruptedError(f'Queue interrupted by signal {signum}')
     signal.signal(signal.SIGTERM,interrupted)
     update()
+    def analyze(item):
+        end=deadline(plan)
+        if time.time()+plan['estimated_analysis_seconds']>=end:
+            update(state='analysis_pending_allocation_time',pending_run=item['name']);return False
+        cfg=json.loads(Path(item['config']).read_text());directory=Path(cfg['output'])
+        status['jobs'][item['name']]='static_analysis';update(state='static_analysis',current_run=item['name'])
+        run_command([sys.executable,'-m','src.training_methods.pretrained_mace','--config',item['config'],'--stage','analysis'],directory/'analysis.log',end)
+        status['jobs'][item['name']]='complete';update()
+        run_command([sys.executable,'-m','src.analysis.pretrained_mace_ablation','--plan',plan['_path'],'--collect'],out/'collect.log',end)
+        if plan['remove_completed_inference_cache']:
+            cache=directory/'static_analysis/analysis_inference_cache.npz'
+            write_json(directory/'removed_cache.json',dict(path=str(cache),bytes=cache.stat().st_size,reason='Disposable inference cache removed after reports and comparison; reproduce with the retained encoder and analysis configuration.'))
+            cache.unlink()
+        return True
     try:
-        while not predecessor_ready(plan['predecessor']):
+        while plan['predecessor'] is not None and not predecessor_ready(plan['predecessor']):
             if time.time()>=deadline(plan):raise TimeoutError('Allocation deadline reached while waiting for predecessor analysis')
             time.sleep(30)
+        for preparation in plan.get('preparation_commands',[]):
+            update(state='preparation',current_command=preparation['command'])
+            run_command(preparation['command'],out/preparation['log'],deadline(plan))
         for item in plan['runs']:
             end=deadline(plan)
-            if time.time()+plan['estimated_training_seconds']+plan['estimated_probe_seconds']>=end:
+            required=plan['estimated_training_seconds']+plan['estimated_probe_seconds']
+            if plan.get('analysis_after_each_run',False):required+=plan['estimated_analysis_seconds']
+            if time.time()+required>=end:
                 update(state='insufficient_allocation_time',pending_run=item['name']);break
             cfg=json.loads(Path(item['config']).read_text());directory=Path(cfg['output']);directory.mkdir(parents=True,exist_ok=True)
-            # Training reads the immutable prepared manifest; no cache rewriting.
-            shutil.copy2(Path(plan['prepared_output'])/'data_summary.json',directory/'data_summary.json')
-            status['jobs'][item['name']]='training';update(state='training_ablation',current_run=item['name'],deadline=datetime.fromtimestamp(end).astimezone().isoformat())
-            run_command([sys.executable,'-m','src.training_methods.pretrained_mace','--config',item['config'],'--stage','train'],directory/'run.log',end)
+            command=[sys.executable,'-m','src.training_methods.pretrained_mace','--config',item['config'],'--stage','train']
+            status['jobs'][item['name']]='training';update(state='training',current_command=command,current_run=item['name'],deadline=datetime.fromtimestamp(end).astimezone().isoformat())
+            run_command(command,directory/'run.log',end)
             summary=json.loads((directory/'training_summary.json').read_text())
             if summary['steps']!=plan['expected_steps'] or summary['partial_epoch']:
                 raise RuntimeError(f'{item["name"]} did not receive the matched {plan["expected_steps"]}-step budget: {summary}')
             status['jobs'][item['name']]='probing';update(state='probing',current_run=item['name'])
             run_command([sys.executable,'-m','src.analysis.pretrained_mace_ablation','--plan',plan['_path'],'--run',item['name']],directory/'probe.log',end)
             status['jobs'][item['name']]='trained_and_probed';update()
+            if plan.get('analysis_after_each_run',False) and not analyze(item):return
         # All matched trainings finish before visualization work spends the remaining time.
         for item in plan['runs']:
             if status['jobs'][item['name']]!='trained_and_probed':continue
-            end=deadline(plan)
-            if time.time()+plan['estimated_analysis_seconds']>=end:
-                update(state='analysis_pending_allocation_time',pending_run=item['name']);return
-            cfg=json.loads(Path(item['config']).read_text());directory=Path(cfg['output'])
-            status['jobs'][item['name']]='static_analysis';update(state='static_analysis',current_run=item['name'])
-            run_command([sys.executable,'-m','src.training_methods.pretrained_mace','--config',item['config'],'--stage','analysis'],directory/'analysis.log',end)
-            status['jobs'][item['name']]='complete';update()
-            run_command([sys.executable,'-m','src.analysis.pretrained_mace_ablation','--plan',plan['_path'],'--collect'],out/'collect.log',end)
-            if plan['remove_completed_inference_cache']:
-                cache=directory/'static_analysis/analysis_inference_cache.npz'
-                write_json(directory/'removed_cache.json',dict(path=str(cache),bytes=cache.stat().st_size,reason='Disposable inference cache removed after reports and comparison; reproduce with the retained encoder and analysis configuration.'))
-                cache.unlink()
+            if not analyze(item):return
         finished=all(value=='complete' for value in status['jobs'].values())
         update(state='complete' if finished else 'pending_allocation_time',current_run=None)
     except BaseException:

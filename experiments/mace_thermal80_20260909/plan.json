@@ -1,0 +1,47 @@
+{
+  "output": "output/mace_thermal80_20260909",
+  "allocation": "986459",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": null,
+  "expected_steps": 216,
+  "estimated_training_seconds": 2600,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1800,
+  "probe_seed": 20260907,
+  "probe_train_anchors": 6144,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": true,
+  "runs": [
+    {
+      "name": "thermal",
+      "config": "experiments/mace_thermal80_20260909/training.json"
+    }
+  ],
+  "protocol_description": "Variant C pilot: small pretrained MACE, matched hot/relaxed 80-atom views from full periodic fixed-cell minimization; same 80 atom IDs per pair, relaxed TDA targets, six training views, fixed coefficients, 12 uniform epochs and TDA from epoch six. Ordinary Al/Mg/Ta sources, first anchor each. This is not a matched comparison against the larger plain80 dataset; frozen prediction probes and standard encoder-only static Al analysis follow.",
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.data_utils.mace_relaxed",
+        "--config",
+        "experiments/mace_thermal80_20260909/training.json"
+      ],
+      "log": "prepare.log"
+    },
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.training_methods.pretrained_mace",
+        "--config",
+        "experiments/mace_thermal80_20260909/training.json",
+        "--stage",
+        "preflight"
+      ],
+      "log": "preflight.log"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "protocol": "temporal80",
+  "output": "output/mace_temporal_transformer_20260909",
+  "cache": "output/mace_temporal_transformer_20260909/data",
+  "paired_manifest": "output/mace_thermal80_20260909/data/manifest.json",
+  "encoder": {
+    "pretrained_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+    "frame_offsets_ps": [
+      -0.4,
+      -0.3,
+      -0.2,
+      -0.1,
+      0.0
+    ],
+    "time_scale_ps": 0.1,
+    "width": 128,
+    "num_heads": 4,
+    "num_layers": 2,
+    "feedforward_dim": 512,
+    "dropout": 0.0,
+    "frame_batch_size": 512,
+    "accelerated": true,
+    "performance": {
+      "geometry_cache": false,
+      "dense_precision": "highest",
+      "compile_radial_mlp": true,
+      "bf16_mode": "radial_compensated"
+    }
+  },
+  "seed": 20260909,
+  "epochs": 24,
+  "batch_size": 1536,
+  "microbatch_size": 64,
+  "scaling_anchors": 2048,
+  "tda_components": 32,
+  "learning_rate": 0.0001,
+  "head_learning_rate": 0.001,
+  "weight_decay": 1e-05,
+  "gradient_clip": 5.0,
+  "cpu_threads": 4,
+  "max_training_seconds": 12000,
+  "deadline": "2026-09-10T05:30:55+02:00",
+  "scheduler": {
+    "warmup_epochs": 1,
+    "head_warmup_epochs": 0.5,
+    "min_lr": 1e-06
+  },
+  "loss": {
+    "tda": 1.0,
+    "tda_start_epoch": 1,
+    "variance": 25.0,
+    "covariance": 1.0
+  },
+  "wandb": {
+    "project": "PointCloudMaterials",
+    "name": "MACE-temporal-transformer5-relaxed-TDA-24ep",
+    "id": "mact5s09"
+  },
+  "analysis": {
+    "probe_train_anchors": 8192,
+    "ridge_alpha": 1.0,
+    "single_frame_checkpoint": "output/mace_thermal80_tda1_24ep_20260909/runs/thermal/best.pt"
+  },
+  "data_limitations": "Al and Mg validation continuations are held out within the same campaigns, not independent campaigns. Ta uses different center IDs and later non-overlapping history windows of the same source. Only the first stored paired anchor per source is used for training; spatial/temporal/future partner histories are analysis-only. Full-cell fixed-box relaxation and target IDs are reused from thermal80; both source positions and local offsets inherit recorded float16 quantization. Validation selects the checkpoint, so reported validation scores are not an untouched test. The former thermal80 encoder differs in objective and exposure budget; its probe is a reference rather than a matched architecture ablation. Analysis uses real history windows and sampled spatial maps, not isolated static snapshots."
+}

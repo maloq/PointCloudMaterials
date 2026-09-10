@@ -1,0 +1,18 @@
+{
+  "kind": "training",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "configs": [
+    "configs/vicreg_pretrained_mace_geometry_tda.yaml"
+  ],
+  "question": "Cache full 80-point normalized-geometry TDA targets and fit training-only PCA32",
+  "output": "output/mace_original_vicreg_tda_20260909/preparation",
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.data_utils.spatiotemporal_tda",
+    "--config",
+    "configs/vicreg_pretrained_mace_geometry_tda.yaml"
+  ]
+}

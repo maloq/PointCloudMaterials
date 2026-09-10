@@ -1,0 +1,39 @@
+{
+  "output": "output/mace_balanced_representation_20260908",
+  "allocation": "984861",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": null,
+  "prepared_output": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives",
+  "expected_steps": 8448,
+  "estimated_training_seconds": 22000,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1800,
+  "probe_seed": 20260907,
+  "probe_anchors_per_material": 2048,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": true,
+  "runs": [
+    {
+      "name": "balanced",
+      "config": "experiments/mace_balanced_representation_20260908/training.json",
+      "wandb_id": "b3r12s08"
+    }
+  ],
+  "protocol_description": "Fresh MACE-MP-0b2 small MLIP initialization, 80 atoms, Al/Mg/Ta, 0.1 ps temporal views; 12 complete epochs. Optimize only spatial VICReg, temporal VICReg, and TDA reconstruction, with EMA inverse encoder-gradient-norm balancing. No nuisance augmentation, forecast head, future-embedding loss or future-TDA loss. Four ordinary views retain TDA supervision and future-view spread. Select the epoch maximizing the worst relative gain across three properties and three materials, subject to rank retention. Frozen prediction probes are evaluation only, followed by the standard encoder-only static Al analysis. Single seed; no joint improvement or significance guarantee.",
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.training_methods.mace_balanced",
+        "--config",
+        "experiments/mace_balanced_representation_20260908/training.json",
+        "--scaling-dir",
+        "output/mace_bf16_training_20260908/runs/continued"
+      ],
+      "log": "preflight.log"
+    }
+  ]
+}

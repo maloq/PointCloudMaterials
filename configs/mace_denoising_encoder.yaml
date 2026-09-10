@@ -1,0 +1,14 @@
+# Construction only. Load the fitted scaling and fusion from an encoder export.
+encoder:
+  name: PretrainedMACEDenoising
+  kwargs:
+    pretrained_checkpoint: output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model
+    frame_offsets_ps: [-3.0, -2.25, -1.5, -0.75, 0.0]
+    fusion: residual
+    frame_batch_size: 128
+    accelerated: true
+    performance:
+      geometry_cache: false
+      dense_precision: highest
+      compile_radial_mlp: false
+      bf16_mode: none

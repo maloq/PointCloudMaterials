@@ -8,6 +8,12 @@ Research-specific recipes live in [experiments/](experiments/README.md).
 Use the [trajectory conversion tool](docs/trajectory_conversion.md) for format changes.
 Test commands and coverage guidelines are in [tests/README.md](tests/README.md).
 
+The [temporal MACE encoder](docs/mace_temporal_encoder.md) combines physical
+snapshot histories with learned temporal attention and exports one anchor embedding.
+The [encoder, TDA and relaxation review](docs/encoder_tda_relaxation_problems_20260910.md)
+collects confirmed problems, implemented corrections, unresolved questions and
+the evidence needed for the next experiments.
+
 The frozen-encoder temporal predictive-representation prototype is documented in
 [docs/temporal_vamp.md](docs/temporal_vamp.md). Its reference configuration uses the
 current pretrained `GeoFrameTransformer` and fits a linear VAMP/kinetic map on

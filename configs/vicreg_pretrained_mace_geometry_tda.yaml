@@ -1,0 +1,144 @@
+data:
+  kind: spatiotemporal_binary
+  num_points: 80
+  model_points: 80
+  cache_dir: /home/ids/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views
+  materials:
+  - Al
+  - Mg
+  - Ta
+  temporal_lag_steps: 1
+project_name: pointnet
+experiment_name: MACE-original-VICReg-TDA80-epoch1-no-elements
+wandb_mode: online
+model_type: vicreg
+latent_size: 128
+load_supervised_checkpoint: null
+init_from_checkpoint: null
+resume_from_checkpoint: null
+encoder:
+  name: PretrainedMACEGeometry
+  kwargs:
+    pretrained_checkpoint: output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model
+    reference_radius_A: 9.192189
+    performance:
+      geometry_cache: false
+      dense_precision: highest
+      compile_radial_mlp: true
+      bf16_mode: radial_compensated
+compile_encoder: false
+encoder_compile_mode: default
+encoder_compile_fullgraph: true
+encoder_compile_dynamic: false
+representation_source: vicreg_projector
+learning_rate: 0.001
+batch_size: 512
+precision: 32-true
+gradient_clip_val: 1.0
+accumulate_grad_batches: 1
+auto_batch_size_search: false
+auto_batch_size_mode: power
+auto_batch_size_init_val: null
+auto_batch_size_max_trials: 12
+auto_batch_size_steps_per_trial: 3
+auto_batch_size_use_single_device: true
+auto_batch_size_adjust_accumulate: true
+auto_batch_size_target_effective_batch: null
+auto_batch_size_strict: false
+enable_swa: false
+swa_epoch_start: 1000
+epochs: 24
+max_samples: 0
+check_val_every_n_epoch: 1
+checkpoint_monitor: loss/val
+checkpoint_mode: min
+checkpoint_save_top_k: 1
+checkpoint_save_last: true
+checkpoint_every_n_epochs: 0
+run_post_training_analysis: true
+run_test_after_training: false
+gpu: true
+devices:
+- 0
+ddp_find_unused_parameters: false
+log_every_n_steps: 5
+num_workers: 8
+scheduler_name: Cosine
+scheduler_min_lr: 1.0e-06
+warmup_enabled: true
+warmup_epochs: 3
+warmup_start_factor: 0.1
+decay_rate: 0.04
+seed_everything: 20260909
+enable_embedding_metrics: false
+enable_svm_accuracy: false
+enable_probe_metrics: false
+supervised_metric_stages: []
+embedding_metric_stages: []
+probe_metric_stages: []
+probe_k: 7
+probe_max_samples: 8192
+probe_pca_max_components: 128
+probe_silhouette_samples: 5000
+probe_kmeans_seed_count: 3
+probe_kmeans_n_init: 5
+probe_seed: 0
+probe_best_k_min: 7
+probe_best_k_max: 7
+max_supervised_samples: 8192
+idec_enabled: false
+idec_num_clusters: 0
+idec_gamma: 0.1
+idec_update_interval: 200
+idec_delta: 0.001
+idec_max_iter: null
+idec_use_global_p: true
+idec_normalize_z: true
+idec_init_kmeans: true
+vicreg_enabled: true
+vicreg_weight: 1.0
+vicreg_sim_coeff: 25.0
+vicreg_std_coeff: 25.0
+vicreg_cov_coeff: 1.0
+vicreg_embed_dim: 128
+vicreg_projector_mode: mlp
+vicreg_start_epoch: 0
+vicreg_jitter_std: 0.01
+vicreg_jitter_mode: physical
+vicreg_drop_ratio: 0.0
+vicreg_neighbor_view: true
+vicreg_view_points: 80
+vicreg_rotation_mode: none
+vicreg_mirror_prob: 0.5
+vicreg_strain_std: 0.0
+vicreg_occlusion_mode: none
+vicreg_std_eps: 0.0001
+vicreg_std_target: 1.0
+vicreg_radial_enabled: false
+factor_vae_enabled: false
+augmentation:
+  rotation_scale: 0.0
+  noise_scale: 0.0
+  jitter_scale: 0.0
+  scaling_range: 0.0
+  track_augmentation: false
+init_from_checkpoint_strict: true
+vicreg_temporal_view: true
+vicreg_temporal_weight: 1.0
+vicreg_neighbor_view_mode: second
+vicreg_neighbor_k: 8
+swav_enabled: false
+enable_model_summary: false
+num_sanity_val_steps: 2
+vicreg_objective: vicreg
+spatiotemporal_mix_validation: true
+spatiotemporal_validation_batch_size: 512
+tda:
+  enabled: true
+  start_epoch: 1
+  weight: 1.0
+  hidden_dim: 256
+  components: 32
+  fit_anchors: 12288
+  workers: 6
+  cache_dir: /home/ids/vmorozov/experiments/mace_original_vicreg_tda_20260909/targets

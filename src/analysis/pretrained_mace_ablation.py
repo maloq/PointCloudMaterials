@@ -1,4 +1,4 @@
-"""Matched frozen-encoder probes and tables for MACE objective ablations."""
+"""Frozen-encoder topology and forecast probes after MACE training."""
 import argparse
 import csv
 import json
@@ -11,7 +11,9 @@ from sklearn.preprocessing import StandardScaler
 import torch
 from src.data_utils.pretrained_mace import Quadruplets
 from src.data_utils.temporal_campaign import write_json
-from src.training_methods.pretrained_mace import Learner,encode,gpu_batch
+from src.training_methods.pretrained_mace import Learner
+from src.training_methods.mace_performance import encode_views as encode
+from src.data_utils.pretrained_mace_gpu import GPUQuadruplets
 
 
 def ridge_score(x,y,v,w,alpha):
@@ -21,25 +23,26 @@ def ridge_score(x,y,v,w,alpha):
 
 
 @torch.no_grad()
-def features(model,data,indices,scaling,cfg):
+def features(model,gpu,indices,cfg):
     zs=[];targets=[];conditions=[];materials=[]
     for start in range(0,len(indices),cfg['batch_size']):
-        x,t,c,m=gpu_batch(data.get(indices[start:start+cfg['batch_size']]),scaling)
-        zs.append(encode(model,x,m,cfg['microbatch_size']).cpu().numpy())
-        targets.append(t.cpu().numpy());conditions.append(c.cpu().numpy());materials.append(m.cpu().numpy())
+        x,t,c,m=gpu.get(indices[start:start+cfg['batch_size']])
+        zs.append(encode(model,x[:,:4],m,cfg['microbatch_size']).cpu().numpy())
+        targets.append(t[:,:4].cpu().numpy());conditions.append(c.cpu().numpy());materials.append(m.cpu().numpy())
     return [np.concatenate(v) for v in (zs,targets,conditions,materials)]
 
 
 def probe(plan,item):
     cfg=json.loads(Path(item['config']).read_text());out=Path(cfg['output'])
     torch.set_num_threads(4);torch.set_float32_matmul_precision('highest')
-    data=Quadruplets(cfg);model=Learner(cfg).cuda().eval()
+    data=Quadruplets(cfg)
+    model=Learner(cfg).cuda().eval()
     saved=torch.load(out/'best.pt',map_location='cpu',weights_only=False);model.load_state_dict(saved['model'],strict=True)
     with np.load(out/'scaling.npz') as f:scaling=dict(f)
     rng=np.random.default_rng(plan['probe_seed'])
-    train=np.concatenate([p[rng.choice(len(p),plan['probe_anchors_per_material'],replace=False)] for p in data.pools['train']])
-    val=data.validation_indices(cfg['validation_anchors_per_material'],np.random.default_rng(cfg['seed']))
-    z,y,c,m=features(model,data,train,scaling,cfg);v,w,d,n=features(model,data,val,scaling,cfg)
+    pool=data.all_indices('train');train=pool[rng.choice(len(pool),plan['probe_train_anchors'],replace=False)]
+    val=data.all_indices('val');gpu=GPUQuadruplets(data,scaling)
+    z,y,c,m=features(model,gpu,train,cfg);v,w,d,n=features(model,gpu,val,cfg)
     alpha=plan['probe_ridge_alpha']
     # New probes are trained identically after freezing every encoder. Disabled
     # in-training heads are never used as a representation-quality metric.
@@ -58,7 +61,7 @@ def probe(plan,item):
         selected=(n==i)&eligible;a=v[selected,0];t=v[selected,2]
         random=t[rng.permutation(len(t))]
         normalized_temporal[name]=float(np.square(a-t).mean()/np.square(a-random).mean())
-    result=dict(name=item['name'],checkpoint_epoch=saved['epoch'],train_anchors=len(train),validation_anchors=len(val),tda_probe=tda,future_tda_probe=future_tda,future_latent_probe=future_latent,effective_rank=ranks,temporal_mse_over_shuffled=normalized_temporal,protocol='Fixed train-only ridge probes on frozen encoders, identical seed/data/scalers and alpha. No trained auxiliary head is compared. In-domain validation; one seed; four-epoch screening, no convergence claim.')
+    result=dict(name=item['name'],checkpoint_epoch=saved['epoch'],train_anchors=len(train),validation_anchors=len(val),tda_probe=tda,future_tda_probe=future_tda,future_latent_probe=future_latent,effective_rank=ranks,temporal_mse_over_shuffled=normalized_temporal,protocol=f'Fixed train-only ridge probes on frozen encoders, identical seed/data/scalers and alpha. No trained auxiliary head is compared. In-domain validation; one seed; configured budget {cfg["epochs"]} epochs, no convergence claim.')
     write_json(out/'probe_metrics.json',result)
 
 
@@ -80,12 +83,11 @@ def collect(plan):
     with (out/'comparison.csv').open('w') as f:
         writer=csv.DictWriter(f,fieldnames=keys);writer.writeheader();writer.writerows(rows)
     def cell(row,key):return f'{row[key]:.4f}' if key in row else 'pending'
-    lines=['# Matched MACE objective ablations','',
-        plan.get('protocol_description','Fresh MLIP initialization, same seed/data, 80 points, 0.1 ps temporal pairs, four complete epochs and final-epoch checkpoints. Single-seed screening; convergence and statistical significance are not established. The longer warm-started main run is not a matched control.'),'',
+    lines=['# MACE training and frozen probes','',
+        plan['protocol_description'],'',
         '| Model | State | TDA probe R² | Future TDA probe R² | Latent forecast gain | Spatial neighbor/random |','|---|---|---:|---:|---:|---:|']
     for row in rows:lines.append('| '+ ' | '.join([row['model'],row['state']]+[cell(row,k) for k in ('tda_probe_r2','future_tda_probe_r2','latent_forecast_gain','spatial_neighbor_random_ratio')])+' |')
     lines+=['','Ridge probes are fitted after freezing each encoder, including models trained without TDA or forecasting. Targets are the same train-fitted whitened TDA components. Forecast gain is relative to an unchanged embedding; inspect per-material rank and temporal ratios in the CSV for collapse. Lower spatial neighbor/random ratios mean greater spatial coherence, not verified phases. Static Al contains ancestors of training continuations and is not an independent test.','',
-        'All variants retain the shared 0.25 future-view variance/covariance regularizer. Each minus-VICReg variant removes that view-pair’s invariance and variance/covariance terms together. Minus-forecast removes the future prediction loss; minus-TDA removes TDA gradients during encoder training.','',
         'TDA R² entries average within-material R² over Al/Mg/Ta, so differences between element means cannot alone produce a good score. Detailed runs and static plots are under `runs/`. Full machine-readable results: [comparison.csv](comparison.csv). Queue status: [status.json](status.json).','']
     (out/'RESULTS.md').write_text('\n'.join(lines))
 

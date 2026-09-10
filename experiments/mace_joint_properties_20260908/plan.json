@@ -1,0 +1,67 @@
+{
+  "output": "output/mace_joint_properties_20260908",
+  "allocation": "984861",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": null,
+  "prepared_output": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives",
+  "expected_steps": 4224,
+  "estimated_training_seconds": 11000,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1200,
+  "probe_seed": 20260907,
+  "probe_anchors_per_material": 2048,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": true,
+  "runs": [
+    {
+      "name": "control",
+      "config": "experiments/mace_joint_properties_20260908/control.json",
+      "wandb_id": "e90f8e94"
+    },
+    {
+      "name": "nuisance_future",
+      "config": "experiments/mace_joint_properties_20260908/nuisance_future.json",
+      "wandb_id": "e85fd627"
+    },
+    {
+      "name": "joint_ranking",
+      "config": "experiments/mace_joint_properties_20260908/joint_ranking.json",
+      "wandb_id": "61e8ad10"
+    },
+    {
+      "name": "joint_pcgrad",
+      "config": "experiments/mace_joint_properties_20260908/joint_pcgrad.json",
+      "wandb_id": "8d2a9207"
+    }
+  ],
+  "joint_review": {
+    "reference_config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives.json",
+    "previous_topology_config": "experiments/mace_topology_nuances_20260907/training.json",
+    "target_stability": "output/mace_topology_nuances_20260907/target_stability.json",
+    "perturbation_sigmas_A": [
+      0.001,
+      0.005,
+      0.02
+    ],
+    "audit_anchors_per_material": 128,
+    "bootstrap_replicates": 500,
+    "reference_evaluation_config": "experiments/mace_joint_properties_20260908/reference.json"
+  },
+  "protocol_description": "Four controlled six-epoch continuations from the same previous all-objective checkpoint. Same seed, data, fixed scalers, batch 1536, 80 atoms, 0.1 ps temporal pairs and per-step cosine LR 3e-4/3e-3. No teacher. No early stopping; validation selects a candidate using an all-material no-regression screen. Full-state physical metrics decide success; a failed screen remains a failed screen.",
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.analysis.mace_joint",
+        "--plan",
+        "experiments/mace_joint_properties_20260908/plan.json",
+        "--stage",
+        "preflight"
+      ],
+      "log": "preflight.log"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "output": "output/mace_bf16_20260908/full_batch",
+  "allocation": "984861",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": {
+    "pid": 2861973,
+    "process_identity": "304846602",
+    "status": "output/mace_throughput_20260908/status.json"
+  },
+  "runs": [],
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.analysis.mace_performance",
+        "--config",
+        "experiments/mace_bf16_20260908/full_batch.json"
+      ],
+      "log": "benchmark.log"
+    }
+  ],
+  "protocol_description": "Benchmark-only queue: wait for the existing training, probes and static analysis controller to finish and release GPU memory, then compare compiled FP32 versus compensated BF16 at production chunk 1536. No training run or production configuration is changed."
+}

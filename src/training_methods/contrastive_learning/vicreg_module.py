@@ -462,6 +462,16 @@ class VICRegModule(BaseSSLModule):
             if self.temporal_weight <= 0:
                 raise ValueError("vicreg_temporal_weight must be positive.")
 
+        self.tda_head = None
+        tda_cfg = getattr(cfg, 'tda', None)
+        if tda_cfg is not None and tda_cfg.enabled:
+            # Preserve the baseline encoder/projector and data RNG initialization.
+            with torch.random.fork_rng(devices=[]):
+                self.tda_head = nn.Sequential(nn.Linear(self.vicreg.embed_dim, tda_cfg.hidden_dim),
+                                              nn.SiLU(), nn.Linear(tda_cfg.hidden_dim, tda_cfg.components))
+            self.tda_weight = float(tda_cfg.weight)
+            self.tda_start_epoch = int(tda_cfg.start_epoch)
+
         self.factor_vae_discriminator_learning_rate = float(
             getattr(cfg, "factor_vae_discriminator_learning_rate", 1.0e-4)
         )
@@ -569,6 +579,8 @@ class VICRegModule(BaseSSLModule):
 
     def _weighted_total_loss(self, losses: dict[str, torch.Tensor]) -> torch.Tensor:
         total_loss = super()._weighted_total_loss(losses)
+        if 'tda' in losses:
+            total_loss = total_loss + losses['tda']
         if "factor_vae_tc" in losses:
             gamma = self.factor_vae.effective_gamma(
                 current_epoch=int(self.current_epoch)
@@ -806,14 +818,24 @@ class VICRegModule(BaseSSLModule):
             views.append(points)
         encoded = self.encoder_io.encode(torch.cat(views, dim=0))
         features = self._shared_invariant(encoded.invariant, encoded.equivariant).chunk(3, dim=0)
-        loss, metrics = self.vicreg.compute_spatiotemporal_loss(
+        loss, metrics, projected = self.vicreg.compute_spatiotemporal_loss(
             features=features, temporal_weight=self.temporal_weight,
         )
+        losses = {self.vicreg.metric_prefix: loss}
+        if self.tda_head is not None and self.current_epoch + 1 >= self.tda_start_epoch:
+            target = batch['tda_targets'].to(device=self.device, dtype=torch.float32, non_blocking=True)
+            prediction = self.tda_head(torch.stack(projected, dim=1))
+            tda_mse = F.mse_loss(prediction.float(), target)
+            if not torch.isfinite(tda_mse):
+                raise FloatingPointError('Nonfinite TDA loss on normalized 80-point views')
+            losses['tda'] = self.tda_weight * tda_mse
+            metrics['tda_mse'] = tda_mse
+            metrics['tda_mean_baseline_mse'] = target.square().mean()
         for name, value in metrics.items():
             self._log_metric(stage, name, value, batch_size=views[0].shape[0])
         return self._finish_ssl_step(
             stage=stage, batch_idx=batch_idx, batch_size=views[0].shape[0],
-            losses={self.vicreg.metric_prefix: loss},
+            losses=losses,
         )
 
     def training_step(self, batch, batch_idx, dataloader_idx: int = 0):

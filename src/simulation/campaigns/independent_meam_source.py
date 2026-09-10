@@ -846,14 +846,15 @@ def _active_submission_conflicts(root: Path) -> list[str]:
     active = _load_json(path)
     ids = [str(active["array_job_id"]), str(active["successor_job_id"])]
     queued = subprocess.run(
-        ["squeue", "-h", "-j", ",".join(ids), "-o", "%A"],
+        ["squeue", "-h", "-u", os.environ["USER"], "-o", "%A"],
         check=True,
         text=True,
         capture_output=True,
     )
     current = os.environ.get("SLURM_JOB_ID")
     return sorted(
-        {line.strip() for line in queued.stdout.splitlines() if line.strip() != current}
+        {line.strip() for line in queued.stdout.splitlines()
+         if line.strip() in ids and line.strip() != current}
     )
 
 

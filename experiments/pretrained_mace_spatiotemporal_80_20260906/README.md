@@ -1,5 +1,12 @@
 # Strict 80-point pretrained MACE, with W&B online — 2026-09-06
 
+> Completed experiment record — implementation retired on 2026-09-09.
+> Commands, plans, and implementation paths below describe the original run,
+> not the current supported trainer. Reproduction of that protocol requires
+> the run's `tracking/*/source.tar.gz` and recorded configs under `output/`.
+> Existing results/checkpoints are retained. Use the
+> [current 80-atom recipe](../mace_plain80_20260909/README.md) for new training.
+
 Stopped at the user's request and continued from saved step 2,600 in the
 [0.1 ps / per-step cosine experiment](../pretrained_mace_80_dt01_cosine_20260906/README.md).
 The protocol below records the superseded phase.

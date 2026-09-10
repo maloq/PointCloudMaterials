@@ -1,0 +1,20 @@
+{
+  "kind": "training",
+  "question": "Does variant C with relaxed-TDA supervision from the first update and 24 epochs improve topology, thermal consistency and spatial structure?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_thermal80_tda1_24ep_20260909",
+  "configs": [
+    "experiments/mace_thermal80_tda1_24ep_20260909/plan.json",
+    "experiments/mace_thermal80_tda1_24ep_20260909/training.json",
+    "experiments/mace_thermal80_tda1_24ep_20260909/static.yaml"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_thermal80_tda1_24ep_20260909/plan.json"
+  ]
+}

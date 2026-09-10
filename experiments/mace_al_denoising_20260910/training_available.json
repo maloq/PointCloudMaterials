@@ -1,0 +1,325 @@
+{
+  "protocol": "denoising80_reuse",
+  "output": "output/mace_al_denoising_20260910/available_mixed",
+  "cache": "output/mace_al_denoising_20260910/available_mixed/data",
+  "feature_cache": "output/mace_al_denoising_20260910/available_mixed/features",
+  "centers_per_frame": 256,
+  "seed": 20260910,
+  "workers": 8,
+  "frame_offsets_ps": [
+    -3,
+    -2.25,
+    -1.5,
+    -0.75,
+    0
+  ],
+  "pretrained_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+  "performance": {
+    "geometry_cache": false,
+    "dense_precision": "highest",
+    "compile_radial_mlp": false,
+    "bf16_mode": "none"
+  },
+  "feature_batch_size": 128,
+  "cpu_threads": 4,
+  "deadline": "2026-09-10T18:55:00+02:00",
+  "seeds": [
+    20260910,
+    20260911,
+    20260912
+  ],
+  "epochs": 32,
+  "batch_size": 256,
+  "atom_batch_size": 64,
+  "learning_rate": 0.001,
+  "weight_decay": 1e-05,
+  "gradient_clip": 5.0,
+  "patience": 8,
+  "tda_components": 32,
+  "block_scale_floor_fraction": 0.05,
+  "ridge_alpha": 1.0,
+  "variants": [
+    {
+      "name": "anchor_pca",
+      "architecture": "anchor",
+      "target": "pca",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": false
+    },
+    {
+      "name": "mean_pca",
+      "architecture": "mean",
+      "target": "pca",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": false
+    },
+    {
+      "name": "transformer_pca_regularized",
+      "architecture": "transformer",
+      "target": "pca",
+      "variance": 25.0,
+      "covariance": 1.0,
+      "warmstart": false
+    },
+    {
+      "name": "transformer_pca_tda",
+      "architecture": "transformer",
+      "target": "pca",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": false
+    },
+    {
+      "name": "transformer_blocks",
+      "architecture": "transformer",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": false
+    },
+    {
+      "name": "anchor_blocks",
+      "architecture": "anchor",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": false
+    },
+    {
+      "name": "mean_blocks",
+      "architecture": "mean",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": false
+    },
+    {
+      "name": "anchor_continue_blocks",
+      "architecture": "anchor",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": true
+    },
+    {
+      "name": "residual_blocks",
+      "architecture": "residual",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": true
+    },
+    {
+      "name": "atom_anchor_blocks",
+      "architecture": "atom_anchor",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": true
+    },
+    {
+      "name": "atom_temporal_blocks",
+      "architecture": "atom_temporal",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": true
+    },
+    {
+      "name": "relaxed_blocks",
+      "architecture": "relaxed",
+      "target": "blocks",
+      "variance": 0.0,
+      "covariance": 0.0,
+      "warmstart": false
+    }
+  ],
+  "reuse_records": [
+    {
+      "name": "source_000_T400_optimization_melt206158192_velocity611147995_frame240",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/data/source_000_T400_optimization_melt206158192_velocity611147995_frame240/manifest.json",
+      "source_index": 0,
+      "split": "train",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "cg",
+      "lineage": "independent_melt_206158192"
+    },
+    {
+      "name": "source_000_T400_optimization_melt206158192_velocity611147995_frame40",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/data/source_000_T400_optimization_melt206158192_velocity611147995_frame40/manifest.json",
+      "source_index": 0,
+      "split": "train",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "cg",
+      "lineage": "independent_melt_206158192"
+    },
+    {
+      "name": "source_000_T400_optimization_melt206158192_velocity611147995_frame640",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/data/source_000_T400_optimization_melt206158192_velocity611147995_frame640/manifest.json",
+      "source_index": 0,
+      "split": "train",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "cg",
+      "lineage": "independent_melt_206158192"
+    },
+    {
+      "name": "source_001_T400_optimization_melt248699045_velocity607871863_frame240",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/data/source_001_T400_optimization_melt248699045_velocity607871863_frame240/manifest.json",
+      "source_index": 1,
+      "split": "val",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "cg",
+      "lineage": "independent_melt_248699045"
+    },
+    {
+      "name": "source_001_T400_optimization_melt248699045_velocity607871863_frame40",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/data/source_001_T400_optimization_melt248699045_velocity607871863_frame40/manifest.json",
+      "source_index": 1,
+      "split": "val",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "cg",
+      "lineage": "independent_melt_248699045"
+    },
+    {
+      "name": "source_001_T400_optimization_melt248699045_velocity607871863_frame640",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/fire/data/source_001_T400_optimization_melt248699045_velocity607871863_frame640/manifest.json",
+      "source_index": 1,
+      "split": "val",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "fire",
+      "lineage": "independent_melt_248699045"
+    },
+    {
+      "name": "source_002_T400_optimization_melt235751553_velocity626188066_frame240",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/fire/data/source_002_T400_optimization_melt235751553_velocity626188066_frame240/manifest.json",
+      "source_index": 2,
+      "split": "test",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "fire",
+      "lineage": "independent_melt_235751553"
+    },
+    {
+      "name": "source_002_T400_optimization_melt235751553_velocity626188066_frame40",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/fire/data/source_002_T400_optimization_melt235751553_velocity626188066_frame40/manifest.json",
+      "source_index": 2,
+      "split": "test",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "fire",
+      "lineage": "independent_melt_235751553"
+    },
+    {
+      "name": "source_002_T400_optimization_melt235751553_velocity626188066_frame640",
+      "format": "denoising80",
+      "manifest": "output/mace_al_denoising_20260910/fire/data/source_002_T400_optimization_melt235751553_velocity626188066_frame640/manifest.json",
+      "source_index": 2,
+      "split": "test",
+      "temperature_K": 400.0,
+      "potential": "Lee2003_MEAM",
+      "minimizer": "fire",
+      "lineage": "independent_melt_235751553"
+    },
+    {
+      "name": "Al_continuation_166ps_train",
+      "format": "temporal80",
+      "manifest": "output/mace_temporal_transformer_20260909/data/Al_continuation_166ps_train/manifest.json",
+      "paired_manifest": "output/mace_thermal80_20260909/data/Al_continuation_166ps_train/manifest.json",
+      "source_index": 3,
+      "split": "train",
+      "temperature_K": 650.0,
+      "potential": "Al1_EAM_FS",
+      "minimizer": "cg",
+      "lineage": "shared_Al_parent_trajectory"
+    },
+    {
+      "name": "Al_continuation_170ps_train",
+      "format": "temporal80",
+      "manifest": "output/mace_temporal_transformer_20260909/data/Al_continuation_170ps_train/manifest.json",
+      "paired_manifest": "output/mace_thermal80_20260909/data/Al_continuation_170ps_train/manifest.json",
+      "source_index": 4,
+      "split": "train",
+      "temperature_K": 650.0,
+      "potential": "Al1_EAM_FS",
+      "minimizer": "cg",
+      "lineage": "shared_Al_parent_trajectory"
+    },
+    {
+      "name": "Al_continuation_174ps_train",
+      "format": "temporal80",
+      "manifest": "output/mace_temporal_transformer_20260909/data/Al_continuation_174ps_train/manifest.json",
+      "paired_manifest": "output/mace_thermal80_20260909/data/Al_continuation_174ps_train/manifest.json",
+      "source_index": 5,
+      "split": "train",
+      "temperature_K": 650.0,
+      "potential": "Al1_EAM_FS",
+      "minimizer": "cg",
+      "lineage": "shared_Al_parent_trajectory"
+    },
+    {
+      "name": "Al_continuation_175ps_train",
+      "format": "temporal80",
+      "manifest": "output/mace_temporal_transformer_20260909/data/Al_continuation_175ps_train/manifest.json",
+      "paired_manifest": "output/mace_thermal80_20260909/data/Al_continuation_175ps_train/manifest.json",
+      "source_index": 6,
+      "split": "val",
+      "temperature_K": 650.0,
+      "potential": "Al1_EAM_FS",
+      "minimizer": "cg",
+      "lineage": "shared_Al_parent_trajectory"
+    },
+    {
+      "name": "Al_continuation_177ps_val",
+      "format": "temporal80",
+      "manifest": "output/mace_temporal_transformer_20260909/data/Al_continuation_177ps_val/manifest.json",
+      "paired_manifest": "output/mace_thermal80_20260909/data/Al_continuation_177ps_val/manifest.json",
+      "source_index": 7,
+      "split": "test",
+      "temperature_K": 650.0,
+      "potential": "Al1_EAM_FS",
+      "minimizer": "cg",
+      "lineage": "shared_Al_parent_trajectory"
+    }
+  ],
+  "data_context": "Available Al pilot: existing Al1 EAM/FS and Lee2003 MEAM relaxed labels, with CG and FIRE targets retained separately by provenance. Five actual snapshot times are supplied per sample.",
+  "data_limitations": "Exploratory whole-continuation holdout, not independent-campaign evidence: EAM continuations share an ancestral trajectory. MEAM sources 000/001/002 are assigned train/val/test before this fit. EAM 166/170/174 train, 175 validation, 177 test. The EAM test continuation was validation data in earlier experiments. One held-out trajectory per potential; potential is confounded with temperature (650 versus 400 K), history spacing (0.1 versus 0.75 ps), and source campaign. Between-potential score differences cannot establish a causal potential effect. Original CG is preferred over duplicate FIRE labels; no input is duplicated or its target averaged.",
+  "relaxation_pairs": [
+    {
+      "cg_manifest": "output/mace_al_denoising_20260910/data/source_000_T400_optimization_melt206158192_velocity611147995_frame240/manifest.json",
+      "fire_manifest": "output/mace_al_denoising_20260910/fire/data/source_000_T400_optimization_melt206158192_velocity611147995_frame240/manifest.json"
+    },
+    {
+      "cg_manifest": "output/mace_al_denoising_20260910/data/source_000_T400_optimization_melt206158192_velocity611147995_frame40/manifest.json",
+      "fire_manifest": "output/mace_al_denoising_20260910/fire/data/source_000_T400_optimization_melt206158192_velocity611147995_frame40/manifest.json"
+    },
+    {
+      "cg_manifest": "output/mace_al_denoising_20260910/data/source_000_T400_optimization_melt206158192_velocity611147995_frame640/manifest.json",
+      "fire_manifest": "output/mace_al_denoising_20260910/fire/data/source_000_T400_optimization_melt206158192_velocity611147995_frame640/manifest.json"
+    },
+    {
+      "cg_manifest": "output/mace_al_denoising_20260910/data/source_001_T400_optimization_melt248699045_velocity607871863_frame240/manifest.json",
+      "fire_manifest": "output/mace_al_denoising_20260910/fire/data/source_001_T400_optimization_melt248699045_velocity607871863_frame240/manifest.json"
+    },
+    {
+      "cg_manifest": "output/mace_al_denoising_20260910/data/source_001_T400_optimization_melt248699045_velocity607871863_frame40/manifest.json",
+      "fire_manifest": "output/mace_al_denoising_20260910/fire/data/source_001_T400_optimization_melt248699045_velocity607871863_frame40/manifest.json"
+    }
+  ],
+  "potential_audit_config": "experiments/mace_al_denoising_20260910/potential_audit.json"
+}

@@ -1,0 +1,22 @@
+{
+  "kind": "analysis",
+  "completion": "process_exit",
+  "question": "Compare the twelve mixed-data denoising variants and report potential-specific errors; retain exploratory split limitations.",
+  "dependencies": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/tracking/20260910T114949.326999Z/run_record.json"
+  ],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_al_denoising_20260910/available_mixed/analysis_controller",
+  "configs": [
+    "experiments/mace_al_denoising_20260910/training_available.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace",
+    "--config",
+    "experiments/mace_al_denoising_20260910/training_available.json",
+    "--stage",
+    "analysis"
+  ]
+}

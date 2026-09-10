@@ -1,0 +1,20 @@
+# Encoder construction only; not a single-frame VICReg training recipe.
+# See docs/mace_temporal_encoder.md for the physical history input contract.
+encoder:
+  name: PretrainedMACETemporal
+  kwargs:
+    pretrained_checkpoint: output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model
+    frame_offsets_ps: [-0.4, -0.3, -0.2, -0.1, 0.0]
+    time_scale_ps: 0.1
+    width: 128
+    num_heads: 4
+    num_layers: 2
+    feedforward_dim: 512
+    dropout: 0.0
+    frame_batch_size: 512
+    accelerated: true
+    performance:
+      geometry_cache: false
+      dense_precision: highest
+      compile_radial_mlp: false
+      bf16_mode: none

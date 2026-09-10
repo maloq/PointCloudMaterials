@@ -20,9 +20,12 @@ def _ensure_registry_loaded() -> None:
         geo_frame_transformer,
         geo_frame_transformer_v2,
         mace_encoder,
+        mace_temporal,
+        mace_denoising,
         mlp,
         nequip_encoder,
         pointnet,
+        pretrained_mace,
         ri_mae_encoder,
         vn_encoders,
     )

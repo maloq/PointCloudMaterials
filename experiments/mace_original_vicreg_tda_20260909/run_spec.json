@@ -1,0 +1,23 @@
+{
+  "kind": "training",
+  "completion": "process_exit",
+  "dependencies": [
+    "output/mace_original_vicreg_20260909/execution/run_record.json",
+    "output/mace_original_vicreg_tda_20260909/preparation/execution/run_record.json"
+  ],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "configs": [
+    "configs/vicreg_pretrained_mace_geometry_tda.yaml",
+    "configs/analysis/static.yaml"
+  ],
+  "question": "Matched original VICReg plus TDA prediction from the exported latent, followed by standard static Al analysis",
+  "output": "output/mace_original_vicreg_tda_20260909",
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.contrastive_learning.train_contrastive",
+    "--config-name",
+    "vicreg_pretrained_mace_geometry_tda",
+    "hydra.run.dir=output/mace_original_vicreg_tda_20260909/train"
+  ]
+}

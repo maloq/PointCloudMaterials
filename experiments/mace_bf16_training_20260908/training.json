@@ -1,0 +1,160 @@
+{
+  "output": "output/mace_bf16_training_20260908/runs/continued",
+  "cache": "/home/ids/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/data",
+  "source_cache": "/home/ids/vmorozov/experiments/temporal_hypotheses_12h_20260906/cache",
+  "pretrained_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+  "pretrained_url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mp_0b2/mace-small-density-agnesi-stress.model",
+  "seed": 20260906,
+  "workers": 16,
+  "points": 512,
+  "shooting_shots": [
+    0,
+    1
+  ],
+  "al_centers_train": 1024,
+  "al_centers_val": 128,
+  "ordinary_centers_train": 2048,
+  "ordinary_centers_val": 256,
+  "batch_size": 1536,
+  "microbatch_size": 1536,
+  "epochs": 6,
+  "patience": 7,
+  "learning_rate": 0.0003,
+  "head_learning_rate": 0.003,
+  "weight_decay": 1e-05,
+  "gradient_clip": 5.0,
+  "tda_components": 32,
+  "spatial_weight": 1.0,
+  "temporal_weight": 0.25,
+  "tda_weight": 10.0,
+  "prediction_weight": 5.0,
+  "validation_anchors_per_material": 256,
+  "analysis_config": "experiments/mace_bf16_training_20260908/static.yaml",
+  "max_training_seconds": 20000,
+  "model_points": 80,
+  "outer_radius_A": null,
+  "checkpoint_directory": "/tmp/vmorozov_mace_bf16_training_20260908/checkpoints",
+  "wandb": {
+    "project": "PointCloudMaterials",
+    "name": "MACE-80-compensated-BF16-continuation",
+    "id": "e6c2265c"
+  },
+  "reuse_prepared_cache": "/home/ids/vmorozov/experiments/pretrained_mace_spatiotemporal_20260906/uniform_training",
+  "temporal_lag_ps": 0.1,
+  "scheduler": {
+    "name": "cosine_per_step",
+    "warmup_epochs": 1,
+    "warmup_start_factor": 0.05,
+    "min_lr": 1e-06
+  },
+  "al_continuations": {
+    "root": "datasets/zr_al_mg_initial_6x24ps/branches/Al",
+    "source_cache": "/home/ids/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/source_cache",
+    "train_snapshots": [
+      "166ps",
+      "170ps",
+      "174ps",
+      "175ps"
+    ],
+    "val_snapshots": [
+      "177ps"
+    ],
+    "excluded_snapshots": [
+      "240ps"
+    ],
+    "centers": {
+      "train": 4096,
+      "val": 512
+    },
+    "anchors": [
+      20,
+      40,
+      60,
+      80
+    ],
+    "lags": [
+      1,
+      4,
+      20,
+      40
+    ]
+  },
+  "checkpoint_selection": "joint_constraints",
+  "warm_start": {
+    "checkpoint": "/tmp/vmorozov_mace_bf16_training_20260908/resume.pt",
+    "scaling_dir": "output/mace_throughput_20260908/runs/optimized",
+    "initialize_context_readout": false
+  },
+  "joint_objective": {
+    "nuisance_sigma_A": 0.005,
+    "nuisance_weight": 1000.0,
+    "future_tda_weight": 5.0,
+    "ranking_weight": 0.0,
+    "reliability_weights": [
+      0.9751660227775574,
+      0.974663257598877,
+      0.9892780184745789,
+      0.9924352765083313,
+      0.989639937877655,
+      0.9658989310264587,
+      0.9741056561470032,
+      0.9869811534881592,
+      0.9546501040458679,
+      0.9534305334091187,
+      0.9760581851005554,
+      0.9711043238639832,
+      0.9821553230285645,
+      0.974903404712677,
+      0.9686146378517151,
+      0.9411733150482178,
+      0.9522501826286316,
+      0.9774426817893982,
+      0.9743772745132446,
+      0.9478858709335327,
+      0.9657725095748901,
+      0.9470893144607544,
+      0.980231761932373,
+      0.9569172859191895,
+      0.9493667483329773,
+      0.9685224294662476,
+      0.9672864079475403,
+      0.9700886607170105,
+      0.9608438014984131,
+      0.9590487480163574,
+      0.9884994029998779,
+      0.9758070111274719
+    ],
+    "density_relative_tolerance": 0.03,
+    "target_distance_gap": 0.3483349037515263,
+    "latent_margin": 0.1,
+    "pcgrad_every_steps": 0,
+    "gradient_diagnostic_every_steps": 100
+  },
+  "saved_static_reference": {
+    "metrics_csv": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives/static_spatial_comparison.csv",
+    "model_analysis": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives/static_analysis",
+    "coordinate_roots": [
+      "output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/analysis_best_static",
+      "output/temporal_hypotheses_12h_20260906/static_pipeline_encoder_only"
+    ],
+    "protocol": "Archived reference scores with exact original grid/order and shared-center count verification; same neighbor sampling seed and standardization. Reference inference caches were explicitly retired previously."
+  },
+  "support": {
+    "mode": "target_complete",
+    "input_points": 80,
+    "target_points": 65,
+    "full_weight_points": 70,
+    "context_readout": "pooled_first_layer_residual",
+    "context_init_scale": 0.1
+  },
+  "performance": {
+    "gpu_data": true,
+    "geometry_cache": true,
+    "dense_precision": "highest",
+    "compile_radial_mlp": true,
+    "bf16_mode": "radial_compensated"
+  },
+  "resume_first_epoch": {
+    "source_run": "output/mace_throughput_20260908/runs/optimized"
+  }
+}

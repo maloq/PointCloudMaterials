@@ -1,5 +1,12 @@
 # MACE ablations: quota recovery and 5× peak LR — 2026-09-07
 
+> Completed experiment record — implementation retired on 2026-09-09.
+> Commands, plans, and implementation paths below describe the original run,
+> not the current supported trainer. Reproduction of that protocol requires
+> the run's `tracking/*/source.tar.gz` and recorded configs under `output/`.
+> Existing results/checkpoints are retained. Use the
+> [current 80-atom recipe](../mace_plain80_20260909/README.md) for new training.
+
 User-requested recovery of the [matched ablation queue](../pretrained_mace_ablations_20260907/README.md).
 The main MACE run and standard static analysis completed at 01:50 Paris. Its
 successor started normally, but failed at optimizer update 2,000 while writing

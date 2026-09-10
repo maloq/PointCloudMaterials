@@ -1,0 +1,20 @@
+{
+  "kind": "training",
+  "question": "Does plain full-80-atom MACE with uniform spatial/temporal VICReg and delayed TDA improve structure while reducing pipeline complexity?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_plain80_20260909",
+  "configs": [
+    "experiments/mace_plain80_20260909/plan.json",
+    "experiments/mace_plain80_20260909/training.json",
+    "experiments/mace_plain80_20260909/static.yaml"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace_queue",
+    "--plan",
+    "experiments/mace_plain80_20260909/plan.json"
+  ]
+}

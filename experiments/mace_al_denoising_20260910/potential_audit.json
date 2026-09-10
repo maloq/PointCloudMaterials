@@ -1,0 +1,231 @@
+{
+  "output": "output/mace_al_denoising_20260910/available_mixed/potential_audit",
+  "sources": [
+    {
+      "name": "source_003_T400_optimization_melt750494487_velocity85653941",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_003_T400_optimization_melt750494487_velocity85653941/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_003_T400_optimization_melt750494487_velocity85653941/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 400.0,
+      "preparation_seed": 750494487,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_004_T400_optimization_melt378118914_velocity845282558",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_004_T400_optimization_melt378118914_velocity845282558/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_004_T400_optimization_melt378118914_velocity845282558/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 400.0,
+      "preparation_seed": 378118914,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_005_T400_optimization_melt387039544_velocity90935429",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_005_T400_optimization_melt387039544_velocity90935429/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_005_T400_optimization_melt387039544_velocity90935429/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 400.0,
+      "preparation_seed": 387039544,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_033_T450_optimization_melt134462729_velocity225335578",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_033_T450_optimization_melt134462729_velocity225335578/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_033_T450_optimization_melt134462729_velocity225335578/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 450.0,
+      "preparation_seed": 134462729,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_034_T450_optimization_melt147978527_velocity388842215",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_034_T450_optimization_melt147978527_velocity388842215/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_034_T450_optimization_melt147978527_velocity388842215/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 450.0,
+      "preparation_seed": 147978527,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_035_T450_optimization_melt700628451_velocity337737036",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_035_T450_optimization_melt700628451_velocity337737036/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_035_T450_optimization_melt700628451_velocity337737036/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 450.0,
+      "preparation_seed": 700628451,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_003_T510_optimization_melt661426236_velocity201750649",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_003_T510_optimization_melt661426236_velocity201750649/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_003_T510_optimization_melt661426236_velocity201750649/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 510.0,
+      "preparation_seed": 661426236,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_004_T510_optimization_melt564513410_velocity693065731",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_004_T510_optimization_melt564513410_velocity693065731/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_004_T510_optimization_melt564513410_velocity693065731/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 510.0,
+      "preparation_seed": 564513410,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    },
+    {
+      "name": "source_005_T510_optimization_melt603302271_velocity45594483",
+      "path": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_005_T510_optimization_melt603302271_velocity45594483/trajectory_binary_float16",
+      "outcome": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_005_T510_optimization_melt603302271_velocity45594483/outcome.json",
+      "campaign_manifest": "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/manifest.json",
+      "source_split": "optimization",
+      "split": "train",
+      "temperature_K": 510.0,
+      "preparation_seed": 603302271,
+      "anchors": [
+        40,
+        240,
+        640
+      ],
+      "cadence_ps": 0.75,
+      "timestep_ps": 0.003
+    }
+  ],
+  "frame": 40,
+  "centers": 256,
+  "seed": 20260910,
+  "potentials": {
+    "Lee2003_MEAM": {
+      "lammps_command": [
+        "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/bin/lmp",
+        "-k",
+        "on",
+        "g",
+        "1",
+        "-sf",
+        "kk",
+        "-pk",
+        "kokkos",
+        "newton",
+        "on",
+        "neigh",
+        "half"
+      ],
+      "mass": 26.9815385,
+      "pair_commands": [
+        "pair_style meam",
+        "pair_coeff * * /home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/potential/Lee2003_Al.library.meam Al /home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/potential/Lee2003_Al.meam Al"
+      ],
+      "potential_files": [
+        "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/potential/Lee2003_Al.library.meam",
+        "/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/potential/Lee2003_Al.meam"
+      ],
+      "force_tolerance": 0.01,
+      "max_iterations": 10000,
+      "max_evaluations": 50000,
+      "frame_timeout_seconds": 900,
+      "minimizer": "fire",
+      "timestep_ps": 0.001
+    },
+    "Al1_EAM_FS": {
+      "lammps_command": [
+        "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/bin/lmp",
+        "-k",
+        "on",
+        "g",
+        "1",
+        "-sf",
+        "kk",
+        "-pk",
+        "kokkos",
+        "newton",
+        "on",
+        "neigh",
+        "half"
+      ],
+      "mass": 26.9815385,
+      "pair_commands": [
+        "pair_style eam/fs",
+        "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs Al"
+      ],
+      "potential_files": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs"
+      ],
+      "force_tolerance": 0.01,
+      "max_iterations": 10000,
+      "max_evaluations": 50000,
+      "frame_timeout_seconds": 900,
+      "minimizer": "fire",
+      "timestep_ps": 0.001
+    }
+  },
+  "predictor": "atom_temporal_blocks",
+  "hypothesis": "Primary: mean source-level balanced prediction-error difference Al1_EAM_FS minus Lee2003_MEAM for the same held-out thermal inputs.",
+  "test": "Exact two-sided paired label-swap permutation test over nine independent melt sources (512 assignments); primary alpha 0.05. Paired-source bootstrap interval and relative effect size. Secondary homology tests use Holm correction.",
+  "practical_relative_effect": 0.05,
+  "scope": "Target-potential sensitivity on MEAM-generated structures at 400, 450 and 510 K. Both labels use FIRE, identical boxes/centers/neighbor IDs and convergence threshold. This does not isolate the effect of generating dynamics under different potentials."
+}

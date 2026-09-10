@@ -1,0 +1,63 @@
+{
+  "output": "output/mace_target_complete_20260908_context",
+  "allocation": "984861",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": null,
+  "prepared_output": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives",
+  "expected_steps": 4224,
+  "estimated_training_seconds": 18000,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1200,
+  "probe_seed": 20260907,
+  "probe_anchors_per_material": 2048,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": true,
+  "runs": [
+    {
+      "name": "target_complete",
+      "config": "experiments/mace_target_complete_20260908/training.json",
+      "wandb_id": "5fdfce26"
+    }
+  ],
+  "joint_review": {
+    "reference_config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives.json",
+    "previous_topology_config": "experiments/mace_topology_nuances_20260907/training.json",
+    "target_stability": "output/mace_topology_nuances_20260907/target_stability.json",
+    "perturbation_sigmas_A": [
+      0.001,
+      0.005,
+      0.02
+    ],
+    "audit_anchors_per_material": 128,
+    "bootstrap_replicates": 500,
+    "reference_evaluation_config": "experiments/mace_target_complete_20260908/reference.json"
+  },
+  "protocol_description": "One six-epoch continuation from the previous all-objective checkpoint with corrected target-complete 80-atom support. Full weight through atom 70; smooth buffer to atom 80. Same nuisance/future objective, batch 1536, 0.1 ps pairs and per-step cosine LR. No teacher. Frozen and full-static encoder-only analysis follows. A weighted first-layer context pool corrects target atoms without a two-hop central path; a 128x128 residual projection is initialized to 0.1 identity.",
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "experiments/mace_target_complete_20260908/support_audit.py",
+        "--config",
+        "experiments/mace_target_complete_20260908/training.json",
+        "--output",
+        "output/mace_target_complete_20260908_context/support_audit"
+      ],
+      "log": "support_audit.log"
+    },
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.analysis.mace_joint",
+        "--plan",
+        "experiments/mace_target_complete_20260908/plan.json",
+        "--stage",
+        "preflight"
+      ],
+      "log": "preflight.log"
+    }
+  ]
+}

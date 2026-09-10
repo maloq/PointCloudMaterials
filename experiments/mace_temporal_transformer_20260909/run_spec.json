@@ -1,0 +1,21 @@
+{
+  "kind": "training",
+  "question": "Can jointly trained MACE and temporal attention infer relaxed topology from five causal snapshots?",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_temporal_transformer_20260909",
+  "configs": [
+    "experiments/mace_temporal_transformer_20260909/training.json",
+    "configs/mace_temporal_encoder.yaml"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace",
+    "--config",
+    "experiments/mace_temporal_transformer_20260909/training.json",
+    "--stage",
+    "all"
+  ]
+}

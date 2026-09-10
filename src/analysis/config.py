@@ -23,7 +23,7 @@ def _resolve_project_root() -> Path:
 
 PROJECT_ROOT = _resolve_project_root()
 DEFAULT_ANALYSIS_CONFIG_PATH = (
-    PROJECT_ROOT / "configs" / "analysis" / "checkpoint_analysis.yaml"
+    PROJECT_ROOT / "configs" / "analysis" / "static.yaml"
 )
 
 
@@ -1077,6 +1077,13 @@ def build_runtime_model_config(
 
 
 def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
+    if OmegaConf.select(model_cfg, 'encoder.name') == 'PretrainedMACEGeometry':
+        # Analysis adds new graph sizes and inference contexts after training has
+        # already populated Dynamo's shared code cache. fullgraph=True then hits
+        # the recompilation limit. Eager radial layers retain the weights/BF16 math.
+        with open_dict(model_cfg):
+            model_cfg.encoder.kwargs.performance.compile_radial_mlp = False
+        print('[analysis] Using eager MACE radial layers for variable-size inference batches.')
     if bool(OmegaConf.select(model_cfg, "vicreg_temporal_view", default=False)) and model_cfg.data.kind != "spatiotemporal_binary":
         print("[analysis] Disabling training-only temporal view construction for the overridden inference dataset; encoder/projector weights are unchanged.")
         with open_dict(model_cfg):

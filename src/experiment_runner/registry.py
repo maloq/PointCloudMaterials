@@ -399,6 +399,7 @@ def main(argv=None):
     parser.add_argument('--plan', type=Path)
     parser.add_argument('--spec', type=Path, help='Explicit run specification for the run command.')
     parser.add_argument('--record', type=Path, help='run_record.json for the status command.')
+    parser.add_argument('--wait-for-dependencies-until', help='Wait for local dependency records until this timezone-aware ISO deadline, then execute the spec.')
     parser.add_argument('--before', help='Timezone-aware ISO cutoff for packing old experiment logs.')
     parser.add_argument('--id', help='Existing idea ID to update.')
     parser.add_argument('--state', choices=['proposed', 'planned', 'running', 'blocked', 'completed', 'needs_review'])
@@ -431,7 +432,7 @@ def main(argv=None):
         if args.spec is None:
             parser.error('run requires --spec PATH')
         from .tracking import execute_spec
-        execute_spec(args.spec)
+        execute_spec(args.spec, wait_for_dependencies_until=args.wait_for_dependencies_until)
     elif args.command == 'status':
         if args.record is None:
             parser.error('status requires --record PATH')

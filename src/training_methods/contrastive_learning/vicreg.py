@@ -479,7 +479,7 @@ class VICRegLoss(nn.Module):
         metrics["encoder_spatial_mse"] = (a - s).square().mean()
         metrics["encoder_std"] = a.std(dim=0).mean()
         metrics["encoder_temporal_relative_mse"] = (a - t).square().mean() / a.var(dim=0).mean().clamp_min(1.e-8)
-        return loss, metrics
+        return loss, metrics, (anchor, spatial, temporal)
 
     def _resolve_neighbor_flags(self, *, device) -> tuple[bool, bool]:
         if not self.neighbor_view:

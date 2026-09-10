@@ -1,0 +1,46 @@
+{
+  "output": "output/mace_throughput_20260908/confirmation",
+  "training_config": "experiments/mace_target_complete_20260908/training.json",
+  "restart_config": "experiments/mace_throughput_20260908/training.json",
+  "reference_encoder": "output/mace_throughput_20260908/reference_encoder.py",
+  "reference_trainer": "output/mace_throughput_20260908/reference_trainer.py",
+  "warmup_updates": 4,
+  "timed_updates": 40,
+  "max_relative_gradient_error": 0.005,
+  "max_noise_MSE_fraction": 0.01,
+  "variants": [
+    {
+      "name": "baseline",
+      "microbatch_size": 512,
+      "performance": {
+        "gpu_data": false,
+        "geometry_cache": false,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false
+      },
+      "legacy": true
+    },
+    {
+      "name": "geometry_cache",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": false
+      },
+      "legacy": false
+    },
+    {
+      "name": "compiled_fp32",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": true
+      },
+      "legacy": false
+    }
+  ]
+}

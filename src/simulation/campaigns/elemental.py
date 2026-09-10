@@ -188,6 +188,36 @@ print "BRANCH_COMPLETE"
     complete_trajectory(config, directory, config['branch_steps'], branch)
 
 
+def run_selected_branch(config_path, parents_path, index):
+    """Run one immutable position-conditioned parent, without launching a source."""
+    from src.experiment_runner.tracking import tracked_run
+
+    config = json.loads(config_path.read_text())
+    parents = json.loads(parents_path.read_text())
+    branch = parents['branches'][index]
+    if config['protocol'] != 'ti-source-then-branches' or config['material'] != 'Ti':
+        raise ValueError('Selected-parent execution requires the Ti position-branch protocol')
+    for item in config['potential_files']:
+        if sha256(item['path']) != item['sha256']:
+            raise RuntimeError(f'Potential changed: {item}')
+    if 'SLURM_JOB_ID' in os.environ:
+        ranks = int(os.environ['SLURM_CPUS_PER_TASK'])
+        allocated = sorted(os.sched_getaffinity(0))
+        if len(allocated) < ranks:
+            raise RuntimeError(f'Slurm granted {ranks} CPUs but process affinity is {allocated}')
+        config['cpus'] = allocated[:ranks]
+        # Single-node MPICH ranks inherit this Slurm step's allocation.
+        os.environ['HYDRA_BOOTSTRAP'] = 'fork'
+    root = Path(config['output_root'])
+    directory = root / 'branches' / branch['name']
+    if directory.exists():
+        raise FileExistsError(f'Refusing to rerun an existing selected branch: {directory}')
+    with tracked_run(directory, kind='simulation', configs=[config_path, parents_path],
+                     command=[sys.executable, *sys.argv]):
+        write_json(directory / 'config.json', config)
+        run_branch(config, root, branch)
+
+
 def ti_source(config, root):
     melt = root / 'melt'
     nx, ny, nz = config['repetitions_xyz']
@@ -365,6 +395,10 @@ def main(argv=None):
     command = sub.add_parser('run')
     command.add_argument('--config', required=True, type=Path)
     command.add_argument('--resume-ta', action='store_true')
+    command = sub.add_parser('branch')
+    command.add_argument('--config', required=True, type=Path)
+    command.add_argument('--parents', required=True, type=Path)
+    command.add_argument('--index', required=True, type=int)
     command = sub.add_parser('assess-ti')
     command.add_argument('root', type=Path)
     command.add_argument('step', type=int)
@@ -380,6 +414,8 @@ def main(argv=None):
         with tracked_run(Path(config['output_root']), kind='simulation', configs=[args.config],
                          command=[sys.executable, *sys.argv]):
             run(args.config.resolve(), resume_ta=args.resume_ta)
+    elif args.action == 'branch':
+        run_selected_branch(args.config.resolve(), args.parents.resolve(), args.index)
     elif args.action == 'assess-ti':
         assess(args.root.resolve(), args.step)
     else:

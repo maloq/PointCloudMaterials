@@ -1,0 +1,17 @@
+{
+  "kind": "analysis",
+  "completion": "process_exit",
+  "dependencies": [],
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "configs": [
+    "experiments/mace_original_vicreg_20260909/analysis_recovery.yaml"
+  ],
+  "question": "Recover the completed 24-epoch VICReg run: analyze its selected best checkpoint with eager radial layers",
+  "output": "output/mace_original_vicreg_20260909/analysis_recovery",
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.analysis.pipeline",
+    "experiments/mace_original_vicreg_20260909/analysis_recovery.yaml"
+  ]
+}

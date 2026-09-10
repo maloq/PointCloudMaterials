@@ -38,7 +38,8 @@ def test_three_view_loss_has_temporal_and_spatial_gradients_and_detects_bad_valu
     loss_fn = VICRegLoss.from_config(cfg, input_dim=8)
     features = tuple(torch.randn(32, 8, requires_grad=True) for _ in range(3))
     rng = torch.get_rng_state()
-    loss, metrics = loss_fn.compute_spatiotemporal_loss(features=features, temporal_weight=1)
+    loss, metrics, projected = loss_fn.compute_spatiotemporal_loss(features=features, temporal_weight=1)
+    assert all(a is b for a,b in zip(projected, features))
     torch.set_rng_state(rng)
     expected = (loss_fn._loss(features[0], features[1])[0] + loss_fn._loss(features[0], features[2])[0]) / 2
     assert loss_fn.objective == objective

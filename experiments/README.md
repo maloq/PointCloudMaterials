@@ -6,14 +6,30 @@ configs, checkpoints and plots across training and simulations. The versioned
 lists external storage roots. See [the run/retention guide](../docs/output_registry.md)
 before launching or reorganizing runs.
 
-These directories retain code whose assumptions belong to a particular research
-question. They are not an archive of abandoned scripts. Shared implementation
+These directories retain configurations and findings for individual research
+questions. Retired MACE implementations and their dedicated diagnostics were
+removed on 2026-09-09; completed records identify the source snapshots needed
+to reproduce their original protocols. Shared implementation
 belongs in `src/`, and maintained commands are indexed in
 [`scripts/README.md`](../scripts/README.md).
 
 | Experiment | Question |
 | --- | --- |
-| [mace_topology_nuances_20260907](mace_topology_nuances_20260907/README.md) | Target stability and frozen-decoder diagnostics, then topology-aware attraction and distance preservation in 80-atom MACE |
+| [mace_al_denoising_20260910](mace_al_denoising_20260910/README.md) | Al TDA loss/fusion comparisons, completed mixed-potential pilot, [force/structure/topology potential comparison](mace_al_denoising_20260910/POTENTIAL_DIFFERENCES.md) and detached preparation of independent sources |
+| [mace_temporal_transformer_20260909](mace_temporal_transformer_20260909/README.md) | Joint MACE and five-frame temporal attention for relaxed-anchor topology, followed by held-out temporal and spatial analysis |
+| [mace_original_vicreg_tda_20260909](mace_original_vicreg_tda_20260909/README.md) | Queued matched original VICReg + TDA from the exported latent, TDA80 from epoch 1, then the standard static analysis |
+| [mace_original_vicreg_20260909](mace_original_vicreg_20260909/README.md) | Pretrained small MACE with normalized 80-point geometry, no element inputs, the original Lightning VICReg/projector, and standard static analysis |
+| [mace_vicreg_audit_20260909](mace_vicreg_audit_20260909/README.md) | Numerical VICReg/gradient audit against the original module, and TDA-free optimization controls for raw versus learned MACE coordinates |
+| [mace_thermal80_tda1_24ep_20260909](mace_thermal80_tda1_24ep_20260909/README.md) | Delayed fresh variant C run on the same paired data: TDA from epoch 1, 24 epochs, frozen probes and static Al analysis |
+| [mace_thermal80_20260909](mace_thermal80_20260909/README.md) | Variant C pilot: shared hot/relaxed 80-atom views, full-cell fixed-box minimization, relaxed TDA targets, 12 epochs and standard static Al analysis |
+| [mace_plain80_20260909](mace_plain80_20260909/README.md) | Current simplified MACE: full 80-atom pooling, uniform epochs, fixed spatial/temporal VICReg, TDA80 beginning in epoch six; 12 epochs then standard static Al analysis |
+| [mace_bf16_training_20260908](mace_bf16_training_20260908/README.md) | Continue update-500 MACE checkpoint with compensated BF16, preserving Adam/LR/sampling position and the original 4224-update budget; interim loss/gradient audit and metric glossary |
+| [mace_balanced_representation_20260908](mace_balanced_representation_20260908/README.md) | Fresh MLIP MACE, 12 epochs of encoder-gradient-balanced spatial/temporal VICReg and TDA; no nuisance or forecasting; frozen probes and standard static-Al analysis |
+| [mace_bf16_20260908](mace_bf16_20260908/README.md) | Selective and compensated BF16 MACE precision/throughput screening; user requested immediate BF16 continuation after the successful screen |
+| [mace_throughput_20260908](mace_throughput_20260908/README.md) | Matched throughput measurements for larger chunks, GPU data, geometry reuse and compiled/faster matrix operations; optimized detached restart |
+| [mace_target_complete_20260908](mace_target_complete_20260908/README.md) | Correct TDA support with an adaptive 80-atom window and pooled MACE context; restarted in the throughput experiment after user-authorized optimization |
+| [mace_joint_properties_20260908](mace_joint_properties_20260908/README.md) | Four matched MACE continuations with all-property screening; [interim review](../output/mace_joint_properties_20260908/INTERIM_REVIEW_20260908.md) finds a mismatch between compact encoder support and TDA targets; remaining jobs superseded by the corrected-support run |
+| [mace_topology_nuances_20260907](mace_topology_nuances_20260907/README.md) | Target stability, frozen decoders and topology-aware MACE; [completed review](../output/mace_topology_nuances_20260907/REVIEW_20260908.md): improved topology geometry, reduced smoothness |
 | [pretrained_mace_ablations_lr5_20260907](pretrained_mace_ablations_lr5_20260907/README.md) | Recover the MACE ablations from checkpoint quota failure using node-local optimizer checkpoints and 5× peak learning rates |
 | [ti_ta_crystallization_20260907](ti_ta_crystallization_20260907/README.md) | Generate one pure-Ti Kavousi MEAM crystallization source, branch from six stages, and add five archived Ta branches |
 | [pretrained_mace_ablations_20260907](pretrained_mace_ablations_20260907/README.md) | Matched fresh-MLIP loss ablations queued after the current MACE static analysis; frozen probes and full-frame spatial comparison |

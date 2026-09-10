@@ -14,6 +14,7 @@ import signal
 import subprocess
 import sys
 import tarfile
+import time
 import traceback
 
 from .registry import sha256, write_json
@@ -90,17 +91,47 @@ def tracked_run(output: Path, *, kind: str, configs: list[Path], command: list[s
             save()
 
 
-def execute_spec(path: Path) -> None:
+def wait_for_dependencies(paths, *, until, status_path):
+    """Wait for local tracked commands to finish, including their analysis stage."""
+    try:
+        while True:
+            pending = []
+            for path in paths:
+                record = observed_record(Path(path))
+                if record['state'] == 'command_succeeded':
+                    continue
+                if record['state'] != 'running' or record['observation'] != 'process alive':
+                    raise RuntimeError(f'Dependency cannot complete successfully: {path}: {record["state"]}; {record["observation"]}')
+                pending.append(path)
+            if not pending:
+                write_json(status_path, dict(state='dependencies_complete', updated_at=datetime.now(timezone.utc).isoformat()))
+                return
+            if until is None:
+                raise RuntimeError(f'Dependencies have not succeeded: {pending}')
+            if time.time() >= until:
+                raise TimeoutError(f'Dependency deadline reached: {pending}')
+            write_json(status_path, dict(state='waiting_for_dependencies', pending=pending,
+                       pid=os.getpid(), updated_at=datetime.now(timezone.utc).isoformat(),
+                       deadline=datetime.fromtimestamp(until, timezone.utc).isoformat()))
+            time.sleep(min(30, until-time.time()))
+    except BaseException as error:
+        write_json(status_path, dict(state='failed', error=repr(error), updated_at=datetime.now(timezone.utc).isoformat()))
+        raise
+
+
+def execute_spec(path: Path, *, wait_for_dependencies_until: str | None = None) -> None:
     """Execute an explicit command list without shell interpolation or hidden resume."""
     spec = json.loads(path.read_text())
     if spec['kind'] not in {'training', 'simulation', 'analysis'}:
         raise ValueError(f'Unsupported run kind in {path}: {spec["kind"]}')
     if spec['completion'] not in {'process_exit', 'submission_only'}:
         raise ValueError(f'Explicit completion must be process_exit or submission_only in {path}')
-    for dependency in spec['dependencies']:
-        record = json.loads(Path(dependency).read_text())
-        if record['state'] != 'command_succeeded':
-            raise RuntimeError(f'Dependency has not succeeded: {dependency}: {record["state"]}')
+    until = None
+    if wait_for_dependencies_until is not None:
+        deadline = datetime.fromisoformat(wait_for_dependencies_until)
+        if deadline.tzinfo is None:
+            raise ValueError('Dependency deadline must include its UTC offset')
+        until = deadline.timestamp()
     output = Path(spec['output']).resolve()
     execution = output / 'execution'
     if (execution / 'run_record.json').exists():
@@ -108,6 +139,13 @@ def execute_spec(path: Path) -> None:
     with tracked_run(execution, kind=spec['kind'], configs=[path] + [Path(p) for p in spec['configs']],
                      command=spec['command'], question=spec['question'],
                      success_state='submitted' if spec['completion'] == 'submission_only' else 'command_succeeded'):
+        def interrupt_wait(signum, frame):
+            raise InterruptedError(f'Dependency wait interrupted by signal {signum}')
+        previous_term = signal.signal(signal.SIGTERM, interrupt_wait)
+        try:
+            wait_for_dependencies(spec['dependencies'], until=until, status_path=output/'queue_status.json')
+        finally:
+            signal.signal(signal.SIGTERM, previous_term)
         with (output / 'command.log').open('xb') as log:
             child = subprocess.Popen(spec['command'], cwd=spec['cwd'], stdout=log,
                                      stderr=subprocess.STDOUT, start_new_session=True)

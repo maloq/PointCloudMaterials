@@ -143,3 +143,32 @@ def test_binary_float16_migration_preserves_arrays_and_legacy_path(branch):
     assert binary.verify_checksums() == report['checksums']
     saved = json.loads((branch / 'binary_conversion.json').read_text())
     assert saved['checksums'] == report['checksums']
+
+
+def test_selected_branch_uses_slurm_affinity(tmp_path, monkeypatch):
+    from contextlib import contextmanager
+    from src.simulation.campaigns import elemental
+    from src.experiment_runner import tracking
+
+    @contextmanager
+    def tracked(directory, **kwargs):
+        directory.mkdir(parents=True)
+        yield
+
+    config = tmp_path / 'config.json'
+    config.write_text(json.dumps({'material': 'Ti', 'protocol': 'ti-source-then-branches',
+                                 'potential_files': [], 'cpus': [0, 1],
+                                 'output_root': str(tmp_path / 'output')}))
+    parents = tmp_path / 'parents.json'
+    parents.write_text(json.dumps({'branches': [{'name': 'parent_0'}]}))
+    monkeypatch.setenv('SLURM_JOB_ID', '123')
+    monkeypatch.setenv('SLURM_CPUS_PER_TASK', '2')
+    monkeypatch.setattr(elemental.os, 'sched_getaffinity', lambda pid: {12, 13})
+    monkeypatch.setattr(tracking, 'tracked_run', tracked)
+    observed = []
+    monkeypatch.setattr(elemental, 'run_branch', lambda c, r, b: observed.append(c['cpus']))
+    elemental.run_selected_branch(config, parents, 0)
+    assert observed == [[12, 13]]
+    assert elemental.os.environ['HYDRA_BOOTSTRAP'] == 'fork'
+    with pytest.raises(FileExistsError):
+        elemental.run_selected_branch(config, parents, 0)

@@ -1,0 +1,52 @@
+{
+  "output": "output/mace_bf16_training_20260908",
+  "allocation": "984861",
+  "timezone": "Europe/Paris",
+  "allocation_reserve_seconds": 1800,
+  "predecessor": null,
+  "prepared_output": "output/pretrained_mace_ablations_lr5_20260907/runs/all_objectives",
+  "expected_steps": 4224,
+  "estimated_training_seconds": 15000,
+  "estimated_probe_seconds": 300,
+  "estimated_analysis_seconds": 1200,
+  "probe_seed": 20260907,
+  "probe_anchors_per_material": 2048,
+  "probe_ridge_alpha": 10.0,
+  "remove_completed_inference_cache": false,
+  "analysis_after_each_run": true,
+  "runs": [
+    {
+      "name": "continued",
+      "config": "experiments/mace_bf16_training_20260908/training.json",
+      "wandb_id": "e6c2265c"
+    }
+  ],
+  "joint_review": {
+    "reference_config": "experiments/pretrained_mace_ablations_lr5_20260907/all_objectives.json",
+    "previous_topology_config": "experiments/mace_topology_nuances_20260907/training.json",
+    "target_stability": "output/mace_topology_nuances_20260907/target_stability.json",
+    "perturbation_sigmas_A": [
+      0.001,
+      0.005,
+      0.02
+    ],
+    "audit_anchors_per_material": 128,
+    "bootstrap_replicates": 500,
+    "reference_evaluation_config": "experiments/mace_bf16_training_20260908/reference.json"
+  },
+  "protocol_description": "Continue the first-epoch FP32 checkpoint with compensated BF16 radial matrices. Preserve optimizer, original step-cosine position, sampler position, initial validation and total 4224-step budget. Full preflight then training, probes and the existing encoder-only static-Al analysis.",
+  "preparation_commands": [
+    {
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-m",
+        "src.analysis.mace_joint",
+        "--plan",
+        "experiments/mace_bf16_training_20260908/plan.json",
+        "--stage",
+        "preflight"
+      ],
+      "log": "preflight.log"
+    }
+  ]
+}

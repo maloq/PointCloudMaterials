@@ -820,6 +820,11 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
             logger.print(f"Resuming training from checkpoint: {resume_ckpt_path}")
         trainer.fit(model, dm, ckpt_path=resume_ckpt_path)
 
+    # This Lightning version can leave save_last pointing at the best epoch.
+    # Persist the actual completed optimizer state before analysis can fail.
+    if checkpoint_save_last:
+        trainer.save_checkpoint(os.path.join(run_dir, 'last.ckpt'))
+
     # Resolve the checkpoint used for final test.
     test_ckpt_path = None
     for callback in checkpoint_callbacks:

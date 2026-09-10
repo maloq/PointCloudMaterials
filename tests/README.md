@@ -29,6 +29,12 @@ and run record; avoid repeating them in assertions solely to freeze a run.
 Scientific protocol constraints, independence, and destructive-operation safety
 still warrant regression coverage.
 
+`test_mace_denoising.py` checks zero-initialized residual fusion, gradients from
+every observation, shared atom-identity permutation symmetry, the matched
+anchor-only control, equal homology-block weighting, per-history timing in
+mixed-cadence batches, and exact paired source-level potential statistics. `test_mace_temporal.py`
+also verifies that exposing atom features preserves the existing MACE pooling.
+
 `test_experiment_registry.py` covers cleanup preflight and symlink boundaries,
 retained prerequisites, verified recoverable log archives, execution failure logs,
 and immutable provenance across attempts. See [the registry guide](../docs/output_registry.md).
@@ -64,3 +70,15 @@ test logs are under `output/test_cleanup_20260906/`.
 
 Float16 trajectory storage and periodic-boundary decoding are covered in
 `test_elemental_conversion.py`, including verified original retirement and legacy-path resolution.
+
+`test_independent_meam_source_campaign.py` also checks recovery from expired Slurm
+receipts without disabling duplicate-submission detection.
+
+`test_mace_temporal.py` exercises the temporal transformer with a small real MACE:
+history/time dependence, gradients through every frame, rigid-motion and atom
+permutation invariance, frame chunking, and registry/checkpoint construction.
+See [the encoder input contract](../docs/mace_temporal_encoder.md).
+
+`test_mace_history.py` checks the relaxed target's fixed atom membership through
+periodic crossings and exact anchor reconstruction. The temporal encoder tests
+also check full-batch covariance gradients under history microbatch replay.

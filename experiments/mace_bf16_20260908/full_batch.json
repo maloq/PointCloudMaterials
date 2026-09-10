@@ -1,0 +1,37 @@
+{
+  "output": "output/mace_bf16_20260908/full_batch",
+  "training_config": "experiments/mace_bf16_20260908/full_candidate.json",
+  "restart_config": "experiments/mace_bf16_20260908/full_candidate.json",
+  "reference_encoder": "output/mace_throughput_20260908/reference_encoder.py",
+  "reference_trainer": "output/mace_throughput_20260908/reference_trainer.py",
+  "warmup_updates": 4,
+  "timed_updates": 40,
+  "max_relative_gradient_error": 0.005,
+  "max_noise_MSE_fraction": 0.01,
+  "variants": [
+    {
+      "name": "baseline",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": true,
+        "bf16_mode": "none"
+      },
+      "legacy": false
+    },
+    {
+      "name": "bf16_compensated",
+      "microbatch_size": 1536,
+      "performance": {
+        "gpu_data": true,
+        "geometry_cache": true,
+        "dense_precision": "highest",
+        "compile_radial_mlp": true,
+        "bf16_mode": "radial_compensated"
+      },
+      "legacy": false
+    }
+  ]
+}
