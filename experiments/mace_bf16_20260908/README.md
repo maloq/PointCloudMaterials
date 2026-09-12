@@ -10,14 +10,14 @@
 Research question: can BF16 accelerate the existing 80-atom MACE objective
 without masking small structural changes or corrupting cached task gradients?
 
-Configuration: [benchmark.json](benchmark.json), with an isolated
-[candidate configuration](candidate.json). Output:
+Configuration: [benchmark.json](technical/benchmark.json), with an isolated
+[candidate configuration](technical/candidate.json). Output:
 [`output/mace_bf16_20260908`](../../output/mace_bf16_20260908/).
 
 Reproduction with `pointnet`, from the repository root:
 
 ```bash
-python -m src.analysis.mace_performance --config experiments/mace_bf16_20260908/benchmark.json
+python -m src.analysis.mace_performance --config experiments/mace_bf16_20260908/technical/benchmark.json
 ```
 
 The effective VICReg batch stays 1,536 quadruplets. This first screen uses chunks
@@ -62,18 +62,18 @@ The compensated mode now explicitly enables `emulate_precision_casts=True` on
 its compiled radial MLPs. Eager and compiled matrix tests both pass, checking
 forward and both backward operands to relative error <2e-5.
 
-[Corrected benchmark](corrected.json) uses 512-cloud chunks, 24 measured updates
+[Corrected benchmark](technical/corrected.json) uses 512-cloud chunks, 24 measured updates
 per variant, and the actual running experiment's preserved update-200 checkpoint
 in `trained_reference.pt`. It compares the current compiled FP32 path against
 corrected compensated BF16, with matched initial weights and effective batch.
-Its [candidate config](trained_candidate.json) is separate from the live run.
+Its [candidate config](technical/trained_candidate.json) is separate from the live run.
 The independently recorded pause remains bounded to 15 minutes with automatic
 resume. Results: [corrected report](../../output/mace_bf16_20260908/corrected/BENCHMARK.md).
 
 Reproduce the correction with:
 
 ```bash
-python -m src.analysis.mace_performance --config experiments/mace_bf16_20260908/corrected.json
+python -m src.analysis.mace_performance --config experiments/mace_bf16_20260908/technical/corrected.json
 ```
 
 The corrected comparison passed: **3.162 → 2.617 seconds/update, 1.21×
@@ -85,15 +85,15 @@ the same FP32 trainer resumed, with optimizer and schedule preserved.
 
 The production-size confirmation was queued after the complete
 training/probe/static-analysis controller released the GPU. It uses
-[full_batch.json](full_batch.json) (40 timed updates, chunk 1536),
-[full_candidate.json](full_candidate.json), [plan.json](plan.json), and
-[run_spec.json](run_spec.json). The existing queue runs only the benchmark
+[full_batch.json](technical/full_batch.json) (40 timed updates, chunk 1536),
+[full_candidate.json](technical/full_candidate.json), [plan.json](technical/plan.json), and
+[run_spec.json](technical/run_spec.json). The existing queue runs only the benchmark
 preparation command with an explicitly empty training-run list. It does not
 start another scientific training or modify the active run. Output:
 [`full_batch/`](../../output/mace_bf16_20260908/full_batch/).
 
 ```bash
-python scripts/experiment_registry.py run --spec experiments/mace_bf16_20260908/run_spec.json
+python scripts/experiment_registry.py run --spec experiments/mace_bf16_20260908/technical/run_spec.json
 ```
 
 The 1.21× figure compares identical chunks of 512 and must not be multiplied

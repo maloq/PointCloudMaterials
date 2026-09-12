@@ -2,7 +2,7 @@ defaults:
   - data: loaders/static_multi_material
   - _self_
 
-# Self-contained FactorVAE variant of vicreg_geo_frame_multiscale.yaml. The
+# Self-contained FactorVAE variant of the historical multiscale protocol. The
 # inherited GeoFrame configs used by that file are absent from this worktree,
 # so their resolved model/training values are recorded explicitly here.
 project_name: pointnet

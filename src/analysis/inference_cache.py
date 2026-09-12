@@ -12,8 +12,22 @@ from .output_layout import write_json
 
 
 def discard_inference_cache(out_dir: Path, cache_filename: str) -> None:
-    """Remove a completed analysis's regenerable arrays and their matching sidecar."""
+    """Retain the exact reconstruction specification before removing completed inference arrays."""
     data, metadata = _inference_cache_paths(out_dir, cache_filename)
+    if metadata.is_file():
+        specification = metadata.read_bytes()
+        checksum = hashlib.sha256(specification).hexdigest()
+        retained = Path(out_dir) / 'retention'
+        retained.mkdir(exist_ok=True)
+        archive = retained / f'{metadata.name}.{checksum}.json'
+        archive.write_bytes(specification)
+        if hashlib.sha256(archive.read_bytes()).hexdigest() != checksum:
+            raise RuntimeError(f'Could not verify retained inference specification: {archive}')
+        (retained / 'README.md').write_text(
+            '# Removed inference caches\n\n'
+            'The adjacent metadata preserves exact checkpoint, input, sampling and seed specifications. '
+            'Rebuild with the original full analysis and `figure_set.figure_only=false`. '
+            'Keep the selected checkpoint and original datasets. Prediction arrays are not removed.\n')
     for path in (data, metadata):
         if path.exists() or path.is_symlink():
             path.unlink()

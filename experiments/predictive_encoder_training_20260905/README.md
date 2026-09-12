@@ -32,14 +32,14 @@ inputs only. Their three losses have equal weight. Future topology, order and
 mobility losses also have equal weight. These complementary geometric targets
 are training measurements, not evidence that a particular phase exists.
 
-Configuration: [config.json](config.json). Implementation is shared in
+Configuration: [config.json](technical/config.json). Implementation is shared in
 `src/training_methods/predictive_structure.py`; this directory contains the
 experiment entry point and protocol. All outputs reside physically under
 `output/predictive_encoder_training_20260905`.
 
 ```bash
 conda activate pointnet
-OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python experiments/predictive_encoder_training_20260905/run.py --config experiments/predictive_encoder_training_20260905/config.json
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python src/research/predictive_encoder_training/run.py --config experiments/predictive_encoder_training_20260905/technical/config.json
 ```
 
 The run is launched detached; its PID, command, per-trial logs, checkpoints,

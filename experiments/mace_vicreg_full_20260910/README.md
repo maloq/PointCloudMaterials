@@ -101,7 +101,7 @@ prepared cache directly, use the existing producer command:
 
 ```bash
 conda run --no-capture-output -n pointnet python \
-  experiments/spatiotemporal_20260905/prepare_spatiotemporal_vicreg_views.py \
+  src/research/spatiotemporal/prepare_spatiotemporal_vicreg_views.py \
   --config experiments/mace_vicreg_full_20260910/data.json
 ```
 
@@ -118,7 +118,7 @@ settings before expanded-cache completion: peak allocated memory 59.304 GiB,
 median warm step 0.934 seconds under concurrent GPU load, and loss
 19.9308 → 19.2324 with finite nonzero backbone/projector gradients. These are
 execution checks, not expanded-data training results. Reproduce with
-`experiments/mace_original_vicreg_20260909/preflight.py --config
+`src/research/mace_original_vicreg/preflight.py --config
 output/mace_vicreg_full_20260910/preflight/resolved_reference_data.yaml --output
 output/mace_vicreg_full_20260910/preflight`; the report is `result.json` there.
 

@@ -114,14 +114,14 @@ is deferred until these single-frame experiments are analyzed.
 
 ## Reproduction and execution
 
-[Queue plan](plan.json) and per-run JSON/YAML files specify scientific settings.
+[Queue plan](technical/plan.json) and per-run JSON/YAML files specify scientific settings.
 
 ```bash
 conda run -n pointnet python -m pytest -q tests/test_mace_joint_objective.py
 conda run -n pointnet python -m src.analysis.mace_joint \
-  --plan experiments/mace_joint_properties_20260908/plan.json --stage preflight
+  --plan experiments/mace_joint_properties_20260908/technical/plan.json --stage preflight
 conda run -n pointnet python scripts/experiment_registry.py run \
-  --spec experiments/mace_joint_properties_20260908/run_spec.json
+  --spec experiments/mace_joint_properties_20260908/technical/run_spec.json
 ```
 
 The queue includes preflight, then train → frozen probes → full static analysis
@@ -165,7 +165,7 @@ interim review linked above.
 ```bash
 PYTHONPATH=. conda run -n pointnet python \
   experiments/mace_joint_properties_20260908/receptive_field_audit.py \
-  --config experiments/mace_joint_properties_20260908/control.json \
+  --config experiments/mace_joint_properties_20260908/technical/control.json \
   --output output/mace_joint_properties_20260908/architecture_review_20260908 \
   --anchors-per-material 2048 --perturb-examples-per-material 16
 ```

@@ -48,12 +48,12 @@ Existing manifest/report names and their scientific contents remain compatible.
 | Previous path | Current command | Implementation / recipe |
 | --- | --- | --- |
 | `scripts/analyze_geoframe_temporal_stability.py` | `python scripts/analyze_geoframe.py stability` | `src/temporal_vamp/commands/geoframe_stability.py` |
-| `scripts/analyze_spatiotemporal_vicreg_results.py` | `python experiments/spatiotemporal_20260905/analyze_spatiotemporal_vicreg_results.py` | `experiments/spatiotemporal_20260905/analyze_spatiotemporal_vicreg_results.py` |
+| `scripts/analyze_spatiotemporal_vicreg_results.py` | `python src/research/spatiotemporal/analyze_spatiotemporal_vicreg_results.py` | `src/research/spatiotemporal/analyze_spatiotemporal_vicreg_results.py` |
 | `scripts/audit_lammps_temporal_float32.py` | `python scripts/convert_trajectory.py audit-temporal` | `src/data_utils/conversion/audit_temporal.py` |
 | `scripts/compare_geoframe_stability_representations.py` | `python scripts/analyze_geoframe.py compare-representations` | `src/temporal_vamp/commands/geoframe_compare_representations.py` |
 | `scripts/compare_geoframe_temporal_variability.py` | `python scripts/analyze_geoframe.py compare-variability` | `src/temporal_vamp/commands/geoframe_compare_variability.py` |
-| `scripts/compare_spatiotemporal_objectives.py` | `python experiments/spatiotemporal_20260905/compare_spatiotemporal_objectives.py` | `experiments/spatiotemporal_20260905/compare_spatiotemporal_objectives.py` |
-| `scripts/compare_spatiotemporal_static_clustering.py` | `python experiments/spatiotemporal_20260905/compare_spatiotemporal_static_clustering.py` | `experiments/spatiotemporal_20260905/compare_spatiotemporal_static_clustering.py` |
+| `scripts/compare_spatiotemporal_objectives.py` | `python src/research/spatiotemporal/compare_spatiotemporal_objectives.py` | `src/research/spatiotemporal/compare_spatiotemporal_objectives.py` |
+| `scripts/compare_spatiotemporal_static_clustering.py` | `python src/research/spatiotemporal/compare_spatiotemporal_static_clustering.py` | `src/research/spatiotemporal/compare_spatiotemporal_static_clustering.py` |
 | `scripts/convert_lammps_shooting_binary.py` | `python scripts/convert_trajectory.py export-shooting` | `src/data_utils/conversion/shooting_export.py` |
 | `scripts/export_trajectory_npz_to_lammps_dump.py` | `python scripts/convert_trajectory.py export-npz-dump` | `src/data_utils/conversion/npz_dump.py` |
 | `scripts/migrate_lammps_shooting_float32.py` | `python scripts/convert_trajectory.py shooting` | `src/data_utils/conversion/shooting.py` |
@@ -62,9 +62,9 @@ Existing manifest/report names and their scientific contents remain compatible.
 | `scripts/plot_grouped_metric_csv.py` | `python scripts/plot_grouped_metric_csv.py` | `src/analysis/plots/plot_grouped_metric_csv.py` |
 | `scripts/plot_homogeneous_checkpoint.py` | `python scripts/plot_homogeneous_checkpoint.py` | `src/analysis/plots/plot_homogeneous_checkpoint.py` |
 | `scripts/plotting_common.py` | `Shared library; no command` | `src/analysis/plots/plotting_common.py` |
-| `scripts/prepare_spatiotemporal_vicreg_views.py` | `python experiments/spatiotemporal_20260905/prepare_spatiotemporal_vicreg_views.py` | `experiments/spatiotemporal_20260905/prepare_spatiotemporal_vicreg_views.py` |
-| `scripts/run_geoframe_factor_vae_queue.py` | `python experiments/factor_vae_20260901/run_queue.py` | `experiments/factor_vae_20260901/run_queue.py` |
-| `scripts/run_geoframe_spatiotemporal_post_analysis.py` | `python experiments/spatiotemporal_20260905/run_geoframe_spatiotemporal_post_analysis.py` | `experiments/spatiotemporal_20260905/run_geoframe_spatiotemporal_post_analysis.py` |
+| `scripts/prepare_spatiotemporal_vicreg_views.py` | `python src/research/spatiotemporal/prepare_spatiotemporal_vicreg_views.py` | `src/research/spatiotemporal/prepare_spatiotemporal_vicreg_views.py` |
+| `scripts/run_geoframe_factor_vae_queue.py` | `python src/research/factor_vae/run_queue.py` | `src/research/factor_vae/run_queue.py` |
+| `scripts/run_geoframe_spatiotemporal_post_analysis.py` | `python src/research/spatiotemporal/run_geoframe_spatiotemporal_post_analysis.py` | `src/research/spatiotemporal/run_geoframe_spatiotemporal_post_analysis.py` |
 | `scripts/run_geoframe_temporal_variability.py` | `python scripts/analyze_geoframe.py variability` | `src/temporal_vamp/commands/geoframe_variability.py` |
 | `scripts/run_lammps_homogeneous_campaign.py` | `python scripts/run_lammps_campaign.py homogeneous` | `src/simulation/campaigns/homogeneous.py` |
 | `scripts/run_lammps_independent_meam_510_520K_sources.py` | `python experiments/independent_sources_20260903/independent_meam_510_520K_sources.py` | `experiments/independent_sources_20260903/independent_meam_510_520K_sources.py` |
@@ -94,7 +94,7 @@ Existing manifest/report names and their scientific contents remain compatible.
 | `scripts/run_shooting_short_horizon_ablation.py` | `python scripts/run_shooting_ablation.py short-horizon` | `src/temporal_vamp/commands/ablation_short_horizon.py` |
 | `scripts/run_shooting_spatial_ablation.py` | `python scripts/run_shooting_ablation.py spatial` | `src/temporal_vamp/commands/ablation_spatial.py` |
 | `scripts/run_shooting_temporal_pretraining_ablation.py` | `python scripts/run_shooting_ablation.py temporal-pretraining` | `src/temporal_vamp/commands/ablation_temporal_pretraining.py` |
-| `scripts/run_spatiotemporal_objective_comparison.py` | `python experiments/spatiotemporal_20260905/run_spatiotemporal_objective_comparison.py` | `experiments/spatiotemporal_20260905/run_spatiotemporal_objective_comparison.py` |
+| `scripts/run_spatiotemporal_objective_comparison.py` | `python src/research/spatiotemporal/run_spatiotemporal_objective_comparison.py` | `src/research/spatiotemporal/run_spatiotemporal_objective_comparison.py` |
 | `scripts/train_geoframe_spatiotemporal.py` | `python scripts/train_geoframe_spatiotemporal.py` | `src/training_methods/spatiotemporal.py` |
 | `scripts/analyze_shooting_branch_outcomes.py` | `python scripts/analyze_shooting_branch_outcomes.py` | `src/temporal_vamp/commands/analyze_shooting_branch_outcomes.py` |
 | `scripts/evaluate_shooting_ablation0.py` | `python scripts/evaluate_shooting_ablation0.py` | `src/temporal_vamp/commands/evaluate_shooting_ablation0.py` |

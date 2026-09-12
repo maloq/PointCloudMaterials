@@ -285,13 +285,17 @@ collection. See the [submitted enlarged runs](SCALE_RUN.md) for the 125-source,
 Slurm job per model.
 
 Primary cache: `/home/ids/vmorozov/training-cache/embedding-forecast-20260911`.
-Outputs: `output/embedding_forecast_20260911/{pilot,main,history3}`. Per fit:
+Outputs: `output/embedding_forecast_20260911/{pilot,main,history3}`. New fits put
+checkpoints, logs, configs and arrays in `technical/`, scores and definitions in
+`tables/`, and plots in `plots/`; exact resumes recognize the original layout.
+The following artifact names describe the retained historical fits:
 `best.pt`, `last.pt`, `training.jsonl`, `test_metrics.json`, paired-row
 `test_errors.npz`, small `test_examples.npz`, `history_interventions.json`,
 `forecast_scores.png`, configuration/data summaries and completion status.
 The test examples are in original encoder units. Test errors are in the saved
 training-standardized units unless labelled raw. No full duplicated prediction
-cache is retained. Matrix collection writes `comparison.json` and refuses
+cache is retained. New matrix collection writes `technical/comparison.json` and
+`tables/model-comparison.csv` with `tables/METRICS.md` and refuses
 incomplete runs or mismatched held-out rows.
 
 The new `src/training_methods/embedding_forecast/` package and

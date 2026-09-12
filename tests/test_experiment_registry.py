@@ -33,7 +33,7 @@ def test_prune_preflights_whole_plan_and_preserves_prerequisite(tmp_path):
     assert first.exists()
     assert prune(tmp_path, plan, True)['state'] == 'complete'
     assert not first.exists() and not second.exists() and checkpoint.exists()
-    assert len((root / 'registry/cleanup_applied.jsonl').read_text().splitlines()) == 2
+    assert len((root / 'registry/technical/cleanup_applied.jsonl').read_text().splitlines()) == 2
 
 
 def test_prune_rejects_external_symlink_and_required_overlap(tmp_path):

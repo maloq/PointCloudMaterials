@@ -31,8 +31,8 @@ Do not add generic broadcasting, arbitrary iterable/scalar coercion, compatibili
 - Shared scientific implementation and orchestration belong in the relevant
   `src/` package. Do not import implementation from `scripts/`, and do not add
   imports between command scripts. Keep entry points small.
-- Keep experiment-specific code under `experiments/<topic>_<YYYYMMDD>/`, with a
-  README stating the research question, configuration, reproduction command,
+- Keep experiment-specific implementation under `src/research/<method>/` and
+  research records under `experiments/<topic>_<YYYYMMDD>/`, with a README stating the research question, configuration, reproduction command,
   output location, and findings (or a link to the research report). Date experiment
   records, not maintained command names. Keep reproducibility code versioned.
 - Put disposable diagnostics, generated job scripts, logs, and results in the
@@ -58,3 +58,16 @@ Keep box bounds in float32, integer identity/timeline arrays exact, and LAMMPS
 integration and restart precision unchanged. Record quantization error and
 checksums before removing larger position exports. Use the maintained conversion
 commands; update a producer's storage path when launching it if necessary.
+
+## Readable results and metric definitions (2026-09-12)
+
+- Follow `docs/research_layout.md`. New explicit run roots use
+  `output/<question>/<run-name>/`; plots and metric CSVs go in `plots/` and `tables/`,
+  machine-readable configs, JSON, arrays and logs in `technical/`.
+- Export metric tables with the matching `tables/METRICS.md` and implementation
+  hashes using `src/experiment_runner/metric_docs.py`. When changing calculations,
+  update `docs/metrics/` and `contracts.json` in the same change. Preserve historical
+  exported definitions; do not relabel old scores as freshly recomputed results.
+- Use `scripts/experiment_registry.py storage` and `clean` for storage inspection
+  and inference-cache cleanup. Preview first; never delete a large file merely
+  because of its extension or size. Preserve exact-resume state and paired test data.

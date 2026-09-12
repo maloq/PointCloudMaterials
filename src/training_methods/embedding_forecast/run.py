@@ -14,6 +14,13 @@ from .data import WindowDataset, fit_scaling, prepare_cache, verify_cache, windo
 from .metrics import evaluate, source_bootstrap
 from .model import EmbeddingForecaster
 from .augmentation import augment_history
+from src.experiment_runner.artifacts import result_folders
+from src.experiment_runner.metric_docs import write_metric_table
+
+
+def forecast_directory(root):
+    root = Path(root)
+    return root if (root / "config.json").is_file() else root / "technical"
 
 
 def datasets(config, manifest):
@@ -51,7 +58,9 @@ def plot_scores(directory, model, metrics, cadence):
 
 
 def evaluate_checkpoint(directory, device):
-    directory = Path(directory)
+    directory = forecast_directory(directory)
+    result_root = directory.parent if directory.name == 'technical' else directory
+    result_folders(result_root)
     payload = torch.load(directory / 'best.pt', map_location='cpu', weights_only=False)
     config = payload['config']
     root = Path(config['data']['cache'])
@@ -82,7 +91,10 @@ def evaluate_checkpoint(directory, device):
         values, _, _ = evaluate(model, loader, mean, scale, device, intervention=name, retain_rows=False)
         interventions[name] = values
     write_json(directory / 'history_interventions.json', interventions)
-    plot_scores(directory, model, metrics, manifest['cadence_ps'])
+    plot_scores(result_root / 'plots', model, metrics, manifest['cadence_ps'])
+    write_metric_table(metrics, result_root, family='forecast', name='forecast-scores')
+    (result_root/'README.md').write_text('# Embedding forecast\n\n[Scores](tables/forecast-scores.csv) · '
+        '[Metric definitions](tables/METRICS.md) · [Forecast plot](plots/forecast_scores.png)\n')
     write_json(directory / 'status.json', dict(state='complete', selected_epoch=payload['epoch']))
     return metrics
 
@@ -110,6 +122,8 @@ def train(config, variant, seed, device, *, resume=False, epochs_per_invocation=
     directory = Path(config['output']) / f"{variant['name']}-seed{seed}"
     if directory.exists() and not resume:
         raise FileExistsError(f'Fresh forecast fit would overwrite {directory}; evaluate it or choose a new output.')
+    run_root = directory
+    directory = forecast_directory(run_root)
     checkpoint = None
     if resume:
         saved = json.loads((directory / 'config.json').read_text())
@@ -123,7 +137,7 @@ def train(config, variant, seed, device, *, resume=False, epochs_per_invocation=
         if checkpoint['cache_manifest_sha256'] != sha256(root / 'manifest.json'):
             raise ValueError(f'Resume cache identity changed: {root}')
     else:
-        directory.mkdir(parents=True)
+        result_folders(run_root)
         write_json(directory / 'config.json', dict(config=config, variant=variant, seed=seed))
     write_json(directory / 'status.json', dict(state='training'))
     if checkpoint is None:
@@ -252,7 +266,7 @@ def train(config, variant, seed, device, *, resume=False, epochs_per_invocation=
                       total_epochs=settings['epochs'], next_action='Resume the same config with --resume.')
         write_json(directory / 'status.json', status)
         return status
-    return evaluate_checkpoint(directory, device)
+    return evaluate_checkpoint(run_root, device)
 
 
 def collect(config):
@@ -263,7 +277,7 @@ def collect(config):
     for variant in config['variants']:
         records = []
         for seed in config['seeds']:
-            directory = root / f"{variant['name']}-seed{seed}"
+            directory = forecast_directory(root / f"{variant['name']}-seed{seed}")
             if json.loads((directory / 'status.json').read_text())['state'] != 'complete':
                 raise ValueError(f'Cannot collect incomplete forecast: {directory}')
             declared = json.loads((directory / 'config.json').read_text())
@@ -305,7 +319,9 @@ def collect(config):
             a['bin_errors'], b['bin_errors'], a['rows']['source'], 20260911)
     report = dict(variants=summary, comparisons=comparisons,
                   uncertainty='Source bootstrap after seed averaging; previously examined test sources remain exploratory.')
-    write_json(root / 'comparison.json', report)
+    result_folders(root)
+    write_json(root / 'technical/comparison.json', report)
+    write_metric_table(report, root, family='forecast', name='model-comparison')
     return report
 
 

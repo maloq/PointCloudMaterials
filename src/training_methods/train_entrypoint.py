@@ -61,8 +61,10 @@ def _run_registered_post_training_analysis(
     if not best_ckpt or not os.path.exists(best_ckpt):
         raise FileNotFoundError(f'Requested post-training analysis has no retained best checkpoint: {best_ckpt!r}')
 
-    output_dir = OmegaConf.select(cfg, 'analysis_output_dir', default=os.path.join(
-        os.path.dirname(best_ckpt), 'analysis_standard' if cfg.data.kind == 'relaxed_histories' else 'analysis'))
+    checkpoint_dir = Path(best_ckpt).parent
+    default_analysis = (checkpoint_dir.parent if checkpoint_dir.name == 'technical' else
+                        checkpoint_dir / ('analysis_standard' if cfg.data.kind == 'relaxed_histories' else 'analysis'))
+    output_dir = OmegaConf.select(cfg, 'analysis_output_dir', default=str(default_analysis))
     run_post_training_analysis_safe(best_ckpt, output_dir, _first_cuda_device(cfg))
     if not bool(OmegaConf.select(cfg, 'checkpoint_keep_last_after_analysis', default=True)):
         last = Path(best_ckpt).parent/'last.ckpt'
@@ -102,6 +104,12 @@ def train(cfg: DictConfig, *, method_name: str | None = None, run_analysis: bool
     from src.experiment_runner.tracking import tracked_run
     output = Path(HydraConfig.get().runtime.output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    if output.name == 'technical':
+        from src.experiment_runner.artifacts import result_folders
+        result_folders(output.parent)
+        (output.parent / 'README.md').write_text('# Training run\n\n'
+            'Technical files contain the resolved config, execution record and checkpoints.\n'
+            'The requested post-training analysis will populate plots/ and tables/.\n')
     config = output / 'resolved_config.yaml'
     OmegaConf.save(cfg, config, resolve=True)
     with tracked_run(output, kind='training', configs=[config], command=[sys.executable, *sys.argv]):

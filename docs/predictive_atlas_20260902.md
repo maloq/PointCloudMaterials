@@ -288,7 +288,7 @@ rows.
 
 Reproduction configurations are:
 
-- `configs/temporal_encoder_pretraining_geoframe_v2_468480_20260902.yaml`
+- `experiments/shooting_ablation_20260901/technical/temporal_encoder_pretraining_geoframe_v2_468480_20260902.yaml`
 - `configs/predictive_atlas_temporal_encoder_scaled_input_cache_20260902.yaml`
 - `configs/predictive_atlas_temporal_encoder_scaled_history_20260902.yaml`
 - `configs/predictive_atlas_temporal_encoder_scaled_20260902.yaml`
@@ -410,6 +410,6 @@ Artifacts are in:
 The runner, comparison, configurations, and core metrics are respectively in
 `scripts/analyze_geoframe.py stability`,
 `scripts/analyze_geoframe.py compare-representations`,
-`configs/geoframe_temporal_stability_finest_30fs_20260904.yaml`,
-`configs/geoframe_encoder_temporal_stability_finest_30fs_20260904.yaml`, and
+`experiments/geoframe_continuity_20260905/technical/geoframe_temporal_stability_finest_30fs_20260904.yaml`,
+`experiments/geoframe_continuity_20260905/technical/geoframe_encoder_temporal_stability_finest_30fs_20260904.yaml`, and
 `src/temporal_vamp/geoframe_stability.py`.

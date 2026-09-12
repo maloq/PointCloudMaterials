@@ -106,7 +106,7 @@ conda run -n pointnet python scripts/experiment_registry.py run \
 The shared real-GPU preflight also supports this configuration:
 
 ```bash
-PYTHONPATH=. conda run -n pointnet python experiments/mace_original_vicreg_20260909/preflight.py \
+PYTHONPATH=. conda run -n pointnet python src/research/mace_original_vicreg/preflight.py \
   --config configs/vicreg_pretrained_mace_geometry_tda.yaml \
   --output output/mace_original_vicreg_tda_20260909/recovery/preflight
 ```

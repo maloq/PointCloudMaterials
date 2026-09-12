@@ -19,12 +19,12 @@ execution, not the scientific objective or encoder architecture.
 
 ## Configuration and reproduction
 
-- [Benchmark configuration](benchmark.json): frozen pre-change source snapshots,
+- [Benchmark configuration](technical/benchmark.json): frozen pre-change source snapshots,
   matched initial weights, batches, augmentations, effective batch 1,536,
   learning rates, warmup, timed updates and numerical acceptance thresholds.
-- [Training](training.json), [queue](plan.json), [static analysis](static.yaml),
-  [tracked detached launcher](run_spec.json).
-- [Longer confirmation benchmark](confirmation.json): repeats the baseline,
+- [Training](technical/training.json), [queue](technical/plan.json), [static analysis](technical/static.yaml),
+  [tracked detached launcher](technical/run_spec.json).
+- [Longer confirmation benchmark](technical/confirmation.json): repeats the baseline,
   geometry reuse and full-FP32 compilation for 40 measured updates per variant.
 - Output: [`output/mace_throughput_20260908`](../../output/mace_throughput_20260908/).
 - Optimizer and compilation caches: `/tmp/vmorozov_mace_throughput_20260908`.
@@ -33,9 +33,9 @@ execution, not the scientific objective or encoder architecture.
 From the repository root with the `pointnet` environment:
 
 ```bash
-python -m src.analysis.mace_performance --config experiments/mace_throughput_20260908/benchmark.json
-python -m src.analysis.mace_performance --config experiments/mace_throughput_20260908/confirmation.json
-python scripts/experiment_registry.py run --spec experiments/mace_throughput_20260908/run_spec.json
+python -m src.analysis.mace_performance --config experiments/mace_throughput_20260908/technical/benchmark.json
+python -m src.analysis.mace_performance --config experiments/mace_throughput_20260908/technical/confirmation.json
+python scripts/experiment_registry.py run --spec experiments/mace_throughput_20260908/technical/run_spec.json
 ```
 
 The benchmark updates only this experiment's restart configuration with the

@@ -19,8 +19,8 @@ the 80; the disagreement was introduced by the encoder's mask.
 
 ## Configuration and scientific protocol
 
-- [Training configuration](training.json), [queue plan](plan.json),
-  [static analysis configuration](static.yaml), [tracked launcher](run_spec.json).
+- [Training configuration](technical/training.json), [queue plan](technical/plan.json),
+  [static analysis configuration](technical/static.yaml), [tracked launcher](technical/run_spec.json).
 - Exactly 80 atoms. Sort radii; keep full source weight through rank 70. Between
   ranks 70 and 80 use `(1-u)^3 (1+3u+6u^2)`, with normalized radial coordinate `u`.
   Rank 80 has zero source weight. Five full-weight atoms beyond the 65 targets
@@ -58,7 +58,7 @@ the 80; the disagreement was introduced by the encoder's mask.
 Run from the repository root in the `pointnet` environment:
 
 ```bash
-python scripts/experiment_registry.py run --spec experiments/mace_target_complete_20260908/run_spec.json
+python scripts/experiment_registry.py run --spec experiments/mace_target_complete_20260908/technical/run_spec.json
 ```
 
 Use a new output directory for another training invocation. The current detached

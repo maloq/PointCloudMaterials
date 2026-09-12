@@ -681,7 +681,7 @@ def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path
 
     render_summary_plots = plot_module.render_summary_plots
     plot_metrics = plan.plot.metrics if plan.plot.metrics else None
-    output_root = summary_path.parent / "summary_plots"
+    output_root = summary_path.parent.parent / "plots"
     plot_variants = [
         ("no_error_bars", "none", "metrics_no_error_bars"),
         ("with_error_bars", "std", "metrics_with_error_bars"),
@@ -689,7 +689,7 @@ def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path
 
     written_paths: List[Path] = []
     for subdir_name, error_mode, prefix in plot_variants:
-        variant_output_dir = output_root / subdir_name
+        variant_output_dir = output_root
         try:
             variant_paths = render_summary_plots(
                 summary_path,

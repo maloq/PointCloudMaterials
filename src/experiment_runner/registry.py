@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 import hashlib
@@ -89,7 +90,9 @@ def scalar_metrics(value, prefix=''):
 def build(repo: Path) -> dict:
     output = repo / 'output'
     registry = output / 'registry'
-    registry.mkdir(exist_ok=True)
+    registry.mkdir(parents=True, exist_ok=True)
+    (registry / 'technical').mkdir(exist_ok=True)
+    (registry / 'tables').mkdir(exist_ok=True)
     captured = datetime.now(timezone.utc).isoformat()
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--porcelain'], cwd=repo, text=True)
@@ -101,7 +104,7 @@ def build(repo: Path) -> dict:
                 continue
             relative = path.relative_to(repo)
             checksum = sha256(path)
-            target = registry / 'config_snapshot/objects' / (checksum + path.suffix)
+            target = registry / 'technical/config_snapshot/objects' / (checksum + path.suffix)
             target.parent.mkdir(parents=True, exist_ok=True)
             if not target.exists():
                 shutil.copy2(path, target)
@@ -113,14 +116,16 @@ def build(repo: Path) -> dict:
         'captured_at': captured, 'catalogue_commit': commit,
         'note': 'Current config/recipe snapshot, not evidence of historical run configuration.',
         'files': snapshot_index}
-    write_json(registry / 'config_snapshot/index.json', config_capture)
-    write_json(registry / 'config_snapshot/captures' / (captured.replace(':', '-') + '.json'), config_capture)
-    (registry / 'working_tree_status.txt').write_text(dirty)
+    write_json(registry / 'technical/config_snapshot/index.json', config_capture)
+    write_json(registry / 'technical/config_snapshot/captures' / (captured.replace(':', '-') + '.json'), config_capture)
+    (registry / 'technical/working_tree_status.txt').write_text(dirty)
     groups = defaultdict(list)
     for path in files_under(output):
         if path == output / 'README.md':
             continue
         groups[run_id(path.relative_to(output))].append(path)
+    for path in files_under(repo / 'outputs'):
+        groups['legacy/' + run_id(path.relative_to(repo / 'outputs'))].append(path)
     entries = []
     for identifier, paths in sorted(groups.items()):
         artifacts = []
@@ -157,7 +162,7 @@ def build(repo: Path) -> dict:
         kind = 'experiment'
         if first in {'synthetic_data', 'temporal_cache'}:
             kind = 'dataset'
-        elif first in {'wandb', 'training_jobs', 'slurm_outputs'} or first.startswith(('ids_', 'cache_float16', 'simulation_audit')):
+        elif first in {'maintenance', 'wandb', 'training_jobs', 'slurm_outputs'} or first.startswith(('ids_', 'cache_float16', 'simulation_audit')):
             kind = 'maintenance'
         recipe = repo / 'experiments' / identifier / 'README.md'
         entries.append({'id': identifier, 'kind': kind, 'artifacts': artifacts,
@@ -175,8 +180,17 @@ def build(repo: Path) -> dict:
         settings = json.loads(settings_path.read_text())
         catalogue['external_runs'] = external_runs(repo, settings['storage_roots'])
         catalogue['ideas'] = json.loads((repo / 'experiments/ideas.json').read_text())['ideas']
-    write_json(registry / 'experiments.json', catalogue)
+    write_json(registry / 'technical/experiments.json', catalogue)
+    with (registry / 'tables/experiments.csv').open('w', newline='') as stream:
+        writer = csv.writer(stream)
+        writer.writerow(('experiment', 'kind', 'allocated_gib', 'files', 'recipe'))
+        for entry in entries:
+            writer.writerow((entry['id'], entry['kind'], round(entry['allocated_bytes']/2**30, 3),
+                             len(entry['artifacts']), entry['recipe']))
     render(registry, catalogue)
+    previous = registry / 'experiments.json'
+    if previous.exists():
+        previous.rename(registry / 'technical' / ('previous-inventory-' + sha256(previous) + '.json'))
     print(f'Indexed {len(entries)} entries, {sum(len(e["artifacts"]) for e in entries)} files', flush=True)
     return catalogue
 
@@ -258,9 +272,13 @@ def render(registry: Path, catalogue: dict) -> None:
                 links.append('<li>' + link + '</li>')
             if links:
                 sections.append(f'<details><summary>{kind.title()} ({len(links)})</summary><ul class="{kind}">' + ''.join(links) + '</ul></details>')
-        preview = html.escape(json.dumps(entry['metric_preview'], indent=2))
+        preview_rows = ''.join('<tr><td>' + html.escape(metric['source']) + '</td><td>'
+            + html.escape(key) + '</td><td>' + html.escape(str(value)) + '</td></tr>'
+            for metric in entry['metric_preview'] for key, value in metric['values'].items())
+        preview = '<table><tr><th>Source</th><th>Metric</th><th>Value</th></tr>' + preview_rows + '</table>'
         recipe = '' if not entry['recipe'] else f'<a href="../../{quote(entry["recipe"])}">Research recipe</a> · '
-        statuses = html.escape(json.dumps(entry['statuses']))
+        statuses = '<br>'.join(html.escape(s['source'] + ': ' + str(s['value'].get('state', 'state not recorded')))
+                                  for s in entry['statuses'])
         primary = [s['value'] for s in entry['statuses'] if s['source'] == 'output/' + entry['id'] + '/status.json']
         if not primary:
             primary = [s['value'] for s in entry['statuses'] if s['source'] == 'output/' + entry['id'] + '/run_record.json']
@@ -269,7 +287,7 @@ def render(registry: Path, catalogue: dict) -> None:
                      f'<p>{recipe}{entry["kind"]} · {entry["allocated_bytes"] / 2**30:.2f} GiB · '
                      f'Run git commit: {html.escape(entry["git_status"])}</p>'
                      f'<p>Recorded progress: <strong>{html.escape(state)}</strong></p>'
-                     f'<details><summary>Recorded status / metric preview</summary><p>{statuses}</p><pre>{preview}</pre></details>'
+                     f'<details><summary>Recorded status / metric preview</summary><p>{statuses}</p>{preview}</details>'
                      + ''.join(sections) + '</article>')
     page = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Materials experiment registry</title><style>
@@ -281,7 +299,7 @@ a{color:#17528d;overflow-wrap:anywhere}summary{cursor:pointer;padding:7px 0}li{m
 .plots{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;list-style:none;padding:0}.plots img{width:100%;height:190px;object-fit:contain}
 pre{white-space:pre-wrap;max-height:400px;overflow:auto;font-size:12px}article[hidden]{display:none}
 </style><header><h1>Materials experiment registry</h1>
-<p>Configs, results, checkpoints and plots at their original paths. <a href="experiments.json">JSON registry</a> · <a href="../../docs/output_registry.md">Retention &amp; reproduction guide</a></p>
+<p>Configs, results, checkpoints and plots at their original paths. <a href="tables/experiments.csv">Experiment table</a> · <a href="technical/experiments.json">Technical inventory</a> · <a href="../../docs/output_registry.md">Retention &amp; reproduction guide</a></p>
 <input id="search" type="search" placeholder="Search experiment, model, metric or artifact…">
 <select id="kind"><option value="experiment">Experiments</option><option value="simulation">Simulations</option><option value="idea">Ideas</option><option value="">Everything</option><option value="dataset">Datasets &amp; caches</option><option value="maintenance">Maintenance</option></select>
 <span id="count"></span></header>'''
@@ -296,14 +314,15 @@ search.addEventListener('input',filter);kind.addEventListener('change',filter);f
             '| Experiment | Allocated GiB | Files |', '| --- | ---: | ---: |']
     for entry in catalogue['experiments']:
         if entry['kind'] == 'experiment':
-            rows.append(f'| [{entry["id"]}](../../output/{quote(entry["id"])}/) | {entry["allocated_bytes"]/2**30:.2f} | {len(entry["artifacts"])} |')
+            target = ('outputs/' + entry['id'].removeprefix('legacy/') if entry['id'].startswith('legacy/') else 'output/' + entry['id'])
+            rows.append(f'| [{entry["id"]}](../../{quote(target)}/) | {entry["allocated_bytes"]/2**30:.2f} | {len(entry["artifacts"])} |')
     (registry / 'README.md').write_text('\n'.join(rows) + '\n')
 
 
 def checked_path(repo: Path, name: str, *, retained: bool = False) -> Path:
     path = repo / name
-    if not path.is_relative_to(repo / 'output') or '..' in path.parts:
-        raise ValueError(f'Cleanup path must be inside output/: {name}')
+    if not any(path.is_relative_to(repo / base) for base in ('output', 'outputs')) or '..' in path.parts:
+        raise ValueError(f'Cleanup path must be inside output/ or outputs/: {name}')
     if path.is_symlink() or path.resolve() != path or (not retained and (repo / 'output/registry') in path.parents):
         raise ValueError(f'Refusing symlink, registry, or redirected cleanup path: {name}')
     return path
@@ -327,7 +346,8 @@ def prune(repo: Path, plan_path: Path, apply: bool) -> dict:
     result = {'state': 'preview', 'files': len(items),
               'allocated_bytes': sum(checked_path(repo, i['path']).stat().st_blocks * 512 for i in items)}
     if apply:
-        audit = repo / 'output/registry/cleanup_applied.jsonl'
+        (repo / 'output/registry/technical').mkdir(parents=True, exist_ok=True)
+        audit = repo / 'output/registry/technical/cleanup_applied.jsonl'
         with audit.open('a') as log:
             for item in items:
                 path = checked_path(repo, item['path'])
@@ -339,7 +359,7 @@ def prune(repo: Path, plan_path: Path, apply: bool) -> dict:
                 log.flush()
                 os.fsync(log.fileno())
         result['state'] = 'complete'
-        write_json(repo / 'output/registry/cleanup_result.json', result)
+        write_json(repo / 'output/registry/technical/cleanup_result.json', result)
     print(json.dumps(result, indent=2), flush=True)
     return result
 
@@ -350,7 +370,10 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
     if cutoff.tzinfo is None:
         raise ValueError('--before must include a UTC offset')
     stamp = cutoff.strftime('%Y%m%dT%H%M%S')
-    catalogue = json.loads((repo / 'output/registry/experiments.json').read_text())
+    inventory = repo / 'output/registry/technical/experiments.json'
+    if not inventory.exists():
+        inventory = repo / 'output/registry/experiments.json'  # Earlier registry build.
+    catalogue = json.loads(inventory.read_text())
     result = []
     for entry in catalogue['experiments']:
         if entry['kind'] != 'experiment' and entry['id'] != 'wandb':
@@ -360,7 +383,8 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
         paths = [p for p in paths if p.stat().st_mtime < cutoff.timestamp() and not p.is_symlink()]
         if not paths:
             continue
-        directory = repo / 'output' / entry['id']
+        directory = (repo / 'outputs' / entry['id'].removeprefix('legacy/') if entry['id'].startswith('legacy/')
+                     else repo / 'output' / entry['id'])
         archive_path = directory / f'diagnostics-before-{stamp}.tar.gz'
         if archive_path.exists():
             raise FileExistsError(f'Existing diagnostics archive: {archive_path}; rebuild registry before another packing pass')
@@ -388,14 +412,17 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
                 path.unlink()
             record['archive_allocated_bytes'] = archive_path.stat().st_blocks * 512
         result.append(record)
-    write_json(repo / 'output/registry/log_archive_result.json', {'applied': apply, 'before': before, 'runs': result})
+    write_json(repo / 'output/registry/technical/log_archive_result.json', {'applied': apply, 'before': before, 'runs': result})
     print(f'{"Packed" if apply else "Would pack"} {sum(r["files"] for r in result)} old logs in {len(result)} archives', flush=True)
     return result
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['build', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
+    parser.add_argument('command', choices=['build', 'storage', 'clean', 'metrics-docs', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
+    parser.add_argument('--root', action='append', help='Local output/ or outputs/ subtree; repeat to select several.')
+    parser.add_argument('--inactive', action='store_true', help='Confirm the selected runs have no active readers, writers or queued jobs.')
+    parser.add_argument('--min-mib', type=float, default=100, help='Large-file report threshold (allocated MiB).')
     parser.add_argument('--plan', type=Path)
     parser.add_argument('--spec', type=Path, help='Explicit run specification for the run command.')
     parser.add_argument('--record', type=Path, help='run_record.json for the status command.')
@@ -409,6 +436,15 @@ def main(argv=None):
     repo = Path(__file__).resolve().parents[2]
     if args.command == 'build':
         build(repo)
+    elif args.command == 'storage':
+        from .storage import inventory
+        inventory(repo, args.root, repo / 'output/maintenance/storage', args.min_mib)
+    elif args.command == 'clean':
+        from .storage import clean_caches
+        clean_caches(repo, args.root, apply=args.apply, inactive=args.inactive)
+    elif args.command == 'metrics-docs':
+        from .metric_docs import check_metric_docs
+        print('Verified metric documentation: ' + ', '.join(check_metric_docs()))
     elif args.command == 'relocate-caches':
         if args.plan is None:
             parser.error('relocate-caches requires --plan PATH')

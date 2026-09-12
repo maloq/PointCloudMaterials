@@ -12,7 +12,7 @@ tradeoff beyond ordinary history?
 
 Motivation and literature:
 [`geoframe_v3_literature_20260905.md`](../../docs/geoframe_v3_literature_20260905.md).
-Configuration: [`config.json`](config.json). Outputs, including checkpoints,
+Configuration: [`config.json`](technical/config.json). Outputs, including checkpoints,
 arrays, plots, logs, and the final report, are physically inside
 [`output/smooth_temporal_encoder_20260905`](../../output/smooth_temporal_encoder_20260905/).
 
@@ -102,16 +102,16 @@ Use `pointnet`, from the repository root. Choose a fresh `output` in the config
 for a complete rerun; preparation and training refuse to replace prior runs.
 
 ```bash
-python experiments/smooth_temporal_encoder_20260905/prepare.py --config experiments/smooth_temporal_encoder_20260905/config.json
-python experiments/smooth_temporal_encoder_20260905/run.py --config experiments/smooth_temporal_encoder_20260905/config.json --stage spatial
-python experiments/smooth_temporal_encoder_20260905/prepare.py --config experiments/smooth_temporal_encoder_20260905/config.json --labels-only
-python experiments/smooth_temporal_encoder_20260905/evaluate.py --config experiments/smooth_temporal_encoder_20260905/config.json --stage all
-python experiments/smooth_temporal_encoder_20260905/full_static.py --config experiments/smooth_temporal_encoder_20260905/config.json
-python experiments/smooth_temporal_encoder_20260905/train_temporal.py --config experiments/smooth_temporal_encoder_20260905/config.json
-python experiments/smooth_temporal_encoder_20260905/rank_controls.py --config experiments/smooth_temporal_encoder_20260905/config.json
-python experiments/smooth_temporal_encoder_20260905/assess.py --config experiments/smooth_temporal_encoder_20260905/config.json
+python src/research/smooth_temporal_encoder/prepare.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json
+python src/research/smooth_temporal_encoder/run.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json --stage spatial
+python src/research/smooth_temporal_encoder/prepare.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json --labels-only
+python src/research/smooth_temporal_encoder/evaluate.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json --stage all
+python src/research/smooth_temporal_encoder/full_static.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json
+python src/research/smooth_temporal_encoder/train_temporal.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json
+python src/research/smooth_temporal_encoder/rank_controls.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json
+python src/research/smooth_temporal_encoder/assess.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json
 python -m pytest tests/test_smooth_density.py -q
-python experiments/smooth_temporal_encoder_20260905/summarize.py --config experiments/smooth_temporal_encoder_20260905/config.json
+python src/research/smooth_temporal_encoder/summarize.py --config experiments/smooth_temporal_encoder_20260905/technical/config.json
 ```
 
 The `--labels-only` command records a completed assay-verification stage and can

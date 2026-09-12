@@ -77,7 +77,7 @@ def test_ptm_assay_keeps_neighbor_particles():
     import numpy as np
     from ase.build import bulk
     from scipy.spatial import cKDTree
-    from experiments.smooth_temporal_encoder_20260905.prepare import ptm_labels
+    from src.research.smooth_temporal_encoder.prepare import ptm_labels
     points = bulk("Al", "fcc", a=4.05, cubic=True).repeat((9, 9, 9)).positions
     center = points[len(points)//2]
     _, ids = cKDTree(points).query(center, k=193)

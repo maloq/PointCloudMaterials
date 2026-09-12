@@ -38,8 +38,8 @@ prove that additional decoder capacity can never help.
 
 ## New training protocol
 
-[Training configuration](training.json), [controller plan](plan.json),
-[standard analysis](static_analysis.yaml), [descriptive comparison](comparison.json).
+[Training configuration](technical/training.json), [controller plan](technical/plan.json),
+[standard analysis](technical/static_analysis.yaml), [descriptive comparison](technical/comparison.json).
 
 - Warm-start encoder, TDA head, forecast head and fixed scalers from the completed
   all-objective model; fresh optimizer and schedule. No teacher or EMA network.
@@ -69,11 +69,11 @@ Al contains ancestors of training continuations and is not an independent test.
 
 ```bash
 conda run -n pointnet python -m src.analysis.topology_nuances \
-  --plan experiments/mace_topology_nuances_20260907/plan.json --stage stability
+  --plan experiments/mace_topology_nuances_20260907/technical/plan.json --stage stability
 conda run -n pointnet python -m src.analysis.topology_nuances \
-  --plan experiments/mace_topology_nuances_20260907/plan.json --stage decoder
+  --plan experiments/mace_topology_nuances_20260907/technical/plan.json --stage decoder
 conda run -n pointnet python -m src.training_methods.topology_campaign \
-  --plan experiments/mace_topology_nuances_20260907/plan.json
+  --plan experiments/mace_topology_nuances_20260907/technical/plan.json
 ```
 
 The detached controller launch and current PID are recorded in the output's
@@ -105,7 +105,7 @@ disposable run outputs. Completed findings are linked in the September 8 review 
 ```bash
 PYTHONPATH=. conda run -n pointnet python \
   experiments/mace_topology_nuances_20260907/review.py \
-  --plan experiments/mace_topology_nuances_20260907/plan.json \
+  --plan experiments/mace_topology_nuances_20260907/technical/plan.json \
   --output output/mace_topology_nuances_20260907/review_20260908 \
   --last-checkpoint output/mace_topology_nuances_20260907/review_20260908/last_epoch6_weights.pt
 ```

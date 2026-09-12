@@ -13,12 +13,12 @@ The user explicitly requested starting training now instead of waiting for the
 deferred production-size benchmark. That waiting queue and the FP32 controller
 were stopped by verified process identity.
 
-Configuration: [training.json](training.json), [queue](plan.json),
-[static analysis](static.yaml), [tracked run spec](run_spec.json).
+Configuration: [training.json](technical/training.json), [queue](technical/plan.json),
+[static analysis](technical/static.yaml), [tracked run spec](technical/run_spec.json).
 Output: [`output/mace_bf16_training_20260908`](../../output/mace_bf16_training_20260908/).
 
 ```bash
-python scripts/experiment_registry.py run --spec experiments/mace_bf16_training_20260908/run_spec.json
+python scripts/experiment_registry.py run --spec experiments/mace_bf16_training_20260908/technical/run_spec.json
 ```
 
 Resume from the preserved first-epoch checkpoint at **update 500**, retaining
@@ -61,16 +61,16 @@ The full preflight passed and actual BF16 training was verified at update 530/42
 
 ## Interim metric review — 2026-09-08
 
-The CPU-only experiment diagnostic [analyze_training_metrics.py](analyze_training_metrics.py)
+The CPU-only experiment diagnostic [analyze_training_metrics.py](../../src/research/mace_bf16_training/analyze_training_metrics.py)
 captures the live logs, reconstructs weighted loss contributions, compares fixed
 validation measurements, and documents every objective and diagnostic. It does
 not change training or allocate GPU memory. Results and plots are saved in
 [training_review/RESULTS.md](../../output/mace_bf16_training_20260908/training_review/RESULTS.md).
 
 ```bash
-conda run -n pointnet python experiments/mace_bf16_training_20260908/analyze_training_metrics.py
+conda run -n pointnet python src/research/mace_bf16_training/analyze_training_metrics.py
 # Reproduce the same report from its captured input, without rereading live logs:
-conda run -n pointnet python experiments/mace_bf16_training_20260908/analyze_training_metrics.py \
+conda run -n pointnet python src/research/mace_bf16_training/analyze_training_metrics.py \
   --snapshot output/mace_bf16_training_20260908/training_review/inputs.json
 ```
 

@@ -110,3 +110,14 @@ retain the recovery checkpoint while successful analysis may remove it.
 
 `test_elemental_conversion.py` also verifies the explicit Al/FCC and Ti/BCC
 source lattice contracts and atom counts.
+
+## Research layout and metric documentation
+
+`test_research_layout.py` checks inference-cache deletion boundaries, retained
+provenance, legacy analysis locations and metric-definition/source hashes.
+`test_analysis_storage.py` covers portable readable galleries; the forecast tests
+check exact optimizer/sampler resume in both recorded output layouts.
+
+```bash
+conda run -n pointnet python -m pytest -q tests/test_research_layout.py tests/test_analysis_storage.py tests/test_embedding_forecast.py tests/test_experiment_registry.py
+```

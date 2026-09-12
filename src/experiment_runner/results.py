@@ -41,6 +41,7 @@ def find_best_checkpoint(run_dir: Path) -> Optional[Path]:
 
     # Checkpoints saved directly in the run dir.
     candidates.extend(run_dir.glob("*.ckpt"))
+    candidates.extend((run_dir / "technical").glob("*.ckpt"))
 
     if not candidates:
         return None
@@ -103,6 +104,8 @@ def _read_checkpoint_metric(run_dir: Path, metric_name: str) -> Optional[float]:
 def _read_metrics_json(run_dir: Path) -> Optional[Dict[str, Any]]:
     """Read a final_metrics.json if present (from run_ablation.py style runs)."""
     path = run_dir / "final_metrics.json"
+    if not path.exists():
+        path = run_dir / "technical/final_metrics.json"
     if path.exists():
         return json.loads(path.read_text())
     return None
@@ -589,6 +592,9 @@ def write_csv_tables(
     metrics_cfg: MetricsConfig,
 ) -> List[Path]:
     """Write aggregated CSV tables. Returns paths of files written."""
+    from .metric_docs import snapshot_metric_docs
+    snapshot_metric_docs(output_dir, "aggregation")
+    output_dir = output_dir / "tables"
     written: List[Path] = []
     ordered_groups = _ordered_result_groups(results)
 
@@ -651,6 +657,9 @@ def write_grouped_csv_tables(
     if not aggregated_results:
         return []
 
+    from .metric_docs import snapshot_metric_docs
+    snapshot_metric_docs(output_dir, "aggregation")
+    output_dir = output_dir / "tables"
     written: List[Path] = []
 
     final_path = output_dir / "final_metrics_grouped.csv"
@@ -700,7 +709,9 @@ def write_summary_json(
     aggregated_results: Sequence[AggregatedExperimentResult] | None = None,
 ) -> Path:
     """Write a JSON summary of all results."""
-    path = output_dir / "summary.json"
+    from .artifacts import result_folders
+    result_folders(output_dir)
+    path = output_dir / "technical/summary.json"
     payload = {
         "plan_name": plan.name,
         "generated_at": datetime.now().isoformat(),

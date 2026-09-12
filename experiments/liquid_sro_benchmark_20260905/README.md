@@ -30,7 +30,7 @@ and a central-atom readout. Graphs include the full two-hop receptive field.
 Learned candidates receive same-center jitter views with a separate VICReg
 projector; PTM, TDA, and future outcomes do not supervise encoder pretraining.
 
-Configuration: [config.json](config.json). Generated data, detached logs,
+Configuration: [config.json](technical/config.json). Generated data, detached logs,
 checkpoints, and the final table are stored physically in
 [output/liquid_sro_benchmark_20260905](../../output/liquid_sro_benchmark_20260905/).
 
@@ -59,14 +59,14 @@ Reproduce in a fresh output directory by changing `output` in `config.json`
 conda activate pointnet
 export OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4
 python -m pytest tests/test_liquid_sro_benchmark.py -q
-python experiments/liquid_sro_benchmark_20260905/prepare.py --config experiments/liquid_sro_benchmark_20260905/config.json
-python experiments/liquid_sro_benchmark_20260905/features.py --config experiments/liquid_sro_benchmark_20260905/config.json
-python experiments/liquid_sro_benchmark_20260905/null_control.py
-python experiments/liquid_sro_benchmark_20260905/robustness.py --config experiments/liquid_sro_benchmark_20260905/config.json --stage prepare
-python experiments/liquid_sro_benchmark_20260905/temporal.py --config experiments/liquid_sro_benchmark_20260905/config.json --stage prepare
-python experiments/liquid_sro_benchmark_20260905/train.py --config experiments/liquid_sro_benchmark_20260905/config.json
-python experiments/liquid_sro_benchmark_20260905/postprocess.py
-python experiments/liquid_sro_benchmark_20260905/conditioned_probe.py
+python src/research/liquid_sro_benchmark/prepare.py --config experiments/liquid_sro_benchmark_20260905/technical/config.json
+python src/research/liquid_sro_benchmark/features.py --config experiments/liquid_sro_benchmark_20260905/technical/config.json
+python src/research/liquid_sro_benchmark/null_control.py
+python src/research/liquid_sro_benchmark/robustness.py --config experiments/liquid_sro_benchmark_20260905/technical/config.json --stage prepare
+python src/research/liquid_sro_benchmark/temporal.py --config experiments/liquid_sro_benchmark_20260905/technical/config.json --stage prepare
+python src/research/liquid_sro_benchmark/train.py --config experiments/liquid_sro_benchmark_20260905/technical/config.json
+python src/research/liquid_sro_benchmark/postprocess.py
+python src/research/liquid_sro_benchmark/conditioned_probe.py
 ```
 
 `postprocess.py` waits for detached training to complete, then selects retained

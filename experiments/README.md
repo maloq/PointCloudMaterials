@@ -9,6 +9,10 @@ before launching or reorganizing runs.
 The [Al MEAM crystallization campaign](al_meam_crystallization_20260911/README.md)
 applies the Ti source-and-branches workflow to 100000 Al atoms with the shooting potential.
 
+For the current folder and metric conventions, see [research layout](../docs/research_layout.md).
+Historical implementation is in [src/research](../src/research/README.md); machine
+configs and inventories belong in each record's `technical/` directory.
+
 These directories retain configurations and findings for individual research
 questions. Retired MACE implementations and their dedicated diagnostics were
 removed on 2026-09-09; completed records identify the source snapshots needed
@@ -28,6 +32,7 @@ selection and topology accuracy.
 
 | Experiment | Question |
 | --- | --- |
+| [shooting_ablation_20260901](shooting_ablation_20260901/README.md) | Historical shooting, committor and temporal-pretraining protocols and their standalone configurations |
 | [embedding_forecast_20260911](embedding_forecast_20260911/README.md) | Forecast separate 0–3/3–6/6–9 ps embedding means or direct/autoregressive future paths; [enlarged augmented runs](embedding_forecast_20260911/SCALE_RUN.md) reduced to 32 epochs and one Slurm job per model |
 | [mace_vicreg_full_20260910](mace_vicreg_full_20260910/README.md) | Corrected original MACE + VICReg on all original Al/Mg/Ta views plus completed new Ta/Ti trajectories; detached H100 training and standard analysis |
 | [mace_vicreg_relaxed_20260910](mace_vicreg_relaxed_20260910/README.md) | MEAM topology/history comparisons in corrected original VICReg; standard checkpoint analysis with topology probes, source uncertainty and history interventions |

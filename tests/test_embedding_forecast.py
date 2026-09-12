@@ -26,7 +26,8 @@ def test_augmentation_preserves_anchor_and_carries_only_past():
     torch.testing.assert_close(history, original)
 
 
-def test_chunk_resume_restores_augmented_optimizer_and_sampling(tmp_path):
+@pytest.mark.parametrize("legacy_layout", [False, True])
+def test_chunk_resume_restores_augmented_optimizer_and_sampling(tmp_path, legacy_layout):
     cache_fixture(tmp_path / 'cache')
     model_config = autoregressive_variant()
     config = dict(data=dict(cache=str(tmp_path / 'cache')), output=str(tmp_path / 'whole'),
@@ -41,16 +42,22 @@ def test_chunk_resume_restores_augmented_optimizer_and_sampling(tmp_path):
     result = train(chunk_config, model_config, 3, 'cpu', epochs_per_invocation=3)
     directory = tmp_path / 'chunked' / f"{model_config['name']}-seed3"
     assert result['state'] == 'training_paused' and result['completed_epochs'] == 3
-    assert not (directory / 'test_metrics.json').exists()
+    assert not (directory / 'technical/test_metrics.json').exists()
+    artifacts = directory / 'technical'
+    if legacy_layout:
+        for path in artifacts.iterdir():
+            path.rename(directory / path.name)
+        artifacts.rmdir()
+        artifacts = directory
     train(chunk_config, model_config, 3, 'cpu', resume=True, epochs_per_invocation=3)
-    whole = torch.load(tmp_path / 'whole' / directory.name / 'last.pt', weights_only=False)
-    chunked = torch.load(directory / 'last.pt', weights_only=False)
+    whole = torch.load(tmp_path / 'whole' / directory.name / 'technical/last.pt', weights_only=False)
+    chunked = torch.load(artifacts / 'last.pt', weights_only=False)
     for name in whole['model']:
         torch.testing.assert_close(whole['model'][name], chunked['model'][name], rtol=0, atol=0)
     assert whole['scheduler'] == chunked['scheduler']
     assert whole['step'] == chunked['step']
     torch.testing.assert_close(whole['sampler_rng'], chunked['sampler_rng'], rtol=0, atol=0)
-    assert len((directory / 'training.jsonl').read_text().splitlines()) == 6
+    assert len((artifacts / 'training.jsonl').read_text().splitlines()) == 6
     with pytest.raises(ValueError, match='exact scientific config'):
         train(dict(chunk_config, stride_ps=1.5), model_config, 3, 'cpu', resume=True)
 
@@ -264,7 +271,7 @@ def test_fit_checkpoint_roundtrip_and_collection(tmp_path, model_config):
     directory = tmp_path / 'runs' / f"{model_config['name']}-seed3"
     restored = evaluate_checkpoint(directory, 'cpu')
     assert restored['source_mean']['mse'] == metrics['source_mean']['mse']
-    assert (directory / 'last.pt').is_file()
+    assert (directory / 'technical/last.pt').is_file()
     report = collect(config)
     assert report['variants'][model_config['name']]['persistence']['gain'] > 0
     with pytest.raises(FileExistsError, match='overwrite'):

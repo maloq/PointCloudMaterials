@@ -14,7 +14,7 @@ for numerical metric previews, reports, checkpoints, config files and plots.
 For current MACE results, open the short [MACE gallery](../output/mace/index.html):
 `output/mace/<variant>-seed<seed>/` or `output/mace/full/` contains UMAP, t-SNE,
 spatial views, representatives and metrics. Detailed analysis artifacts live in
-`/home/ids/vmorozov/analysis/mace/artifacts/`. Each report's `source.json` records
+`/home/ids/vmorozov/analysis/mace/artifacts/`. Each report's `technical/source.json` records
 the original artifact paths and checkpoint hash.
 
 Add questions to `experiments/ideas.json`; each needs an ID, title, question,
@@ -48,9 +48,9 @@ runs retain their results and original execution source/config snapshots.
 | `experiments/<question>_<date>/README.md` | Versioned research question, protocol, reproduction commands and findings |
 | `experiments/ideas.json` | Small versioned backlog: question, state, next action and evidence |
 | `experiments/registry.json` | Explicit IDS storage roots, scanned read-only |
-| `output/registry/experiments.json` | Generated inventory and results index |
+| `output/registry/technical/experiments.json` | Generated inventory and results index |
 | `output/registry/index.html` | Generated navigation, progress and plot galleries |
-| `output/registry/config_snapshot/` | Verified config/recipe snapshots and capture indexes |
+| `output/registry/technical/config_snapshot/` | Verified config/recipe snapshots and capture indexes |
 | `<run>/run_record.json` | Latest tracked execution, not a replacement for scientific status |
 | `<run>/tracking/<timestamp>/` | Immutable execution attempt, config copies, source archive, git patch and outcome |
 
@@ -102,13 +102,14 @@ Requested post-training analysis failures now fail the workflow explicitly.
 Default Hydra training runs use:
 
 ```text
-output/runs/training/<experiment_name>/<timestamp>/
+output/<experiment_name>/<timestamp>/technical/
 ```
 
 Explicit run directories and submitted jobs retain their original paths. For new
 simulation protocols, use the configured IDS simulation root; the run record lives
 beside the simulation artifacts. Keep derived training datasets on IDS, not under
-the repository. Do not move active campaigns or rewrite their submitted scripts.
+the repository. New default Hydra runs put checkpoints, logs and execution attempts
+inside `technical/`, with post-training plots and metric tables at the run root. Do not move active campaigns or rewrite their submitted scripts.
 
 For another maintained command, use an explicit JSON execution spec:
 
@@ -149,6 +150,14 @@ run configs, source snapshots and hashes remain the evidence. Missing provenance
 is displayed as not recorded.
 
 ## Retention and cleanup
+
+Use `experiment_registry.py storage` for a readable size report, and
+`experiment_registry.py clean --root output/QUESTION/RUN` for a quick inference-cache
+preview. Add `--apply --inactive` only after checking readers/writers and queued jobs.
+The cleaner retains sidecar provenance and uses the verified prune implementation.
+Both local `output/` and legacy `outputs/` are supported; external symlink targets
+are excluded. See [the current output/metrics conventions](research_layout.md).
+
 
 Keep the checkpoints used for each reported model/seed comparison, including
 distinct best/final models when compared. Keep selected weights and the scalers
@@ -216,12 +225,12 @@ The adjacent manifest records member hashes and the archive checksum. Extract
 into a separate directory to inspect logs or recover W&B journals for replay.
 Simulation and maintenance logs are excluded, except the standalone W&B folder.
 
-## Next: configs
+## Configs and readable outputs
 
 Keep reusable Hydra composition under `configs/`; keep question-specific launch
 specs beside the research recipe; keep immutable resolved configs with each run.
-`config_snapshot/index.json` maps current original paths to content-addressed
-copies and SHA-256 hashes. Previous capture indexes are retained, so a later config
+`technical/config_snapshot/index.json` maps current original paths to content-addressed
+copies and SHA-256 hashes. Pre-migration `config_snapshot/` files retain their original paths for saved provenance references. New captures live under `technical/`. Previous capture indexes are retained, so a later config
 reorganization cannot overwrite this evidence. Build the registry before moving
 configs, update composition/import/command references together, and preserve paths
-embedded in active jobs. The actual configs-folder migration is a separate step.
+embedded in active jobs. Historical standalone configs have now moved into their experiment records; reusable Hydra composition and simulation config paths are preserved. See [the layout and cleanup record](research_layout.md).

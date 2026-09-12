@@ -277,7 +277,7 @@ actually creates the gain.
 
 The ordinary-trajectory pretraining ablation is implemented by
 `scripts/run_shooting_ablation.py temporal-pretraining` with
-`configs/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901.yaml`.
+`experiments/shooting_ablation_20260901/technical/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901.yaml`.
 It reads the migrated `trajectory_binary_float32` arrays by memory map, tracks the
 same 64 shooting center atom IDs, and caches GeoFrameV2 tokens for a central local
 environment, 16 spatial satellites, and central futures at 6, 12, and 24 ps.
@@ -297,7 +297,7 @@ source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 cd /home/infres/vmorozov/PointCloudMaterials
 PYTHONPATH=. python scripts/run_shooting_ablation.py temporal-pretraining \
-  --config configs/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901.yaml \
+  --config experiments/shooting_ablation_20260901/technical/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901.yaml \
   --stage all
 ```
 
@@ -388,7 +388,7 @@ source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 cd /home/infres/vmorozov/PointCloudMaterials
 PYTHONPATH=. python scripts/run_shooting_ablation.py dynamical \
-  --config configs/shooting_dynamical_ablation7_geoframe_v2_20260901.yaml \
+  --config experiments/shooting_ablation_20260901/technical/shooting_dynamical_ablation7_geoframe_v2_20260901.yaml \
   --stage all
 ```
 
@@ -444,10 +444,10 @@ Run the completed short-horizon and outcome analyses with:
 
 ```bash
 PYTHONPATH=. python scripts/run_shooting_ablation.py short-horizon \
-  --config configs/shooting_short_horizon_ablation7b_geoframe_v2_20260901.yaml \
+  --config experiments/shooting_ablation_20260901/technical/shooting_short_horizon_ablation7b_geoframe_v2_20260901.yaml \
   --stage all
 PYTHONPATH=. python scripts/analyze_shooting_branch_outcomes.py \
-  --config configs/shooting_short_horizon_ablation7b_geoframe_v2_20260901.yaml
+  --config experiments/shooting_ablation_20260901/technical/shooting_short_horizon_ablation7b_geoframe_v2_20260901.yaml
 ```
 
 Results are under

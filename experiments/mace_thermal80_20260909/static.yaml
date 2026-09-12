@@ -3,7 +3,7 @@ checkpoint:
   output_dir: output/mace_thermal80_20260909/runs/thermal/static_analysis
   cuda_device: 0
 inputs:
-  data_config: experiments/pretrained_mace_spatiotemporal_80_20260906/static_data.yaml
+  data_config: experiments/pretrained_mace_spatiotemporal_80_20260906/technical/static_data.yaml
   static_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null

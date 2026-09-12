@@ -41,7 +41,7 @@ The source data cache is only read from `/home/ids`.
 
 ```bash
 conda run -n pointnet python -m src.training_methods.pretrained_mace_queue \
-  --plan experiments/pretrained_mace_ablations_lr5_20260907/plan.json
+  --plan experiments/pretrained_mace_ablations_lr5_20260907/technical/plan.json
 ```
 
 Detached controller launched September 7 at **11:01 Paris**, PID 1204708, in
@@ -62,7 +62,7 @@ after reporting; selected encoders, plots and metrics remain.
 ```bash
 PYTHONPATH=. conda run -n pointnet python \
   experiments/pretrained_mace_ablations_20260907/verify.py \
-  --plan experiments/pretrained_mace_ablations_lr5_20260907/plan.json
+  --plan experiments/pretrained_mace_ablations_lr5_20260907/technical/plan.json
 ```
 
 Verification covers matched configurations/update counts, exact objective

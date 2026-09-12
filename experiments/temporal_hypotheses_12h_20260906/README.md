@@ -125,7 +125,7 @@ from obsolete/regenerable files while retaining source data and valid results.
 
 ```bash
 conda activate pointnet
-OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python experiments/temporal_hypotheses_12h_20260906/run.py --config experiments/temporal_hypotheses_12h_20260906/config.json
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python src/research/temporal_hypotheses_12h/run.py --config experiments/temporal_hypotheses_12h_20260906/technical/config.json
 ```
 
 The actual detached launch has a process-group watchdog, a twelve-hour budget,
@@ -163,9 +163,9 @@ rerun after both evaluations complete.
 ```bash
 conda activate pointnet
 export OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4
-python experiments/temporal_hypotheses_12h_20260906/run.py --config experiments/temporal_hypotheses_12h_20260906/config.json --analysis-only
-python experiments/temporal_hypotheses_12h_20260906/run.py --config experiments/temporal_hypotheses_12h_20260906/config.json --screen-analysis
-python experiments/temporal_hypotheses_12h_20260906/run.py --config experiments/temporal_hypotheses_12h_20260906/config.json --review-only
+python src/research/temporal_hypotheses_12h/run.py --config experiments/temporal_hypotheses_12h_20260906/technical/config.json --analysis-only
+python src/research/temporal_hypotheses_12h/run.py --config experiments/temporal_hypotheses_12h_20260906/technical/config.json --screen-analysis
+python src/research/temporal_hypotheses_12h/run.py --config experiments/temporal_hypotheses_12h_20260906/technical/config.json --review-only
 ```
 
 These modes call shared implementation in `src/analysis/temporal_campaign.py`.
@@ -179,11 +179,11 @@ stored separately in `analysis_source_snapshot/` and `analysis_provenance.json`.
 
 Question: what spatial environments does the validation-selected predictive
 density encoder distinguish across the six complete static-Al snapshots?
-The explicit settings are in [full_static_Al.json](full_static_Al.json).
+The explicit settings are in [full_static_Al.json](technical/full_static_Al.json).
 The existing entry point calls `src/analysis/temporal_static.py`:
 
 ```bash
-OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python experiments/temporal_hypotheses_12h_20260906/run.py --config experiments/temporal_hypotheses_12h_20260906/config.json --static-config experiments/temporal_hypotheses_12h_20260906/full_static_Al.json
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python src/research/temporal_hypotheses_12h/run.py --config experiments/temporal_hypotheses_12h_20260906/technical/config.json --static-config experiments/temporal_hypotheses_12h_20260906/technical/full_static_Al.json
 ```
 
 This command requires a new output directory. It encodes all 772,953 existing
@@ -217,13 +217,13 @@ This is the requested standard post-training workflow. The preceding custom
 full-static run is retained as an exploratory diagnostic; it used an additional
 Linear/LayerNorm representation map and did not run the complete standard pipeline.
 
-[static_Al_encoder_analysis.yaml](static_Al_encoder_analysis.yaml) is an exact copy
+[static_Al_encoder_analysis.yaml](technical/static_Al_encoder_analysis.yaml) is an exact copy
 of `configs/analysis/static.yaml` except for checkpoint path, output directory and
 input-data configuration path. The full runtime profile, connected-regime analysis,
 representatives, t-SNE/UMAP, MD outputs, transition analysis and Blender settings
 remain those of the standard configuration.
 
-[static_Al_encoder_data.yaml](static_Al_encoder_data.yaml) retains the six-frame
+[static_Al_encoder_data.yaml](technical/static_Al_encoder_data.yaml) retains the six-frame
 static loader and its 160-point sampling/auto-cutoff settings, but uses physical
 Angstrom offsets (`normalize: false`), all 160 points for representative geometry,
 and a distinct physical-input cache on IDS. Raw encoder inference is invariant to
@@ -248,7 +248,7 @@ from src.analysis.density_encoder_adapter import export_encoder
 export_encoder(
     Path('output/temporal_hypotheses_12h_20260906/checkpoints/confirm_density_predictive_seed123.pt'),
     Path('output/temporal_hypotheses_12h_20260906/encoder_only_checkpoint/density_encoder.ckpt'),
-    Path('experiments/temporal_hypotheses_12h_20260906/static_Al_encoder_data.yaml'),
+    Path('experiments/temporal_hypotheses_12h_20260906/technical/static_Al_encoder_data.yaml'),
 )
 ```
 
@@ -256,7 +256,7 @@ Run the maintained analysis directly:
 
 ```bash
 conda activate pointnet
-OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python -m src.analysis.pipeline experiments/temporal_hypotheses_12h_20260906/static_Al_encoder_analysis.yaml
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python -m src.analysis.pipeline experiments/temporal_hypotheses_12h_20260906/technical/static_Al_encoder_analysis.yaml
 ```
 
 Output: `output/temporal_hypotheses_12h_20260906/static_pipeline_encoder_only/`.
@@ -282,7 +282,7 @@ user's exact August 31 grouped-FactorVAE GeoFrame checkpoint? The
 record findings and distinguish measurement from causal hypotheses.
 
 ```bash
-OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python experiments/temporal_hypotheses_12h_20260906/diagnose_spatial_geometry.py --config experiments/temporal_hypotheses_12h_20260906/spatial_diagnosis.json
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4 python src/research/temporal_hypotheses_12h/diagnose_spatial_geometry.py --config experiments/temporal_hypotheses_12h_20260906/technical/spatial_diagnosis.json
 ```
 
 The thin dated recipe calls `src/analysis/static_spatial_diagnosis.py` and requires

@@ -16,10 +16,10 @@ Launched detached on September 7 at 00:00 Paris time in allocation 983527.
 
 ```bash
 conda run -n pointnet python -m src.training_methods.pretrained_mace \
-  --config experiments/pretrained_mace_80_dt01_cosine_20260906/config.json
+  --config experiments/pretrained_mace_80_dt01_cosine_20260906/technical/config.json
 ```
 
-[Configuration](config.json), [standard static analysis](static_analysis.yaml).
+[Configuration](technical/config.json), [standard static analysis](technical/static_analysis.yaml).
 The prior run was stopped at the user's request. This phase initializes from
 its saved step **2,600**, retaining encoder weights, both prediction heads, and
 the fixed feature/TDA scalers. `initialization.pt` contains those weights and

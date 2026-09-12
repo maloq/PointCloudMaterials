@@ -86,9 +86,11 @@ def run(plan):
         status['jobs'][item['name']]='complete';update()
         run_command([sys.executable,'-m','src.analysis.pretrained_mace_ablation','--plan',plan['_path'],'--collect'],out/'collect.log',end)
         if plan['remove_completed_inference_cache']:
-            cache=directory/'static_analysis/analysis_inference_cache.npz'
+            from src.experiment_runner.artifacts import analysis_artifacts
+            from src.analysis.inference_cache import discard_inference_cache
+            cache=analysis_artifacts(directory/'static_analysis')/'analysis_inference_cache.npz'
             write_json(directory/'removed_cache.json',dict(path=str(cache),bytes=cache.stat().st_size,reason='Disposable inference cache removed after reports and comparison; reproduce with the retained encoder and analysis configuration.'))
-            cache.unlink()
+            discard_inference_cache(cache.parent, cache.name)
         return True
     try:
         while plan['predecessor'] is not None and not predecessor_ready(plan['predecessor']):

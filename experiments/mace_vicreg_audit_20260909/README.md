@@ -24,7 +24,7 @@ epoch-6 checkpoint includes its one TDA-active epoch; pre-TDA statements use
 the recorded epoch-1–5 metrics separately.
 
 ```bash
-PYTHONPATH=. conda run -n pointnet python experiments/mace_vicreg_audit_20260909/audit.py \
+PYTHONPATH=. conda run -n pointnet python src/research/mace_vicreg_audit/audit.py \
   --config experiments/mace_vicreg_audit_20260909/config.json
 ```
 
@@ -42,9 +42,9 @@ implementation is the primary numerical reference.
 Additional controls use the same command:
 
 ```bash
-PYTHONPATH=. conda run -n pointnet python experiments/mace_vicreg_audit_20260909/audit.py --config experiments/mace_vicreg_audit_20260909/conditional.json --stage readouts
-PYTHONPATH=. conda run -n pointnet python experiments/mace_vicreg_audit_20260909/audit.py --config experiments/mace_vicreg_audit_20260909/joint.json --stage joint
-PYTHONPATH=. conda run -n pointnet python experiments/mace_vicreg_audit_20260909/audit.py --config experiments/mace_vicreg_audit_20260909/config.json --stage gradients
+PYTHONPATH=. conda run -n pointnet python src/research/mace_vicreg_audit/audit.py --config experiments/mace_vicreg_audit_20260909/conditional.json --stage readouts
+PYTHONPATH=. conda run -n pointnet python src/research/mace_vicreg_audit/audit.py --config experiments/mace_vicreg_audit_20260909/joint.json --stage joint
+PYTHONPATH=. conda run -n pointnet python src/research/mace_vicreg_audit/audit.py --config experiments/mace_vicreg_audit_20260909/config.json --stage gradients
 ```
 
 The conditional control changes only the reference variance/covariance moments

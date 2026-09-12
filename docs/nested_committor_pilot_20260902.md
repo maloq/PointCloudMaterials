@@ -79,7 +79,7 @@ cd /home/infres/vmorozov/PointCloudMaterials
 source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
 PYTHONPATH=. python scripts/run_nested_committor.py \
-  --config configs/nested_committor_geoframe_v2_20260902.yaml
+  --config experiments/shooting_ablation_20260901/technical/nested_committor_geoframe_v2_20260902.yaml
 ```
 
 Outputs are written to

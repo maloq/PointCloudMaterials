@@ -224,7 +224,9 @@ def run_post_training_analysis(
         output_dir_override=output_dir,
         cuda_device_override=cuda_device,
     )
-    out_dir = Path(run_settings.output_dir)
+    from src.experiment_runner.artifacts import analysis_artifacts, result_folders
+    result_root = result_folders(run_settings.output_dir)
+    out_dir = analysis_artifacts(result_root)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     _step("Loading checkpoint training config")
@@ -394,7 +396,9 @@ def run_post_training_analysis(
     runtime_metrics = asdict(runtime_profile)
     runtime_metrics.update(md_num_views=figure_settings.md_num_views,
                            raytrace_enabled=figure_settings.raytrace_enabled)
-    all_metrics: Dict[str, Any] = {"runtime_profile": runtime_metrics}
+    from src.experiment_runner.registry import sha256
+    all_metrics: Dict[str, Any] = {"runtime_profile": runtime_metrics,
+                                  "checkpoint_sha256": sha256(Path(run_settings.checkpoint_path))}
     dm = None
     if temporal_real_mode:
         _step("Building temporal dump analysis dataset")
@@ -1053,6 +1057,7 @@ def run_post_training_analysis(
             out_dir=out_dir,
             elapsed=time.perf_counter() - t0,
         )
+        publish_report(out_dir, result_root, checkpoint_sha256=all_metrics["checkpoint_sha256"], update_index=False)
         return merged_metrics
 
     # ── PCA + latent statistics ────────────────────────────────────────
@@ -1631,6 +1636,7 @@ def run_post_training_analysis(
     write_json(metrics_path, all_metrics)
     if 'topology' in all_metrics:
         write_json(Path(run_settings.checkpoint_path).parent/'final_metrics.json', all_metrics['topology']['flat_metrics'])
+    publish_report(out_dir, result_root, update_index=False)
     report_dir = report_directory(cfg, analysis_cfg)
     if report_dir is not None:
         publish_report(out_dir, report_dir)
@@ -1681,7 +1687,8 @@ def main() -> None:
     if args.batch is not None:
         batch = OmegaConf.load(args.batch)
         for item in batch.runs:
-            output = Path(item.output_dir)
+            from src.experiment_runner.artifacts import analysis_artifacts
+            output = analysis_artifacts(item.output_dir)
             completed = output/'analysis_metrics.json'
             if args.publish_only:
                 settings = load_checkpoint_analysis_config(item.analysis_config)

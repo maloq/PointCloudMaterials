@@ -2,7 +2,7 @@ checkpoint:
   # Fill this with the trained TMF checkpoint.
   path: output/2026-04-16/21-26-34/TMF_l256_S32_B16_C5_RI_MAE_Invariant-epoch=05.ckpt
   # null -> <checkpoint_dir>/analysis
-  output_dir: outputs/tmf_analysis
+  output_dir: output/temporal-motif/standard
   cuda_device: 0
 
 inputs:

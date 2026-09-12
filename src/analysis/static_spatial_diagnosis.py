@@ -7,11 +7,12 @@ import pandas as pd
 from scipy.spatial import cKDTree
 
 from src.vis_tools.latent_analysis_vis import compute_kmeans_labels
+from src.experiment_runner.artifacts import analysis_artifacts
 
 
 def run(cfg):
     out=Path(cfg['output']);out.mkdir(parents=True,exist_ok=False)
-    roots={k:Path(v) for k,v in cfg['analyses'].items()}
+    roots={k:analysis_artifacts(v) for k,v in cfg['analyses'].items()}
     raw_cache=np.load(roots['density_raw']/'analysis_inference_cache.npz')
     old_cache=np.load(roots['old_geoframe_projector']/'analysis_inference_cache.npz')
     coords=raw_cache['coords'];old_coords=old_cache['coords']

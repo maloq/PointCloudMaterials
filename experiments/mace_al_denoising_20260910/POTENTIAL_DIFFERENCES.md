@@ -257,7 +257,7 @@ This Markdown file is a versioned experiment record.
 ```bash
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 OVITO_THREAD_COUNT=1 PYTHONPATH=. conda run --no-capture-output -n pointnet \
-  python experiments/mace_al_denoising_20260910/analyze_potential_differences.py
+  python src/research/mace_al_denoising/analyze_potential_differences.py
 ```
 
 The force evaluations use the GPU binary and potential paths in

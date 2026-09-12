@@ -5,7 +5,7 @@ by this research queue. The checkpoint selection, sweep and Hydra configuration
 names remain the original experiment's explicit assumptions.
 
 ```bash
-conda run -n pointnet python experiments/factor_vae_20260901/run_queue.py --help
+conda run -n pointnet python src/research/factor_vae/run_queue.py --help
 ```
 
 The queue's arguments select its output root and execution settings. It records

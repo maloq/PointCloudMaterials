@@ -27,15 +27,19 @@ def train(cfg: DictConfig, run_analysis: bool = True):
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="vicreg_geo_frame_multiscale_8_16_l128",
+    config_name=None,
 )
 def main(cfg: DictConfig):
+    if not cfg:
+        raise ValueError("Select a training configuration with --config-name NAME; see configs/README.md.")
     train(cfg)
 
 
 if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        raise SystemExit("Select --config-name NAME; see configs/README.md for available training configurations.")
     if not any(arg.startswith("hydra.run.dir=") for arg in sys.argv):
-        sys.argv.append("hydra.run.dir=output/runs/training/${experiment_name}/${now:%Y%m%d_%H%M%S}")
+        sys.argv.append("hydra.run.dir=output/${experiment_name}/${now:%Y%m%d-%H%M%S}/technical")
     main()
 
 

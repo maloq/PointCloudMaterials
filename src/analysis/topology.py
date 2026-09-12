@@ -155,8 +155,12 @@ def run_topology_analysis(*, model, cfg, analysis_cfg, checkpoint_path, out_dir,
 def collect(root, specification):
     cfg = json.loads(Path(specification).read_text())
     report_root = cfg.get('report_root')
-    files = (sorted(p.parent/'metrics.json' for p in Path(report_root).glob('*/source.json')) if report_root is not None
-             else sorted(Path(root).glob('*/**/analysis_standard/analysis_metrics.json')))
+    if report_root is not None:
+        manifests = sorted(Path(report_root).glob('*/technical/source.json')) + sorted(Path(report_root).glob('*/source.json'))
+        files = [p.parent/'metrics.json' for p in manifests]
+    else:
+        files = sorted(set(Path(root).glob('*/**/analysis_standard/**/analysis_metrics.json'))
+                       | set(Path(root).glob('*/**/technical/analysis_metrics.json')))
     groups = {name:[] for name in cfg['variants']}
     for path in files:
         result = json.loads(path.read_text())['topology']
@@ -192,9 +196,9 @@ def collect(root, specification):
     ridge_comparisons = {f'{candidate}_versus_{reference}':paired_source_gain(
         ridge_errors[reference], ridge_errors[candidate], reference_sources, cfg['bootstrap_seed'])
         for reference,candidate in cfg['comparisons']}
-    output = Path(root)/'comparison'
-    output.mkdir(exist_ok=True)
-    write_json(output/'metrics.json', dict(results=results, comparisons=comparisons,
+    from src.experiment_runner.artifacts import result_folders
+    output = result_folders(Path(root)/'comparison')
+    write_json(output/'technical/metrics.json', dict(results=results, comparisons=comparisons,
                                          ridge_comparisons=ridge_comparisons))
     lines = ['# MEAM comparison in the original VICReg trainer', '',
         '| Variant | Test balanced MSE | Within-frame R² | Projector ridge MSE |', '|---|---:|---:|---:|']
@@ -209,5 +213,8 @@ def collect(root, specification):
         lo,hi = r['source_bootstrap_95_percent_interval']
         lines.append(f'| {name} | {100*r["relative_mse_reduction"]:.2f}% | [{100*lo:.2f}%, {100*hi:.2f}%] |')
     lines += ['', 'Intervals resample six whole source trajectories after averaging seeds. Comparisons are exploratory; this cohort was already evaluated in the frozen-MACE experiment.']
+    from src.experiment_runner.metric_docs import write_metric_table
+    write_metric_table(dict(results=results, comparisons=comparisons, ridge_comparisons=ridge_comparisons),
+                       output, family='topology', name='comparison')
     (output/'RESULTS.md').write_text('\n'.join(lines)+'\n')
     print(output/'RESULTS.md', flush=True)

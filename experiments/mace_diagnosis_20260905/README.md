@@ -6,18 +6,18 @@ transferred structural readout?
 
 This is an experiment record, not a maintained command. It inspects the completed
 [smooth pilot](../smooth_temporal_encoder_20260905/README.md) without replacing its
-checkpoints or metrics. Configuration: [config.json](config.json). Generated
+checkpoints or metrics. Configuration: [config.json](technical/config.json). Generated
 diagnostics and findings live in
 [output/mace_diagnosis_20260905](../../output/mace_diagnosis_20260905/).
 
 Use `pointnet` from the repository root:
 
 ```bash
-python experiments/mace_diagnosis_20260905/readouts.py --config experiments/mace_diagnosis_20260905/config.json
-python experiments/mace_diagnosis_20260905/features.py --config experiments/mace_diagnosis_20260905/config.json
-python experiments/mace_diagnosis_20260905/views.py --config experiments/mace_diagnosis_20260905/config.json
-python experiments/mace_diagnosis_20260905/objectives.py --config experiments/mace_diagnosis_20260905/config.json
-python experiments/mace_diagnosis_20260905/report.py --config experiments/mace_diagnosis_20260905/config.json
+python src/research/mace_diagnosis/readouts.py --config experiments/mace_diagnosis_20260905/technical/config.json
+python src/research/mace_diagnosis/features.py --config experiments/mace_diagnosis_20260905/technical/config.json
+python src/research/mace_diagnosis/views.py --config experiments/mace_diagnosis_20260905/technical/config.json
+python src/research/mace_diagnosis/objectives.py --config experiments/mace_diagnosis_20260905/technical/config.json
+python src/research/mace_diagnosis/report.py --config experiments/mace_diagnosis_20260905/technical/config.json
 ```
 
 The readout control freezes all encoders. It fits the existing class-balanced

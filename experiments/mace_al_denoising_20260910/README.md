@@ -189,7 +189,7 @@ its own session, `/dev/null` input and a persistent log in
 The batch launch uses the existing Slurm submission helper and family command:
 
 ```bash
-PYTHONPATH=. python experiments/mace_al_denoising_20260910/submit_slurm.py \
+PYTHONPATH=. python src/research/mace_al_denoising/submit_slurm.py \
   --plan experiments/mace_al_denoising_20260910/slurm.json --job prepare_full
 ```
 

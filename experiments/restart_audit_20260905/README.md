@@ -6,7 +6,7 @@ Run from the repository root, in `pointnet`, inside a 24-rank CPU Slurm
 allocation:
 
 ```bash
-python experiments/restart_audit_20260905/diagnose_restart.py \
+python src/research/restart_audit/diagnose_restart.py \
   --smoke-root /home/ids/vmorozov/simulations/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904 \
   --output-root /home/ids/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001
 ```

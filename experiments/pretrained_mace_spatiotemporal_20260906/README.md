@@ -23,7 +23,7 @@ train-only initialization scaler. There is no output projector or teacher.
 
 ```bash
 conda run -n pointnet python -m src.training_methods.pretrained_mace \
-  --config experiments/pretrained_mace_spatiotemporal_20260906/config.json
+  --config experiments/pretrained_mace_spatiotemporal_20260906/technical/config.json
 ```
 
 Stages `--stage prepare`, `--stage train`, and `--stage analysis` are available.
@@ -32,7 +32,7 @@ existing run directory. Preparation reuses the exact recorded complete shards;
 use a new cache for different data settings. The full stage chains preparation,
 training, selected-encoder export, the existing analysis pipeline and its report.
 
-Configuration: [config.json](config.json). Shared code:
+Configuration: [config.json](technical/config.json). Shared code:
 `src/data_utils/pretrained_mace.py`, `src/models/encoders/pretrained_mace.py`,
 `src/training_methods/pretrained_mace.py`,
 `src/analysis/pretrained_mace_adapter.py`.
@@ -107,7 +107,7 @@ selected at epoch end. Checkpoints do not provide automatic resume semantics.
 
 Reproduce numerical checks with `PYTHONPATH=. conda run -n pointnet python
 experiments/pretrained_mace_spatiotemporal_20260906/verify.py --config
-experiments/pretrained_mace_spatiotemporal_20260906/config.json` (requires prepared
+experiments/pretrained_mace_spatiotemporal_20260906/technical/config.json` (requires prepared
 data and CUDA; run when the GPU is available). This is experiment verification
 code, not another training runner.
 
@@ -122,9 +122,9 @@ all populated parameter gradients (maximum absolute difference 3.17e-7).
 Preflight batch 768 used 34.63 GB of CUDA allocations; its first complete step
 took 6.73 s (an estimate, not a steady-state benchmark).
 
-[static_analysis.yaml](static_analysis.yaml) retains the scientific and display
+[static_analysis.yaml](technical/static_analysis.yaml) retains the scientific and display
 settings of `configs/analysis/static.yaml`, changing only checkpoint, data override
-and output paths. [static_data.yaml](static_data.yaml) keeps all **772,953 original
+and output paths. [static_data.yaml](technical/static_data.yaml) keeps all **772,953 original
 Al grid-selected atom centers**. The optional static `atomic_context` input
 expansion uses `src/data_utils/atomic_context.py` to query 512 real nearest atoms
 around those same centers. The full 10 Å halo and distance to the nonperiodic

@@ -41,15 +41,17 @@ def saved_reference_spatial_rows(cfg,frames):
     import pandas as pd
     from scipy.spatial import cKDTree
     settings=cfg['saved_static_reference'];out=Path(cfg['output'])
-    saved=pd.read_csv(settings['metrics_csv']);cache=np.load(out/'static_analysis/analysis_inference_cache.npz')
+    from src.experiment_runner.artifacts import analysis_artifacts
+    analysis_root=analysis_artifacts(out/'static_analysis')
+    saved=pd.read_csv(settings['metrics_csv']);cache=np.load(analysis_root/'analysis_inference_cache.npz')
     rows=[];offset=0;rng=np.random.default_rng(20260907)
     for frame in frames:
         name=frame['output_name'];sl=slice(offset,offset+frame['num_samples']);coordinates=cache['coords'][sl]
-        original=np.load(Path(settings['model_analysis'])/'snapshots'/name/'md_space/local_structure_coords_clusters.npz')['coords']
+        original=np.load(analysis_artifacts(settings['model_analysis'])/'snapshots'/name/'md_space/local_structure_coords_clusters.npz')['coords']
         np.testing.assert_array_equal(coordinates,original,err_msg=f'{name}: archived spatial scores require the exact original center grid and ordering')
         mask=np.ones(len(coordinates),dtype=bool)
         for root in settings['coordinate_roots']:
-            reference=np.load(Path(root)/'snapshots'/name/'md_space/local_structure_coords_clusters.npz')['coords']
+            reference=np.load(analysis_artifacts(root)/'snapshots'/name/'md_space/local_structure_coords_clusters.npz')['coords']
             distances,_=cKDTree(reference).query(coordinates);mask&=distances<1e-6
         selected=np.flatnonzero(mask);c=coordinates[selected]
         expected=saved[(saved.frame==name)&(saved.model=='pretrained_MACE_finetuned')].iloc[0]
@@ -57,7 +59,7 @@ def saved_reference_spatial_rows(cfg,frames):
         near=cKDTree(c).query(c,k=7,workers=4)[1][:,1:];sample=rng.choice(len(c),min(10000,len(c)),replace=False);random=rng.integers(len(c),size=(len(sample),6))
         z=cache['inv_latents'][sl][selected];scale=np.maximum(z.std(0),1e-3)
         local=np.square((z[sample,None]-z[near[sample]])/scale).mean();shuffled=np.square((z[sample,None]-z[random])/scale).mean()
-        labels=np.load(out/'static_analysis/snapshots'/name/'md_space/local_structure_coords_clusters.npz')['clusters'][selected]
+        labels=np.load(analysis_root/'snapshots'/name/'md_space/local_structure_coords_clusters.npz')['clusters'][selected]
         a=np.broadcast_to(labels[:,None],near.shape).ravel();b=labels[near].ravel();chance=np.dot(np.bincount(a,minlength=7)/len(a),np.bincount(b,minlength=7)/len(b))
         rows.append(dict(frame=name,model='pretrained_MACE_finetuned',shared_centers=len(c),neighbor_mse_over_random=float(local/shuffled),adjusted_neighbor_cluster_agreement=float(((a==b).mean()-chance)/(1-chance))))
         for record in saved[saved.frame==name].to_dict('records'):
@@ -72,7 +74,8 @@ def write_report(cfg):
     import json
     import pandas as pd
     out=Path(cfg['output']);training=json.loads((out/'training_summary.json').read_text());data=json.loads((out/'data_summary.json').read_text())
-    metrics=json.loads((out/'static_analysis/analysis_metrics.json').read_text())
+    from src.experiment_runner.artifacts import analysis_artifacts
+    metrics=json.loads((analysis_artifacts(out/'static_analysis')/'analysis_metrics.json').read_text())
     frames=metrics['real_md_qualitative']['frames'];rows=saved_reference_spatial_rows(cfg,frames)
     pd.DataFrame(rows).to_csv(out/'static_spatial_comparison.csv',index=False)
     val=training['selected_validation'];selected_epoch=training['selected_epoch'];count=data['counts']['train'];fit=metrics['clustering']['cluster_fit_info_by_k']['7']

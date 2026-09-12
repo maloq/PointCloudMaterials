@@ -18,7 +18,7 @@ User-requested replacement of the 512-point run: use **exactly 80 actual atoms**
 
 ```bash
 conda run -n pointnet python -m src.training_methods.pretrained_mace \
-  --config experiments/pretrained_mace_spatiotemporal_80_20260906/config.json
+  --config experiments/pretrained_mace_spatiotemporal_80_20260906/technical/config.json
 ```
 
 This is a **fresh fine-tune from the original MACE-MP-0b2 small MLIP weights**.
@@ -28,8 +28,8 @@ to this replacement. As with the original workflow, use a new output directory
 and W&B run ID for another fresh training run. `--stage analysis` reruns only the
 selected-encoder export and standard analysis after training.
 
-[Configuration](config.json), [static data](static_data.yaml),
-[standard analysis configuration](static_analysis.yaml).
+[Configuration](technical/config.json), [static data](technical/static_data.yaml),
+[standard analysis configuration](technical/static_analysis.yaml).
 
 Online dashboard: <https://wandb.ai/teshbek/PointCloudMaterials/runs/qn8kpl1s>.
 The workflow explicitly requests online mode, uses the existing authenticated
@@ -100,7 +100,7 @@ Runtime estimates should use the ongoing `status.json` and epoch measurements.
 ```bash
 PYTHONPATH=. conda run -n pointnet python \
   experiments/pretrained_mace_spatiotemporal_80_20260906/verify.py \
-  --config experiments/pretrained_mace_spatiotemporal_80_20260906/config.json
+  --config experiments/pretrained_mace_spatiotemporal_80_20260906/technical/config.json
 ```
 
 The versioned verification checks actual `(B,4,80,3)` input, equivalence with a

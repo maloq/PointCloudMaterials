@@ -6,16 +6,16 @@ transporting a frame with local motion remove the frame-related jumps?
 
 `analysis.py` and `summarize.py` are experiment records for this controlled
 intervention, not maintained training tools. No model weights or shared encoder
-implementation are changed. Configuration is in [config.json](config.json).
+implementation are changed. Configuration is in [config.json](technical/config.json).
 Generated diagnostics, arrays, figures and the report are under
 `output/geoframe_continuity_20260905/` in this repository, approximately 197 MB.
 
 From the repository root, using conda `pointnet`:
 
 ```bash
-python experiments/geoframe_continuity_20260905/analysis.py \
-  experiments/geoframe_continuity_20260905/config.json
-python experiments/geoframe_continuity_20260905/summarize.py \
+python src/research/geoframe_continuity/analysis.py \
+  experiments/geoframe_continuity_20260905/technical/config.json
+python src/research/geoframe_continuity/summarize.py \
   output/geoframe_continuity_20260905
 ```
 

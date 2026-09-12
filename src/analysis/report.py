@@ -9,6 +9,9 @@ import shutil
 
 from omegaconf import OmegaConf
 
+from src.experiment_runner.artifacts import analysis_artifacts, result_folders
+from src.experiment_runner.metric_docs import write_metric_table
+
 
 def report_directory(cfg, analysis_cfg):
     root = OmegaConf.select(analysis_cfg, 'report.root')
@@ -26,14 +29,21 @@ def _write(path, text):
     temporary.replace(path)
 
 
-def publish_report(source, destination):
+def publish_report(source, destination, *, checkpoint_sha256=None, update_index=True):
     source, destination = Path(source).resolve(), Path(destination).resolve()
+    if not (source/'analysis_metrics.json').is_file():
+        source = analysis_artifacts(source)
     metrics = json.loads((source/'analysis_metrics.json').read_text())
-    destination.mkdir(parents=True, exist_ok=True)
-    manifest_path = destination/'source.json'
-    if manifest_path.exists():
-        previous = json.loads(manifest_path.read_text())
-        if previous['checkpoint_sha256'] != metrics['topology']['checkpoint_sha256']:
+    if checkpoint_sha256 is None:
+        checkpoint_sha256 = (metrics['topology']['checkpoint_sha256'] if 'topology' in metrics
+                             else metrics['checkpoint_sha256'])
+    result_folders(destination)
+    manifest_path = destination/'technical/source.json'
+    legacy_manifest = destination/'source.json'
+    previous_path = manifest_path if manifest_path.exists() else legacy_manifest
+    if previous_path.exists():
+        previous = json.loads(previous_path.read_text())
+        if previous['checkpoint_sha256'] != checkpoint_sha256:
             raise FileExistsError(f'{destination} already belongs to {previous["analysis_directory"]}. '
                                   'Choose a distinct report.root for another experiment.')
     k = int(metrics['clustering']['primary_k'])
@@ -68,20 +78,37 @@ def publish_report(source, destination):
         original = source/relative
         if not original.exists():
             continue  # These plots are optional stages of the analysis pipeline.
-        temporary = destination/f'.{name}.{os.getpid()}.tmp'
-        shutil.copy2(original, temporary)
+        category = 'technical' if name.endswith('.json') else 'plots'
+        name = f'{category}/{name}'
+        temporary = (destination/name).with_name(f'.{Path(name).name}.{os.getpid()}.tmp')
+        if source.is_relative_to(destination):
+            # A self-contained run already owns these bytes in technical/. Avoid a second plot copy.
+            temporary.symlink_to(os.path.relpath(original, temporary.parent))
+        else:
+            shutil.copy2(original, temporary)
         temporary.replace(destination/name)
         published[name] = relative
-    cards, links = [], []
+    write_metric_table(metrics, destination, family='analysis')
+    # Only retire the files owned by our previous gallery manifest. Source analyses stay intact.
+    if legacy_manifest.exists():
+        previous = json.loads(legacy_manifest.read_text())
+        for name in previous['files']:
+            old = destination/name
+            if name not in published and old.is_file() and old.parent == destination:
+                old.unlink()
+        legacy_manifest.unlink()
+    cards = []
+    links = ['<li><a href="tables/metrics.csv">Metric table (CSV)</a></li>',
+             '<li><a href="tables/METRICS.md">How the metrics are calculated</a></li>']
     for name in published:
-        label = name.rsplit('.', 1)[0].replace('-', ' ')
+        label = Path(name).stem.replace('-', ' ')
         if name.endswith('.png'):
             cards.append(f'<figure><a href="{html.escape(name)}"><img loading="lazy" '
                          f'src="{html.escape(name)}" alt="{html.escape(label)}"></a>'
                          f'<figcaption>{html.escape(label)}</figcaption></figure>')
-        else:
+        elif name.endswith('.html'):
             links.append(f'<li><a href="{html.escape(name)}">{html.escape(name)}</a></li>')
-    umap_status = 'UMAP available.' if 'umap.png' in published else 'UMAP has not been generated for this report yet.'
+    umap_status = 'UMAP available.' if 'plots/umap.png' in published else 'UMAP has not been generated for this report yet.'
     title = destination.name
     page = ('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
         f'<title>{html.escape(title)}</title><style>body{{font:16px system-ui;margin:2rem;background:#f5f6f8;color:#202530}}'
@@ -92,16 +119,20 @@ def publish_report(source, destination):
         f'<ul>{"".join(links)}</ul><div class="plots">{"".join(cards)}</div>')
     _write(destination/'index.html', page)
     _write(destination/'README.md', f'# {title}\n\nOpen [the gallery](index.html).\n\n{umap_status}\n\n'
-           + '\n'.join(f'- [{name}]({name})' for name in published)+'\n')
+           + '- [Metric table](tables/metrics.csv) · [Metric definitions](tables/METRICS.md)\n\n'
+           + '\n'.join(f'- [{name}]({name})' for name in published if not name.startswith('technical/'))+'\n')
     _write(manifest_path, json.dumps(dict(analysis_directory=str(source), files=published,
-        checkpoint_sha256=metrics['topology']['checkpoint_sha256']), indent=2)+'\n')
+        checkpoint_sha256=checkpoint_sha256), indent=2)+'\n')
+    print(f'[analysis] Gallery: {destination/"index.html"}', flush=True)
+    if not update_index:
+        return
     with (destination.parent/'.index.lock').open('w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        reports = sorted(p.parent for p in destination.parent.glob('*/source.json'))
+        reports = sorted({p.parent.parent for p in destination.parent.glob('*/technical/source.json')}
+                         | {p.parent for p in destination.parent.glob('*/source.json')})
         entries = ''.join(f'<li><a href="{html.escape(p.name)}/index.html">{html.escape(p.name)}</a></li>' for p in reports)
-        _write(destination.parent/'index.html', '<!doctype html><meta charset="utf-8"><title>MACE results</title>'
+        _write(destination.parent/'index.html', '<!doctype html><meta charset="utf-8"><title>Research results</title>'
             '<style>body{font:18px system-ui;margin:3rem}li{margin:.7rem 0}</style>'
-            f'<h1>MACE results</h1><ul>{entries}</ul>')
-        _write(destination.parent/'README.md', '# MACE results\n\n'
+            f'<h1>Research results</h1><ul>{entries}</ul>')
+        _write(destination.parent/'README.md', '# Research results\n\n'
                + '\n'.join(f'- [{p.name}]({p.name}/index.html)' for p in reports)+'\n')
-    print(f'[analysis] Gallery: {destination/"index.html"}', flush=True)

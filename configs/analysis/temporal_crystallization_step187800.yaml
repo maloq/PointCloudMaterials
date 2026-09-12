@@ -1,6 +1,6 @@
 checkpoint:
   path: output/2026-07-13/18-40-11/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=95.ckpt
-  output_dir: outputs/temporal_crystallization_step187800_multiscale_vicreg
+  output_dir: output/crystallization-187800/temporal
   cuda_device: 0
 
 inputs:

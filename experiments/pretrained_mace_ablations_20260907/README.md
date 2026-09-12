@@ -21,7 +21,7 @@ existing static analysis complete.
 
 ```bash
 conda run -n pointnet python -m src.training_methods.pretrained_mace_queue \
-  --plan experiments/pretrained_mace_ablations_20260907/plan.json
+  --plan experiments/pretrained_mace_ablations_20260907/technical/plan.json
 ```
 
 The controller waits for the predecessor's successful `complete` status **and**
@@ -35,11 +35,11 @@ do not rerun it over completed trial directories.
 
 | Order | Configuration | Removed encoder-training loss |
 |---|---|---|
-| 1 | [all_objectives.json](all_objectives.json) | None; matched control |
-| 2 | [no_temporal.json](no_temporal.json) | Temporal VICReg |
-| 3 | [no_tda.json](no_tda.json) | TDA prediction |
-| 4 | [no_forecast.json](no_forecast.json) | Future-latent prediction |
-| 5 | [no_spatial.json](no_spatial.json) | Spatial VICReg |
+| 1 | [all_objectives.json](technical/all_objectives.json) | None; matched control |
+| 2 | [no_temporal.json](technical/no_temporal.json) | Temporal VICReg |
+| 3 | [no_tda.json](technical/no_tda.json) | TDA prediction |
+| 4 | [no_forecast.json](technical/no_forecast.json) | Future-latent prediction |
+| 5 | [no_spatial.json](technical/no_spatial.json) | Spatial VICReg |
 
 Each model trains for **four complete epochs / 5,632 optimizer updates**,
 then receives frozen-encoder probes. Only after all five trainings/probes finish

@@ -54,7 +54,7 @@ six-frame static Al input configuration. No alternative MACE analysis adapter
 or custom clustering workflow is involved.
 
 ```bash
-PYTHONPATH=. conda run -n pointnet python experiments/mace_original_vicreg_20260909/preflight.py
+PYTHONPATH=. conda run -n pointnet python src/research/mace_original_vicreg/preflight.py
 conda run -n pointnet python scripts/experiment_registry.py run \
   --spec experiments/mace_original_vicreg_20260909/run_spec.json
 ```
@@ -100,7 +100,7 @@ absolute error on the verification sample; batch sizes 1/2/5/7/16/31 also agree.
 Reproduce this check with:
 
 ```bash
-PYTHONPATH=. conda run -n pointnet python experiments/mace_original_vicreg_20260909/verify_analysis_inference.py
+PYTHONPATH=. conda run -n pointnet python src/research/mace_original_vicreg/verify_analysis_inference.py
 conda run -n pointnet python scripts/experiment_registry.py run \
   --spec experiments/mace_original_vicreg_20260909/analysis_recovery_spec.json
 ```

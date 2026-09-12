@@ -10,7 +10,7 @@
   "dependencies": [],
   "command": [
     "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
-    "experiments/spatiotemporal_20260905/prepare_spatiotemporal_vicreg_views.py",
+    "src/research/spatiotemporal/prepare_spatiotemporal_vicreg_views.py",
     "--config",
     "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_full_20260910/data.json"
   ]

@@ -120,7 +120,7 @@ Six focused tests pass, including worsened-validation checkpoint retention and t
 for both objectives. Full-batch GPU smoke tests restored all 168 model tensors and produced finite gradients.
 
 Execution uses a frozen `source/` copy because concurrent repository reorganization moved the entry points.
-The queue is `experiments/spatiotemporal_20260905/run_spatiotemporal_objective_comparison.py` inside that copy.
+The queue is `src/research/spatiotemporal/run_spatiotemporal_objective_comparison.py` inside that copy.
 Inspect `queue_status.json`, `vicreg/status.json`, and `visreg/status.json` for progress.
 The report will be `comparison/RESULTS.md`, with `metrics.json`, plots, and saved embeddings.
 It compares baseline and best/final checkpoints for both losses on identical temporal pairs and static

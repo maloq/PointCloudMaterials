@@ -21,7 +21,7 @@ def test_flat_gallery_is_portable_and_rejects_another_checkpoint(tmp_path):
     output = tmp_path/'reports'/'anchor'
     publish_report(source, output)
     (source/'latent_umap_clusters.png').unlink()
-    assert (output/'umap.png').read_bytes() == b'figure'
+    assert (output/'plots/umap.png').read_bytes() == b'figure'
     assert not (output/'analysis_inference_cache.npz').exists()
     assert 'umap.png' in (output/'index.html').read_text()
     assert 'anchor/index.html' in (output.parent/'index.html').read_text()
@@ -29,6 +29,19 @@ def test_flat_gallery_is_portable_and_rejects_another_checkpoint(tmp_path):
     (source/'analysis_metrics.json').write_text(json.dumps(metrics))
     with pytest.raises(FileExistsError, match='already belongs'):
         publish_report(source, output)
+
+
+def test_run_gallery_does_not_duplicate_its_own_plot_bytes(tmp_path):
+    source = tmp_path / 'technical'
+    source.mkdir()
+    (source / 'analysis_metrics.json').write_text(json.dumps(dict(
+        clustering=dict(primary_k=7), checkpoint_sha256='checkpoint')))
+    (source / 'latent_umap_clusters.png').write_bytes(b'figure')
+    publish_report(source, tmp_path, update_index=False)
+    plot = tmp_path / 'plots/umap.png'
+    assert plot.is_symlink() and plot.read_bytes() == b'figure'
+    assert plot.resolve().is_relative_to(tmp_path)
+    assert (tmp_path / 'tables/METRICS.md').exists()
 
 
 def test_cache_relocation_preserves_bytes_links_and_old_loader_path(tmp_path):
@@ -57,7 +70,10 @@ def test_discard_only_inference_arrays_and_matching_metadata(tmp_path):
     for name in ['cache.npz','cache.npz.meta.json','test_predictions.npz']:
         (tmp_path/name).write_bytes(b'preserved prediction or removable cache')
     discard_inference_cache(tmp_path, 'cache.npz')
-    assert sorted(p.name for p in tmp_path.iterdir()) == ['test_predictions.npz']
+    assert sorted(p.name for p in tmp_path.iterdir()) == ['retention', 'test_predictions.npz']
+    retained = list((tmp_path/'retention').glob('*.json'))
+    assert len(retained) == 1
+    assert retained[0].read_bytes() == b'preserved prediction or removable cache'
 
 
 def test_recovery_checkpoint_is_removed_only_after_successful_analysis(tmp_path, monkeypatch):

@@ -1,0 +1,39 @@
+{
+  "topology": {
+    "files": {
+      "docs/metrics/topology.md": "2fc88010c19e9143cbf3b543832f4ce17df6aeb454a4b75091cd85bf82585781",
+      "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
+      "src/analysis/topology.py": "c1c61cc47b278530000f2614c149d61c5b854477a1cba590a85eb8c75383d840",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1"
+    }
+  },
+  "forecast": {
+    "files": {
+      "docs/metrics/forecast.md": "44469142cde4c254524f15435d75d46134f7da83ea997fd5c79faff3f350b484",
+      "src/training_methods/embedding_forecast/metrics.py": "0658fda4a2c1a4b8750b3524fd6f48f46f80384fb29241941acc185c2e9b8fee",
+      "src/training_methods/embedding_forecast/model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c",
+      "src/training_methods/embedding_forecast/run.py": "b087ab73ae14bf509c2be13efe21b54682568dc471e7a77347a4cace1fd3b0c5",
+      "src/training_methods/embedding_forecast/data.py": "9fa71000ce25f5fea34f1f02f429546f7cad291d73166bf7104fb9a2452461ed"
+    }
+  },
+  "aggregation": {
+    "files": {
+      "docs/metrics/aggregation.md": "3864f17c3badbdc311bf7815cb2975974fb1b831069fd757c6b853bbb2a2feed",
+      "src/experiment_runner/results.py": "aaba58fd5beaf93813556df3a5aae6cf15decc66f9ec1e8dbda8fc43daddde7b",
+      "src/utils/evaluation_metrics.py": "14f2f43ca5361d4a4dcfda194e6f6ed729b70342d71347a7e9e0a718a674b2d4",
+      "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1"
+    }
+  },
+  "analysis": {
+    "files": {
+      "docs/metrics/analysis.md": "30f993b03c3bb080245cadbb980b2d287636323eea585790ca6a89e41ce38140",
+      "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
+      "src/analysis/topology.py": "c1c61cc47b278530000f2614c149d61c5b854477a1cba590a85eb8c75383d840",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+      "src/analysis/clustering.py": "22204ce9baa49fdc039ef91b84e399f67c11ac401dfc05532842c74014839b4b",
+      "src/vis_tools/latent_analysis_vis.py": "15138e427cf6af7d5840623ceb4874c8ff4f7ea58d105ea602074ead3a15c79f",
+      "src/analysis/latent_vis.py": "954682cd6ef37d873c5323435ba7bb9f626f1a70a75cfa55c33071aedd4bc39d"
+    }
+  }
+}

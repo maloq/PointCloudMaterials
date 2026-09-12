@@ -11,13 +11,13 @@ Question: can spatial coherence, temporal coherence and TDA reconstruction impro
 together when nuisance and prediction objectives are removed and task gradients
 are balanced? The user requested 12 epochs followed by analysis.
 
-Configuration: [training.json](training.json), [queue](plan.json),
-[static analysis](static.yaml), [tracked run spec](run_spec.json).
+Configuration: [training.json](technical/training.json), [queue](technical/plan.json),
+[static analysis](technical/static.yaml), [tracked run spec](technical/run_spec.json).
 Output: [output/mace_balanced_representation_20260908](../../output/mace_balanced_representation_20260908/).
 
 ```bash
 conda run -n pointnet python scripts/experiment_registry.py run \
-  --spec experiments/mace_balanced_representation_20260908/run_spec.json
+  --spec experiments/mace_balanced_representation_20260908/technical/run_spec.json
 ```
 
 Fresh official MACE-MP-0b2 small MLIP weights, new TDA decoder, fresh AdamW and

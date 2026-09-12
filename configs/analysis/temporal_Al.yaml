@@ -1,6 +1,6 @@
 checkpoint:
   path: output/2026-06-25/17-03-39/VISREG_l512_K4096_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
-  output_dir: outputs/temporal_Al_500frames_multi_visreg
+  output_dir: output/temporal-al/standard
   cuda_device: 0
 
 inputs:
