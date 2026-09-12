@@ -1,0 +1,20 @@
+{
+  "output": "output/embedding_forecast_20260911/scale/queue_32epochs",
+  "question": "Does enlarged autoregressive or direct full-trajectory prediction improve future local embedding prediction with all completed independent sources and augmented history?",
+  "epochs_per_invocation": 32,
+  "gpu": {
+    "partition": "H100",
+    "gpus": 1,
+    "cpus": 16,
+    "memory": "192G",
+    "time": "24:00:00"
+  },
+  "cpu": {
+    "partition": "CPU",
+    "gpus": 0,
+    "cpus": 8,
+    "memory": "64G",
+    "time": "02:00:00"
+  },
+  "preparation_job_id": "989350"
+}

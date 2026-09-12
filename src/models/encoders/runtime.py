@@ -25,6 +25,10 @@ def resolve_encoder_output_dim(encoder: Encoder) -> int:
 
 def prepare_encoder_input(encoder: Encoder, points: torch.Tensor) -> torch.Tensor:
     """Convert repository point clouds from dataset layout (B, N, 3)."""
+    if encoder.input_layout == "btn3":
+        if points.ndim != 4 or points.shape[-1] != 3:
+            raise ValueError(f"History encoder requires (B, T, N, 3), got {tuple(points.shape)}.")
+        return points.contiguous()
     if points.dim() != 3 or points.shape[-1] != 3:
         raise ValueError(
             "Repository encoder inputs must have dataset shape (B, N, 3), "

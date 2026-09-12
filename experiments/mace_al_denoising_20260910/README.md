@@ -4,7 +4,115 @@ The [cross-experiment problem review](../../docs/encoder_tda_relaxation_problems
 consolidates encoder, TDA, relaxation and evaluation issues, with confirmed
 findings separated from open questions.
 
-## Current state: available-data results and detached work
+## Current state: full MEAM comparison completed
+
+The user requested the full prepared MEAM comparison after reviewing the mixed
+pilot. All 90 target and 90 frozen-feature shards completed at 16:09 CEST.
+Fresh training and automatic analysis ran detached from 16:43 to **16:51 CEST**
+in the existing allocation **988064**, step **988064.2**, on node50 (L40S).
+All **36 runs and analysis completed successfully**.
+`run_spec_fire_training.json` uses the unchanged `training_fire.json` and the
+maintained `all` stage: verify/reuse caches, preflight, train twelve variants
+with three seeds, then analyze. It preserves the 18/6/6 independent-source
+train/validation/test split (13,824/4,608/4,608 neighborhoods), all three
+temperatures and the common five-frame, 3 ps histories. No mixed-pilot weights
+are used. Within this experiment the residual/atom controls retain their
+configured anchor-head warm starts.
+
+```bash
+conda run --no-capture-output -n pointnet python scripts/experiment_registry.py run \
+  --spec experiments/mace_al_denoising_20260910/run_spec_fire_training.json
+```
+
+The spec is an experiment record, not a new runner. Its output is
+`fire/full_training_controller/`; `command.log` contains training and analysis
+progress. `fire/detached_training/launch.json` records the independent process
+session and Slurm step, and `fire/training_readiness.json` records the complete
+manifest/split/force checks. These are generated run artifacts. The safety
+deadline remains 18:55 CEST, before the allocation expires at 19:13 CEST.
+The family command wrote the [full results](../../output/mace_al_denoising_20260910/fire/analysis/RESULTS.md),
+[metrics](../../output/mace_al_denoising_20260910/fire/analysis/metrics.json),
+predictions and three reusable encoder exports under `fire/analysis/`.
+The run and controller records both report successful completion.
+
+### Findings on uniform MEAM data
+
+These are balanced H0/H1/H2 test errors, averaged across three training seeds
+where applicable. Lower is better. All observations and relaxed targets use
+Lee2003 MEAM, with full-cell, fixed-box FIRE targets at maximum force 0.01 eV/Å.
+
+| Predictor | Balanced test MSE | Within-frame mean block R² |
+| --- | ---: | ---: |
+| Single-frame pooled MLP | 0.03751 | 0.8277 |
+| Five-frame mean MLP | 0.03299 | 0.8488 |
+| Five-frame mean ridge | 0.02991 | 0.8631 |
+| Pooled temporal transformer, balanced targets | 0.02738 | 0.8746 |
+| Residual temporal fusion | 0.02699 | 0.8764 |
+| Matched atom-anchor control | 0.03321 | 0.8476 |
+| Atom-temporal fusion | **0.02554** | **0.8831** |
+| Relaxed-input MLP reference | 0.01395 | 0.9362 |
+| Relaxed-input ridge reference | 0.00965 | 0.9556 |
+
+The primary atom-history comparison improves by **23.08%** over its matched
+atom-anchor control; the 95% source-bootstrap interval is **20.52–26.46%**.
+All six held-out source trajectories improve individually, by 19.4–30.5%.
+Seeds are averaged before resampling whole trajectories; the thousands of
+neighborhoods are not treated as independent replicates. Improvements occur
+at each temperature and in each homology block.
+
+The loss ablations also support the earlier diagnosis: removing representation
+regularization reduces error by 49.56% in the matched PCA transformer comparison;
+replacing PCA supervision with the balanced full target improves it by another
+14.17%. Residual fusion beats its continued-anchor control by 22.85% and the
+mean MLP by 18.19%. These are separate controlled comparisons, not additive gains.
+
+There is an important limit to the overall score. A post-hoc breakdown of saved
+predictions gives:
+
+| Anchor time | Atom-anchor MSE | Atom-temporal MSE | Temporal error reduction | Temporal within-frame R² |
+| --- | ---: | ---: | ---: | ---: |
+| 30 ps | 0.02572 | 0.02350 | 8.60% | 0.2388 |
+| 180 ps | 0.02941 | 0.02727 | 7.26% | 0.8958 |
+| 480 ps | 0.04449 | 0.02585 | 41.90% | 0.9280 |
+
+The largest gain is at the latest sampled time. Neighborhood-specific topology
+is still much less predictable in the earliest frames. This breakdown did not
+change fitting, checkpoint selection or the primary comparisons; its intervals
+are exploratory and not corrected for multiple comparisons. It describes anchor
+times, not independently validated phase or defect labels.
+
+Reversing the past while keeping the anchor fixed changes atom-temporal MSE
+only from 0.02554 to 0.02590. Multiple observations clearly help in this cohort;
+the evidence for using their temporal order is weaker. Repeating the anchor at
+inference increases its error to 0.24126, but that intervention changes the
+trained model's input distribution. The fair evidence for the value of history
+is the 23.08% gain against the separately trained, matched atom-anchor control.
+
+The relaxed-input ridge result confirms that these targets are decodable from
+relaxed MACE features, with substantial headroom for inference from noisy
+observations. It is a diagnostic reference with privileged inputs, not an
+available thermal-input predictor. None of these runs compares a GRU with a
+transformer or validates defect recognition or thermodynamic stability.
+
+This is stronger evidence for useful temporal denoising than the earlier mixed
+pilot, whose interval crossed zero. It does not isolate the cause of that
+difference: dataset size, source independence, temperatures and target protocol
+also changed. Absolute MSE values across the two experiments use different
+training scales and must not be compared as one common benchmark. Six held-out
+sources and one potential still limit generalization.
+
+The generated [frame breakdown](../../output/mace_al_denoising_20260910/fire/analysis/frame_breakdown.json)
+records input checksums and uncertainty limits. Its standalone review code was
+retired on 2026-09-10 when frame/source scoring moved into the
+[standard VICReg checkpoint analysis](../mace_vicreg_relaxed_20260910/README.md).
+Historical code is retained only in run provenance archives.
+
+The pipeline preflight passed, including nonzero history gradients and a
+discarded tiny-set overfit check. The three selected exports reproduce cached
+inference within a maximum absolute difference of 1.55e-5. Target and feature
+cache checksums and disjoint source splits were verified before fitting.
+
+## Earlier mixed-potential pilot and preparation history
 
 The matched audit completed at 14:31 CEST. The subsequent
 [detailed potential comparison](POTENTIAL_DIFFERENCES.md) separates force-field,
@@ -267,7 +375,7 @@ Its eventual report will be
 [fire/analysis/RESULTS.md](../../output/mace_al_denoising_20260910/fire/analysis/RESULTS.md).
 
 New `src/data_utils/mace_denoising.py`, `src/models/encoders/mace_denoising.py`,
-`src/training_methods/mace_denoising.py` and `src/analysis/mace_denoising.py` are
+and `src/training_methods/mace_denoising.py` are
 maintained implementations behind the existing family command. This directory
 contains experiment records. Build artifacts, logs, checkpoints, cached features,
 relaxation snapshots and measurements are generated run artifacts under output.

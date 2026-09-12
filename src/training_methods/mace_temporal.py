@@ -188,6 +188,10 @@ def train(model, data, cfg, out, wandb_run):
 
 
 def run(cfg, stage):
+    if stage in ('analysis', 'all'):
+        raise ValueError('The standalone temporal analysis has been retired. Use original VICReg '
+                         'checkpoints with python -m src.analysis.pipeline. Historical non-Lightning '
+                         'checkpoints require their recorded source snapshot.')
     out = Path(cfg['output'])
     out.mkdir(parents=True, exist_ok=True)
     if stage in ('train', 'all') and (out / 'initial.pt').exists():
@@ -225,10 +229,6 @@ def run(cfg, stage):
                     wandb_run = None
                 del model, data
                 torch.cuda.empty_cache()
-            if stage in ('analysis', 'all'):
-                write_json(out / 'status.json', dict(state='analysis'))
-                from src.analysis.mace_temporal import analyze
-                analyze(cfg)
             write_json(out / 'status.json', dict(state='complete', stage=stage, completed_at=datetime.now().astimezone().isoformat()))
     except BaseException:
         if wandb_run is not None:

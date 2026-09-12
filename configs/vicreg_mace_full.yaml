@@ -1,0 +1,15 @@
+defaults:
+- vicreg_pretrained_mace_geometry
+- _self_
+experiment_name: MACE-original-VICReg-full-Al-Mg-Ta-Ti
+seed_everything: 20260910
+analysis_output_dir: /home/ids/vmorozov/analysis/mace/artifacts/full
+data:
+  cache_dir: /home/ids/vmorozov/training-cache/mace-full
+  materials:
+  - Al
+  - Mg
+  - Ta
+  - Ti
+num_workers: 4
+checkpoint_keep_last_after_analysis: false

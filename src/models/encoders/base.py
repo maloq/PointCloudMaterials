@@ -8,7 +8,7 @@ import torch.nn as nn
 
 
 class Encoder(ABC, nn.Module):
-    input_layout: Literal["bn3", "b3n"] = "bn3"
+    input_layout: Literal["bn3", "b3n", "btn3"] = "bn3"
     output_contract: Literal[
         "invariant",
         "invariant_aux",

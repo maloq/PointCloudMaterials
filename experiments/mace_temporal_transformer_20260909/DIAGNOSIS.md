@@ -151,18 +151,12 @@ observed loss-design problem until these controls are in place.
 - [Frozen-probe report and plots](../../output/mace_temporal_transformer_20260909/analysis/RESULTS.md)
 - [Failure diagnosis plot](../../output/mace_temporal_transformer_20260909/diagnosis/failure_diagnosis.png)
 - [Training stop summary](../../output/mace_temporal_transformer_20260909/training_summary.json)
-- [Diagnostic implementation](diagnose.py)
 
-```bash
-OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 conda run -n pointnet python -m \
-  experiments.mace_temporal_transformer_20260909.diagnose \
-  --config experiments/mace_temporal_transformer_20260909/training.json
-# Re-render figures from completed JSON without model inference:
-conda run -n pointnet python -m experiments.mace_temporal_transformer_20260909.diagnose \
-  --config experiments/mace_temporal_transformer_20260909/training.json --figures-only
-```
+The standalone diagnostic was retired on 2026-09-10 with the old checkpoint
+analysis. Its source is preserved in run provenance archives; new diagnostics
+use the [standard VICReg pipeline](../mace_vicreg_relaxed_20260910/README.md).
 
-The report and diagnostic are versioned experiment records. Generated measurements,
+The report is a versioned experiment record. Generated measurements,
 figures and failure/retry logs stay in the run output. The diagnosis used no neural
 optimizer updates. The failed initial diagnostic attempts (module invocation,
 then an unsupported retained compiled backward graph) and successful retry are

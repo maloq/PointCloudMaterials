@@ -395,7 +395,7 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['build', 'prune', 'pack-logs', 'run', 'status', 'idea'])
+    parser.add_argument('command', choices=['build', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
     parser.add_argument('--plan', type=Path)
     parser.add_argument('--spec', type=Path, help='Explicit run specification for the run command.')
     parser.add_argument('--record', type=Path, help='run_record.json for the status command.')
@@ -409,6 +409,11 @@ def main(argv=None):
     repo = Path(__file__).resolve().parents[2]
     if args.command == 'build':
         build(repo)
+    elif args.command == 'relocate-caches':
+        if args.plan is None:
+            parser.error('relocate-caches requires --plan PATH')
+        from .cache_storage import relocate_caches
+        relocate_caches(args.plan, args.apply)
     elif args.command == 'idea':
         if not args.id or not args.state or not args.next_action:
             parser.error('idea requires --id, --state and --next-action')

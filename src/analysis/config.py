@@ -27,6 +27,15 @@ DEFAULT_ANALYSIS_CONFIG_PATH = (
 )
 
 
+def default_analysis_config_for_checkpoint(checkpoint_path: str) -> Path:
+    cfg = load_checkpoint_training_config(checkpoint_path)
+    if cfg.data.kind == 'relaxed_histories':
+        name = ('relaxed_histories.yaml' if cfg.encoder.name == 'PretrainedMACEHistoryGeometry'
+                else 'static_topology.yaml')
+        return DEFAULT_ANALYSIS_CONFIG_PATH.parent/name
+    return DEFAULT_ANALYSIS_CONFIG_PATH
+
+
 @dataclass(frozen=True)
 class RunSettings:
     checkpoint_path: str
@@ -1077,13 +1086,18 @@ def build_runtime_model_config(
 
 
 def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
-    if OmegaConf.select(model_cfg, 'encoder.name') == 'PretrainedMACEGeometry':
+    if OmegaConf.select(model_cfg, 'encoder.name') in {'PretrainedMACEGeometry', 'PretrainedMACEHistoryGeometry'}:
         # Analysis adds new graph sizes and inference contexts after training has
         # already populated Dynamo's shared code cache. fullgraph=True then hits
         # the recompilation limit. Eager radial layers retain the weights/BF16 math.
         with open_dict(model_cfg):
             model_cfg.encoder.kwargs.performance.compile_radial_mlp = False
+            model_cfg.encoder.kwargs.activation_checkpointing = False
         print('[analysis] Using eager MACE radial layers for variable-size inference batches.')
+    if OmegaConf.select(model_cfg, 'data.kind') == 'relaxed_histories':
+        with open_dict(model_cfg):
+            model_cfg.data.radius = model_cfg.data.normalization_radius_A
+            model_cfg.data.analysis_identity = 'atom_id_v1'
     if bool(OmegaConf.select(model_cfg, "vicreg_temporal_view", default=False)) and model_cfg.data.kind != "spatiotemporal_binary":
         print("[analysis] Disabling training-only temporal view construction for the overridden inference dataset; encoder/projector weights are unchanged.")
         with open_dict(model_cfg):

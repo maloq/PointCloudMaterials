@@ -443,6 +443,12 @@ def init_wandb(cfg: DictConfig, run_dir):
     os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
     os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
     wandb_run = wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
+    if cfg.wandb_mode == 'online' and wandb_run.offline:
+        raise RuntimeError('Online W&B was requested, but the initialized run is offline.')
+    from pathlib import Path
+    from src.experiment_runner.registry import write_json
+    write_json(Path(run_dir)/'wandb_run.json', dict(id=wandb_run.id, url=wandb_run.url,
+        entity=wandb_run.entity, project=wandb_run.project, mode=cfg.wandb_mode))
     wandb_run.define_metric("trainer/global_step", hidden=True)
     wandb_run.define_metric("*", step_metric="trainer/global_step", step_sync=True)
     return WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
@@ -591,12 +597,15 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
         elif data_kind == "spatiotemporal_binary":
             from src.data_utils.spatiotemporal_views import SpatiotemporalViewDataModule
             dm = SpatiotemporalViewDataModule(cfg)
+        elif data_kind == "relaxed_histories":
+            from src.data_utils.relaxed_histories import RelaxedHistoryDataModule
+            dm = RelaxedHistoryDataModule(cfg)
         elif data_kind == "static":
             dm = StaticPointCloudDataModule(cfg)
         else:
             raise ValueError(
                 "Unsupported data.kind. Expected one of "
-                "['static', 'synthetic', 'temporal_lammps', 'spatiotemporal_binary'] "
+                "['static', 'synthetic', 'temporal_lammps', 'spatiotemporal_binary', 'relaxed_histories'] "
                 f"got {cfg.data.kind!r}."
             )
     model = model_class(cfg)

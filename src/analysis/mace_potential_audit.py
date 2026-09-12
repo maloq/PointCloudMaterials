@@ -58,7 +58,7 @@ def audit_existing_minimizers(cfg, scaling, directory):
 
 @torch.no_grad()
 def run_audit(cfg, data, exports):
-    from src.analysis.mace_denoising import score
+    from src.analysis.topology_metrics import score
     audit = json.loads(Path(cfg['potential_audit_config']).read_text())
     root = Path(audit['output'])
     root.mkdir(parents=True, exist_ok=True)

@@ -15,14 +15,12 @@ Configuration: [training.json](training.json). Reproduction, in `pointnet`:
 python scripts/experiment_registry.py run --spec experiments/mace_temporal_transformer_20260909/run_spec.json
 ```
 
-The maintained MACE family command dispatches the explicit `temporal80`
-protocol to `src/training_methods/mace_temporal.py`. `--stage all` prepares
-histories, fits training-only scaling, runs a real-GPU gradient preflight,
-trains, then performs temporal analysis. Individual stages use the same config:
-
-```bash
-python -m src.training_methods.pretrained_mace --config experiments/mace_temporal_transformer_20260909/training.json --stage analysis
-```
+This command records the historical protocol. Its standalone analysis and
+diagnostic implementation were retired on 2026-09-10, when new training and
+analysis moved to the [original VICReg workflow](../mace_vicreg_relaxed_20260910/README.md).
+Reproducing this old non-Lightning checkpoint requires its recorded source
+snapshot. The family command still supports preparation, preflight and training;
+`analysis` and `all` now report the retirement explicitly.
 
 For a new reproduction, set a fresh output/cache, W&B ID and an available
 allocation's explicit deadline in the configuration. No optimizer restart

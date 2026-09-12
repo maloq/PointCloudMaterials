@@ -1,0 +1,24 @@
+{
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "dependencies": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace/jobs/overnight-core/execution/run_record.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace/jobs/umap_compact/execution/run_record.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace/jobs/overnight-residual/execution/run_record.json"
+  ],
+  "kind": "analysis",
+  "question": "Aggregate all completed 24 MEAM fits after fixing collection of flat reports to exclude its own summary.",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace/jobs/morning-comparison",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.analysis.pipeline",
+    "--collect-root",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace",
+    "--specification",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis.json"
+  ]
+}

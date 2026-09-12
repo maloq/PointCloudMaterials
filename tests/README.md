@@ -22,6 +22,18 @@ artifacts exercise the simulation machinery without submitting cluster jobs.
 Some atomistic fixtures load repository potential configurations; their configured
 model files must be available even when the test uses an injected EMT calculator.
 
+`test_embedding_forecast.py` checks causal time windows and disjoint mean bins,
+matched anchors across history lengths, batched mmap loading with spawned workers,
+training-only scaling, whole-lineage separation, gradients from every historical
+frame, joint Gaussian covariance/NLL, and learning/checkpoint/evaluation round trips
+for both mean-bin and full-path forecasts. Autoregressive tests also verify
+prediction feedback, gradients through earlier rollout steps, correctly shifted
+teacher-forcing targets, and the prohibition on teacher forcing during evaluation.
+Scale-up coverage checks causal history augmentation, bit-exact augmented training
+across an explicit checkpoint continuation, streaming metric agreement, and frozen
+Slurm specifications with independent training chains and a shared final join.
+It also checks one-job fits that depend on an existing shared preparation job.
+
 Add a test when it catches a meaningful failure. Prefer observable results over
 private call sequences or Python source-text matching. Experiment seeds, widths,
 paths, temperature grids, and rendering presets belong in their configuration
@@ -82,3 +94,19 @@ See [the encoder input contract](../docs/mace_temporal_encoder.md).
 `test_mace_history.py` checks the relaxed target's fixed atom membership through
 periodic crossings and exact anchor reconstruction. The temporal encoder tests
 also check full-batch covariance gradients under history microbatch replay.
+
+`test_topology_analysis.py` checks the standard pipeline's real-history inference,
+anchor visualization and atom identity, including temporal interventions. It
+changes only held-out targets and verifies that training-only ridge predictions
+remain identical. `test_vicreg_relaxed_histories.py` also checks source pairing
+and seed averaging for both trained-head and ridge comparisons.
+Its collector test covers legacy and flat report directories and repeats
+aggregation to ensure the generated comparison is never read as a model report.
+
+`test_analysis_storage.py` checks portable flat reports, checkpoint identity
+protection, verified cache relocation with preserved loader paths, and targeted
+inference-cache removal. It also verifies that post-training analysis failures
+retain the recovery checkpoint while successful analysis may remove it.
+
+`test_elemental_conversion.py` also verifies the explicit Al/FCC and Ti/BCC
+source lattice contracts and atom counts.

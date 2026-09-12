@@ -1,0 +1,22 @@
+{
+  "kind": "training",
+  "question": "Repeat the MEAM topology and history comparisons in the original normalized MACE VICRegModule with online W&B and trainable backbone.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_vicreg_relaxed_20260910/l40s_controller",
+  "configs": [
+    "experiments/mace_vicreg_relaxed_20260910/plan_l40s.yaml",
+    "configs/vicreg_mace_relaxed.yaml",
+    "configs/vicreg_pretrained_mace_geometry_tda.yaml"
+  ],
+  "dependencies": [],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "scripts/run_experiments.py",
+    "--plan",
+    "experiments/mace_vicreg_relaxed_20260910/plan_l40s.yaml",
+    "--local",
+    "--nan-restart-max-retries",
+    "0"
+  ]
+}

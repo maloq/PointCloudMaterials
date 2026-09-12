@@ -11,6 +11,14 @@ from omegaconf import DictConfig, OmegaConf
 from .output_layout import write_json
 
 
+def discard_inference_cache(out_dir: Path, cache_filename: str) -> None:
+    """Remove a completed analysis's regenerable arrays and their matching sidecar."""
+    data, metadata = _inference_cache_paths(out_dir, cache_filename)
+    for path in (data, metadata):
+        if path.exists() or path.is_symlink():
+            path.unlink()
+
+
 def _build_inference_cache_spec(
     *,
     checkpoint_path: str,

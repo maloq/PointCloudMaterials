@@ -14,6 +14,9 @@ from src.experiment_runner.registry import sha256, write_json
 
 
 def prepare(cfg):
+    if cfg.data.kind == 'relaxed_histories':
+        from src.data_utils.relaxed_histories import prepare as prepare_histories
+        return prepare_histories(cfg)
     root = Path(cfg.data.cache_dir)
     out = Path(cfg.tda.cache_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -101,6 +104,14 @@ def prepare(cfg):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--config', required=True, help='Resolved training YAML with data and tda settings.')
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument('--config', help='Resolved training YAML with data and tda settings.')
+    source.add_argument('--config-name', help='Compose an existing Hydra training configuration under configs/.')
     args = parser.parse_args()
-    prepare(OmegaConf.load(args.config))
+    if args.config_name:
+        from hydra import compose, initialize_config_dir
+        with initialize_config_dir(version_base=None, config_dir=str(Path('configs').resolve())):
+            config = compose(config_name=args.config_name)
+    else:
+        config = OmegaConf.load(args.config)
+    prepare(config)

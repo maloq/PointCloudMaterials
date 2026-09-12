@@ -1,0 +1,158 @@
+{
+  "data": {
+    "sources_config": "experiments/mace_al_denoising_20260910/training_fire.json",
+    "checkpoint": "output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+    "cache": "/home/ids/vmorozov/training-cache/embedding-forecast-20260911",
+    "cadence_ps": 0.75,
+    "history_ps": 6,
+    "future_ps": 9,
+    "anchor_margin_ps": 1.5,
+    "centers_per_source": 64,
+    "encoder_batch_size": 64,
+    "seed": 20260911
+  },
+  "output": "output/embedding_forecast_20260911/history3",
+  "device": "cuda:0",
+  "history_ps": 3,
+  "anchor_history_ps": 6,
+  "horizons_ps": [
+    3,
+    6,
+    9
+  ],
+  "stride_ps": 0.75,
+  "seeds": [
+    20260911,
+    20260912,
+    20260913
+  ],
+  "training": {
+    "epochs": 60,
+    "patience": 12,
+    "batch_size": 256,
+    "workers": 2,
+    "cpu_threads": 4,
+    "scale_floor_fraction": 0.05,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "minimum_lr_fraction": 0.05,
+    "gradient_clip": 5
+  },
+  "variants": [
+    {
+      "name": "path_mean_residual",
+      "target": "trajectory",
+      "architecture": "mean_residual_gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0.25,
+        "increment_mse": 0.1,
+        "nll": 0
+      }
+    },
+    {
+      "name": "bins_mean_residual",
+      "target": "bin_means",
+      "architecture": "mean_residual_gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0,
+        "increment_mse": 0,
+        "nll": 0
+      }
+    },
+    {
+      "name": "path_gru",
+      "target": "trajectory",
+      "architecture": "gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0.25,
+        "increment_mse": 0.1,
+        "nll": 0
+      }
+    },
+    {
+      "name": "bins_gru",
+      "target": "bin_means",
+      "architecture": "gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0,
+        "increment_mse": 0,
+        "nll": 0
+      }
+    },
+    {
+      "name": "path_ar_rollout",
+      "target": "trajectory",
+      "architecture": "autoregressive_gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0.25,
+        "increment_mse": 0.1,
+        "nll": 0
+      },
+      "autoregressive": {
+        "initial_state": "history_mean",
+        "training": "rollout"
+      }
+    }
+  ],
+  "comparisons": [
+    [
+      "path_ar_rollout",
+      "path_mean_residual"
+    ]
+  ],
+  "bin_comparisons": [
+    [
+      "path_mean_residual",
+      "bins_mean_residual"
+    ],
+    [
+      "path_gru",
+      "bins_gru"
+    ]
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "dependencies": [],
+  "kind": "training",
+  "question": "Overnight core comparison: matched learned MACE temporal fusion in the original VICReg trainer, with three seeds.",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace/jobs/overnight-core",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/overnight_20260911.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/vicreg_mace_relaxed.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/relaxed_histories.yaml"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "scripts/run_experiments.py",
+    "--plan",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/overnight_20260911.yaml",
+    "--local",
+    "--nan-restart-max-retries",
+    "0",
+    "--continue-on-error"
+  ]
+}

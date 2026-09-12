@@ -1,0 +1,21 @@
+{
+  "kind": "training",
+  "question": "Train the corrected coordinate-only MACE with original spatial/temporal VICReg on original Al/Mg/Ta plus new Ta/Ti data, then standard static analysis.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/controller",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/configs/vicreg_mace_full.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/vicreg_pretrained_mace_geometry.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_full_20260910/data.json"
+  ],
+  "dependencies": [],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.contrastive_learning.train_contrastive",
+    "--config-name",
+    "vicreg_mace_full",
+    "hydra.run.dir=/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/train"
+  ]
+}

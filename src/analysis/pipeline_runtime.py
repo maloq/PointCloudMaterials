@@ -52,6 +52,9 @@ def _build_analysis_dataloader(
     inference_batch_size: int,
     dataloader_num_workers: int,
 ) -> torch.utils.data.DataLoader:
+    if cfg.data.kind == 'relaxed_histories':
+        from .topology_dataset import topology_dataloader
+        return topology_dataloader(dm.test_dataset, inference_batch_size, dataloader_num_workers)
     if str(cfg.data.kind).strip().lower() == "temporal_lammps":
         data_cfg = cfg.data
         dump_file = getattr(data_cfg, "dump_file", None)
@@ -396,7 +399,7 @@ def _collect_main_inference_cache(
                 progress_every_batches=analysis_settings.progress_every_batches,
                 verbose=True,
                 temporal_sequence_mode=(
-                    "static_anchor"
+                    ("temporal" if cfg.data.kind == 'relaxed_histories' else "static_anchor")
                     if temporal_bundle is None
                     else temporal_bundle.collection_inference_spec.mode
                 ),
@@ -535,6 +538,9 @@ def build_datamodule(
     data_kind = str(cfg.data.kind).strip().lower()
     if data_kind == "synthetic":
         dm = SyntheticPointCloudDataModule(cfg)
+    elif data_kind == 'relaxed_histories':
+        from .topology_dataset import RelaxedTopologyAnalysisDataModule
+        dm = RelaxedTopologyAnalysisDataModule(cfg)
     elif data_kind == "temporal_lammps":
         dm = TemporalLAMMPSDataModule(cfg)
     elif data_kind == "static":
@@ -545,7 +551,7 @@ def build_datamodule(
     else:
         raise ValueError(
             "Unsupported data.kind. Expected one of "
-            "['static', 'synthetic', 'temporal_lammps'], "
+            "['static', 'synthetic', 'temporal_lammps', 'relaxed_histories'], "
             f"got {cfg.data.kind!r}."
         )
     return dm

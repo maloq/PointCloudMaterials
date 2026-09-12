@@ -1,0 +1,18 @@
+name: mace_vicreg_relaxed_l40s
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_mace_relaxed
+output_root: output/mace_vicreg_relaxed_20260910/runs
+repeat_each: 3
+repeat_seed_base: 20260910
+repeat_seed_key: seed_everything
+experiments:
+- name: anchor_vicreg
+  overrides:
+  - experiment_variant=anchor_vicreg
+  - tda.enabled=false
+metrics:
+  final:
+  - test/balanced_mse
+  - test/mean_within_frame_r2
+  - test/projector_ridge_mse
+  - val/balanced_mse

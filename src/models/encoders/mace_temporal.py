@@ -114,3 +114,63 @@ class PretrainedMACETemporalEncoder(nn.Module):
         for block in self.blocks:
             tokens = block(tokens)
         return self.output_norm(tokens[:, -1])
+
+
+@register_encoder('PretrainedMACEHistoryGeometry')
+class PretrainedMACEHistoryGeometryEncoder(PretrainedMACETemporalEncoder):
+    """Normalized coordinate-only histories in the original VICReg encoder API.
+
+    MACE remains trainable. Activation checkpointing changes memory use only;
+    the projector and full-batch VICReg statistics stay in VICRegModule.
+    """
+
+    def __init__(self, pretrained_checkpoint, reference_radius_A, performance,
+                 frame_offsets_ps, fusion, frame_batch_size=128, activation_checkpointing=True):
+        super().__init__(pretrained_checkpoint, frame_offsets_ps,
+            time_scale_ps=frame_offsets_ps[-1]-frame_offsets_ps[-2],
+            frame_batch_size=frame_batch_size, performance=performance)
+        self.reference_radius_A = float(reference_radius_A)
+        self.activation_checkpointing = activation_checkpointing
+        self.fusion_kind = fusion
+        if fusion != 'transformer':
+            del self.frame_projection, self.time_embedding, self.blocks, self.output_norm
+            self.invariant_dim = 256
+        if fusion == 'residual':
+            from .mace_denoising import ResidualFrameFusion
+            self.fusion = ResidualFrameFusion(frame_offsets_ps)
+        elif fusion in ('atom_anchor', 'atom_temporal'):
+            from .mace_denoising import AtomTemporalFusion
+            self.fusion = AtomTemporalFusion(frame_offsets_ps, anchor_only=fusion=='atom_anchor')
+        elif fusion not in ('mean', 'transformer'):
+            raise ValueError(f'Unknown normalized history fusion: {fusion}')
+
+    def forward(self, points):
+        from torch.utils.checkpoint import checkpoint
+        frames = len(self.frame_offsets_ps)
+        if points.ndim != 4 or points.shape[1:] != (frames, 80, 3):
+            raise ValueError(f'Expected normalized (B, {frames}, 80, 3) histories, got {points.shape}')
+        observed = points[:, -1:] if self.fusion_kind == 'atom_anchor' else points
+        flat = observed.flatten(0, 1)*self.reference_radius_A
+        channel = torch.zeros(len(flat), dtype=torch.long, device=flat.device)
+        encode = self.mace.raw_node_features if self.fusion_kind.startswith('atom_') else self.mace.raw_features
+        pieces = []
+        for start in range(0, len(flat), self.frame_batch_size):
+            args = (flat[start:start+self.frame_batch_size], channel[start:start+self.frame_batch_size])
+            if self.activation_checkpointing and self.training and torch.is_grad_enabled():
+                pieces.append(checkpoint(encode, *args, use_reentrant=False))
+            else:
+                pieces.append(encode(*args))
+        features = torch.cat(pieces)
+        nodes = None
+        if self.fusion_kind.startswith('atom_'):
+            nodes = features.reshape(len(points), observed.shape[1], 80, 256)
+            if self.fusion_kind == 'atom_anchor':
+                nodes = nodes.expand(-1, frames, -1, -1)
+            pooled = nodes.mean(2)
+        else:
+            pooled = features.reshape(len(points), frames, 256)
+        if self.fusion_kind == 'mean':
+            return pooled.mean(1)
+        if self.fusion_kind == 'transformer':
+            return self.forward_features(pooled)
+        return self.fusion(pooled, nodes)

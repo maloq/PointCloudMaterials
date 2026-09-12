@@ -1,0 +1,20 @@
+{
+  "kind": "training",
+  "question": "Run the declared twelve-variant, three-seed denoising comparison on the complete uniform-FIRE MEAM dataset: 30 independent sources at 400/450/510 K, source-held-out evaluation, matched atom-anchor/temporal controls and relaxed-input references. Reuse and verify all prepared caches; train from fresh initialization and then analyze.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "output/mace_al_denoising_20260910/fire/full_training_controller",
+  "configs": [
+    "experiments/mace_al_denoising_20260910/training_fire.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.training_methods.pretrained_mace",
+    "--config",
+    "experiments/mace_al_denoising_20260910/training_fire.json",
+    "--stage",
+    "all"
+  ],
+  "dependencies": []
+}

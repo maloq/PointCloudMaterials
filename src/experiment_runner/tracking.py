@@ -92,7 +92,7 @@ def tracked_run(output: Path, *, kind: str, configs: list[Path], command: list[s
 
 
 def wait_for_dependencies(paths, *, until, status_path):
-    """Wait for local tracked commands to finish, including their analysis stage."""
+    """Wait for tracked commands, verifying remote Slurm processes on their node."""
     try:
         while True:
             pending = []
@@ -100,6 +100,8 @@ def wait_for_dependencies(paths, *, until, status_path):
                 record = observed_record(Path(path))
                 if record['state'] == 'command_succeeded':
                     continue
+                if record['state'] == 'running' and record['host'] != socket.gethostname():
+                    record['observation'] = remote_process_observation(record)
                 if record['state'] != 'running' or record['observation'] != 'process alive':
                     raise RuntimeError(f'Dependency cannot complete successfully: {path}: {record["state"]}; {record["observation"]}')
                 pending.append(path)
@@ -117,6 +119,28 @@ def wait_for_dependencies(paths, *, until, status_path):
     except BaseException as error:
         write_json(status_path, dict(state='failed', error=repr(error), updated_at=datetime.now(timezone.utc).isoformat()))
         raise
+
+
+def remote_process_observation(record):
+    """Read the recorded PID and start ticks through its existing Slurm allocation."""
+    if record['slurm_job_id'] is None:
+        raise RuntimeError(f'Cannot verify remote dependency without a Slurm allocation: {record["host"]}')
+    code = """from pathlib import Path
+import sys
+path = Path('/proc') / sys.argv[1] / 'stat'
+if not path.exists():
+    print('interrupted/stale: recorded process no longer exists')
+else:
+    fields = path.read_text().rsplit(')', 1)[1].split()
+    print('process alive' if fields[19] == sys.argv[2] and fields[0] != 'Z'
+          else 'interrupted/stale: PID exited or was reused')
+"""
+    command = ['srun', '--jobid='+record['slurm_job_id'], '--overlap', '--exact',
+        '--nodes=1', '--ntasks=1', '--cpus-per-task=1', '--mem=64M', '--gres=none',
+        '--immediate=10', '--nodelist='+record['host'], record['python'], '-c', code,
+        str(record['pid']), record['pid_start_ticks']]
+    result = subprocess.run(command, text=True, capture_output=True, timeout=20, check=True)
+    return result.stdout.strip()
 
 
 def execute_spec(path: Path, *, wait_for_dependencies_until: str | None = None) -> None:

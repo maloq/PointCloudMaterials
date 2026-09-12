@@ -1,0 +1,24 @@
+{
+  "kind": "training",
+  "question": "Run the 12 untouched VICReg variants after standard-pipeline analysis integration; retain all 12 completed fits.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/standard_pipeline_migration/training_controller",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/plan_h100_unstarted.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/vicreg_mace_relaxed.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/relaxed_histories.yaml"
+  ],
+  "dependencies": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/standard_pipeline_migration/history_controller/execution/run_record.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "scripts/run_experiments.py",
+    "--plan",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/plan_h100_unstarted.yaml",
+    "--local",
+    "--nan-restart-max-retries",
+    "0"
+  ]
+}

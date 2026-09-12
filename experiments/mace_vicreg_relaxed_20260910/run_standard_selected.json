@@ -1,0 +1,21 @@
+{
+  "kind": "analysis",
+  "question": "Run the existing static-Al analysis and integrated relaxed-topology metrics on the selected original-VICReg checkpoint.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/standard_pipeline_migration/selected_controller",
+  "configs": [
+    "configs/analysis/static_topology.yaml"
+  ],
+  "dependencies": [],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.analysis.pipeline",
+    "configs/analysis/static_topology.yaml",
+    "--checkpoint",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep02-epoch=09.ckpt",
+    "--output-dir",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/analysis_standard"
+  ]
+}

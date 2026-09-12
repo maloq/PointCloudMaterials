@@ -1,0 +1,20 @@
+{
+  "kind": "analysis",
+  "question": "Finish UMAP galleries from completed checkpoints and discard per-model inference caches after successful analysis.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace/jobs/umap_compact",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis_umap_20260911.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/relaxed_histories.yaml"
+  ],
+  "dependencies": [],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.analysis.pipeline",
+    "--batch",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis_umap_20260911.yaml"
+  ]
+}

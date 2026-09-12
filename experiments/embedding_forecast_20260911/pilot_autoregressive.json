@@ -1,0 +1,175 @@
+{
+  "data": {
+    "sources_config": "experiments/mace_al_denoising_20260910/training_fire.json",
+    "checkpoint": "output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+    "cache": "output/embedding_forecast_20260911/pilot/cache",
+    "cadence_ps": 0.75,
+    "history_ps": 6,
+    "future_ps": 9,
+    "anchor_margin_ps": 0,
+    "centers_per_source": 8,
+    "encoder_batch_size": 8,
+    "seed": 20260911
+  },
+  "output": "output/embedding_forecast_20260911/pilot/runs",
+  "device": "cuda:0",
+  "history_ps": 6,
+  "anchor_history_ps": 6,
+  "horizons_ps": [
+    3,
+    6,
+    9
+  ],
+  "stride_ps": 0.75,
+  "seeds": [
+    20260911
+  ],
+  "training": {
+    "epochs": 32,
+    "patience": 8,
+    "batch_size": 128,
+    "workers": 0,
+    "cpu_threads": 4,
+    "scale_floor_fraction": 0.05,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "minimum_lr_fraction": 0.05,
+    "gradient_clip": 5
+  },
+  "variants": [
+    {
+      "name": "path_ar_rollout",
+      "target": "trajectory",
+      "architecture": "autoregressive_gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0.25,
+        "increment_mse": 0.1,
+        "nll": 0
+      },
+      "autoregressive": {
+        "initial_state": "history_mean",
+        "training": "rollout"
+      }
+    },
+    {
+      "name": "path_ar_mean_control",
+      "target": "trajectory",
+      "architecture": "autoregressive_gru",
+      "history_mode": "mean",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0.25,
+        "increment_mse": 0.1,
+        "nll": 0
+      },
+      "autoregressive": {
+        "initial_state": "history_mean",
+        "training": "rollout"
+      }
+    },
+    {
+      "name": "path_ar_anchor_control",
+      "target": "trajectory",
+      "architecture": "autoregressive_gru",
+      "history_mode": "anchor",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0.25,
+        "increment_mse": 0.1,
+        "nll": 0
+      },
+      "autoregressive": {
+        "initial_state": "history_mean",
+        "training": "rollout"
+      }
+    },
+    {
+      "name": "path_ar_rollout_mse",
+      "target": "trajectory",
+      "architecture": "autoregressive_gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0,
+        "increment_mse": 0,
+        "nll": 0
+      },
+      "autoregressive": {
+        "initial_state": "history_mean",
+        "training": "rollout"
+      }
+    },
+    {
+      "name": "path_ar_teacher_forced",
+      "target": "trajectory",
+      "architecture": "autoregressive_gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 128,
+      "layers": 2,
+      "heads": 4,
+      "dropout": 0.05,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1,
+        "bin_mse": 0,
+        "increment_mse": 0,
+        "nll": 0
+      },
+      "autoregressive": {
+        "initial_state": "history_mean",
+        "training": "teacher_forcing"
+      }
+    }
+  ],
+  "comparisons": [
+    [
+      "path_ar_rollout",
+      "path_ar_mean_control"
+    ],
+    [
+      "path_ar_rollout",
+      "path_ar_anchor_control"
+    ],
+    [
+      "path_ar_rollout_mse",
+      "path_ar_teacher_forced"
+    ],
+    [
+      "path_ar_rollout",
+      "path_ar_rollout_mse"
+    ]
+  ],
+  "bin_comparisons": []
+}

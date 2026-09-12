@@ -1,0 +1,23 @@
+{
+  "kind": "analysis",
+  "question": "Apply the existing analysis pipeline and integrated topology stage to all 13 fitted checkpoints (12 MEAM and the full Al/Mg/Ta/Ti run).",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/standard_pipeline_migration/batch_controller",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis_completed.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/relaxed_histories.yaml"
+  ],
+  "dependencies": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/standard_pipeline_migration/selected_controller/execution/run_record.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/standard_pipeline_migration/history_controller/execution/run_record.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.analysis.pipeline",
+    "--batch",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis_completed.yaml"
+  ]
+}

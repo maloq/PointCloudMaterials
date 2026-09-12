@@ -14,6 +14,12 @@ The [encoder, TDA and relaxation review](docs/encoder_tda_relaxation_problems_20
 collects confirmed problems, implemented corrections, unresolved questions and
 the evidence needed for the next experiments.
 
+The [embedding-trajectory forecast experiment](experiments/embedding_forecast_20260911/README.md)
+predicts three future time-bin means or every future embedding through 9 ps from
+causal histories using direct or autoregressive decoding, with frozen MACE
+targets, source-separated evaluation and
+optional joint path uncertainty. Methods live in `src/training_methods/embedding_forecast/`.
+
 The frozen-encoder temporal predictive-representation prototype is documented in
 [docs/temporal_vamp.md](docs/temporal_vamp.md). Its reference configuration uses the
 current pretrained `GeoFrameTransformer` and fits a linear VAMP/kinetic map on

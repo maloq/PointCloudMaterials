@@ -173,6 +173,10 @@ class BaseSSLModule(pl.LightningModule):
         print(message)
 
     def _prepare_model_input(self, pc: torch.Tensor) -> torch.Tensor:
+        if self.encoder.input_layout == 'btn3':
+            # The history producer fixes atom membership at its anchor. Independent
+            # frame cropping would destroy that correspondence.
+            return pc
         out = pc
         if self.model_points is not None:
             out = crop_to_num_points(out, self.model_points)

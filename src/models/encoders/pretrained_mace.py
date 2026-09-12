@@ -122,11 +122,25 @@ class PretrainedMACEGeometryEncoder(Encoder):
     invariant_dim=256
     equivariant_dim=None
 
-    def __init__(self,pretrained_checkpoint,reference_radius_A,performance):
+    def __init__(self,pretrained_checkpoint,reference_radius_A,performance,
+                 frame_batch_size=None, activation_checkpointing=False):
         super().__init__()
         self.mace=PretrainedMACEEncoder(pretrained_checkpoint,performance=performance)
         self.reference_radius_A=float(reference_radius_A)
+        self.frame_batch_size=frame_batch_size
+        self.activation_checkpointing=activation_checkpointing
 
     def forward(self,points):
         channel=torch.zeros(len(points),dtype=torch.long,device=points.device)
-        return self.mace.raw_features(points*self.reference_radius_A,channel)
+        physical=points*self.reference_radius_A
+        if self.frame_batch_size is None:
+            return self.mace.raw_features(physical,channel)
+        from torch.utils.checkpoint import checkpoint
+        pieces=[]
+        for start in range(0,len(points),self.frame_batch_size):
+            args=(physical[start:start+self.frame_batch_size],channel[start:start+self.frame_batch_size])
+            if self.activation_checkpointing and self.training and torch.is_grad_enabled():
+                pieces.append(checkpoint(self.mace.raw_features,*args,use_reentrant=False))
+            else:
+                pieces.append(self.mace.raw_features(*args))
+        return torch.cat(pieces)

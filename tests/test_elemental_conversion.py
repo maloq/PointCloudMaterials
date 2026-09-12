@@ -172,3 +172,23 @@ def test_selected_branch_uses_slurm_affinity(tmp_path, monkeypatch):
     assert elemental.os.environ['HYDRA_BOOTSTRAP'] == 'fork'
     with pytest.raises(FileExistsError):
         elemental.run_selected_branch(config, parents, 0)
+
+
+@pytest.mark.parametrize('protocol,material,lattice,repetitions', [
+    ('ti-source-then-branches', 'Ti', 'bcc', [50, 40, 25]),
+    ('al-source-then-branches', 'Al', 'fcc', [25, 25, 40]),
+])
+def test_source_input_preserves_material_lattice_and_atom_count(protocol, material, lattice, repetitions):
+    from src.simulation.campaigns.elemental import melt_input
+    config = {'protocol': protocol, 'material': material, 'repetitions_xyz': repetitions,
+              'atom_count': 100000, 'lattice_constant_A': 4.0, 'pair_commands': ['pair_style meam'],
+              'mass_g_mol': 27, 'timestep_ps': .001, 'dump_every_steps': 100,
+              'melt_temperature_K': 1325, 'melt_seed': 911001, 'thermostat_ps': .1,
+              'barostat_ps': 1.0, 'checkpoint_steps': 24000, 'melt_steps': 300000}
+    text = melt_input(config)
+    assert f'lattice {lattice} 4.0' in text
+    assert 'run 300000' in text
+    assert 'write_restart liquid.restart.bin' in text
+    config['atom_count'] = 100001
+    with pytest.raises(ValueError):
+        melt_input(config)

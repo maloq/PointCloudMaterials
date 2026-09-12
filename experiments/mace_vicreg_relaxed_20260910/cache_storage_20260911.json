@@ -1,0 +1,20 @@
+{
+  "audit": "/home/infres/vmorozov/PointCloudMaterials/output/mace/storage/cache-moves.json",
+  "moves": [
+    {
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/data",
+      "destination": "/home/ids/vmorozov/training-cache/mace-meam",
+      "producer": "src/data_utils/relaxed_histories.py"
+    },
+    {
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/views",
+      "destination": "/home/ids/vmorozov/training-cache/mace-full",
+      "producer": "src/data_utils/spatiotemporal_views.py"
+    },
+    {
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/temporal_cache",
+      "destination": "/home/ids/vmorozov/training-cache/temporal",
+      "producer": "src/data_utils/temporal_lammps_dataset.py"
+    }
+  ]
+}

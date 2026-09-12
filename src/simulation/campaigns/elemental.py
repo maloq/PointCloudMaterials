@@ -1,4 +1,4 @@
-"""Explicit Ti source-then-branches and archived Ta position-branch protocols."""
+"""Explicit Al/Ti source-then-branches and archived Ta position-branch protocols."""
 import argparse
 import hashlib
 import json
@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[3]
+SOURCE_PROTOCOLS = {'ti-source-then-branches': ('Ti', 'bcc', 2),
+                    'al-source-then-branches': ('Al', 'fcc', 4)}
 
 
 def write_json(path, value):
@@ -46,7 +48,7 @@ def assess(root, step):
     source = root / 'source'
     result = structure(source / f'snapshot_{step}.lammpstrj', config['ptm_rmsd_cutoff'])
     if result['atom_count'] != config['atom_count']:
-        raise RuntimeError(f'Lost Ti atoms at source step {step}: {result}')
+        raise RuntimeError(f'Lost {config["material"]} atoms at source step {step}: {result}')
     result.update(step=step, time_ps=step * config['timestep_ps'])
     write_json(source / f'ptm_{step}.json', result)
     previous = step - config['assessment_steps']
@@ -188,18 +190,8 @@ print "BRANCH_COMPLETE"
     complete_trajectory(config, directory, config['branch_steps'], branch)
 
 
-def run_selected_branch(config_path, parents_path, index):
-    """Run one immutable position-conditioned parent, without launching a source."""
-    from src.experiment_runner.tracking import tracked_run
-
-    config = json.loads(config_path.read_text())
-    parents = json.loads(parents_path.read_text())
-    branch = parents['branches'][index]
-    if config['protocol'] != 'ti-source-then-branches' or config['material'] != 'Ti':
-        raise ValueError('Selected-parent execution requires the Ti position-branch protocol')
-    for item in config['potential_files']:
-        if sha256(item['path']) != item['sha256']:
-            raise RuntimeError(f'Potential changed: {item}')
+def bind_allocation(config):
+    """Use the CPUs assigned to this single-node Slurm step."""
     if 'SLURM_JOB_ID' in os.environ:
         ranks = int(os.environ['SLURM_CPUS_PER_TASK'])
         allocated = sorted(os.sched_getaffinity(0))
@@ -208,6 +200,21 @@ def run_selected_branch(config_path, parents_path, index):
         config['cpus'] = allocated[:ranks]
         # Single-node MPICH ranks inherit this Slurm step's allocation.
         os.environ['HYDRA_BOOTSTRAP'] = 'fork'
+
+
+def run_selected_branch(config_path, parents_path, index):
+    """Run one immutable position-conditioned parent, without launching a source."""
+    from src.experiment_runner.tracking import tracked_run
+
+    config = json.loads(config_path.read_text())
+    parents = json.loads(parents_path.read_text())
+    branch = parents['branches'][index]
+    if config['protocol'] not in SOURCE_PROTOCOLS or config['material'] != SOURCE_PROTOCOLS[config['protocol']][0]:
+        raise ValueError('Selected-parent execution requires an Al/Ti position-branch protocol')
+    for item in config['potential_files']:
+        if sha256(item['path']) != item['sha256']:
+            raise RuntimeError(f'Potential changed: {item}')
+    bind_allocation(config)
     root = Path(config['output_root'])
     directory = root / 'branches' / branch['name']
     if directory.exists():
@@ -218,13 +225,15 @@ def run_selected_branch(config_path, parents_path, index):
         run_branch(config, root, branch)
 
 
-def ti_source(config, root):
-    melt = root / 'melt'
+def melt_input(config):
+    material, lattice, atoms_per_cell = SOURCE_PROTOCOLS[config['protocol']]
     nx, ny, nz = config['repetitions_xyz']
+    if material != config['material'] or atoms_per_cell * nx * ny * nz != config['atom_count']:
+        raise ValueError('Source lattice/material does not match the configured atom count')
     text = f'''units metal
 atom_style atomic
 boundary p p p
-lattice bcc {config['lattice_constant_A']}
+lattice {lattice} {config['lattice_constant_A']}
 region box block 0 {nx} 0 {ny} 0 {nz}
 create_box 1 box
 create_atoms 1 box
@@ -241,12 +250,17 @@ write_dump all custom liquid.lammpstrj id type x y z modify sort id
 write_restart liquid.restart.bin
 print "MELT_COMPLETE"
 '''
-    execute(config, melt, text, 'MELT_COMPLETE')
+    return text
+
+
+def crystallization_source(config, root):
+    melt = root / 'melt'
+    execute(config, melt, melt_input(config), 'MELT_COMPLETE')
     liquid = structure(melt / 'liquid.lammpstrj', config['ptm_rmsd_cutoff'])
     msd = np.loadtxt(melt / 'msd.dat')
     liquid['msd_growth_last_half_A2'] = float(msd[-1, 1] - msd[len(msd) // 2, 1])
     if liquid['atom_count'] != config['atom_count'] or liquid['crystal_fraction'] > config['max_liquid_crystal_fraction'] or liquid['msd_growth_last_half_A2'] < config['minimum_liquid_msd_growth_A2']:
-        raise RuntimeError(f'Ti melt is not a validated diffusive liquid: {liquid}')
+        raise RuntimeError(f'{config["material"]} melt is not a validated diffusive liquid: {liquid}')
     write_json(root / 'liquid_validation.json', liquid)
     source = root / 'source'
     source.mkdir()
@@ -260,14 +274,14 @@ velocity all scale {config['temperature_K']}
 '''
     text += npt(config, config['temperature_K']) + dump(config)
     text += f'''write_dump all custom snapshot_0.lammpstrj id type x y z modify sort id
-shell {sys.executable} -m src.simulation.campaigns.elemental assess-ti {root} 0
+shell {sys.executable} -m src.simulation.campaigns.elemental assess-source {root} 0
 include decision_0.lammps
 variable cycle loop {config['max_source_steps'] // config['assessment_steps']}
 label source_loop
 run {config['assessment_steps']}
 write_dump all custom snapshot_$(step:%.0f).lammpstrj id type x y z modify sort id
 write_restart checkpoint.$(step:%.0f).restart.bin
-shell {sys.executable} -m src.simulation.campaigns.elemental assess-ti {root} $(step:%.0f)
+shell {sys.executable} -m src.simulation.campaigns.elemental assess-source {root} $(step:%.0f)
 include decision_$(step:%.0f).lammps
 if "${{crystallized}} == 1" then "jump SELF source_complete"
 next cycle
@@ -318,7 +332,7 @@ def run(config_path, *, resume_ta=False):
         archive_failed_status(root / 'status.json')
     elif (root / 'status.json').exists():
         raise FileExistsError(f'Refusing to overwrite a previous campaign: {root}')
-    if config['protocol'] not in ('ti-source-then-branches', 'ta-position-branches'):
+    if config['protocol'] not in (*SOURCE_PROTOCOLS, 'ta-position-branches'):
         raise ValueError(f"Unknown explicit protocol: {config['protocol']}")
     for item in config['potential_files']:
         if sha256(item['path']) != item['sha256']:
@@ -327,12 +341,13 @@ def run(config_path, *, resume_ta=False):
         raise ValueError('Branch duration must be divisible by dump cadence')
     if shutil.disk_usage(root).free < config['required_free_bytes']:
         raise RuntimeError(f"Need {config['required_free_bytes']} free bytes at {root}")
+    bind_allocation(config)
     write_json(root / 'config.json', config)
     status = {'state': 'running', 'host': socket.gethostname(), 'pid': os.getpid(),
               'started_at_utc': datetime.now(timezone.utc).isoformat(), 'completed_branches': []}
     write_json(root / 'status.json', status)
     try:
-        branches = ti_source(config, root) if config['protocol'] == 'ti-source-then-branches' else config['branches']
+        branches = crystallization_source(config, root) if config['protocol'] in SOURCE_PROTOCOLS else config['branches']
         for branch in branches:
             status['current_branch'] = branch['name']
             write_json(root / 'status.json', status)
@@ -399,7 +414,7 @@ def main(argv=None):
     command.add_argument('--config', required=True, type=Path)
     command.add_argument('--parents', required=True, type=Path)
     command.add_argument('--index', required=True, type=int)
-    command = sub.add_parser('assess-ti')
+    command = sub.add_parser('assess-source', aliases=['assess-ti'])
     command.add_argument('root', type=Path)
     command.add_argument('step', type=int)
     command = sub.add_parser('sequence')
@@ -416,7 +431,7 @@ def main(argv=None):
             run(args.config.resolve(), resume_ta=args.resume_ta)
     elif args.action == 'branch':
         run_selected_branch(args.config.resolve(), args.parents.resolve(), args.index)
-    elif args.action == 'assess-ti':
+    elif args.action in ('assess-source', 'assess-ti'):
         assess(args.root.resolve(), args.step)
     else:
         sequence(args.ta_config.resolve(), args.ti_config.resolve(), resume_ta=args.resume_ta)

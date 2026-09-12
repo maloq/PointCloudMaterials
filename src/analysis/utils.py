@@ -56,7 +56,9 @@ def _extract_pc_phase_coords(
 
     Returns (pc, phase, coords, instance_id).
     """
-    pc = batch["points"]
+    # Prepared-history analysis displays the anchor in `points`, while model_input
+    # retains the actual sequence used by the encoder.
+    pc = batch["model_input"] if "model_input" in batch else batch["points"]
     phase = batch.get("class_id", None)
     coords = batch.get("coords", None)
     instance_id = batch.get("instance_id", None)

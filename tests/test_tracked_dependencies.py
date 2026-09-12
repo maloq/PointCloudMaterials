@@ -42,3 +42,26 @@ def test_queue_deadline_is_enforced(tmp_path):
     record(dependency)
     with pytest.raises(TimeoutError, match='deadline'):
         wait_for_dependencies([str(dependency)], until=time.time()-1, status_path=tmp_path/'queue.json')
+
+
+@pytest.mark.parametrize('alive', [True, False])
+def test_remote_dependency_requires_verified_process_identity(tmp_path, monkeypatch, alive):
+    dependency = tmp_path/'remote.json'
+    value = dict(state='running', host='another-slurm-node', pid=123,
+                 pid_start_ticks='456', slurm_job_id='789', python='/python')
+    dependency.write_text(json.dumps(value))
+    observed = []
+    def remote(record):
+        observed.append(record['pid_start_ticks'])
+        return 'process alive' if alive else 'interrupted/stale: PID exited or was reused'
+    monkeypatch.setattr('src.experiment_runner.tracking.remote_process_observation', remote)
+    def finishes(seconds):
+        value['state'] = 'command_succeeded'
+        dependency.write_text(json.dumps(value))
+    monkeypatch.setattr('src.experiment_runner.tracking.time.sleep', finishes)
+    if alive:
+        wait_for_dependencies([str(dependency)], until=time.time()+60, status_path=tmp_path/'status.json')
+    else:
+        with pytest.raises(RuntimeError, match='Dependency cannot complete'):
+            wait_for_dependencies([str(dependency)], until=time.time()+60, status_path=tmp_path/'status.json')
+    assert observed == ['456']

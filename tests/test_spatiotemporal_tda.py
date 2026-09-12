@@ -29,7 +29,7 @@ def test_targets_use_same_normalized_eighty_atoms_and_training_only_scaling(tmp_
         np.save(root/f'Al_{split}.pairs.npy', pairs)
         shards.append(dict(split=split, views=f'Al_{split}.views.npy', pairs=f'Al_{split}.pairs.npy'))
     (root/'manifest.json').write_text(json.dumps(dict(state='complete', shards=shards)))
-    cfg = OmegaConf.create(dict(data=dict(cache_dir=str(root), temporal_lag_steps=1),
+    cfg = OmegaConf.create(dict(data=dict(kind='spatiotemporal_binary', cache_dir=str(root), temporal_lag_steps=1),
         encoder=dict(kwargs=dict(reference_radius_A=9.192189)), seed_everything=9,
         tda=dict(cache_dir=str(tmp_path/'targets'), components=2, fit_anchors=2, workers=1)))
     prepare(cfg)

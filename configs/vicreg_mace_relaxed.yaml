@@ -1,0 +1,39 @@
+defaults:
+- vicreg_pretrained_mace_geometry_tda
+- _self_
+experiment_name: MACE-original-VICReg-MEAM-relaxed
+experiment_variant: anchor_blocks
+seed_everything: 20260910
+analysis_output_dir: /home/ids/vmorozov/analysis/mace/artifacts/${experiment_variant}-seed${seed_everything}
+data:
+  kind: relaxed_histories
+  materials:
+  - Al
+  cache_dir: /home/ids/vmorozov/training-cache/mace-meam
+  relaxed_manifest: output/mace_al_denoising_20260910/fire/data/manifest.json
+  normalization_radius_A: 9.192189
+  preparation_seed: 20260910
+  frame_offsets_ps:
+  - -3.0
+  - -2.25
+  - -1.5
+  - -0.75
+  - 0.0
+  temporal_lag_steps: 1
+  input_mode: anchor
+encoder:
+  kwargs:
+    frame_batch_size: 128
+    activation_checkpointing: true
+    performance:
+      compile_radial_mlp: false
+tda:
+  target: blocks
+  views: anchor
+  components: 144
+  block_scale_floor_fraction: 0.05
+  cache_dir: ${data.cache_dir}
+topology_analysis:
+  batch_size: 128
+  ridge_alpha: 1.0
+checkpoint_keep_last_after_analysis: false

@@ -1,0 +1,23 @@
+{
+  "kind": "analysis",
+  "question": "Use the currently allocated idle H100 for the shared full-scale forecast embedding cache; queued preparation resumes completed shards after allocation expiry.",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/active-allocation-988041",
+  "completion": "process_exit",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/config.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/queue_config.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/sources.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/source_manifest.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-c",
+    "import runpy,sys;sys.path.insert(0,'/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/source');runpy.run_module('src.training_methods.embedding_forecast',run_name='__main__')",
+    "--config",
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/config.json",
+    "--stage",
+    "prepare"
+  ],
+  "dependencies": []
+}

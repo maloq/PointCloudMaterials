@@ -61,8 +61,13 @@ def _run_registered_post_training_analysis(
     if not best_ckpt or not os.path.exists(best_ckpt):
         raise FileNotFoundError(f'Requested post-training analysis has no retained best checkpoint: {best_ckpt!r}')
 
-    output_dir = os.path.join(os.path.dirname(best_ckpt), "analysis")
+    output_dir = OmegaConf.select(cfg, 'analysis_output_dir', default=os.path.join(
+        os.path.dirname(best_ckpt), 'analysis_standard' if cfg.data.kind == 'relaxed_histories' else 'analysis'))
     run_post_training_analysis_safe(best_ckpt, output_dir, _first_cuda_device(cfg))
+    if not bool(OmegaConf.select(cfg, 'checkpoint_keep_last_after_analysis', default=True)):
+        last = Path(best_ckpt).parent/'last.ckpt'
+        if last.exists() and last.resolve() != Path(best_ckpt).resolve():
+            last.unlink()
 
 
 def _train(

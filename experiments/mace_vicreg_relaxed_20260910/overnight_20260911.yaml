@@ -1,0 +1,83 @@
+name: overnight
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_mace_relaxed
+output_root: /home/ids/vmorozov/experiments/mace
+experiments:
+- name: atom_temporal_blocks-seed20260910
+  overrides:
+  - experiment_variant=atom_temporal_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_temporal
+  - seed_everything=20260910
+- name: atom_anchor_blocks-seed20260910
+  overrides:
+  - experiment_variant=atom_anchor_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_anchor
+  - seed_everything=20260910
+- name: transformer_blocks-seed20260910
+  overrides:
+  - experiment_variant=transformer_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=transformer
+  - seed_everything=20260910
+- name: atom_temporal_blocks-seed20260911
+  overrides:
+  - experiment_variant=atom_temporal_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_temporal
+  - seed_everything=20260911
+- name: atom_anchor_blocks-seed20260911
+  overrides:
+  - experiment_variant=atom_anchor_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_anchor
+  - seed_everything=20260911
+- name: transformer_blocks-seed20260911
+  overrides:
+  - experiment_variant=transformer_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=transformer
+  - seed_everything=20260911
+- name: atom_temporal_blocks-seed20260912
+  overrides:
+  - experiment_variant=atom_temporal_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_temporal
+  - seed_everything=20260912
+- name: atom_anchor_blocks-seed20260912
+  overrides:
+  - experiment_variant=atom_anchor_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_anchor
+  - seed_everything=20260912
+- name: transformer_blocks-seed20260912
+  overrides:
+  - experiment_variant=transformer_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=transformer
+  - seed_everything=20260912
+metrics:
+  final:
+  - test/balanced_mse
+  - test/mean_within_frame_r2
+  - test/projector_ridge_mse
+  - val/balanced_mse

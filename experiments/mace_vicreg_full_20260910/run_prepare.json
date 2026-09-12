@@ -1,0 +1,17 @@
+{
+  "kind": "analysis",
+  "question": "Extend the original normalized Al/Mg/Ta triplets with the five completed Ta and six unique Ti trajectories.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/preparation",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_full_20260910/data.json"
+  ],
+  "dependencies": [],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "experiments/spatiotemporal_20260905/prepare_spatiotemporal_vicreg_views.py",
+    "--config",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_full_20260910/data.json"
+  ]
+}

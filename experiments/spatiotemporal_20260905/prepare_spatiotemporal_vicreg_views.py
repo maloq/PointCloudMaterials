@@ -10,69 +10,27 @@ import sys
 import time
 
 import numpy as np
-from numpy.lib.format import open_memmap
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPOSITORY))
 
-from src.data_utils.spatiotemporal_views import periodic_tree, local_views
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data_utils.spatiotemporal_views import prepare_branch
 
 
-def prepare_branch(task):
-    source, output, branch_index, seed = task
-    trajectory = TemporalLAMMPSBinaryTrajectory.load(source["path"])
-    if trajectory.frame_count != 241:
-        raise ValueError(f"Expected 241 saved frames at 0.1 ps spacing: {source['path']}")
-    expected_step = 50 if source["material"] == "Ta" else 100
-    if not np.array_equal(trajectory.timesteps, np.arange(241) * expected_step):
-        raise ValueError(f"Unexpected timestep grid: {source['path']}")
-    rng = np.random.default_rng(seed + branch_index)
-    multiplier = 6 if source["material"] == "Ta" else 1
-    shards = []
-    for split, anchors, centers in (("train", range(20, 176, 5), 1024 * multiplier),
-                                     ("val", range(200, 236, 5), 256 * multiplier)):
-        count = len(anchors) * centers
-        stem = f"{source['material']}_{source['snapshot']}_{split}"
-        views_file, pairs_file = f"{stem}.views.npy", f"{stem}.pairs.npy"
-        views = open_memmap(output / views_file, mode="w+", dtype=np.float16, shape=(count, 3, 80, 3))
-        pairs = open_memmap(output / pairs_file, mode="w+", dtype=np.int64, shape=(count, 4))
-        rows = np.arange(trajectory.atom_count)
-        pool = rows[rows % 5 != 0] if split == "train" else rows[rows % 5 == 0]
-        for j, anchor in enumerate(anchors):
-            selected = rng.choice(pool, size=centers, replace=False)
-            lengths = trajectory.box_high[anchor] - trajectory.box_low[anchor]
-            points, tree = periodic_tree(trajectory.positions[anchor], lengths)
-            _, nearest = tree.query(points[selected], k=9, workers=1)
-            candidates = nearest[nearest != selected[:, None]].reshape(centers, 8)
-            spatial = candidates[np.arange(centers), rng.integers(0, 8, size=centers)]
-            batch = slice(j * centers, (j + 1) * centers)
-            views[batch, 0] = local_views(points, tree, lengths, selected, num_points=80, radius=source["radius"])
-            views[batch, 1] = local_views(points, tree, lengths, spatial, num_points=80, radius=source["radius"])
-            lags = np.tile([1, 5], centers // 2)
-            rng.shuffle(lags)
-            for lag in (1, 5):
-                frame = anchor + lag
-                lengths_t = trajectory.box_high[frame] - trajectory.box_low[frame]
-                points_t, tree_t = periodic_tree(trajectory.positions[frame], lengths_t)
-                mask = lags == lag
-                views[j * centers + np.flatnonzero(mask), 2] = local_views(
-                    points_t, tree_t, lengths_t, selected[mask], num_points=80, radius=source["radius"],
-                )
-            pairs[batch] = np.column_stack((trajectory.atom_ids[selected], trajectory.atom_ids[spatial], np.full(centers, anchor), lags))
-        views.flush()
-        pairs.flush()
-        shards.append(dict(material=source["material"], snapshot=source["snapshot"], split=split,
-                           samples=count, views=views_file, pairs=pairs_file))
-        print(f"Prepared {stem}: {count} triplets", flush=True)
-    return shards
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--config", type=Path, help="Explicit expanded-cache configuration; reuses this view producer.")
     parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args(argv)
+    if args.config is not None:
+        from src.data_utils.spatiotemporal_views import prepare_expanded
+        prepare_expanded(json.loads(args.config.read_text()))
+        return
+    if args.output is None:
+        parser.error("--output is required without --config")
     args.output.mkdir(parents=True, exist_ok=False)
     sources = []
     root = REPOSITORY / "datasets/zr_al_mg_initial_6x24ps/branches"
@@ -101,6 +59,11 @@ def main(argv=None):
     started = time.monotonic()
     try:
         shards = []
+        for source in sources:
+            multiplier = 6 if source["material"] == "Ta" else 1
+            source.update(frame_count=241, timestep_stride=50 if source["material"] == "Ta" else 100,
+                lags=[1,5], splits=[dict(split="train", anchors=list(range(20,176,5)), centers=1024*multiplier),
+                                  dict(split="val", anchors=list(range(200,236,5)), centers=256*multiplier)])
         with ProcessPoolExecutor(max_workers=args.workers) as pool:
             futures = [pool.submit(prepare_branch, (source, args.output, index, report["seed"])) for index, source in enumerate(sources)]
             for future in as_completed(futures):

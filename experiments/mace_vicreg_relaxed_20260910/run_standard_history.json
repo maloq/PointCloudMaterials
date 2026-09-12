@@ -1,0 +1,21 @@
+{
+  "kind": "analysis",
+  "question": "Run the existing checkpoint analysis on the completed five-frame mean encoder after correcting independently sampled source metadata.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/standard_pipeline_migration/history_controller",
+  "configs": [
+    "configs/analysis/relaxed_histories.yaml"
+  ],
+  "dependencies": [],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.analysis.pipeline",
+    "configs/analysis/relaxed_histories.yaml",
+    "--checkpoint",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep03-epoch=16.ckpt",
+    "--output-dir",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard"
+  ]
+}

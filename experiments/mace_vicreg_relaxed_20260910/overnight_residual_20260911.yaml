@@ -1,0 +1,21 @@
+name: overnight-residual
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_mace_relaxed
+output_root: /home/ids/vmorozov/experiments/mace
+repeat_each: 3
+repeat_seed_base: 20260910
+repeat_seed_key: seed_everything
+experiments:
+- name: residual_blocks
+  overrides:
+  - experiment_variant=residual_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=residual
+metrics:
+  final:
+  - test/balanced_mse
+  - test/mean_within_frame_r2
+  - test/projector_ridge_mse
+  - val/balanced_mse

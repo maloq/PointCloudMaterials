@@ -1,0 +1,26 @@
+{
+  "kind": "analysis",
+  "question": "Aggregate all 24 original-VICReg MEAM runs after both existing GPU allocations finish their assigned training and analysis.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/comparison_detached_controller",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis.json"
+  ],
+  "dependencies": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/l40s_controller/execution/run_record.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/h100_detached_controller/execution/run_record.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/run_record.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep02/run_record.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep03/run_record.json"
+  ],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "-m",
+    "src.analysis.pipeline",
+    "--collect-root",
+    "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs",
+    "--specification",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/analysis.json"
+  ]
+}

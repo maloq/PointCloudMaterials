@@ -1,0 +1,21 @@
+{
+  "kind": "training",
+  "question": "Complete the remaining 18 original-VICReg comparisons after retaining all three finished anchor-PCA seeds.",
+  "completion": "process_exit",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/h100_detached_controller",
+  "configs": [
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/plan_h100_remaining.yaml",
+    "/home/infres/vmorozov/PointCloudMaterials/configs/vicreg_mace_relaxed.yaml"
+  ],
+  "dependencies": [],
+  "command": [
+    "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+    "scripts/run_experiments.py",
+    "--plan",
+    "/home/infres/vmorozov/PointCloudMaterials/experiments/mace_vicreg_relaxed_20260910/plan_h100_remaining.yaml",
+    "--local",
+    "--nan-restart-max-retries",
+    "0"
+  ]
+}

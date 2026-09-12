@@ -1,0 +1,61 @@
+name: mace_vicreg_relaxed
+train_script: src/training_methods/contrastive_learning/train_contrastive.py
+config_name: vicreg_mace_relaxed
+output_root: output/mace_vicreg_relaxed_20260910/runs
+repeat_each: 3
+repeat_seed_base: 20260910
+repeat_seed_key: seed_everything
+experiments:
+- name: anchor_vicreg
+  overrides:
+  - experiment_variant=anchor_vicreg
+  - tda.enabled=false
+- name: anchor_pca
+  overrides:
+  - experiment_variant=anchor_pca
+  - tda.target=pca
+  - tda.components=32
+- name: anchor_blocks
+  overrides:
+  - experiment_variant=anchor_blocks
+- name: mean_blocks
+  overrides:
+  - experiment_variant=mean_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=mean
+- name: transformer_blocks
+  overrides:
+  - experiment_variant=transformer_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=transformer
+- name: residual_blocks
+  overrides:
+  - experiment_variant=residual_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=residual
+- name: atom_anchor_blocks
+  overrides:
+  - experiment_variant=atom_anchor_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_anchor
+- name: atom_temporal_blocks
+  overrides:
+  - experiment_variant=atom_temporal_blocks
+  - encoder.name=PretrainedMACEHistoryGeometry
+  - data.input_mode=history
+  - +encoder.kwargs.frame_offsets_ps=[-3.0,-2.25,-1.5,-0.75,0.0]
+  - +encoder.kwargs.fusion=atom_temporal
+metrics:
+  final:
+  - test/balanced_mse
+  - test/mean_within_frame_r2
+  - test/projector_ridge_mse
+  - val/balanced_mse

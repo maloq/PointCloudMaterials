@@ -6,6 +6,9 @@ configs, checkpoints and plots across training and simulations. The versioned
 lists external storage roots. See [the run/retention guide](../docs/output_registry.md)
 before launching or reorganizing runs.
 
+The [Al MEAM crystallization campaign](al_meam_crystallization_20260911/README.md)
+applies the Ti source-and-branches workflow to 100000 Al atoms with the shooting potential.
+
 These directories retain configurations and findings for individual research
 questions. Retired MACE implementations and their dedicated diagnostics were
 removed on 2026-09-09; completed records identify the source snapshots needed
@@ -13,9 +16,22 @@ to reproduce their original protocols. Shared implementation
 belongs in `src/`, and maintained commands are indexed in
 [`scripts/README.md`](../scripts/README.md).
 
+Current MACE figures and metrics have a short, flat
+[results gallery](../output/mace/index.html). Reusable training caches live in
+`/home/ids/vmorozov/training-cache/`; see the
+[September 11 storage and rendering record](mace_vicreg_relaxed_20260910/README.md#umap-flat-reports-and-storage--september-11).
+The [overnight H100 queue](mace_vicreg_relaxed_20260910/OVERNIGHT_20260911.md)
+tests learned frame/atom temporal fusion against matched controls with three seeds.
+Its [completed 24-fit review](mace_vicreg_relaxed_20260910/RESULTS_20260911.md)
+finds modest history gains and a major mismatch between combined-loss checkpoint
+selection and topology accuracy.
+
 | Experiment | Question |
 | --- | --- |
-| [mace_al_denoising_20260910](mace_al_denoising_20260910/README.md) | Al TDA loss/fusion comparisons, completed mixed-potential pilot, [force/structure/topology potential comparison](mace_al_denoising_20260910/POTENTIAL_DIFFERENCES.md) and detached preparation of independent sources |
+| [embedding_forecast_20260911](embedding_forecast_20260911/README.md) | Forecast separate 0–3/3–6/6–9 ps embedding means or direct/autoregressive future paths; [enlarged augmented runs](embedding_forecast_20260911/SCALE_RUN.md) reduced to 32 epochs and one Slurm job per model |
+| [mace_vicreg_full_20260910](mace_vicreg_full_20260910/README.md) | Corrected original MACE + VICReg on all original Al/Mg/Ta views plus completed new Ta/Ti trajectories; detached H100 training and standard analysis |
+| [mace_vicreg_relaxed_20260910](mace_vicreg_relaxed_20260910/README.md) | MEAM topology/history comparisons in corrected original VICReg; standard checkpoint analysis with topology probes, source uncertainty and history interventions |
+| [mace_al_denoising_20260910](mace_al_denoising_20260910/README.md) | Completed mixed-potential pilot, [potential comparison](mace_al_denoising_20260910/POTENTIAL_DIFFERENCES.md), and full 30-source MEAM comparison: atom histories reduce error by 23.08% against the matched anchor control |
 | [mace_temporal_transformer_20260909](mace_temporal_transformer_20260909/README.md) | Joint MACE and five-frame temporal attention for relaxed-anchor topology, followed by held-out temporal and spatial analysis |
 | [mace_original_vicreg_tda_20260909](mace_original_vicreg_tda_20260909/README.md) | Queued matched original VICReg + TDA from the exported latent, TDA80 from epoch 1, then the standard static analysis |
 | [mace_original_vicreg_20260909](mace_original_vicreg_20260909/README.md) | Pretrained small MACE with normalized 80-point geometry, no element inputs, the original Lightning VICReg/projector, and standard static analysis |

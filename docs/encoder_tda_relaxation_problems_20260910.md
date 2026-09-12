@@ -1,6 +1,18 @@
 # Encoder, TDA and relaxation: problems, evidence and next decisions
 
-Research review — 10 September 2026
+Research review — 10 September 2026, before the full MEAM training result
+
+**Follow-up, 16:51 CEST:** the full uniform-MEAM comparison has now completed all
+36 training runs and analysis. Atom-temporal fusion reduces balanced test MSE
+from 0.03321 to 0.02554 against its matched atom-anchor control: **23.08%**,
+with a 95% source-bootstrap interval of **20.52–26.46%**, improving on all six
+held-out trajectories. This supersedes the small, uncertain temporal advantage
+reported below for the mixed pilot. The earliest frames still have modest local
+predictability (within-frame R² 0.239); most of the gain is at the latest sampled
+time. See the [updated experiment findings](../experiments/mace_al_denoising_20260910/README.md#findings-on-uniform-meam-data)
+for the controls, time breakdown and limitations. The review below preserves
+the evidence available before this follow-up; statements about pending full-data
+training and the small temporal gain refer to that earlier state.
 
 This document consolidates the problems found in our MACE structural encoders,
 topological supervision and relaxed-target preparation through September 10.
@@ -546,3 +558,16 @@ This Markdown file is a versioned research review, indexed from the repository
 README, encoder documentation and Al experiment record. No encoder, target
 producer, relaxation settings or training jobs were changed to produce this
 review.
+
+
+## 10. Analysis workflow correction — September 10, 2026
+
+The original VICReg experiments now use the existing checkpoint analysis pipeline.
+Topology error, within-frame R², training-only ridge probes, source/temperature/frame
+breakdowns, history interventions and paired source-bootstrap comparisons are
+integrated as its optional topology stage. Clustering, latent statistics and
+representative structure plots retain their existing implementations. See the
+[reproduction and integration record](../experiments/mace_vicreg_relaxed_20260910/README.md).
+The standalone evaluators and duplicate review scripts have been removed;
+historical results remain available. This workflow correction does not establish
+that relaxed TDA is a defect label or a thermodynamic stability measurement.

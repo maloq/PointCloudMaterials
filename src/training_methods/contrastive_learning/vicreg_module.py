@@ -428,6 +428,8 @@ class VICRegModule(BaseSSLModule):
         super().__init__(
             cfg,
             module_name="VICRegModule",
+            summary_sequence_length=(len(cfg.data.frame_offsets_ps)
+                if self.data_kind == 'relaxed_histories' and cfg.data.input_mode == 'history' else None),
         )
         self.cache_warning_prefix = "contrastive"
         self.factor_vae = FactorVAELoss.from_config(
@@ -454,8 +456,8 @@ class VICRegModule(BaseSSLModule):
         self.automatic_optimization = not self.factor_vae.enabled
         self.temporal_view = bool(getattr(cfg, "vicreg_temporal_view", False))
         if self.temporal_view:
-            if self.data_kind != "spatiotemporal_binary" or not self.vicreg.neighbor_view:
-                raise ValueError("Temporal VICReg requires spatiotemporal_binary data and a spatial neighbor view.")
+            if self.data_kind not in ("spatiotemporal_binary", "relaxed_histories") or not self.vicreg.neighbor_view:
+                raise ValueError("Temporal VICReg requires prepared spatial/temporal views and a spatial neighbor view.")
             if self.factor_vae.enabled or self.swav.enabled or not self.vicreg.enabled:
                 raise ValueError("The three-view objective requires VICReg enabled and FactorVAE/SwAV disabled.")
             self.temporal_weight = float(cfg.vicreg_temporal_weight)
@@ -471,6 +473,10 @@ class VICRegModule(BaseSSLModule):
                                               nn.SiLU(), nn.Linear(tda_cfg.hidden_dim, tda_cfg.components))
             self.tda_weight = float(tda_cfg.weight)
             self.tda_start_epoch = int(tda_cfg.start_epoch)
+            self.tda_target_kind = str(getattr(tda_cfg, 'target', 'pca'))
+            self.tda_views = str(getattr(tda_cfg, 'views', 'all'))
+            if self.tda_views not in ('all', 'anchor') or self.tda_target_kind not in ('pca', 'blocks'):
+                raise ValueError(f'Unsupported TDA target/views: {self.tda_target_kind}/{self.tda_views}')
 
         self.factor_vae_discriminator_learning_rate = float(
             getattr(cfg, "factor_vae_discriminator_learning_rate", 1.0e-4)
@@ -589,7 +595,7 @@ class VICRegModule(BaseSSLModule):
         return total_loss
 
     def _unpack_batch(self, batch):
-        if self.data_kind == "spatiotemporal_binary":
+        if self.data_kind in ("spatiotemporal_binary", "relaxed_histories"):
             return batch["points"], {}
         if self.data_kind == "static":
             return batch["points"], {}
@@ -812,9 +818,18 @@ class VICRegModule(BaseSSLModule):
             if stage == "train":
                 # Centers and their complete neighborhoods come from the trajectory;
                 # do not shift the already-centered spatial view a second time.
-                points = self.vicreg.apply_view_postprocessing(
-                    points, use_neighbor=(key == "spatial_points"), apply_occlusion=False,
-                )
+                if points.ndim == 4:
+                    shape = points.shape
+                    # A rigid augmentation is shared across the entire history;
+                    # jitter remains independent per observed coordinate.
+                    points = self.vicreg.apply_view_postprocessing(
+                        points.flatten(1, 2), use_neighbor=(key == "spatial_points"),
+                        apply_occlusion=False, view_points=None,
+                    ).reshape(shape)
+                else:
+                    points = self.vicreg.apply_view_postprocessing(
+                        points, use_neighbor=(key == "spatial_points"), apply_occlusion=False,
+                    )
             views.append(points)
         encoded = self.encoder_io.encode(torch.cat(views, dim=0))
         features = self._shared_invariant(encoded.invariant, encoded.equivariant).chunk(3, dim=0)
@@ -824,13 +839,17 @@ class VICRegModule(BaseSSLModule):
         losses = {self.vicreg.metric_prefix: loss}
         if self.tda_head is not None and self.current_epoch + 1 >= self.tda_start_epoch:
             target = batch['tda_targets'].to(device=self.device, dtype=torch.float32, non_blocking=True)
-            prediction = self.tda_head(torch.stack(projected, dim=1))
-            tda_mse = F.mse_loss(prediction.float(), target)
+            from src.data_utils.topology_targets import topology_loss
+            representation = projected[0] if self.tda_views == 'anchor' else torch.stack(projected, dim=1)
+            prediction = self.tda_head(representation).float()
+            tda_mse = topology_loss(prediction.reshape(-1, prediction.shape[-1]),
+                                    target.reshape(-1, target.shape[-1]), self.tda_target_kind)
             if not torch.isfinite(tda_mse):
                 raise FloatingPointError('Nonfinite TDA loss on normalized 80-point views')
             losses['tda'] = self.tda_weight * tda_mse
             metrics['tda_mse'] = tda_mse
-            metrics['tda_mean_baseline_mse'] = target.square().mean()
+            flat_target = target.reshape(-1, target.shape[-1])
+            metrics['tda_mean_baseline_mse'] = topology_loss(torch.zeros_like(flat_target), flat_target, self.tda_target_kind)
         for name, value in metrics.items():
             self._log_metric(stage, name, value, batch_size=views[0].shape[0])
         return self._finish_ssl_step(

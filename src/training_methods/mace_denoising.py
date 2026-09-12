@@ -9,7 +9,6 @@ import time
 import traceback
 
 import numpy as np
-from sklearn.decomposition import PCA
 import torch
 from torch import nn
 
@@ -18,45 +17,9 @@ from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.mace_denoising import ResidualFrameFusion, AtomTemporalFusion
 from src.models.encoders.mace_temporal import PretrainedMACETemporalEncoder
 from src.training_methods.mace_objective import variance_covariance
-
-
-BLOCKS = (slice(0, 16), slice(16, 80), slice(80, 144))
-
-
-def fit_targets(targets, components, floor_fraction):
-    pca = PCA(n_components=components, svd_solver='full').fit(targets)
-    block_std = np.array([np.sqrt(targets[:, block].var(0).mean()) for block in BLOCKS])
-    floor = floor_fraction * block_std.max()
-    block_scale = np.sqrt(block_std**2 + floor**2)
-    pixel_scale = np.concatenate([np.full(block.stop-block.start, scale) for block, scale in zip(BLOCKS, block_scale)])
-    return dict(tda_mean=pca.mean_.astype(np.float32), tda_components=pca.components_.astype(np.float32),
-        tda_std=np.maximum(np.sqrt(pca.explained_variance_), 1e-5).astype(np.float32),
-        pixel_scale=pixel_scale.astype(np.float32), block_std=block_std, block_scale=block_scale,
-        pca_variance_ratio=pca.explained_variance_ratio_)
-
-
-def transform_target(target, scaling, kind):
-    centered = target - scaling['tda_mean']
-    if kind == 'pca':
-        return (centered @ scaling['tda_components'].T) / scaling['tda_std']
-    if kind == 'blocks':
-        return centered / scaling['pixel_scale']
-    raise ValueError(f'Unknown topology target transform: {kind}')
-
-
-def raw_prediction(prediction, scaling, kind):
-    if kind == 'pca':
-        return (prediction * scaling['tda_std']) @ scaling['tda_components'] + scaling['tda_mean']
-    if kind == 'blocks':
-        return prediction * scaling['pixel_scale'] + scaling['tda_mean']
-    raise ValueError(f'Unknown topology target transform: {kind}')
-
-
-def topology_loss(prediction, target, kind):
-    errors = (prediction-target).square()
-    if kind == 'pca':
-        return errors.mean()
-    return torch.stack([errors[:, block].mean() for block in BLOCKS]).mean()
+from src.data_utils.topology_targets import (
+    BLOCKS, fit_targets, transform_target, raw_prediction, topology_loss,
+)
 
 
 class FrozenData:
@@ -308,6 +271,10 @@ def train_one(cfg, variant, seed, data):
 
 
 def run(cfg, stage):
+    if stage in ('analysis', 'all'):
+        raise ValueError('The standalone denoising analysis has been retired. Use original VICReg '
+                         'checkpoints with python -m src.analysis.pipeline. Historical non-Lightning '
+                         'checkpoints require their recorded source snapshot.')
     out = Path(cfg['output'])
     out.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(cfg['cpu_threads'])
@@ -338,9 +305,6 @@ def run(cfg, stage):
                     for seed in cfg['seeds']:
                         for variant in cfg['variants']:
                             train_one(cfg, variant, seed, data)
-                if stage in ('analysis', 'all'):
-                    from src.analysis.mace_denoising import analyze
-                    analyze(cfg, data)
                 if stage == 'potential-audit' or (stage == 'all' and cfg['protocol']=='denoising80_reuse'):
                     if cfg['protocol'] != 'denoising80_reuse':
                         raise ValueError('The paired potential audit requires the explicit denoising80_reuse protocol.')

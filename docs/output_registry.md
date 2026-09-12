@@ -11,6 +11,12 @@ The **Experiments**, **Simulations**, **Datasets & caches**, **Maintenance** and
 Search matches run names, metric names, configs and artifact paths. Expand a run
 for numerical metric previews, reports, checkpoints, config files and plots.
 
+For current MACE results, open the short [MACE gallery](../output/mace/index.html):
+`output/mace/<variant>-seed<seed>/` or `output/mace/full/` contains UMAP, t-SNE,
+spatial views, representatives and metrics. Detailed analysis artifacts live in
+`/home/ids/vmorozov/analysis/mace/artifacts/`. Each report's `source.json` records
+the original artifact paths and checkpoint hash.
+
 Add questions to `experiments/ideas.json`; each needs an ID, title, question,
 state, concrete next action, and a link to evidence. Update an existing idea with
 `experiment_registry.py idea --id ID --state planned --next-action "ACTION"`.
@@ -162,6 +168,26 @@ inputs and specifications. Inference cache metadata must be archived and removed
 with its NPZ; an orphan sidecar makes the current loader fail. Rebuild caches using
 the original full analysis with `figure_set.figure_only=false` before figure-only
 analysis. Per-directory `CACHE_RETENTION.md` records this requirement.
+
+Current MACE training caches are shared across fits under
+`/home/ids/vmorozov/training-cache/{mace-meam,mace-full,temporal}`. Old paths forward
+there through verified symlinks so recorded configs and cache identities remain
+usable. To move another inactive cache, use an explicit plan with `audit` and
+`moves: [{source, destination, producer}]`:
+
+```bash
+conda run -n pointnet python scripts/experiment_registry.py relocate-caches --plan PLAN.json
+conda run -n pointnet python scripts/experiment_registry.py relocate-caches --plan PLAN.json --apply
+```
+
+The implementation verifies copied bytes and an unchanged source inventory before
+removing the original directory. Stop writers before planning a move.
+For the current MACE configs, only the selected best checkpoint remains after
+successful analysis; unfinished or failed runs keep rolling recovery state.
+Analysis keeps metrics, test predictions and the requested plots, discards
+regenerable inference arrays after success, and skips redundant figure sets,
+paper-format duplicates and validation prediction exports. These settings do
+not remove simulation trajectories or change the training objective.
 
 Cleanup is an explicit list of paths, SHA-256 hashes, sizes, reasons and retained
 prerequisites. It is never a wildcard deletion policy:

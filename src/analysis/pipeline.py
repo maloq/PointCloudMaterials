@@ -34,6 +34,7 @@ from .config import (
     _resolve_analysis_files, _resolve_analysis_settings, _resolve_figure_set_settings,
     _resolve_input_settings, _resolve_run_settings,
     build_runtime_model_config, load_checkpoint_analysis_config,
+    default_analysis_config_for_checkpoint,
 )
 from .connected_regimes import (
     resolve_connected_regime_settings,
@@ -56,6 +57,7 @@ from .lazy_static_dataset import build_lazy_static_analysis_dataloader
 from .latent_vis import print_analysis_summary, run_equivariance_evaluation, run_pca_and_latent_stats, run_tsne_visualizations
 from .md_outputs import build_md_metrics
 from .output_layout import real_md_outputs_root, real_md_outputs_root_for_k, write_json
+from .report import report_directory, publish_report
 from .pipeline_runtime import (
     _build_analysis_dataloader,
     _collect_clustering_fit_cache,
@@ -208,6 +210,8 @@ def run_post_training_analysis(
     # ── Config resolution ──────────────────────────────────────────────
     _step("Loading analysis config")
     if analysis_cfg is None:
+        if analysis_config_path is None and checkpoint_path is not None:
+            analysis_config_path = str(default_analysis_config_for_checkpoint(checkpoint_path))
         analysis_cfg = load_checkpoint_analysis_config(analysis_config_path)
     if not isinstance(analysis_cfg, DictConfig):
         raise TypeError(
@@ -528,6 +532,12 @@ def run_post_training_analysis(
         "force_recompute": bool(analysis_settings.inference_cache_force_recompute),
         "spec_sha256": _inference_cache_spec_hash(cache_spec),
     }
+    if bool(OmegaConf.select(analysis_cfg, 'topology.enabled', default=False)):
+        from .topology import run_topology_analysis
+        all_metrics['topology'] = run_topology_analysis(
+            model=model, cfg=cfg, analysis_cfg=analysis_cfg,
+            checkpoint_path=run_settings.checkpoint_path, out_dir=out_dir,
+            main_cache=cache, step=_step)
     fit_cache: dict[str, np.ndarray] | None = None
     fit_cache_loaded = False
     fit_cfg: DictConfig | None = None
@@ -1616,7 +1626,19 @@ def run_post_training_analysis(
     # ── Write metrics & summary ────────────────────────────────────────
     _step("Writing metrics")
     metrics_path = out_dir / "analysis_metrics.json"
+    retain_cache = bool(OmegaConf.select(analysis_cfg, 'cache.retain_after_analysis', default=True))
+    all_metrics['inference_cache']['retained_after_analysis'] = retain_cache
     write_json(metrics_path, all_metrics)
+    if 'topology' in all_metrics:
+        write_json(Path(run_settings.checkpoint_path).parent/'final_metrics.json', all_metrics['topology']['flat_metrics'])
+    report_dir = report_directory(cfg, analysis_cfg)
+    if report_dir is not None:
+        publish_report(out_dir, report_dir)
+    if not retain_cache:
+        from .inference_cache import discard_inference_cache
+        discard_inference_cache(out_dir, analysis_settings.inference_cache_file)
+        for path in (out_dir/'topology').glob('*_inference.npz'):
+            discard_inference_cache(path.parent, path.name)
 
     elapsed = time.perf_counter() - t0
     print_analysis_summary(
@@ -1643,8 +1665,63 @@ def main() -> None:
         default=str(DEFAULT_ANALYSIS_CONFIG_PATH),
         help=f"Path to the analysis config YAML (default: {DEFAULT_ANALYSIS_CONFIG_PATH})",
     )
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument('--batch', type=Path, help='YAML with explicit checkpoint/config/output entries.')
+    modes.add_argument('--collect-root', type=Path, help='Collect standard pipeline topology results across seeds.')
+    parser.add_argument('--specification', type=Path, help='Declared variants, seeds and paired comparisons for collection.')
+    parser.add_argument('--checkpoint', help='Override checkpoint.path for a single analysis.')
+    parser.add_argument('--output-dir', help='Override checkpoint.output_dir for a single analysis.')
+    parser.add_argument('--rerun', action='store_true', help='Re-run completed batch analyses using their inference caches.')
+    parser.add_argument('--publish-only', action='store_true', help='Publish existing completed batch results to flat galleries.')
     args = parser.parse_args()
-    run_post_training_analysis(analysis_config_path=args.config)
+    if (args.rerun or args.publish_only) and args.batch is None:
+        parser.error('--rerun and --publish-only require --batch')
+    if args.rerun and args.publish_only:
+        parser.error('--rerun and --publish-only are mutually exclusive')
+    if args.batch is not None:
+        batch = OmegaConf.load(args.batch)
+        for item in batch.runs:
+            output = Path(item.output_dir)
+            completed = output/'analysis_metrics.json'
+            if args.publish_only:
+                settings = load_checkpoint_analysis_config(item.analysis_config)
+                cfg = build_runtime_model_config(item.checkpoint, settings)
+                report_dir = report_directory(cfg, settings)
+                if report_dir is None:
+                    raise ValueError(f'--publish-only requires report.root in {item.analysis_config}')
+                publish_report(output, report_dir)
+                continue
+            if completed.exists() and not args.rerun:
+                import json
+                from src.experiment_runner.registry import sha256
+                saved = json.loads(completed.read_text())
+                if saved['topology']['checkpoint_sha256'] != sha256(Path(item.checkpoint)):
+                    raise ValueError(f'Completed analysis belongs to a different checkpoint: {completed}')
+                settings = load_checkpoint_analysis_config(item.analysis_config)
+                if not bool(OmegaConf.select(settings, 'cache.retain_after_analysis', default=True)):
+                    from .inference_cache import discard_inference_cache
+                    discard_inference_cache(output, settings.cache.file)
+                    for path in (output/'topology').glob('*_inference.npz'):
+                        discard_inference_cache(path.parent, path.name)
+                    saved['inference_cache']['retained_after_analysis'] = False
+                    write_json(completed, saved)
+                cfg = build_runtime_model_config(item.checkpoint, settings)
+                report_dir = report_directory(cfg, settings)
+                if report_dir is not None:
+                    publish_report(output, report_dir)
+                print(f'[analysis][batch] Verified completed result: {completed}', flush=True)
+                continue
+            run_post_training_analysis(checkpoint_path=item.checkpoint, output_dir=item.output_dir,
+                analysis_config_path=item.analysis_config, cuda_device=batch.cuda_device)
+        return
+    if args.collect_root is not None:
+        if args.specification is None:
+            parser.error('--collect-root requires --specification')
+        from .topology import collect
+        collect(args.collect_root, args.specification)
+        return
+    run_post_training_analysis(analysis_config_path=args.config,
+                              checkpoint_path=args.checkpoint, output_dir=args.output_dir)
 
 
 if __name__ == "__main__":

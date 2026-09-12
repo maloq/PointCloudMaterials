@@ -1,0 +1,36 @@
+{
+  "variants": [
+    "anchor_vicreg",
+    "anchor_pca",
+    "anchor_blocks",
+    "mean_blocks",
+    "transformer_blocks",
+    "atom_anchor_blocks",
+    "atom_temporal_blocks"
+  ],
+  "seeds": [
+    20260910,
+    20260911,
+    20260912
+  ],
+  "bootstrap_seed": 20260910,
+  "comparisons": [
+    [
+      "anchor_pca",
+      "anchor_blocks"
+    ],
+    [
+      "anchor_blocks",
+      "mean_blocks"
+    ],
+    [
+      "mean_blocks",
+      "transformer_blocks"
+    ],
+    [
+      "atom_anchor_blocks",
+      "atom_temporal_blocks"
+    ]
+  ],
+  "report_root": "output/mace"
+}
