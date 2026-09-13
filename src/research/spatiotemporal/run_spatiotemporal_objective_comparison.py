@@ -17,6 +17,8 @@ def main(argv=None):
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--static-cache", type=Path, required=True)
     parser.add_argument("--config-tag", default="corrected_20260905")
+    parser.add_argument("--config-dir", type=Path, required=True,
+                        help="Restored Hydra tree containing the historical GeoFrame recipes.")
     args = parser.parse_args(argv)
 
     def status(state, stage, **extra):
@@ -28,7 +30,8 @@ def main(argv=None):
     stage = "initializing"
     try:
         jobs = [(objective, [sys.executable, "-u", "src/training_methods/spatiotemporal.py",
-                 "--run-dir", str(args.root / objective), "--config-name", f"{objective}_geoframe_v2_spatiotemporal_{args.config_tag}"])
+                 "--run-dir", str(args.root / objective), "--config-dir", str(args.config_dir.resolve()),
+                 "--config-name", f"{objective}_geoframe_v2_spatiotemporal_{args.config_tag}"])
                 for objective in ("vicreg", "visreg")]
         jobs.append(("comparison", [sys.executable, "-u", "src/research/spatiotemporal/compare_spatiotemporal_objectives.py", "--root", str(args.root), "--static-cache", str(args.static_cache)]))
         for index, (stage, command) in enumerate(jobs):

@@ -23,7 +23,8 @@ def test_checkpoint_path_with_equals_is_quoted_for_hydra(monkeypatch, tmp_path: 
         wandb_run_id="test",
     )
 
-    command = _run_command(spec, device=0, v2_checkpoint=None)
+    command = _run_command(spec, device=0, v2_checkpoint=None, config_dir=tmp_path)
+    assert command[command.index("--config-dir") + 1] == str(tmp_path)
     override = next(arg for arg in command if arg.startswith("init_from_checkpoint="))
     parsed = OverridesParser.create().parse_override(override)
 

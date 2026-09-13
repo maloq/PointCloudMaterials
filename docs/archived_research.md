@@ -22,6 +22,12 @@ before resuming or changing it; retain original provenance.
 [The September 11–13 retention review](research_retention.md) identifies the current
 research, checkpoints and older dependencies kept in the working checkout.
 
+The configuration cleanup also has a complete, verified
+[pre-cleanup `configs/` copy](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/)
+and [file-hash receipt](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs.verification.json).
+Restore old Hydra recipes with their defaults and loader dependencies together;
+see the [current configuration index](../configs/README.md).
+
 Archived WandB log links that formerly pointed into the live checkout now point
 to their retained archive files; [the link audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/archive-log-links.json)
 preserves original targets. No trajectory, checkpoint or frozen source bytes changed.

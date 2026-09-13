@@ -104,7 +104,11 @@ module above. Historical simulation specialization/queue code is now under
 The two existing `run_lammps_independent_meam_*` forwarding commands still import
 maintained simulation implementations. Historical exact protocols and arguments
 are documented in [simulation records](../docs/simulations/README.md).
-The Aluminum shell launcher still requires `PYTHON` and accepts `DEVICES`.
+The historical Aluminum shell launcher requires `PYTHON` and an explicit
+`CAMPAIGN_CONFIG`, and accepts `DEVICES`; restore its dependency tree as described
+in the [config index](../configs/README.md). The FactorVAE and historical GeoFrame
+objective queues require `--config-dir` for restored recipes; the spatiotemporal
+trainer accepts it too. All maintained simulation recipes live in `configs/simulation/`.
 
 `project.py` manages machine settings (`paths`, `doctor`), dataset IDs (`datasets`), JSON resolution (`resolve`), verified selected exports (`bundle`, `verify-bundle`), full checkout snapshots (`snapshot`), completed simulation publication (`publish-simulation`), and stopped failure archives (`archive-failed-simulation --inactive`). Inputs and copy semantics are documented in [portability](../docs/portability.md); implementation is in `src/project_runtime/`.
 

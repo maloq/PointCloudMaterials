@@ -25,7 +25,7 @@ from src.data_utils.synthetic.atomistic.potential_benchmark import (
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 BENCHMARK_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/potential_benchmark.yaml"
+    / "tests/fixtures/simulation/potential_benchmark.yaml"
 )
 
 

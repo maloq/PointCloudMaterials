@@ -5,6 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPOSITORY_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PYTHON=${PYTHON:?PYTHON must point to the isolated MACE 0.3.16 runtime}
+CAMPAIGN_CONFIG=${CAMPAIGN_CONFIG:?Set an explicit campaign recipe; retired configs are documented in configs/README.md}
 SELECTION_REPORT=output/synthetic_data/al_potential_benchmark/selection.json
 DEVICES=${DEVICES:-0,1}
 
@@ -79,11 +80,9 @@ print(model)
 case "$selected_model" in
     mace-mpa-0-medium)
         source_root=output/synthetic_data/al_liquid_source_16384_compiled_mpa_500K
-        campaign_config=configs/simulation/atomistic/al/campaign_16384_mpa.yaml
         ;;
     mace-mh-1-omat-pbe)
         source_root=output/synthetic_data/al_liquid_source_16384_compiled_mh1_omat_pbe_500K
-        campaign_config=configs/simulation/atomistic/al/campaign_16384_mh1.yaml
         ;;
     *)
         echo "Unsupported selected model: $selected_model" >&2
@@ -104,12 +103,12 @@ from src.data_utils.synthetic.atomistic.homogeneous_campaign_config import load_
 from src.data_utils.synthetic.atomistic.homogeneous_generator import _load_source_liquid
 config = load_homogeneous_campaign_config(sys.argv[1])
 _load_source_liquid(config.homogeneous)
-' "$campaign_config"
+' "$CAMPAIGN_CONFIG"
 
 echo "Starting/resuming $selected_model on devices=$DEVICES through its configured endpoint."
 
 exec "$PYTHON" -u \
     -m src.data_utils.synthetic.atomistic_homogeneous_campaign \
     run \
-    --config "$campaign_config" \
+    --config "$CAMPAIGN_CONFIG" \
     --devices "$DEVICES"

@@ -10,7 +10,6 @@ class TrainingMethodSpec:
     name: str
     module_path: str
     class_name: str
-    default_config: str
     run_post_training_analysis: bool = False
 
     def load_module_class(self):
@@ -94,7 +93,6 @@ register_training_method(
         name="contrastive",
         module_path="src.training_methods.contrastive_learning.vicreg_module",
         class_name="VICRegModule",
-        default_config="vicreg_vn_molecular.yaml",
         run_post_training_analysis=True,
     )
 )
@@ -103,7 +101,6 @@ register_training_method(
         name="temporal_ssl",
         module_path="src.training_methods.temporal_ssl.temporal_ssl_module",
         class_name="TemporalSSLModule",
-        default_config="temporal_vicreg_lammps.yaml",
     )
 )
 __all__ = [

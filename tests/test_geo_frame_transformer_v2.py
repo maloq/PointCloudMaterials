@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import os
+from pathlib import Path
 
 import torch
-from hydra import compose, initialize_config_dir
+from omegaconf import OmegaConf
 
 from src.models.encoders.factory import available_encoder_names
 from src.models.encoders.geo_frame_transformer import (
@@ -366,9 +366,8 @@ def test_v1_and_v2_are_distinct_registered_encoders() -> None:
     assert any("edge_value_gate" in name for name in v2.state_dict())
 
 
-def test_v2_active_vicreg_config_builds_the_new_encoder() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="vicreg_geo_frame_transformer_v2")
+def test_v2_recorded_vicreg_config_builds_the_new_encoder() -> None:
+    cfg = OmegaConf.load(Path(__file__).parent / "fixtures/vicreg_geo_frame_transformer_v2.yaml")
     module = VICRegModule(cfg)
     uncompiled_encoder = getattr(module.encoder, "_orig_mod", module.encoder)
 

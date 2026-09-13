@@ -886,7 +886,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--config",
         type=str,
-        default="configs/vicreg_vn_molecular.yaml",
+        default="configs/vicreg_vn_molecular_multi.yaml",
         help="Hydra config path or config name inside configs/.",
     )
     parser.add_argument(

@@ -1,5 +1,10 @@
 # Al MEAM simulation context for a new agent
 
+Configuration note (2026-09-13): the older recipes named below are preserved in
+the [verified config archive](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/). Restore their full dependency tree
+in a historical checkout to reproduce those commands. See the
+[current config index](../configs/README.md) for maintained recipes.
+
 **Recovery update, September 5:** read
 [simulation_recovery_20260905.md](simulation_recovery_20260905.md) first.
 Low-temperature array 981561 and controller 981562 replace the failed chain;

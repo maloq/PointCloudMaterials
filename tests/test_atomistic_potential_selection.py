@@ -31,19 +31,19 @@ from src.data_utils.synthetic.atomistic.potential_selection import (
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 BASELINE_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+    / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
 )
 CANDIDATE_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/phase_context_70304_mh1.yaml"
+    / "tests/fixtures/simulation/phase_context_70304_mh1.yaml"
 )
 PRODUCTION_RUNTIME_VARIANTS_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/potential_runtime_variants.yaml"
+    / "tests/fixtures/simulation/potential_runtime_variants.yaml"
 )
 PRODUCTION_RUNTIME_70304_CONFIGS = tuple(
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al"
+    / "tests/fixtures/simulation"
     / f"potential_runtime_70304_cueq_nocudagraphs_skin0{skin}.yaml"
     for skin in (3, 4, 5)
 )

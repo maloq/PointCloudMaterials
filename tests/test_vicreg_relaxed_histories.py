@@ -126,9 +126,9 @@ def test_collection_pairs_sources_after_averaging_seeds(tmp_path, flat_reports):
         settings['report_root'] = str(tmp_path)
     spec.write_text(json.dumps(settings))
     collect(tmp_path, spec)
-    # A second collection must not treat its own comparison/metrics.json as a model.
+    # A second collection must not treat its own technical metrics as a model.
     collect(tmp_path, spec)
-    result = json.loads((tmp_path/'comparison/metrics.json').read_text())
+    result = json.loads((tmp_path/'comparison/technical/metrics.json').read_text())
     gain = result['comparisons']['history_versus_anchor']
     np.testing.assert_allclose(gain['relative_mse_reduction'], .2)
     assert gain['source_count'] == 6

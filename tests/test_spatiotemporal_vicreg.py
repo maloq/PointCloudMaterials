@@ -32,7 +32,7 @@ def test_float16_boundary_coordinate_is_wrapped_before_neighbor_query():
 @pytest.mark.parametrize("objective", ["vicreg", "visreg"])
 def test_three_view_loss_has_temporal_and_spatial_gradients_and_detects_bad_values(objective):
     with initialize_config_dir(version_base=None, config_dir=str(Path("configs").resolve())):
-        cfg = compose(config_name=f"{objective}_geoframe_v2_spatiotemporal_corrected_20260905")
+        cfg = compose(config_name="vicreg_mace_full", overrides=[f"vicreg_objective={objective}"])
     cfg.vicreg_projector_mode = "identity"
     cfg.vicreg_embed_dim = 8
     loss_fn = VICRegLoss.from_config(cfg, input_dim=8)

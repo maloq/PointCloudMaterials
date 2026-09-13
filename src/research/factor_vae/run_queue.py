@@ -243,11 +243,13 @@ def _record_failed_run(
     _write_results_csv(output_root / "results.csv", run_states)
 
 
-def _base_command(spec: RunSpec, device: int) -> list[str]:
+def _base_command(spec: RunSpec, device: int, config_dir: Path) -> list[str]:
     return [
         sys.executable,
         "-u",
         str(TRAIN_SCRIPT),
+        "--config-dir",
+        str(config_dir.resolve()),
         "--config-name",
         spec.config_name,
         f"hydra.run.dir={spec.run_dir}",
@@ -263,8 +265,8 @@ def _base_command(spec: RunSpec, device: int) -> list[str]:
     ]
 
 
-def _run_command(spec: RunSpec, device: int, v2_checkpoint: Path | None) -> list[str]:
-    command = _base_command(spec, device)
+def _run_command(spec: RunSpec, device: int, v2_checkpoint: Path | None, *, config_dir: Path) -> list[str]:
+    command = _base_command(spec, device, config_dir)
     if spec.factor is None:
         command.extend(
             [
@@ -305,6 +307,8 @@ def _run_command(spec: RunSpec, device: int, v2_checkpoint: Path | None) -> list
 def _parse_args(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-root", required=True)
+    parser.add_argument("--config-dir", type=Path, required=True,
+                        help="Restored Hydra config tree for this retired sweep; see configs/README.md.")
     parser.add_argument("--device", type=int, default=0)
     parser.add_argument("--fine-tune-epochs", type=int, default=100)
     parser.add_argument("--v2-pretrain-epochs", type=int, default=160)
@@ -578,7 +582,7 @@ def main(argv=None) -> None:
                 f"Run {spec.index} ({spec.label}) has unsupported state {state['state']!r}."
             )
 
-        command = _run_command(spec, args.device, v2_checkpoint)
+        command = _run_command(spec, args.device, v2_checkpoint, config_dir=args.config_dir)
         state.update(
             {
                 "state": "running",

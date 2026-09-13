@@ -377,7 +377,7 @@ def test_compiled_graph_refill_matches_fresh_fixed_shape_batch() -> None:
 def test_compile_and_kernel_controls_are_explicit_and_strict(tmp_path) -> None:
     source = (
         Path(__file__).resolve().parents[1]
-        / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+        / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
     )
     raw = yaml.safe_load(source.read_text(encoding="utf-8"))
     raw["potential"].update(
@@ -411,7 +411,7 @@ def test_compile_and_kernel_controls_are_explicit_and_strict(tmp_path) -> None:
 def test_bfloat16_autocast_is_explicit_and_identity_bound(tmp_path) -> None:
     source = (
         Path(__file__).resolve().parents[1]
-        / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+        / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
     )
     raw = yaml.safe_load(source.read_text(encoding="utf-8"))
     raw["potential"]["autocast_dtype"] = "bfloat16"
@@ -434,7 +434,7 @@ def test_bfloat16_autocast_is_explicit_and_identity_bound(tmp_path) -> None:
 def test_default_precision_keeps_legacy_serialized_identity() -> None:
     source = (
         Path(__file__).resolve().parents[1]
-        / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+        / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
     )
 
     config = load_config(source)
@@ -446,7 +446,7 @@ def test_default_precision_keeps_legacy_serialized_identity() -> None:
 def test_force_only_nvt_mode_is_explicit_and_identity_bound(tmp_path) -> None:
     source = (
         Path(__file__).resolve().parents[1]
-        / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+        / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
     )
     raw = yaml.safe_load(source.read_text(encoding="utf-8"))
 

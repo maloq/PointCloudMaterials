@@ -28,10 +28,18 @@
     {
       "id": "config_organization",
       "title": "Consolidate configuration layout",
-      "state": "planned",
+      "state": "completed",
       "question": "How should reusable model/data defaults be separated from immutable run configurations?",
-      "next_action": "Use registry config snapshots and dependency references to plan the configs/ cleanup; preserve Hydra composition.",
-      "source": "docs/output_registry.md"
+      "next_action": "Completed September 13: active recipes and all analysis templates retained; verified archive and restoration instructions are in configs/README.md.",
+      "source": "configs/README.md",
+      "history": [
+        {
+          "updated_at": "2026-09-13T19:06:51.105920+00:00",
+          "previous_state": "planned",
+          "state": "completed",
+          "next_action": "Completed September 13: active recipes and all analysis templates retained; verified archive and restoration instructions are in configs/README.md."
+        }
+      ]
     },
     {
       "id": "ta_quota_recovery",

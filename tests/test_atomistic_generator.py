@@ -27,15 +27,15 @@ from src.data_utils.prepare_data import get_regular_samples
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+    / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
 )
 TRANSITION_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/phase_transition_70304_mpa.yaml"
+    / "tests/fixtures/simulation/phase_transition_70304_mpa.yaml"
 )
 HOMOGENEOUS_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/homogeneous_16384_mpa.yaml"
+    / "tests/fixtures/simulation/homogeneous_16384_mpa.yaml"
 )
 
 

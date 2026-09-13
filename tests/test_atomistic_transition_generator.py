@@ -28,11 +28,11 @@ from src.data_utils.synthetic.atomistic.provenance import _producer_code_provena
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+    / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
 )
 TRANSITION_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/phase_transition_70304_mpa.yaml"
+    / "tests/fixtures/simulation/phase_transition_70304_mpa.yaml"
 )
 
 

@@ -6,19 +6,19 @@ multi-stage checkpoint chaining, and automated result aggregation.
 
 Examples:
     # Submit to SLURM (default):
-    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml
+    python scripts/run_experiments.py --plan experiments/mace_vicreg_relaxed_20260910/plan.yaml
 
     # Run locally (no SLURM):
-    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --local
+    python scripts/run_experiments.py --plan experiments/mace_vicreg_relaxed_20260910/plan.yaml --local
 
     # Dry run (preview commands without executing):
-    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --dry-run
+    python scripts/run_experiments.py --plan experiments/mace_vicreg_relaxed_20260910/plan.yaml --dry-run
 
     # Resume a previously interrupted run:
-    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --resume output/experiments/vicreg_encoders_polycrystalline_20260219_120000
+    python scripts/run_experiments.py --plan experiments/mace_vicreg_relaxed_20260910/plan.yaml --resume output/QUESTION/RUN
 
     # Re-collect results from an existing output directory:
-    python scripts/run_experiments.py --plan configs/experiments/vicreg_encoders_polycrystalline.yaml --collect output/experiments/vicreg_encoders_polycrystalline_20260219_120000
+    python scripts/run_experiments.py --plan experiments/mace_vicreg_relaxed_20260910/plan.yaml --collect output/QUESTION/RUN
 """
 
 from __future__ import annotations

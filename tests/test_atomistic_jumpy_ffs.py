@@ -35,11 +35,11 @@ from src.data_utils.synthetic.atomistic.potential_selection import (
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/jumpy_ffs_16384_mpa.yaml"
+    / "tests/fixtures/simulation/jumpy_ffs_16384_mpa.yaml"
 )
 MH1_CONFIG = (
     REPOSITORY_ROOT
-    / "configs/simulation/atomistic/al/jumpy_ffs_16384_mh1.yaml"
+    / "tests/fixtures/simulation/jumpy_ffs_16384_mh1.yaml"
 )
 
 

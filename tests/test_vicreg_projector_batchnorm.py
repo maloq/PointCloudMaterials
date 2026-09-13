@@ -1,17 +1,16 @@
-import os
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 import torch
-from hydra import compose, initialize_config_dir
+from omegaconf import OmegaConf
 
 from src.training_methods.base_ssl_module import BaseSSLModule
 from src.training_methods.contrastive_learning.vicreg import VICRegLoss
 
 
 def test_midpoint_factor_vae_projector_is_context_invariant_in_eval() -> None:
-    with initialize_config_dir(version_base=None, config_dir=os.path.abspath("configs")):
-        cfg = compose(config_name="vicreg_geo_frame_multiscale_factor_vae_midpoint_no_noise")
+    cfg = OmegaConf.load(Path(__file__).parent / "fixtures/vicreg_geo_frame_multiscale_factor_vae_midpoint_no_noise.yaml")
 
     assert cfg.vicreg_projector_bn_eval_batch_stats is False
     vicreg = VICRegLoss.from_config(cfg, input_dim=8).eval()

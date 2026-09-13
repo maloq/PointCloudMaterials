@@ -14,7 +14,9 @@
   reproduction commands and configurations. No storage, portability, cleanup,
   environment checks, simulation campaigns or dataset inventories there.
 - Put operational documentation in `docs/`, simulation records in `docs/simulations/`,
-  reusable recipes in `configs/`, and simulation locations in `configs/datasets.json`.
+  active recipes in `configs/`, simulation recipes in `configs/simulation/`, and
+  simulation locations in `configs/datasets.json`. Keep analysis templates; retire
+  unused training/simulation variants with their dependency references.
   See [storage](docs/data_storage.md) and [simulations](docs/simulations/README.md).
 - Follow [the result layout](docs/research_layout.md): `output/<question>/<run>/`,
   readable `plots/` and `tables/`, machine artifacts/logs in `technical/`.

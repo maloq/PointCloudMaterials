@@ -1,5 +1,10 @@
 # Position-conditioned 2NN-MEAM shooting data
 
+Configuration note (2026-09-13): the older recipes named below are preserved in
+the [verified config archive](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/). Restore their full dependency tree
+in a historical checkout to reproduce those commands. See the
+[current config index](../configs/README.md) for maintained recipes.
+
 This campaign produces dense, independent future ensembles around observed
 homogeneous-crystallization events.  It is intended for temporal representation
 learning and future-neighbor evaluation, where one needs multiple possible futures

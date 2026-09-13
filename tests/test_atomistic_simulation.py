@@ -15,7 +15,7 @@ from src.data_utils.synthetic.atomistic.simulation import run_nvt
 
 PRODUCTION_CONFIG = (
     Path(__file__).resolve().parents[1]
-    / "configs/simulation/atomistic/al/phase_context_70304_mpa.yaml"
+    / "tests/fixtures/simulation/phase_context_70304_mpa.yaml"
 )
 
 

@@ -120,10 +120,12 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--config-name", required=True, help="Hydra configuration name under configs/.")
+    parser.add_argument("--config-dir", type=Path, default=REPOSITORY / "configs",
+                        help="Hydra config tree; use a restored tree for retired research recipes.")
     args = parser.parse_args(argv)
-    args.run_dir.mkdir(parents=True, exist_ok=False)
-    with initialize_config_dir(version_base=None, config_dir=str(REPOSITORY / "configs")):
+    with initialize_config_dir(version_base=None, config_dir=str(args.config_dir.resolve())):
         cfg = compose(config_name=args.config_name)
+    args.run_dir.mkdir(parents=True, exist_ok=False)
     OmegaConf.save(cfg, args.run_dir / "config.yaml", resolve=True)
     (args.run_dir / ".hydra").mkdir()
     OmegaConf.save(cfg, args.run_dir / ".hydra/config.yaml", resolve=True)

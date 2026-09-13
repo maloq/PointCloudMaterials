@@ -1,5 +1,10 @@
 # GeoFrame v3: literature review and architecture proposal
 
+Configuration note (2026-09-13): the older recipes named below are preserved in
+the [verified config archive](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/). Restore their full dependency tree
+in a historical checkout to reproduce those commands. See the
+[current config index](../configs/README.md) for maintained recipes.
+
 September 5, 2026. **Research design record; the subsequent pilot is linked below.**
 Primary papers and repository code were reviewed for this proposal. Publication
 status is distinguished from preprint status below. This is a focused literature
@@ -336,7 +341,7 @@ The repository already contains
 [MACE](../src/models/encoders/mace_encoder.py) and
 [NequIP](../src/models/encoders/nequip_encoder.py) adapters. Their current
 radius-graph builders select up to max_neighbors using torch.topk. For example,
-[the temporal MACE configuration](../configs/temporal_vicreg_lammps_mace.yaml)
+[the temporal MACE configuration](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/temporal_vicreg_lammps_mace.yaml)
 uses max_neighbors=16. When that cap binds, two neighbors can exchange inclusion
 while both have nonzero radial weight. We have not run a continuity audit of
 these adapters; this is a concrete potential failure in their implementation.

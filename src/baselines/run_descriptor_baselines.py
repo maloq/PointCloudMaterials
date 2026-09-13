@@ -14,9 +14,11 @@ from src.baselines.descriptor_baselines import run_descriptor_baseline
 @hydra.main(
     version_base=None,
     config_path=os.path.join(os.getcwd(), "configs"),
-    config_name="descriptor_baselines.yaml",
+    config_name=None,
 )
 def main(cfg: DictConfig) -> None:
+    if not cfg:
+        raise ValueError("Select --config-dir DIR --config-name NAME; retired baseline recipes are documented in configs/README.md.")
     run_dir = Path(HydraConfig.get().run.dir)
     metrics, _summary = run_descriptor_baseline(cfg, output_dir=run_dir)
     print("Descriptor baseline evaluation completed.")
@@ -25,6 +27,8 @@ def main(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        raise SystemExit("Select --config-dir DIR --config-name NAME; see configs/README.md.")
     if not any(arg.startswith("hydra.run.dir=") for arg in sys.argv):
         sys.argv.append("hydra.run.dir=output/${now:%Y-%m-%d}/${now:%H-%M-%S}")
     main()

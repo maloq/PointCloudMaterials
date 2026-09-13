@@ -1,5 +1,10 @@
 # GFv2 spatial and temporal VICReg — September 5, 2026
 
+Configuration note (2026-09-13): the older recipes named below are preserved in
+the [verified config archive](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/). Restore their full dependency tree
+in a historical checkout to reproduce those commands. See the
+[current config index](../configs/README.md) for maintained recipes.
+
 ## Post-training audit
 
 The 60-epoch run completed. Its best validation checkpoint is zero-based epoch 3.
