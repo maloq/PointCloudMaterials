@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Run the repository structural analysis for the saved Al/Mg/Ta GFv2 model."""
 
+
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.project_runtime.paths import dataset_path
 import argparse
 from datetime import datetime, timezone
 import json
@@ -17,7 +19,7 @@ import yaml
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--recipe", type=Path, default=(Path(__file__).resolve().parents[3] / 'experiments/spatiotemporal_20260905') / "technical/post_analysis.yaml")
+    parser.add_argument("--recipe", type=Path, default=(dataset_path('research-records-20260913') / 'experiments/spatiotemporal_20260905') / "technical/post_analysis.yaml")
     args = parser.parse_args(argv)
     jobs = yaml.safe_load(args.recipe.read_text())["analysis_jobs"]
     status = {"state": "running", "materials": {}}

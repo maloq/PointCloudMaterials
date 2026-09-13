@@ -1,84 +1,42 @@
-use conda environment `pointnet` if avilable
+# Working rules
 
-## No silent failures / no ambiguity
+- Use conda `pointnet` when available.
+- Research correctness comes first: fail loudly with useful context. Trace values
+  to their repository producer; use its actual types, shapes and fields. Avoid
+  silent fallbacks, generic compatibility code and unnecessary defensive checks.
+- Read [scripts/README.md](scripts/README.md) before adding a command. Reuse existing
+  workflows and config/CLI arguments for run variations. Keep entry points thin;
+  implementation belongs in `src/`. Preserve distinct scientific protocols.
 
-This is research code: correctness and clarity beat cleverness.
+# Where things belong
 
-- **Never fail silently.** No empty `except`, no “best-effort” fallbacks, no ignoring return codes, no `pass` on errors.
-- **Make errors loud and informative.** Raise explicit exceptions with actionable messages; include context (inputs, shapes, units, paths, assumptions).
-- **Be explicit, not ambiguous.** Prefer readable code over implicit magic; avoid unclear defaults and side effects.
-- **Validate inputs + invariants.** Assert/guard preconditions and key assumptions early (types, ranges, dimensions, units).
-- **If uncertain, stop and say so.** Don’t guess—surface the uncertainty and propose a safe, checkable approach.
+- `experiments/` is **only scientific research**: questions, protocols, findings,
+  reproduction commands and configurations. No storage, portability, cleanup,
+  environment checks, simulation campaigns or dataset inventories there.
+- Put operational documentation in `docs/`, simulation records in `docs/simulations/`,
+  reusable recipes in `configs/`, and simulation locations in `configs/datasets.json`.
+  See [storage](docs/data_storage.md) and [simulations](docs/simulations/README.md).
+- Follow [the result layout](docs/research_layout.md): `output/<question>/<run>/`,
+  readable `plots/` and `tables/`, machine artifacts/logs in `technical/`.
+- Export metric CSVs with `tables/METRICS.md` and implementation hashes through
+  `src/experiment_runner/metric_docs.py`. Change `docs/metrics/` and `contracts.json`
+  with calculations; preserve historical exported definitions.
 
-Silent errors are worse than crashes. Crashes with good messages are acceptable.
+# Preservation and cleanup
 
-Do not add unnecessary checks, like any data checks in functions that only used once. I'm serious, If the code works than we don't need any checks, it works. It's a code for research to be use once
-
-This repository is a closed loop: before handling a value, trace it to the repository-owned dataset or producer and use its concrete type, shape, and required fields directly.
-Do not add generic broadcasting, arbitrary iterable/scalar coercion, compatibility fallbacks, or sentinel replacements for hypothetical external inputs that this repository never produces.
-
-## Commands, experiments, and generated files
-
-- Before creating a script, read `scripts/README.md` and inspect the existing
-  command and producer for that workflow. Reuse them when the method is unchanged.
-- Dataset, checkpoint, seed, temperature, horizon, and output-path changes belong
-  in configuration or existing command arguments, when supported by that method.
-  Do not copy a runner for another run. Preserve explicit differences in scientific
-  protocols; do not merge different objectives or restart semantics behind defaults.
-- `scripts/` contains maintained entry points only. Add a command only for a
-  distinct reusable workflow, document its inputs and implementation in
-  `scripts/README.md`, and use the existing family command when applicable.
-- Shared scientific implementation and orchestration belong in the relevant
-  `src/` package. Do not import implementation from `scripts/`, and do not add
-  imports between command scripts. Keep entry points small.
-- Keep experiment-specific implementation under `src/research/<method>/` and
-  research records under `experiments/<topic>_<YYYYMMDD>/`, with a README stating the research question, configuration, reproduction command,
-  output location, and findings (or a link to the research report). Date experiment
-  records, not maintained command names. Keep reproducibility code versioned.
-- Put disposable diagnostics, generated job scripts, logs, and results in the
-  run's output directory. Do not create a live `scripts/archive/` or leave a new
-  diagnostic in `scripts/` at task completion.
-- Before retiring code, check imports, tests, configuration, documentation, and
-  generated-job references. Update repository references together. Do not delete
-  uncommitted research code or alter existing external job files during cleanup.
-- Before moving or removing simulation launchers, inspect the live Slurm queue
-  and the batch scripts used by active controller chains. Preserve their exact
-  launcher paths with temporary forwarding entry points until the campaigns
-  finish. Updating repository references alone does not preserve submitted jobs.
-- Use `scripts/convert_trajectory.py` for the supported repository format
-  conversions. Extend its format implementation for a new repository producer;
-  do not create another migration script. Preserve verification and provenance.
-- At task completion, identify new files as maintained tools, experiment records,
-  or disposable diagnostics. Update the relevant index when adding a workflow.
-
-## Simulation trajectory storage (user preference, 2026-09-07)
-
-Store positions from new simulations as verified float16 trajectory artifacts.
-Keep box bounds in float32, integer identity/timeline arrays exact, and LAMMPS
-integration and restart precision unchanged. Record quantization error and
-checksums before removing larger position exports. Use the maintained conversion
-commands; update a producer's storage path when launching it if necessary.
-
-## Readable results and metric definitions (2026-09-12)
-
-- Follow `docs/research_layout.md`. New explicit run roots use
-  `output/<question>/<run-name>/`; plots and metric CSVs go in `plots/` and `tables/`,
-  machine-readable configs, JSON, arrays and logs in `technical/`.
-- Export metric tables with the matching `tables/METRICS.md` and implementation
-  hashes using `src/experiment_runner/metric_docs.py`. When changing calculations,
-  update `docs/metrics/` and `contracts.json` in the same change. Preserve historical
-  exported definitions; do not relabel old scores as freshly recomputed results.
-- Use `scripts/experiment_registry.py storage` and `clean` for storage inspection
-  and inference-cache cleanup. Preview first; never delete a large file merely
-  because of its extension or size. Preserve exact-resume state and paired test data.
-
-## External storage (2026-09-13)
-
-Use `/work/PERSO/vmorozov` for existing simulation inputs, datasets and analysis.
-Keep training/dataset caches on `/home/ids/vmorozov/training-cache`. New simulation
-results start on `/scratch/PERSO/vmorozov/PointCloudMaterials/simulations`; publish
-completed elemental runs to STORE with checksum verification before deleting larger
-copies. Preserve stopped failures/restarts on STORE before SCRATCH's 30-day inactivity
-purge. Use the machine profile and dataset IDs documented in `docs/portability.md`.
-Keep compatibility aliases and immutable manifests/resume configs. New machine
-paths belong in ignored `machine.local.yaml`, not scientific recipes.
+- Before retiring files, check imports, tests, configs, documentation and submitted
+  jobs. Preserve uncommitted research and immutable source/manifests/resume configs.
+  Inspect Slurm controllers before moving launchers; retain exact forwarding paths
+  while any submitted job still needs them. Do not edit external job files.
+- Archive and verify old results before removal; keep current research and required
+  checkpoints, exact-resume state, paired test data and simulation restarts.
+  Preview cleanup with `experiment_registry.py storage` / `clean`; size alone never
+  makes a file disposable. See [the archive](docs/archived_research.md).
+- Use `scripts/convert_trajectory.py` for conversions: new simulation positions are
+  verified float16, boxes float32, identity/timeline arrays exact. Preserve LAMMPS
+  integration/restart precision; record quantization error and checksums before deletion.
+- Existing inputs/analysis use WORK, training caches IDS, new simulations SCRATCH;
+  publish completed runs and stopped failures/restarts to STORE before SCRATCH purge.
+  Keep machine paths in ignored `machine.local.yaml`; see [portability](docs/portability.md).
+- Update the relevant index when adding a workflow; keep disposable diagnostics in
+  the run output, with no live `scripts/archive/`.

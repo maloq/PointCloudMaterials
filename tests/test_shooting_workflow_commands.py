@@ -12,7 +12,7 @@ from src.temporal_vamp.commands import ablation_multiscale
 
 def test_multiscale_extract_builds_cache_and_stops_before_training(tmp_path, monkeypatch):
     root = Path(__file__).resolve().parents[1]
-    cfg = OmegaConf.load(root / "experiments/shooting_ablation_20260901/technical/shooting_multiscale_ablation1_geoframe_v2_20260901.yaml")
+    cfg = OmegaConf.load(root / "tests/fixtures/shooting_multiscale.yaml")
     cfg.output_dir = str(tmp_path / "run")
     cfg.device = "cpu"
     config_path = tmp_path / "config.yaml"

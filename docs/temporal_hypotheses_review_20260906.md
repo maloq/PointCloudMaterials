@@ -62,7 +62,7 @@ interval [+2.51%, +4.61%]. Temporal invariance's mobility interval crosses zero,
 seeds; they do not include model-selection uncertainty or correct for the many
 exploratory comparisons. The test sources have been examined in earlier work.
 
-![Future-assay scores and source intervals](../output/temporal_hypotheses_12h_20260906/comparison_intervals.png)
+![Future-assay scores and source intervals](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/comparison_intervals.png)
 
 ## What the controlled ablations say
 
@@ -182,13 +182,13 @@ nor TDA regression establishes discovery of new pre-crystalline motifs.
 
 ## Artifacts and reproduction
 
-- [Campaign recipe and explicit analysis commands](../experiments/temporal_hypotheses_12h_20260906/README.md)
-- [Full twelve-hypothesis results](../output/temporal_hypotheses_12h_20260906/RESULTS.md)
-- [Equal-budget screening table](../output/temporal_hypotheses_12h_20260906/screen_analysis/comparison.csv)
-- [Paired equal-budget intervals](../output/temporal_hypotheses_12h_20260906/equal_budget_pairs.csv)
-- [Paired historical comparison](../output/temporal_hypotheses_12h_20260906/previous_training_pairs.csv)
-- [Training audit](../output/temporal_hypotheses_12h_20260906/training_audit.csv) and [curves](../output/temporal_hypotheses_12h_20260906/training_curves.png)
-- [Representation diagnostics](../output/temporal_hypotheses_12h_20260906/representation_summary.csv)
+- [Campaign recipe and explicit analysis commands](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/temporal_hypotheses_12h_20260906/README.md)
+- [Full twelve-hypothesis results](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/RESULTS.md)
+- [Equal-budget screening table](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/screen_analysis/comparison.csv)
+- [Paired equal-budget intervals](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/equal_budget_pairs.csv)
+- [Paired historical comparison](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/previous_training_pairs.csv)
+- [Training audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/training_audit.csv) and [curves](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/training_curves.png)
+- [Representation diagnostics](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/representation_summary.csv)
 
 This document is a versioned research report. Shared analysis and orchestration
 remain in `src/`; the dated experiment record documents the existing entry point.

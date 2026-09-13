@@ -167,11 +167,11 @@ useful geometry. A further broad twelve-hour sweep would be premature.
 
 ## Reproduction and artifacts
 
-[Experiment recipe](../experiments/temporal_hypotheses_12h_20260906/README.md#spatial-geometry-diagnosis),
-[alignment and metric definitions](../output/temporal_hypotheses_12h_20260906/spatial_diagnosis/protocol.json),
-[spatial label coherence](../output/temporal_hypotheses_12h_20260906/spatial_diagnosis/spatial_label_coherence.csv),
-[continuous spatial variation](../output/temporal_hypotheses_12h_20260906/spatial_diagnosis/continuous_spatial_variation.csv),
-[clustering-only control](../output/temporal_hypotheses_12h_20260906/spatial_diagnosis/clustering_metrics.json).
+[Experiment recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/temporal_hypotheses_12h_20260906/README.md#spatial-geometry-diagnosis),
+[alignment and metric definitions](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/spatial_diagnosis/protocol.json),
+[spatial label coherence](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/spatial_diagnosis/spatial_label_coherence.csv),
+[continuous spatial variation](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/spatial_diagnosis/continuous_spatial_variation.csv),
+[clustering-only control](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/temporal_hypotheses_12h_20260906/spatial_diagnosis/clustering_metrics.json).
 
 Only the PCA dimensionality control refits a clustering model. No encoder was
 trained, selected or changed during this diagnosis.

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "storage_roots": [
+    {
+      "id": "simulations",
+      "kind": "simulation",
+      "path": "${storage:simulations}"
+    },
+    {
+      "id": "training_storage",
+      "kind": "dataset",
+      "path": "${storage:training_storage}"
+    },
+    {
+      "id": "training_cache",
+      "kind": "dataset",
+      "path": "${storage:cache}"
+    },
+    {
+      "id": "forecast_analysis",
+      "kind": "experiment",
+      "path": "${storage:analysis}/embedding_forecast"
+    }
+  ]
+}

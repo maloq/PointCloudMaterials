@@ -100,7 +100,7 @@ The existing per-view thermal/VICReg objective is separate from the maintained
 `temporal80` training protocol in `src/training_methods/mace_temporal.py`.
 That protocol builds identity-matched histories with `src/data_utils/mace_history.py`,
 trains on relaxed-anchor TDA with variance/covariance regularization, and analyzes
-real held-out histories. See the [training experiment](../experiments/mace_temporal_transformer_20260909/README.md)
+real held-out histories. See the [training experiment](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_temporal_transformer_20260909/README.md)
 for its config and the existing MACE family command. Selecting the encoder
 constructor alone does not change a single-frame trainer's scientific protocol.
 

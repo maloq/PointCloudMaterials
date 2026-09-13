@@ -177,7 +177,7 @@ def build(repo: Path) -> dict:
                  'catalogue_working_tree_dirty': bool(dirty),
                  'note': 'Catalogue commit is not a historical experiment commit. Original output paths are preserved.',
                  'experiments': entries}
-    settings_path = repo / 'experiments/registry.json'
+    settings_path = repo / 'configs/experiment_registry.json'
     if settings_path.exists():
         settings = load_json(settings_path)
         catalogue['external_runs'] = external_runs(repo, settings['storage_roots'])

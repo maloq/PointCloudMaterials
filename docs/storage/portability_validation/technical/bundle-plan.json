@@ -1,0 +1,9 @@
+{
+  "datasets": [
+    "portability-smoke-forecast",
+    "potential-ti-kavousi2019"
+  ],
+  "files": [
+    "docs/storage/portability_validation/technical/cpu-smoke.json"
+  ]
+}

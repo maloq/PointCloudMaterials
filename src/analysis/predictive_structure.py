@@ -1,4 +1,5 @@
 """Evaluate task-trained predictors after all validation selection is complete."""
+
 import hashlib
 import importlib.metadata
 import json
@@ -14,6 +15,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from src.training_methods.predictive_structure import Predictor,NEURAL,FAMILIES,FUTURE_SLICES,CURRENT_SLICES,ROOT,write_json,future_errors
+from src.project_runtime.paths import dataset_path
 
 
 def cluster_interval(error,baseline,sources,draws):
@@ -343,9 +345,9 @@ Artifacts: [comparison.csv](comparison.csv), [linear probes](linear_probe_compar
 [experiment configuration](config.json). All output is physically in the repository.
 '''
     (out/'RESULTS.md').write_text(findings)
-    files=[ROOT/'src/training_methods/predictive_structure.py',ROOT/'src/analysis/predictive_structure.py',ROOT/'src/models/encoders/atomic_graph.py',ROOT/'experiments/predictive_encoder_training_20260905/technical/config.json',out/'training_source_at_launch.py']
+    files=[ROOT/'src/training_methods/predictive_structure.py',ROOT/'src/analysis/predictive_structure.py',ROOT/'src/models/encoders/atomic_graph.py',dataset_path('research-records-20260913') / 'experiments/predictive_encoder_training_20260905/technical/config.json',out/'training_source_at_launch.py']
     inputs=[ROOT/cfg['benchmark']/p for p in ('metadata.npz','evaluation/split_and_targets.npz','density_scaling.pt','order.npy','embeddings/TDA_16.npy','embeddings/SOAP.npy')]
-    write_json(out/'provenance.json',dict(files={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
+    write_json(out/'provenance.json',dict(files={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
         inputs={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs},
         environment=dict(python=platform.python_version(),packages={name:importlib.metadata.version(name) for name in ('torch','mace-torch','e3nn','cuequivariance','scikit-learn','numpy')},
                          cuda=torch.version.cuda,gpu=torch.cuda.get_device_name()),

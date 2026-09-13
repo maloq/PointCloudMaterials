@@ -226,13 +226,13 @@ python scripts/evaluate_shooting_ablation0.py \
   --experiment-dir /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901 \
   --output-dir /home/ids/vmorozov/experiments/shooting_ablation0_future_change_geoframe_v2_20260901
 python scripts/run_shooting_ablation.py multiscale \
-  --config experiments/shooting_ablation_20260901/technical/shooting_multiscale_ablation1_geoframe_v2_20260901.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/technical/shooting_multiscale_ablation1_geoframe_v2_20260901.yaml
 python scripts/run_shooting_ablation.py spatial \
-  --config experiments/shooting_ablation_20260901/technical/shooting_spatial_ablation2_geoframe_v2_20260901.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/technical/shooting_spatial_ablation2_geoframe_v2_20260901.yaml
 python scripts/run_shooting_ablation.py distributional \
-  --config experiments/shooting_ablation_20260901/technical/shooting_distributional_ablation3_geoframe_v2_20260901.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/technical/shooting_distributional_ablation3_geoframe_v2_20260901.yaml
 python scripts/run_shooting_ablation.py geometry \
-  --config experiments/shooting_ablation_20260901/technical/shooting_geometry_ablation4_fixed_geoframe_v2_20260901.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/technical/shooting_geometry_ablation4_fixed_geoframe_v2_20260901.yaml
 ```
 
 Ablation 1 caches 16 individual satellite embeddings, their PBC-correct offsets,

@@ -62,7 +62,7 @@ completed Ti/Ta elemental producer's sorted position dump, using its
 invokes it automatically. It retains text, rejects incomplete/extra frames and
 changed IDs/types, verifies source and array hashes, and compares a semantic
 coordinate hash after writing the float32 temporal binary. See the
-[Ti/Ta protocol](../experiments/ti_ta_crystallization_20260907/README.md).
+[Ti/Ta protocol](../docs/simulations/ti_ta_crystallization/README.md).
 
 Use `elemental /path/to/branch --delete-source` to remove the original dump
 after these checks pass. Its conversion report retains the source hash and

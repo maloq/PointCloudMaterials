@@ -9,7 +9,7 @@ It incorporates the completed switch audit and relevant prior art. The design
 below is retained as the earlier research record; frozen-GFv2 filtering remains
 a baseline rather than the principal architecture candidate.
 
-Follow-up: the [completed continuity audit](../output/geoframe_continuity_20260905/RESULTS.md)
+Follow-up: the [completed continuity audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_continuity_20260905/RESULTS.md)
 now confirms finite embedding jumps from triad frame switches in both checkpoints,
 including float32 Ta. With patch identities fixed, motion-based frame transport
 removes essentially all of the isolated switch-boundary jump. The architecture
@@ -29,7 +29,7 @@ should still allow a real rearrangement to change the state. A representation
 that requires recent observations is a history-dependent state; it changes the
 inference contract relative to the existing single-snapshot encoder.
 
-**Evidence from this repository.** The [completed Al/Mg/Ta comparison](../output/geoframe_v2_spatiotemporal_analysis_20260905/RESULTS.md)
+**Evidence from this repository.** The [completed Al/Mg/Ta comparison](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_v2_spatiotemporal_analysis_20260905/RESULTS.md)
 supports starting with the VICReg projector. Its absolute temporal MSE improves
 on all three materials. The raw encoder's absolute temporal MSE increases,
 although its relative MSE improves, and its effective rank falls. On Al, for
@@ -42,7 +42,7 @@ in relative drift. That branch deserves a separate evaluation of stable regions
 and rearrangements; its large drift has not been identified as either pure
 thermal noise or useful structural evolution.
 
-The [earlier 30 fs audit](../output/geoframe_temporal_stability_comparison_finest_30fs_20260904/README.md)
+The [earlier 30 fs audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_temporal_stability_comparison_finest_30fs_20260904/README.md)
 found large drift despite deterministic inference and accurate rotation
 invariance. Local neighborhoods retained 98.1% of their 160 atoms at 30 fs.
 This motivates a thermal sensitivity and internal geometry audit. That audit

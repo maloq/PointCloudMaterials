@@ -1,4 +1,5 @@
 """Render the completed liquid benchmark tables, confidence intervals and figures."""
+
 from datetime import datetime,timezone
 import hashlib
 import importlib.metadata
@@ -10,6 +11,7 @@ import sys
 
 ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT))
+from src.project_runtime.paths import dataset_path
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -51,7 +53,7 @@ def pairwise(out):
 
 
 def main():
-    cfg=json.loads(((Path(__file__).resolve().parents[3] / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json').read_text());out=ROOT/cfg['output']
+    cfg=json.loads(((dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json').read_text());out=ROOT/cfg['output']
     assert json.loads((out/'postprocess_status.json').read_text())['state']=='complete'
     assert json.loads((out/'conditioned_probe/protocol.json').read_text())['state']=='complete'
     validation=(out/'validation.log').read_text();assert '5 passed' in validation
@@ -204,11 +206,11 @@ Preparation saved its then-current configuration (30 epochs, batch 128). Before 
 Literature: [Hiraoka et al., persistent homology of amorphous solids](https://arxiv.org/abs/1501.03611), [Adams et al., persistence images](https://arxiv.org/abs/1507.06217), [Russo and Tanaka, orientational ordering before crystallization](https://pmc.ncbi.nlm.nih.gov/articles/PMC3395031/) (hard-sphere evidence, not direct evidence for these metals), [MACE](https://arxiv.org/abs/2206.07697), [SchNet](https://arxiv.org/abs/1706.08566).
 '''
     (out/'RESULTS.md').write_text(text)
-    files=sorted((ROOT / "src/research/liquid_sro_benchmark").glob("*.py"))+sorted((ROOT/'experiments/liquid_sro_benchmark_20260905/technical').glob('*.json'))+[ROOT/'src/analysis/liquid_structure.py',ROOT/'src/models/encoders/atomic_graph.py',ROOT/'src/models/encoders/smooth_density.py',ROOT/'tests/test_liquid_sro_benchmark.py']
+    files=sorted((ROOT / "src/research/liquid_sro_benchmark").glob("*.py"))+sorted((dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905/technical').glob('*.json'))+[ROOT/'src/analysis/liquid_structure.py',ROOT/'src/models/encoders/atomic_graph.py',ROOT/'src/models/encoders/smooth_density.py',ROOT/'tests/test_liquid_sro_benchmark.py']
     write_json(out/'provenance.json',dict(host=platform.node(),python=sys.version,executable=sys.executable,
         git_head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         versions={n:importlib.metadata.version(n) for n in ('torch','mace-torch','e3nn','cuequivariance','cuequivariance-torch','gudhi','dscribe','ase','numpy','scipy')},
-        files={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
+        files={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
         checkpoints={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((out/'models').glob('*/selected.pt'))},
         validation='5 tests passed; detailed output in validation.log; report gates the final fused-MACE rotation results'))
     print(primary)

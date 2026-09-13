@@ -1,6 +1,10 @@
 # Research records and result storage
 
-For a new question, create `experiments/<question>_<YYYYMMDD>/README.md`. State the
+Only scientific research belongs in `experiments/`. Storage, portability, cleanup,
+environment validation and dataset inventories belong in `docs/`; simulation campaigns
+belong in [docs/simulations](simulations/README.md). See [storage](data_storage.md).
+
+For a new scientific question, create `experiments/<question>_<YYYYMMDD>/README.md`. State the
 question, scientific protocol, configuration, exact reproduction command, output
 location and findings. Keep implementation in the relevant `src/` package; faithful
 older research workflows live in `src/research/<method>/`. Keep dated commands out
@@ -41,10 +45,9 @@ forecast resumes are explicitly recognized and preserve their previous artifact 
 `outputs/` is a legacy root: readable storage inspection and cleanup include it; new
 runs should use singular `output/`. Do not bulk-move historical runs or submitted jobs.
 
-Recent queue configs and simulation launcher paths have deliberately not moved until
-Slurm quiescence can be checked. Older experiment configs were moved into `technical/`;
-repository imports, reproduction commands and config references were updated together.
-The September 12 change is recorded in [the cleanup report](repository_cleanup_20260912.md).
+Current forecast configs and immutable run snapshots keep their exact paths. Older
+research is in [the STORE archive](archived_research.md); the
+[retention review](research_retention.md) records what remains and why.
 
 ## Metrics and their definitions
 
@@ -104,4 +107,4 @@ verified copies to STORE. SCRATCH is not backed up and has a 30-day inactivity p
 archive stopped failures/restarts explicitly. WORK still reports a 512 GiB capacity.
 Use named storage roots and dataset IDs, preserving old aliases and immutable
 manifests. See [portable setup and retention](portability.md) and the
-[initial migration record](../experiments/storage_migration_20260913/README.md).
+[initial migration record](../docs/storage/migration/README.md).

@@ -5,6 +5,9 @@
 
 Maintained commands are indexed in [scripts/README.md](scripts/README.md).
 Research-specific recipes live in [experiments/](experiments/README.md).
+See [current research and retained checkpoints](docs/research_retention.md),
+[archived research on STORE](docs/archived_research.md),
+[data storage](docs/data_storage.md), and [the simulation catalog](docs/simulations/README.md).
 Use the [trajectory conversion tool](docs/trajectory_conversion.md) for format changes.
 Test commands and coverage guidelines are in [tests/README.md](tests/README.md).
 

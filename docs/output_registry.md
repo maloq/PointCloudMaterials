@@ -22,24 +22,12 @@ state, concrete next action, and a link to evidence. Update an existing idea wit
 `experiment_registry.py idea --id ID --state planned --next-action "ACTION"`.
 Updates retain a small decision history. Rebuild the dashboard to display them.
 
-The [variant C pilot](../experiments/mace_thermal80_20260909/README.md) prepares
-matched hot/relaxed full-cell data on node53, then runs 12 epochs and static Al
-analysis through the same maintained MACE queue.
-
-The current MACE recipe restores the [original VICReg pipeline](../experiments/mace_original_vicreg_20260909/README.md):
-pretrained small MACE, normalized 80-point geometry without element inputs,
-the original Lightning module/projector and pure spatial/temporal VICReg.
-It runs 24 epochs followed by the standard static Al analysis.
-The [matched VICReg + TDA run](../experiments/mace_original_vicreg_tda_20260909/README.md)
-is queued after both finish, using the same protocol with TDA from epoch 1 and
-its own static analysis. Its detached dependency wait is visible in
-`output/mace_original_vicreg_tda_20260909/queue_status.json`.
-The baseline completed training but its first analysis hit Dynamo's radial
-recompilation limit. Analysis was restarted with eager radial layers, and the
-TDA queue now waits on that analysis recovery record. Both recoveries use the
-original training/analysis output locations and preserve failed-attempt records.
-The completed [plain80](../experiments/mace_plain80_20260909/README.md) and thermal
-runs retain their results and original execution source/config snapshots.
+Current research is listed in the [retention review](research_retention.md).
+Older results live in [the STORE archive](archived_research.md). Registry settings
+are in `configs/experiment_registry.json`; WORK forecast analysis roots are included
+so active fits reached through output symlinks remain discoverable. The separate
+[simulation catalog](simulations/README.md) records collection locations and producer
+outcomes without claiming that duplicate records are independent trajectories.
 
 ## Files and responsibilities
 
@@ -47,7 +35,7 @@ runs retain their results and original execution source/config snapshots.
 | --- | --- |
 | `experiments/<question>_<date>/README.md` | Versioned research question, protocol, reproduction commands and findings |
 | `experiments/ideas.json` | Small versioned backlog: question, state, next action and evidence |
-| `experiments/registry.json` | Explicit WORK/STORE storage roots, scanned read-only |
+| `configs/experiment_registry.json` | Explicit WORK/STORE storage roots, scanned read-only |
 | `output/registry/technical/experiments.json` | Generated inventory and results index |
 | `output/registry/index.html` | Generated navigation, progress and plot galleries |
 | `output/registry/technical/config_snapshot/` | Verified config/recipe snapshots and capture indexes |

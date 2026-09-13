@@ -136,3 +136,10 @@ hashes. Individual results are available earlier under `technical/local/`.
 Final combined regression run: **56 passed** in `pointnet`, including the existing
 forecast, local crystallization and new spatial/mixture suites. Log:
 `technical/final-tests.log`. Initial matched single-seed results are in [RESULTS.md](RESULTS.md).
+
+## Short-history extension
+
+[Four shorter histories](SHORT_HISTORY.md) add 14 fits for anchor-only, 1.5, 3 and
+6 ps spatial-mixture forecasts and matched deterministic controls. They reuse six
+existing reference fits and publish a separate paired report; the original 12-fit
+study continues under its existing plan.

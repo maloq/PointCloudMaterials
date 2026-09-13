@@ -1,4 +1,5 @@
 """CPU-only, dated audit of the live continuation's repository-owned logs."""
+
 import argparse
 from datetime import datetime, timezone
 import json
@@ -9,6 +10,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from src.project_runtime.paths import dataset_path
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -37,7 +39,7 @@ def main():
         snapshot = read_json(args.snapshot)
     else:
         snapshot = dict(captured_utc=datetime.now(timezone.utc).isoformat(),
-                        config=read_json(ROOT / 'experiments/mace_bf16_training_20260908/technical/training.json'),
+                        config=read_json(dataset_path('research-records-20260913') / 'experiments/mace_bf16_training_20260908/technical/training.json'),
                         initial=read_json(RUN / 'initial_validation.json'),
                         resume=read_json(RUN / 'resume_validation.json'),
                         epochs=[json.loads(s) for s in (RUN / 'training.jsonl').read_text().splitlines(keepends=True) if s.endswith('\n')],

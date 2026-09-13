@@ -82,7 +82,7 @@ conversion. Python compilation and whitespace checks passed. The retained source
 files required by all removed inference caches are present.
 
 New `scripts/experiment_registry.py`, `src/experiment_runner/registry.py` and
-`tracking.py` are maintained tools. `experiments/registry.json` and `ideas.json`
+`tracking.py` are maintained tools. `configs/experiment_registry.json` and `ideas.json`
 are maintained organization records. This report and the guide are versioned
 documentation. Dashboard, inventories, test logs and cleanup manifests are
 generated records under `output/registry/`; retained provenance and verified log

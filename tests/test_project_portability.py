@@ -33,6 +33,33 @@ def project(tmp_path, monkeypatch):
     return repo
 
 
+def test_simulation_index_keeps_attempt_evidence_without_following_aliases(project):
+    import csv
+    from src.project_runtime.simulation_inventory import export_simulations
+
+    root = project / 'simulation'
+    (root / 'branches/one').mkdir(parents=True)
+    (root / 'interrupted/one').mkdir(parents=True)
+    (root / 'branches/one/outcome.json').write_text('{"state":"complete"}')
+    (root / 'interrupted/one/outcome.json').write_text('{"state":"failed"}')
+    (root / 'duplicate-link').symlink_to(root / 'branches/one', target_is_directory=True)
+    entries = {name: dict(root='repo', path=path, kind=kind, dependencies=[])
+               for name, path, kind in [('campaign', 'simulation', 'simulation'),
+                                        ('unavailable', 'missing', 'simulation'),
+                                        ('cache', 'simulation', 'cache')]}
+    (project / 'configs/datasets.json').write_text(json.dumps(dict(schema_version=1, datasets=entries)))
+    out = project / 'docs/simulations'
+    result = export_simulations(out)
+    assert result['collections'] == 2
+    with (out / 'run_records.csv').open() as stream:
+        records = list(csv.DictReader(stream))
+    assert {r['recorded_state'] for r in records} == {'complete', 'failed'}
+    assert len(records) == 2
+    with (out / 'collections.csv').open() as stream:
+        collections = {r['dataset_id']: r for r in csv.DictReader(stream)}
+    assert collections['unavailable']['available'] == 'False'
+
+
 def test_shared_json_yaml_resolution_and_path_independent_identity(project):
     entries = dict(schema_version=1, datasets={'sample': dict(root='cache', path='sample',
         kind='cache', dependencies=[], aliases=['/recorded/cache/sample'])})

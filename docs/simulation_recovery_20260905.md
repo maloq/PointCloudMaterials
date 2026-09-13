@@ -54,7 +54,7 @@ through melting and high-temperature sources 9/10 at measurement steps
 ## Remaining scientific blocker
 
 CPU diagnostic **981566** completed successfully in about six minutes.
-[Experiment and recipe](../experiments/restart_audit_20260905/README.md).
+[Experiment and recipe](../docs/simulations/restart_audit/README.md).
 It reproduced the original 15 ps checkpoint byte for byte but observed velocity
 divergence on the first restarted step, with unchanged rank ownership and local
 atom order. Disabling sorting also failed. The exact-extension gate remains

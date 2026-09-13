@@ -67,8 +67,8 @@ representation benchmark, not discovery or validation of a new phase.
 
 All generated artifacts are physically inside this repository:
 
-- [Full report, methods, uncertainty and plots](../output/liquid_sro_benchmark_20260905/RESULTS.md)
-- [Comparison CSV](../output/liquid_sro_benchmark_20260905/evaluation/comparison.csv)
-- [Pairwise source-bootstrap comparisons](../output/liquid_sro_benchmark_20260905/evaluation/pairwise_advantages.csv)
-- [Selected checkpoints](../output/liquid_sro_benchmark_20260905/checkpoint_selection.json)
-- [Code and reproduction commands](../experiments/liquid_sro_benchmark_20260905/README.md)
+- [Full report, methods, uncertainty and plots](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/liquid_sro_benchmark_20260905/RESULTS.md)
+- [Comparison CSV](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/liquid_sro_benchmark_20260905/evaluation/comparison.csv)
+- [Pairwise source-bootstrap comparisons](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/liquid_sro_benchmark_20260905/evaluation/pairwise_advantages.csv)
+- [Selected checkpoints](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/liquid_sro_benchmark_20260905/checkpoint_selection.json)
+- [Code and reproduction commands](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/liquid_sro_benchmark_20260905/README.md)

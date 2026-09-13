@@ -524,7 +524,7 @@ details:
 The latest committor configuration and entry point are:
 
 ```text
-experiments/shooting_ablation_20260901/technical/nested_committor_geoframe_v2_20260902.yaml
+/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/technical/nested_committor_geoframe_v2_20260902.yaml
 scripts/run_nested_committor.py
 ```
 

@@ -18,8 +18,8 @@ experiments use the existing VICReg codebase. Production training runs through
 `src.training_methods.contrastive_learning.train_contrastive` and `VICRegModule`.
 There is no separate optimizer loop or replacement VICReg implementation.
 
-The reference is the [original normalized MACE recipe](../mace_original_vicreg_20260909/README.md)
-and its [matched TDA extension](../mace_original_vicreg_tda_20260909/README.md).
+The reference is the [original normalized MACE recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_original_vicreg_20260909/README.md)
+and its [matched TDA extension](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_original_vicreg_tda_20260909/README.md).
 Their saved full static-Al cosine silhouettes are 0.6809 and 0.6897; these are
 structural sanity checks, not proof of relaxed-topology accuracy. The user chose
 this MACE recipe after being shown the stronger GeoFrame silhouette as well.

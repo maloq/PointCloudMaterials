@@ -7,10 +7,10 @@
 - `experiments/`: reusable experiment-plan templates (model, objective and data sweeps).
 - `simulation/`: maintained simulation protocols and source definitions; see its README.
 
-Historical standalone shooting and GeoFrame configs now live in the experiment
-record's `technical/` directory; start at
-[shooting ablations](../experiments/shooting_ablation_20260901/README.md) or
-[GeoFrame continuity](../experiments/geoframe_continuity_20260905/README.md).
+Historical standalone shooting and GeoFrame configs are in the STORE experiment
+records; start at
+[shooting ablations](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/README.md) or
+[GeoFrame continuity](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/geoframe_continuity_20260905/README.md).
 Hydra defaults and simulation configs retain their existing paths. Recent submitted
 queue specifications also retain their paths until scheduler quiescence is verified.
 

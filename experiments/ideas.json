@@ -23,7 +23,7 @@
       "state": "needs_review",
       "question": "Which new Ta trajectories provide independent validation rather than branches of a shared source?",
       "next_action": "Audit source ancestry in the Ta/Ti campaign before declaring an independent test set.",
-      "source": "experiments/ti_ta_crystallization_20260907/README.md"
+      "source": "docs/simulations/ti_ta_crystallization/README.md"
     },
     {
       "id": "config_organization",

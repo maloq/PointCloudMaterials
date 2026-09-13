@@ -131,8 +131,8 @@ outside the patch: the native 5 Å edge cutoff and artificial patch boundary
 still limit environmental context. Increasing temporal depth cannot recover
 spatial information that is never observed without relying on correlations.
 
-Evidence: [support audit](../output/mace_joint_properties_20260908/INTERIM_REVIEW_20260908.md),
-[full-80 protocol and checks](../experiments/mace_plain80_20260909/README.md).
+Evidence: [support audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_joint_properties_20260908/INTERIM_REVIEW_20260908.md),
+[full-80 protocol and checks](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_plain80_20260909/README.md).
 
 ### E2. Pooling before temporal fusion can discard useful structure
 
@@ -170,7 +170,7 @@ identity. They answer different questions and their caches/checkpoints cannot
 be interchanged casually. In Al-only training, cross-element separation is
 removed, but temperature, density and source/potential shortcuts remain possible.
 
-Evidence: [VICReg/input audit](../output/mace_vicreg_audit_20260909/REPORT.md),
+Evidence: [VICReg/input audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_audit_20260909/REPORT.md),
 [encoder APIs](mace_temporal_encoder.md).
 
 ### E4–E5. The optimization objective can improve while the representation worsens
@@ -207,9 +207,9 @@ transition. Pulling their embeddings together can suppress desired differences.
 The relevant tolerance needs empirical validation; proximity alone is not a
 proof that two neighborhoods should share a representation.
 
-Evidence: [temporal failure diagnosis](../experiments/mace_temporal_transformer_20260909/DIAGNOSIS.md),
-[VICReg audit](../output/mace_vicreg_audit_20260909/REPORT.md),
-[balanced-objective experiment](../experiments/mace_balanced_representation_20260908/README.md).
+Evidence: [temporal failure diagnosis](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_temporal_transformer_20260909/DIAGNOSIS.md),
+[VICReg audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_audit_20260909/REPORT.md),
+[balanced-objective experiment](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_balanced_representation_20260908/README.md).
 
 ### E6. Learned temporal fusion is not yet clearly better than a strong anchor model
 
@@ -273,7 +273,7 @@ comparison but still defines a chosen metric. Equal block weights are not a
 physical theorem, and changing the training distribution changes its scale.
 
 Evidence: [target implementation](../src/analysis/liquid_structure.py),
-[scaling diagnosis](../experiments/mace_temporal_transformer_20260909/DIAGNOSIS.md).
+[scaling diagnosis](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_temporal_transformer_20260909/DIAGNOSIS.md).
 
 ### T2. Average accuracy is not local topology learning
 
@@ -482,7 +482,7 @@ integer identities/timelines, and unchanged integration/restart precision.
 Finite-difference velocity estimates from stored positions would need their own
 cadence and quantization assessment; the current encoder has no velocity input.
 
-Evidence: [BF16 screen](../experiments/mace_bf16_20260908/README.md),
+Evidence: [BF16 screen](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_bf16_20260908/README.md),
 [potential precision controls](../experiments/mace_al_denoising_20260910/POTENTIAL_DIFFERENCES.md),
 [storage protocol](trajectory_conversion.md).
 
@@ -516,7 +516,7 @@ caches must not be reported as completed model training. Scientific changes
 require explicit configurations and separate output provenance; retired commands
 in historical experiment records may need the recorded source snapshot.
 
-Evidence: [analysis recovery](../experiments/mace_original_vicreg_20260909/README.md),
+Evidence: [analysis recovery](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_original_vicreg_20260909/README.md),
 [current encoder contract](mace_temporal_encoder.md),
 [experiment status and reproduction](../experiments/mace_al_denoising_20260910/README.md).
 
@@ -545,13 +545,13 @@ the experiments completed so far.
 
 | Topic | Primary repository record |
 | --- | --- |
-| Missing spatial support | [September 8 architecture audit](../output/mace_joint_properties_20260908/INTERIM_REVIEW_20260908.md) |
-| Geometry/species shortcuts, rank loss, loss shrinkage | [VICReg audit](../output/mace_vicreg_audit_20260909/REPORT.md) |
-| Failed joint temporal encoder | [September 9 diagnosis](../experiments/mace_temporal_transformer_20260909/DIAGNOSIS.md) |
+| Missing spatial support | [September 8 architecture audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_joint_properties_20260908/INTERIM_REVIEW_20260908.md) |
+| Geometry/species shortcuts, rank loss, loss shrinkage | [VICReg audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_audit_20260909/REPORT.md) |
+| Failed joint temporal encoder | [September 9 diagnosis](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_temporal_transformer_20260909/DIAGNOSIS.md) |
 | Completed loss and fusion comparisons | [36-run Al results](../output/mace_al_denoising_20260910/available_mixed/analysis/RESULTS.md) |
 | Potential, force, structure and calibration differences | [Detailed September 10 report](../experiments/mace_al_denoising_20260910/POTENTIAL_DIFFERENCES.md) |
 | Relaxation failure, recovery and larger data | [Al experiment record](../experiments/mace_al_denoising_20260910/README.md) |
-| Numerical precision | [BF16 audit](../experiments/mace_bf16_20260908/README.md) |
+| Numerical precision | [BF16 audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_bf16_20260908/README.md) |
 | Current input/export interfaces | [Temporal MACE documentation](mace_temporal_encoder.md) |
 
 This Markdown file is a versioned research review, indexed from the repository

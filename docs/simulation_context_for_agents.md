@@ -463,6 +463,6 @@ calibration, or quota check merely because the shooting runner is ready.
 - Independent-source runner:
   `scripts/run_lammps_campaign.py independent-meam-source`
 - 510/520 K source specialization:
-  `experiments/independent_sources_20260903/independent_meam_510_520K_sources.py`
+  `src/simulation/campaigns/independent_meam_high_temperature.py`
 - Binary reader/converter: `src/data_utils/shooting_binary.py`
 - Strict dataset validators/loaders: `src/data_utils/shooting_dataset.py`

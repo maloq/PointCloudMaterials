@@ -73,13 +73,13 @@ and diagnostic requirements are settled; archive compression is an alternative.
 
 ## Caches and other data
 
-- `experiments/temporal_hypotheses_12h_20260906/cache`: **52.60 GiB**, derived
+- `/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/temporal_hypotheses_12h_20260906/cache`: **52.60 GiB**, derived
   training features. Current MACE ablation config explicitly references it as
   `source_cache`; preserve during the active queue.
-- `experiments/pretrained_mace_spatiotemporal_20260906/uniform_training`:
+- `/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/pretrained_mace_spatiotemporal_20260906/uniform_training`:
   **5.54 GiB**, explicitly referenced by that queue as `reuse_prepared_cache`.
-- `experiments/pretrained_mace_80_dt01_cosine_20260906`: **2.75 GiB**, also in use.
-- `experiments/pretrained_mace_spatiotemporal_20260906/static_context`:
+- `/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/pretrained_mace_80_dt01_cosine_20260906`: **2.75 GiB**, also in use.
+- `/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/pretrained_mace_spatiotemporal_20260906/static_context`:
   **4.42 GiB**, derived analysis data; a later candidate after checking queued
   analysis configs. Keep checkpoints, results, and manifests.
 - `data/saved_features_boost` contains **8.85 GiB** of related Parquet datasets,

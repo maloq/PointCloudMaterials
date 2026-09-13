@@ -62,7 +62,7 @@ and immutable provenance across attempts. See [the registry guide](../docs/outpu
 `test_elemental_conversion.py` covers Ti/Ta position-producer conversion,
 periodic coordinate semantics, and rejection of corrupt IDs, cadence, and frame
 counts. The real LAMMPS source/branch smoke and full-size preflights are documented
-in [the Ti/Ta experiment](../experiments/ti_ta_crystallization_20260907/README.md).
+in [the Ti/Ta experiment](../docs/simulations/ti_ta_crystallization/README.md).
 
 ## September 6, 2026 cleanup
 
@@ -141,3 +141,13 @@ individual forwards, censored local negatives and missed-event timing, and paire
 source uncertainty after averaging seed confusion counts.
 
 `test_project_portability.py` checks shared JSON/YAML resolution, relocated bundle hashes/links, changed-source copy refusal, completed-only publication, SCRATCH placement, and exact checkpoint continuation after physically moving the cache.
+
+`test_forecast_allocation.py` verifies explicit subprocess completion, failed
+prerequisite propagation, duplicate-attempt rejection and allocation deadline
+enforcement without submitting Slurm jobs. The spatial-mixture analysis tests
+also exercise anchor-only inputs and their unchanged clean-anchor augmentation.
+
+The multiscale command regression uses `fixtures/shooting_multiscale.yaml`; its
+mocked workflow no longer depends on an archived experiment directory. Simulation
+inventory tests distinguish unavailable collections and recorded failed attempts
+from completed records, without following duplicate symlinks.

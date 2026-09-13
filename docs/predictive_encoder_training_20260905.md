@@ -114,9 +114,9 @@ Three training-metric tests passed, all nine models passed forward/backward
 preflight, and the final MACE rotation control passed. All generated artifacts
 are physically in the repository.
 
-- [Complete methods, source intervals, seed variation and training curves](../output/predictive_encoder_training_20260905/RESULTS.md)
-- [Forecast comparison CSV](../output/predictive_encoder_training_20260905/comparison.csv)
-- [Matched linear probes](../output/predictive_encoder_training_20260905/linear_probe_comparison.csv)
-- [Paired improvements over earlier training](../output/predictive_encoder_training_20260905/improvement_over_previous_training.csv)
-- [Selected checkpoints](../output/predictive_encoder_training_20260905/selected_runs.json)
-- [Experiment recipe and configuration](../experiments/predictive_encoder_training_20260905/README.md)
+- [Complete methods, source intervals, seed variation and training curves](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/predictive_encoder_training_20260905/RESULTS.md)
+- [Forecast comparison CSV](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/predictive_encoder_training_20260905/comparison.csv)
+- [Matched linear probes](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/predictive_encoder_training_20260905/linear_probe_comparison.csv)
+- [Paired improvements over earlier training](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/predictive_encoder_training_20260905/improvement_over_previous_training.csv)
+- [Selected checkpoints](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/predictive_encoder_training_20260905/selected_runs.json)
+- [Experiment recipe and configuration](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/predictive_encoder_training_20260905/README.md)

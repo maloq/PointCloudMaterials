@@ -1,4 +1,5 @@
 """Detached completion queue for the retained benchmark training sweep."""
+
 import json
 import os
 from pathlib import Path
@@ -6,11 +7,12 @@ import subprocess
 import sys
 import time
 import traceback
+from src.project_runtime.paths import dataset_path
 
 
 def main():
     root=Path(__file__).resolve().parents[3]
-    config=(Path(__file__).resolve().parents[3] / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json';out=root/json.loads(config.read_text())['output']
+    config=(dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json';out=root/json.loads(config.read_text())['output']
     status=dict(state='waiting_for_training',pid=os.getpid())
     def save(): (out/'postprocess_status.json').write_text(json.dumps(status,indent=2)+'\n')
     save()

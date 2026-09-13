@@ -30,7 +30,7 @@ Specialized 510/520 K and Ta recipes live under `experiments/`.
 The `elemental run --config CONFIG` workflow provides explicit Al/FCC and Ti/BCC
 source-then-branches and Ta archived-position protocols, implemented in
 `src/simulation/campaigns/elemental.py`. See the
-[Ti/Ta experiment](../experiments/ti_ta_crystallization_20260907/README.md).
+[Ti/Ta experiment](../docs/simulations/ti_ta_crystallization/README.md).
 `elemental sequence --ta-config TA --ti-config TI` finishes Ta before launching
 Ti, allowing each campaign to use the full CPU allocation without overlap.
 After a failed Ta sequence, add `--resume-ta` to verify completed branch/restart
@@ -120,11 +120,11 @@ Shared metric plotting and campaign dashboards are implemented in
 For full checkpoint analysis, use `python -m src.analysis.pipeline CONFIG`.
 This includes encoder-only predictive-density exports (`model_type: density_encoder`),
 loaded through `src/analysis/density_encoder_adapter.py`; see the
-[static-Al experiment recipe](../experiments/temporal_hypotheses_12h_20260906/README.md#standard-static-pipeline-encoder-only).
+[static-Al experiment recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/temporal_hypotheses_12h_20260906/README.md#standard-static-pipeline-encoder-only).
 For MLIP-initialized MACE, use
 the original Lightning VICReg entry point with
 `python -m src.training_methods.contrastive_learning.train_contrastive --config-name vicreg_pretrained_mace_geometry`.
-The [geometry-only recipe](../experiments/mace_original_vicreg_20260909/README.md)
+The [geometry-only recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_original_vicreg_20260909/README.md)
 uses normalized 80-point views, a fixed internal species channel, the original
 projector/loss/optimizer and standard static analysis. It adds no new runner.
 The [full Ta/Ti expansion](../experiments/mace_vicreg_full_20260910/README.md)
@@ -133,7 +133,7 @@ selects `vicreg_mace_full` in that same entry point. The existing
 command now accepts explicit source/timeline/cutoff settings and reuses the
 shared original producer in `src/data_utils/spatiotemporal_views.py`. It verifies
 the original cache links and completed additions, and records excluded duplicates.
-The [matched TDA recipe](../experiments/mace_original_vicreg_tda_20260909/README.md)
+The [matched TDA recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_original_vicreg_tda_20260909/README.md)
 adds the optional TDA head within that same module. Prepare normalized three-view
 targets with `python -m src.data_utils.spatiotemporal_tda --config configs/vicreg_pretrained_mace_geometry_tda.yaml`,
 then select that config in the original training entry point. The producer
@@ -181,7 +181,7 @@ final optimizer checkpoint before starting analysis.
 The historical explicit TDA and thermal protocols use
 `python -m src.training_methods.pretrained_mace --config CONFIG --stage prepare|preflight|train|analysis|all`.
 The same command supports `protocol: temporal80` for the
-[five-frame transformer experiment](../experiments/mace_temporal_transformer_20260909/README.md).
+[five-frame transformer experiment](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_temporal_transformer_20260909/README.md).
 Its distinct relaxed-anchor objective and history preparation live in
 `src/training_methods/mace_temporal.py` and `src/data_utils/mace_history.py`;
 the preparation and training stages retain their historical protocol. The
@@ -216,14 +216,14 @@ training and analysis, using `src/analysis/mace_potential_audit.py`. It requires
 the completed encoder exports, an explicit potential-audit config and the
 validated shared EAM/MEAM GPU binary. New relaxed artifacts use the maintained
 float16 conversion command.
-The [80-atom recipe](../experiments/mace_plain80_20260909/README.md)
+The [80-atom recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_plain80_20260909/README.md)
 uses full-graph mean pooling, uniform sampling, fixed spatial/temporal VICReg,
 and TDA on the same 80 atoms beginning in epoch six. The real-GPU preflight
 checks native MACE equivalence, gradient replay, TDA support, and peak-LR updates.
 The encoder, dataset, objective and training implementation are respectively in
 `src/models/encoders/pretrained_mace.py`, `src/data_utils/pretrained_mace.py`,
 `src/training_methods/mace_objective.py` and `src/training_methods/pretrained_mace.py`.
-The [variant C recipe](../experiments/mace_thermal80_20260909/README.md)
+The [variant C recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_thermal80_20260909/README.md)
 uses the same trainer with `protocol: thermal80`: shared hot/relaxed 80-atom
 views, relaxed TDA targets, and explicit hot/relaxed consistency. Its paired
 cache producer is `python -m src.data_utils.mace_relaxed --config CONFIG`, with
@@ -263,6 +263,6 @@ frozen Ti position parent without launching a source. It reuses the elemental
 branch protocol and converter, records provenance per branch, and obtains MPI
 CPU bindings from the Slurm step affinity when submitted as a single-node job.
 
-The [Al crystallization recipe](../experiments/al_meam_crystallization_20260911/README.md)
+The [Al crystallization recipe](../docs/simulations/al_crystallization/README.md)
 uses `elemental run` with `al-source-then-branches`, the Al shooting MEAM
 potential, and the Ti continuous-source/position-branch design.

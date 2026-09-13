@@ -165,7 +165,7 @@ the frozen source. It was rerun successfully from the current repository code.
 
 All new analysis outputs, including copies of the best/final/last checkpoints, are
 in `output/geoframe_v2_spatiotemporal_analysis_20260905/` on `/home/infres`.
-See the [consolidated report](../output/geoframe_v2_spatiotemporal_analysis_20260905/RESULTS.md).
+See the [consolidated report](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_v2_spatiotemporal_analysis_20260905/RESULTS.md).
 Actual checkpoint tensors were verified: last and final are identical and contain
 step 4,320 for each objective.
 
@@ -196,7 +196,7 @@ The output contains 253 PNGs, 30 interactive HTML files, exact pipeline configs,
 embeddings, labels, structural representatives, and machine-readable metrics
 (about 3.0 GB). Experiment-specific branch diagnostics and full-analysis
 consolidation helpers are documented in
-[the experiment record](../experiments/spatiotemporal_20260905/README.md).
+[the experiment record](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/spatiotemporal_20260905/README.md).
 
 The proposed next experiment—causal smoothing, fixed-target future prediction,
 and an audit of discontinuous geometry choices—is recorded in

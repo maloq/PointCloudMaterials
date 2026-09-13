@@ -596,20 +596,20 @@ The transition target/input audit and shooting GIFs use:
 
 ```bash
 python scripts/run_predictability_map.py \
-  --config experiments/shooting_ablation_20260901/technical/predictability_map_nested_transition_geoframe_v2_20260903.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/technical/predictability_map_nested_transition_geoframe_v2_20260903.yaml
 
 python scripts/render_shooting_dynamics_gifs.py \
-  --config experiments/shooting_ablation_20260901/technical/shooting_dynamics_gifs_nested_transition_20260903.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/shooting_ablation_20260901/technical/shooting_dynamics_gifs_nested_transition_20260903.yaml
 ```
 
 The finest-timestep stability audit and direct-encoder control use:
 
 ```bash
 python scripts/analyze_geoframe.py stability \
-  --config experiments/geoframe_continuity_20260905/technical/geoframe_temporal_stability_finest_30fs_20260904.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/geoframe_continuity_20260905/technical/geoframe_temporal_stability_finest_30fs_20260904.yaml
 
 python scripts/analyze_geoframe.py stability \
-  --config experiments/geoframe_continuity_20260905/technical/geoframe_encoder_temporal_stability_finest_30fs_20260904.yaml
+  --config /store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/geoframe_continuity_20260905/technical/geoframe_encoder_temporal_stability_finest_30fs_20260904.yaml
 
 python scripts/analyze_geoframe.py compare-representations \
   --projector-result output/geoframe_temporal_stability_finest_30fs_20260904 \

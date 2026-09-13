@@ -1,0 +1,546 @@
+[
+  {
+    "label": "anchor-blocks-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep01/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep01-epoch=02.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep01/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep01-epoch=02.ckpt",
+    "sha256": "db2be38b52a4b74230f8d82d30e44a5519a6253c7f61361ffc860c3af21771e6",
+    "bytes": 100392781
+  },
+  {
+    "label": "anchor-blocks-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep02-epoch=09.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep02-epoch=09.ckpt",
+    "sha256": "79d2e769853459d58557fb8d18f6d46d381058932352b0d620bbc58da9498495",
+    "bytes": 100392781
+  },
+  {
+    "label": "anchor-blocks-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep03/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep03-epoch=08.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep03/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep03-epoch=08.ckpt",
+    "sha256": "5d926509730dcfd7eaf7e5ab2484c54d51c40b12729f58b21eb783eba9c23497",
+    "bytes": 100392781
+  },
+  {
+    "label": "anchor-pca-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/mace_vicreg_relaxed_h100_default_anchor_pca__rep01-epoch=02.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/mace_vicreg_relaxed_h100_default_anchor_pca__rep01-epoch=02.ckpt",
+    "sha256": "a4756afb95a04e50a74cbabc67b49a58eee5fca02bd44ef02ba48714bc312082",
+    "bytes": 100047309
+  },
+  {
+    "label": "anchor-pca-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep02/mace_vicreg_relaxed_h100_default_anchor_pca__rep02-epoch=09.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep02/mace_vicreg_relaxed_h100_default_anchor_pca__rep02-epoch=09.ckpt",
+    "sha256": "398bcd81dfc938cd522382fdb0d6ca5124d1b7b94ea550466c5a4c5a51da0711",
+    "bytes": 100047309
+  },
+  {
+    "label": "anchor-pca-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep03/mace_vicreg_relaxed_h100_default_anchor_pca__rep03-epoch=03.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep03/mace_vicreg_relaxed_h100_default_anchor_pca__rep03-epoch=03.ckpt",
+    "sha256": "df79c3a61c80a631601fab052b8598bda6c233fcd3c48e2c781cb0995f0d0797",
+    "bytes": 100047309
+  },
+  {
+    "label": "anchor-vicreg-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+    "sha256": "118ca618678ecc9b324ed8b2a93647f53fdd91976b1b7945ce253400e6a4495f",
+    "bytes": 99547629
+  },
+  {
+    "label": "anchor-vicreg-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep02/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep02-epoch=09.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep02/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep02-epoch=09.ckpt",
+    "sha256": "32bd9284586a3090bde781e281821bfc948674a2afa3704c51df8d2df610e4d7",
+    "bytes": 99547629
+  },
+  {
+    "label": "anchor-vicreg-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep03/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep03-epoch=08.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep03/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep03-epoch=08.ckpt",
+    "sha256": "c81b31d60e7ab03bd28a2407aa2932fb5c875330d11318a2a04fc6363b1ca41b",
+    "bytes": 99547629
+  },
+  {
+    "label": "atom-anchor-blocks-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_anchor_blocks-seed20260910/overnight_default_atom_anchor_blocks-seed20260910-epoch=07.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_anchor_blocks-seed20260910/overnight_default_atom_anchor_blocks-seed20260910-epoch=07.ckpt",
+    "sha256": "5389b0ff085b8905b19c90fa62f4e289311714d91f3080feec68c32ac2adef46",
+    "bytes": 101628007
+  },
+  {
+    "label": "atom-anchor-blocks-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_anchor_blocks-seed20260911/overnight_default_atom_anchor_blocks-seed20260911-epoch=11.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_anchor_blocks-seed20260911/overnight_default_atom_anchor_blocks-seed20260911-epoch=11.ckpt",
+    "sha256": "ff429715cd115a5200ee4dc2f1d2fa475692d691ee8ed53350ebbac18451ce93",
+    "bytes": 101628007
+  },
+  {
+    "label": "atom-anchor-blocks-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_anchor_blocks-seed20260912/overnight_default_atom_anchor_blocks-seed20260912-epoch=09.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_anchor_blocks-seed20260912/overnight_default_atom_anchor_blocks-seed20260912-epoch=09.ckpt",
+    "sha256": "10d71f9093f173253e68cd0a26e1ae0a77ffbec48ad94e8f4a1b4dd604dbfe3c",
+    "bytes": 101628007
+  },
+  {
+    "label": "atom-temporal-blocks-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_temporal_blocks-seed20260910/overnight_default_atom_temporal_blocks-seed20260910-epoch=15.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_temporal_blocks-seed20260910/overnight_default_atom_temporal_blocks-seed20260910-epoch=15.ckpt",
+    "sha256": "244993c3330549bbc7c569201a63841e41eb67c95ec920e1fefaf9b3cf8dca69",
+    "bytes": 101628007
+  },
+  {
+    "label": "atom-temporal-blocks-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_temporal_blocks-seed20260911/overnight_default_atom_temporal_blocks-seed20260911-epoch=13.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_temporal_blocks-seed20260911/overnight_default_atom_temporal_blocks-seed20260911-epoch=13.ckpt",
+    "sha256": "984347d117f8b71ffd583fb83aff504059b4b3dc1e4fc88eae358fdb086d4037",
+    "bytes": 101628007
+  },
+  {
+    "label": "atom-temporal-blocks-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_temporal_blocks-seed20260912/overnight_default_atom_temporal_blocks-seed20260912-epoch=17.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/atom_temporal_blocks-seed20260912/overnight_default_atom_temporal_blocks-seed20260912-epoch=17.ckpt",
+    "sha256": "8c3f2972714da7c7a9e33e453ce4eab52c21cbbe1ecb0337c8c33ef15f6f538f",
+    "bytes": 101628007
+  },
+  {
+    "label": "full",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/train/MACE-original-VICReg-full-Al-Mg-Ta-Ti-epoch=09.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/train/MACE-original-VICReg-full-Al-Mg-Ta-Ti-epoch=09.ckpt",
+    "sha256": "15804ebcacea829b90a31ca745257626db0ec9cb6d97d2f8728a444090d442f5",
+    "bytes": 99543085
+  },
+  {
+    "label": "mean-blocks-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep01/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep01-epoch=02.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep01/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep01-epoch=02.ckpt",
+    "sha256": "d1a34e888baaf8cfec30ee91560757170141149004b0eefc3061201f5c2bef8d",
+    "bytes": 100394441
+  },
+  {
+    "label": "mean-blocks-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep02/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep02-epoch=04.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep02/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep02-epoch=04.ckpt",
+    "sha256": "f9af48c029119cd697af463b75547c2077930a52e1e275931e51416091d0add8",
+    "bytes": 100394441
+  },
+  {
+    "label": "mean-blocks-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep03-epoch=16.ckpt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep03-epoch=16.ckpt",
+    "sha256": "3eb928b7f8373be682c5c0c7b18d6b3a48650fb2e63c8f6411743178ce460d03",
+    "bytes": 100394505
+  },
+  {
+    "label": "residual-blocks-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight-residual_20260911_065550/default/residual_blocks__rep01/overnight-residual_default_residual_blocks__rep01-epoch=08.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight-residual_20260911_065550/default/residual_blocks__rep01/overnight-residual_default_residual_blocks__rep01-epoch=08.ckpt",
+    "sha256": "59a75cc62ae4b43c1d907973ca51682eaede4880e279d2e115cedbfd5390bc35",
+    "bytes": 101467879
+  },
+  {
+    "label": "residual-blocks-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight-residual_20260911_065550/default/residual_blocks__rep02/overnight-residual_default_residual_blocks__rep02-epoch=18.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight-residual_20260911_065550/default/residual_blocks__rep02/overnight-residual_default_residual_blocks__rep02-epoch=18.ckpt",
+    "sha256": "d0e22ce526be1ffdfc0ea4f0b477bf2f6294acb12cd9d68c906bac23a441862c",
+    "bytes": 101467879
+  },
+  {
+    "label": "residual-blocks-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight-residual_20260911_065550/default/residual_blocks__rep03/overnight-residual_default_residual_blocks__rep03-epoch=08.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight-residual_20260911_065550/default/residual_blocks__rep03/overnight-residual_default_residual_blocks__rep03-epoch=08.ckpt",
+    "sha256": "3ef18ce41f6edf5277eeef00dee2677ab3796571d49d29d5dc90d35e67b1263a",
+    "bytes": 101467879
+  },
+  {
+    "label": "transformer-blocks-seed20260910",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/transformer_blocks-seed20260910/overnight_default_transformer_blocks-seed20260910-epoch=22.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/transformer_blocks-seed20260910/overnight_default_transformer_blocks-seed20260910-epoch=22.ckpt",
+    "sha256": "bcf05ab93e8ed5dfc85cfa46ce89b5ae6b53fc50e4434eda7606847c2ed79fff",
+    "bytes": 105593929
+  },
+  {
+    "label": "transformer-blocks-seed20260911",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/transformer_blocks-seed20260911/overnight_default_transformer_blocks-seed20260911-epoch=21.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/transformer_blocks-seed20260911/overnight_default_transformer_blocks-seed20260911-epoch=21.ckpt",
+    "sha256": "2da8fd75dccbe945c1fda438f3db135509533432338d4654caee93340b6caadf",
+    "bytes": 105593929
+  },
+  {
+    "label": "transformer-blocks-seed20260912",
+    "role": "MACE selected encoder",
+    "path": "/home/ids/vmorozov/experiments/mace/overnight_20260911_014107/default/transformer_blocks-seed20260912/overnight_default_transformer_blocks-seed20260912-epoch=00.ckpt",
+    "resolved": "/store/PERSO/vmorozov/experiments/mace/overnight_20260911_014107/default/transformer_blocks-seed20260912/overnight_default_transformer_blocks-seed20260912-epoch=00.ckpt",
+    "sha256": "4f333952883bfe196829f3f281ae3e02208f8c75e778b8c50fb60c150790823a",
+    "bytes": 105593801
+  },
+  {
+    "label": "bins_anchor-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_anchor-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_anchor-seed20260911/best.pt",
+    "sha256": "f52b527f87e33850452bbb5e7feee0bf3351b1b2ab2a85d9f6a9e0bbcfb04d2e",
+    "bytes": 4597751
+  },
+  {
+    "label": "bins_gru-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_gru-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_gru-seed20260911/best.pt",
+    "sha256": "5ac3c7d8e90958d7e15fe058cc86267b844a1e1c09731a42504163791e2d7d61",
+    "bytes": 4597751
+  },
+  {
+    "label": "bins_mean_residual-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_mean_residual-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_mean_residual-seed20260911/best.pt",
+    "sha256": "2768c49c56b2c35ef5f3030a996110c320c45f7c4f2518df2d9215f338e1188e",
+    "bytes": 4597367
+  },
+  {
+    "label": "bins_mean_residual_control-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_mean_residual_control-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/bins_mean_residual_control-seed20260911/best.pt",
+    "sha256": "b2a71ffbab2dbb167eac3ddb52413d6417873e62ddd9c0b9b5a3483291d33c73",
+    "bytes": 4598071
+  },
+  {
+    "label": "path_anchor-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_anchor-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_anchor-seed20260911/best.pt",
+    "sha256": "38e0988a826f92c026a2d66b2a72d21873bedb9be81c9897d9febf4859ab5674",
+    "bytes": 4597879
+  },
+  {
+    "label": "path_ar_anchor_control-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_anchor_control-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_anchor_control-seed20260911/best.pt",
+    "sha256": "06ea24217396e586270cad69d8fa7dd2b097a02def7785bfbe479480c5ba622a",
+    "bytes": 6989847
+  },
+  {
+    "label": "path_ar_mean_control-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_mean_control-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_mean_control-seed20260911/best.pt",
+    "sha256": "d5b04e92effe96258ea0dd8f4341720ff28e89b16830626be8a4c93485d5e66b",
+    "bytes": 6989847
+  },
+  {
+    "label": "path_ar_rollout-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_rollout-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_rollout-seed20260911/best.pt",
+    "sha256": "84c7389e4523bcdad8e80f6b7fd791836de948bfc368fef09831fcb03ac89486",
+    "bytes": 6989847
+  },
+  {
+    "label": "path_ar_rollout_mse-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_rollout_mse-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_rollout_mse-seed20260911/best.pt",
+    "sha256": "ac1ae63bfb0d7556c84c69f0552c95efdc8216ea25ab701132fed28036d5c1af",
+    "bytes": 6989847
+  },
+  {
+    "label": "path_ar_teacher_forced-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_teacher_forced-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_ar_teacher_forced-seed20260911/best.pt",
+    "sha256": "15aa4c94bd4ecd4d9a4146acda82cc1b7fb70353c70056304e504d58749fd2e7",
+    "bytes": 6989847
+  },
+  {
+    "label": "path_gaussian-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_gaussian-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_gaussian-seed20260911/best.pt",
+    "sha256": "89c1a2e6c01417571ebc079b85d7c820123f26a401217bf73e57758aa166a059",
+    "bytes": 6583319
+  },
+  {
+    "label": "path_gru-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_gru-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_gru-seed20260911/best.pt",
+    "sha256": "ae0f04c5bbd2b76e0d0389bbe6ab1e946f68a6dbf8d21a8878d1736da868966c",
+    "bytes": 4597879
+  },
+  {
+    "label": "path_mean_residual-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_mean_residual-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_mean_residual-seed20260911/best.pt",
+    "sha256": "a622ae9ce95f51313a7cf48cc8ca8d952fbf21196982adb21432e193c074dd21",
+    "bytes": 4597495
+  },
+  {
+    "label": "path_mean_residual_control-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_mean_residual_control-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/runs/path_mean_residual_control-seed20260911/best.pt",
+    "sha256": "a87f37001b7e96a72e6e64fa462aa77e7881755575bfc35e0e418b8e09fcc9e7",
+    "bytes": 4597495
+  },
+  {
+    "label": "path_ar_large_aug-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/runs/path_ar_large_aug-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/runs/path_ar_large_aug-seed20260911/best.pt",
+    "sha256": "955cf7cb88c8ed60e2d73490bfc498f9c96770e58107fe30c4432c63591e71b1",
+    "bytes": 119923861
+  },
+  {
+    "label": "path_direct_large_aug-seed20260911",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/runs/path_direct_large_aug-seed20260911/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/runs/path_direct_large_aug-seed20260911/best.pt",
+    "sha256": "98f4db50ea5514945f772e1d12433a41b9426e0dedf1157382c6748b7b3a3e39",
+    "bytes": 96216805
+  },
+  {
+    "label": "ar_history0ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history0ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history0ps-seed20260913/technical/best.pt",
+    "sha256": "9c043775d540cd3387712d445a7fa6208caf16a67788828d0302863f7126ad5f",
+    "bytes": 6993809
+  },
+  {
+    "label": "ar_history0ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history0ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history0ps-seed20260914/technical/best.pt",
+    "sha256": "bd37892576a48024802273d25ea272d46e168a6b0c0df719d2eb6d402417f6b8",
+    "bytes": 6993809
+  },
+  {
+    "label": "ar_history12ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history12ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history12ps-seed20260913/technical/best.pt",
+    "sha256": "370e62c904b5bfcc595552ece535096ae57f6f238fcc728e59ad015c6f8ce103",
+    "bytes": 6993873
+  },
+  {
+    "label": "ar_history12ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history12ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history12ps-seed20260914/technical/best.pt",
+    "sha256": "08dba428f4f1c4b7a66e5ec7a9e4da40e8d0eda5688cab720f946a82c2732d07",
+    "bytes": 6993873
+  },
+  {
+    "label": "ar_history1p5ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history1p5ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history1p5ps-seed20260913/technical/best.pt",
+    "sha256": "9ff8d0a7f9d7e61ca84b498134d9861147f60f6ad5afc922d97d2697f719c95d",
+    "bytes": 6993809
+  },
+  {
+    "label": "ar_history1p5ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history1p5ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history1p5ps-seed20260914/technical/best.pt",
+    "sha256": "630b94179cf05a48c1be593bee8973dc5fdfcba5ff32549a9ccbd3d04ae6d17a",
+    "bytes": 6993809
+  },
+  {
+    "label": "ar_history24ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history24ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history24ps-seed20260913/technical/best.pt",
+    "sha256": "9d06846a3314f35fbad2308af0d1b8396d23d0f41dbdd63a7ceef6fb06d08973",
+    "bytes": 6993937
+  },
+  {
+    "label": "ar_history24ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history24ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history24ps-seed20260914/technical/best.pt",
+    "sha256": "0c9c5a822c26e38391c360b3d095d4ce074633d9c622880e51528abadca5c21a",
+    "bytes": 6993937
+  },
+  {
+    "label": "ar_history3ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history3ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history3ps-seed20260913/technical/best.pt",
+    "sha256": "be59fb6a7ee2332ae7634a148b3000559b7af719e646df26af12c4cc0f0dcd1b",
+    "bytes": 6993809
+  },
+  {
+    "label": "ar_history3ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history3ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history3ps-seed20260914/technical/best.pt",
+    "sha256": "148d8dcfc3ea85e7e6895777f21d47e75e2de8bb336d61f1915d2975510d4615",
+    "bytes": 6993809
+  },
+  {
+    "label": "ar_history6ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history6ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history6ps-seed20260913/technical/best.pt",
+    "sha256": "0d1a44a2bd27ad7d6932b3602d59da278986933433aba0a82b90f1bca85f7b23",
+    "bytes": 6993809
+  },
+  {
+    "label": "ar_history6ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history6ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/ar_history6ps-seed20260914/technical/best.pt",
+    "sha256": "751a14ee472fa72fad8d273a06e152ab03cde6f1e2825107950e3d12dbfe89bd",
+    "bytes": 6993809
+  },
+  {
+    "label": "direct_history0ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history0ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history0ps-seed20260913/technical/best.pt",
+    "sha256": "48a89fcc1d039851774e8b94fedede84a4702d6955df9b4616674f4872167327",
+    "bytes": 4602865
+  },
+  {
+    "label": "direct_history0ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history0ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history0ps-seed20260914/technical/best.pt",
+    "sha256": "1ac2ab3ad3380880225d57205940d12579e6b0a405d5b8eb9119d15c0519431c",
+    "bytes": 4602801
+  },
+  {
+    "label": "direct_history12ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history12ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history12ps-seed20260913/technical/best.pt",
+    "sha256": "78ffd2556d925efa4d5b20be10600f955dba5c0b7331d67b8f7786b41a9e8bb4",
+    "bytes": 4602929
+  },
+  {
+    "label": "direct_history12ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history12ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history12ps-seed20260914/technical/best.pt",
+    "sha256": "cacb99e3fd3a111bc256b565565876316c04e7f6b806006a393f629a27479338",
+    "bytes": 4602865
+  },
+  {
+    "label": "direct_history1p5ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history1p5ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history1p5ps-seed20260913/technical/best.pt",
+    "sha256": "7356d9c4b206991344fb6d75953636f6c89a183155589272bd6b028274a516db",
+    "bytes": 4602865
+  },
+  {
+    "label": "direct_history1p5ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history1p5ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history1p5ps-seed20260914/technical/best.pt",
+    "sha256": "22b004314d80662ce65c3e708d3b6bde3cf5d6a14c08d23ab28a5da8be0476e3",
+    "bytes": 4602865
+  },
+  {
+    "label": "direct_history24ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history24ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history24ps-seed20260913/technical/best.pt",
+    "sha256": "1600625d26dfc45a70e7eb71e5400a7222da2509accf480b827aa5cb436ed8dc",
+    "bytes": 4602993
+  },
+  {
+    "label": "direct_history24ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history24ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history24ps-seed20260914/technical/best.pt",
+    "sha256": "56b312ba78ff42c249a776fd1f7658a2e7ba2e58df8a648ddd6be2bfffbac907",
+    "bytes": 4602929
+  },
+  {
+    "label": "direct_history3ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history3ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history3ps-seed20260913/technical/best.pt",
+    "sha256": "99f3c8586386f8079060bbac275695992e3133ad435e18bb7df6a7e44ea27d0b",
+    "bytes": 4602865
+  },
+  {
+    "label": "direct_history3ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history3ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history3ps-seed20260914/technical/best.pt",
+    "sha256": "01a7c1ad2f10ddac446b52b86040cc4859dc028269dc42de223b39ce026ad023",
+    "bytes": 4602801
+  },
+  {
+    "label": "direct_history6ps-seed20260913",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history6ps-seed20260913/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history6ps-seed20260913/technical/best.pt",
+    "sha256": "28dee6706c0273d15811a31f49b180fdaaa0330cfb82e9e9558962f03d45e2b3",
+    "bytes": 4602865
+  },
+  {
+    "label": "direct_history6ps-seed20260914",
+    "role": "Selected forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history6ps-seed20260914/technical/best.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history6ps-seed20260914/technical/best.pt",
+    "sha256": "7a752c9c1b075229ba792529960825cf07351c23522230edcd2865f95df5da63",
+    "bytes": 4602801
+  },
+  {
+    "label": "local-assay-ar",
+    "role": "Frozen physical-assay forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/local-crystallization-20260913/technical/checkpoints/ar.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/local-crystallization-20260913/technical/checkpoints/ar.pt",
+    "sha256": "955cf7cb88c8ed60e2d73490bfc498f9c96770e58107fe30c4432c63591e71b1",
+    "bytes": 119923861
+  },
+  {
+    "label": "local-assay-direct",
+    "role": "Frozen physical-assay forecaster",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/local-crystallization-20260913/technical/checkpoints/direct.pt",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/local-crystallization-20260913/technical/checkpoints/direct.pt",
+    "sha256": "98f4db50ea5514945f772e1d12433a41b9426e0dedf1157382c6748b7b3a3e39",
+    "bytes": 96216805
+  },
+  {
+    "label": "MACE-MP-0b2-small",
+    "role": "Pretrained denoising dependency",
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+    "resolved": "/home/infres/vmorozov/PointCloudMaterials/output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+    "sha256": "d5773bf9440e96d6eb8c598f84bd0e6369fcfa432f626a87f890e07da3c651c9",
+    "bytes": 67622684
+  }
+]

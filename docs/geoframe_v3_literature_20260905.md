@@ -5,7 +5,7 @@ Primary papers and repository code were reviewed for this proposal. Publication
 status is distinguished from preprint status below. This is a focused literature
 review, not an exhaustive priority search or a claim of established novelty.
 
-**Experimental update:** the [completed pilot](../output/smooth_temporal_encoder_20260905/RESULTS.md)
+**Experimental update:** the [completed pilot](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/smooth_temporal_encoder_20260905/RESULTS.md)
 trained six spatial and twelve temporal models on Al/Mg/Ta and evaluated all
 772,953 saved static-Al centers. Smooth neighborhoods remove the selected frame
 switches. Ordinary recurrent memory currently gives the best smoothness/structure
@@ -30,7 +30,7 @@ have substantial prior art.
 
 ## 1. What the repository establishes
 
-The [continuity audit](../output/geoframe_continuity_20260905/RESULTS.md) isolates
+The [continuity audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_continuity_20260905/RESULTS.md) isolates
 frame switches with all atom and patch identities fixed. In one float32 Ta case,
 a coordinate separation of approximately 2.09e-6 Å RMS produces a 148.78-degree
 frame switch and an encoder difference of 1.1193. Holding or transporting the
@@ -46,7 +46,7 @@ including deliberately selected switch boundaries. They demonstrate a failure
 mechanism, not the proportion of ordinary MD drift caused by it. They also do
 not establish that the intervened pretrained network retains structural quality.
 
-The [training comparison](../output/geoframe_v2_spatiotemporal_analysis_20260905/RESULTS.md)
+The [training comparison](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_v2_spatiotemporal_analysis_20260905/RESULTS.md)
 shows why smoothness alone is insufficient: relative encoder drift improved
 while absolute drift increased and effective rank fell. The new architecture
 must preserve information at a controlled output scale, not simply make vectors

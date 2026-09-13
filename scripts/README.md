@@ -86,15 +86,29 @@ For completed fits, `python -m src.research.forecast_spatial_mixture.evaluate
 both mean paths and probabilistic crystal readouts. Then `compare --plan PLAN` in
 the same package verifies matched windows/scales and exports the full paired study.
 See the [spatial/mixture experiment](../experiments/forecast_spatial_mixture_20260913/README.md).
+`python -m src.training_methods.embedding_forecast.allocation --plan PLAN` runs
+explicit training/analysis module commands serially inside an existing allocation.
+Its plan specifies node/job identity, prerequisite status files, exact arguments,
+completion states and an allocation deadline; it never submits or implicitly resumes
+a job. The paired collector accepts explicit `comparison_pairs` and `reference_runs`
+with retained `local_directory` paths for the [short-history extension](../experiments/forecast_spatial_mixture_20260913/SHORT_HISTORY.md).
 
 Recorded older protocols live in [src/research](../src/research/README.md); their
 configuration and findings stay with the dated experiment record.
 
-Temporary paths required by submitted jobs remain:
-`run_lammps_independent_meam_source_campaign.py`,
-`run_lammps_independent_meam_510_520K_sources.py`, and the old
-`experiments/spatiotemporal_20260905/prepare_spatiotemporal_vicreg_views.py`.
-Do not remove them until the relevant Slurm controller chains finish. The optimized
-Aluminum shell launcher still requires `PYTHON` and accepts `DEVICES`.
+The September 13 queue audit found no remaining simulation controllers. The old
+spatiotemporal experiment-path forwarder was retired; use the maintained preparation
+module above. Historical simulation specialization/queue code is now under
+`src/simulation/campaigns/` (`independent_meam_high_temperature`, `local_source_queue`,
+`ta_initial_branch`, `al_crystallization_preflight`, `recover_ta_ti_float16`).
+The two existing `run_lammps_independent_meam_*` forwarding commands still import
+maintained simulation implementations. Historical exact protocols and arguments
+are documented in [simulation records](../docs/simulations/README.md).
+The Aluminum shell launcher still requires `PYTHON` and accepts `DEVICES`.
 
 `project.py` manages machine settings (`paths`, `doctor`), dataset IDs (`datasets`), JSON resolution (`resolve`), verified selected exports (`bundle`, `verify-bundle`), full checkout snapshots (`snapshot`), completed simulation publication (`publish-simulation`), and stopped failure archives (`archive-failed-simulation --inactive`). Inputs and copy semantics are documented in [portability](../docs/portability.md); implementation is in `src/project_runtime/`.
+
+`project.py simulations --output docs/simulations` exports readable collection and
+producer-outcome CSV indexes from `configs/datasets.json`; implementation is in
+`src/project_runtime/simulation_inventory.py`. It preserves failed/duplicate attempt
+evidence and never treats outcome records as counts of independent simulations.

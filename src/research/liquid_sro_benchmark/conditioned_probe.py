@@ -1,10 +1,12 @@
 """Common covariance-conditioned linear probes: audit raw-channel/PCA basis bias."""
+
 import json
 from pathlib import Path
 import sys
 
 ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT))
+from src.project_runtime.paths import dataset_path
 import numpy as np
 from src.research.liquid_sro_benchmark.evaluate import FIXED,LEARNED,CONTROLS,standardize,bootstrap_skill,save_csv
 from src.research.smooth_temporal_encoder.prepare import write_json
@@ -24,7 +26,7 @@ def fit(x,y,split,alphas):
 
 
 def main():
-    cfg=json.loads(((Path(__file__).resolve().parents[3] / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json').read_text());out=ROOT/cfg['output']
+    cfg=json.loads(((dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json').read_text());out=ROOT/cfg['output']
     directory=out/'conditioned_probe';directory.mkdir(exist_ok=True)
     saved=dict(np.load(out/'evaluation/split_and_targets.npz'));ids=saved['rows'];split=saved['split']
     train,test=split=='train',split=='test';source=saved['source'][test]

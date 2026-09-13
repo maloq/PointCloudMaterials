@@ -26,7 +26,7 @@ change the live total.
 - Checked the remote `ta-then-ti-20260907.service` on lamedell11: failed,
   `MainPID=0`, and both previously recorded PIDs absent. Its partial binary had
   already been removed by the separate storage-failure diagnosis documented in
-  `experiments/ti_ta_crystallization_20260907/storage_failure_20260907.json`.
+  `docs/simulations/ti_ta_crystallization/technical/storage_failure_20260907.json`.
   That prior 15.95 GiB reclamation is **not** included in this cleanup's total.
 - Verified canonical replacement binary checksums before removing archived
   nested/shooting attempt trajectories. Kept metadata and logs. Removed files

@@ -41,6 +41,7 @@ def main(argv=None):
     p = sub.add_parser('doctor'); p.add_argument('--lammps', action='store_true')
     sub.add_parser('paths')
     sub.add_parser('datasets')
+    p = sub.add_parser('simulations'); p.add_argument('--output', required=True, type=Path)
     p = sub.add_parser('resolve'); p.add_argument('config', type=Path)
     p = sub.add_parser('snapshot'); p.add_argument('destination', type=Path)
     p = sub.add_parser('bundle'); p.add_argument('--plan', required=True, type=Path); p.add_argument('--destination', required=True, type=Path); p.add_argument('--apply', action='store_true')
@@ -59,6 +60,9 @@ def main(argv=None):
                   for key, entry in catalog().items()}
     elif args.command == 'resolve':
         result = load_json(args.config)
+    elif args.command == 'simulations':
+        from .simulation_inventory import export_simulations
+        result = export_simulations(args.output)
     else:
         from .transfer import archive_failed_simulation, bundle, publish_simulation, snapshot, verify_bundle
         if args.command == 'snapshot':

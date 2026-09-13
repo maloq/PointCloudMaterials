@@ -1,4 +1,5 @@
 """Source-held-out prediction of liquid structure and dynamics from frozen encoders."""
+
 import argparse
 import csv
 from datetime import datetime,timezone
@@ -8,6 +9,7 @@ import sys
 
 ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT))
+from src.project_runtime.paths import dataset_path
 import numpy as np
 from scipy.spatial.distance import cdist
 from src.research.smooth_temporal_encoder.prepare import write_json
@@ -125,7 +127,7 @@ def main():
     parser.add_argument('--config',type=Path,required=True)
     parser.add_argument('--stage',choices=('baselines','all'),default='all')
     args=parser.parse_args();cfg=json.loads(args.config.read_text());out=ROOT/cfg['output']
-    protocol=json.loads(((Path(__file__).resolve().parents[3] / 'experiments/liquid_sro_benchmark_20260905')/'technical/evaluation_protocol.json').read_text())
+    protocol=json.loads(((dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905')/'technical/evaluation_protocol.json').read_text())
     directory=out/('baseline_evaluation' if args.stage=='baselines' else 'evaluation');directory.mkdir(exist_ok=True)
     (directory/'readouts').mkdir(exist_ok=True)
     names=list(FIXED)+list(CONTROLS)

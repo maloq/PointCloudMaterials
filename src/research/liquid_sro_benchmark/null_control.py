@@ -1,12 +1,14 @@
 """Destroy local structural information while retaining split/temperature marginals."""
+
 import json
 from pathlib import Path
 import numpy as np
+from src.project_runtime.paths import dataset_path
 
 
 def main():
     root=Path(__file__).resolve().parents[3]
-    cfg=json.loads(((Path(__file__).resolve().parents[3] / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json').read_text());out=root/cfg['output']
+    cfg=json.loads(((dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905')/'technical/config.json').read_text());out=root/cfg['output']
     meta=dict(np.load(out/'metadata.npz'));rng=np.random.default_rng(20260910)
     permutation=np.arange(len(meta['split']))
     for split in ('train','val','test'):

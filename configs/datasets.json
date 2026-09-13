@@ -283,7 +283,7 @@
     },
     "potential-ti-kavousi2019": {
       "root": "repo",
-      "path": "experiments/ti_ta_crystallization_20260907/potential",
+      "path": "configs/simulation/potentials/ti_kavousi2019",
       "kind": "potential",
       "dependencies": [],
       "citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c; pure Ti mapping"
@@ -295,8 +295,8 @@
       "dependencies": []
     },
     "portability-smoke-forecast": {
-      "root": "output",
-      "path": "portability/storage-20260913/technical/smoke-cache",
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/portability/storage-20260913/technical/smoke-cache",
       "kind": "test_fixture",
       "dependencies": [],
       "description": "Synthetic linear embeddings from tests/test_embedding_forecast.py:cache_fixture; environment check, not scientific data."
@@ -312,7 +312,164 @@
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/portability-ti-smoke-20260913"
       ],
-      "description": "128-atom, 20-step pure-Ti integration/storage smoke, not crystallization research data."
+      "description": "128-atom, 20-step pure-Ti integration/storage smoke, not crystallization research data.",
+      "simulation_fixture": true
+    },
+    ".al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    ".al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    ".al_phase_context_70304x1.generation-5016671fb856": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1.generation-5016671fb856",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    ".al_phase_context_70304x1_seed_12346.generation-559b40e8ef01": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1_seed_12346.generation-559b40e8ef01",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_campaign_70304_mpa_bf16_comparison_20260724": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_comparison_20260724",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_liquid_source_70304_mpa_seed12345_500K": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12345_500K",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_liquid_source_70304_mpa_seed12346_500K": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_mpa_70304_bf16_validation_20260724": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_mpa_70304_bf16_validation_20260724",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_phase_context_70304x1": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_phase_context_70304x1_seed_12346": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1_seed_12346",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "polycrystalline_balanced_geometries": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "polycrystalline_balanced_geometries_v2": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries_v2",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "research-records-20260913": {
+      "root": "archive",
+      "path": "projects/PointCloudMaterials-retention-20260913",
+      "kind": "research_archive",
+      "dependencies": []
     }
   }
 }
