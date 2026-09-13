@@ -1,8 +1,8 @@
 # Ranked ablation 2: retain the spatial organization of the 17 context tokens.
 # Target, horizons, source-run split, encoder, and evaluation match ablation 1.
-output_dir: /home/ids/vmorozov/experiments/shooting_spatial_ablation2_geoframe_v2_20260901
-base_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
-context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+output_dir: /store/PERSO/vmorozov/experiments/shooting_spatial_ablation2_geoframe_v2_20260901
+base_embedding_cache: /store/PERSO/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+context_token_cache: /store/PERSO/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
 device: cuda:0
 
 data:

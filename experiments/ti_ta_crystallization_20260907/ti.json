@@ -8,7 +8,7 @@
   "sample_interval_ps": 0.1,
   "protocol": "ti-source-then-branches",
   "material": "Ti",
-  "output_root": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti",
+  "output_root": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti",
   "cpus": [
     0,
     1,

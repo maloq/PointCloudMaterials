@@ -29,6 +29,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from src.simulation.campaigns import predictive_dynamics as campaign  # noqa: E402
+from src.project_runtime.paths import storage_path
 from src.data_utils.shooting_binary import (  # noqa: E402
     ShootingBinaryTrajectory,
     binary_directory_sizes,
@@ -57,12 +58,10 @@ THERMOSTAT_TIME_FS = 300.0
 EXTENSION_STOP_PS = 24.0
 EXTENSION_STOP_STEP = 8_000
 EXTENSION_TIMESTEPS = tuple(range(RUN_STEPS + SAMPLE_INTERVAL_STEPS, EXTENSION_STOP_STEP + 1, SAMPLE_INTERVAL_STEPS))
-TOPUP_ROOT = Path(
-    "/home/ids/vmorozov/simulations/"
+TOPUP_ROOT = (storage_path('simulation_runs') /
     "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904"
 )
-SMOKE_ROOT = Path(
-    "/home/ids/vmorozov/simulations/"
+SMOKE_ROOT = (storage_path('simulation_runs') /
     "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904"
 )
 SNAPSHOT = campaign.DEFAULT_SNAPSHOT

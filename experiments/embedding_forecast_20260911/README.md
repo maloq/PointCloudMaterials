@@ -9,6 +9,10 @@ Implementation: [`src/training_methods/embedding_forecast/`](../../src/training_
 This is a separate frozen-embedding forecasting workflow. It does not retrain the
 geometric encoder or change the original VICReg/relaxation objectives.
 
+The enlarged direct and autoregressive runs now use
+[GPU-resident continuation inside their existing H100 allocations](GPU_RESIDENT_RESTART_20260913.md).
+The September 13 restart preserves their saved training state and 32-epoch budget.
+
 ## What the latest results imply
 
 The [September 11 MACE report](../mace_vicreg_relaxed_20260910/RESULTS_20260911.md)

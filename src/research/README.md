@@ -13,6 +13,9 @@ for a dataset/seed/output-path change that an existing command can express.
 
 | Package | Record |
 | --- | --- |
+| `forecast_spatial_mixture` | [forecast_spatial_mixture_20260913](../../experiments/forecast_spatial_mixture_20260913/README.md); matched point/distribution readouts and paired local transition comparison |
+| `forecast_crystallization` | [forecast_crystallization_20260913](../../experiments/forecast_crystallization_20260913/README.md); local PTM state, transition timing and frozen-forecast evaluation |
+| `forecast_context` | [forecast_context_20260913](../../experiments/forecast_context_20260913/README.md); paired analysis of histories fitted with the maintained forecaster |
 | `factor_vae` | [factor_vae_20260901](../../experiments/factor_vae_20260901/README.md) |
 | `geoframe_continuity` | [geoframe_continuity_20260905](../../experiments/geoframe_continuity_20260905/README.md) |
 | `liquid_sro_benchmark` | [liquid_sro_benchmark_20260905](../../experiments/liquid_sro_benchmark_20260905/README.md) |

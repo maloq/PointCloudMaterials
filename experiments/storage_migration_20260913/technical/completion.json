@@ -1,0 +1,76 @@
+{
+  "state": "complete",
+  "completed_at": "2026-09-13T15:47:44.308598+00:00",
+  "moves": [
+    {
+      "source": "/home/ids/vmorozov/training-cache",
+      "destination": "/work/PERSO/vmorozov/training-cache",
+      "regular_files": 1163,
+      "symlinks": 52,
+      "logical_file_bytes": 58525100173,
+      "verification_sha256": "13eca6bdb3a305db1f1b57a1a758a3211c4b9433a800608b6a646c8c167c7deb"
+    },
+    {
+      "source": "/home/ids/vmorozov/simulations",
+      "destination": "/work/PERSO/vmorozov/simulations",
+      "regular_files": 28418,
+      "symlinks": 5,
+      "logical_file_bytes": 469845336679,
+      "verification_sha256": "9deeb866ddddc640f5838b38bcbd3be9e472f133c0015e351bdafbce816109ac"
+    },
+    {
+      "source": "/home/ids/vmorozov/analysis",
+      "destination": "/work/PERSO/vmorozov/analysis",
+      "regular_files": 2169,
+      "symlinks": 0,
+      "logical_file_bytes": 3084722883,
+      "verification_sha256": "487521346810f9aaa864f995d3d2cb2a71a2b87db8491864e74f15221e9aa9ac"
+    },
+    {
+      "source": "/home/ids/vmorozov/experiments",
+      "destination": "/store/PERSO/vmorozov/experiments",
+      "regular_files": 4573,
+      "symlinks": 5,
+      "logical_file_bytes": 16670844394,
+      "verification_sha256": "3b1f09a1a41cc7b1f0523ab2a17f45fe7dcf6bb5c0c7a53e1a8da0dcee29f54b"
+    },
+    {
+      "source": "/home/ids/vmorozov/data",
+      "destination": "/store/PERSO/vmorozov/data",
+      "regular_files": 5813,
+      "symlinks": 2,
+      "logical_file_bytes": 28911859904,
+      "verification_sha256": "1cde50818defc5aee701ef7e65ba6acdc6b080bdd3772f95c6da69bafce48705"
+    },
+    {
+      "source": "/home/ids/vmorozov/models",
+      "destination": "/store/PERSO/vmorozov/models",
+      "regular_files": 135,
+      "symlinks": 0,
+      "logical_file_bytes": 1533649980,
+      "verification_sha256": "95d405bef88e71cc64b45ab07b28497571b4ed838dc5b0f2d065578a15ba1d9c"
+    }
+  ],
+  "configuration_files_updated": 95,
+  "repository_links_updated": 289,
+  "preexisting_broken_debug_log_links": [
+    "output/wandb/wandb/offline-run-20260905_140750-c2xklqd5/logs/debug-core.log",
+    "output/wandb/wandb/offline-run-20260905_143830-j31xr2hw/logs/debug-core.log",
+    "output/wandb/wandb/offline-run-20260905_142334-3d1lgxcm/logs/debug-core.log"
+  ],
+  "ids_allocated_bytes_before": 545295909888,
+  "ids_allocated_bytes_after": 33943040,
+  "ids_bytes_reclaimed": 545261966848,
+  "work_capacity_bytes": 549755813888,
+  "work_available_bytes": 39582695424,
+  "validation": {
+    "tda_tests_passed": 2,
+    "config_path_references_checked": 484,
+    "registry_build": "Indexed 128 entries, 25519 files",
+    "cross_node_alias_checks": [
+      "node53",
+      "nodesumo01"
+    ]
+  },
+  "inventory_implementation_sha256": "31fef1af8085fd050b185f4c218fdac04838e27e22534f31db20c2ab27d82060"
+}

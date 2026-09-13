@@ -103,6 +103,25 @@ ablation queue, defer conversion of all referenced caches until it finishes so
 that runs use the same cached values. Precision migrations are recorded in the
 sidecars; an older producer manifest may describe the original float32 creation.
 
+## Forecast embedding cache storage
+
+```bash
+python scripts/convert_trajectory.py embedding-cache --config NEW_FORECAST_CONFIG.json \
+  --producer FROZEN_SOURCE/src/training_methods/embedding_forecast/data.py \
+  --audit OUTPUT/technical/embedding-conversion.json
+```
+
+Pause cache writers and readers first. The new data configuration must equal the
+original protocol with only `storage_dtype: "float16"` added. The command converts
+completed 256-channel shards, checks every rounded value and metadata checksum,
+and preserves original protocols/manifests and per-shard rounding errors. Partial
+shards without completion manifests are rebuilt by preparation. Rerun the exact
+command to recover an interrupted migration; readers reject unfinished migrations.
+Model windows decode to float32; scaling accumulates float64 moments of the stored values.
+This changes the storage precision of the target embeddings, so resulting scores
+must be identified as using float16 storage. Simulation data and encoder weights
+are preserved. New preparation accepts `data.storage_dtype` (default `float32`).
+
 ## Separate exports
 
 ```bash

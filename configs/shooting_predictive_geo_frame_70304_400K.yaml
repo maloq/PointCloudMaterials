@@ -1,6 +1,6 @@
 # First position-conditioned ensemble run. The 400 K block is the only currently
 # complete temperature with full parent ensembles in both source splits.
-output_dir: /home/ids/vmorozov/experiments/shooting_predictive_geo_frame_70304_400K_20260831
+output_dir: ${storage:training_storage}/shooting_predictive_geo_frame_70304_400K_20260831
 
 encoder:
   checkpoint: output/detached/vicreg_geoframe_corrected_h100_20260829_220250/VICREG_GEOFRAME_MULTISCALE_8_16_l128_CORRECTED_H100_N160_M80_GeoFrameTransformer-epoch=159.ckpt
@@ -15,7 +15,7 @@ embedding:
   environment_num_workers: 4
 
 data:
-  campaign_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+  campaign_root: ${storage:simulations}/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
   temperatures_K: [400]
   minimum_complete_branches_per_parent: 8
   horizons_ps: [6, 12, 24, 48]

@@ -1,0 +1,17 @@
+# Copy to machine.local.yaml; adjust executable paths for your installation.
+roots:
+  datasets: /work/PERSO/${USER}/datasets
+  simulations: /work/PERSO/${USER}/simulations
+  cache: /home/ids/${USER}/training-cache
+  archive: /store/PERSO/${USER}
+  training_storage: /store/PERSO/${USER}/experiments
+  analysis: /work/PERSO/${USER}/analysis
+  output: output
+  scratch: /scratch/PERSO/${USER}/PointCloudMaterials
+  simulation_runs: /scratch/PERSO/${USER}/PointCloudMaterials/simulations
+execution:
+  backend: local
+  device: cuda:0
+  lammps: lmp
+  mpi_launcher: [mpiexec, '-n', '{ranks}']
+  mpi_environment: {}

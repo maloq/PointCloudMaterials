@@ -22,7 +22,7 @@ data:
       - al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K
       - al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827
       - al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827
-    cache_root: /home/ids/vmorozov/training-cache/temporal/al_unseeded_2nn_meam_70304
+    cache_root: ${dataset:temporal}/al_unseeded_2nn_meam_70304
     required_atom_count: 70304
     required_potential_parameter_sha256: b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a
     required_crystal_seed: null

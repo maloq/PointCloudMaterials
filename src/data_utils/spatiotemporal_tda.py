@@ -17,8 +17,9 @@ def prepare(cfg):
     if cfg.data.kind == 'relaxed_histories':
         from src.data_utils.relaxed_histories import prepare as prepare_histories
         return prepare_histories(cfg)
-    root = Path(cfg.data.cache_dir)
-    out = Path(cfg.tda.cache_dir)
+    from src.project_runtime.paths import resolve_path
+    root = resolve_path(cfg.data.cache_dir)
+    out = resolve_path(cfg.tda.cache_dir)
     out.mkdir(parents=True, exist_ok=True)
     source = json.loads((root/'manifest.json').read_text())
     protocol = dict(source_root=str(root.resolve()), source_sha256=sha256(root/'manifest.json'),
@@ -28,7 +29,9 @@ def prepare(cfg):
                     seed=cfg.seed_everything)
     if (out/'manifest.json').exists():
         saved = json.loads((out/'manifest.json').read_text())
-        if saved['protocol'] != protocol:
+        saved_protocol = dict(saved['protocol'])
+        saved_protocol['source_root'] = str(resolve_path(saved_protocol['source_root']).resolve())
+        if saved_protocol != protocol:
             raise ValueError(f'TDA cache protocol differs: {out}/manifest.json')
         for name, digest in saved['checksums'].items():
             if sha256(out/name) != digest:

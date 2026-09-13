@@ -3,9 +3,9 @@ defaults:
 - _self_
 experiment_name: MACE-original-VICReg-full-Al-Mg-Ta-Ti
 seed_everything: 20260910
-analysis_output_dir: /home/ids/vmorozov/analysis/mace/artifacts/full
+analysis_output_dir: ${storage:analysis}/mace/artifacts/full
 data:
-  cache_dir: /home/ids/vmorozov/training-cache/mace-full
+  cache_dir: ${dataset:mace-full}
   materials:
   - Al
   - Mg

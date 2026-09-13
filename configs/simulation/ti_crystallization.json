@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "required_free_bytes": 3000000000000,
+  "pressure_bar": 0,
+  "position_storage_dtype": "float16",
+  "sample_interval_ps": 0.1,
+  "protocol": "ti-source-then-branches",
+  "material": "Ti",
+  "pair_commands": [
+    "pair_style meam",
+    "pair_coeff * * ${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam Ni Ti ${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam Ti"
+  ],
+  "potential_files": [
+    {
+      "path": "${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam",
+      "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+      "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+    },
+    {
+      "path": "${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam",
+      "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+      "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+    }
+  ],
+  "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+  "temperature_K": 1250,
+  "timestep_ps": 0.001,
+  "thermostat_ps": 0.1,
+  "barostat_ps": 1.0,
+  "mass_g_mol": 47.88,
+  "dump_every_steps": 100,
+  "checkpoint_steps": 24000,
+  "branch_steps": 240000,
+  "melt_temperature_K": 3000,
+  "melt_steps": 50000,
+  "melt_seed": 917001,
+  "lattice_constant_A": 3.29089653438,
+  "atom_count": 100000,
+  "assessment_steps": 4000,
+  "max_source_steps": 2000000,
+  "ptm_rmsd_cutoff": 0.17,
+  "complete_crystal_fraction": 0.94,
+  "max_liquid_crystal_fraction": 0.01,
+  "minimum_liquid_msd_growth_A2": 10.0,
+  "branch_target_fractions": [
+    0.0,
+    0.1,
+    0.3,
+    0.5,
+    0.7,
+    0.9
+  ],
+  "branch_velocity_seeds": [
+    917101,
+    917103,
+    917107,
+    917111,
+    917117,
+    917123
+  ],
+  "branch_semantics": "Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.",
+  "repetitions_xyz": [
+    50,
+    40,
+    25
+  ],
+  "delete_verified_source_text": true
+}

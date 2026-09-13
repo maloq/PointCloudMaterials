@@ -8,7 +8,7 @@
   "sample_interval_ps": 0.1,
   "protocol": "al-source-then-branches",
   "material": "Al",
-  "output_root": "/home/ids/vmorozov/simulations/al_meam_crystallization_100k_450K_20260911",
+  "output_root": "/work/PERSO/vmorozov/simulations/al_meam_crystallization_100k_450K_20260911",
   "cpus": [
     0,
     1,

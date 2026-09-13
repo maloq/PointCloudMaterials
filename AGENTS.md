@@ -71,3 +71,14 @@ commands; update a producer's storage path when launching it if necessary.
 - Use `scripts/experiment_registry.py storage` and `clean` for storage inspection
   and inference-cache cleanup. Preview first; never delete a large file merely
   because of its extension or size. Preserve exact-resume state and paired test data.
+
+## External storage (2026-09-13)
+
+Use `/work/PERSO/vmorozov` for existing simulation inputs, datasets and analysis.
+Keep training/dataset caches on `/home/ids/vmorozov/training-cache`. New simulation
+results start on `/scratch/PERSO/vmorozov/PointCloudMaterials/simulations`; publish
+completed elemental runs to STORE with checksum verification before deleting larger
+copies. Preserve stopped failures/restarts on STORE before SCRATCH's 30-day inactivity
+purge. Use the machine profile and dataset IDs documented in `docs/portability.md`.
+Keep compatibility aliases and immutable manifests/resume configs. New machine
+paths belong in ignored `machine.local.yaml`, not scientific recipes.

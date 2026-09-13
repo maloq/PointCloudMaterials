@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-09-13T17:04:01.451237+02:00",
+  "home_allocated_bytes": 545295909888,
+  "report": "/home/infres/vmorozov/PointCloudMaterials/output/ids_datasets/inventory-20260913/README.md",
+  "report_sha256": "0d9809795132e8f860d7308fcd626a962da49ad1c76f93a397c2804401a93fb7",
+  "methods": [
+    "du allocated bytes; no symlink following",
+    "canonical manifest branch membership and outcome state",
+    "current binary manifest precision",
+    "NPY header inspection for selected caches",
+    "Slurm queue inspection",
+    "Ti duplicate array-description comparison"
+  ],
+  "limitations": [
+    "Non-atomic read-only inventory",
+    "No full rehash of every large trajectory",
+    "Incomplete and superseded records excluded from completed counts"
+  ],
+  "key_counts": {
+    "separately_melted_Al_sources_complete": 126,
+    "separately_melted_Al_sources_planned": 150,
+    "Ti_unique_completed_branches": 6,
+    "Ti_duplicate_completed_copies": 6,
+    "Ta_completed_branches": 6,
+    "Al_new_source_completed": false
+  }
+}

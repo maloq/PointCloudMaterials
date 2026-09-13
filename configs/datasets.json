@@ -1,0 +1,318 @@
+{
+  "schema_version": 1,
+  "datasets": {
+    "Al": {
+      "root": "datasets",
+      "path": "Al",
+      "kind": "dataset",
+      "dependencies": [],
+      "aliases": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/Al",
+        "/work/PERSO/vmorozov/datasets/Al"
+      ]
+    },
+    "Al50Ni50": {
+      "root": "datasets",
+      "path": "Al50Ni50",
+      "kind": "dataset",
+      "dependencies": [],
+      "aliases": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/Al50Ni50",
+        "/work/PERSO/vmorozov/datasets/Al50Ni50"
+      ]
+    },
+    "Mg": {
+      "root": "datasets",
+      "path": "Mg",
+      "kind": "dataset",
+      "dependencies": [],
+      "aliases": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/Mg",
+        "/work/PERSO/vmorozov/datasets/Mg"
+      ]
+    },
+    "Ta": {
+      "root": "datasets",
+      "path": "Ta",
+      "kind": "dataset",
+      "dependencies": [],
+      "aliases": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/Ta",
+        "/work/PERSO/vmorozov/datasets/Ta"
+      ]
+    },
+    "Zr": {
+      "root": "datasets",
+      "path": "Zr",
+      "kind": "dataset",
+      "dependencies": [],
+      "aliases": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/Zr",
+        "/work/PERSO/vmorozov/datasets/Zr"
+      ]
+    },
+    "potentials": {
+      "root": "datasets",
+      "path": "potentials",
+      "kind": "potentials",
+      "dependencies": [],
+      "aliases": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials",
+        "/work/PERSO/vmorozov/datasets/potentials"
+      ]
+    },
+    "zr_al_mg_initial_6x24ps": {
+      "root": "datasets",
+      "path": "zr_al_mg_initial_6x24ps",
+      "kind": "dataset",
+      "dependencies": [],
+      "aliases": [
+        "/home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps",
+        "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps"
+      ]
+    },
+    "al_homogeneous_unseeded_2nn_meam_70304_12temps_390-500K_600ps_1ps_positions_velocities_6seeds_20260830": {
+      "root": "simulations",
+      "path": "al_homogeneous_unseeded_2nn_meam_70304_12temps_390-500K_600ps_1ps_positions_velocities_6seeds_20260830",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901": {
+      "root": "simulations",
+      "path": "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_independent_sources_recovery_20260909T203221Z": {
+      "root": "simulations",
+      "path": "al_independent_sources_recovery_20260909T203221Z",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_crystallization_100k_450K_20260911": {
+      "root": "simulations",
+      "path": "al_meam_crystallization_100k_450K_20260911",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902": {
+      "root": "simulations",
+      "path": "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903": {
+      "root": "simulations",
+      "path": "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum": {
+      "root": "simulations",
+      "path": "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_nested_shooting_pilot_70304_400-500K_20260902": {
+      "root": "simulations",
+      "path": "al_meam_nested_shooting_pilot_70304_400-500K_20260902",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible": {
+      "root": "simulations",
+      "path": "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830": {
+      "root": "simulations",
+      "path": "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904": {
+      "root": "simulations",
+      "path": "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903": {
+      "root": "simulations",
+      "path": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation": {
+      "root": "simulations",
+      "path": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "interrupted_attempts": {
+      "root": "simulations",
+      "path": "interrupted_attempts",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "local_overnight_lamedell11_20260905": {
+      "root": "simulations",
+      "path": "local_overnight_lamedell11_20260905",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "local_overnight_lamedell11_20260905.startup_attempt_010736": {
+      "root": "simulations",
+      "path": "local_overnight_lamedell11_20260905.startup_attempt_010736",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "nested_shooting_prepare_logs": {
+      "root": "simulations",
+      "path": "nested_shooting_prepare_logs",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "nonshooting_float32_migration_20260901": {
+      "root": "simulations",
+      "path": "nonshooting_float32_migration_20260901",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "restart_boundary_audit_20260905": {
+      "root": "simulations",
+      "path": "restart_boundary_audit_20260905",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "shooting_float32_migration_20260901": {
+      "root": "simulations",
+      "path": "shooting_float32_migration_20260901",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z": {
+      "root": "simulations",
+      "path": "superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z": {
+      "root": "simulations",
+      "path": "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "ta_initial_model_1m_24ps_npt_20260905": {
+      "root": "simulations",
+      "path": "ta_initial_model_1m_24ps_npt_20260905",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "ti_ta_crystallization_20260907": {
+      "root": "simulations",
+      "path": "ti_ta_crystallization_20260907",
+      "kind": "simulation",
+      "dependencies": []
+    },
+    "mace-full": {
+      "root": "cache",
+      "path": "mace-full",
+      "kind": "cache",
+      "dependencies": []
+    },
+    "mace-meam": {
+      "root": "cache",
+      "path": "mace-meam",
+      "kind": "cache",
+      "dependencies": []
+    },
+    "temporal": {
+      "root": "cache",
+      "path": "temporal",
+      "kind": "cache",
+      "dependencies": []
+    },
+    "embedding-forecast-full-20260911": {
+      "root": "cache",
+      "path": "embedding-forecast-full-20260911",
+      "kind": "cache",
+      "dependencies": []
+    },
+    "potential-ti-kavousi2019": {
+      "root": "repo",
+      "path": "experiments/ti_ta_crystallization_20260907/potential",
+      "kind": "potential",
+      "dependencies": [],
+      "citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c; pure Ti mapping"
+    },
+    "potential-ta-zhong2014": {
+      "root": "simulations",
+      "path": "ta_initial_model_1m_24ps_npt_20260905/potential",
+      "kind": "potential",
+      "dependencies": []
+    },
+    "portability-smoke-forecast": {
+      "root": "output",
+      "path": "portability/storage-20260913/technical/smoke-cache",
+      "kind": "test_fixture",
+      "dependencies": [],
+      "description": "Synthetic linear embeddings from tests/test_embedding_forecast.py:cache_fixture; environment check, not scientific data."
+    },
+    "portability-ti-smoke-20260913": {
+      "root": "archive",
+      "path": "simulations/portability-ti-smoke-20260913",
+      "kind": "test_fixture",
+      "state": "complete",
+      "dependencies": [
+        "potential-ti-kavousi2019"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/portability-ti-smoke-20260913"
+      ],
+      "description": "128-atom, 20-step pure-Ti integration/storage smoke, not crystallization research data."
+    }
+  }
+}

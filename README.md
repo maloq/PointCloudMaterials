@@ -63,3 +63,5 @@ conda run -n pointnet python scripts/experiment_registry.py clean --root output/
 The cleanup command previews reclaimable inference caches. Applying it requires
 `--apply --inactive` after checking that the selected runs are inactive. Dataset and
 trajectory conversions still use the maintained conversion command.
+
+Portable machines and storage: see [setup, CPU/GPU environments, dataset bundles and SCRATCH-first simulations](docs/portability.md).

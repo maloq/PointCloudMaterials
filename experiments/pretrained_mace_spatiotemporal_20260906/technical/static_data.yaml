@@ -26,11 +26,11 @@ data_files:
 - 240ps.npy
 sample_cache:
   enabled: true
-  cache_dir: /home/ids/vmorozov/experiments/temporal_hypotheses_12h_20260906/static_Al_physical_cache
+  cache_dir: /store/PERSO/vmorozov/experiments/temporal_hypotheses_12h_20260906/static_Al_physical_cache
   local_cache_dir: /dev/shm/vmorozov/pointcloudmaterials/static_Al_predictive_density_physical
   rebuild: false
 normalize: false
 atomic_context:
   points: 512
   required_radius_A: 10.02
-  cache_dir: /home/ids/vmorozov/experiments/pretrained_mace_spatiotemporal_20260906/static_context
+  cache_dir: /store/PERSO/vmorozov/experiments/pretrained_mace_spatiotemporal_20260906/static_context

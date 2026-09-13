@@ -27,7 +27,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.config is not None:
         from src.data_utils.spatiotemporal_views import prepare_expanded
-        prepare_expanded(json.loads(args.config.read_text()))
+        from src.project_runtime.paths import load_json
+        prepare_expanded(load_json(args.config))
         return
     if args.output is None:
         parser.error("--output is required without --config")

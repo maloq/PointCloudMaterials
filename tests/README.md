@@ -33,6 +33,14 @@ Scale-up coverage checks causal history augmentation, bit-exact augmented traini
 across an explicit checkpoint continuation, streaming metric agreement, and frozen
 Slurm specifications with independent training chains and a shared final join.
 It also checks one-job fits that depend on an existing shared preparation job.
+Resident-loader coverage compares FP16/FP32 batches, identities and sampler RNG
+on CPU and CUDA, and resumes an augmented mmap fit through the resident loader.
+`test_embedding_forecast_handoff.py` uses real local subprocesses to verify
+process identity, restoration after preflight failure, and holding the original
+launcher alive while replacing its child. It does not submit cluster jobs.
+`test_forecast_context.py` checks equal-source weighting after seed averaging,
+paired bootstrap gains, rejection of mismatched test windows or normalization,
+and complete context-comparison tables, metric definitions and plots.
 
 Add a test when it catches a meaningful failure. Prefer observable results over
 private call sequences or Python source-text matching. Experiment seeds, widths,
@@ -121,3 +129,15 @@ check exact optimizer/sampler resume in both recorded output layouts.
 ```bash
 conda run -n pointnet python -m pytest -q tests/test_research_layout.py tests/test_analysis_storage.py tests/test_embedding_forecast.py tests/test_experiment_registry.py
 ```
+
+`test_forecast_crystallization.py` checks local PTM event persistence/censoring, observed-only risk sets, validation F1 thresholds, missed-event timing denominators and forecast readout normalization/identity ordering.
+
+`test_forecast_context_mixture.py` checks exact deterministic-model parity,
+whole-path mixture likelihood against PyTorch distributions, coherent component
+sampling, analytical CRPS/crystal probability, spatial gradients and causal
+neighbor gathers, plus a complete mixture training/export round trip.
+`test_forecast_spatial_mixture_analysis.py` checks batched spatial readout against
+individual forwards, censored local negatives and missed-event timing, and paired
+source uncertainty after averaging seed confusion counts.
+
+`test_project_portability.py` checks shared JSON/YAML resolution, relocated bundle hashes/links, changed-source copy refusal, completed-only publication, SCRATCH placement, and exact checkpoint continuation after physically moving the cache.

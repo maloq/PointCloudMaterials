@@ -1,0 +1,17 @@
+# Paths are relative to the checkout, independent of the calling shell directory.
+roots:
+  datasets: datasets
+  simulations: data/simulations
+  cache: data/cache
+  archive: data/archive
+  training_storage: data/archive/experiments
+  analysis: output/analysis
+  output: output
+  scratch: tmp
+  simulation_runs: tmp/simulations
+execution:
+  backend: local
+  device: cpu
+  lammps: lmp
+  mpi_launcher: []
+  mpi_environment: {}

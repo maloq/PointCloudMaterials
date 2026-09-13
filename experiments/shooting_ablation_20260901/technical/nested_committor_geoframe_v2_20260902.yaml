@@ -1,6 +1,6 @@
 # First-passage committor test on the transition-balanced nested shooting pilot.
 # The final-validation source runs are untouched until the last reported fit.
-output_dir: /home/ids/vmorozov/experiments/nested_committor_geoframe_v2_20260902
+output_dir: /store/PERSO/vmorozov/experiments/nested_committor_geoframe_v2_20260902
 device: cuda:0
 
 encoder:
@@ -11,7 +11,7 @@ encoder:
   point_cloud_batch_size: 2048
 
 data:
-  campaign_root: /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902
+  campaign_root: /work/PERSO/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902
   expected_parent_count: 36
   expected_branch_count: 144
   require_complete_campaign: true
@@ -31,6 +31,6 @@ model:
   grouped_source_run_folds: 5
 
 cache:
-  path: /home/ids/vmorozov/experiments/nested_committor_geoframe_v2_20260902/features
+  path: /store/PERSO/vmorozov/experiments/nested_committor_geoframe_v2_20260902/features
   force_recompute: false
 

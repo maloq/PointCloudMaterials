@@ -1,7 +1,7 @@
 name: overnight
 train_script: src/training_methods/contrastive_learning/train_contrastive.py
 config_name: vicreg_mace_relaxed
-output_root: /home/ids/vmorozov/experiments/mace
+output_root: /store/PERSO/vmorozov/experiments/mace
 experiments:
 - name: atom_temporal_blocks-seed20260910
   overrides:

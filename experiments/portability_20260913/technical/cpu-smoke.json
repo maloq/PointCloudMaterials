@@ -1,0 +1,62 @@
+{
+  "device": "cpu",
+  "data": {
+    "cache": "${dataset:portability-smoke-forecast}"
+  },
+  "output": "${storage:output}/portability/cpu-smoke",
+  "history_ps": 1.5,
+  "anchor_history_ps": 1.5,
+  "horizons_ps": [
+    0.75,
+    1.5,
+    2.25
+  ],
+  "stride_ps": 0.75,
+  "seeds": [
+    3
+  ],
+  "training": {
+    "epochs": 2,
+    "patience": 2,
+    "cpu_threads": 1,
+    "scale_floor_fraction": 0.05,
+    "batch_size": 13,
+    "workers": 0,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0001,
+    "minimum_lr_fraction": 0.2,
+    "gradient_clip": 5.0,
+    "warmup_epochs": 1,
+    "augmentation": {
+      "noise_std": 0.01,
+      "frame_dropout": 0.15
+    }
+  },
+  "variants": [
+    {
+      "name": "trajectory_autoregressive_gru",
+      "target": "trajectory",
+      "architecture": "autoregressive_gru",
+      "distribution": "deterministic",
+      "history_mode": "real",
+      "width": 16,
+      "layers": 1,
+      "heads": 2,
+      "dropout": 0.0,
+      "covariance_rank": 2,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1.0,
+        "bin_mse": 0.25,
+        "increment_mse": 0.1,
+        "nll": 0.0
+      },
+      "autoregressive": {
+        "initial_state": "history_mean",
+        "training": "rollout"
+      }
+    }
+  ],
+  "comparisons": [],
+  "bin_comparisons": []
+}

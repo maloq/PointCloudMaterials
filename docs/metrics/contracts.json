@@ -9,11 +9,15 @@
   },
   "forecast": {
     "files": {
-      "docs/metrics/forecast.md": "44469142cde4c254524f15435d75d46134f7da83ea997fd5c79faff3f350b484",
-      "src/training_methods/embedding_forecast/metrics.py": "0658fda4a2c1a4b8750b3524fd6f48f46f80384fb29241941acc185c2e9b8fee",
+      "docs/metrics/forecast.md": "11774cd398a10b1380bdd8fe87cde13f82ad33ba8f38ffb545bf8428109c018e",
+      "src/training_methods/embedding_forecast/metrics.py": "7c4f04a7962e76e620ccc564eca5e47f74b68b74d3dad1a14707471747e52974",
       "src/training_methods/embedding_forecast/model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c",
-      "src/training_methods/embedding_forecast/run.py": "b087ab73ae14bf509c2be13efe21b54682568dc471e7a77347a4cace1fd3b0c5",
-      "src/training_methods/embedding_forecast/data.py": "9fa71000ce25f5fea34f1f02f429546f7cad291d73166bf7104fb9a2452461ed"
+      "src/training_methods/embedding_forecast/run.py": "7a9b217774ee65d9c87bab4d8b0a61723bab2d714a15816b8879f8ae322907e9",
+      "src/training_methods/embedding_forecast/data.py": "5c80bf8a04df6957423b3a40f2d36affc49ee7a3767a0d18c06484a622d8befd",
+      "src/training_methods/embedding_forecast/resident.py": "5bedcc5c49c243224823ff8f5c8d6d71ce01f1b61b9228dc554fdb78510addda",
+      "src/training_methods/embedding_forecast/runtime.py": "53de09c7cedb6e6c8c4ff095ae02b50b3b71d358cdffa015d01054f7d1651830",
+      "src/training_methods/embedding_forecast/context_mixture.py": "76a139a0aec570486d3b531784ad8fecdf078d3f0f5c139bc1cc85cee4c248a1",
+      "src/training_methods/embedding_forecast/spatial.py": "f708af6fbb48295d531de66d93df106f6397114f8602dfb938a1bcc0ef04482b"
     }
   },
   "aggregation": {
@@ -34,6 +38,39 @@
       "src/analysis/clustering.py": "22204ce9baa49fdc039ef91b84e399f67c11ac401dfc05532842c74014839b4b",
       "src/vis_tools/latent_analysis_vis.py": "15138e427cf6af7d5840623ceb4874c8ff4f7ea58d105ea602074ead3a15c79f",
       "src/analysis/latent_vis.py": "954682cd6ef37d873c5323435ba7bb9f626f1a70a75cfa55c33071aedd4bc39d"
+    }
+  },
+  "forecast_context": {
+    "files": {
+      "docs/metrics/forecast_context.md": "6d0e5a2eb462110633ade6196da43dbf04dc17835ad8869d58d456ece9eeaf33",
+      "docs/metrics/forecast.md": "11774cd398a10b1380bdd8fe87cde13f82ad33ba8f38ffb545bf8428109c018e",
+      "src/research/forecast_context/compare.py": "8e62b01d2600cd240c18948b2934f356fc7e546b4f4fec497d19e00b077f725a",
+      "src/training_methods/embedding_forecast/metrics.py": "7c4f04a7962e76e620ccc564eca5e47f74b68b74d3dad1a14707471747e52974"
+    }
+  },
+  "forecast_crystallization": {
+    "files": {
+      "docs/metrics/forecast_crystallization.md": "8231805fd1bee74d2539e49d2bc23a5cbc85ac5bf4378c2fab000eae7b468294",
+      "src/research/forecast_crystallization/local_analyze.py": "7bba5cc7061c15b8cae4197656f26a181a3b36fb185e8981c803ffb1aa63822f",
+      "src/research/forecast_crystallization/local_data.py": "66658f128f6dd42c8b45e988e689b72a1f4fd5ee5b0451cdbeee8cebb783d0e8",
+      "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+      "src/research/forecast_crystallization/local_predict.py": "ba5f5e53ec7484e75cca18e6249374f4899220ad4ce46e94ef8c2d6aca7219a5",
+      "src/research/smooth_temporal_encoder/prepare.py": "6f3975ab75f83fd5561ddfdf5c64557ff9790a5577d4223a226f2e0c4565746a",
+      "src/research/smooth_temporal_encoder/evaluate.py": "f9b3e9b30de356950ca9cc513fc4c38dbcadbd8a575ed77bddcc89bb046f4c0c"
+    }
+  },
+  "forecast_spatial_mixture": {
+    "files": {
+      "docs/metrics/forecast_spatial_mixture.md": "2b1b3539a2c5b263dc8dfdfeea60061f203ca582930c58135588be4d9966a995",
+      "docs/metrics/forecast.md": "11774cd398a10b1380bdd8fe87cde13f82ad33ba8f38ffb545bf8428109c018e",
+      "docs/metrics/forecast_crystallization.md": "8231805fd1bee74d2539e49d2bc23a5cbc85ac5bf4378c2fab000eae7b468294",
+      "src/research/forecast_spatial_mixture/evaluate.py": "3ffa8ed910dd39bb983d834372fc3024381c3c0de2856fdcaba1149612c700a8",
+      "src/research/forecast_spatial_mixture/compare.py": "f151329de42024edd977dd99b8485fd03336dac52c7ae7c23491b27b85a71a6d",
+      "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+      "src/research/forecast_crystallization/local_analyze.py": "7bba5cc7061c15b8cae4197656f26a181a3b36fb185e8981c803ffb1aa63822f",
+      "src/training_methods/embedding_forecast/context_mixture.py": "76a139a0aec570486d3b531784ad8fecdf078d3f0f5c139bc1cc85cee4c248a1",
+      "src/training_methods/embedding_forecast/spatial.py": "f708af6fbb48295d531de66d93df106f6397114f8602dfb938a1bcc0ef04482b",
+      "src/training_methods/embedding_forecast/metrics.py": "7c4f04a7962e76e620ccc564eca5e47f74b68b74d3dad1a14707471747e52974"
     }
   }
 }

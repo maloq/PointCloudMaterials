@@ -1,0 +1,69 @@
+{
+  "data": {
+    "sources_config": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/sources.json",
+    "checkpoint": "output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+    "cache": "/work/PERSO/vmorozov/training-cache/embedding-forecast-full-20260911",
+    "cadence_ps": 0.75,
+    "history_ps": 6,
+    "future_ps": 9,
+    "anchor_margin_ps": 292.5,
+    "centers_per_source": 1024,
+    "encoder_batch_size": 1024,
+    "seed": 20260911,
+    "storage_dtype": "float16"
+  },
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits",
+  "device": "cuda:0",
+  "history_ps": 12,
+  "anchor_history_ps": 12,
+  "horizons_ps": [
+    3,
+    6,
+    9
+  ],
+  "stride_ps": 6,
+  "seeds": [
+    20260913,
+    20260914
+  ],
+  "training": {
+    "epochs": 12,
+    "patience": 12,
+    "batch_size": 8192,
+    "workers": 0,
+    "cpu_threads": 4,
+    "scale_floor_fraction": 0.05,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "minimum_lr_fraction": 0.05,
+    "gradient_clip": 5,
+    "warmup_epochs": 2,
+    "augmentation": {
+      "noise_std": 0.01,
+      "frame_dropout": 0.15
+    }
+  },
+  "variants": [
+    {
+      "name": "history12_deterministic",
+      "target": "trajectory",
+      "architecture": "mean_residual_gru",
+      "history_mode": "real",
+      "distribution": "deterministic",
+      "width": 512,
+      "layers": 4,
+      "heads": 4,
+      "dropout": 0.0,
+      "covariance_rank": 4,
+      "minimum_std": 0.03,
+      "loss": {
+        "mse": 1.0,
+        "bin_mse": 0.0,
+        "increment_mse": 0.0,
+        "nll": 0.0
+      }
+    }
+  ],
+  "comparisons": [],
+  "bin_comparisons": []
+}

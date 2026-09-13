@@ -14,7 +14,7 @@ for numerical metric previews, reports, checkpoints, config files and plots.
 For current MACE results, open the short [MACE gallery](../output/mace/index.html):
 `output/mace/<variant>-seed<seed>/` or `output/mace/full/` contains UMAP, t-SNE,
 spatial views, representatives and metrics. Detailed analysis artifacts live in
-`/home/ids/vmorozov/analysis/mace/artifacts/`. Each report's `technical/source.json` records
+`/work/PERSO/vmorozov/analysis/mace/artifacts/`. Each report's `technical/source.json` records
 the original artifact paths and checkpoint hash.
 
 Add questions to `experiments/ideas.json`; each needs an ID, title, question,
@@ -47,7 +47,7 @@ runs retain their results and original execution source/config snapshots.
 | --- | --- |
 | `experiments/<question>_<date>/README.md` | Versioned research question, protocol, reproduction commands and findings |
 | `experiments/ideas.json` | Small versioned backlog: question, state, next action and evidence |
-| `experiments/registry.json` | Explicit IDS storage roots, scanned read-only |
+| `experiments/registry.json` | Explicit WORK/STORE storage roots, scanned read-only |
 | `output/registry/technical/experiments.json` | Generated inventory and results index |
 | `output/registry/index.html` | Generated navigation, progress and plot galleries |
 | `output/registry/technical/config_snapshot/` | Verified config/recipe snapshots and capture indexes |
@@ -70,7 +70,7 @@ conda run -n pointnet python scripts/experiment_registry.py status \
 ```
 
 Building refreshes both local outputs and configured IDS roots without loading
-large arrays. IDS artifacts are linked through `output/registry/storage/`.
+large arrays. External artifacts are linked through `output/registry/storage/`.
 No external data is moved or deleted. If a configured root is unavailable, the
 build raises an error instead of silently dropping it.
 
@@ -179,7 +179,7 @@ the original full analysis with `figure_set.figure_only=false` before figure-onl
 analysis. Per-directory `CACHE_RETENTION.md` records this requirement.
 
 Current MACE training caches are shared across fits under
-`/home/ids/vmorozov/training-cache/{mace-meam,mace-full,temporal}`. Old paths forward
+`/work/PERSO/vmorozov/training-cache/{mace-meam,mace-full,temporal}`. Old paths forward
 there through verified symlinks so recorded configs and cache identities remain
 usable. To move another inactive cache, use an explicit plan with `audit` and
 `moves: [{source, destination, producer}]`:

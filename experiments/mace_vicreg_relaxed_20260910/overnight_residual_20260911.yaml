@@ -1,7 +1,7 @@
 name: overnight-residual
 train_script: src/training_methods/contrastive_learning/train_contrastive.py
 config_name: vicreg_mace_relaxed
-output_root: /home/ids/vmorozov/experiments/mace
+output_root: /store/PERSO/vmorozov/experiments/mace
 repeat_each: 3
 repeat_seed_base: 20260910
 repeat_seed_key: seed_everything

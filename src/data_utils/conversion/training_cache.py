@@ -21,6 +21,12 @@ def convert_file(path: Path):
     if not (path.name in ('clouds.npy', 'benchmark_clouds.npy')
             or path.name.endswith(('.views.npy', '.context.npy'))):
         raise ValueError(f'Not a supported derived neighborhood cache: {path}')
+    return convert_array(path, last_dim=3,
+        interpretation='Lossy storage of derived local coordinates; decode to float32 for geometry.')
+
+
+def convert_array(path: Path, *, last_dim: int, interpretation: str):
+    """Shared verified replacement for the repository's neighborhood and embedding arrays."""
     record_path = path.with_suffix('.float16.json')
     values = np.load(path, mmap_mode='r', allow_pickle=False)
     if values.dtype == np.float16:
@@ -33,8 +39,8 @@ def convert_file(path: Path):
         record['target_allocated_bytes'] = path.stat().st_blocks * 512
         write_json(record_path, record)
         return record
-    if values.dtype != np.float32 or values.shape[-1] != 3:
-        raise ValueError(f'Expected float32 neighborhood coordinates ending in xyz: {path}, {values.shape}, {values.dtype}')
+    if values.dtype != np.float32 or values.shape[-1] != last_dim:
+        raise ValueError(f'Expected float32 cache with last dimension {last_dim}: {path}, {values.shape}, {values.dtype}')
     stat = path.stat()
     temporary = path.with_name(path.name + '.float16-building')
     if temporary.exists():
@@ -69,7 +75,7 @@ def convert_file(path: Path):
                   rmse=(square_error / values.size) ** .5, source_allocated_bytes=stat.st_blocks * 512,
                   source_payload_bytes=values.nbytes, target_payload_bytes=values.size * 2,
                   target_allocated_bytes=temporary.stat().st_blocks * 512,
-                  interpretation='Lossy storage of derived local coordinates; decode to float32 for geometry.')
+                  interpretation=interpretation)
     del target, values
     if (path.stat().st_size, path.stat().st_mtime_ns) != (stat.st_size, stat.st_mtime_ns):
         raise RuntimeError(f'Cache changed during conversion; original retained: {path}')

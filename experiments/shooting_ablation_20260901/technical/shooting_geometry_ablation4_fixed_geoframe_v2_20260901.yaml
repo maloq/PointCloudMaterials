@@ -1,10 +1,10 @@
 # Corrected ablation 4. The first scratch run exposed scale collapse because its
 # student temperature adapted to the collapsing representation. This run starts
 # from ablation 3 and fixes that temperature from the initial non-collapsed state.
-output_dir: /home/ids/vmorozov/experiments/shooting_geometry_ablation4_fixed_geoframe_v2_20260901
-base_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
-context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
-initial_checkpoint: /home/ids/vmorozov/experiments/shooting_distributional_ablation3_geoframe_v2_20260901/model.pt
+output_dir: /store/PERSO/vmorozov/experiments/shooting_geometry_ablation4_fixed_geoframe_v2_20260901
+base_embedding_cache: /store/PERSO/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+context_token_cache: /store/PERSO/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+initial_checkpoint: /store/PERSO/vmorozov/experiments/shooting_distributional_ablation3_geoframe_v2_20260901/model.pt
 device: cuda:0
 
 data:

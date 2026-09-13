@@ -50,6 +50,16 @@ def test_targets_use_same_normalized_eighty_atoms_and_training_only_scaling(tmp_
     np.testing.assert_allclose(item['tda_targets'][1].numpy(), expected, atol=1e-5)
     assert set(item) == {'points', 'spatial_points', 'temporal_points', 'tda_targets'}
     prepare(cfg)  # Completed cache must verify and reuse its original targets.
+    # A storage relocation must keep hash-bound target provenance unchanged.
+    manifest_before = (out/'manifest.json').read_bytes()
+    relocated = tmp_path/'work_views'
+    root.rename(relocated)
+    root.symlink_to(relocated, target_is_directory=True)
+    cfg.data.cache_dir = str(relocated)
+    prepare(cfg)
+    moved = SpatiotemporalViewDataset(relocated, 'train', 1, out)
+    np.testing.assert_array_equal(moved[1]['tda_targets'], item['tda_targets'])
+    assert (out/'manifest.json').read_bytes() == manifest_before
 
 
 class TinyEncoder(nn.Module):

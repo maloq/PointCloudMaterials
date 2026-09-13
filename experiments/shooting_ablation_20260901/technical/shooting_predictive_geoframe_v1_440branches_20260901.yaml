@@ -1,5 +1,5 @@
 # Controlled full-data rerun of the original epoch-159 GeoFrame representation.
-output_dir: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v1_440branches_20260901
+output_dir: /store/PERSO/vmorozov/experiments/shooting_predictive_geoframe_v1_440branches_20260901
 
 encoder:
   checkpoint: output/detached/vicreg_geoframe_corrected_h100_20260829_220250/VICREG_GEOFRAME_MULTISCALE_8_16_l128_CORRECTED_H100_N160_M80_GeoFrameTransformer-epoch=159.ckpt
@@ -17,9 +17,9 @@ data:
   # These three campaigns have identical parent coordinate hashes and protocol,
   # and disjoint branch velocity/thermostat seed pairs.
   campaign_roots:
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
   temperatures_K: [400, 450, 500]
   minimum_complete_branches_per_parent: 11
   expected_parent_count: 40

@@ -1,0 +1,34 @@
+{
+  "source_root": "/home/ids/vmorozov",
+  "work_capacity_bytes": 549755813888,
+  "phase": "complete",
+  "moves": [
+    {
+      "source": "/home/ids/vmorozov/training-cache",
+      "destination": "/work/PERSO/vmorozov/training-cache"
+    },
+    {
+      "source": "/home/ids/vmorozov/simulations",
+      "destination": "/work/PERSO/vmorozov/simulations"
+    },
+    {
+      "source": "/home/ids/vmorozov/analysis",
+      "destination": "/work/PERSO/vmorozov/analysis"
+    },
+    {
+      "source": "/home/ids/vmorozov/experiments",
+      "destination": "/store/PERSO/vmorozov/experiments"
+    },
+    {
+      "source": "/home/ids/vmorozov/data",
+      "destination": "/store/PERSO/vmorozov/data"
+    },
+    {
+      "source": "/home/ids/vmorozov/models",
+      "destination": "/store/PERSO/vmorozov/models"
+    }
+  ],
+  "pending_placement": [],
+  "verification": "Full checksum comparison before source removal; preserve old paths as compatibility symlinks.",
+  "completed_at": "2026-09-13T15:47:44.308598+00:00"
+}

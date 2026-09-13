@@ -1,6 +1,6 @@
 {
   "output": "output/smooth_temporal_encoder_20260905",
-  "views_manifest": "/home/ids/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/manifest.json",
+  "views_manifest": "/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/manifest.json",
   "continuity_root": "output/geoframe_continuity_20260905",
   "geoframe_checkpoint": "output/geoframe_v2_spatiotemporal_analysis_20260905/vicreg/GFv2-spatiotemporal-epoch=048.ckpt",
   "full_static_cache": "datasets/cache/data_ae_Al_80_analysis_coords",

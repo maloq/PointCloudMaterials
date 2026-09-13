@@ -1,7 +1,7 @@
 # Ranked ablation 5.  Keep accepted ablation-3 model/target/evaluation fixed and
 # change only its initialization through leakage-safe ordinary-trajectory
 # temporal pretraining.
-output_dir: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901
+output_dir: /store/PERSO/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901
 device: cuda:0
 
 encoder:
@@ -14,8 +14,8 @@ encoder:
   environment_num_workers: 4
 
 shooting:
-  base_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
-  context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+  base_embedding_cache: /store/PERSO/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+  context_token_cache: /store/PERSO/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
 
 ordinary:
   catalog:
@@ -24,7 +24,7 @@ ordinary:
       - al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828
       - al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827
       - al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827
-    cache_root: /home/ids/vmorozov/training-cache/temporal/al_unseeded_2nn_meam_70304
+    cache_root: /work/PERSO/vmorozov/training-cache/temporal/al_unseeded_2nn_meam_70304
     required_atom_count: 70304
     required_potential_parameter_sha256: b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a
     required_crystal_seed: null
@@ -89,7 +89,7 @@ evaluation:
   seed: 123
 
 comparison:
-  ablation3_metrics: /home/ids/vmorozov/experiments/shooting_distributional_ablation3_geoframe_v2_20260901/metrics.json
+  ablation3_metrics: /store/PERSO/vmorozov/experiments/shooting_distributional_ablation3_geoframe_v2_20260901/metrics.json
 
 cache:
   force_recompute: false

@@ -1,5 +1,17 @@
 # Enlarged full-trajectory forecasts — September 11, 2026
 
+**September 13 optimization:** both recovered fits continue from their saved
+checkpoints in the same H100 allocations: autoregressive `990769.0` on
+`nodesumo01`, direct `990770.4` on `node53`. See the
+[GPU-resident restart record](GPU_RESIDENT_RESTART_20260913.md) for the current
+execution records and replacement collection job `991021`. Older submissions
+below are retained as historical provenance.
+
+**September 12 recovery:** preparation exhausted the `/home/ids` quota after
+35/125 shards; the dependent fits never started. See the
+[failure diagnosis and storage recovery](RECOVERY_20260912.md) for the explicit
+float16 cache protocol and replacement submission.
+
 Question: does a larger autoregressive or direct forecaster learn useful future
 local-structure dynamics with all currently completed canonical independent Al
 MEAM sources, complete timelines, and augmented observed histories? Both methods

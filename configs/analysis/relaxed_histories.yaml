@@ -236,7 +236,7 @@ topology:
   - reverse_past
   data:
     kind: relaxed_histories
-    cache_dir: /home/ids/vmorozov/training-cache/mace-meam
+    cache_dir: ${dataset:mace-meam}
     relaxed_manifest: output/mace_al_denoising_20260910/fire/data/manifest.json
     normalization_radius_A: 9.192189
     input_mode: anchor

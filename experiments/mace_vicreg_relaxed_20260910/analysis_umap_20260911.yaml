@@ -1,41 +1,41 @@
 cuda_device: 0
 runs:
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep02-epoch=09.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-blocks-seed20260911
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-blocks-seed20260911
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/train/MACE-original-VICReg-full-Al-Mg-Ta-Ti-epoch=09.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/full
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/full
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep03-epoch=16.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/mean-blocks-seed20260912
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/mean-blocks-seed20260912
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/relaxed_histories.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/mace_vicreg_relaxed_h100_default_anchor_pca__rep01-epoch=02.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-pca-seed20260910
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-pca-seed20260910
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep02/mace_vicreg_relaxed_h100_default_anchor_pca__rep02-epoch=09.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-pca-seed20260911
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-pca-seed20260911
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep03/mace_vicreg_relaxed_h100_default_anchor_pca__rep03-epoch=03.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-pca-seed20260912
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-pca-seed20260912
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep01/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep01-epoch=02.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-blocks-seed20260910
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-blocks-seed20260910
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep03/mace_vicreg_relaxed_h100_detached_default_anchor_blocks__rep03-epoch=08.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-blocks-seed20260912
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-blocks-seed20260912
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep01/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep01-epoch=02.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/mean-blocks-seed20260910
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/mean-blocks-seed20260910
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/relaxed_histories.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep02/mace_vicreg_relaxed_h100_detached_default_mean_blocks__rep02-epoch=04.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/mean-blocks-seed20260911
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/mean-blocks-seed20260911
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/relaxed_histories.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-vicreg-seed20260910
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-vicreg-seed20260910
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep02/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep02-epoch=09.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-vicreg-seed20260911
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-vicreg-seed20260911
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml
 - checkpoint: /home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep03/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep03-epoch=08.ckpt
-  output_dir: /home/ids/vmorozov/analysis/mace/artifacts/anchor-vicreg-seed20260912
+  output_dir: /work/PERSO/vmorozov/analysis/mace/artifacts/anchor-vicreg-seed20260912
   analysis_config: /home/infres/vmorozov/PointCloudMaterials/configs/analysis/static_topology.yaml

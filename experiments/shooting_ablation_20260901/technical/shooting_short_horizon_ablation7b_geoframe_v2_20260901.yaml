@@ -1,7 +1,7 @@
 # Short-horizon control for ablation 7. The 0.3--3 ps targets span one to ten
 # Langevin damping times and therefore test the velocity pathway before the
 # 6--24 ps structural-propensity benchmark forgets its initial momentum.
-output_dir: /home/ids/vmorozov/experiments/shooting_short_horizon_ablation7b_geoframe_v2_20260901
+output_dir: /store/PERSO/vmorozov/experiments/shooting_short_horizon_ablation7b_geoframe_v2_20260901
 device: cuda:0
 
 encoder:
@@ -14,18 +14,18 @@ encoder:
   environment_num_workers: 4
 
 initialization:
-  ordinary_pretrained_backbones: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/ordinary_pretrained_backbones.pt
+  ordinary_pretrained_backbones: /store/PERSO/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/ordinary_pretrained_backbones.pt
 
 shooting:
-  reference_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
-  context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
-  dynamical_feature_cache: /home/ids/vmorozov/experiments/shooting_dynamical_ablation7_geoframe_v2_20260901/dynamical_features
+  reference_embedding_cache: /store/PERSO/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+  context_token_cache: /store/PERSO/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+  dynamical_feature_cache: /store/PERSO/vmorozov/experiments/shooting_dynamical_ablation7_geoframe_v2_20260901/dynamical_features
 
 data:
   campaign_roots:
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
   temperatures_K: [400, 450, 500]
   minimum_complete_branches_per_parent: 11
   expected_parent_count: 40
@@ -75,7 +75,7 @@ evaluation:
   seed: 123
 
 outcomes:
-  path: /home/ids/vmorozov/experiments/shooting_short_horizon_ablation7b_geoframe_v2_20260901/endpoint_outcomes
+  path: /store/PERSO/vmorozov/experiments/shooting_short_horizon_ablation7b_geoframe_v2_20260901/endpoint_outcomes
   persistence_frames: 3
   ptm_rmsd_cutoff: 0.10
   crystal_cluster_threshold_atoms: 100

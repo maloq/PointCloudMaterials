@@ -146,7 +146,8 @@ def _load_json(path: Path) -> dict[str, Any]:
 def load_shooting_config(path: str | Path) -> ShootingConfig:
     config_path = Path(path).expanduser().resolve()
     with config_path.open("r", encoding="utf-8") as handle:
-        raw = yaml.safe_load(handle)
+        from src.project_runtime.paths import resolve_config
+        raw = resolve_config(yaml.safe_load(handle))
     if not isinstance(raw, dict):
         raise TypeError(f"{config_path}: top-level configuration must be a mapping.")
     _reject_unknown(

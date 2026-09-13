@@ -16,6 +16,8 @@ import subprocess
 import tarfile
 from urllib.parse import quote
 
+from src.project_runtime.paths import load_json
+
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -177,7 +179,7 @@ def build(repo: Path) -> dict:
                  'experiments': entries}
     settings_path = repo / 'experiments/registry.json'
     if settings_path.exists():
-        settings = json.loads(settings_path.read_text())
+        settings = load_json(settings_path)
         catalogue['external_runs'] = external_runs(repo, settings['storage_roots'])
         catalogue['ideas'] = json.loads((repo / 'experiments/ideas.json').read_text())['ideas']
     write_json(registry / 'technical/experiments.json', catalogue)

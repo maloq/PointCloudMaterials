@@ -13,10 +13,11 @@ from src.data_utils.mace_history import history_clouds
 from src.data_utils.shooting_binary import ShootingBinaryTrajectory
 from src.data_utils.topology_targets import fit_targets, transform_target
 from src.experiment_runner.registry import sha256, write_json
+from src.project_runtime.paths import resolve_path
 
 
 def prepare(cfg):
-    root = Path(cfg.data.cache_dir)
+    root = resolve_path(cfg.data.cache_dir)
     root.mkdir(parents=True, exist_ok=True)
     source_path = Path(cfg.data.relaxed_manifest)
     source = json.loads(source_path.read_text())
@@ -103,7 +104,7 @@ def prepare(cfg):
 
 class RelaxedHistoryDataset(Dataset):
     def __init__(self, cfg, split):
-        root = Path(cfg.data.cache_dir)
+        root = resolve_path(cfg.data.cache_dir)
         manifest = json.loads((root/'manifest.json').read_text())
         if manifest['state'] != 'complete':
             raise RuntimeError(f'History preparation incomplete: {root}')

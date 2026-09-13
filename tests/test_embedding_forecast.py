@@ -12,6 +12,49 @@ from src.training_methods.embedding_forecast.metrics import evaluate, source_boo
 from src.training_methods.embedding_forecast.model import EmbeddingForecaster, bin_means, forecast_loss, joint_distribution
 from src.training_methods.embedding_forecast.run import collect, evaluate_checkpoint, train
 from src.training_methods.embedding_forecast.augmentation import augment_history
+from src.training_methods.embedding_forecast.resident import ResidentLoader
+from src.training_methods.embedding_forecast.runtime import implementation_hashes, check_resume_implementation
+
+
+@pytest.mark.parametrize('storage_dtype', ['float32', 'float16'])
+@pytest.mark.parametrize('device', ['cpu', 'cuda'])
+def test_resident_windows_match_mmap_values_identity_and_sampler(tmp_path, storage_dtype, device):
+    if device == 'cuda' and not torch.cuda.is_available():
+        pytest.skip('CUDA is required for actual device-gather parity.')
+    manifest = cache_fixture(tmp_path / 'cache')
+    for record in manifest['shards']:
+        path = tmp_path / 'cache' / record['directory'] / 'embeddings.npy'
+        np.save(path, np.load(path).astype(storage_dtype))
+    # Give the second source a distinct absolute timeline to catch shard mixing.
+    frame_path = tmp_path / 'cache/source_1/frames.npy'
+    np.save(frame_path, np.arange(200, 228, dtype=np.int64))
+    dataset = WindowDataset(tmp_path / 'cache', manifest, 'train', 1.5, 2.25, 0.75, 3)
+    baseline = window_loader(dataset, 7, 0, True, 9)
+    resident = ResidentLoader(dataset, 7, True, 9, device)
+    before = torch.get_rng_state().clone()
+    for _ in range(2):
+        for a, b in zip(baseline, resident, strict=True):
+            for key in a:
+                torch.testing.assert_close(a[key], b[key].cpu(), rtol=0, atol=0)
+        torch.testing.assert_close(baseline.sampler.sampler.generator.get_state(),
+                                   resident.sampler.sampler.generator.get_state(), rtol=0, atol=0)
+    torch.testing.assert_close(before, torch.get_rng_state(), rtol=0, atol=0)
+
+
+def test_execution_transition_requires_exact_hashes_and_unchanged_science(tmp_path):
+    current = implementation_hashes()
+    previous = dict(current, **{'run.py': '0' * 64})
+    checkpoint = dict(implementation_sha256=previous, epoch=3)
+    transition = tmp_path / 'transition.json'
+    with pytest.raises(ValueError, match='reviewed transition'):
+        check_resume_implementation(checkpoint, current, None, tmp_path)
+    write_json(transition, dict(previous=previous, replacement=current))
+    check_resume_implementation(checkpoint, current, transition, tmp_path)
+    assert json.loads((tmp_path / 'implementation_transition.json').read_text())['resumed_epoch'] == 4
+    changed = dict(current, **{'model.py': '1' * 64})
+    write_json(transition, dict(previous=previous, replacement=changed))
+    with pytest.raises(ValueError, match='preserve'):
+        check_resume_implementation(checkpoint, changed, transition, tmp_path)
 
 
 def test_augmentation_preserves_anchor_and_carries_only_past():
@@ -49,7 +92,8 @@ def test_chunk_resume_restores_augmented_optimizer_and_sampling(tmp_path, legacy
             path.rename(directory / path.name)
         artifacts.rmdir()
         artifacts = directory
-    train(chunk_config, model_config, 3, 'cpu', resume=True, epochs_per_invocation=3)
+    train(chunk_config, model_config, 3, 'cpu', resume=True, epochs_per_invocation=3,
+          runtime=dict(loader='resident', log_every_steps=2))
     whole = torch.load(tmp_path / 'whole' / directory.name / 'technical/last.pt', weights_only=False)
     chunked = torch.load(artifacts / 'last.pt', weights_only=False)
     for name in whole['model']:

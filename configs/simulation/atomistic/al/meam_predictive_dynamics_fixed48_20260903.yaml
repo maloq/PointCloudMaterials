@@ -1,12 +1,12 @@
 campaign:
   campaign_seed: 20260903
-  storage_root: /home/ids/vmorozov/simulations
-  topup_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903
-  smoke_root: /home/ids/vmorozov/simulations/al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903
-  production_root: /home/ids/vmorozov/simulations/al_meam_predictive_dynamics_fixed48_160parents_2560branches_float32_20260903
+  storage_root: ${storage:simulations}
+  topup_root: ${storage:simulations}/al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903
+  smoke_root: ${storage:simulations}/al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903
+  production_root: ${storage:simulations}/al_meam_predictive_dynamics_fixed48_160parents_2560branches_float32_20260903
 
 existing_ensemble:
-  authoritative_snapshot: /home/ids/vmorozov/experiments/predictive_atlas_geoframe_v2_480branches_20260902/dataset_snapshot.json
+  authoritative_snapshot: ${storage:training_storage}/predictive_atlas_geoframe_v2_480branches_20260902/dataset_snapshot.json
   parents: 40
   existing_futures_per_parent: 12
   added_futures_per_parent: 4

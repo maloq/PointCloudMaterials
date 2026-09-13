@@ -20,7 +20,7 @@
   "protocol": "plain80",
   "output": "output/mace_plain80_20260909/runs/plain",
   "cache": "output/mace_plain80_20260909/data",
-  "source_manifest": "/home/ids/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/data/manifest.json",
+  "source_manifest": "/store/PERSO/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/data/manifest.json",
   "points": 80,
   "workers": 16,
   "batch_size": 1536,

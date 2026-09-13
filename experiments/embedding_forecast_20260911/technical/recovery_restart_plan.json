@@ -1,0 +1,133 @@
+{
+  "state": "prepared",
+  "jobs": [
+    {
+      "name": "prepare",
+      "replaces_job_id": "989350",
+      "parents": [],
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--job-name",
+        "ef-prepare",
+        "--partition",
+        "H100",
+        "--cpus-per-task",
+        "16",
+        "--mem",
+        "192G",
+        "--time",
+        "24:00:00",
+        "--output",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/prepare/slurm.log",
+        "--error",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/prepare/slurm.log",
+        "--export",
+        "ALL,CONDA_DEFAULT_ENV=pointnet",
+        "--kill-on-invalid-dep=yes",
+        "--gres",
+        "gpu:1",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/prepare/job.sbatch"
+      ],
+      "spec": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/prepare/run_spec.json"
+    },
+    {
+      "name": "path_ar_large_aug-s20260911-e000",
+      "replaces_job_id": "990063",
+      "parents": [
+        "prepare"
+      ],
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--job-name",
+        "ef-path_ar_large_aug-s20260911-e000",
+        "--partition",
+        "H100",
+        "--cpus-per-task",
+        "16",
+        "--mem",
+        "192G",
+        "--time",
+        "24:00:00",
+        "--output",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_ar_large_aug-s20260911-e000/slurm.log",
+        "--error",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_ar_large_aug-s20260911-e000/slurm.log",
+        "--export",
+        "ALL,CONDA_DEFAULT_ENV=pointnet",
+        "--kill-on-invalid-dep=yes",
+        "--gres",
+        "gpu:1",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_ar_large_aug-s20260911-e000/job.sbatch"
+      ],
+      "spec": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_ar_large_aug-s20260911-e000/run_spec.json"
+    },
+    {
+      "name": "path_direct_large_aug-s20260911-e000",
+      "replaces_job_id": "990064",
+      "parents": [
+        "prepare"
+      ],
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--job-name",
+        "ef-path_direct_large_aug-s20260911-e000",
+        "--partition",
+        "H100",
+        "--cpus-per-task",
+        "16",
+        "--mem",
+        "192G",
+        "--time",
+        "24:00:00",
+        "--output",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_direct_large_aug-s20260911-e000/slurm.log",
+        "--error",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_direct_large_aug-s20260911-e000/slurm.log",
+        "--export",
+        "ALL,CONDA_DEFAULT_ENV=pointnet",
+        "--kill-on-invalid-dep=yes",
+        "--gres",
+        "gpu:1",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_direct_large_aug-s20260911-e000/job.sbatch"
+      ],
+      "spec": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/path_direct_large_aug-s20260911-e000/run_spec.json"
+    },
+    {
+      "name": "collect",
+      "replaces_job_id": "990065",
+      "parents": [
+        "path_ar_large_aug-s20260911-e000",
+        "path_direct_large_aug-s20260911-e000"
+      ],
+      "command": [
+        "sbatch",
+        "--parsable",
+        "--job-name",
+        "ef-collect",
+        "--partition",
+        "CPU",
+        "--cpus-per-task",
+        "8",
+        "--mem",
+        "64G",
+        "--time",
+        "02:00:00",
+        "--output",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/collect/slurm.log",
+        "--error",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/collect/slurm.log",
+        "--export",
+        "ALL,CONDA_DEFAULT_ENV=pointnet",
+        "--kill-on-invalid-dep=yes",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/collect/job.sbatch"
+      ],
+      "spec": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/collect/run_spec.json"
+    }
+  ],
+  "cache": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911",
+  "epochs": 32,
+  "source_manifest_sha256": "e5bd6562fc901acfac253656b3f356178d0944aedef7af8a11629855bedb1094"
+}

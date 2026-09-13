@@ -1,0 +1,108 @@
+{
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913",
+  "embedding_cache": "/work/PERSO/vmorozov/training-cache/embedding-forecast-full-20260911",
+  "spatial_cache": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/spatial-cache",
+  "local_assay": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/local-crystallization-20260913/technical",
+  "cadence_ps": 0.75,
+  "horizons_ps": [
+    3,
+    6,
+    9
+  ],
+  "anchor_history_ps": 12,
+  "persistence_frames": [
+    3,
+    9
+  ],
+  "negative_history_frames": 3,
+  "bootstrap_repetitions": 2000,
+  "bootstrap_seed": 20260913,
+  "inference_batch_size": 4096,
+  "device": "cuda:0",
+  "runs": [
+    {
+      "name": "history12_mixture4",
+      "seed": 20260913,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_mixture4.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_mixture4-seed20260913",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/method-source"
+    },
+    {
+      "name": "history12_spatial_mixture4",
+      "seed": 20260913,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial_mixture4.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial_mixture4-seed20260913",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source"
+    },
+    {
+      "name": "history12_deterministic",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_deterministic-seed20260914",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/baseline-source"
+    },
+    {
+      "name": "history12_mixture4",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_mixture4.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_mixture4-seed20260914",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/method-source"
+    },
+    {
+      "name": "history12_spatial_mixture4",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial_mixture4.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial_mixture4-seed20260914",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source"
+    },
+    {
+      "name": "history12_spatial",
+      "seed": 20260913,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial-seed20260913",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source"
+    },
+    {
+      "name": "history12_gaussian",
+      "seed": 20260913,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_gaussian.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_gaussian-seed20260913",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/method-source"
+    },
+    {
+      "name": "history6_deterministic",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history6.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history6_deterministic-seed20260914",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/baseline-source"
+    },
+    {
+      "name": "history12_spatial",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial-seed20260914",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source"
+    },
+    {
+      "name": "history12_gaussian",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_gaussian.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_gaussian-seed20260914",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/method-source"
+    },
+    {
+      "name": "history6_deterministic",
+      "seed": 20260913,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history6.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history6_deterministic-seed20260913",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/baseline-source"
+    },
+    {
+      "name": "history12_deterministic",
+      "seed": 20260913,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12.json",
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_deterministic-seed20260913",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/baseline-source"
+    }
+  ]
+}

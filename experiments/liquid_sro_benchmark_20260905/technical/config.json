@@ -1,6 +1,6 @@
 {
   "output": "output/liquid_sro_benchmark_20260905",
-  "shooting_campaign": "/home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+  "shooting_campaign": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
   "pilot": "output/smooth_temporal_encoder_20260905",
   "seed": 20260907,
   "workers": 10,

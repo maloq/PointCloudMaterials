@@ -1,0 +1,20 @@
+{
+  "previous": {
+    "data.py": "3fa77833b9b0c9f2da2841d9e197e82818eb80a9272bc70803ffd0bb322adc76",
+    "model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c",
+    "metrics.py": "0658fda4a2c1a4b8750b3524fd6f48f46f80384fb29241941acc185c2e9b8fee",
+    "run.py": "d35559a78e7801c96ef2246490a3b0bc29b46bf5a93fedca21ff2c4830f9ca3c",
+    "augmentation.py": "76d4e75936d708499af8d0363d9a2c16acf7656ba7591ce07f428311019e7fc8"
+  },
+  "replacement": {
+    "data.py": "3fa77833b9b0c9f2da2841d9e197e82818eb80a9272bc70803ffd0bb322adc76",
+    "model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c",
+    "metrics.py": "4137d55ddc93066202cbf4ad7a8156931314183fa2c86f296cee63a4704facd9",
+    "run.py": "f84b80f644aa5d5781dc2ceaf41a4b20bc384f0431c2d8bbdea8b9ebd802ba6a",
+    "augmentation.py": "76d4e75936d708499af8d0363d9a2c16acf7656ba7591ce07f428311019e7fc8",
+    "resident.py": "5bedcc5c49c243224823ff8f5c8d6d71ce01f1b61b9228dc554fdb78510addda",
+    "runtime.py": "da37664a356620f2ae3199cc9f9e8034a0d421792e7ee40887c2f9405145e480"
+  },
+  "reason": "Reviewed execution-only migration: GPU-resident gathering preserves exact FP16-stored values expanded to FP32, original CPU sampler and all optimizer/scaler/RNG state. Metric formulas unchanged; example export now accepts CUDA batches. Readable metric tables and progress/timing metadata added.",
+  "validation": "43 tests passed; full train/validation cache preflight, exact shuffled batch parity, 30 resumed optimizer updates, 98304 validation samples."
+}

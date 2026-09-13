@@ -1,6 +1,6 @@
 # Ranked ablation 6. Retain ablation-5 temporal pretraining and change only the
 # final GeoFrameV2 transformer block from frozen to trainable on shooting data.
-output_dir: /home/ids/vmorozov/experiments/shooting_encoder_finetune_ablation6_geoframe_v2_20260901
+output_dir: /store/PERSO/vmorozov/experiments/shooting_encoder_finetune_ablation6_geoframe_v2_20260901
 device: cuda:0
 
 encoder:
@@ -13,17 +13,17 @@ encoder:
   environment_num_workers: 4
 
 initialization:
-  ordinary_pretrained_backbones: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/ordinary_pretrained_backbones.pt
+  ordinary_pretrained_backbones: /store/PERSO/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/ordinary_pretrained_backbones.pt
 
 shooting:
-  base_embedding_cache: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
-  context_token_cache: /home/ids/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
+  base_embedding_cache: /store/PERSO/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901/embeddings
+  context_token_cache: /store/PERSO/vmorozov/experiments/shooting_multiscale_ablation1_geoframe_v2_20260901/context_tokens
 
 data:
   campaign_roots:
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
   temperatures_K: [400, 450, 500]
   minimum_complete_branches_per_parent: 11
   expected_parent_count: 40
@@ -72,8 +72,8 @@ evaluation:
   seed: 123
 
 comparison:
-  ablation3_metrics: /home/ids/vmorozov/experiments/shooting_distributional_ablation3_geoframe_v2_20260901/metrics.json
-  ablation5_metrics: /home/ids/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/metrics.json
+  ablation3_metrics: /store/PERSO/vmorozov/experiments/shooting_distributional_ablation3_geoframe_v2_20260901/metrics.json
+  ablation5_metrics: /store/PERSO/vmorozov/experiments/shooting_temporal_pretraining_ablation5_geoframe_v2_20260901/metrics.json
 
 cache:
   force_recompute: false

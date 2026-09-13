@@ -34,6 +34,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.project_runtime.paths import storage_path, resolve_config
 from src.simulation.campaigns.independent_meam_source import _ptm_progress  # noqa: E402
 from src.data_utils.shooting_binary import (  # noqa: E402
     FORMAT_NAME,
@@ -70,16 +71,13 @@ BASIN_B_MIN = 100
 BASIN_A_MAX = {400.0: 19, 450.0: 20, 500.0: 16}
 LIBRARY_SHA256 = "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
 PARAMETER_SHA256 = "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
-DEFAULT_SNAPSHOT = Path(
-    "/home/ids/vmorozov/experiments/"
+DEFAULT_SNAPSHOT = (storage_path("training_storage") /
     "predictive_atlas_geoframe_v2_480branches_20260902/dataset_snapshot.json"
 )
-DEFAULT_TOPUP_ROOT = Path(
-    "/home/ids/vmorozov/simulations/"
+DEFAULT_TOPUP_ROOT = (storage_path("simulation_runs") /
     "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903"
 )
-DEFAULT_SMOKE_ROOT = Path(
-    "/home/ids/vmorozov/simulations/"
+DEFAULT_SMOKE_ROOT = (storage_path("simulation_runs") /
     "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903"
 )
 SMOKE_SOURCE_SNAPSHOT_BRANCH_INDEX = 4
@@ -94,7 +92,7 @@ def _load_json(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"Required JSON file is missing: {path}")
     with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
+        value = resolve_config(json.load(handle))
     if not isinstance(value, dict):
         raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
     return value

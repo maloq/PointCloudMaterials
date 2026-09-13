@@ -61,7 +61,7 @@ def test_cleanup_rejects_redirected_storage(tmp_path):
 
 
 def test_metric_documents_match_implementation_and_travel_with_table(tmp_path):
-    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'aggregation'}
+    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'forecast_context', 'forecast_crystallization', 'forecast_spatial_mixture', 'aggregation'}
     path = write_metric_table({'test': {'balanced_mse': 0.125, 'undefined': None, 'ci95': [0.1, 0.2]}},
                               tmp_path, family='topology')
     with path.open() as stream:

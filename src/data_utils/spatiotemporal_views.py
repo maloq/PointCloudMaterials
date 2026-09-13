@@ -9,6 +9,7 @@ import torch
 from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
 from torch.utils.data import DataLoader, Dataset, Subset
+from src.project_runtime.paths import resolve_path
 
 
 def periodic_tree(positions: np.ndarray, lengths: np.ndarray):
@@ -27,6 +28,8 @@ def local_views(points, tree, lengths, center_rows, *, num_points, radius):
 
 class SpatiotemporalViewDataset(Dataset):
     def __init__(self, root: Path, split: str, temporal_lag_steps: int | None = None, tda_cache: Path | None = None):
+        root = resolve_path(root)
+        tda_cache = resolve_path(tda_cache) if tda_cache is not None else None
         manifest = json.loads((root / "manifest.json").read_text())
         if manifest["state"] != "complete":
             raise RuntimeError(f"View preparation is incomplete: {root}")
@@ -40,7 +43,7 @@ class SpatiotemporalViewDataset(Dataset):
         if tda_cache is not None:
             targets = json.loads((tda_cache/'manifest.json').read_text())
             protocol = targets['protocol']
-            if targets['state'] != 'complete' or protocol['source_root'] != str(root.resolve()) or protocol['temporal_lag_steps'] != temporal_lag_steps:
+            if targets['state'] != 'complete' or resolve_path(protocol['source_root']).resolve() != root.resolve() or protocol['temporal_lag_steps'] != temporal_lag_steps:
                 raise ValueError(f'TDA cache does not match the selected view producer: {tda_cache}')
             records = {s['source_views']:s for s in targets['shards']}
             self.tda = []

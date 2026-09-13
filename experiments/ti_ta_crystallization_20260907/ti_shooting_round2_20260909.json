@@ -8,7 +8,7 @@
   "sample_interval_ps": 0.1,
   "protocol": "ti-source-then-branches",
   "material": "Ti",
-  "output_root": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_shooting_round2_20260909",
+  "output_root": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_shooting_round2_20260909",
   "cpus": [
     0,
     1,

@@ -1,0 +1,7 @@
+{
+  "embedding_cache": "/work/PERSO/vmorozov/training-cache/embedding-forecast-full-20260911",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/spatial-cache",
+  "sources_config": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/sources.json",
+  "neighbors": 8,
+  "workers": 12
+}

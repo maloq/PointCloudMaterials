@@ -1,0 +1,4 @@
+{
+  "loader": "resident",
+  "log_every_steps": 50
+}

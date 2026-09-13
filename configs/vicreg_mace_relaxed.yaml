@@ -4,12 +4,12 @@ defaults:
 experiment_name: MACE-original-VICReg-MEAM-relaxed
 experiment_variant: anchor_blocks
 seed_everything: 20260910
-analysis_output_dir: /home/ids/vmorozov/analysis/mace/artifacts/${experiment_variant}-seed${seed_everything}
+analysis_output_dir: ${storage:analysis}/mace/artifacts/${experiment_variant}-seed${seed_everything}
 data:
   kind: relaxed_histories
   materials:
   - Al
-  cache_dir: /home/ids/vmorozov/training-cache/mace-meam
+  cache_dir: ${dataset:mace-meam}
   relaxed_manifest: output/mace_al_denoising_20260910/fire/data/manifest.json
   normalization_radius_A: 9.192189
   preparation_seed: 20260910

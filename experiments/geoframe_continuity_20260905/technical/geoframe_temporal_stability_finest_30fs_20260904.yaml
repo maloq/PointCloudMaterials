@@ -1,7 +1,7 @@
 output_dir: output/geoframe_temporal_stability_finest_30fs_20260904
 
 data:
-  campaign_root: /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902
+  campaign_root: /work/PERSO/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902
   timesteps: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
   center_atom_count: 32
   center_selection_seed: 123

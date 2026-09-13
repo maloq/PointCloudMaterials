@@ -11,6 +11,7 @@ from torch.utils.data import BatchSampler, DataLoader, Dataset, RandomSampler, S
 from src.data_utils.shooting_binary import ShootingBinaryTrajectory
 from src.data_utils.spatiotemporal_views import local_views
 from src.experiment_runner.registry import sha256, write_json
+from src.project_runtime.paths import load_json, resolve_path, resolve_config
 
 
 def frame_steps(time_ps, cadence_ps):
@@ -22,14 +23,14 @@ def frame_steps(time_ps, cadence_ps):
 
 def source_records(config):
     """Use the existing denoising source selection and the independent-melt producer."""
-    source_config = json.loads(Path(config['sources_config']).read_text())
+    source_config = load_json(config['sources_config'])
     if source_config['protocol'] not in ('denoising80', 'embedding_forecast_sources'):
         raise ValueError('Forecast preparation expects a denoising80 or embedding_forecast_sources selection.')
     records = source_config['sources']
     seen_paths, seen_seeds = set(), set()
     campaigns = {}
     for source in records:
-        path = str(Path(source['path']).resolve())
+        path = str(resolve_path(source['path']).resolve())
         seed = source['preparation_seed']
         if path in seen_paths or seed in seen_seeds:
             raise ValueError(f"Duplicate trajectory or melt lineage: {source['name']}; split by whole source.")
@@ -45,7 +46,7 @@ def source_records(config):
         split = {'optimization': 'train', 'model_selection': 'val', 'final_validation': 'test'}
         if (split[produced['source_split']] != source['split'] or
                 produced['preparation_seed'] != seed or
-                Path(campaign_path).parent / produced['run_dir'] != Path(path).parent):
+                (resolve_path(campaign_path).parent / produced['run_dir']).resolve() != Path(path).parent):
             raise ValueError(f"Source selection disagrees with campaign lineage: {source['name']}")
         if (source['cadence_ps'] != config['cadence_ps'] or
                 campaign['protocol']['sample_interval_ps'] != config['cadence_ps'] or
@@ -60,7 +61,7 @@ def load_snapshot_encoder(checkpoint, device):
     from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
     from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 
-    directory, name = resolve_config_path(checkpoint)
+    directory, name = resolve_config_path(str(resolve_path(checkpoint)))
     cfg = OmegaConf.load(Path(directory) / f'{name}.yaml')
     if cfg.encoder.name != 'PretrainedMACEGeometry':
         raise ValueError('Forecast targets require a single-frame PretrainedMACEGeometry checkpoint; '
@@ -73,7 +74,10 @@ def load_snapshot_encoder(checkpoint, device):
 
 
 def verify_cache(root):
-    root = Path(root)
+    root = resolve_path(root)
+    migration = root / 'storage_migration.json'
+    if migration.exists() and json.loads(migration.read_text())['state'] != 'complete':
+        raise RuntimeError(f'Embedding storage migration must finish before use: {migration}')
     manifest = json.loads((root / 'manifest.json').read_text())
     if manifest['state'] != 'complete':
         raise ValueError(f'Incomplete embedding cache: {root}')
@@ -91,9 +95,16 @@ def verify_cache(root):
 
 
 def prepare_cache(config, device):
+    config = resolve_config(config)
+    storage_dtype = np.dtype(config.get('storage_dtype', 'float32'))
+    if storage_dtype not in (np.dtype('float32'), np.dtype('float16')):
+        raise ValueError(f'Unsupported embedding storage dtype: {storage_dtype}')
     records = source_records(config)
     root = Path(config['cache'])
     root.mkdir(parents=True, exist_ok=True)
+    migration = root / 'storage_migration.json'
+    if migration.exists() and json.loads(migration.read_text())['state'] != 'complete':
+        raise RuntimeError(f'Embedding storage migration must finish before preparation: {migration}')
     checkpoint = Path(config['checkpoint'])
     from src.utils.model_utils import resolve_config_path
     directory, name = resolve_config_path(str(checkpoint))
@@ -142,7 +153,7 @@ def prepare_cache(config, device):
                 shards.append(shard)
                 continue
             embeddings = np.lib.format.open_memmap(shard_dir / 'embeddings.npy', mode='w+',
-                dtype=np.float32, shape=(len(centers), stop - start, 256))
+                dtype=storage_dtype, shape=(len(centers), stop - start, 256))
             for column, frame in enumerate(range(start, stop)):
                 low = trajectory.box_low[frame].astype(np.float64)
                 lengths = trajectory.box_high[frame].astype(np.float64) - low
@@ -155,9 +166,10 @@ def prepare_cache(config, device):
                     for batch_start in range(0, len(centers), config['encoder_batch_size']):
                         batch = slice(batch_start, batch_start + config['encoder_batch_size'])
                         z = encoder(torch.from_numpy(clouds[batch]).to(device)).float()
-                        if not torch.isfinite(z).all():
-                            raise FloatingPointError(f"Nonfinite encoder output: {source['name']}, frame {frame}")
-                        embeddings[batch, column] = z.cpu().numpy()
+                        stored = z.cpu().numpy().astype(storage_dtype)
+                        if not np.isfinite(stored).all():
+                            raise FloatingPointError(f"Nonfinite {storage_dtype} embedding: {source['name']}, frame {frame}")
+                        embeddings[batch, column] = stored
             embeddings.flush()
             np.save(shard_dir / 'atom_ids.npy', trajectory.atom_ids[centers])
             np.save(shard_dir / 'frames.npy', np.arange(start, stop, dtype=np.int64))
@@ -183,7 +195,7 @@ class WindowDataset(Dataset):
     """Batch-indexed windows; storage is (center, time, channel), with no window copies."""
 
     def __init__(self, root, manifest, split, history_ps, future_ps, stride_ps, anchor_history_ps):
-        self.root = Path(root)
+        self.root = resolve_path(root)
         self.records = [r for r in manifest['shards'] if r['split'] == split]
         self.cadence_ps = manifest['cadence_ps']
         self.history_steps = frame_steps(history_ps, self.cadence_ps) + 1

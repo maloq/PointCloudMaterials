@@ -1,12 +1,12 @@
 campaign:
   campaign_seed: 20260904
-  storage_root: /home/ids/vmorozov/simulations
-  topup_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904
-  smoke_root: /home/ids/vmorozov/simulations/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904
-  production_root: /home/ids/vmorozov/simulations/al_meam_predictive_dynamics_fixed15_160parents_2560branches_float32_20260904
+  storage_root: ${storage:simulations}
+  topup_root: ${storage:simulations}/al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904
+  smoke_root: ${storage:simulations}/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904
+  production_root: ${storage:simulations}/al_meam_predictive_dynamics_fixed15_160parents_2560branches_float32_20260904
 
 existing_ensemble:
-  authoritative_snapshot: /home/ids/vmorozov/experiments/predictive_atlas_geoframe_v2_480branches_20260902/dataset_snapshot.json
+  authoritative_snapshot: ${storage:training_storage}/predictive_atlas_geoframe_v2_480branches_20260902/dataset_snapshot.json
   parents: 40
   existing_futures_per_parent: 12
   added_futures_per_parent: 4
@@ -15,8 +15,8 @@ existing_ensemble:
 new_parent_design:
   temperatures_K: [400, 450, 500, 510, 520]
   independent_source_roots:
-    temperatures_400_450_500: /home/ids/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902
-    temperatures_510_520: /home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903
+    temperatures_400_450_500: ${storage:simulations}/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902
+    temperatures_510_520: ${storage:simulations}/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903
   parents_per_temperature:
     transition_candidate: {optimization: 10, model_selection: 2, final_validation: 4}
     liquid_control: {optimization: 4, model_selection: 2, final_validation: 2}

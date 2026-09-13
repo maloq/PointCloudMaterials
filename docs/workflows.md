@@ -81,7 +81,7 @@ then replace the old directory with a compatibility symlink. The plan contains
 `audit` and `moves: [{source, destination, producer}]`; no cache writer may be
 active. Implementation: `src/experiment_runner/cache_storage.py`. The
 [September 11 plan](../experiments/mace_vicreg_relaxed_20260910/cache_storage_20260911.json)
-places shared MACE and temporal training caches in `/home/ids/vmorozov/training-cache/`.
+places shared MACE and temporal training caches in `/work/PERSO/vmorozov/training-cache/`.
 
 `run --spec SPEC --wait-for-dependencies-until ISO_TIMESTAMP` waits for successful
 completion of tracked dependencies, including their post-training analysis,

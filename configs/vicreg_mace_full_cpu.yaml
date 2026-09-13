@@ -1,0 +1,11 @@
+defaults:
+  - vicreg_mace_full
+  - _self_
+gpu: false
+devices: 1
+wandb_mode: offline
+encoder:
+  kwargs:
+    performance:
+      bf16_mode: none
+      compile_radial_mlp: false

@@ -1,5 +1,5 @@
 campaign:
-  output_root: /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902
+  output_root: ${storage:simulation_runs}/al_meam_nested_shooting_pilot_70304_400-500K_20260902
   campaign_seed: 20260902
 
 sources:
@@ -10,7 +10,7 @@ sources:
         - al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K
         - al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827
         - al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827
-    - root: /home/ids/vmorozov/simulations/al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901
+    - root: ${storage:simulations}/al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901
       campaign_globs:
         - runs/run_*
   temperatures:

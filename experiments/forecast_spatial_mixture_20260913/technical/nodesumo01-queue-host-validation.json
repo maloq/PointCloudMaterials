@@ -1,0 +1,105 @@
+{
+  "node": "nodesumo01",
+  "allocation": 990987,
+  "wait_status": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_gaussian-seed20260913/technical/status.json",
+  "jobs": [
+    {
+      "name": "history12_spatial",
+      "seed": 20260913,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial.json",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-u",
+        "-c",
+        "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));runpy.run_module(\"src.training_methods.embedding_forecast\",run_name=\"__main__\")",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+        "--config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial.json",
+        "--stage",
+        "train",
+        "--variant",
+        "history12_spatial",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/runtime-spatial.json"
+      ],
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial-seed20260913"
+    },
+    {
+      "name": "history6_deterministic",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history6.json",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/baseline-source",
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-u",
+        "-c",
+        "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));runpy.run_module(\"src.training_methods.embedding_forecast\",run_name=\"__main__\")",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/baseline-source",
+        "--config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history6.json",
+        "--stage",
+        "train",
+        "--variant",
+        "history6_deterministic",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/runtime.json"
+      ],
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history6_deterministic-seed20260914"
+    },
+    {
+      "name": "history12_spatial",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial.json",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-u",
+        "-c",
+        "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));runpy.run_module(\"src.training_methods.embedding_forecast\",run_name=\"__main__\")",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+        "--config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial.json",
+        "--stage",
+        "train",
+        "--variant",
+        "history12_spatial",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/runtime-spatial.json"
+      ],
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial-seed20260914"
+    },
+    {
+      "name": "history12_gaussian",
+      "seed": 20260914,
+      "config": "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_gaussian.json",
+      "source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/method-source",
+      "command": [
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python",
+        "-u",
+        "-c",
+        "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));runpy.run_module(\"src.training_methods.embedding_forecast\",run_name=\"__main__\")",
+        "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/technical/method-source",
+        "--config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/history12_gaussian.json",
+        "--stage",
+        "train",
+        "--variant",
+        "history12_gaussian",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "/home/infres/vmorozov/PointCloudMaterials/experiments/forecast_spatial_mixture_20260913/technical/runtime.json"
+      ],
+      "fit": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913/fits/history12_gaussian-seed20260914"
+    }
+  ],
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-space-mixture-20260913",
+  "cwd": "/home/infres/vmorozov/PointCloudMaterials"
+}

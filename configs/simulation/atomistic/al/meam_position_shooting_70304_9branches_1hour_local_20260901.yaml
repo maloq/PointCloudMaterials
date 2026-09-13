@@ -1,5 +1,5 @@
 campaign:
-  output_root: /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_9branches_1hour_local_20260901
+  output_root: ${storage:simulation_runs}/al_meam_position_shooting_70304_400-500K_48ps_9branches_1hour_local_20260901
   parent_indices: [2, 7, 8, 12, 19, 21, 24, 31, 32]
   branches_per_parent: 1
   campaign_seed: 20260903

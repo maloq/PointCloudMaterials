@@ -11,7 +11,7 @@ encoder:
   environment_num_workers: 8
 
 data:
-  campaign_root: /home/ids/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible
+  campaign_root: /work/PERSO/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible
   temperatures_K: [400, 450, 500]
   basin_roles: [transition_candidate, liquid_control, crystal_control]
   minimum_complete_branches_per_parent: 4

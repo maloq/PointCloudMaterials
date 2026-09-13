@@ -1,7 +1,7 @@
 {
   "output": "output/pretrained_mace_spatiotemporal_20260906",
-  "cache": "/home/ids/vmorozov/experiments/pretrained_mace_spatiotemporal_20260906/uniform_training",
-  "source_cache": "/home/ids/vmorozov/experiments/temporal_hypotheses_12h_20260906/cache",
+  "cache": "/store/PERSO/vmorozov/experiments/pretrained_mace_spatiotemporal_20260906/uniform_training",
+  "source_cache": "/store/PERSO/vmorozov/experiments/temporal_hypotheses_12h_20260906/cache",
   "pretrained_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
   "pretrained_url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mp_0b2/mace-small-density-agnesi-stress.model",
   "seed": 20260906,

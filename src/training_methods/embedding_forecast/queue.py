@@ -6,14 +6,16 @@ import shlex
 import shutil
 import subprocess
 import sys
+import os
 
 from src.experiment_runner.registry import sha256, write_json
+from src.project_runtime.paths import load_json, REPO
 
 
 def submit_queue(config_path, queue_path):
     config_path, queue_path = Path(config_path).resolve(), Path(queue_path).resolve()
-    config = json.loads(config_path.read_text())
-    plan = json.loads(queue_path.read_text())
+    config = load_json(config_path)
+    plan = load_json(queue_path)
     repo = Path(__file__).resolve().parents[3]
     root = Path(plan['output']).resolve()
     # One immutable submission directory prevents an accidental second campaign.
@@ -64,6 +66,9 @@ def submit_queue(config_path, queue_path):
         command = [sys.executable, str(repo / 'scripts/experiment_registry.py'), 'run',
                    '--spec', str(directory / 'run_spec.json')]
         script.write_text('#!/bin/bash\nset -euo pipefail\n' +
+                          'export PCM_PROJECT_ROOT=' + shlex.quote(str(REPO)) + '\n' +
+                          ('export PCM_MACHINE_CONFIG=' + shlex.quote(os.environ['PCM_MACHINE_CONFIG']) + '\n'
+                           if 'PCM_MACHINE_CONFIG' in os.environ else '') +
                           'cd ' + shlex.quote(str(repo)) + '\nexec ' + shlex.join(command) + '\n')
         job['script'] = str(script)
         job['log'] = str(directory / 'slurm.log')

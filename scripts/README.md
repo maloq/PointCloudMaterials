@@ -44,6 +44,49 @@ python -m src.data_utils.spatiotemporal_tda --config-name vicreg_mace_relaxed
 
 The MACE preparation command is
 `python -m src.research.spatiotemporal.prepare_spatiotemporal_vicreg_views --config CONFIG`.
+Forecast embedding storage migration uses `convert_trajectory.py embedding-cache`;
+see the [conversion protocol](../docs/trajectory_conversion.md).
+Forecast training accepts `--runtime-config RUNTIME.json` with
+`{"loader":"resident","log_every_steps":100}` to retain stored embeddings on
+the compute device and report batch progress. The default `mmap` loader remains
+available. Explicit `--resume-transition TRANSITION.json` permits a reviewed,
+exact old/new implementation hash transition while restoring the saved training
+state and preserving the scientific configuration.
+`python -m src.training_methods.embedding_forecast.handoff --plan PLAN.json
+--variant NAME` replaces a tracked forecast process inside its existing Slurm
+allocation. Its plan supplies exact job/node identities, the original execution
+record and checkpoint directory, and the replacement run specification. See the
+[GPU restart record](../experiments/embedding_forecast_20260911/GPU_RESIDENT_RESTART_20260913.md)
+for the plan schema, allocation holding, and guarded collection semantics.
+Observed-history sweeps use the same forecast training command with per-context
+configuration files. The distinct paired comparison is
+`python -m src.research.forecast_context.compare --plan PLAN.json`; it verifies
+matched windows and normalization across histories and exports source-weighted
+scores, paired intervals and plots. Inputs are completed forecast artifacts and
+a plan listing their configs, seeds and result root. See the
+[context experiment](../experiments/forecast_context_20260913/README.md).
+Local crystallization assessment uses the exact tracked center atoms and existing
+PTM implementation: `python -m src.research.forecast_crystallization.local_data
+--config CONFIG`, then `local_predict` and `local_analyze` in the same package.
+Inputs are an existing forecast cache, source trajectories and frozen checkpoints;
+outputs are local physical labels, a train-only crystal readout, paired forecasts,
+transition/timing tables and plots. See the
+[local crystal assay](../experiments/forecast_crystallization_20260913/README.md).
+
+Spatial/mixture forecasting uses the same training command. Runtime setting
+`validation_residency: host` retains validation inputs in RAM to leave GPU space for
+the training split and large batches. Prepare periodic
+observed-frame neighbor indices with
+`python -m src.training_methods.embedding_forecast.spatial --config CONFIG`.
+Its config declares the existing embedding cache, simulation source manifest,
+neighbor count and output. Training variants select spatial inputs and a Gaussian
+mixture over the complete future path; spatial training requires the resident loader.
+For completed fits, `python -m src.research.forecast_spatial_mixture.evaluate
+--plan PLAN --run NAME --seed SEED` reuses the frozen local PTM assay and scores
+both mean paths and probabilistic crystal readouts. Then `compare --plan PLAN` in
+the same package verifies matched windows/scales and exports the full paired study.
+See the [spatial/mixture experiment](../experiments/forecast_spatial_mixture_20260913/README.md).
+
 Recorded older protocols live in [src/research](../src/research/README.md); their
 configuration and findings stay with the dated experiment record.
 
@@ -53,3 +96,5 @@ Temporary paths required by submitted jobs remain:
 `experiments/spatiotemporal_20260905/prepare_spatiotemporal_vicreg_views.py`.
 Do not remove them until the relevant Slurm controller chains finish. The optimized
 Aluminum shell launcher still requires `PYTHON` and accepts `DEVICES`.
+
+`project.py` manages machine settings (`paths`, `doctor`), dataset IDs (`datasets`), JSON resolution (`resolve`), verified selected exports (`bundle`, `verify-bundle`), full checkout snapshots (`snapshot`), completed simulation publication (`publish-simulation`), and stopped failure archives (`archive-failed-simulation --inactive`). Inputs and copy semantics are documented in [portability](../docs/portability.md); implementation is in `src/project_runtime/`.

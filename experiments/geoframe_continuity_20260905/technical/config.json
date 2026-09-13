@@ -1,6 +1,6 @@
 {
   "output": "output/geoframe_continuity_20260905",
-  "views_manifest": "/home/ids/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/manifest.json",
+  "views_manifest": "/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/manifest.json",
   "checkpoints": {
     "original": "output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt",
     "vicreg_best": "output/geoframe_v2_spatiotemporal_analysis_20260905/vicreg/GFv2-spatiotemporal-epoch=048.ckpt"

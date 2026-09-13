@@ -9,6 +9,7 @@ COMMANDS = {
     "relaxation": "src.data_utils.conversion.relaxation",
     "temporal-storage": "src.data_utils.conversion.position_storage",
     "training-cache": "src.data_utils.conversion.training_cache",
+    "embedding-cache": "src.data_utils.conversion.embedding_cache",
     "elemental": "src.data_utils.conversion.elemental",
     "shooting": "src.data_utils.conversion.shooting",
     "temporal": "src.data_utils.conversion.temporal",

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import sys
 import subprocess
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -45,7 +46,7 @@ def build_command(
     exp_name = _safe_experiment_name(plan.name, stage.name, experiment.name)
 
     cmd = [
-        "python",
+        sys.executable,
         train_script,
         "--config-name", config_name,
     ]

@@ -12,6 +12,7 @@ from typing import Any
 
 import numpy as np
 from numpy.lib.format import open_memmap
+from src.project_runtime.paths import resolve_path
 
 
 FORMAT_NAME = "pointcloudmaterials.temporal_lammps_trajectory"
@@ -105,7 +106,7 @@ class TemporalLAMMPSBinaryTrajectory:
 
     @classmethod
     def load(cls, path: str | Path) -> "TemporalLAMMPSBinaryTrajectory":
-        root = Path(path).expanduser().resolve()
+        root = resolve_path(path).resolve()
         manifest_path = root / "manifest.json"
         if not manifest_path.is_file():
             raise FileNotFoundError(f"Temporal binary manifest is missing: {manifest_path}")

@@ -1,6 +1,6 @@
 {
   "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/views",
-  "base_cache": "/home/ids/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views",
+  "base_cache": "/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views",
   "workers": 4,
   "seed": 20260910,
   "materials": [
@@ -13,7 +13,7 @@
     {
       "material": "Ta",
       "snapshot": "new_2.7ns",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/trajectory_binary_float16",
       "manifest_sha256": "3e02c48641a4e59ff390918d88d70627f4e18acaad9a55a7965ac62c7b65bcaf",
       "storage_dtype": "float16",
       "radius": 9.388275,
@@ -80,7 +80,7 @@
     {
       "material": "Ta",
       "snapshot": "new_2.8ns",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/trajectory_binary_float16",
       "manifest_sha256": "52ea325eb16a2832cc8e60a3e7988ad6afae3438d15dc8c63d30649ff469f253",
       "storage_dtype": "float16",
       "radius": 9.388275,
@@ -147,7 +147,7 @@
     {
       "material": "Ta",
       "snapshot": "new_2.9ns",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/trajectory_binary_float16",
       "manifest_sha256": "2eb7223c2f52169cfbf835f6f195415309f993ed5c9ad8f88e3419733232209e",
       "storage_dtype": "float16",
       "radius": 9.388275,
@@ -214,7 +214,7 @@
     {
       "material": "Ta",
       "snapshot": "new_3.0ns",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/trajectory_binary_float16",
       "manifest_sha256": "6f1409995dcc1c9b6d037c69ce9c36a35b17fb6c49a66133143d428dd19161f2",
       "storage_dtype": "float16",
       "radius": 9.388275,
@@ -281,7 +281,7 @@
     {
       "material": "Ta",
       "snapshot": "new_3.60ns",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/trajectory_binary_float16",
       "manifest_sha256": "f8afb27e7d38f42d2d50fc7837cc894ead01170906f9db24af67ece769577d0a",
       "storage_dtype": "float16",
       "radius": 9.388275,
@@ -348,7 +348,7 @@
     {
       "material": "Ti",
       "snapshot": "new_parent_000000000",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16",
       "manifest_sha256": "a31636bba3cee58bb519e42b091ab3afcaf1e28c490817aef0d7acc20caf2408",
       "storage_dtype": "float16",
       "radius": 9.247764279105562,
@@ -415,7 +415,7 @@
     {
       "material": "Ti",
       "snapshot": "new_parent_000008000",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16",
       "manifest_sha256": "056225c2eca6f6bae9e968b593e246ac74931cf9b75b78bf6d85ef8e38eaab5b",
       "storage_dtype": "float16",
       "radius": 9.247764279105562,
@@ -482,7 +482,7 @@
     {
       "material": "Ti",
       "snapshot": "new_parent_000032000",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16",
       "manifest_sha256": "d97a81813c22fd798188f921c88de4eaa4eb8a18aabde3d0ba505691ed3a68de",
       "storage_dtype": "float16",
       "radius": 9.247764279105562,
@@ -549,7 +549,7 @@
     {
       "material": "Ti",
       "snapshot": "new_parent_000040000",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16",
       "manifest_sha256": "2c1592b2a52e624405b6c5f1956ff85a1835902fea24ef61cfec1621ecf94a2f",
       "storage_dtype": "float16",
       "radius": 9.247764279105562,
@@ -616,7 +616,7 @@
     {
       "material": "Ti",
       "snapshot": "new_parent_000056000",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16",
       "manifest_sha256": "afd3f1481f3470ec8cd93523f18316a2cb318e41405ea38b3a118290c244bfc0",
       "storage_dtype": "float16",
       "radius": 9.247764279105562,
@@ -683,7 +683,7 @@
     {
       "material": "Ti",
       "snapshot": "new_parent_000192000",
-      "path": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16",
       "manifest_sha256": "2fa93d61e448a82856521d7caf6d824245aa14a5d46b2b696834e6e1a0c8e813",
       "storage_dtype": "float16",
       "radius": 9.247764279105562,
@@ -764,37 +764,37 @@
       "kth_distance_mean": 8.89559975012499,
       "kth_distance_max": 9.111076706405232
     },
-    "reference": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16"
+    "reference": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16"
   },
   "duplicate_trajectories_excluded": [
     {
-      "included": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16",
-      "excluded": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16",
+      "included": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16",
+      "excluded": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16",
       "reason": "All six trajectory-array checksums identical."
     },
     {
-      "included": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16",
-      "excluded": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16",
+      "included": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16",
+      "excluded": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16",
       "reason": "All six trajectory-array checksums identical."
     },
     {
-      "included": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16",
-      "excluded": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16",
+      "included": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16",
+      "excluded": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16",
       "reason": "All six trajectory-array checksums identical."
     },
     {
-      "included": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16",
-      "excluded": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16",
+      "included": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16",
+      "excluded": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16",
       "reason": "All six trajectory-array checksums identical."
     },
     {
-      "included": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16",
-      "excluded": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16",
+      "included": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16",
+      "excluded": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16",
       "reason": "All six trajectory-array checksums identical."
     },
     {
-      "included": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16",
-      "excluded": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16",
+      "included": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16",
+      "excluded": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16",
       "reason": "All six trajectory-array checksums identical."
     }
   ],

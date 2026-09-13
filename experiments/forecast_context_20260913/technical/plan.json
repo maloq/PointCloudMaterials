@@ -1,0 +1,53 @@
+{
+  "question": "How much does observed history length affect a matched 9 ps local-embedding forecast?",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913",
+  "configs": [
+    {
+      "history_ps": 0,
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/configs/history0ps.json"
+    },
+    {
+      "history_ps": 1.5,
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/configs/history1p5ps.json"
+    },
+    {
+      "history_ps": 3,
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/configs/history3ps.json"
+    },
+    {
+      "history_ps": 6,
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/configs/history6ps.json"
+    },
+    {
+      "history_ps": 12,
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/configs/history12ps.json"
+    },
+    {
+      "history_ps": 24,
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/configs/history24ps.json"
+    }
+  ],
+  "seeds": [
+    20260913,
+    20260914
+  ],
+  "runtime": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/runtime.json",
+  "training_source": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/gpu-resident-restart-20260913/technical/source",
+  "training_source_manifest": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/gpu-resident-restart-20260913/technical/source_manifest.json",
+  "window_counts": {
+    "train": 1818624,
+    "val": 589824,
+    "test": 663552
+  },
+  "common_anchor_history_ps": 24,
+  "stride_ps": 24,
+  "history_order": [
+    0,
+    6,
+    24,
+    1.5,
+    3,
+    12
+  ],
+  "training_execution_record": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/training/execution/run_record.json"
+}

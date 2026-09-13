@@ -95,3 +95,13 @@ static/temporal templates retain their caches because existing spatial-compariso
 workflows consume them after analysis; clean them only after those comparisons finish. Other protocols retain
 their explicit settings. Large PNG collections and array files are reported, not
 assumed disposable. `pack-logs` remains available for verified lossless log compression.
+
+## External research storage (2026-09-13)
+
+Existing simulation inputs and datasets live on WORK; caches live on IDS.
+New simulation output starts on SCRATCH and completed elemental campaigns publish
+verified copies to STORE. SCRATCH is not backed up and has a 30-day inactivity purge;
+archive stopped failures/restarts explicitly. WORK still reports a 512 GiB capacity.
+Use named storage roots and dataset IDs, preserving old aliases and immutable
+manifests. See [portable setup and retention](portability.md) and the
+[initial migration record](../experiments/storage_migration_20260913/README.md).

@@ -6,6 +6,7 @@ import numpy as np
 import torch
 
 from .model import bin_means, joint_distribution
+from .context_mixture import call_forecaster, mixture_metrics, sample_trajectories
 
 
 def relative_gain(candidate, reference):
@@ -49,7 +50,7 @@ def evaluate(model, loader, mean, scale, device, intervention='real', sample_pat
             raise ValueError(f'Unknown intervention: {intervention}')
         future = (batch['future'].to(device) - mean) / scale
         target = model.target_values(future)
-        output = model(history)
+        output = call_forecaster(model, history, batch, mean, scale)
         prediction = output['mean']
         anchor = original[:, -1:]
         times = torch.arange(1, future.shape[1] + 1, device=device, dtype=future.dtype)
@@ -97,6 +98,8 @@ def evaluate(model, loader, mean, scale, device, intervention='real', sample_pat
                 truth_distance = (samples - target.flatten(1)[None]).norm(dim=-1).mean(0)
                 paired_distance = (samples[:8] - samples[8:]).norm(dim=-1).mean(0)
                 measures['energy_score'] = (truth_distance - 0.5*paired_distance) / math.sqrt(target[0].numel())
+        elif model.distribution == 'trajectory_mixture':
+            measures.update(mixture_metrics(output, target, sample_paths))
         batch_values = {}
         for key, values in measures.items():
             if not torch.isfinite(values).all():
@@ -116,16 +119,21 @@ def evaluate(model, loader, mean, scale, device, intervention='real', sample_pat
             for key in ('source', 'atom_id', 'anchor_frame', 'temperature_K'):
                 rows.setdefault(key, []).append(batch[key].numpy())
         if not examples:
-            examples = [dict(history=batch['history'][:16].numpy(), future=batch['future'][:16].numpy(),
+            examples = [dict(history=batch['history'][:16].cpu().numpy(), future=batch['future'][:16].cpu().numpy(),
                              prediction=(prediction[:16]*scale+mean).cpu().numpy())]
             if sample_paths and model.distribution == 'low_rank_gaussian':
                 examples[0]['sample_paths'] = (samples[:, :16].reshape(16, -1, *target.shape[1:]) * scale + mean).cpu().numpy()
+            elif sample_paths and model.distribution == 'trajectory_mixture':
+                small = {key: value[:16] for key, value in output.items()}
+                examples[0]['sample_paths'] = (sample_trajectories(small, 16)*scale+mean).cpu().numpy()
     arrays = {key: np.concatenate(values) for key, values in rows.items()}
     source_ids = np.array(sorted(source_sums))
     count = sum(source_counts.values())
     total = {key: sum(s[key] for s in source_sums.values()) for key in batch_values}
     scalar_keys = [key for key, value in total.items() if value.ndim == 0]
     metrics = dict(samples=count, sources=len(source_ids), intervention=intervention)
+    if 'spatial_neighbors' in model.config and model.config['spatial_neighbors']:
+        metrics['intervention_scope'] = 'central history only; observed spatial history is unchanged'
     metrics['sample_mean'] = {key: float(total[key] / count) for key in scalar_keys}
     metrics['per_source'] = {str(s): {key: float(source_sums[s][key] / source_counts[s]) for key in scalar_keys}
                              for s in source_ids}

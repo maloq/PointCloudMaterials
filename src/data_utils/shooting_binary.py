@@ -12,6 +12,7 @@ from typing import Any, Sequence
 
 import numpy as np
 from numpy.lib.format import open_memmap
+from src.project_runtime.paths import resolve_path
 
 from src.data_utils.shooting_dataset import (
     ShootingFrame,
@@ -86,7 +87,7 @@ class ShootingBinaryTrajectory:
 
     @classmethod
     def load(cls, path: str | Path) -> "ShootingBinaryTrajectory":
-        root = Path(path).expanduser().resolve()
+        root = resolve_path(path).resolve()
         manifest = _load_json_object(root / "manifest.json")
         if manifest.get("format") != FORMAT_NAME:
             raise ValueError(

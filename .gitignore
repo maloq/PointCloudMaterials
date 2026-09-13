@@ -1,4 +1,7 @@
 datasets
+machine.local.yaml
+/data/
+/tmp/
 log
 lightning_logs
 checkpoints

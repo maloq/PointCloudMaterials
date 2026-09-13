@@ -22,3 +22,5 @@ Use `output/<question>/<run-name>/` for new explicit result directories; see the
 Two invalid historical templates were retired on the cleanup branch. Their exact
 contents and failure reasons are recorded in [the cleanup report](../docs/repository_cleanup_20260912.md);
 training requires `--config-name NAME` instead of guessing a replacement default.
+
+Machine-only locations and execution settings live in ignored `machine.local.yaml`; examples are in `machines/`. `datasets.json` supplies stable dataset IDs. See [portability](../docs/portability.md). `vicreg_mace_full_cpu` selects the CPU-compatible MACE execution path.

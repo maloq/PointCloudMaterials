@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 
 import numpy as np
 
+from src.project_runtime.paths import load_json, machine, portable_config, resolve_config, storage_path
+
 REPO = Path(__file__).resolve().parents[3]
 SOURCE_PROTOCOLS = {'ti-source-then-branches': ('Ti', 'bcc', 2),
                     'al-source-then-branches': ('Al', 'fcc', 4)}
@@ -90,13 +92,25 @@ dump_modify trajectory sort id format line "%d %d %.9g %.9g %.9g"
 def execute(config, directory, text, marker):
     directory.mkdir(parents=True, exist_ok=True)
     (directory / 'in.lammps').write_text(text)
-    command = [config['mpiexec'], '-n', str(len(config['cpus'])), '-bind-to',
-               'user:' + ','.join(map(str, config['cpus'])), config['lammps'],
-               '-in', 'in.lammps', '-log', 'log.lammps']
+    if 'execution' in config:
+        execution = config['execution']
+        launcher = [arg.format(ranks=len(config['cpus'])) for arg in execution['mpi_launcher']]
+        if len(config['cpus']) > 1 and not launcher:
+            raise ValueError('Multiple MPI ranks require execution.mpi_launcher in the machine configuration.')
+        command = launcher + [execution['lammps'], '-in', 'in.lammps', '-log', 'log.lammps']
+    else:
+        # Historical configurations retain their original MPICH launch semantics.
+        command = [config['mpiexec'], '-n', str(len(config['cpus'])), '-bind-to',
+                   'user:' + ','.join(map(str, config['cpus'])), config['lammps'],
+                   '-in', 'in.lammps', '-log', 'log.lammps']
     environment = os.environ.copy()
-    environment.update(LD_LIBRARY_PATH=str(Path(sys.prefix) / 'lib'), OMP_NUM_THREADS='1',
-                       OPENBLAS_NUM_THREADS='1', MPIR_CVAR_CH4_NETMOD='ofi', FI_PROVIDER='tcp',
-                       PYTHONPATH=str(REPO), QT_QPA_PLATFORM='offscreen')
+    if 'execution' in config:
+        environment.update(config['execution']['mpi_environment'])
+        environment.update(PYTHONPATH=str(REPO), QT_QPA_PLATFORM='offscreen')
+    else:
+        environment.update(LD_LIBRARY_PATH=str(Path(sys.prefix) / 'lib'), OMP_NUM_THREADS='1',
+                           OPENBLAS_NUM_THREADS='1', MPIR_CVAR_CH4_NETMOD='ofi', FI_PROVIDER='tcp',
+                           PYTHONPATH=str(REPO), QT_QPA_PLATFORM='offscreen')
     with (directory / 'stdout.log').open('xb') as output:
         try:
             subprocess.run(command, cwd=directory, env=environment, stdin=subprocess.DEVNULL,
@@ -137,7 +151,7 @@ def verify_completed_branch(config, directory, branch):
                 'timestep_ps': config['timestep_ps'], 'origin': branch,
                 'potential': config['potential_files']}
     for key, value in expected.items():
-        if outcome[key] != value:
+        if portable_config(outcome[key]) != portable_config(value):
             raise RuntimeError(f'Completed branch {key} differs from requested protocol: {directory}')
     if sha256(directory / 'final.restart.bin') != outcome['final_restart_sha256']:
         raise RuntimeError(f'Completed restart checksum mismatch: {directory}')
@@ -192,7 +206,7 @@ print "BRANCH_COMPLETE"
 
 def bind_allocation(config):
     """Use the CPUs assigned to this single-node Slurm step."""
-    if 'SLURM_JOB_ID' in os.environ:
+    if 'SLURM_JOB_ID' in os.environ and 'execution' not in config:
         ranks = int(os.environ['SLURM_CPUS_PER_TASK'])
         allocated = sorted(os.sched_getaffinity(0))
         if len(allocated) < ranks:
@@ -206,8 +220,8 @@ def run_selected_branch(config_path, parents_path, index):
     """Run one immutable position-conditioned parent, without launching a source."""
     from src.experiment_runner.tracking import tracked_run
 
-    config = json.loads(config_path.read_text())
-    parents = json.loads(parents_path.read_text())
+    config = load_json(config_path)
+    parents = load_json(parents_path)
     branch = parents['branches'][index]
     if config['protocol'] not in SOURCE_PROTOCOLS or config['material'] != SOURCE_PROTOCOLS[config['protocol']][0]:
         raise ValueError('Selected-parent execution requires an Al/Ti position-branch protocol')
@@ -223,6 +237,7 @@ def run_selected_branch(config_path, parents_path, index):
                      command=[sys.executable, *sys.argv]):
         write_json(directory / 'config.json', config)
         run_branch(config, root, branch)
+    write_json(root / 'status.json', dict(state='complete', completed_branches=[branch['name']]))
 
 
 def melt_input(config):
@@ -318,7 +333,7 @@ print "SOURCE_CRYSTALLIZATION_COMPLETE"
 
 
 def run(config_path, *, resume_ta=False):
-    config = json.loads(config_path.read_text())
+    config = load_json(config_path)
     root = Path(config['output_root'])
     root.mkdir(parents=True, exist_ok=True)
     if resume_ta:
@@ -327,7 +342,7 @@ def run(config_path, *, resume_ta=False):
         previous = json.loads((root / 'config.json').read_text())
         # Storage retention may change on recovery; scientific settings may not.
         for key, value in previous.items():
-            if key not in {'delete_verified_source_text', 'position_storage_dtype'} and config[key] != value:
+            if key not in {'delete_verified_source_text', 'position_storage_dtype'} and portable_config(config[key]) != portable_config(value):
                 raise RuntimeError(f'Resume changed existing campaign setting {key}: {root}')
         archive_failed_status(root / 'status.json')
     elif (root / 'status.json').exists():
@@ -366,9 +381,9 @@ def run(config_path, *, resume_ta=False):
         raise
 
 
-def sequence(ta_config, ti_config, *, resume_ta=False):
+def sequence(ta_config, ti_config, *, resume_ta=False, prepared=False):
     """Finish all Ta work before starting the Ti source, using the same CPUs."""
-    configs = [json.loads(path.read_text()) for path in (ta_config, ti_config)]
+    configs = [load_json(path) for path in (ta_config, ti_config)]
     if [c['protocol'] for c in configs] != ['ta-position-branches', 'ti-source-then-branches']:
         raise ValueError('Sequence requires Ta position branches followed by a Ti crystallization source')
     root = Path(configs[0]['output_root']).parent
@@ -392,7 +407,11 @@ def sequence(ta_config, ti_config, *, resume_ta=False):
             resuming_campaign = resume_ta and config['material'] == 'Ta'
             if resuming_campaign:
                 command.append('--resume-ta')
-            with (directory / 'runner.log').open('ab' if resuming_campaign else 'xb') as output:
+            elif prepared:
+                command.append('--prepared')
+            logs = root / 'sequence_logs'
+            logs.mkdir(exist_ok=True)
+            with (logs / f'{config["material"]}.log').open('ab' if resuming_campaign else 'xb') as output:
                 subprocess.run(command,
                                cwd=REPO, stdout=output, stderr=subprocess.STDOUT, check=True)
             status['completed_campaigns'].append(config['material'])
@@ -404,16 +423,53 @@ def sequence(ta_config, ti_config, *, resume_ta=False):
         raise
 
 
+def prepare_fresh_launch(config_path, name, ranks=None, *, parent=None):
+    """Resolve scientific inputs once and place all fresh integration output on SCRATCH."""
+    from src.project_runtime.paths import catalog
+    if not name or Path(name).name != name or name in {'.', '..'}:
+        raise ValueError(f'Run name must be a single directory name: {name!r}')
+    if name in catalog():
+        raise ValueError(f'Dataset ID already exists: {name}; choose a new --run-name.')
+    config = load_json(config_path)
+    root = (storage_path('simulation_runs') if parent is None else Path(parent)) / name
+    root.mkdir(parents=True, exist_ok=False)
+    settings = machine()['execution']
+    config['execution'] = {key: settings[key] for key in ('lammps', 'mpi_launcher', 'mpi_environment')}
+    available = sorted(os.sched_getaffinity(0)) if hasattr(os, 'sched_getaffinity') else list(range(os.cpu_count()))
+    ranks = ranks if ranks is not None else (len(available) if settings['mpi_launcher'] else 1)
+    if not 1 <= ranks <= len(available):
+        raise ValueError(f'Requested {ranks} ranks, but {len(available)} CPUs are available.')
+    config.update(output_root=str(root), run_id=name, cpus=available[:ranks], position_storage_dtype='float16',
+                  delete_verified_source_text=True)
+    # Legacy executable fields are execution configuration, never scientific parameters.
+    config.pop('mpiexec', None)
+    config.pop('lammps', None)
+    technical = root / 'technical'
+    technical.mkdir()
+    launch = technical / 'launch_config.json'
+    write_json(launch, config)
+    write_json(technical / 'portable_config.json', portable_config(config))
+    write_json(technical / 'machine.json', machine())
+    return launch
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     command = sub.add_parser('run')
     command.add_argument('--config', required=True, type=Path)
     command.add_argument('--resume-ta', action='store_true')
+    command.add_argument('--run-name', help='Unique fresh-run ID; writes to the machine SCRATCH root.')
+    command.add_argument('--ranks', type=int, help='MPI ranks for a fresh run; default follows machine launcher/CPU allocation.')
+    command.add_argument('--keep-on-scratch', action='store_true', help='Skip verified publication to STORE after completion.')
+    command.add_argument('--prepared', action='store_true', help='Execute an already staged launch_config.json, used by the sequence controller.')
     command = sub.add_parser('branch')
     command.add_argument('--config', required=True, type=Path)
     command.add_argument('--parents', required=True, type=Path)
     command.add_argument('--index', required=True, type=int)
+    command.add_argument('--run-name', required=True, help='Unique branch run ID, staged on SCRATCH.')
+    command.add_argument('--ranks', type=int)
+    command.add_argument('--keep-on-scratch', action='store_true')
     command = sub.add_parser('assess-source', aliases=['assess-ti'])
     command.add_argument('root', type=Path)
     command.add_argument('step', type=int)
@@ -422,19 +478,54 @@ def main(argv=None):
     command.add_argument('--ti-config', required=True, type=Path)
     command.add_argument('--resume-ta', action='store_true',
                          help='Verify and skip completed Ta branches after a failed sequence.')
+    command.add_argument('--run-name', help='Unique sequence ID for fresh SCRATCH staging.')
+    command.add_argument('--ranks', type=int)
     args = parser.parse_args(argv)
     if args.action == 'run':
         from src.experiment_runner.tracking import tracked_run
-        config = json.loads(args.config.read_text())
-        with tracked_run(Path(config['output_root']), kind='simulation', configs=[args.config],
+        if args.resume_ta and args.run_name:
+            parser.error('--resume-ta preserves the existing campaign; it cannot use --run-name.')
+        config_path = args.config
+        if args.prepared:
+            if args.run_name or args.config.name != 'launch_config.json' or not args.config.resolve().is_relative_to(storage_path('simulation_runs')):
+                parser.error('--prepared requires a launch_config.json already staged under simulation_runs.')
+        elif not args.resume_ta:
+            if not args.run_name:
+                parser.error('Fresh runs require --run-name NAME; results start on SCRATCH and publish to STORE.')
+            config_path = prepare_fresh_launch(args.config, args.run_name, args.ranks)
+        config = load_json(config_path)
+        with tracked_run(Path(config['output_root']), kind='simulation', configs=[config_path],
                          command=[sys.executable, *sys.argv]):
-            run(args.config.resolve(), resume_ta=args.resume_ta)
+            run(config_path.resolve(), resume_ta=args.resume_ta)
+        if not args.resume_ta and not args.keep_on_scratch:
+            from src.project_runtime.transfer import publish_simulation
+            publish_simulation(config['output_root'], identifier=config['run_id'], move=True)
     elif args.action == 'branch':
-        run_selected_branch(args.config.resolve(), args.parents.resolve(), args.index)
+        config_path = prepare_fresh_launch(args.config, args.run_name, args.ranks)
+        config = load_json(config_path)
+        root = Path(config['output_root'])
+        try:
+            run_selected_branch(config_path, args.parents.resolve(), args.index)
+        except BaseException as error:
+            write_json(root / 'status.json', dict(state='failed', error=repr(error), traceback=traceback.format_exc()))
+            raise
+        if not args.keep_on_scratch:
+            from src.project_runtime.transfer import publish_simulation
+            publish_simulation(root, identifier=args.run_name, move=True)
     elif args.action in ('assess-source', 'assess-ti'):
         assess(args.root.resolve(), args.step)
     else:
-        sequence(args.ta_config.resolve(), args.ti_config.resolve(), resume_ta=args.resume_ta)
+        if args.resume_ta:
+            sequence(args.ta_config.resolve(), args.ti_config.resolve(), resume_ta=True,
+                     prepared=args.ti_config.name == 'launch_config.json')
+        else:
+            if not args.run_name or Path(args.run_name).name != args.run_name or args.run_name in {'.', '..'}:
+                parser.error('Fresh sequences require --run-name NAME.')
+            parent = storage_path('simulation_runs') / args.run_name
+            parent.mkdir(parents=True, exist_ok=False)
+            ta = prepare_fresh_launch(args.ta_config, args.run_name+'-Ta', args.ranks, parent=parent)
+            ti = prepare_fresh_launch(args.ti_config, args.run_name+'-Ti', args.ranks, parent=parent)
+            sequence(ta, ti, prepared=True)
 
 
 if __name__ == '__main__':

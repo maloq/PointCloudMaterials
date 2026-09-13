@@ -1,7 +1,7 @@
 # Matched full-data run using the repository-selected best GeoFrameTransformerV2
 # factor-VAE/spectral-normalization checkpoint. Only encoder and output differ
 # from shooting_predictive_geoframe_v1_440branches_20260901.yaml.
-output_dir: /home/ids/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901
+output_dir: /store/PERSO/vmorozov/experiments/shooting_predictive_geoframe_v2_factor_sn_440branches_20260901
 
 encoder:
   checkpoint: output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt
@@ -17,9 +17,9 @@ embedding:
 
 data:
   campaign_roots:
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
-    - /home/ids/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831
+    - /work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831
   temperatures_K: [400, 450, 500]
   minimum_complete_branches_per_parent: 11
   expected_parent_count: 40

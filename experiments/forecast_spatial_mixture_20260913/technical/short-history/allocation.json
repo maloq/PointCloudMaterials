@@ -1,0 +1,696 @@
+{
+  "output": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913",
+  "node": "nodesumo01",
+  "allocation": 990987,
+  "deadline_utc": "2026-09-14T08:09:56+00:00",
+  "cwd": "${storage:repo}",
+  "steps": [
+    {
+      "name": "train-history3_deterministic-seed20260913",
+      "dependencies": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/nodesumo01-queue-status.json",
+          "success_state": "complete",
+          "pending_states": [
+            "waiting_for_control",
+            "training"
+          ]
+        }
+      ],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_deterministic.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_deterministic-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history3_deterministic-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history3_deterministic",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_deterministic-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history1p5_deterministic-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history1p5_deterministic.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history1p5_deterministic-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history1p5_deterministic-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history1p5_deterministic",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history1p5_deterministic-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history0_deterministic-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history0_deterministic.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history0_deterministic-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history0_deterministic-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history0_deterministic",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history0_deterministic-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history3_spatial_mixture4-seed20260913",
+      "dependencies": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/analysis-queue-status.json",
+          "success_state": "complete",
+          "pending_states": [
+            "waiting_for_nodesumo01_training",
+            "waiting_for_remaining_training",
+            "local_evaluation",
+            "paired_collection"
+          ]
+        }
+      ],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_spatial_mixture4-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history3_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history3_spatial_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_spatial_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history1p5_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history1p5_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history1p5_spatial_mixture4-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history1p5_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history1p5_spatial_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history1p5_spatial_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history6_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history6_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history6_spatial_mixture4-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history6_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history6_spatial_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history6_spatial_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history0_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history0_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history0_spatial_mixture4-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history0_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history0_spatial_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history0_spatial_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history3_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_deterministic.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_deterministic-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history3_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history3_deterministic",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_deterministic-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history1p5_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history1p5_deterministic.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history1p5_deterministic-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history1p5_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history1p5_deterministic",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history1p5_deterministic-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history0_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history0_deterministic.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history0_deterministic-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history0_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history0_deterministic",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history0_deterministic-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history3_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_spatial_mixture4-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history3_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history3_spatial_mixture4",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_spatial_mixture4-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history1p5_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history1p5_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history1p5_spatial_mixture4-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history1p5_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history1p5_spatial_mixture4",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history1p5_spatial_mixture4-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history6_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history6_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history6_spatial_mixture4-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history6_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history6_spatial_mixture4",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history6_spatial_mixture4-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history0_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "module": "src.training_methods.embedding_forecast",
+      "arguments": [
+        "--config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history0_spatial_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/runtime.json"
+      ],
+      "minimum_remaining_seconds": 3600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history0_spatial_mixture4-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history0_spatial_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json",
+        "--run",
+        "history0_spatial_mixture4",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history0_spatial_mixture4-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "paired-comparison",
+      "dependencies": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/analysis-queue-status.json",
+          "success_state": "complete",
+          "pending_states": [
+            "waiting_for_nodesumo01_training",
+            "waiting_for_remaining_training",
+            "local_evaluation",
+            "paired_collection"
+          ]
+        }
+      ],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/source",
+      "module": "src.research.forecast_spatial_mixture.compare",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/plan.json"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": []
+    }
+  ]
+}

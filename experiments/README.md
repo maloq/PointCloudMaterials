@@ -13,6 +13,9 @@ For the current folder and metric conventions, see [research layout](../docs/res
 Historical implementation is in [src/research](../src/research/README.md); machine
 configs and inventories belong in each record's `technical/` directory.
 
+The [IDS dataset inventory](ids_dataset_inventory_20260913/README.md) records
+current dataset counts, potentials, storage, duplicate trajectories and incomplete runs.
+
 These directories retain configurations and findings for individual research
 questions. Retired MACE implementations and their dedicated diagnostics were
 removed on 2026-09-09; completed records identify the source snapshots needed
@@ -33,7 +36,10 @@ selection and topology accuracy.
 | Experiment | Question |
 | --- | --- |
 | [shooting_ablation_20260901](shooting_ablation_20260901/README.md) | Historical shooting, committor and temporal-pretraining protocols and their standalone configurations |
-| [embedding_forecast_20260911](embedding_forecast_20260911/README.md) | Forecast separate 0–3/3–6/6–9 ps embedding means or direct/autoregressive future paths; [enlarged augmented runs](embedding_forecast_20260911/SCALE_RUN.md) reduced to 32 epochs and one Slurm job per model |
+| [embedding_forecast_20260911](embedding_forecast_20260911/README.md) | Forecast separate 0–3/3–6/6–9 ps embedding means or direct/autoregressive future paths; [enlarged augmented runs](embedding_forecast_20260911/SCALE_RUN.md), 32 epochs per model, now [continuing with GPU-resident data](embedding_forecast_20260911/GPU_RESIDENT_RESTART_20260913.md) in the existing H100 jobs |
+| [forecast_spatial_mixture_20260913](forecast_spatial_mixture_20260913/README.md) | 12 ps history, causal nearby-center context and full-path Gaussian mixtures: 12 matched H100 fits plus local transition/timing evaluation |
+| [forecast_crystallization_20260913](forecast_crystallization_20260913/README.md) | Do frozen forecasts predict when the tracked local atom becomes crystalline? Physical PTM transitions, timing, false alarms and source uncertainty |
+| [forecast_context_20260913](forecast_context_20260913/README.md) | [24 completed compact direct/AR fits](forecast_context_20260913/RESULTS.md): history improves matched 9 ps forecasts; gains diminish after 6–12 ps |
 | [mace_vicreg_full_20260910](mace_vicreg_full_20260910/README.md) | Corrected original MACE + VICReg on all original Al/Mg/Ta views plus completed new Ta/Ti trajectories; detached H100 training and standard analysis |
 | [mace_vicreg_relaxed_20260910](mace_vicreg_relaxed_20260910/README.md) | MEAM topology/history comparisons in corrected original VICReg; standard checkpoint analysis with topology probes, source uncertainty and history interventions |
 | [mace_al_denoising_20260910](mace_al_denoising_20260910/README.md) | Completed mixed-potential pilot, [potential comparison](mace_al_denoising_20260910/POTENTIAL_DIFFERENCES.md), and full 30-source MEAM comparison: atom histories reduce error by 23.08% against the matched anchor control |
@@ -80,3 +86,7 @@ analysis. Prefer an existing command plus a config for another run of a method.
 Existing Hydra configs remain under `configs/` because their composition and
 checkpoint references depend on that configuration root; link them rather than
 copying them into a new experiment folder.
+
+- [IDS storage migration, 2026-09-13](storage_migration_20260913/README.md): verified relocation to WORK/STORE with compatibility paths.
+
+- [Portable project and storage placement](portability_20260913/README.md): machine roots, verified moves, selected exports, CPU validation and STORE snapshot.
