@@ -107,3 +107,44 @@ def test_bulk_cache_reads_match_individual_reads_and_dataloader(tmp_path):
         loader_batch = next(iter(loader))
         torch.testing.assert_close(loader_batch["points"], expected_points)
         torch.testing.assert_close(loader_batch["coords"], expected_coords)
+
+
+def test_static_datamodule_preserves_cached_split_and_lifecycle(
+    tmp_path, monkeypatch
+):
+    from omegaconf import OmegaConf
+
+    from src.data_utils.data_modules import static
+
+    cache_dir = tmp_path / "cache"
+    metadata = _write_cache(cache_dir, return_coords=True)
+    dataset = _load_test_dataset(cache_dir, metadata, return_coords=True)
+    monkeypatch.setattr(static, "PointCloudDataset", lambda **kwargs: dataset)
+    cfg = OmegaConf.create({
+        "batch_size": 2,
+        "num_workers": 0,
+        "max_samples": 0,
+        "data": {
+            "kind": "static", "split_seed": 42, "train_ratio": 0.6,
+            "data_sources": [], "radius": 1.0, "sample_type": "random",
+            "num_points": 2,
+        },
+    })
+    dm = static.StaticPointCloudDataModule(cfg, return_coords=True)
+    dm.setup("fit")
+    assert dm.train_dataset.indices == [1, 6, 3, 5]
+    assert dm.val_dataset.indices == [4, 0, 2]
+    original_train = dm.train_dataset
+    for stage in ("fit", "validate", "test"):
+        dm.setup(stage)
+        assert dm.train_dataset is original_train
+        assert dm.test_dataset is dm.val_dataset
+    loader = dm.val_dataloader()
+    assert not loader.drop_last
+    assert loader.pin_memory
+    batch = next(iter(loader))
+    for key in ("points", "coords"):
+        expected = torch.stack([dataset[i][key] for i in [4, 0]])
+        torch.testing.assert_close(batch[key], expected, rtol=0, atol=0)
+    assert dm.train_dataloader().drop_last
+    assert dm.state_dict() == {}

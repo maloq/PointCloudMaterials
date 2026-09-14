@@ -8,6 +8,7 @@
 - [Research/result layout and metric definitions](research_layout.md)
 - [Run registry and retention commands](output_registry.md)
 - [Maintained workflow details](workflows.md)
+- [Source refactor scope and validation](src_refactor.md)
 
 Scientific experiment records belong in [experiments/](../experiments/README.md).
 Operational changes, simulation campaigns and dataset inventories belong in this

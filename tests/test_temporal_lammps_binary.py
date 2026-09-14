@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from src.data_utils.temporal_lammps_binary import (
     TemporalLAMMPSBinaryTrajectory,
@@ -83,3 +84,68 @@ def test_binary_replaces_missing_text_path_for_dataset(tmp_path: Path) -> None:
     assert dataset.frame_count == 2
     assert dataset.num_atoms == 4
     np.testing.assert_array_equal(dataset.positions, positions)
+
+
+@pytest.mark.parametrize("num_workers", [0, 1])
+def test_temporal_datamodule_lifecycle_and_batched_identity(
+    tmp_path, num_workers
+):
+    import torch
+    from omegaconf import OmegaConf
+
+    from src.data_utils.data_modules.temporal_lammps import (
+        TemporalLAMMPSDataModule,
+    )
+
+    source = tmp_path / "tiny.lammpstrj"
+    frames = []
+    for frame in range(6):
+        rows = "\n".join(
+            f"{atom + 1} 1 {1 + atom * 0.3 + frame * 0.01} 1 1"
+            for atom in range(4)
+        )
+        frames.append(
+            f"ITEM: TIMESTEP\n{frame * 10}\nITEM: NUMBER OF ATOMS\n4\n"
+            "ITEM: BOX BOUNDS pp pp pp\n0 10\n0 10\n0 10\n"
+            f"ITEM: ATOMS id type x y z\n{rows}\n"
+        )
+    source.write_text("".join(frames))
+    cfg = OmegaConf.create({
+        "batch_size": 3, "num_workers": num_workers, "max_samples": 0,
+        "data": {
+            "kind": "temporal_lammps", "dump_file": str(source),
+            "cache_dir": str(tmp_path / "cache"), "sequence_length": 2,
+            "num_points": 3, "radius": 2.0, "train_ratio": 0.6,
+            "split_seed": 42, "center_selection_mode": "atom_ids",
+            "center_atom_ids": [1, 3],
+        },
+    })
+    dm = TemporalLAMMPSDataModule(cfg)
+    dm.setup("fit")
+    train = dm.train_dataset
+    val = dm.val_dataset
+    for stage in ("fit", "validate", "test"):
+        dm.setup(stage)
+        assert dm.train_dataset is train
+        assert dm.val_dataset is val
+        assert dm.test_dataset is val
+    indices = [3, 0, 2, 0]
+    batch = val.__getitems__(indices)
+    for key, value in batch.items():
+        if key == "source_path":
+            assert value == [val[i][key] for i in indices]
+            continue
+        expected = torch.stack([val[i][key] for i in indices])
+        torch.testing.assert_close(value, expected, rtol=0, atol=0)
+    loader = dm.val_dataloader()
+    if num_workers:
+        loader.multiprocessing_context = "spawn"
+    batches = list(loader)
+    assert [len(batch["points"]) for batch in batches] == [3, 1]
+    for key, value in batches[0].items():
+        if key == "source_path":
+            assert value == [val[i][key] for i in range(3)]
+            continue
+        expected = torch.stack([val[i][key] for i in range(3)])
+        torch.testing.assert_close(value, expected, rtol=0, atol=0)
+    assert dm.state_dict() == {}
