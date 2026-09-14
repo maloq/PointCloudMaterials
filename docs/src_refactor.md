@@ -172,3 +172,74 @@ remain unperformed; the tiny one-step check must not be substituted for them.
 Next review slice: extract shared static source resolution and cutoff operations
 only after baselining real lazy-analysis/cache behavior and full-size preparation.
 Keep simulation/method moves and forecast protected-code changes out of that slice.
+
+## Phase 3a: shared static source operations
+
+Starting commit: `f9d490b1146596dd615cf9a9a59481abfff3a68c` (clean checkout).
+The previous 510-pass/8-CUDA-skip integration is the full-suite baseline for this
+unchanged source. This slice extracts shared operations only; it does not move
+whole datasets, SOAP, simulation engines, training methods or forecast code.
+
+| Existing operation | Consumers | New owner |
+| --- | --- | --- |
+| `PointCloudDataset._resolve_sources` | Eager static loading and lazy analysis | `src.data.static_sources.resolve_sources` |
+| `_load_points` | Static sampling, source cutoff estimation, lazy analysis | `src.data.static_sources.load_points` |
+| `PointCloudDataset._resolve_auto_cutoff_config` | Static, synthetic, temporal LAMMPS and temporal-real analysis | `src.data.static_sources.resolve_auto_cutoff_config` |
+| `PointCloudDataset._estimate_source_cutoff_radius` | Static, synthetic and lazy analysis | `src.data.static_sources.estimate_source_cutoff_radius` |
+| `_ShardValueSequence` | Static-cache and lazy-analysis source/radius metadata | `src.data.static_sources.ShardValueSequence` |
+
+The shared source module owns source descriptors, validated point ingestion,
+cutoff settings/calculation and compact source-shard metadata. `prepare_data`
+remains authoritative for OFF decoding and existing point-sampling algorithms.
+Dataset-specific cache preparation and multiprocessing stay in `data_load.py`;
+lazy representative reconstruction keeps its own lifecycle and point selection.
+The static cutoff estimator remains non-periodic; temporal trajectory cutoff
+calculation continues to use its distinct producer-specific implementation.
+
+Repository Python/config/command/document searches found no external callers of
+these old private names beyond the consumers above. All known consumers migrate
+together; no private forwarding methods are added. Concrete dataset classes and
+the `data_load` module path remain unchanged, including their pickling names.
+No command or submitted-job path is retired. Whole-checkout historical source
+snapshots and exact-resume requirements remain as described above.
+
+`SoapCoordDataset` is a Parquet feature/coordinate reader, unrelated to atom
+sampling. The only discovered caller is the old `data_load.py` embedded demo,
+which passes an unsupported `num_coord_dims` argument. Keep it pending a dedicated
+historical-consumer review; lack of maintained imports does not prove it disposable.
+
+### Baseline characterization and scientific caveat
+
+Temporary fixtures exercise two sources with duplicate names, distinct radii,
+source caps, truncated inference rows, negative/duplicate/non-monotonic indexing,
+missing raw input at lazy construction, delayed missing-file errors, cached
+representative reuse, invalid cache ordering, NPY/OFF ingestion and a known pooled
+cutoff quantile. Source-cutoff estimation must not modify NumPy's global RNG.
+
+A tied-distance lattice exposed an existing eager/lazy point-order difference.
+The characterization therefore records the lazy output from the pinned baseline
+separately; it does not assume equality to eager sampling or change either
+algorithm. The different scalar/batched neighbor-query ordering is a candidate
+for later scientific review, not an algorithm fix authorized by this extraction.
+
+Real-data baseline diagnostics use the complete 166 ps aluminum source, 160 points,
+seed 42, automatic cutoff settings from the active static recipe, zero overlap,
+two dropped edge layers and no sample cap. Each of three fresh temporary caches
+contains 13,824 neighborhoods. This is full preparation of one real frame, not
+the complete six-frame active analysis recipe. Cache directories are new; OS page
+cache is not flushed. Existing data, sample caches and inference outputs are not
+modified. Raw diagnostics live in
+`output/maintenance/static-source-refactor-20260914/technical/`.
+
+Before production edits the focused baseline passed **35 tests** in 26.33 seconds:
+
+```bash
+CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+  conda run -n pointnet python -m pytest \
+  tests/test_analysis_fast_paths.py tests/test_static_sample_cache_fast_path.py \
+  tests/test_temporal_lammps_binary.py tests/test_atomistic_generator.py -q
+```
+
+The first draft assertion that eager and lazy lattice point arrays were identical
+failed against baseline; the corrected characterization preserves the separate
+lazy result. No existing focused test failed.

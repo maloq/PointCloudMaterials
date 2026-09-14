@@ -148,3 +148,44 @@ def test_static_datamodule_preserves_cached_split_and_lifecycle(
         torch.testing.assert_close(batch[key], expected, rtol=0, atol=0)
     assert dm.train_dataloader().drop_last
     assert dm.state_dict() == {}
+
+
+def test_source_reader_preserves_values_and_rejects_wrong_shapes(tmp_path):
+    import pytest
+
+    from src.data_utils.data_load import _load_points
+
+    points = np.array([[1.25, 2.5, 3.75], [4, 5, 6]], dtype=np.float64)
+    path = tmp_path / "points.npy"
+    np.save(path, points)
+    loaded = _load_points(str(path))
+    assert loaded.dtype == np.float32
+    np.testing.assert_array_equal(loaded, points.astype(np.float32))
+    off = tmp_path / "points.off"
+    off.write_text("OFF\n2 0 0\n1.25 2.5 3.75\n4 5 6\n")
+    np.testing.assert_array_equal(_load_points(str(off)), loaded)
+    np.save(path, np.zeros((4, 2)))
+    with pytest.raises(ValueError, match="Expected.*array.*shape"):
+        _load_points(str(path))
+    with pytest.raises(ValueError, match="Unsupported file extension"):
+        _load_points(str(tmp_path / "points.txt"))
+
+
+def test_source_cutoff_preserves_pooled_quantile_and_global_rng(tmp_path):
+    points = np.zeros((4, 3), dtype=np.float32)
+    points[:, 0] = [0, 1, 3, 7]
+    np.save(tmp_path / "a.npy", points)
+    np.save(tmp_path / "b.npy", points * 2)
+    np.random.seed(17)
+    state = np.random.get_state()
+    radius, coverage = PointCloudDataset._estimate_source_cutoff_radius(
+        source_root=str(tmp_path), source_files=["a.npy", "b.npy"],
+        target_points=2, quantile=0.5, estimation_samples_per_file=4,
+        seed=42, safety_factor=1.2, boundary_margin=None,
+    )
+    assert radius == 2.4
+    assert coverage == 0.625
+    current = np.random.get_state()
+    assert state[0] == current[0]
+    np.testing.assert_array_equal(state[1], current[1])
+    assert state[2:] == current[2:]

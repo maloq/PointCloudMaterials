@@ -180,3 +180,83 @@ def test_raytrace_standard_and_high_quality_presets(tmp_path) -> None:
     assert high_quality.raytrace_kwargs["raytrace_render_resolution"] == 1600
     assert high_quality.raytrace_kwargs["raytrace_render_samples"] == 64
     assert high_quality.raytrace_kwargs["raytrace_render_high_quality"] is True
+
+
+def test_lazy_static_preserves_source_rows_and_defers_point_reads(tmp_path):
+    import hashlib
+
+    import pytest
+    import torch
+
+    from src.data_utils.data_load import PointCloudDataset
+
+    points = np.indices((9, 9, 9)).reshape(3, -1).T.astype(np.float32)
+    np.save(tmp_path / "a.npy", points)
+    np.save(tmp_path / "b.npy", points + 20)
+    sources = [
+        {"name": "Al", "data_path": str(tmp_path),
+         "data_files": ["a.npy"], "radius": 2.0, "max_samples": 4},
+        {"name": "Al", "data_path": str(tmp_path),
+         "data_files": ["b.npy"], "radius": 2.5, "max_samples": 3},
+    ]
+    cache = {
+        "enabled": True, "cache_dir": str(tmp_path / "cache"),
+        "local_cache_dir": None, "rebuild": False,
+    }
+    eager = PointCloudDataset(
+        data_sources=sources, num_points=7, return_coords=True,
+        radius=2.0, drop_edge_samples=False, sample_cache_config=cache,
+    )
+    coords = np.stack([eager[i]["coords"].numpy() for i in range(len(eager))])
+    cfg = OmegaConf.create({"data": {
+        "data_sources": sources, "num_points": 7, "radius": 2.0,
+        "sample_type": "regular", "normalize": True, "sample_cache": cache,
+    }})
+    # Missing raw inputs cannot prevent construction or cached metadata access.
+    (tmp_path / "b.npy").rename(tmp_path / "held.npy")
+    lazy = LazyStaticAnalysisDataset(cfg, expected_coords=coords[:6])
+    assert len(lazy) == 6
+    assert list(lazy.sample_source_names) == ["Al"] * 4 + ["Al_1"] * 2
+    assert lazy.sample_radii[:] == [2.0] * 4 + [2.5] * 2
+    np.testing.assert_array_equal(lazy.center(-1), coords[5])
+    first = lazy[0]["points"].clone()
+    with pytest.raises(FileNotFoundError):
+        lazy[4]
+    (tmp_path / "held.npy").rename(tmp_path / "b.npy")
+    # Exact lazy output captured on f9d490b before source extraction.
+    reference = torch.stack([lazy[i]["points"] for i in range(6)])
+    assert hashlib.sha256(reference.numpy().tobytes()).hexdigest() == (
+        "89b03f114bf94dc150defbcc8da57cfcc30d2b24b3a3f93110b2d5716be78537"
+    )
+    torch.testing.assert_close(reference[0], first, rtol=0, atol=0)
+    for index in [5, 0, 4, 1, 5, -1]:
+        expected_index = index if index >= 0 else 5
+        torch.testing.assert_close(
+            lazy[index]["points"], reference[expected_index], rtol=0, atol=0
+        )
+        torch.testing.assert_close(
+            lazy[index]["coords"], eager[expected_index]["coords"],
+            rtol=0, atol=0,
+        )
+    # Loaded representatives continue to work without reading the source again.
+    (tmp_path / "b.npy").unlink()
+    torch.testing.assert_close(lazy[5]["points"], reference[5],
+                               rtol=0, atol=0)
+
+
+def test_lazy_static_rejects_mismatched_cache_order(tmp_path):
+    import pytest
+
+    metadata = {"total_samples": 2, "shards": [
+        {"source": "Al", "file": "b.npy", "count": 2},
+    ]}
+    (tmp_path / "metadata.json").write_text(json.dumps(metadata))
+    cfg = OmegaConf.create({"data": {
+        "data_path": str(tmp_path), "data_files": ["a.npy"],
+        "data_sources": [{"name": "Al", "data_path": str(tmp_path),
+                          "data_files": ["a.npy"]}],
+        "radius": 2.0, "num_points": 7,
+        "sample_cache": {"cache_dir": str(tmp_path)},
+    }})
+    with pytest.raises(ValueError, match="shard order"):
+        LazyStaticAnalysisDataset(cfg, expected_coords=np.zeros((2, 3)))
