@@ -134,7 +134,9 @@ module above. Historical simulation specialization/queue code is now under
 `src/simulation/campaigns/` (`independent_meam_high_temperature`, `local_source_queue`,
 `ta_initial_branch`, `al_crystallization_preflight`, `recover_ta_ti_float16`).
 The two existing `run_lammps_independent_meam_*` forwarding commands still import
-maintained simulation implementations. Historical exact protocols and arguments
+maintained simulation implementations. Remove those two temporary launchers only
+after the [post-queue cleanup conditions](../docs/src_refactor.md#post-queue-cleanup-checklist)
+are satisfied. Historical exact protocols and arguments
 are documented in [simulation records](../docs/simulations/README.md).
 The historical Aluminum shell launcher requires `PYTHON` and an explicit
 `CAMPAIGN_CONFIG`, and accepts `DEVICES`; restore its dependency tree as described

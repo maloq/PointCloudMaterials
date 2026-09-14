@@ -3,6 +3,9 @@
 Simulation production and inventories belong here. `experiments/` is reserved for
 scientific comparisons using the data.
 
+Deferred launcher retirement and compatibility exclusions are listed in the
+[post-queue cleanup checklist](../src_refactor.md#post-queue-cleanup-checklist).
+
 The location database is [configs/datasets.json](../../configs/datasets.json).
 It records stable IDs, physical storage roles, aliases and dependencies. The readable
 [collection catalog](collections.csv) and [run-record index](run_records.csv) are

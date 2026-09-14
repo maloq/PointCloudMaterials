@@ -576,3 +576,62 @@ validation, checkpoint/continuation gates and simulation integrity. None of the
 unrun checks is represented as passing or as permission to resume with changed
 source hashes. The structural refactor is complete within these explicit
 compatibility and scientific boundaries.
+
+### Post-queue cleanup checklist
+
+This is a deferred cleanup note, not a deletion plan approved for execution.
+An empty Slurm queue alone does not retire historical commands, saved-object
+imports, source-hash contracts or required restart data.
+
+**Remove the two temporary submitted-job launchers once their dependencies end:**
+
+| File to remove | Replacement for future runs | Removal condition |
+| --- | --- | --- |
+| `scripts/run_lammps_independent_meam_source_campaign.py` | `python scripts/run_lammps_campaign.py independent-meam-source ...` | Both independent-source campaigns and their controller/retry chains have finished; no submitted job, local controller or retained live recipe invokes this file. |
+| `scripts/run_lammps_independent_meam_510_520K_sources.py` | `python -m src.simulation.campaigns.independent_meam_high_temperature ...` | Same condition, including remaining high-temperature array tasks and final summarization/publication. |
+
+The September 14 read-only check still found array tasks `991371_3/4/5`
+(`al_520K_finish`) and job `991395` (`al_1m_450K`) running. Their inspected
+`run.sbatch` files invoke the maintained high-temperature module and elemental
+campaign dispatcher respectively, rather than these two temporary wrappers.
+The array launcher also performs final summarization and publication after all
+six workers finish. Retain those maintained implementation/command paths.
+Allocations `992069` and `991772` were running `bash`, and `991900` was pending;
+their allocation names do not establish whether child training queues are done.
+Recheck the live state when cleanup is actually performed; these IDs are a dated
+observation, not a permanent list of all dependencies.
+
+**Review these additional candidates after queues finish; migrate their remaining
+consumers before removing them:**
+
+| Candidate | Required follow-up before removal |
+| --- | --- |
+| CLI files matching `src/data_utils/synthetic/atomistic_*.py` | Move/reuse their argument parsing under simulation ownership and migrate recorded commands. `simulation/atomistic/{homogeneous_campaign,transition_campaign}.py` still construct old module commands; `scripts/run_optimized_al_homogeneous_campaign.sh` also invokes the old homogeneous command. Merely waiting for queues is insufficient. |
+| `src/training_methods/pretrained_mace_queue.py` | Migrate recipes to `python -m src.training_methods.pretrained_mace.queue`; verify no queued controller still launches the old module. Keep the actual `pretrained_mace/queue.py` implementation. |
+| `src/data_utils/spatiotemporal_tda.py` | Migrate remaining historical preparation recipes to `python -m src.data.topology_views`. |
+| `src/data_utils/mace_relaxed.py` | Migrate remaining paired-cache recipes to `python -m src.data.relaxed`. |
+| Command forwarding in `src/data_utils/pretrained_mace.py` | Migrate preparation commands to `python -m src.training_methods.pretrained_mace.data`. Its `Quadruplets` saved-object import has a separate lifetime; do not delete the whole file just because the command is unused. |
+
+**Do not remove solely because queues have finished:**
+
+- The maintained campaign modules, `scripts/run_lammps_campaign.py`, training
+  method packages, their `__main__.py` commands, or actual queue implementations.
+- Dataset/datamodule/history/SSL class import bridges and method-package class
+  exports required by retained saved objects. Check actual retained consumers
+  before narrowing them, as listed in “Compatibility retained and removed”.
+- Forecast reader/sampling bridges, metric-hashed numerical sources, or the
+  historical qualified-calculator class identity. These require their own
+  compatibility review; queue completion does not authorize a source transition.
+- Checkpoints, exact-resume state, immutable source/manifests/configurations,
+  paired test data, simulation restarts, or archived scientific records.
+
+Before deleting the eligible wrappers, inspect submitted jobs **and** controller
+processes, pending dependencies/retries, local training queues and handoff plans.
+Verify final summaries/publication, including stopped failures and restart state,
+and publish required SCRATCH artifacts to STORE. Preserve external launcher files
+and logs as execution provenance; do not edit them or treat them as repository
+cleanup targets. Recheck imports, command strings, tests, configs, current docs
+and restored recipes. Update `scripts/README.md` and this checklist in the removal
+commit, then run relevant command/import tests. Any later artifact cleanup must
+use the documented storage/clean preview and verified archive procedure; this
+source cleanup does not authorize deleting outputs.
