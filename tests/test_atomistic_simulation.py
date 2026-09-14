@@ -9,8 +9,8 @@ from ase import Atoms
 from ase.calculators.calculator import Calculator, all_changes
 from ase.constraints import FixAtoms
 
-from src.data_utils.synthetic.atomistic.config import load_config
-from src.data_utils.synthetic.atomistic.simulation import run_nvt
+from src.simulation.atomistic.config import load_config
+from src.simulation.atomistic.simulation import run_nvt
 
 
 PRODUCTION_CONFIG = (

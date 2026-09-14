@@ -13,7 +13,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.data_utils.synthetic.atomistic.lammps_shooting import (  # noqa: E402
+from src.simulation.atomistic.lammps_shooting import (  # noqa: E402
     load_shooting_config,
     prepare_campaign,
     run_branch,

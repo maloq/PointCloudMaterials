@@ -5,8 +5,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic.transition_config import load_transition_config
-from .atomistic.transition_slices import add_structure_slices_to_transition_datasets
+from src.simulation.atomistic.transition_config import load_transition_config
+from src.simulation.atomistic.transition_slices import add_structure_slices_to_transition_datasets
 
 
 def main() -> None:

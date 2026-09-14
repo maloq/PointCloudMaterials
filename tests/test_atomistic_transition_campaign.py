@@ -12,28 +12,28 @@ from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.md.nose_hoover_chain import IsotropicMTKNPT
 
-from src.data_utils.synthetic.atomistic.artifacts import label_interface
-from src.data_utils.synthetic.atomistic.config import potential_calculator_settings
-from src.data_utils.synthetic.atomistic.generator import select_calculator
-from src.data_utils.synthetic.atomistic.provenance import (
+from src.simulation.atomistic.artifacts import label_interface
+from src.simulation.atomistic.config import potential_calculator_settings
+from src.simulation.atomistic.generator import select_calculator
+from src.simulation.atomistic.provenance import (
     TRANSITION_CAMPAIGN_MD_PRODUCER_FILES,
     _producer_code_provenance,
 )
-from src.data_utils.synthetic.atomistic.simulation import (
+from src.simulation.atomistic.simulation import (
     set_maxwell_boltzmann_velocities,
 )
-from src.data_utils.synthetic.atomistic.transition_campaign import (
+from src.simulation.atomistic.transition_campaign import (
     analyze_transition_task,
     finalize_transition_campaign,
     run_analysis_worker,
     run_md_worker,
     run_transition_task,
 )
-from src.data_utils.synthetic.atomistic.transition_campaign_config import (
+from src.simulation.atomistic.transition_campaign_config import (
     load_content_bound_prepared_interface,
     load_transition_campaign_config,
 )
-from src.data_utils.synthetic.atomistic.transition_campaign_queue import (
+from src.simulation.atomistic.transition_campaign_queue import (
     TransitionCampaignTask,
     campaign_rows,
     claim_analysis_task,
@@ -43,9 +43,9 @@ from src.data_utils.synthetic.atomistic.transition_campaign_queue import (
     fail_task,
     initialize_transition_queue,
 )
-from src.data_utils.synthetic.atomistic.transition_generator import PreparedInterface
-from src.data_utils.synthetic.atomistic.transition_config import load_transition_config
-from src.data_utils.synthetic.atomistic.transition_resumable import (
+from src.simulation.atomistic.transition_generator import PreparedInterface
+from src.simulation.atomistic.transition_config import load_transition_config
+from src.simulation.atomistic.transition_resumable import (
     TransitionCheckpointStore,
     build_transition_mtk_dynamics,
     capture_mtk_state,
@@ -285,7 +285,7 @@ def test_queue_initialization_rolls_back_metadata_and_tasks_together(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     config = load_transition_campaign_config(_write_campaign(tmp_path))
-    import src.data_utils.synthetic.atomistic.transition_campaign_queue as queue_module
+    import src.simulation.atomistic.transition_campaign_queue as queue_module
 
     expected = queue_module._expected_tasks(config)
     duplicate_seed = list(expected[1])
@@ -440,7 +440,7 @@ def test_persistent_worker_and_deferred_analysis_vertical_slice(
     config = load_transition_campaign_config(_write_campaign(tmp_path))
     initialize_transition_queue(config, retry_failed=False)
     prepared = _prepared_interface()
-    import src.data_utils.synthetic.atomistic.transition_campaign as campaign_module
+    import src.simulation.atomistic.transition_campaign as campaign_module
 
     monkeypatch.setattr(
         campaign_module,
@@ -462,7 +462,7 @@ def test_persistent_worker_and_deferred_analysis_vertical_slice(
         return ((z < 0.25) | (z >= 0.75)).astype(np.int32)
 
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.transition_analysis._ptm_structure_types",
+        "src.simulation.atomistic.transition_analysis._ptm_structure_types",
         spatial_structure_types,
     )
     run_md_worker(

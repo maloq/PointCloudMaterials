@@ -13,13 +13,13 @@ from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.md.nose_hoover_chain import IsotropicMTKNPT
 
-from src.data_utils.synthetic.atomistic.artifacts import build_atom_table, label_bulk
-from src.data_utils.synthetic.atomistic.config import (
+from src.simulation.atomistic.artifacts import build_atom_table, label_bulk
+from src.simulation.atomistic.config import (
     load_config,
     potential_calculator_settings,
 )
-from src.data_utils.synthetic.atomistic.generator import select_calculator
-from src.data_utils.synthetic.atomistic.homogeneous_campaign import (
+from src.simulation.atomistic.generator import select_calculator
+from src.simulation.atomistic.homogeneous_campaign import (
     CALCULATOR_GRAPH_COUNTER_FIELDS,
     RAW_REPLICA_ARTIFACTS,
     analyze_campaign_replica,
@@ -27,27 +27,27 @@ from src.data_utils.synthetic.atomistic.homogeneous_campaign import (
     run_analysis_worker,
     run_md_worker,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_campaign_config import (
+from src.simulation.atomistic.homogeneous_campaign_config import (
     campaign_config_is_monotonic_measurement_extension,
     campaign_config_matches_after_path_relocation,
     load_homogeneous_campaign_config,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_campaign_queue import (
+from src.simulation.atomistic.homogeneous_campaign_queue import (
     CampaignReplicaTask,
     campaign_rows,
     initialize_campaign_queue,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_liquid_source import (
+from src.simulation.atomistic.homogeneous_liquid_source import (
     generate_homogeneous_liquid_source,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_config import (
+from src.simulation.atomistic.homogeneous_config import (
     trajectory_sample_steps,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_online import (
+from src.simulation.atomistic.homogeneous_online import (
     OnlineCrystallinityObservation,
     OnlineThresholdTracker,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_resumable import (
+from src.simulation.atomistic.homogeneous_resumable import (
     ResumableReplicaCheckpointStore,
     _campaign_identity,
     _checkpoint_runtime_is_portable,
@@ -55,11 +55,11 @@ from src.data_utils.synthetic.atomistic.homogeneous_resumable import (
     build_mtk_dynamics,
     capture_mtk_state,
 )
-from src.data_utils.synthetic.atomistic.potential_selection import (
+from src.simulation.atomistic.potential_selection import (
     POTENTIAL_SELECTION_POLICY_VERSION,
     POTENTIAL_SELECTION_SCHEMA_VERSION,
 )
-from src.data_utils.synthetic.atomistic.provenance import (
+from src.simulation.atomistic.provenance import (
     ExecutionProvenance,
     GENERIC_PRODUCER_FILES,
     TRANSITION_CAMPAIGN_MD_PRODUCER_FILES,
@@ -68,7 +68,7 @@ from src.data_utils.synthetic.atomistic.provenance import (
     homogeneous_liquid_source_producer_code_provenance,
     producer_code_is_compatible,
 )
-from src.data_utils.synthetic.atomistic.simulation import (
+from src.simulation.atomistic.simulation import (
     set_maxwell_boltzmann_velocities,
 )
 
@@ -214,7 +214,7 @@ def test_checkpoint_identity_migration_allows_only_certified_producer_change(
         }
     )
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.homogeneous_resumable."
+        "src.simulation.atomistic.homogeneous_resumable."
         "producer_code_is_compatible",
         lambda old, new: old == old_producer and new == new_producer,
     )
@@ -924,7 +924,7 @@ def test_md_worker_uses_runtime_generator_but_source_loader_uses_source_config(
     config = load_homogeneous_campaign_config(campaign_path)
     assert config.runtime_generator is not None
     initialize_campaign_queue(config, retry_failed=False)
-    import src.data_utils.synthetic.atomistic.homogeneous_campaign as campaign_module
+    import src.simulation.atomistic.homogeneous_campaign as campaign_module
 
     real_load_source = campaign_module._load_source_liquid
     real_select = campaign_module.select_calculator
@@ -1130,7 +1130,7 @@ def test_dynamic_worker_reuses_calculator_and_offline_analysis(
     campaign_path, _ = _write_test_campaign(tmp_path)
     config = load_homogeneous_campaign_config(campaign_path)
     initialize_campaign_queue(config, retry_failed=False)
-    import src.data_utils.synthetic.atomistic.homogeneous_campaign as campaign_module
+    import src.simulation.atomistic.homogeneous_campaign as campaign_module
 
     real_select = campaign_module.select_calculator
     selection_calls = 0

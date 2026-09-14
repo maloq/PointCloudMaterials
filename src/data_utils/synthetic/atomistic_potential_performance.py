@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic.potential_performance import (
+from src.simulation.atomistic.potential_performance import (
     load_potential_performance_config,
     run_potential_performance_benchmark,
 )

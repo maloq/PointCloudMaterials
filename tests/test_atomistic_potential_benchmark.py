@@ -11,7 +11,7 @@ from ase.calculators.emt import EMT
 from ase.calculators.singlepoint import SinglePointCalculator
 from ase.io import write
 
-from src.data_utils.synthetic.atomistic.potential_benchmark import (
+from src.simulation.atomistic.potential_benchmark import (
     DFTReferenceConfig,
     QualificationScopeConfig,
     _read_reference_frames,
@@ -30,7 +30,7 @@ BENCHMARK_CONFIG = (
 
 
 def test_verlet_cache_rebuilds_when_atom_count_changes() -> None:
-    from src.data_utils.synthetic.atomistic.calculator import VerletSkinMACECalculator
+    from src.simulation.atomistic.calculator import VerletSkinMACECalculator
 
     calculator = object.__new__(VerletSkinMACECalculator)
     calculator._reference_cell_A = np.eye(3)

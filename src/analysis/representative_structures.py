@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 
 from src.baselines.descriptor_baselines import CNADescriptorBaseline, infer_center_shell
-from src.data_utils.synthetic.atomistic.transition_analysis import (
+from src.simulation.atomistic.transition_analysis import (
     CRYSTALLINE_STRUCTURE_TYPES,
 )
 from .output_layout import write_json

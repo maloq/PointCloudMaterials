@@ -11,15 +11,15 @@ import yaml
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from src.data_utils.synthetic.atomistic import (
+from src.simulation.atomistic import (
     generate_dataset,
     load_config,
     load_homogeneous_crystallization_config,
     load_transition_config,
 )
-from src.data_utils.synthetic.atomistic.artifacts import PHASE_NAMES, label_interface
-from src.data_utils.synthetic.atomistic.generator import build_calculator, select_calculator
-from src.data_utils.synthetic.atomistic.provenance import configured_mace_provenance
+from src.simulation.atomistic.artifacts import PHASE_NAMES, label_interface
+from src.simulation.atomistic.generator import build_calculator, select_calculator
+from src.simulation.atomistic.provenance import configured_mace_provenance
 from src.data.synthetic import SyntheticPointCloudDataset
 from src.data.sampling import get_regular_samples
 
@@ -435,7 +435,7 @@ def test_mace_head_fallback_is_rejected(tmp_path: Path, monkeypatch) -> None:
             self.head = self.available_heads[-1]
 
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.calculator.VerletSkinMACECalculator",
+        "src.simulation.atomistic.calculator.VerletSkinMACECalculator",
         FallbackCalculator,
     )
     with pytest.raises(RuntimeError, match="does not exist.*available_heads"):

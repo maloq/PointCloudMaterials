@@ -10,19 +10,19 @@ import yaml
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from src.data_utils.synthetic.atomistic import (
+from src.simulation.atomistic import (
     add_phase_rdf_to_transition_dataset,
     generate_transition_dataset,
     load_transition_config,
 )
-from src.data_utils.synthetic.atomistic.simulation import ThermodynamicTrace
-from src.data_utils.synthetic.atomistic.transition_analysis import (
+from src.simulation.atomistic.simulation import ThermodynamicTrace
+from src.simulation.atomistic.transition_analysis import (
     analyze_phase_rdf,
     analyze_transition,
 )
-from src.data_utils.synthetic.atomistic.transition_config import TransitionBranchConfig
-from src.data_utils.synthetic.atomistic.transition_generator import _resolve_zero_velocity
-from src.data_utils.synthetic.atomistic.provenance import _producer_code_provenance
+from src.simulation.atomistic.transition_config import TransitionBranchConfig
+from src.simulation.atomistic.transition_generator import _resolve_zero_velocity
+from src.simulation.atomistic.provenance import _producer_code_provenance
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -114,7 +114,7 @@ def test_spatial_front_fit_tracks_two_interfaces_not_global_density(
         return crystalline.astype(np.int32)
 
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.transition_analysis._ptm_structure_types",
+        "src.simulation.atomistic.transition_analysis._ptm_structure_types",
         moving_interface_structure_types,
     )
     branch = TransitionBranchConfig(
@@ -425,7 +425,7 @@ def test_small_direct_coexistence_round_trip(
         return structure_types
 
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.transition_analysis._ptm_structure_types",
+        "src.simulation.atomistic.transition_analysis._ptm_structure_types",
         spatial_test_structure_types,
     )
     result = generate_transition_dataset(

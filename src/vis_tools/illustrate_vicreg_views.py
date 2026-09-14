@@ -28,7 +28,7 @@ from scipy.spatial import cKDTree
 
 sys.path.append(os.getcwd())
 
-from src.data_utils.synthetic.visualization import (
+from src.simulation.visualization import (
     _build_local_coordination_edges,
     _compute_radial_colormap_colors,
     _draw_edges,

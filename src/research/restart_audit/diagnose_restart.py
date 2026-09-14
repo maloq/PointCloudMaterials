@@ -13,7 +13,7 @@ import numpy as np
 REPOSITORY = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPOSITORY))
 from src.simulation.campaigns.predictive_dynamics_15ps import _render_uninterrupted_24ps_input
-from src.data_utils.synthetic.atomistic.lammps_shooting import _lammps_command, _lammps_environment
+from src.simulation.atomistic.lammps_shooting import _lammps_command, _lammps_environment
 
 
 def read_probe(path):

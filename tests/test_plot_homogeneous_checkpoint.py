@@ -86,7 +86,7 @@ def test_render_checkpoint_visualizations_writes_live_and_step_stamped_images(
         write_dashboard,
     )
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.transition_analysis."
+        "src.simulation.atomistic.transition_analysis."
         "write_structure_slice_visualization",
         write_structure_slices,
     )

@@ -38,7 +38,7 @@ from src.data.trajectories.shooting import (  # noqa: E402
     ShootingBinaryTrajectory,
     convert_shooting_trajectory,
 )
-from src.data_utils.synthetic.atomistic.transition_analysis import (  # noqa: E402
+from src.simulation.atomistic.transition_analysis import (  # noqa: E402
     CRYSTALLINE_STRUCTURE_TYPES,
     STRUCTURE_NAMES,
 )

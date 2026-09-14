@@ -36,7 +36,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from src.analysis.plots.plot_homogeneous_checkpoint import _plot_dashboard  # noqa: E402
-from src.data_utils.synthetic.atomistic.homogeneous_analysis import (  # noqa: E402
+from src.simulation.atomistic.homogeneous_analysis import (  # noqa: E402
     HomogeneousCrystallizationAnalysis,
     ReplicaObservation,
     analyze_homogeneous_crystallization,
@@ -44,11 +44,11 @@ from src.data_utils.synthetic.atomistic.homogeneous_analysis import (  # noqa: E
     write_homogeneous_progress_visualization,
     write_homogeneous_rdf_visualization,
 )
-from src.data_utils.synthetic.atomistic.simulation import (  # noqa: E402
+from src.simulation.atomistic.simulation import (  # noqa: E402
     ThermodynamicTrace,
     validate_thermodynamic_trace,
 )
-from src.data_utils.synthetic.atomistic.transition_analysis import (  # noqa: E402
+from src.simulation.atomistic.transition_analysis import (  # noqa: E402
     STRUCTURE_NAMES,
     write_structure_slice_visualization,
 )

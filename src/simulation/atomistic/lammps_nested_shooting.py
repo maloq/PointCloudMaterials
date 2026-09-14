@@ -33,7 +33,7 @@ from src.data.trajectories.shooting import (
     convert_shooting_trajectory,
 )
 from src.data.temporal import TemporalLAMMPSDumpDataset
-from src.data_utils.synthetic.atomistic.transition_analysis import (
+from src.simulation.atomistic.transition_analysis import (
     CRYSTALLINE_STRUCTURE_TYPES,
 )
 from src.temporal_vamp.simulation_catalog import (
@@ -42,7 +42,7 @@ from src.temporal_vamp.simulation_catalog import (
 )
 
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_VERSION = 1
 EXPECTED_ATOM_COUNT = 70_304
 LAMMPS_MAX_SEED = 900_000_000

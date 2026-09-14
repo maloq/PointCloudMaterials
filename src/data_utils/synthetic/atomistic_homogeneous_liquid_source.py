@@ -5,8 +5,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic.config import load_config
-from .atomistic.homogeneous_liquid_source import generate_homogeneous_liquid_source
+from src.simulation.atomistic.config import load_config
+from src.simulation.atomistic.homogeneous_liquid_source import generate_homogeneous_liquid_source
 
 
 def main() -> None:

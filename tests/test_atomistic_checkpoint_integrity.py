@@ -10,18 +10,18 @@ import pytest
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from src.data_utils.synthetic.atomistic.checkpoints import (
+from src.simulation.atomistic.checkpoints import (
     CHECKPOINT_SCHEMA_VERSION,
     CheckpointStore,
 )
-from src.data_utils.synthetic.atomistic.config import load_config
-from src.data_utils.synthetic.atomistic.provenance import (
+from src.simulation.atomistic.config import load_config
+from src.simulation.atomistic.provenance import (
     build_execution_provenance,
     injected_calculator_provenance,
     _producer_code_provenance,
     validate_configured_source_manifest,
 )
-from src.data_utils.synthetic.atomistic.simulation import (
+from src.simulation.atomistic.simulation import (
     ThermodynamicTrace,
     _TraceRecorder,
 )
@@ -233,3 +233,22 @@ def test_derived_dataset_rejects_legacy_source_without_provenance(
         manifest_path=manifest_path,
     )
     assert calculator["head"] == "default"
+
+
+def test_qualified_calculator_identity_keeps_real_producer_source():
+    import inspect
+    from importlib import import_module
+
+    from src.simulation.atomistic.calculator import VerletSkinMACECalculator
+    from src.simulation.atomistic.provenance import ATOMISTIC_PACKAGE_ROOT
+
+    canonical = import_module(VerletSkinMACECalculator.__module__)
+    assert canonical.VerletSkinMACECalculator is VerletSkinMACECalculator
+    assert VerletSkinMACECalculator.__module__ == (
+        "src.data_utils.synthetic.atomistic.calculator"
+    )
+    implementation = ATOMISTIC_PACKAGE_ROOT / "calculator.py"
+    assert Path(inspect.getsourcefile(
+        VerletSkinMACECalculator.calculate
+    )).resolve() == implementation.resolve()
+    assert ATOMISTIC_PACKAGE_ROOT == REPOSITORY_ROOT / "src/simulation/atomistic"

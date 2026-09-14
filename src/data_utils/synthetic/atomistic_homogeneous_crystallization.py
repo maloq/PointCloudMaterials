@@ -6,8 +6,8 @@ import argparse
 from dataclasses import replace
 from pathlib import Path
 
-from .atomistic.homogeneous_config import load_homogeneous_crystallization_config
-from .atomistic.homogeneous_generator import (
+from src.simulation.atomistic.homogeneous_config import load_homogeneous_crystallization_config
+from src.simulation.atomistic.homogeneous_generator import (
     generate_homogeneous_crystallization_dataset,
 )
 

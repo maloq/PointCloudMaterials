@@ -9,23 +9,23 @@ import yaml
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from src.data_utils.synthetic.atomistic import (
+from src.simulation.atomistic import (
     generate_homogeneous_crystallization_dataset,
     load_config,
     load_homogeneous_crystallization_config,
 )
-from src.data_utils.synthetic.atomistic.artifacts import (
+from src.simulation.atomistic.artifacts import (
     build_atom_table,
     label_bulk,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_analysis import (
+from src.simulation.atomistic.homogeneous_analysis import (
     ReplicaObservation,
     analyze_homogeneous_crystallization,
     analyze_replica_survival,
     first_persistent_threshold_run,
 )
-from src.data_utils.synthetic.atomistic.simulation import ThermodynamicTrace
-from src.data_utils.synthetic.atomistic.provenance import _producer_code_provenance
+from src.simulation.atomistic.simulation import ThermodynamicTrace
+from src.simulation.atomistic.provenance import _producer_code_provenance
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]

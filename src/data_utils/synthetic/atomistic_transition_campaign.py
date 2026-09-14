@@ -5,14 +5,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic.transition_campaign import (
+from src.simulation.atomistic.transition_campaign import (
     run_analysis_worker,
     run_deferred_transition_analysis,
     run_md_worker,
     run_transition_campaign,
 )
-from .atomistic.transition_campaign_config import load_transition_campaign_config
-from .atomistic.transition_campaign_queue import campaign_rows
+from src.simulation.atomistic.transition_campaign_config import load_transition_campaign_config
+from src.simulation.atomistic.transition_campaign_queue import campaign_rows
 
 
 def _devices(value: str) -> tuple[str, ...]:

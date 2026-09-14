@@ -7,12 +7,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.data_utils.synthetic.atomistic.config import (
+from src.simulation.atomistic.config import (
     CONFIGURED_MACE_IMPLEMENTATION_CLASS,
     load_config,
     potential_calculator_settings,
 )
-from src.data_utils.synthetic.atomistic.potential_performance import (
+from src.simulation.atomistic.potential_performance import (
     PotentialPerformanceConfig,
     _combined_cuda_peaks,
     _numerical_parity,
@@ -22,7 +22,7 @@ from src.data_utils.synthetic.atomistic.potential_performance import (
     require_numerical_parity,
     summarize_block_timings,
 )
-from src.data_utils.synthetic.atomistic.potential_selection import (
+from src.simulation.atomistic.potential_selection import (
     PotentialSelectionConfig,
     select_potential,
 )

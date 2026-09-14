@@ -1,6 +1,6 @@
 """CLI for force-driven atomistic benchmark generation.
 
-The implementation lives in :mod:`src.data_utils.synthetic.atomistic`.  This
+The implementation lives in :mod:`src.simulation.atomistic`.  This
 module remains the executable entry point because repository scripts invoke it
 with ``python -m src.data_utils.synthetic.atomistic_generator``.
 """
@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic import GenerationResult, GeneratorConfig, generate_dataset, load_config
+from src.simulation.atomistic import GenerationResult, GeneratorConfig, generate_dataset, load_config
 
 __all__ = ["GenerationResult", "GeneratorConfig", "generate_dataset", "load_config"]
 

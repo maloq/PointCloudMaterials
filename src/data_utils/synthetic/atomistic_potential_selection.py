@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic.potential_selection import (
+from src.simulation.atomistic.potential_selection import (
     load_potential_selection_config,
     select_potential,
 )

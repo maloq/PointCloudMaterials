@@ -10,7 +10,7 @@ from typing import Any
 import yaml
 
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 CONFIGURED_MACE_IMPLEMENTATION_CLASS = (
     "src.data_utils.synthetic.atomistic.calculator.VerletSkinMACECalculator"
 )

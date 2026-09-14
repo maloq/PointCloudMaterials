@@ -4,7 +4,7 @@ from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
 
-from src.data_utils.synthetic.atomistic.lammps_nested_shooting import (
+from src.simulation.atomistic.lammps_nested_shooting import (
     _write_schedule,
     _source_splits,
     multirate_output_steps,

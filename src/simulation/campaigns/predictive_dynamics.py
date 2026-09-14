@@ -47,7 +47,7 @@ from src.data.shooting import (  # noqa: E402
     resolve_shooting_trajectory_path,
     validate_complete_shooting_branch,
 )
-from src.data_utils.synthetic.atomistic.lammps_shooting import (  # noqa: E402
+from src.simulation.atomistic.lammps_shooting import (  # noqa: E402
     render_lammps_input,
     run_branch as run_lammps_dynamics,
 )

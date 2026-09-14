@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from src.data_utils.synthetic.atomistic.lammps_shooting import (
+from src.simulation.atomistic.lammps_shooting import (
     _lammps_command,
     _materialize_missing_branch_input,
     branch_random_seeds,
@@ -14,7 +14,7 @@ from src.data_utils.synthetic.atomistic.lammps_shooting import (
 def test_lammps_command_uses_slurm_pmi_without_hydra(monkeypatch) -> None:
     monkeypatch.setenv("SLURM_JOB_ID", "123")
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.lammps_shooting.shutil.which",
+        "src.simulation.atomistic.lammps_shooting.shutil.which",
         lambda executable: "/usr/bin/srun" if executable == "srun" else None,
     )
     command = _lammps_command(mpi_ranks=24, launcher="srun_pmi2")
@@ -31,7 +31,7 @@ def test_lammps_command_uses_slurm_pmi_without_hydra(monkeypatch) -> None:
 def test_lammps_command_uses_local_mpiexec_outside_slurm(monkeypatch) -> None:
     monkeypatch.delenv("SLURM_JOB_ID", raising=False)
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.lammps_shooting.shutil.which",
+        "src.simulation.atomistic.lammps_shooting.shutil.which",
         lambda executable: "/pointnet/bin/mpiexec" if executable == "mpiexec" else None,
     )
     command = _lammps_command(mpi_ranks=48, launcher="local_mpiexec")

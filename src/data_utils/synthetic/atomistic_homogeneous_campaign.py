@@ -5,13 +5,13 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic.homogeneous_campaign import (
+from src.simulation.atomistic.homogeneous_campaign import (
     run_analysis_worker,
     run_deferred_campaign_analysis,
     run_md_worker,
     run_optimized_campaign,
 )
-from .atomistic.homogeneous_campaign_config import (
+from src.simulation.atomistic.homogeneous_campaign_config import (
     load_homogeneous_campaign_config,
 )
 

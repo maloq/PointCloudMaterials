@@ -23,17 +23,17 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.data_utils.synthetic.atomistic.homogeneous_analysis import (  # noqa: E402
+from src.simulation.atomistic.homogeneous_analysis import (  # noqa: E402
     first_persistent_threshold_run,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_campaign_config import (  # noqa: E402
+from src.simulation.atomistic.homogeneous_campaign_config import (  # noqa: E402
     HomogeneousCampaignConfig,
     load_homogeneous_campaign_config,
 )
-from src.data_utils.synthetic.atomistic.homogeneous_resumable import (  # noqa: E402
+from src.simulation.atomistic.homogeneous_resumable import (  # noqa: E402
     _load_and_verify_named_snapshot,
 )
-from src.data_utils.synthetic.atomistic.simulation import (  # noqa: E402
+from src.simulation.atomistic.simulation import (  # noqa: E402
     ThermodynamicTrace,
     validate_thermodynamic_trace,
 )
@@ -580,7 +580,7 @@ def render_checkpoint_visualizations(
     outputs = [dashboard_output]
 
     if include_structure_slices or structure_output is not None:
-        from src.data_utils.synthetic.atomistic.transition_analysis import (
+        from src.simulation.atomistic.transition_analysis import (
             write_structure_slice_visualization,
         )
 

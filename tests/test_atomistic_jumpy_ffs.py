@@ -13,20 +13,20 @@ import yaml
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from src.data_utils.synthetic.atomistic.config import load_config
-from src.data_utils.synthetic.atomistic.jumpy_ffs import (
+from src.simulation.atomistic.config import load_config
+from src.simulation.atomistic.jumpy_ffs import (
     DynamicalState,
     JumpyFFSAlgorithmConfig,
     require_branchable_integrator,
     run_jumpy_ffs,
 )
-from src.data_utils.synthetic.atomistic.jumpy_ffs_config import (
+from src.simulation.atomistic.jumpy_ffs_config import (
     load_jumpy_ffs_config,
 )
-from src.data_utils.synthetic.atomistic.jumpy_ffs_engine import (
+from src.simulation.atomistic.jumpy_ffs_engine import (
     LangevinNVTShotEngine,
 )
-from src.data_utils.synthetic.atomistic.potential_selection import (
+from src.simulation.atomistic.potential_selection import (
     POTENTIAL_SELECTION_POLICY_VERSION,
     POTENTIAL_SELECTION_SCHEMA_VERSION,
 )

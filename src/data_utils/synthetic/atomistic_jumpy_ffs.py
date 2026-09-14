@@ -5,8 +5,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .atomistic.jumpy_ffs_config import load_jumpy_ffs_config
-from .atomistic.jumpy_ffs_runner import generate_jumpy_ffs
+from src.simulation.atomistic.jumpy_ffs_config import load_jumpy_ffs_config
+from src.simulation.atomistic.jumpy_ffs_runner import generate_jumpy_ffs
 
 
 def main() -> None:

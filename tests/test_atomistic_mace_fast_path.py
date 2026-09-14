@@ -13,8 +13,8 @@ from mace import data as mace_data
 from mace.data.padding_tools import build_fake_padding_graph
 from mace.tools import AtomicNumberTable, torch_geometric, torch_tools
 
-from src.data_utils.synthetic.atomistic.calculator import VerletSkinMACECalculator
-from src.data_utils.synthetic.atomistic.config import (
+from src.simulation.atomistic.calculator import VerletSkinMACECalculator
+from src.simulation.atomistic.config import (
     load_config,
     mace_kernel_backend,
 )
@@ -477,7 +477,7 @@ def test_force_only_nvt_mode_is_explicit_and_identity_bound(tmp_path) -> None:
 
 def test_mace_0315_rejects_every_compiled_or_oeq_request(monkeypatch) -> None:
     monkeypatch.setattr(
-        "src.data_utils.synthetic.atomistic.calculator.version",
+        "src.simulation.atomistic.calculator.version",
         lambda _distribution: "0.3.15",
     )
     with pytest.raises(
