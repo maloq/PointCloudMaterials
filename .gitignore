@@ -15,6 +15,8 @@ checkpoints
 !/output/**/tables/METRICS.md
 # Training history is noisy; publish collected comparison/score tables instead.
 /output/**/tables/metrics.csv
+# Keep PDF exports local, including uppercase file extensions.
+/output/**/*.[pP][dD][fF]
 # Keep only the frozen metric contract from each run's technical directory.
 /output/**/technical/**
 !/output/**/technical/metric-contract.json
