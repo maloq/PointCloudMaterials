@@ -2,7 +2,7 @@
 from types import SimpleNamespace
 import pytest
 import torch
-from src.training_methods.mace_performance import encode_clouds,replay_chunks
+from src.training_methods.shared.mace_performance import encode_clouds,replay_chunks
 from src.models.encoders.pretrained_mace import dense_matmul_precision
 
 

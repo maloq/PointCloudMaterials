@@ -13,13 +13,13 @@ from sklearn.decomposition import PCA
 import torch
 from torch import nn
 
-from src.data_utils.pretrained_mace import Quadruplets
-from src.data_utils.pretrained_mace_gpu import GPUQuadruplets
+from src.training_methods.pretrained_mace.data import Quadruplets
+from src.training_methods.pretrained_mace.resident import GPUQuadruplets
 from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.pretrained_mace import PretrainedMACEEncoder
 from src.training_methods.shared.mace_logging import flatten_metrics,start_wandb,save_checkpoint
 from src.training_methods.shared.mace_objective import objective,cached_step,make_scheduler,training_views
-from src.training_methods.mace_performance import encode_views
+from src.training_methods.shared.mace_performance import encode_views
 
 
 class Learner(nn.Module):
@@ -169,12 +169,12 @@ def run(cfg,stage):
         with tracked_run(out,kind='training' if stage in ('train','all') else 'analysis',configs=[Path(sys.argv[sys.argv.index('--config')+1])],command=[sys.executable,*sys.argv]):
             if stage in ('prepare','all'):
                 if cfg['protocol']=='thermal80':
-                    from src.data_utils.mace_relaxed import prepare
+                    from src.data.relaxed import prepare
                 else:
-                    from src.data_utils.pretrained_mace import prepare
+                    from src.training_methods.pretrained_mace.data import prepare
                 prepare(cfg);summarize_data(cfg)
             if stage=='preflight':
-                from src.training_methods.mace_preflight import preflight
+                from src.training_methods.pretrained_mace.preflight import preflight
                 preflight(cfg)
             if stage in ('train','all'):
                 write_json(out/'status.json',dict(state='initializing_training',utc=datetime.now(timezone.utc).isoformat()))

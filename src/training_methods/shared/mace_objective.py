@@ -2,7 +2,7 @@
 import math
 import numpy as np
 import torch
-from src.training_methods.mace_performance import encode_views, replay_chunks
+from src.training_methods.shared.mace_performance import encode_views, replay_chunks
 
 
 def variance_covariance(z):

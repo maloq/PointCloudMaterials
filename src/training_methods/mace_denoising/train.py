@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from src.data_utils.mace_denoising import prepare, cache_features, signature
+from src.training_methods.mace_denoising.data import prepare, cache_features, signature
 from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.mace_denoising import ResidualFrameFusion, AtomTemporalFusion
 from src.models.encoders.mace_temporal import PretrainedMACETemporalEncoder
@@ -292,7 +292,7 @@ def run(cfg, stage):
                          configs=[Path(sys.argv[sys.argv.index('--config')+1])], command=[sys.executable, *sys.argv]):
             if stage in ('prepare', 'all'):
                 if cfg['protocol'] == 'denoising80_reuse':
-                    from src.data_utils.mace_existing import prepare_existing
+                    from src.training_methods.mace_denoising.existing_data import prepare_existing
                     prepare_existing(cfg)
                 else:
                     prepare(cfg)

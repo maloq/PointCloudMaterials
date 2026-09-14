@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 from src.data.conversion.training_cache import convert_file
-from src.data_utils.pretrained_mace import Quadruplets
+from src.training_methods.pretrained_mace.data import Quadruplets
 
 
 def test_local_cache_conversion_decodes_float32_and_is_verifiably_repeatable(tmp_path):

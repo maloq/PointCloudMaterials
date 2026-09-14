@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from src.data_utils.mace_history import history_clouds
-from src.data_utils.mace_relaxed import paired_clouds
+from src.data.histories import history_clouds
+from src.data.relaxed import paired_clouds
 
 
 def test_history_tracks_anchor_ids_across_periodic_crossings():

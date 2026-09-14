@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 import torch
 from torch import nn
 
-from src.data_utils.mace_history import Histories, prepare
+from src.data.histories import Histories, prepare
 from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.mace_temporal import PretrainedMACETemporalEncoder
 from src.training_methods.shared.mace_logging import flatten_metrics, save_checkpoint, start_wandb

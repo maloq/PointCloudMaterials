@@ -9,7 +9,7 @@ from scipy.spatial import cKDTree
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from src.data_utils.mace_history import history_clouds
+from src.data.histories import history_clouds
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.data_utils.topology_targets import fit_targets, transform_target
 from src.experiment_runner.registry import sha256, write_json

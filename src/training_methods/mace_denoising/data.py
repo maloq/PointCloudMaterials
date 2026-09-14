@@ -12,8 +12,8 @@ import torch
 
 from src.analysis.liquid_structure import persistence_image
 from src.data.conversion.relaxation import read_relaxed
-from src.data_utils.mace_history import history_clouds
-from src.data_utils.mace_relaxed import paired_clouds
+from src.data.histories import history_clouds
+from src.data.relaxed import paired_clouds
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.data_utils.temporal_campaign import write_json
 from src.simulation.relaxation import relax_frame, sha256
@@ -50,8 +50,8 @@ def prepare(cfg):
         if source['split'] != expected[source['source_split']]:
             raise ValueError(f"Changed source split for {source['name']}")
     producer = {str(p): sha256(p) for p in (
-        Path(__file__), Path('src/data_utils/mace_history.py'),
-        Path('src/data_utils/mace_relaxed.py'), Path('src/analysis/liquid_structure.py'),
+        Path(__file__), Path('src/data/histories.py'),
+        Path('src/data/relaxed.py'), Path('src/analysis/liquid_structure.py'),
         Path('src/simulation/relaxation.py'))}
     records = []
     with ProcessPoolExecutor(max_workers=cfg['workers']) as pool:
