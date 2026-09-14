@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from src.utils.training_utils import get_optimizers_and_scheduler
+from src.training_methods.shared.optimizers import get_optimizers_and_scheduler
 
 
 def _hparams(**overrides):

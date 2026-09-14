@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import torch
 from src.data_utils.pretrained_mace import Quadruplets
-from src.training_methods.mace_objective import objective,cached_step,make_scheduler
+from src.training_methods.shared.mace_objective import objective,cached_step,make_scheduler
 from src.training_methods.mace_performance import encode_views
 from src.analysis.liquid_structure import persistence_image
 

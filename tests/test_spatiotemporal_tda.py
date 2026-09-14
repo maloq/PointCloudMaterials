@@ -77,7 +77,7 @@ class TinyEncoder(nn.Module):
 
 
 def test_tda_preserves_vicreg_and_reuses_projector_once_per_view(monkeypatch):
-    monkeypatch.setattr('src.training_methods.base_ssl_module.build_encoder', lambda cfg:TinyEncoder())
+    monkeypatch.setattr('src.training_methods.shared.base_ssl_module.build_encoder', lambda cfg:TinyEncoder())
     cfg = OmegaConf.load('configs/vicreg_pretrained_mace_geometry_tda.yaml')
     cfg.vicreg_jitter_std = 0.
     cfg.vicreg_mirror_prob = 0.

@@ -64,7 +64,7 @@ class TinyHistory(nn.Module):
 
 
 def test_history_vicreg_exact_loss_and_tda_supervises_only_anchor(monkeypatch):
-    monkeypatch.setattr('src.training_methods.base_ssl_module.build_encoder', lambda cfg:TinyHistory())
+    monkeypatch.setattr('src.training_methods.shared.base_ssl_module.build_encoder', lambda cfg:TinyHistory())
     cfg = config(['data.input_mode=history', 'vicreg_jitter_std=0', 'vicreg_mirror_prob=0'])
     torch.manual_seed(7)
     model = VICRegModule(cfg)
@@ -89,7 +89,7 @@ def test_history_vicreg_exact_loss_and_tda_supervises_only_anchor(monkeypatch):
 
 
 def test_history_mirror_is_shared_over_time_and_preserves_membership(monkeypatch):
-    monkeypatch.setattr('src.training_methods.base_ssl_module.build_encoder', lambda cfg:TinyHistory())
+    monkeypatch.setattr('src.training_methods.shared.base_ssl_module.build_encoder', lambda cfg:TinyHistory())
     cfg = config(['data.input_mode=history', 'vicreg_jitter_std=0', 'vicreg_mirror_prob=1'])
     model = VICRegModule(cfg)
     points = torch.randn(12, 1, 80, 3).expand(-1, 5, -1, -1).clone()

@@ -16,7 +16,7 @@ from numpy.lib.format import open_memmap
 from omegaconf import OmegaConf
 import torch
 from src.models.encoders.smooth_density import DensityEncoder, SmoothDensity
-from src.training_methods.contrastive_learning.vicreg import VICRegLoss
+from src.training_methods.shared.vicreg import VICRegLoss
 from src.research.smooth_temporal_encoder.prepare import write_json
 
 

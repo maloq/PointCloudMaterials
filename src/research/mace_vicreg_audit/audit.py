@@ -11,8 +11,8 @@ from torch import nn
 from src.data_utils.pretrained_mace import Quadruplets
 from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.pretrained_mace import PretrainedMACEEncoder
-from src.training_methods.contrastive_learning.vicreg import VICRegLoss
-from src.training_methods.mace_objective import objective, variance_covariance, cached_step
+from src.training_methods.shared.vicreg import VICRegLoss
+from src.training_methods.shared.mace_objective import objective, variance_covariance, cached_step
 from src.training_methods.mace_performance import encode_views, replay_chunks
 
 

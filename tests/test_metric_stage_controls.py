@@ -3,8 +3,8 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from src.training_methods.base_ssl_module import BaseSSLModule
-from src.training_methods.contrastive_learning.supervised_cache import (
+from src.training_methods.shared.base_ssl_module import BaseSSLModule
+from src.training_methods.shared.supervised_cache import (
     init_supervised_cache,
     log_supervised_metrics,
 )
@@ -41,7 +41,7 @@ def test_metric_stage_controls_reject_unknown_stage():
 def test_metric_loader_reads_concrete_datamodule_in_split_order():
     from torch.utils.data import Subset, TensorDataset
 
-    from src.training_methods.contrastive_learning.supervised_cache import (
+    from src.training_methods.shared.supervised_cache import (
         _build_supervised_eval_loader,
         _get_stage_dataset,
     )

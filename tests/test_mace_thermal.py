@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import numpy as np
 import torch
 from src.data_utils.mace_relaxed import paired_clouds
-from src.training_methods.mace_objective import objective,cached_step,training_views
+from src.training_methods.shared.mace_objective import objective,cached_step,training_views
 from src.training_methods.mace_performance import encode_views
 
 

@@ -1,6 +1,6 @@
 import torch
 
-from src.training_methods.base_ssl_module import BaseSSLModule
+from src.training_methods.shared.base_ssl_module import BaseSSLModule
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 
 

@@ -5,8 +5,8 @@ import pytest
 import torch
 from omegaconf import OmegaConf
 
-from src.training_methods.base_ssl_module import BaseSSLModule
-from src.training_methods.contrastive_learning.vicreg import VICRegLoss
+from src.training_methods.shared.base_ssl_module import BaseSSLModule
+from src.training_methods.shared.vicreg import VICRegLoss
 
 
 def test_midpoint_factor_vae_projector_is_context_invariant_in_eval() -> None:

@@ -9,7 +9,7 @@ import torch.multiprocessing as mp
 from omegaconf import OmegaConf
 from torch.nn.parallel import DistributedDataParallel
 
-from src.training_methods.contrastive_learning.vicreg import VICRegLoss
+from src.training_methods.shared.vicreg import VICRegLoss
 
 
 _WEIGHT = torch.tensor(

@@ -17,8 +17,8 @@ from src.data_utils.pretrained_mace import Quadruplets
 from src.data_utils.pretrained_mace_gpu import GPUQuadruplets
 from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.pretrained_mace import PretrainedMACEEncoder
-from src.training_methods.mace_logging import flatten_metrics,start_wandb,save_checkpoint
-from src.training_methods.mace_objective import objective,cached_step,make_scheduler,training_views
+from src.training_methods.shared.mace_logging import flatten_metrics,start_wandb,save_checkpoint
+from src.training_methods.shared.mace_objective import objective,cached_step,make_scheduler,training_views
 from src.training_methods.mace_performance import encode_views
 
 
@@ -63,7 +63,7 @@ def validate(model,data,gpu,cfg,epoch):
     eligible=torch.tensor(data.temporal_mask(indices),device='cuda')
     loss,parts=objective(model,z,target,eligible,cfg['loss'],epoch)
     result=dict(loss=float(loss),**{k:float(v) for k,v in parts.items()},by_material={})
-    from src.training_methods.mace_objective import representation_ratios
+    from src.training_methods.shared.mace_objective import representation_ratios
     ratios=representation_ratios(z,m,eligible)
     for i,name in enumerate(('Al','Mg','Ta')):
         covariance=torch.cov(z[m==i,0].T).double()

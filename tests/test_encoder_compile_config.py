@@ -1,6 +1,6 @@
 import pytest
 
-from src.training_methods.base_ssl_module import _validate_encoder_compile_mode
+from src.training_methods.shared.base_ssl_module import _validate_encoder_compile_mode
 
 
 @pytest.mark.parametrize(

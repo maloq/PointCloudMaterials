@@ -6,7 +6,7 @@ import torch
 from hydra import compose, initialize_config_dir
 
 from src.data_utils.spatiotemporal_views import local_views, periodic_tree
-from src.training_methods.contrastive_learning.vicreg import VICRegLoss
+from src.training_methods.shared.vicreg import VICRegLoss
 
 
 def test_temporal_view_tracks_same_atom_across_periodic_boundary():

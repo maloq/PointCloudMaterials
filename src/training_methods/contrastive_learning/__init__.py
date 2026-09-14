@@ -16,11 +16,11 @@ def __getattr__(name):
 
         return FactorVAELoss
     if name == "VICRegLoss":
-        from .vicreg import VICRegLoss
+        from src.training_methods.shared.vicreg import VICRegLoss
 
         return VICRegLoss
     if name == "SwAVLoss":
-        from .swav import SwAVLoss
+        from src.training_methods.shared.swav import SwAVLoss
 
         return SwAVLoss
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -16,7 +16,7 @@ from src.data_utils.mace_denoising import prepare, cache_features, signature
 from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.mace_denoising import ResidualFrameFusion, AtomTemporalFusion
 from src.models.encoders.mace_temporal import PretrainedMACETemporalEncoder
-from src.training_methods.mace_objective import variance_covariance
+from src.training_methods.shared.mace_objective import variance_covariance
 from src.data_utils.topology_targets import (
     BLOCKS, fit_targets, transform_target, raw_prediction, topology_loss,
 )

@@ -4,7 +4,7 @@ import pytest
 import torch
 from omegaconf import OmegaConf
 
-from src.training_methods.contrastive_learning.vicreg import VICRegLoss
+from src.training_methods.shared.vicreg import VICRegLoss
 
 
 def _vicreg_with_mirror_probability(probability: float) -> VICRegLoss:
