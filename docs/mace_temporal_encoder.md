@@ -97,8 +97,8 @@ Supervise only the combined embedding against the relaxed anchor's TDA, with
 train-only target PCA/scaling, and apply any variance/covariance regularization
 to that combined embedding. The encoder contains no prediction head or loss.
 The existing per-view thermal/VICReg objective is separate from the maintained
-`temporal80` training protocol in `src/training_methods/mace_temporal.py`.
-That protocol builds identity-matched histories with `src/data_utils/mace_history.py`,
+`temporal80` training protocol in `src/training_methods/mace_temporal/train.py`.
+That protocol builds identity-matched histories with `src/data/histories.py`,
 trains on relaxed-anchor TDA with variance/covariance regularization, and analyzes
 real held-out histories. See the [training experiment](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_temporal_transformer_20260909/README.md)
 for its config and the existing MACE family command. Selecting the encoder

@@ -351,3 +351,228 @@ Slurm was inspected read-only before moves. Active jobs 991371_3/4/5 invoke
 `scripts/run_lammps_campaign.py elemental`. Those launcher paths and arguments
 are retained. The external SBATCH files were inspected but not edited. Other
 allocations were interactive/pending bash jobs. No jobs are submitted or changed.
+
+### Final ownership
+
+The completion pass uses separate correctness, ownership and formatting commits.
+Numerical loops remain explicit; no universal dataset, trainer, registration
+framework or new runtime dependency was introduced.
+
+| Previous owner | Current implementation | Boundary preserved |
+| --- | --- | --- |
+| `data_utils/data_load.py`, `prepare_data.py` | `data/{static,synthetic,soap,sampling,static_sources}.py` | Static sampling/cache, generated-data consumption and SOAP coordinates are separate. |
+| `data_utils/data_modules/registry.py`, ordinary trainer switch | `data/loaders.py`, concrete `data/data_modules/` | One selector, model override first, unchanged concrete lifecycle and custom temporal sampler. |
+| `data_utils/temporal_lammps_{dataset,binary}.py` | `data/temporal.py`, `data/trajectories/lammps.py` | Dense windows, atom IDs, timelines, binary validation and split order. |
+| `data_utils/shooting{,_binary,_binary_dataset}.py` | `data/shooting.py`, `data/trajectories/shooting.py`, `data/shooting_binary_dataset.py` | Shooting lineage, frame identities and validated outcomes remain distinct. |
+| `data_utils/conversion/`, `shooting_text_conversion.py` | `data/conversion/` | Precision checks, checksums, locks, atomic completion and verified deletion gates. |
+| `data_utils/{mace_history,mace_relaxed}.py` | `data/{histories,relaxed}.py` | Fixed-neighbor history construction and paired relaxed clouds have multiple consumers. |
+| `data_utils/{relaxed_histories,spatiotemporal_views,temporal_binary_context_dataset}.py` | `data/{relaxed_histories,spatiotemporal,temporal_context}.py` | Concrete example definitions and existing sampler/collator behavior. |
+| Static context, TDA preparation, temporal inspection | `data/{atomic_context,topology_views,inspect_temporal}.py` | Existing commands and source-specific preparation. |
+| `data_utils/{mace_denoising,mace_existing}.py` | `training_methods/mace_denoising/{data,existing_data}.py` | Denoising target preparation belongs with its training protocol. |
+| `data_utils/pretrained_mace{,_gpu}.py`, MACE preflight/queue | `training_methods/pretrained_mace/{data,resident,preflight,queue}.py` | Resident iteration remains separate; queue and module commands retain their arguments. |
+| Flat MACE/predictive training files | `training_methods/{mace_denoising,mace_temporal,pretrained_mace,predictive_structure}/train.py` | Existing PyTorch loops, attributes, objectives and checkpoint keys. |
+| Base SSL, reused VICReg/SwAV losses, supervised metrics, optimizer and MACE mechanics | `training_methods/shared/` | Shared code has actual cross-method consumers and no imports from a concrete SSL method. |
+| `data_utils/synthetic/atomistic/`, synthetic visualization | `simulation/atomistic/`, `simulation/visualization.py` | Coherent engine implementations; campaign commands remain in their established locations. |
+| Temporal hypothesis data/train/evaluation | `research/temporal_hypotheses_12h/{data,train,evaluate}.py` | The recorded hypothesis protocol stays together. Its reused atomic JSON writer belongs in `experiment_runner/artifacts.py`. |
+
+The two-method Lightning registry now returns a concrete class and its default
+post-training analysis policy. Explicit-name/config precedence, `vicreg`, `visreg`,
+`contrastive`, `temporal_vicreg` and `temporal_ssl` aliases are characterized. There
+is no mutable registration API or import-string specification. Independent MACE,
+forecast and temporal-VAMP loops do not use this selector.
+
+Reusable encoders, large analysis features and the spatiotemporal stability-probe
+workflow were reviewed without cosmetic splitting. `temporal_vamp` remains its
+separate work package; its changes are shared-data imports and the existing
+Lightning selector consumer. `data_utils/topology_targets.py` stays in place
+because it is a shared, metric-hashed numerical implementation. Moving it adds no
+needed ownership benefit here. Its current and historical metric hashes remain
+unchanged.
+
+### Compatibility retained and removed
+
+These are explicit imports/commands, with one implementation each:
+
+- `data_utils/data_load.py`: `PointCloudDataset`, `SyntheticPointCloudDataset` and
+  `SoapCoordDataset` object paths. `prepare_data.py` retains the pre-refactor
+  sampling/read functions used by restored source recipes. Remove these only when
+  those saved-object/read APIs and partial source restorations are retired.
+- Old temporal/shooting/history/datamodule modules retain their named classes for
+  deserialization. `data_utils/data_module.py` retains the established public
+  constructors, including `PointCloudDataModule`; it constructs no extra object.
+- `data_utils/shooting_binary.ShootingBinaryTrajectory` remains the import used by
+  protected forecast data/spatial/attention files and two metric-hashed research
+  files. `data_utils/temporal_lammps_binary.TemporalLAMMPSBinaryTrajectory` and
+  `data_utils/spatiotemporal_views.{periodic_tree,local_views}` are also used by
+  frozen forecast-related producers. Remove these only with a separately reviewed
+  source transition; do not edit protected sources to remove an import bridge.
+- Historical `BaseSSLModule`, `VICRegLoss`, `EvalBatchStatsBatchNorm1d`, `SwAVLoss`
+  and `NormInvariantHead` class paths remain explicit saved-object imports.
+  Method-package exports preserve saved-object classes such as `Learner` and
+  `Predictor`. Functions are imported from each concrete `train` module; package
+  exports do not shadow that submodule with a function named `train`. Class
+  forwarders can be removed when retained serialized objects no longer need them.
+- The atomistic CLI modules under `data_utils/synthetic/` retain the commands in
+  `docs/atomistic_generator.md`, the optimized homogeneous campaign recipes and
+  campaign subprocess arguments. The implementations are in `simulation/`.
+  Retire a command only after migrating its recorded recipes and submitted jobs.
+- `data_utils.synthetic.atomistic.calculator.VerletSkinMACECalculator` is the
+  canonical public class identity in existing potential qualification reports.
+  The moved class retains that `__module__` identity and the old module explicitly
+  imports it. Producer provenance still hashes the actual
+  `simulation/atomistic/calculator.py`; a test checks both the public identity and
+  the implementing method's source file. This does not certify any source-hash
+  transition or rewrite a qualification report.
+- `training_methods.pretrained_mace` keeps its `python -m` command via
+  `__main__.py`; the historical queue, TDA, paired-relaxation and pretrained-data preparation
+  commands have exact `main` forwarders. No external launcher or submitted job was edited.
+
+Removed layers include the `.impl` Lightning wrapper and duplicate data switch,
+the dynamic two-method registry/specification, dynamic package attribute exports,
+unused function-only forwarding files for MACE logging/objectives, optimizer
+helpers, supervised-cache helpers and configuration warnings, and the broken
+standalone `data_load.py` demonstration. No data products, checkpoints, source
+snapshots, manifests, archived protocols or simulation restarts were removed.
+
+Moving source-hashed preparation code intentionally changes its producer
+identity. Existing cache/resume validation must reject uncertified producer
+changes; create a new cache/run or use the retained source snapshot. Historical
+manifests and exact-continuation allowlists were not rewritten.
+
+### Additional stale references
+
+The maintained SOAP descriptor called a helper deleted in `256f006`. Its
+replacement constructs DScribe SOAP directly with the exact historical helper's
+arguments, including compression, sparse output and float64 precision. A tiny Al
+fixture matches values generated with `256f006^` (`rtol=1e-12`, `atol=1e-14`).
+Analysis now explicitly tells `temporal_motif_field` checkpoint users to use the
+recorded source snapshot instead of importing an already-deleted model. The
+retired training method is not reactivated.
+
+The previously observed eager/lazy tied-neighbor ordering discrepancy remains a
+separate scientific question. This refactor does not assert that these two
+sampling protocols are interchangeable.
+
+### Completion validation
+
+Formatting is a separate commit (`2c30900`). The formatter ran in an isolated
+`/tmp` environment, without changing project/conda dependencies. All **116**
+selected files were checked against `cfeaea7`; **105** changed. Their Python ASTs
+match after normalizing only import grouping, parentheses around deletion targets
+and docstring whitespace. Black's own equivalence checks also ran. The 79-column
+formatting target improves the previously compressed training loops; inherited
+long literals/docstrings, deliberate imports after backend/path setup and a few
+legacy identifier spellings remain. This is not a claim of repository-wide
+pycodestyle compliance. The disposable `formatting.json` records that boundary.
+
+Focused checks in `pointnet` include:
+
+| Area | Result |
+| --- | --- |
+| Sample-cap/selection/source/radius fixes | 45 passed |
+| Static/synthetic/SOAP dataset separation | 39 passed |
+| Shared SSL/MACE mechanics | 32 passed |
+| Method package moves | Denoising 8; temporal 11; pretrained 7; predictive 3 passed |
+| Explicit Lightning selection | 6 baseline cases passed; 11 selection/post-analysis checks passed afterward |
+| Trajectory/conversion/forecast integration | 70 passed, 2 skipped initially; six metric-hash failures led to retaining original protected research imports |
+| Forecast recheck with original metric hashes | 35 passed, 2 skipped |
+| Concrete loader ownership | 35 passed |
+| MACE/history preparation | 34 passed |
+| Temporal hypothesis ownership/shared writer | 18 passed |
+| Simulation move | 141 passed initially; a migrated test stub's historical class identity was restored; generator/integrity recheck: 24 passed |
+| Temporal example ownership | 34 passed initially; two dispatch stubs were migrated to the actual new owner; selector recheck: 26 passed |
+| Forwarder cleanup | 16 passed |
+| SOAP/retired motif/analysis fast paths | 12 passed |
+| Final context/TDA preparation move | 8 passed; historical TDA command help also succeeded |
+
+These overlapping focused counts are not added together. Integration results
+below are the authoritative total. Failed collection attempts from mistyped test
+paths or running the `pytest` executable without the repository import root are
+not test coverage; successful runs use `python -m pytest`.
+
+A seeded CPU VICReg diagnostic was captured before shared-training moves and
+repeated after formatting. It compares the real method's spatiotemporal loss,
+all gradients, AdamW state, model state keys/weights and inference output with
+`rtol=0, atol=0`. Every comparison passed, including strict loading of the captured
+checkpoint and optimizer state. This is a tiny before/after weight-loading and
+optimizer-step check, not certification of historical production exact resume.
+
+Reproduce with the retained diagnostic (the saved baseline was produced before
+commit `492a003`):
+
+```bash
+CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=. \
+  conda run -n pointnet python \
+  output/maintenance/refactor-completion-20260914/technical/ssl_parity.py \
+  output/maintenance/refactor-completion-20260914/technical/ssl-baseline.pt compare
+```
+
+Protected `training_methods/embedding_forecast` sources are byte-identical to
+`d119fd2`. Every current metric implementation hash remains unchanged. Existing
+negative continuation tests still reject changed data identity and uncertified
+source transitions. Historical exports, potential qualification reports and
+resume allowlists were not rewritten.
+
+The full CPU integration command passed **530 tests**, with **8 CUDA-only skips**,
+361 warnings and no failures in **370.69 seconds**:
+
+```bash
+CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+  conda run -n pointnet python -m pytest tests -q -rs
+```
+
+The skips are actual forecast device gather/transfer, spatial attention, fused
+MACE and BF16 GPU checks. A final method-package export regression was added after
+that suite had collected: its targeted method suite passed **26 tests**, including
+that new case. Thus the integration total above does not include the additional
+export test or count overlapping targeted tests twice. Final historical MACE
+preparation forwarders also passed their `--help` checks.
+
+Fourteen command checks succeeded: the conversion dispatcher and temporal
+converter, elemental campaign, temporal inspection, active independent-MEAM
+campaign module, pretrained-MACE training/queue, predictive-structure training,
+old/new TDA commands, atomistic generator/homogeneous campaign, and historical
+paired-relaxation/pretrained-data preparation commands. These checks execute
+argument parsing/imports only, not simulations or training. Final AST import and
+internal module-string audits found no unresolved repository modules.
+
+Validation logs and disposable scripts are retained in
+`output/maintenance/refactor-completion-20260914/technical/`.
+
+### Completion real-source comparison
+
+After tests and other checks stopped, the same existing static diagnostic ran
+sequentially against a clean detached `d119fd2` checkout and final implementation
+`7492429`. Each used three repetitions, fresh temporary caches, the same full
+`datasets/Al/inherent_configurations_off/166ps.npy` source, zero workers, seeds,
+configuration and batch order. The clean temporary checkout was removed after
+validation; the baseline commit remains in Git. No research cache was rebuilt.
+
+All six runs agree exactly on **13,824 samples**, radius
+**9.186229173717608**, complete cache fingerprint, full float32 point/coordinate
+array hashes and lazy representative array hashes (including a duplicate request).
+
+| Measurement | Baseline median (range) | Final median (range) |
+| --- | --- | --- |
+| Fresh cache preparation, s | 3.283 (3.235–3.292) | 3.286 (3.237–3.291) |
+| Warm iteration, samples/s | 135,532 (134,522–135,816) | 137,575 (134,998–137,820) |
+| Lazy metadata construction, ms | 2.675 (2.654–3.207) | 2.596 (2.538–3.039) |
+| First four representatives, s | 1.300 (1.298–1.315) | 0.510 (0.500–0.511) |
+| Repeated four representatives, ms | 0.673 (0.650–0.811) | 0.672 (0.651–0.747) |
+| Whole-process peak RSS, MiB | 1,089.63 | 1,089.92 |
+
+Preparation, warm iteration and memory show no material regression in this
+comparison. The first lazy requests improve because the producer-recorded radius
+is reused rather than estimated again; their actual point arrays remain exact.
+This is a local three-repetition measurement, not a universal throughput claim.
+Raw results are `static-baseline.json`, `static-final.json` and
+`static-comparison.json` in the completion diagnostic directory.
+
+Checks not performed: real retained-production checkpoint inference/warm-start
+and complete historical exact-resume certification; GPU/fused-MACE/BF16 numerical
+and memory checks; full real temporal/shooting training or production-potential
+simulation campaigns. The CPU tests cover tiny deterministic examples, producer
+validation, checkpoint/continuation gates and simulation integrity. None of the
+unrun checks is represented as passing or as permission to resume with changed
+source hashes. The structural refactor is complete within these explicit
+compatibility and scientific boundaries.

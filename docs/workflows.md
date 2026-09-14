@@ -18,7 +18,7 @@ Scientific implementations belong in `src/`. Experiment-specific recipes live in
 | Command | Purpose / implementation |
 | --- | --- |
 | `run_lammps_campaign.py WORKFLOW` | Campaign preparation, execution, continuation and summaries; `src/simulation/campaigns/` |
-| `convert_trajectory.py FORMAT_OR_AUDIT` | Verified format conversion and read-only audits; [conversion guide](../docs/trajectory_conversion.md), `src/data_utils/conversion/` |
+| `convert_trajectory.py FORMAT_OR_AUDIT` | Verified format conversion and read-only audits; [conversion guide](../docs/trajectory_conversion.md), `src/data/conversion/` |
 | `inspect_temporal_lammps_dataset.py` | Inspect a temporal dump and optionally build its cache |
 | `run_optimized_al_homogeneous_campaign.sh` | Resume the selected optimized Aluminum campaign; requires `PYTHON`, accepts `DEVICES` |
 
@@ -131,17 +131,17 @@ The [full Ta/Ti expansion](../experiments/mace_vicreg_full_20260910/README.md)
 selects `vicreg_mace_full` in that same entry point. The existing
 `src/research/spatiotemporal/prepare_spatiotemporal_vicreg_views.py --config JSON`
 command now accepts explicit source/timeline/cutoff settings and reuses the
-shared original producer in `src/data_utils/spatiotemporal_views.py`. It verifies
+shared original producer in `src/data/spatiotemporal.py`. It verifies
 the original cache links and completed additions, and records excluded duplicates.
 The [matched TDA recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_original_vicreg_tda_20260909/README.md)
 adds the optional TDA head within that same module. Prepare normalized three-view
-targets with `python -m src.data_utils.spatiotemporal_tda --config configs/vicreg_pretrained_mace_geometry_tda.yaml`,
+targets with `python -m src.data.topology_views --config configs/vicreg_pretrained_mace_geometry_tda.yaml`,
 then select that config in the original training entry point. The producer
 reuses the existing alpha-complex descriptor, preserves source row indices,
 fits PCA on training views only and records cache checksums.
 For prepared relaxed MEAM targets and actual temporal histories, use the
 [original-VICReg MEAM comparison](../experiments/mace_vicreg_relaxed_20260910/README.md).
-`python -m src.data_utils.spatiotemporal_tda --config-name vicreg_mace_relaxed`
+`python -m src.data.topology_views --config-name vicreg_mace_relaxed`
 prepares the declared spatial/temporal histories and reuses converged anchor
 targets. `train_contrastive --config-name vicreg_mace_relaxed` uses the same
 `VICRegModule`, original projector/loss and online logger with trainable MACE.
@@ -159,7 +159,7 @@ Run one checkpoint with `python -m src.analysis.pipeline CONFIG --checkpoint CKP
 `runs: [{checkpoint, analysis_config, output_dir}]` and `cuda_device`.
 Aggregate configured comparisons with `python -m src.analysis.pipeline --collect-root
 RUNS --specification EXPERIMENT/analysis.json`. Dataset support is in
-`src/data_utils/relaxed_histories.py`; no separate training loop is added.
+`src/data/relaxed_histories.py`; no separate training loop is added.
 
 Current MACE templates publish flat, portable reports through `src/analysis/report.py`
 to `output/mace/<variant>-seed<seed>/` and `output/mace/full/`; start at
@@ -183,7 +183,7 @@ The historical explicit TDA and thermal protocols use
 The same command supports `protocol: temporal80` for the
 [five-frame transformer experiment](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_temporal_transformer_20260909/README.md).
 Its distinct relaxed-anchor objective and history preparation live in
-`src/training_methods/mace_temporal.py` and `src/data_utils/mace_history.py`;
+`src/training_methods/mace_temporal/train.py` and `src/data/histories.py`;
 the preparation and training stages retain their historical protocol. The
 standalone temporal and denoising analysis implementations were removed on
 2026-09-10. Their `analysis` and `all` stages now fail explicitly with migration
@@ -195,7 +195,7 @@ The same family command accepts `protocol: denoising80` for the
 Its `prepare` stage creates full-cell relaxed targets from explicitly selected
 independent MEAM sources and caches frozen MACE atom/frame features; `preflight`
 and `train` retain their explicit meanings. Preparation/training implementation is
-in `src/data_utils/mace_denoising.py`, `src/training_methods/mace_denoising.py`,
+in `src/training_methods/mace_denoising/data.py`, `src/training_methods/mace_denoising/train.py`,
 and `src/models/encoders/mace_denoising.py`.
 The config fixes source splits, anchor times, temporal spacing, relaxation
 potential, objective/architecture variants, seeds, training budget and deadline.
@@ -207,7 +207,7 @@ The original-VICReg pipeline compares variants on common H0/H1/H2 metrics, with
 history interventions and source-level uncertainty; exported temporal encoders require
 identity-aligned histories in physical Å.
 `protocol: denoising80_reuse` uses an explicit list of completed `denoising80`
-and `temporal80` Al shards, implemented in `src/data_utils/mace_existing.py`.
+and `temporal80` Al shards, implemented in `src/training_methods/mace_denoising/existing_data.py`.
 It retains target/potential/minimizer provenance and whole-source assignments;
 it does not run new minimizations during preparation. Mixed-cadence temporal
 models receive the actual `(B, T)` frame offsets in ps. The optional separate
@@ -221,12 +221,12 @@ uses full-graph mean pooling, uniform sampling, fixed spatial/temporal VICReg,
 and TDA on the same 80 atoms beginning in epoch six. The real-GPU preflight
 checks native MACE equivalence, gradient replay, TDA support, and peak-LR updates.
 The encoder, dataset, objective and training implementation are respectively in
-`src/models/encoders/pretrained_mace.py`, `src/data_utils/pretrained_mace.py`,
-`src/training_methods/mace_objective.py` and `src/training_methods/pretrained_mace.py`.
+`src/models/encoders/pretrained_mace.py`, `src/training_methods/pretrained_mace/data.py`,
+`src/training_methods/shared/mace_objective.py` and `src/training_methods/pretrained_mace/train.py`.
 The [variant C recipe](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/experiments/mace_thermal80_20260909/README.md)
 uses the same trainer with `protocol: thermal80`: shared hot/relaxed 80-atom
 views, relaxed TDA targets, and explicit hot/relaxed consistency. Its paired
-cache producer is `python -m src.data_utils.mace_relaxed --config CONFIG`, with
+cache producer is `python -m src.data.relaxed --config CONFIG`, with
 full-periodic fixed-cell minimization in `src/simulation/relaxation.py`.
 `convert_trajectory.py relaxation FRAME_DIR --delete-source` verifies this
 producer's converged snapshot and stores float16 positions, float32 boxes and
@@ -255,7 +255,7 @@ controller chains finish; they are not entry points for new workflows.
 verified temporal float32 artifacts to float16 positions, records periodic
 rounding error and original manifests, verifies all arrays, then optionally
 replaces old directories with compatibility symlinks. Implementation:
-`src/data_utils/conversion/position_storage.py`. The elemental converter defaults
+`src/data/conversion/position_storage.py`. The elemental converter defaults
 to `--storage-dtype float16`; the campaign passes its configured storage dtype.
 
 `elemental branch --config CONFIG --parents MANIFEST --index INDEX` executes one

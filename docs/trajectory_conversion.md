@@ -140,7 +140,7 @@ repository NPZ positions to an orthogonal LAMMPS text dump.
 
 ## Compatibility and records
 
-Implementation lives in `src/data_utils/conversion/`. The old standalone
+Implementation lives in `src/data/conversion/`. The old standalone
 `migrate_lammps_*`, audit and export scripts have been replaced by this command.
 The old shooting deletion flag `--delete-originals` is now `--delete-source`.
 Existing on-disk names such as `binary_migration_float32.json`, lock names,

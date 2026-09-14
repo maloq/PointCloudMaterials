@@ -20,7 +20,7 @@ and [the output layout](../docs/research_layout.md).
 | `run_experiments.py --plan PLAN` | Local/Slurm training plans, explicit resume, collection; `src/experiment_runner/cli.py` |
 | `run_lammps_campaign.py WORKFLOW` | Simulation families; `src/simulation/campaigns/` |
 | `convert_trajectory.py FORMAT_OR_AUDIT` | Verified producer-specific conversions; [formats and provenance](../docs/trajectory_conversion.md) |
-| `inspect_temporal_lammps_dataset.py` | Dataset inspection/cache preparation; `src/data_utils/inspect_temporal_lammps.py` |
+| `inspect_temporal_lammps_dataset.py` | Dataset inspection/cache preparation; `src/data/inspect_temporal.py` |
 | `run_shooting_ablation.py METHOD --config CONFIG` | Distributional, spatial, geometry, multiscale, dynamical, short-horizon, encoder-finetune, temporal-pretraining; `src/temporal_vamp/commands/` |
 | `run_predictive_atlas.py METHOD --config CONFIG` | Frozen, history, finetune, temporal-encoder protocols; `src/temporal_vamp/commands/` |
 | `analyze_geoframe.py WORKFLOW` | Stability, variability and representation comparisons. |
@@ -39,7 +39,7 @@ Current training and analysis use existing module entry points:
 python -m src.training_methods.contrastive_learning.train_contrastive --config-name vicreg_mace_relaxed
 python -m src.analysis.pipeline configs/analysis/static_topology.yaml --checkpoint CHECKPOINT --output-dir output/QUESTION/RUN
 python -m src.training_methods.embedding_forecast --config CONFIG.json --stage train
-python -m src.data_utils.spatiotemporal_tda --config-name vicreg_mace_relaxed
+python -m src.data.topology_views --config-name vicreg_mace_relaxed
 ```
 
 The MACE preparation command is
@@ -148,3 +148,6 @@ trainer accepts it too. All maintained simulation recipes live in `configs/simul
 producer-outcome CSV indexes from `configs/datasets.json`; implementation is in
 `src/project_runtime/simulation_inventory.py`. It preserves failed/duplicate attempt
 evidence and never treats outcome records as counts of independent simulations.
+
+Source ownership and retained historical import/command paths are documented in
+[the source refactor record](../docs/src_refactor.md#completion-pass-starting-at-d119fd2).
