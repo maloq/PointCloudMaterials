@@ -10,7 +10,7 @@ from torch import nn
 
 from src.analysis.liquid_structure import persistence_image
 from src.analysis.config import _apply_analysis_inference_overrides
-from src.data_utils.spatiotemporal_tda import prepare
+from src.data.topology_views import prepare
 from src.data.spatiotemporal import SpatiotemporalViewDataset
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 

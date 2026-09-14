@@ -235,7 +235,7 @@ class PointCloudDataset(Dataset):
                 n_samples=n_samples,
             )
             if atomic_context is not None:
-                from src.data_utils.atomic_context import attach_atomic_context
+                from src.data.atomic_context import attach_atomic_context
                 attach_atomic_context(self, atomic_context, cache_cfg["cache_dir"])
             return
 
