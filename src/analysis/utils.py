@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
-from src.data_utils.data_load import PointCloudDataset
+from src.data.static import PointCloudDataset
 from src.utils.evaluation_metrics import random_rotation_matrix
 
 

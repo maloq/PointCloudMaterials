@@ -4,7 +4,7 @@ import torch
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 
-from src.data_utils.data_load import PointCloudDataset
+from src.data.static import PointCloudDataset
 from src.data_utils.data_modules.common import (
     _cfg_get,
     _resolve_split_seed,

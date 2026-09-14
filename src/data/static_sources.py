@@ -8,7 +8,6 @@ from typing import Any, Sequence
 import numpy as np
 from scipy.spatial import cKDTree
 
-from src.data_utils.prepare_data import read_off_file
 
 
 class ShardValueSequence(Sequence):
@@ -37,6 +36,60 @@ class ShardValueSequence(Sequence):
             )
         shard_idx = bisect.bisect_right(self._cumulative, idx)
         return self._values[shard_idx]
+
+
+def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
+    """Read points from OFF file and return as numpy array.
+    
+    Optionally caches the file on disk in a faster .npy format.
+    
+    Args:
+        filename: Path to the OFF file.
+        verbose: If True, prints additional information.
+        cache: If True, will attempt to load a cached npy file if available,
+               and will save to cache after parsing.
+        
+    Returns:
+        A numpy array of point coordinates (shape: [N, 3]).
+    """
+    if cache:
+        base, _ = os.path.splitext(filename)
+        cache_filename = base + '.npy'
+        if os.path.exists(cache_filename):
+            if verbose:
+                print(f"Loading cached file from {cache_filename}")
+            points = np.load(cache_filename)
+            return points
+
+    # Read the OFF file
+    with open(filename, 'r') as f:
+        # Read and verify OFF header
+        header = f.readline().strip()
+        if header != 'OFF':
+            raise ValueError("Invalid OFF file format")
+        n_vertices, n_faces, n_edges = map(int, f.readline().split())
+        points = []
+        for _ in range(n_vertices):
+            x, y, z = map(float, f.readline().split())
+            points.append([x, y, z])
+            
+    points = np.array(points)
+
+    min_coords = points.min(axis=0)
+    max_coords = points.max(axis=0)
+    space_size = max_coords - min_coords
+    if verbose: 
+        logger.print(f"Read {len(points)} points")
+        logger.print(f"Size of space: {space_size}")
+        logger.print(f"Min coords: {min_coords}")
+        logger.print(f"Max coords: {max_coords}")
+
+    # Cache the data to disk for faster future loading
+    if cache:
+        if verbose:
+            print(f"Caching file to disk at {cache_filename}")
+        np.save(cache_filename, points)
+    return points
 
 
 def load_points(filepath: str) -> np.ndarray:

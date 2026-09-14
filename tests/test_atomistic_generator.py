@@ -20,8 +20,8 @@ from src.data_utils.synthetic.atomistic import (
 from src.data_utils.synthetic.atomistic.artifacts import PHASE_NAMES, label_interface
 from src.data_utils.synthetic.atomistic.generator import build_calculator, select_calculator
 from src.data_utils.synthetic.atomistic.provenance import configured_mace_provenance
-from src.data_utils.data_load import SyntheticPointCloudDataset
-from src.data_utils.prepare_data import get_regular_samples
+from src.data.synthetic import SyntheticPointCloudDataset
+from src.data.sampling import get_regular_samples
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]

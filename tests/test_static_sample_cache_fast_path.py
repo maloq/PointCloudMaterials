@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Subset
 
-from src.data_utils.data_load import PointCloudDataset
+from src.data.static import PointCloudDataset
 
 
 def _write_cache(cache_dir: Path, *, return_coords: bool) -> dict:

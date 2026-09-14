@@ -19,7 +19,7 @@ from src.data.static_sources import (
     load_points,
     resolve_sources,
 )
-from src.data_utils.prepare_data import _resolve_drop_func
+from src.data.sampling import _resolve_drop_func
 
 from .analysis_dataloaders import _analysis_dataloader_kwargs
 

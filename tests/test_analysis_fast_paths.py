@@ -188,7 +188,7 @@ def test_lazy_static_preserves_source_rows_and_defers_point_reads(tmp_path):
     import pytest
     import torch
 
-    from src.data_utils.data_load import PointCloudDataset
+    from src.data.static import PointCloudDataset
 
     points = np.indices((9, 9, 9)).reshape(3, -1).T.astype(np.float32)
     np.save(tmp_path / "a.npy", points)

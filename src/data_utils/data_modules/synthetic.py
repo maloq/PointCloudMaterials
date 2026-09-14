@@ -7,7 +7,7 @@ import pytorch_lightning as pl
 from omegaconf import OmegaConf
 from torch.utils.data import DataLoader
 
-from src.data_utils.data_load import SyntheticPointCloudDataset
+from src.data.synthetic import SyntheticPointCloudDataset
 from src.data_utils.data_modules.common import (
     _resolve_split_seed,
     _seeded_random_split,
