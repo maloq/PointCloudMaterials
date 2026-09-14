@@ -14,7 +14,13 @@ from omegaconf import DictConfig, ListConfig, OmegaConf
 from scipy.spatial import cKDTree
 from torch.utils.data import DataLoader, Dataset
 
-from src.data_utils.data_load import PointCloudDataset, _ShardValueSequence, _load_points
+from src.data.static_sources import (
+    ShardValueSequence,
+    estimate_source_cutoff_radius,
+    load_points,
+    resolve_auto_cutoff_config,
+    resolve_sources,
+)
 from src.data_utils.prepare_data import _resolve_drop_func
 
 from .analysis_dataloaders import _analysis_dataloader_kwargs
@@ -57,7 +63,7 @@ class LazyStaticAnalysisDataset(Dataset):
         self._drop_points = _resolve_drop_func(
             str(getattr(data_cfg, "sampling_method", "drop_farthest"))
         )
-        sources = PointCloudDataset._resolve_sources(
+        sources = resolve_sources(
             str(getattr(data_cfg, "data_path", "")),
             _plain(getattr(data_cfg, "data_files", None)),
             _plain(getattr(data_cfg, "data_sources", None)),
@@ -68,7 +74,7 @@ class LazyStaticAnalysisDataset(Dataset):
             entries=entries,
             row_count=len(coords),
         )
-        auto_cutoff = PointCloudDataset._resolve_auto_cutoff_config(
+        auto_cutoff = resolve_auto_cutoff_config(
             _plain(getattr(data_cfg, "auto_cutoff", None)),
         )
 
@@ -91,11 +97,11 @@ class LazyStaticAnalysisDataset(Dataset):
 
         shard_counts = [len(shard.centers) for shard in self.shards]
         self._cumulative_counts = np.cumsum(shard_counts, dtype=np.int64).tolist()
-        self.sample_source_names = _ShardValueSequence(
+        self.sample_source_names = ShardValueSequence(
             [shard.name for shard in self.shards], shard_counts
         )
         radii = [float(shard.radius or shard.default_radius) for shard in self.shards]
-        self.sample_radii = _ShardValueSequence(radii, shard_counts)
+        self.sample_radii = ShardValueSequence(radii, shard_counts)
         self.source_radii = {
             shard.name: radius for shard, radius in zip(self.shards, radii, strict=True)
         }
@@ -170,7 +176,7 @@ class LazyStaticAnalysisDataset(Dataset):
                 shard.radius = shard.default_radius
             else:
                 ac = shard.auto_cutoff
-                shard.radius, _ = PointCloudDataset._estimate_source_cutoff_radius(
+                shard.radius, _ = estimate_source_cutoff_radius(
                     source_root=str(shard.source["root"]),
                     source_files=list(shard.source["files"]),
                     target_points=max(int(ac["target_points"]), self.num_points),
@@ -180,7 +186,7 @@ class LazyStaticAnalysisDataset(Dataset):
                     safety_factor=float(ac["safety_factor"]),
                     boundary_margin=ac["boundary_margin"],
                 )
-        shard.points = _load_points(shard.path)
+        shard.points = load_points(shard.path)
         shard.tree = cKDTree(shard.points)
 
     def __getitem__(self, index: int) -> dict[str, torch.Tensor]:

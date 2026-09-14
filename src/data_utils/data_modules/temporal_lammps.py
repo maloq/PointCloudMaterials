@@ -4,7 +4,7 @@ import torch
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, SequentialSampler
 
-from src.data_utils.data_load import PointCloudDataset
+from src.data.static_sources import resolve_auto_cutoff_config
 from src.data_utils.data_modules.common import (
     _cfg_get,
     _resolve_split_seed,
@@ -156,7 +156,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
     def _resolve_radius(self, *, dump_file, data_cfg, frame_start: int, num_points: int) -> float:
         ctx = "TemporalLAMMPSDataModule.data"
         radius_raw = _cfg_get(data_cfg, "radius", default=None, context=ctx)
-        auto_cutoff_cfg = PointCloudDataset._resolve_auto_cutoff_config(
+        auto_cutoff_cfg = resolve_auto_cutoff_config(
             _to_container(_cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)),
         )
         if auto_cutoff_cfg is not None:

@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from omegaconf import OmegaConf
 
-from src.data_utils.data_load import PointCloudDataset
+from src.data.static_sources import resolve_auto_cutoff_config
 from src.data_utils.data_modules.temporal_window import (
     _identity_batch_collate,
 )
@@ -380,7 +380,7 @@ def build_temporal_real_analysis_bundle(
             raise ValueError(f"model_cfg.data.radius must be > 0, got {model_radius_raw}.")
 
         auto_cutoff_cfg_raw = OmegaConf.select(model_cfg, "data.auto_cutoff", default=None)
-        auto_cutoff_cfg = PointCloudDataset._resolve_auto_cutoff_config(
+        auto_cutoff_cfg = resolve_auto_cutoff_config(
             OmegaConf.to_container(auto_cutoff_cfg_raw, resolve=True) if auto_cutoff_cfg_raw is not None else None,
         )
         if auto_cutoff_cfg is not None:
