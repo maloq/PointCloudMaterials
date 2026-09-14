@@ -7,7 +7,7 @@ from src.data_utils.data_modules.temporal_lammps import TemporalLAMMPSDataModule
 
 
 def create_datamodule(cfg, model_class=None):
-    """Construct one datamodule, honoring the method override before data.kind."""
+    """Construct one datamodule, checking the method override first."""
     datamodule_class = getattr(model_class, "data_module_class", None)
     if datamodule_class is not None:
         return datamodule_class(cfg)

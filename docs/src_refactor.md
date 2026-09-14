@@ -90,3 +90,85 @@ The untouched-source full suite passed **485 tests**, with **8 skips** and
 relaxed-history suite passed **8 tests** in 8.06 seconds, including history
 loss/gradient and source-split checks. No baseline failures occurred.
 Post-change results follow after integration.
+
+## Consolidation results
+
+Production commit `a1d54ea` removes the second ordinary switch, the forwarding
+Lightning datamodule, four forwarding lifecycle methods, and wrapper-specific
+reach-through in the trainer, descriptor baseline and supervised metric cache.
+`create_datamodule` is exported from both current data-module import paths.
+The compatibility constructor remains a direct alias for the descriptor caller.
+The production slice changes six source files; no data or method implementation
+moves, equations, checkpoint attributes, loader options or metric contracts change.
+
+The combined focused suite passed **35 tests** in 16.84 seconds after the refactor.
+This is the three-file characterization command above plus
+`tests/test_metric_stage_controls.py` and `tests/test_vicreg_relaxed_histories.py`.
+Seven additional selector tests check concrete instance types/attributes, the
+compatibility constructor, unknown-kind errors, and override precedence even when
+ordinary data configuration is absent.
+
+A disposable Lightning comparison loads the original registry source directly
+from the pinned commit and compares it with the new factory. One deterministic
+CPU Adam step over the same temporary static-cache fixture produced **bit-exact
+model parameters, optimizer state, loss and batch order** (`loss=5.239713668823242`).
+This validates Lightning data plumbing; it is not a new certification of old
+research checkpoint inference, warm starts or exact training continuation.
+Existing history tests exercise the actual VICReg loss and gradients.
+
+### Small loading diagnostic
+
+Seven repetitions use identical two-shard float32 fixtures (seven two-point
+clouds), seed 42, batch size 2, no workers, CPU, and the same 300-row validation
+request order. Cache opening/setup creates fresh dataset objects; warm iteration
+uses the existing cache and actual datamodule loader. Every checksum is exactly
+75300.0 before and after. No new cache materialization path is introduced.
+
+| Measurement | Baseline | Refactored |
+| --- | --- | --- |
+| Cache opening/setup median (range), ms | 1.699 (1.586–3.001) | 1.769 (1.650–2.738) |
+| Warm samples/s median (range) | 9,858 (8,814–9,981) | 10,259 (9,289–10,386) |
+| Process peak host RSS, MiB | 839.16 | 840.03 |
+
+Ranges overlap; these small measurements do not establish a speedup. RSS includes
+framework imports, and the small difference is not evidence of a dataset-memory
+regression. This diagnostic measures cache opening, **not cold scientific cache
+preparation from real source trajectories**. Full-size cold preparation, GPU
+memory/performance and real-checkpoint comparisons were not run; unchanged
+producer implementations should still receive that validation before Phase 3.
+
+Raw logs and disposable diagnostic code are retained locally under
+`output/maintenance/src-refactor-20260914/technical/`. From the repository root:
+
+```bash
+CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=. \
+  conda run -n pointnet python \
+  output/maintenance/src-refactor-20260914/technical/loader_benchmark.py
+CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=. \
+  conda run -n pointnet python \
+  output/maintenance/src-refactor-20260914/technical/lightning_parity.py
+```
+
+Run the loading diagnostic on the pinned source for baseline numbers; its fixture
+helper is the retained pre-existing static-cache test helper. Diagnostic code is
+not a maintained command or a second production implementation.
+
+### Full integration
+
+The full CPU command, with `-rs` added to report skip reasons, passed **510 tests**,
+with **8 skips**, 363 warnings and no failures, in 368.09 seconds. Compared with
+485 baseline passes, this adds 25 passing characterization/regression cases.
+The eight skips are CUDA-only: two forecast device-gather cases, one context-mixture
+transfer/training case, two spatial-attention cases, one fused-MACE backend case,
+and two MACE BF16 cases. They do not count as GPU numerical validation.
+No unavailable external potential caused a baseline or integration failure.
+
+`git diff --check` passes. All added Python lines fit 79 columns; the final two
+style-only edits shorten a docstring and wrap a test dictionary entry. The full
+suite covers the unchanged metric contracts and forecast continuation rejection
+gates. Real retained-checkpoint inference, warm-start and exact-resume comparisons
+remain unperformed; the tiny one-step check must not be substituted for them.
+
+Next review slice: extract shared static source resolution and cutoff operations
+only after baselining real lazy-analysis/cache behavior and full-size preparation.
+Keep simulation/method moves and forecast protected-code changes out of that slice.

@@ -143,7 +143,9 @@ def test_public_constructors_return_concrete_datamodule(kind, class_name):
 
     classes = {
         "StaticPointCloudDataModule": registry.StaticPointCloudDataModule,
-        "SyntheticPointCloudDataModule": registry.SyntheticPointCloudDataModule,
+        "SyntheticPointCloudDataModule": (
+            registry.SyntheticPointCloudDataModule
+        ),
         "TemporalLAMMPSDataModule": registry.TemporalLAMMPSDataModule,
         "SpatiotemporalViewDataModule": (
             spatiotemporal_views.SpatiotemporalViewDataModule
