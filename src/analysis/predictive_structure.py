@@ -14,7 +14,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from src.training_methods.predictive_structure import Predictor,NEURAL,FAMILIES,FUTURE_SLICES,CURRENT_SLICES,ROOT,write_json,future_errors
+from src.training_methods.predictive_structure.train import Predictor,NEURAL,FAMILIES,FUTURE_SLICES,CURRENT_SLICES,ROOT,write_json,future_errors
 from src.project_runtime.paths import dataset_path
 
 
@@ -345,7 +345,7 @@ Artifacts: [comparison.csv](comparison.csv), [linear probes](linear_probe_compar
 [experiment configuration](config.json). All output is physically in the repository.
 '''
     (out/'RESULTS.md').write_text(findings)
-    files=[ROOT/'src/training_methods/predictive_structure.py',ROOT/'src/analysis/predictive_structure.py',ROOT/'src/models/encoders/atomic_graph.py',dataset_path('research-records-20260913') / 'experiments/predictive_encoder_training_20260905/technical/config.json',out/'training_source_at_launch.py']
+    files=[ROOT/'src/training_methods/predictive_structure/train.py',ROOT/'src/analysis/predictive_structure.py',ROOT/'src/models/encoders/atomic_graph.py',dataset_path('research-records-20260913') / 'experiments/predictive_encoder_training_20260905/technical/config.json',out/'training_source_at_launch.py']
     inputs=[ROOT/cfg['benchmark']/p for p in ('metadata.npz','evaluation/split_and_targets.npz','density_scaling.pt','order.npy','embeddings/TDA_16.npy','embeddings/SOAP.npy')]
     write_json(out/'provenance.json',dict(files={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},
         inputs={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs},

@@ -1,7 +1,7 @@
 """Scientific weighting and uncertainty controls for supervised encoder training."""
 import numpy as np
 import torch
-from src.training_methods.predictive_structure import current_loss,future_errors
+from src.training_methods.predictive_structure.train import current_loss,future_errors
 from src.analysis.predictive_structure import cluster_interval
 
 

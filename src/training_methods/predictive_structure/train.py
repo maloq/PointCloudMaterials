@@ -16,7 +16,7 @@ from omegaconf import OmegaConf
 from src.models.encoders.atomic_graph import ReferenceMACEEncoder,SchNetEncoder,DensityMLPEncoder
 from src.models.encoders.geo_frame_transformer_v2 import GeoFrameTransformerV2Encoder
 
-ROOT=Path(__file__).resolve().parents[2]
+ROOT=Path(__file__).resolve().parents[3]
 NEURAL=('MACE','SchNet','DensityMLP','GeoFrame')
 CURRENT_SLICES=(slice(0,8),slice(8,24),slice(24,88))
 FUTURE_SLICES=(slice(0,48),slice(48,66),slice(66,72))
