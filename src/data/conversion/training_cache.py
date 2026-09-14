@@ -9,7 +9,7 @@ import time
 
 import numpy as np
 
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 
 
 def sha256(path):

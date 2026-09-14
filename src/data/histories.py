@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.simulation.relaxation import sha256
 

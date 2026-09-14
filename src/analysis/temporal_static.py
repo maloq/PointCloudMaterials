@@ -20,8 +20,9 @@ from sklearn.metrics import adjusted_rand_score
 import torch
 
 from src.analysis.liquid_structure import bond_order, persistence_image
-from src.data_utils.temporal_campaign import ROOT, write_json
-from src.training_methods.temporal_campaign import Learner
+from src.experiment_runner.artifacts import write_json
+from src.research.temporal_hypotheses_12h.data import ROOT
+from src.research.temporal_hypotheses_12h.train import Learner
 from src.vis_tools.latent_analysis_vis import compute_kmeans_labels
 from src.vis_tools.md_cluster_plot import save_interactive_md_plot
 

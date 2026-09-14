@@ -6,7 +6,7 @@ from pathlib import Path
 import time
 import numpy as np
 from src.analysis.liquid_structure import persistence_image
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 
 
 class Quadruplets:

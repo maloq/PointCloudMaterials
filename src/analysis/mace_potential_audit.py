@@ -17,7 +17,7 @@ from src.training_methods.mace_denoising.data import signature
 from src.data.histories import history_clouds
 from src.data.relaxed import paired_clouds
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 from src.models.encoders.mace_denoising import PretrainedMACEDenoisingEncoder
 from src.simulation.relaxation import relax_frame, sha256
 from src.training_methods.mace_denoising.train import BLOCKS, Predictor, raw_prediction

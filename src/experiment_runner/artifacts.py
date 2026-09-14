@@ -1,5 +1,6 @@
 """Readable run outputs and explicit access to the two repository analysis layouts."""
 
+import json
 from pathlib import Path
 
 
@@ -18,3 +19,8 @@ def analysis_artifacts(root):
         return root  # Repository layout before September 12, 2026.
     return root / 'technical'
 
+
+
+def write_json(path,value):
+    temp=path.with_suffix(path.suffix+'.tmp')
+    temp.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n');temp.replace(path)

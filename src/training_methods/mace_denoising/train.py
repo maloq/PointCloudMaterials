@@ -13,7 +13,7 @@ import torch
 from torch import nn
 
 from src.training_methods.mace_denoising.data import prepare, cache_features, signature
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 from src.models.encoders.mace_denoising import ResidualFrameFusion, AtomTemporalFusion
 from src.models.encoders.mace_temporal import PretrainedMACETemporalEncoder
 from src.training_methods.shared.mace_objective import variance_covariance

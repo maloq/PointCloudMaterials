@@ -10,8 +10,9 @@ import pandas as pd
 import torch
 from sklearn.linear_model import Ridge
 
-from src.data_utils.temporal_campaign import ROOT,TemporalPairs,write_json
-from src.training_methods.temporal_campaign import Learner,Representation,batch_size,to_gpu
+from src.experiment_runner.artifacts import write_json
+from src.research.temporal_hypotheses_12h.data import ROOT, TemporalPairs
+from src.research.temporal_hypotheses_12h.train import Learner,Representation,batch_size,to_gpu
 from src.analysis.predictive_structure import linear_forecast,neighbor_errors,cluster_interval,md_table,FAMILIES
 
 

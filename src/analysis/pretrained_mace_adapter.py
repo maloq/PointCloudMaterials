@@ -4,7 +4,7 @@ from omegaconf import OmegaConf
 import torch
 from torch import nn
 from src.models.encoders.pretrained_mace import PretrainedMACEEncoder
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 
 
 class PretrainedMACEAnalysis(nn.Module):

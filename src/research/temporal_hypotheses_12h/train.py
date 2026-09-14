@@ -16,7 +16,8 @@ from omegaconf import OmegaConf
 import torch
 from torch import nn
 
-from src.data_utils.temporal_campaign import ROOT,TemporalPairs,prepare,write_json
+from src.experiment_runner.artifacts import write_json
+from src.research.temporal_hypotheses_12h.data import ROOT, TemporalPairs, prepare
 from src.models.encoders.atomic_graph import ReferenceMACEEncoder,SchNetEncoder,DensityMLPEncoder
 from src.models.encoders.geo_frame_transformer_v2 import GeoFrameTransformerV2Encoder
 
@@ -198,7 +199,7 @@ def fit_density_scaling(data,cfg):
 
 
 def run(cfg,out):
-    from src.analysis.temporal_campaign import evaluate
+    from src.research.temporal_hypotheses_12h.evaluate import evaluate
     launch=time.time();deadline=launch+cfg['duration_seconds'];train_deadline=deadline-cfg['evaluation_reserve_seconds']
     write_json(out/'schedule_runtime.json',dict(start_utc=datetime.fromtimestamp(launch,timezone.utc).isoformat(),
         deadline_utc=datetime.fromtimestamp(deadline,timezone.utc).isoformat(),training_deadline_utc=datetime.fromtimestamp(train_deadline,timezone.utc).isoformat()))
@@ -232,7 +233,7 @@ def run(cfg,out):
 def preflight(cfg,out):
     from concurrent.futures import ProcessPoolExecutor
     import multiprocessing as mp
-    from src.data_utils.temporal_campaign import task_list,prepare_task
+    from src.research.temporal_hypotheses_12h.data import task_list,prepare_task
     cache=Path(cfg['cache']);cache.mkdir(parents=True,exist_ok=True);tasks=task_list(cfg)
     sample=[next(t for t in tasks if t['split']==split and t['material']==m) for split in ('train','val') for m in range(3)]
     records=[];pending=[]
@@ -283,10 +284,10 @@ def main():
         from src.analysis.temporal_static import main as static_main
         static_main(cfg,args.static_config);return
     if args.review_only:
-        from src.analysis.temporal_campaign import review
+        from src.research.temporal_hypotheses_12h.evaluate import review
         review(cfg,out);return
     if args.analysis_only or args.screen_analysis:
-        from src.analysis.temporal_campaign import evaluate
+        from src.research.temporal_hypotheses_12h.evaluate import evaluate
         saved_cfg=json.loads((out/'config.json').read_text())
         if cfg!=saved_cfg:raise ValueError('Analysis replay must use the original saved campaign configuration')
         selected=json.loads((out/('screen_selected.json' if args.screen_analysis else 'selected_runs.json')).read_text())

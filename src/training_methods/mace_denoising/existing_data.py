@@ -9,7 +9,7 @@ import numpy as np
 
 from src.analysis.liquid_structure import persistence_image
 from src.training_methods.mace_denoising.data import completed, signature
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 from src.simulation.relaxation import sha256
 
 

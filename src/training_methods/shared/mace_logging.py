@@ -1,6 +1,6 @@
 """Checkpoint and online tracking utilities for MACE training."""
 import torch
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 
 
 def save_checkpoint(path,model,optimizer,cfg,epoch,step,seen,validation):

@@ -2,7 +2,7 @@
 from types import SimpleNamespace
 import torch
 from torch import nn
-from src.training_methods.temporal_campaign import local_graph,objective,spread_loss
+from src.research.temporal_hypotheses_12h.train import local_graph,objective,spread_loss
 
 
 def test_graph_excludes_identity_even_when_cdist_diagonal_rounds_positive():

@@ -10,7 +10,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 import torch
 from src.training_methods.pretrained_mace.data import Quadruplets
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 from src.training_methods.pretrained_mace.train import Learner
 from src.training_methods.shared.mace_performance import encode_views as encode
 from src.training_methods.pretrained_mace.resident import GPUQuadruplets

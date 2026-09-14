@@ -15,7 +15,7 @@ from torch import nn
 
 from src.training_methods.pretrained_mace.data import Quadruplets
 from src.training_methods.pretrained_mace.resident import GPUQuadruplets
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 from src.models.encoders.pretrained_mace import PretrainedMACEEncoder
 from src.training_methods.shared.mace_logging import flatten_metrics,start_wandb,save_checkpoint
 from src.training_methods.shared.mace_objective import objective,cached_step,make_scheduler,training_views

@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from numpy.lib.format import open_memmap
 from scipy.spatial import cKDTree
-from src.data_utils.temporal_campaign import write_json
+from src.experiment_runner.artifacts import write_json
 
 
 def attach_atomic_context(dataset,config,sample_cache_dir):
