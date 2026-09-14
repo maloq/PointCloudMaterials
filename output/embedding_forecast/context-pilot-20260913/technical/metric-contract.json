@@ -1,0 +1,10 @@
+{
+  "family": "forecast_context",
+  "exported_at": "2026-09-13T13:43:33.909330+00:00",
+  "files": {
+    "docs/metrics/forecast_context.md": "bdcd576abe1c788e56a5545e528bfa12a44059c28b349b9b2ef8a2c1a3eee411",
+    "docs/metrics/forecast.md": "70b7c6c56fc270c85280c8431e81514df022c6a4711e1bc5bff685d7bd8b6b3d",
+    "src/research/forecast_context/compare.py": "8e62b01d2600cd240c18948b2934f356fc7e546b4f4fec497d19e00b077f725a",
+    "src/training_methods/embedding_forecast/metrics.py": "4137d55ddc93066202cbf4ad7a8156931314183fa2c86f296cee63a4704facd9"
+  }
+}
