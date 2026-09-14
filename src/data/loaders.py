@@ -18,13 +18,13 @@ def create_datamodule(cfg, model_class=None):
     if kind == "temporal_lammps":
         return TemporalLAMMPSDataModule(cfg)
     if kind == "spatiotemporal_binary":
-        from src.data_utils.spatiotemporal_views import (
+        from src.data.spatiotemporal import (
             SpatiotemporalViewDataModule,
         )
 
         return SpatiotemporalViewDataModule(cfg)
     if kind == "relaxed_histories":
-        from src.data_utils.relaxed_histories import RelaxedHistoryDataModule
+        from src.data.relaxed_histories import RelaxedHistoryDataModule
 
         return RelaxedHistoryDataModule(cfg)
     if kind == "static":

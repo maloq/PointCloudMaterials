@@ -10,7 +10,7 @@ import pytorch_lightning as pl
 import torch
 
 from src.research.mace_original_vicreg.preflight import Measure
-from src.data_utils.relaxed_histories import RelaxedHistoryDataModule
+from src.data.relaxed_histories import RelaxedHistoryDataModule
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 
 

@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-from src.data_utils.relaxed_histories import RelaxedHistoryDataset
+from src.data.relaxed_histories import RelaxedHistoryDataset
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
 
 

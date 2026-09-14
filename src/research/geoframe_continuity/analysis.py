@@ -13,7 +13,7 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
-from src.data_utils.spatiotemporal_views import periodic_tree
+from src.data.spatiotemporal import periodic_tree
 from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.models.encoders.ri_mae_encoder import (
     _farthest_point_sample, _index_points, _knn_point, RIMAEBackbone,

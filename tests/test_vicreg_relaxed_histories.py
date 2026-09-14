@@ -10,7 +10,7 @@ import pytest
 import torch
 from torch import nn
 
-from src.data_utils.relaxed_histories import RelaxedHistoryDataset
+from src.data.relaxed_histories import RelaxedHistoryDataset
 from src.data_utils.topology_targets import fit_targets
 from src.models import EncoderAdapter
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule

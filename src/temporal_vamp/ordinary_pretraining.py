@@ -17,7 +17,7 @@ import torch
 from numpy.lib.format import open_memmap
 from torch.utils.data import Subset
 
-from src.data_utils.temporal_binary_context_dataset import (
+from src.data.temporal_context import (
     TemporalBinaryContextDataset,
     make_temporal_binary_context_loader,
 )

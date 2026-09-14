@@ -5,7 +5,7 @@ import pytest
 import torch
 from hydra import compose, initialize_config_dir
 
-from src.data_utils.spatiotemporal_views import local_views, periodic_tree
+from src.data.spatiotemporal import local_views, periodic_tree
 from src.training_methods.shared.vicreg import VICRegLoss
 
 

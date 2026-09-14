@@ -15,7 +15,7 @@ from src.experiment_runner.registry import sha256, write_json
 
 def prepare(cfg):
     if cfg.data.kind == 'relaxed_histories':
-        from src.data_utils.relaxed_histories import prepare as prepare_histories
+        from src.data.relaxed_histories import prepare as prepare_histories
         return prepare_histories(cfg)
     from src.project_runtime.paths import resolve_path
     root = resolve_path(cfg.data.cache_dir)

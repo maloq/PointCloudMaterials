@@ -27,7 +27,8 @@ class ModelConstructionReached(Exception):
 def test_trainer_selection_precedes_model_construction(
     monkeypatch, tmp_path, kind, class_name, override
 ):
-    from src.data_utils import relaxed_histories, spatiotemporal_views
+    from src.data import relaxed_histories
+    from src.data import spatiotemporal as spatiotemporal_views
 
     calls = []
 
@@ -138,7 +139,8 @@ def test_temporal_sampler_epoch_replay():
 
 @pytest.mark.parametrize("kind,class_name", KINDS)
 def test_public_constructors_return_concrete_datamodule(kind, class_name):
-    from src.data_utils import relaxed_histories, spatiotemporal_views
+    from src.data import relaxed_histories
+    from src.data import spatiotemporal as spatiotemporal_views
     from src.data_utils.data_module import PointCloudDataModule
 
     classes = {

@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from src.data_utils.spatiotemporal_views import local_views, periodic_tree, prepare_branch
+from src.data.spatiotemporal import local_views, periodic_tree, prepare_branch
 from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 
 

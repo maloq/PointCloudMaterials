@@ -14,7 +14,7 @@ import numpy as np
 REPOSITORY = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPOSITORY))
 
-from src.data_utils.spatiotemporal_views import prepare_branch
+from src.data.spatiotemporal import prepare_branch
 
 
 
@@ -26,7 +26,7 @@ def main(argv=None):
     parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args(argv)
     if args.config is not None:
-        from src.data_utils.spatiotemporal_views import prepare_expanded
+        from src.data.spatiotemporal import prepare_expanded
         from src.project_runtime.paths import load_json
         prepare_expanded(load_json(args.config))
         return

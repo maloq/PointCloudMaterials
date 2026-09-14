@@ -16,7 +16,7 @@ from omegaconf import DictConfig, OmegaConf
 
 matplotlib.use("Agg")
 
-from src.data_utils.temporal_binary_context_dataset import TemporalBinaryContextDataset
+from src.data.temporal_context import TemporalBinaryContextDataset
 from src.temporal_vamp.embeddings import load_frozen_encoder
 from src.temporal_vamp.ordinary_pretraining import (
     OrdinaryContextEmbeddingCache,

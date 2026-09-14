@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from src.training_methods.spatiotemporal import ProgressCheckpoint
 from src.analysis.config import _apply_analysis_inference_overrides, load_checkpoint_analysis_config
-from src.data_utils.spatiotemporal_views import SpatiotemporalViewDataset
+from src.data.spatiotemporal import SpatiotemporalViewDataset
 
 
 def test_default_post_training_analysis_uses_existing_static_config():

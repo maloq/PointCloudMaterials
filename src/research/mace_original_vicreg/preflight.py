@@ -9,7 +9,7 @@ from omegaconf import OmegaConf
 import pytorch_lightning as pl
 import torch
 
-from src.data_utils.spatiotemporal_views import SpatiotemporalViewDataModule
+from src.data.spatiotemporal import SpatiotemporalViewDataModule
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 
 
