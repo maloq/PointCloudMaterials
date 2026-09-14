@@ -202,7 +202,7 @@ def main():
         run_denoising(cfg, args.stage)
         return
     if cfg.get("protocol") == "temporal80":
-        from src.training_methods.mace_temporal import run as run_temporal
+        from src.training_methods.mace_temporal.train import run as run_temporal
         run_temporal(cfg, args.stage)
         return
     if cfg.get("protocol") not in ("plain80","thermal80"):

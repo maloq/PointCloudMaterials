@@ -170,7 +170,7 @@ def test_unpooled_mace_retains_existing_pooled_features(encoder, histories):
 
 
 def test_training_replay_preserves_full_batch_covariance_gradients(encoder, histories):
-    from src.training_methods.mace_temporal import cached_step, objective
+    from src.training_methods.mace_temporal.train import cached_step, objective
     model = torch.nn.Module()
     model.encoder = encoder.train()
     model.tda = torch.nn.Linear(encoder.invariant_dim, 32)
