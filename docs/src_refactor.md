@@ -330,3 +330,24 @@ Remaining ownership work is deliberately separate: dataset-class/SOAP separation
 additional temporal and simulation ownership changes, and any scientific repair
 of the eager/lazy discrepancy. No generators, archived protocols, private source
 snapshots or existing data products were deleted in this slice.
+
+## Completion pass (starting at d119fd2)
+
+The user authorized completing the remaining refactor and removing the temporal
+sample-cap functionality. Temporal datasets/window sampling remain supported;
+`TemporalLAMMPSDataModule` no longer reads or applies the shared `max_samples`
+setting. Static/synthetic caps remain unchanged. A positive shared value is now
+ignored for temporal data, preserving the complete dense window/center layout.
+
+The correctness commit also prevents source-name suffix collisions, routes
+checkpoint evaluation through concrete datamodule selection, and takes lazy
+radius metadata directly from the prepared cache producer. The last change avoids
+re-estimating an already-recorded radius and preserves delayed raw point loading.
+It does not change the separate eager/lazy neighborhood-order protocols. The
+focused data/evaluation suite passed 45 tests in 25.39 seconds.
+
+Slurm was inspected read-only before moves. Active jobs 991371_3/4/5 invoke
+`src.simulation.campaigns.independent_meam_high_temperature`; 991395 invokes
+`scripts/run_lammps_campaign.py elemental`. Those launcher paths and arguments
+are retained. The external SBATCH files were inspected but not edited. Other
+allocations were interactive/pending bash jobs. No jobs are submitted or changed.

@@ -29,7 +29,6 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         self.cfg = cfg
         self.batch_size = cfg.batch_size
         self.num_workers = cfg.num_workers
-        self.max_samples = cfg.max_samples
         self.split_seed = _resolve_split_seed(cfg)
         self._datasets_initialized = False
 
@@ -40,12 +39,6 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             self.train_dataset, self.val_dataset = self._build_datasets()
             self.test_dataset = self.val_dataset
 
-            if self.max_samples > 0:
-                max_train = min(self.max_samples, len(self.train_dataset))
-                max_val = min(self.max_samples, len(self.val_dataset))
-                self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
-                self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
-                self.test_dataset = self.val_dataset
             self._datasets_initialized = True
             initialized_now = True
 

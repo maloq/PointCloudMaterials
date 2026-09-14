@@ -184,3 +184,23 @@ def test_selector_reports_unknown_kind():
     cfg = OmegaConf.create({"data": {"kind": "misspelled"}})
     with pytest.raises(ValueError, match="got 'misspelled'"):
         registry.create_datamodule(cfg)
+
+
+@pytest.mark.parametrize("kind,class_name", KINDS)
+def test_checkpoint_evaluation_uses_concrete_selection(monkeypatch, kind,
+                                                      class_name):
+    from src.training_methods.contrastive_learning import eval_checkpoint
+
+    concrete = SimpleNamespace(setup=lambda stage: stages.append(stage))
+    stages = []
+    received = []
+
+    def select(cfg, model_class):
+        received.append((cfg.data.kind, model_class))
+        return concrete
+
+    monkeypatch.setattr(eval_checkpoint, "create_datamodule", select)
+    cfg = OmegaConf.create({"data": {"kind": kind}})
+    assert eval_checkpoint.build_datamodule(cfg) is concrete
+    assert received == [(kind, eval_checkpoint.VICRegModule)]
+    assert stages == ["test"]

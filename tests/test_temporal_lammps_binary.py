@@ -111,7 +111,7 @@ def test_temporal_datamodule_lifecycle_and_batched_identity(
         )
     source.write_text("".join(frames))
     cfg = OmegaConf.create({
-        "batch_size": 3, "num_workers": num_workers, "max_samples": 0,
+        "batch_size": 3, "num_workers": num_workers, "max_samples": 1,
         "data": {
             "kind": "temporal_lammps", "dump_file": str(source),
             "cache_dir": str(tmp_path / "cache"), "sequence_length": 2,

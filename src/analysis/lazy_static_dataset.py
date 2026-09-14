@@ -16,9 +16,7 @@ from torch.utils.data import DataLoader, Dataset
 
 from src.data.static_sources import (
     ShardValueSequence,
-    estimate_source_cutoff_radius,
     load_points,
-    resolve_auto_cutoff_config,
     resolve_sources,
 )
 from src.data_utils.prepare_data import _resolve_drop_func
@@ -31,12 +29,9 @@ class _Shard:
     name: str
     path: str
     centers: np.ndarray
-    source: dict[str, Any]
-    default_radius: float
-    auto_cutoff: dict[str, Any] | None
+    radius: float
     points: np.ndarray | None = None
     tree: cKDTree | None = None
-    radius: float | None = None
 
 
 def _plain(value: Any) -> Any:
@@ -74,23 +69,15 @@ class LazyStaticAnalysisDataset(Dataset):
             entries=entries,
             row_count=len(coords),
         )
-        auto_cutoff = resolve_auto_cutoff_config(
-            _plain(getattr(data_cfg, "auto_cutoff", None)),
-        )
-
         self.shards: list[_Shard] = []
         offset = 0
         for (source, file_name), count in zip(entries, counts, strict=True):
-            radius_override = source["radius_override"]
             self.shards.append(
                 _Shard(
                     name=str(source["name"]),
                     path=str((Path(source["root"]) / file_name).resolve()),
                     centers=coords[offset : offset + count],
-                    source=source,
-                    default_radius=float(data_cfg.radius),
-                    auto_cutoff=auto_cutoff,
-                    radius=None if radius_override is None else float(radius_override),
+                    radius=source["cached_radius"],
                 )
             )
             offset += count
@@ -100,7 +87,7 @@ class LazyStaticAnalysisDataset(Dataset):
         self.sample_source_names = ShardValueSequence(
             [shard.name for shard in self.shards], shard_counts
         )
-        radii = [float(shard.radius or shard.default_radius) for shard in self.shards]
+        radii = [shard.radius for shard in self.shards]
         self.sample_radii = ShardValueSequence(radii, shard_counts)
         self.source_radii = {
             shard.name: radius for shard, radius in zip(self.shards, radii, strict=True)
@@ -140,6 +127,7 @@ class LazyStaticAnalysisDataset(Dataset):
                     f"configured=({expected_source!r}, {file_name!r})."
                 )
             count = min(int(shard["count"]), remaining)
+            source = dict(source, cached_radius=float(shard["radius"]))
             selected_entries.append((source, file_name))
             selected_counts.append(count)
             remaining -= count
@@ -171,21 +159,6 @@ class LazyStaticAnalysisDataset(Dataset):
     def _load(self, shard: _Shard) -> None:
         if shard.points is not None:
             return
-        if shard.radius is None:
-            if shard.auto_cutoff is None:
-                shard.radius = shard.default_radius
-            else:
-                ac = shard.auto_cutoff
-                shard.radius, _ = estimate_source_cutoff_radius(
-                    source_root=str(shard.source["root"]),
-                    source_files=list(shard.source["files"]),
-                    target_points=max(int(ac["target_points"]), self.num_points),
-                    quantile=float(ac["quantile"]),
-                    estimation_samples_per_file=int(ac["estimation_samples_per_file"]),
-                    seed=int(ac["seed"]) + int(shard.source["index"]),
-                    safety_factor=float(ac["safety_factor"]),
-                    boundary_margin=ac["boundary_margin"],
-                )
         shard.points = load_points(shard.path)
         shard.tree = cKDTree(shard.points)
 

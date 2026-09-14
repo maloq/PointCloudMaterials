@@ -12,8 +12,7 @@ from omegaconf import DictConfig
 
 sys.path.append(os.getcwd())
 
-from src.data_utils.data_kinds import normalize_data_kind
-from src.data_utils.data_module import StaticPointCloudDataModule, SyntheticPointCloudDataModule
+from src.data_utils.data_modules import create_datamodule
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 
@@ -69,7 +68,6 @@ def build_datamodule(
     num_workers_override: int | None = None,
     batch_size_override: int | None = None,
 ):
-    data_kind = normalize_data_kind(cfg.data.kind)
     if data_files_override:
         cfg.data.data_files = [str(v) for v in data_files_override]
     if num_workers_override is not None:
@@ -77,11 +75,7 @@ def build_datamodule(
     if batch_size_override is not None:
         cfg.batch_size = int(batch_size_override)
 
-    if data_kind == "synthetic":
-        dm = SyntheticPointCloudDataModule(cfg)
-    else:
-        dm = StaticPointCloudDataModule(cfg)
-        
+    dm = create_datamodule(cfg, model_class=VICRegModule)
     dm.setup(stage="test")
     return dm
 

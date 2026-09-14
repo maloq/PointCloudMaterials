@@ -79,6 +79,11 @@ def resolve_sources(
             )
             if source_name in used_names:
                 source_name = f"{source_name}_{source_index}"
+            candidate = source_name
+            suffix = 1
+            while source_name in used_names:
+                source_name = f"{candidate}_{suffix}"
+                suffix += 1
             used_names.add(source_name)
             source_max_samples = src.get("max_samples", None)
             if source_max_samples is not None:

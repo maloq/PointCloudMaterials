@@ -107,8 +107,8 @@ def test_lazy_static_file_counts_come_from_sample_cache_metadata(tmp_path) -> No
     metadata = {
         "total_samples": 18,
         "shards": [
-            {"source": "Al", "file": "a.npy", "count": 10},
-            {"source": "Al", "file": "b.npy", "count": 8},
+            {"source": "Al", "file": "a.npy", "count": 10, "radius": 2.0},
+            {"source": "Al", "file": "b.npy", "count": 8, "radius": 2.0},
         ],
     }
     (tmp_path / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
@@ -260,3 +260,22 @@ def test_lazy_static_rejects_mismatched_cache_order(tmp_path):
     }})
     with pytest.raises(ValueError, match="shard order"):
         LazyStaticAnalysisDataset(cfg, expected_coords=np.zeros((2, 3)))
+
+
+def test_lazy_radius_comes_from_prepared_sample_identity(tmp_path):
+    (tmp_path / "metadata.json").write_text(json.dumps({
+        "total_samples": 1,
+        "shards": [{"source": "Al", "file": "a.npy", "count": 1,
+                    "radius": 1.8}],
+    }))
+    cfg = OmegaConf.create({"data": {
+        "data_sources": [{"name": "Al", "data_path": str(tmp_path),
+                          "data_files": ["a.npy"]}],
+        "radius": 9.0, "num_points": 2,
+        "sample_cache": {"cache_dir": str(tmp_path)},
+    }})
+    dataset = LazyStaticAnalysisDataset(
+        cfg, expected_coords=np.zeros((1, 3), dtype=np.float32)
+    )
+    assert dataset.sample_radii[0] == 1.8
+    assert dataset.source_radii == {"Al": 1.8}

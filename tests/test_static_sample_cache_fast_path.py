@@ -191,3 +191,15 @@ def test_source_cutoff_preserves_pooled_quantile_and_global_rng(tmp_path):
     assert state[0] == current[0]
     np.testing.assert_array_equal(state[1], current[1])
     assert state[2:] == current[2:]
+
+
+def test_source_names_remain_unique_after_suffixing():
+    from src.data.static_sources import resolve_sources
+
+    sources = [
+        {"name": name, "data_path": "/unused", "data_files": ["a.npy"]}
+        for name in ["Al_2", "Al", "Al", "Al_2_1"]
+    ]
+    names = [s["name"] for s in resolve_sources("", None, sources)]
+    assert names == ["Al_2", "Al", "Al_2_1", "Al_2_1_3"]
+    assert len(set(names)) == len(names)
