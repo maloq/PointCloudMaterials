@@ -1,0 +1,6 @@
+{
+  "loader": "resident",
+  "log_every_steps": 10,
+  "validation_residency": "swap_device",
+  "evaluation_batch_size": 1024
+}

@@ -1,0 +1,73 @@
+{
+  "node": "nodesumo01",
+  "allocation": 990987,
+  "deadline_utc": "2026-09-14T08:09:56+00:00",
+  "cwd": "${storage:repo}",
+  "output": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/cache-preparation-v2",
+  "status_path": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/cache-allocation-status-v2.json",
+  "steps": [
+    {
+      "name": "prepare-spatial32",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "module": "src.training_methods.embedding_forecast.spatial",
+      "arguments": [
+        "--config",
+        "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/recipes-v2/spatial32.json"
+      ],
+      "minimum_remaining_seconds": 1800,
+      "completion": [
+        {
+          "path": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k32/status.json",
+          "success_state": "complete",
+          "pending_states": [
+            "queued",
+            "preparing"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "prepare-spatial128",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "module": "src.training_methods.embedding_forecast.spatial",
+      "arguments": [
+        "--config",
+        "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/recipes-v2/spatial128.json"
+      ],
+      "minimum_remaining_seconds": 1800,
+      "completion": [
+        {
+          "path": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k128/status.json",
+          "success_state": "complete",
+          "pending_states": [
+            "queued",
+            "preparing"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "prepare-spatial512",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "module": "src.training_methods.embedding_forecast.spatial",
+      "arguments": [
+        "--config",
+        "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/recipes-v2/spatial512.json"
+      ],
+      "minimum_remaining_seconds": 1800,
+      "completion": [
+        {
+          "path": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k512/status.json",
+          "success_state": "complete",
+          "pending_states": [
+            "queued",
+            "preparing"
+          ]
+        }
+      ]
+    }
+  ]
+}

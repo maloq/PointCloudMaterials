@@ -1,0 +1,6 @@
+{
+  "embedding_cache": "${storage:cache}/embedding-forecast-full-20260911",
+  "sources_config": "${storage:output}/embedding_forecast_20260911/scale/queue/sources.json",
+  "output": "${storage:cache}/embedding-forecast-center-geometry-20260914",
+  "workers": 4
+}

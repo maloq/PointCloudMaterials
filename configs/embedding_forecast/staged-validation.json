@@ -1,0 +1,5 @@
+{
+  "loader": "resident",
+  "log_every_steps": 100,
+  "validation_residency": "staged_device"
+}

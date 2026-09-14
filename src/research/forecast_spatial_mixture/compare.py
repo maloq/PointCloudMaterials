@@ -50,6 +50,7 @@ def collect(plan):
         name, seed = run['name'], run['seed']
         embedding.append(dict(method=name, seed=seed, selected_epoch=payload['epoch']+1,
             history_ps=payload['config']['history_ps'],
+            spatial_neighbors=payload['variant'].get('spatial_neighbors', 0),
             parameters=json.loads((fit/'data_summary.json').read_text())['parameters'],
             **metrics['source_mean']))
         with np.load(fit/'test_errors.npz') as rows:
@@ -116,7 +117,10 @@ def collect(plan):
         '[paired transition differences](tables/paired-onset.csv), and [definitions](tables/METRICS.md).\n\n'
         'The main physical outcome is when the tracked local center first becomes crystalline '
         'for three consecutive sampled frames. Tables also contain a nine-frame sensitivity. '
-        'Previously examined test sources make this an exploratory comparison.\n')
+        'Previously examined test sources make this an exploratory comparison.\n\n'
+        '![Local transition F1 and correctly timed recall](plots/local-transitions.png)\n\n'
+        '[Open the full-size plot](plots/local-transitions.png). '
+        'Bars show mean scores across fitted seeds; black dots show individual seeds.\n')
     print('Completed paired comparison:', root, flush=True)
 
 
@@ -147,7 +151,13 @@ def plot(root, events, methods):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--plan', type=Path, required=True)
-    args = parser.parse_args(); collect(load_json(args.plan))
+    parser.add_argument('--stage', choices=('collect', 'summarize'), default='collect')
+    args = parser.parse_args()
+    if args.stage == 'summarize':
+        from .summary import summarize
+        summarize(load_json(args.plan))
+    else:
+        collect(load_json(args.plan))
 
 
 if __name__ == '__main__':

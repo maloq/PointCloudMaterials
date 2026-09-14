@@ -4,6 +4,12 @@ Question: do longer observations, nearby local environments, or multiple possibl
 future paths improve prediction of when the tracked local structure becomes crystal?
 This is a matched exploratory follow-up to the [local crystallization assay](../forecast_crystallization_20260913/README.md).
 
+[Completed results](SPATIAL_CONTEXT_RESULTS.md) cover the original study, shorter
+histories and the larger spatial-context sweep. Twelve ps history with 32 cached
+neighbors is the strongest observed configuration overall, with 56.86% transition
+F1 at 9 ps; timing remains limited. The [11-fit interim report](INTERIM_RESULTS.md)
+is retained as the earlier analysis.
+
 ## Protocol
 
 | Condition | History | Spatial context | Future distribution |
@@ -143,3 +149,21 @@ forecast, local crystallization and new spatial/mixture suites. Log:
 6 ps spatial-mixture forecasts and matched deterministic controls. They reuse six
 existing reference fits and publish a separate paired report; the original 12-fit
 study continues under its existing plan.
+
+## Measured structures and embedding paths
+
+[Trajectory visualizations](TRAJECTORY_VISUALS.md) now link actual 80-atom local
+clouds to their measured embedding trajectories and four-component predicted
+futures. The [gallery](../../output/embedding_forecast/structure-embedding-paths-umap-20260913/index.html)
+contains static figures, a synchronized animation, and four offline interactive
+point-cloud / UMAP time sliders. The original 12-fit study has completed; the shorter-history
+extension remains a separate experiment.
+
+## Broader spatial context
+
+[The context-size sweep](SPATIAL_CONTEXT_SCALE.md) adds 32, 128 and 512 nearby
+cached centers at 3 and 12 ps history, with two matched seeds and retained 8-center
+controls. It uses the same full-trajectory objective, model, data and augmentation.
+All twelve new fits and their paired analyses completed. See the
+[results and interpretation](SPATIAL_CONTEXT_RESULTS.md) and
+[six-figure gallery](../../output/embedding_forecast/spatial-context-analysis-20260914/index.html).

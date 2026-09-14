@@ -1,0 +1,210 @@
+{
+  "output": "${storage:output}/embedding_forecast/context-space-mixture-20260913",
+  "status_path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/interim-analysis-20260913/allocation-status.json",
+  "node": "nodesumo01",
+  "allocation": 990987,
+  "deadline_utc": "2026-09-14T08:09:56+00:00",
+  "cwd": "${storage:repo}",
+  "steps": [
+    {
+      "name": "interim-local-history12_spatial-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history12_spatial",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_spatial-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-local-history12_gaussian-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history12_gaussian",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_gaussian-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-local-history12_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history12_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-local-history12_spatial_mixture4-seed20260913",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history12_spatial_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_spatial_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-compare-seed1",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.compare",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/configs/embedding_forecast/interim-analysis-seed1-20260913.json"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": []
+    },
+    {
+      "name": "interim-local-history6_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history6_deterministic",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history6_deterministic-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-local-history12_deterministic-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history12_deterministic",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_deterministic-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-local-history12_spatial-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history12_spatial",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_spatial-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-local-history12_mixture4-seed20260914",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+        "--run",
+        "history12_mixture4",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_mixture4-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "interim-compare-replicated",
+      "dependencies": [],
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/staged-validation/source",
+      "module": "src.research.forecast_spatial_mixture.compare",
+      "arguments": [
+        "--plan",
+        "${storage:repo}/configs/embedding_forecast/interim-analysis-replicated-20260913.json"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": []
+    }
+  ]
+}

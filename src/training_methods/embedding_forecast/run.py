@@ -17,7 +17,7 @@ from .context_mixture import build_forecaster, call_forecaster, mixture_nll
 from .augmentation import augment_history
 from src.experiment_runner.artifacts import result_folders
 from src.experiment_runner.metric_docs import write_metric_table
-from .runtime import execution_settings, forecast_loader, implementation_hashes, check_resume_implementation
+from .runtime import execution_settings, forecast_loader, implementation_hashes, check_resume_implementation, validation_loader_on_device
 from src.project_runtime.paths import load_json, resolve_config, portable_config, resolve_path, machine
 
 
@@ -28,8 +28,12 @@ def forecast_directory(root):
 
 def datasets(config, manifest):
     from .spatial import SpatialWindowDataset
+    from .attention_data import AttentionWindowDataset
     cls = SpatialWindowDataset if 'spatial_cache' in config['data'] else WindowDataset
     extra = {'spatial_root': config['data']['spatial_cache']} if cls is SpatialWindowDataset else {}
+    if 'geometry_cache' in config['data']:
+        cls = AttentionWindowDataset
+        extra['geometry_root'] = config['data']['geometry_cache']
     return {split: cls(config['data']['cache'], manifest, split,
         config['history_ps'], config['horizons_ps'][-1], config['stride_ps'], config['anchor_history_ps'], **extra)
         for split in ('train', 'val', 'test')}
@@ -39,6 +43,50 @@ def save_checkpoint(path, payload):
     temporary = path.with_suffix('.building')
     torch.save(payload, temporary)
     temporary.replace(path)
+
+
+def optimize_batch(model, batch, mean, scale, device, settings, variant, optimizer):
+    """One optimizer update; normalize/augment once and weight microbatches by sample count."""
+    from .model import forecast_loss
+    history = (batch['history'].to(device,non_blocking=True)-mean)/scale
+    future = (batch['future'].to(device,non_blocking=True)-mean)/scale
+    if 'augmentation' in settings:
+        history = augment_history(history,settings['augmentation'])
+    count = len(history)
+    micro = settings.get('micro_batch_size',count)
+    if micro < 1:
+        raise ValueError('micro_batch_size must be positive.')
+    optimizer.zero_grad(set_to_none=True)
+    totals = {}
+    for start in range(0,count,micro):
+        stop = min(start+micro,count)
+        current,target = history[start:stop],future[start:stop]
+        part = {key:(value if key == 'spatial_store' else value[start:stop]) for key,value in batch.items()}
+        if model.kind == 'autoregressive_gru' and variant['autoregressive']['training'] == 'teacher_forcing':
+            output = model.teacher_forced(current,target)
+        else:
+            output = call_forecaster(model,current,part,mean,scale)
+        if model.distribution == 'trajectory_mixture':
+            if variant['loss']['bin_mse'] or variant['loss']['increment_mse']:
+                raise ValueError('Trajectory-mixture protocol uses explicit mean MSE and joint NLL terms.')
+            terms = dict(mse=(output['mean']-target).square().mean(),nll=mixture_nll(output,target).mean())
+            loss = variant['loss']['mse']*terms['mse']+variant['loss']['nll']*terms['nll']
+            terms['loss'] = loss
+        else:
+            loss,terms = forecast_loss(model,output,target,current[:,-1],variant['loss'])
+        if not torch.isfinite(loss):
+            raise FloatingPointError(f"Nonfinite forecast loss: {variant['name']}, microbatch {start}:{stop}")
+        fraction = (stop-start)/count
+        (loss if stop-start == count else loss*fraction).backward()
+        for key in ('spatial_attention_entropy','spatial_attention_effective_neighbors',
+                    'spatial_attention_max_weight','spatial_attention_distance_A'):
+            if key in output:
+                terms[key] = output[key].mean()
+        for key,value in terms.items():
+            totals[key] = totals.get(key,0.)+value.detach()*fraction
+    gradient = torch.nn.utils.clip_grad_norm_(model.parameters(),settings['gradient_clip'],error_if_nonfinite=True)
+    optimizer.step()
+    return totals,gradient,count
 
 
 def plot_scores(directory, model, metrics, cadence):
@@ -129,6 +177,10 @@ def train(config, variant, seed, device, *, resume=False, epochs_per_invocation=
     root = Path(config['data']['cache'])
     manifest = verify_cache(root)
     data = datasets(config, manifest)
+    if 'spatial_cache' in config['data']:
+        spatial_manifest = load_json(Path(config['data']['spatial_cache'])/'manifest.json')
+        if spatial_manifest['config']['neighbors'] != variant['spatial_neighbors']:
+            raise ValueError('Spatial cache neighborhood count differs from the training variant.')
     directory = Path(config['output']) / f"{variant['name']}-seed{seed}"
     if directory.exists() and not resume:
         raise FileExistsError(f'Fresh forecast fit would overwrite {directory}; evaluate it or choose a new output.')
@@ -167,7 +219,7 @@ def train(config, variant, seed, device, *, resume=False, epochs_per_invocation=
     model = build_forecaster(manifest['embedding_dim'], data['train'].history_steps,
         manifest['cadence_ps'], config['horizons_ps'], variant).to(device)
     train_loader = forecast_loader(data['train'], settings, True, seed, device, runtime)
-    validation_device = 'cpu' if runtime.get('validation_residency', 'device') == 'host' else device
+    validation_device = 'cpu' if runtime.get('validation_residency', 'device') in ('host', 'staged_device', 'swap_device') else device
     val_loader = forecast_loader(data['val'], settings, False, seed, validation_device, runtime)
     optimizer = torch.optim.AdamW(model.parameters(), lr=settings['learning_rate'], weight_decay=settings['weight_decay'])
     if 'warmup_epochs' in settings:
@@ -229,32 +281,10 @@ def train(config, variant, seed, device, *, resume=False, epochs_per_invocation=
             lr = optimizer.param_groups[0]['lr']
             epoch_started = time.perf_counter()
             for epoch_step, batch in enumerate(train_loader, 1):
-                history = (batch['history'].to(device, non_blocking=True) - mean) / scale
-                future = (batch['future'].to(device, non_blocking=True) - mean) / scale
-                if 'augmentation' in settings:
-                    history = augment_history(history, settings['augmentation'])
-                optimizer.zero_grad(set_to_none=True)
-                if (model.kind == 'autoregressive_gru' and
-                        variant['autoregressive']['training'] == 'teacher_forcing'):
-                    output = model.teacher_forced(history, future)
-                else:
-                    output = call_forecaster(model, history, batch, mean, scale)
-                if model.distribution == 'trajectory_mixture':
-                    if variant['loss']['bin_mse'] or variant['loss']['increment_mse']:
-                        raise ValueError('Trajectory-mixture protocol uses explicit mean MSE and joint NLL terms.')
-                    terms = dict(mse=(output['mean']-future).square().mean(), nll=mixture_nll(output, future).mean())
-                    loss = variant['loss']['mse']*terms['mse']+variant['loss']['nll']*terms['nll']
-                    terms['loss'] = loss
-                else:
-                    loss, terms = forecast_loss(model, output, future, history[:, -1], variant['loss'])
-                if not torch.isfinite(loss):
-                    raise FloatingPointError(f"Nonfinite forecast loss: {variant['name']}, seed={seed}, epoch={epoch}, step={step}")
-                loss.backward()
-                gradient = torch.nn.utils.clip_grad_norm_(model.parameters(), settings['gradient_clip'], error_if_nonfinite=True)
-                optimizer.step()
+                terms,gradient,count = optimize_batch(model,batch,mean,scale,device,settings,variant,optimizer)
                 for key, value in dict(terms, gradient_norm=gradient).items():
-                    totals[key] = totals.get(key, 0.0) + float(value.detach()) * len(history)
-                seen += len(history)
+                    totals[key] = totals.get(key, 0.0) + float(value.detach()) * count
+                seen += count
                 step += 1
                 if runtime['log_every_steps'] and epoch_step % runtime['log_every_steps'] == 0:
                     progress = dict(state='training', epoch=epoch, epoch_step=epoch_step,
@@ -263,11 +293,16 @@ def train(config, variant, seed, device, *, resume=False, epochs_per_invocation=
                     write_json(directory / 'progress.json', progress)
                     print(f"{variant['name']} epoch={epoch} batch={epoch_step}/{len(train_loader)} "
                           f"elapsed={progress['elapsed_epoch_s']:.1f}s loader={runtime['loader']}", flush=True)
+            # Attention batches reference their resident store; release the final batch
+            # before validation swapping and eventual independent test reconstruction.
+            del batch
             train_seconds = time.perf_counter() - epoch_started
             write_json(directory / 'progress.json', dict(state='validation', epoch=epoch, step=step,
                        completed_epochs=epoch, total_epochs=settings['epochs'], loader=runtime['loader']))
             validation_started = time.perf_counter()
-            validation, _, _ = evaluate(model, val_loader, mean, scale, device, retain_rows=False)
+            with validation_loader_on_device(val_loader, device, runtime, training_loader=train_loader) as validation_loader:
+                validation, _, _ = evaluate(model, validation_loader, mean, scale, device, retain_rows=False)
+            del validation_loader
             validation_seconds = time.perf_counter() - validation_started
             score = validation['source_mean'][criterion]
             scheduler.step()

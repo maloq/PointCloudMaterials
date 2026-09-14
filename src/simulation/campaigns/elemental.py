@@ -121,8 +121,8 @@ def execute(config, directory, text, marker):
         raise RuntimeError(f'LAMMPS did not reach {marker}: {directory}')
 
 
-def complete_trajectory(config, directory, steps, origin):
-    restart = directory / 'final.restart.bin'
+def complete_trajectory(config, directory, steps, origin, *, restart_name='final.restart.bin'):
+    restart = directory / restart_name
     if restart.stat().st_size == 0:
         raise RuntimeError(f'Empty final restart: {restart}')
     metadata = {'state': 'dynamics_complete', 'material': config['material'],
@@ -130,7 +130,8 @@ def complete_trajectory(config, directory, steps, origin):
                 'dump_every_steps': config['dump_every_steps'],
                 'frame_count': steps // config['dump_every_steps'] + 1,
                 'timestep_ps': config['timestep_ps'], 'origin': origin,
-                'final_restart_sha256': sha256(restart), 'potential': config['potential_files']}
+                'final_restart_sha256': sha256(restart), 'final_restart_file': restart.name,
+                'potential': config['potential_files']}
     write_json(directory / 'metadata.json', metadata)
     command = [sys.executable, str(REPO / 'scripts/convert_trajectory.py'),
                'elemental', str(directory), '--storage-dtype', config['position_storage_dtype']]
@@ -257,6 +258,8 @@ create_atoms 1 box
 velocity all create {config['melt_temperature_K']} {config['melt_seed']} mom yes rot no dist gaussian loop all
 '''
     text += npt(config, config['melt_temperature_K']).replace('fix ensemble ', 'fix melt_ensemble ')
+    if config.get('save_melt_trajectory', False):
+        text += dump(config)
     text += f'''compute diffusion all msd com yes
 fix diffusion_log all ave/time 100 10 1000 c_diffusion[4] file msd.dat
 restart {config['checkpoint_steps']} checkpoint.*.restart.bin
@@ -269,6 +272,13 @@ print "MELT_COMPLETE"
 
 
 def crystallization_source(config, root):
+    limit_policy = config.get('source_limit_policy', 'require_crystallization')
+    if limit_policy not in {'require_crystallization', 'save_state'}:
+        raise ValueError(f'Unknown source_limit_policy: {limit_policy}')
+    if limit_policy == 'save_state' and config['branch_target_fractions']:
+        raise ValueError('Duration-capped source-only runs must have no branch targets.')
+    if config['max_source_steps'] % config['assessment_steps']:
+        raise ValueError('Source limit must be an exact multiple of the assessment interval.')
     melt = root / 'melt'
     execute(config, melt, melt_input(config), 'MELT_COMPLETE')
     liquid = structure(melt / 'liquid.lammpstrj', config['ptm_rmsd_cutoff'])
@@ -277,8 +287,20 @@ def crystallization_source(config, root):
     if liquid['atom_count'] != config['atom_count'] or liquid['crystal_fraction'] > config['max_liquid_crystal_fraction'] or liquid['msd_growth_last_half_A2'] < config['minimum_liquid_msd_growth_A2']:
         raise RuntimeError(f'{config["material"]} melt is not a validated diffusive liquid: {liquid}')
     write_json(root / 'liquid_validation.json', liquid)
+    write_json(root / 'melt_state.json', {
+        'path': str(melt / 'liquid.restart.bin'),
+        'sha256': sha256(melt / 'liquid.restart.bin'),
+        'atom_count': config['atom_count'],
+        'melt_time_ps': config['melt_steps'] * config['timestep_ps'],
+        'temperature_K': config['melt_temperature_K'], 'validated_liquid': True})
+    if config.get('save_melt_trajectory', False):
+        complete_trajectory(config, melt, config['melt_steps'],
+                            {'protocol': 'continuous melt preparation'}, restart_name='liquid.restart.bin')
     source = root / 'source'
     source.mkdir()
+    limit_exit = ('print "SOURCE_DURATION_LIMIT_REACHED"' if limit_policy == 'save_state'
+                  else 'print "SOURCE_LIMIT_REACHED_WITHOUT_COMPLETE_CRYSTALLIZATION"\nquit 1')
+    completion_marker = 'SOURCE_RUN_COMPLETE' if limit_policy == 'save_state' else 'SOURCE_CRYSTALLIZATION_COMPLETE'
     text = f'''units metal
 atom_style atomic
 read_restart {melt / 'liquid.restart.bin'}
@@ -301,14 +323,15 @@ include decision_$(step:%.0f).lammps
 if "${{crystallized}} == 1" then "jump SELF source_complete"
 next cycle
 jump SELF source_loop
-print "SOURCE_LIMIT_REACHED_WITHOUT_COMPLETE_CRYSTALLIZATION"
-quit 1
+{limit_exit}
 label source_complete
 write_restart final.restart.bin
-print "SOURCE_CRYSTALLIZATION_COMPLETE"
+print "{completion_marker}"
 '''
-    execute(config, source, text, 'SOURCE_CRYSTALLIZATION_COMPLETE')
+    execute(config, source, text, completion_marker)
     progress = json.loads((root / 'source_progress.json').read_text())
+    progress['stop_reason'] = 'crystallization_complete' if progress['crystallization_complete'] else 'duration_limit'
+    write_json(root / 'source_progress.json', progress)
     samples = sorted((json.loads(p.read_text()) for p in source.glob('ptm_*.json')), key=lambda r: r['step'])
     branches = []
     # Select distinct chronological parents only after the full source is known.
@@ -328,7 +351,9 @@ print "SOURCE_CRYSTALLIZATION_COMPLETE"
                          'target_crystal_fraction': fraction, 'observed_structure': chosen,
                          'root_lineage': str(source)})
     write_json(root / 'selected_branches.json', branches)
-    complete_trajectory(config, source, progress['step'], {'protocol': 'continuous melt-quench source'})
+    complete_trajectory(config, source, progress['step'], {
+        'protocol': 'continuous melt-quench source', 'stop_reason': progress['stop_reason'],
+        'crystallization_complete': progress['crystallization_complete']})
     return branches
 
 
@@ -373,6 +398,9 @@ def run(config_path, *, resume_ta=False):
                 run_branch(config, root, branch)
             status['completed_branches'].append(branch['name'])
             write_json(root / 'status.json', status)
+        if config['protocol'] in SOURCE_PROTOCOLS:
+            progress = json.loads((root / 'source_progress.json').read_text())
+            status.update(stop_reason=progress['stop_reason'], crystallization_complete=progress['crystallization_complete'])
         status.update(state='complete', completed_at_utc=datetime.now(timezone.utc).isoformat())
         write_json(root / 'status.json', status)
     except BaseException as error:

@@ -1,0 +1,8 @@
+{
+  "embedding_cache": "${storage:cache}/embedding-forecast-full-20260911",
+  "output": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k32",
+  "sources_config": "${storage:output}/embedding_forecast_20260911/scale/queue/sources.json",
+  "neighbors": 32,
+  "workers": 6,
+  "prepool_embeddings": true
+}

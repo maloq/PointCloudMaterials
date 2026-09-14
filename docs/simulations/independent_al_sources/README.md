@@ -59,3 +59,6 @@ job IDs, while retaining duplicate-job detection. Three independent-source tests
 passed, including the expired-receipt regression. A 16 MiB storage write/fsync
 passed; this does not quantify remaining NFS quota. This recovery resumes source
 production only; exact-restart and production-shooting scientific gates remain.
+
+[September 13 recovery](RECOVERY_20260913.md) resumes the final 24 independent 520 K
+sources on SCRATCH as Slurm array 991371; original seeds and identities are preserved.

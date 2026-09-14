@@ -9,7 +9,7 @@ import numpy as np
 import torch
 
 from src.experiment_runner.registry import sha256, write_json
-from src.project_runtime.paths import load_json
+from src.project_runtime.paths import load_json, resolve_path
 from src.research.forecast_crystallization.local_metrics import (
     classification, counts, first_sustained_onset, onset_metrics, risk_windows,
     select_threshold, source_bootstrap,
@@ -40,7 +40,8 @@ def assay(plan):
 
 
 @torch.inference_mode()
-def score_source(z, spatial, radii, anchors, model, mean, scale, weight, bias, batch_size):
+def score_source(z, spatial, radii, anchors, model, mean, scale, weight, bias, batch_size,
+                 neighbor_store=None, center_rows=None):
     """Keep identical center/origin identities for both point and distribution readouts."""
     device = z.device
     offsets = torch.arange(1-model.history_steps, 1, device=device)
@@ -58,6 +59,8 @@ def score_source(z, spatial, radii, anchors, model, mean, scale, weight, bias, b
         columns = anchor[flat % len(anchors), None]+offsets
         history = z[center[:, None], columns].float()
         batch = {}
+        if neighbor_store is not None:
+            batch = dict(spatial_store=neighbor_store,spatial_centers=center_rows[center],spatial_columns=columns)
         if spatial is not None:
             batch = dict(spatial=spatial[center[:, None], columns].float(),
                          spatial_radii_A=radii[center[:, None], columns])
@@ -88,7 +91,7 @@ def predict(plan, run):
     payload = torch.load(checkpoint, map_location='cpu', weights_only=False)
     if payload['cache_manifest_sha256'] != data['observations']['cache_manifest_sha256']:
         raise ValueError(f'Checkpoint and local physical assay use different embeddings: {checkpoint}')
-    for name in ('model.py', 'context_mixture.py', 'spatial.py'):
+    for name in ('model.py', 'context_mixture.py', 'spatial.py','spatial_attention.py','attention_data.py'):
         if name in payload['implementation_sha256']:
             current = Path(__file__).resolve().parents[2]/'training_methods/embedding_forecast'/name
             if sha256(current) != payload['implementation_sha256'][name]:
@@ -104,10 +107,24 @@ def predict(plan, run):
     bias = (difference[-1]-probe['mean'].double()@(difference[:-1]/probe['std'].double())).to(device)
     spatial_model = payload['variant'].get('spatial_neighbors', 0) > 0
     if spatial_model:
-        spatial_manifest = json.loads((Path(plan['spatial_cache'])/'manifest.json').read_text())
+        spatial_root = resolve_path(payload['config']['data']['spatial_cache'])
+        declared = resolve_path(run['spatial_cache'] if 'spatial_cache' in run else plan['spatial_cache'])
+        if spatial_root.resolve() != declared.resolve():
+            raise ValueError(f'Planned spatial context differs from checkpoint: {spatial_root} versus {declared}')
+        spatial_manifest = json.loads((spatial_root/'manifest.json').read_text())
         if spatial_manifest['base_cache_manifest_sha256'] != payload['cache_manifest_sha256']:
             raise ValueError('Physical inference spatial cache differs from training embedding identities.')
+        if spatial_manifest['config']['neighbors'] != payload['variant']['spatial_neighbors']:
+            raise ValueError('Physical inference neighborhood count differs from the fitted model.')
         spatial_records = {r['directory']: r for r in spatial_manifest['records']}
+    attention = 'spatial_attention' in payload['variant']
+    if attention:
+        from src.training_methods.embedding_forecast.attention_data import AttentionSource
+        geometry_root = resolve_path(payload['config']['data']['geometry_cache'])
+        geometry_manifest = json.loads((geometry_root/'manifest.json').read_text())
+        if geometry_manifest['state'] != 'complete' or geometry_manifest['base_cache_manifest_sha256'] != payload['cache_manifest_sha256']:
+            raise ValueError('Physical inference geometry differs from the fitted embedding identities.')
+        geometry_records = {r['directory']:r for r in geometry_manifest['records']}
     np.save(root/'anchors.npy', data['anchors'])
     hashes = {}; started = time.monotonic()
     for i, source in enumerate(data['sources']):
@@ -116,22 +133,45 @@ def predict(plan, run):
         rows = np.load(label_dir/'embedding_rows.npy')
         np.testing.assert_array_equal(np.load(cache/'atom_ids.npy')[rows], np.load(label_dir/'atom_ids.npy'))
         values = np.load(cache/'embeddings.npy', mmap_mode='r')
-        spatial, radii = None, None
-        if spatial_model:
-            spatial_dir = Path(plan['spatial_cache'])/source['directory']
+        spatial, radii, neighbor_store, center_rows = None, None, None, None
+        if attention:
+            spatial_dir = spatial_root/source['directory']; geometry_dir = geometry_root/source['directory']
+            for directory_path, record, names in [
+                    (spatial_dir,spatial_records[source['directory']],('neighbors.npy',)),
+                    (geometry_dir,geometry_records[source['directory']],('center_positions_A.npy','box_lengths_A.npy'))]:
+                for name in names:
+                    if sha256(directory_path/name) != record['checksums'][name]:
+                        raise ValueError(f'Attention local inference input changed: {directory_path/name}')
+            all_z = torch.from_numpy(np.array(values,copy=True)).to(device)
+            neighbor_store = AttentionSource(all_z,
+                torch.from_numpy(np.load(spatial_dir/'neighbors.npy').astype(np.int16)).to(device),
+                torch.from_numpy(np.load(geometry_dir/'center_positions_A.npy')).to(device),
+                torch.from_numpy(np.load(geometry_dir/'box_lengths_A.npy')).to(device))
+            center_rows = torch.from_numpy(rows).to(device)
+            z = all_z[center_rows]
+            del all_z
+        elif spatial_model:
+            spatial_dir = spatial_root/source['directory']
             for name, digest in spatial_records[source['directory']]['checksums'].items():
                 if sha256(spatial_dir/name) != digest:
                     raise ValueError(f'Spatial inference input changed: {spatial_dir/name}')
-            all_z = torch.from_numpy(np.array(values, copy=True)).to(device)
-            neighbors = torch.from_numpy(np.load(spatial_dir/'neighbors.npy')[rows].astype(np.int64)).to(device)
-            spatial = pool_neighbors(all_z, neighbors)
+            if 'pooled_embeddings.npy' in spatial_records[source['directory']]['checksums']:
+                pooled = np.load(spatial_dir/'pooled_embeddings.npy', mmap_mode='r')
+                if pooled.shape != values.shape or pooled.dtype != values.dtype:
+                    raise ValueError(f'Local prepooled context shape/dtype mismatch: {spatial_dir}')
+                spatial = torch.from_numpy(np.array(pooled[rows], copy=True)).to(device)
+                z = torch.from_numpy(np.array(values[rows], copy=True)).to(device)
+            else:
+                all_z = torch.from_numpy(np.array(values, copy=True)).to(device)
+                neighbors = torch.from_numpy(np.load(spatial_dir/'neighbors.npy')[rows].astype(np.int64)).to(device)
+                spatial = pool_neighbors(all_z, neighbors)
+                z = all_z[torch.from_numpy(rows).to(device)]
+                del all_z, neighbors
             radii = torch.from_numpy(np.load(spatial_dir/'radii_A.npy')[rows]).to(device)
-            z = all_z[torch.from_numpy(rows).to(device)]
-            del all_z, neighbors
         else:
             z = torch.from_numpy(np.array(values[rows], copy=True)).to(device)
         scores = score_source(z, spatial, radii, data['anchors'], model, mean, scale, weight, bias,
-                              plan['inference_batch_size'])
+                              plan['inference_batch_size'],neighbor_store=neighbor_store,center_rows=center_rows)
         path = root/f"source_{source['source_index']:03d}.npz"
         np.savez_compressed(path, **scores); hashes[path.name] = sha256(path)
         print(f"Local {run['name']} seed {run['seed']}: {i+1}/{len(data['sources'])} sources, "

@@ -54,3 +54,4 @@ are defined separately in `forecast.md` and are not retrospective scores of this
 
 Host-resident validation is an execution option for newer spatial fits; the historical
 context pilot retains its frozen device-resident implementation and metric definitions.
+The newer staged-device execution option also preserves these metric calculations.

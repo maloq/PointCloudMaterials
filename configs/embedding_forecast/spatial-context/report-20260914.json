@@ -1,0 +1,8 @@
+{
+  "output": "${storage:output}/embedding_forecast/spatial-context-analysis-20260914",
+  "comparisons": {
+    "spatial": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/comparison.json",
+    "history": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/comparison.json",
+    "original": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/comparison.json"
+  }
+}

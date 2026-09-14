@@ -1,0 +1,248 @@
+{
+  "output": "${storage:output}/embedding_forecast/spatial-context-scale-20260913",
+  "embedding_cache": "${storage:cache}/embedding-forecast-full-20260911",
+  "spatial_cache": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/spatial-cache",
+  "local_assay": "${storage:output}/embedding_forecast/local-crystallization-20260913/technical",
+  "cadence_ps": 0.75,
+  "horizons_ps": [
+    3,
+    6,
+    9
+  ],
+  "anchor_history_ps": 12,
+  "persistence_frames": [
+    3,
+    9
+  ],
+  "negative_history_frames": 3,
+  "bootstrap_repetitions": 2000,
+  "bootstrap_seed": 20260913,
+  "inference_batch_size": 4096,
+  "device": "cuda:0",
+  "runs": [
+    {
+      "name": "history3_spatial32_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history3_spatial32_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history3_spatial32_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k32"
+    },
+    {
+      "name": "history3_spatial32_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history3_spatial32_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history3_spatial32_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k32"
+    },
+    {
+      "name": "history12_spatial32_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history12_spatial32_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history12_spatial32_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k32"
+    },
+    {
+      "name": "history12_spatial32_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history12_spatial32_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history12_spatial32_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k32"
+    },
+    {
+      "name": "history3_spatial128_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history3_spatial128_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history3_spatial128_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k128"
+    },
+    {
+      "name": "history3_spatial128_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history3_spatial128_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history3_spatial128_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k128"
+    },
+    {
+      "name": "history12_spatial128_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history12_spatial128_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history12_spatial128_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k128"
+    },
+    {
+      "name": "history12_spatial128_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history12_spatial128_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history12_spatial128_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k128"
+    },
+    {
+      "name": "history3_spatial512_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history3_spatial512_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history3_spatial512_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k512"
+    },
+    {
+      "name": "history3_spatial512_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history3_spatial512_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history3_spatial512_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k512"
+    },
+    {
+      "name": "history12_spatial512_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history12_spatial512_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history12_spatial512_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k512"
+    },
+    {
+      "name": "history12_spatial512_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/configs/embedding_forecast/spatial-context/history12_spatial512_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/fits/history12_spatial512_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-context-scale-20260913/technical/source-v2",
+      "spatial_cache": "${storage:cache}/embedding-forecast-spatial-context-20260913/v2/k512"
+    }
+  ],
+  "reference_runs": [
+    {
+      "name": "history3_deterministic",
+      "seed": 20260913,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_deterministic.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_deterministic-seed20260913",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_deterministic-seed20260913"
+    },
+    {
+      "name": "history3_deterministic",
+      "seed": 20260914,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_deterministic.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_deterministic-seed20260914",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_deterministic-seed20260914"
+    },
+    {
+      "name": "history3_spatial_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_spatial_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_spatial_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_spatial_mixture4-seed20260913"
+    },
+    {
+      "name": "history3_spatial_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/short-history/history3_spatial_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/fits/history3_spatial_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-short-history-20260913/technical/local/history3_spatial_mixture4-seed20260914"
+    },
+    {
+      "name": "history12_spatial_mixture4",
+      "seed": 20260913,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_spatial_mixture4-seed20260913"
+    },
+    {
+      "name": "history12_deterministic",
+      "seed": 20260914,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/history12.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-20260913/fits/history12_deterministic-seed20260914",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/baseline-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_deterministic-seed20260914"
+    },
+    {
+      "name": "history12_spatial_mixture4",
+      "seed": 20260914,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/history12_spatial_mixture4.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-20260913/fits/history12_spatial_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/host-validation-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_spatial_mixture4-seed20260914"
+    },
+    {
+      "name": "history12_deterministic",
+      "seed": 20260913,
+      "config": "${storage:repo}/experiments/forecast_spatial_mixture_20260913/technical/history12.json",
+      "fit": "${storage:output}/embedding_forecast/context-space-mixture-20260913/fits/history12_deterministic-seed20260913",
+      "source": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/baseline-source",
+      "local_directory": "${storage:output}/embedding_forecast/context-space-mixture-20260913/technical/local/history12_deterministic-seed20260913"
+    }
+  ],
+  "comparison_pairs": [
+    [
+      "history3_spatial32_mixture4",
+      "history3_spatial_mixture4"
+    ],
+    [
+      "history12_spatial32_mixture4",
+      "history12_spatial_mixture4"
+    ],
+    [
+      "history12_spatial32_mixture4",
+      "history3_spatial32_mixture4"
+    ],
+    [
+      "history3_spatial128_mixture4",
+      "history3_spatial_mixture4"
+    ],
+    [
+      "history3_spatial128_mixture4",
+      "history3_spatial32_mixture4"
+    ],
+    [
+      "history12_spatial128_mixture4",
+      "history12_spatial_mixture4"
+    ],
+    [
+      "history12_spatial128_mixture4",
+      "history12_spatial32_mixture4"
+    ],
+    [
+      "history12_spatial128_mixture4",
+      "history3_spatial128_mixture4"
+    ],
+    [
+      "history3_spatial512_mixture4",
+      "history3_spatial_mixture4"
+    ],
+    [
+      "history3_spatial512_mixture4",
+      "history3_spatial128_mixture4"
+    ],
+    [
+      "history12_spatial512_mixture4",
+      "history12_spatial_mixture4"
+    ],
+    [
+      "history12_spatial512_mixture4",
+      "history12_spatial128_mixture4"
+    ],
+    [
+      "history12_spatial512_mixture4",
+      "history3_spatial512_mixture4"
+    ],
+    [
+      "history3_spatial_mixture4",
+      "history3_deterministic"
+    ],
+    [
+      "history12_spatial_mixture4",
+      "history12_deterministic"
+    ]
+  ]
+}

@@ -23,6 +23,17 @@ and output location through the existing config/CLI. Do not copy a runner.
 
 - `analysis/`: all seven analysis templates are preserved. Pass the intended
   checkpoint explicitly; historical checkpoint defaults have not been rewritten.
+- `embedding_forecast/`: staged GPU validation and replacement allocation recipes
+  for the active history/spatial/mixture study, plus matched interim-analysis cohorts;
+  [execution evidence](../docs/forecast_performance.md) and [scientific findings](../experiments/forecast_spatial_mixture_20260913/INTERIM_RESULTS.md).
+  `trajectory-visuals.json` links measured structures to observed embeddings and
+  sampled future paths from completed models, using shared UMAP coordinates and
+  interactive point-cloud time sliders. It can reuse the retained raw extraction.
+  `spatial-context/` contains 32/128/512-neighbor cache recipes, a matched 3/12 ps
+  history sweep, paired analysis plans and detached allocation queues.
+  Its `report-20260914.json` summarizes completed cohorts without rerunning inference.
+  `spatial-attention/` retains individual-neighbor geometry, learned attention fits
+  at 3/12 ps, matched physical comparisons, and the active allocation recipe.
 - `data/loaders/`: `static_multi_material`, `static_al_80` and
   `static_al_crystallization_step187800`, required by retained training/analysis.
 - `simulation/`: current Al/Ti/Ta recipes, potential files and checkpoint producer

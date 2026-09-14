@@ -23,3 +23,7 @@ Older Al MLIP, shooting, runtime-benchmark and campaign variants are in the
 Their records and dataset inventory are indexed under
 [docs/simulations](../../docs/simulations/README.md). Regression-only configurations
 live in `tests/fixtures/simulation/`; do not use them to launch production runs.
+
+`al_crystallization_1m.json` is the requested million-atom source-only variant: 300 ps melt, up to 400 ps crystallization, no branches, with the melt restart retained. `source_limit_policy: save_state` records duration-limited completion separately from attaining the crystal-fraction threshold.
+
+The million-atom recipe also enables `save_melt_trajectory: true`: the full melt is sampled at 0.1 ps, converted to verified float16, and kept alongside its native liquid restart.

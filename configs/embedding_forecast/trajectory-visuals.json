@@ -1,0 +1,14 @@
+{
+  "plan": "experiments/forecast_spatial_mixture_20260913/technical/plan.json",
+  "output": "${storage:analysis}/embedding_forecast/structure-embedding-paths-umap-20260913",
+  "reuse_extraction": "${storage:analysis}/embedding_forecast/structure-embedding-paths-20260913",
+  "models": ["history12_deterministic", "history12_spatial", "history12_spatial_mixture4"],
+  "fit_seed": 20260913,
+  "projection_seed": 20260913,
+  "projection_centers_per_source": 4,
+  "projection_frames_per_center": 16,
+  "umap": {"n_neighbors": 30, "min_dist": 0.15, "metric": "euclidean"},
+  "channel_count": 20,
+  "sample_seed": 20260913,
+  "sample_paths": 24
+}

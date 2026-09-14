@@ -48,6 +48,9 @@ class ContextMixtureForecaster(EmbeddingForecaster):
             if spatial is None or spatial_radii_A is None:
                 raise ValueError('Spatial model needs same-frame neighbor means and radii in angstrom.')
             tokens = tokens+self.spatial_input(torch.cat((spatial-history, spatial_radii_A/self.config['spatial_distance_unit_A']), -1))
+        return self.decode_history(tokens, history)
+
+    def decode_history(self, tokens, history):
         _, hidden = self.history(tokens)
         context = hidden[-1]
         decoded = self.decoder(torch.cat((context[:, None].expand(-1, self.output_steps, -1),
@@ -65,11 +68,18 @@ class ContextMixtureForecaster(EmbeddingForecaster):
 
 
 def build_forecaster(dim, history_steps, cadence_ps, horizons_ps, variant):
+    if 'spatial_attention' in variant:
+        from .spatial_attention import SpatialAttentionForecaster
+        return SpatialAttentionForecaster(dim,history_steps,cadence_ps,horizons_ps,variant)
     cls = ContextMixtureForecaster if 'spatial_neighbors' in variant else EmbeddingForecaster
     return cls(dim, history_steps, cadence_ps, horizons_ps, variant)
 
 
 def call_forecaster(model, history, batch, mean, scale):
+    if 'spatial_attention' in model.config:
+        neighbors,relative = batch['spatial_store'].neighbor_batch(batch['spatial_centers'],batch['spatial_columns'])
+        neighbors = (neighbors.to(history.device).float()-mean)/scale
+        return model(history,neighbors,relative.to(history.device))
     if isinstance(model, ContextMixtureForecaster) and model.spatial_neighbors:
         spatial = (batch['spatial'].to(history.device)-mean)/scale
         return model(history, spatial, batch['spatial_radii_A'].to(history.device))
@@ -117,6 +127,10 @@ def mixture_metrics(output, target, sample_paths):
                   coverage90=((cdf >= .05)&(cdf <= .95)).float().mean((1, 2)),
                   mixture_entropy=entropy, mixture_effective_components=entropy.exp(),
                   component_weight=probability, component_responsibility=posterior)
+    for key in ('spatial_attention_entropy','spatial_attention_effective_neighbors',
+                'spatial_attention_max_weight','spatial_attention_distance_A'):
+        if key in output:
+            result[key] = output[key]
     if sample_paths:
         samples = sample_trajectories(output, 16)
         result['energy_score'] = ((samples-target[None]).flatten(2).norm(dim=-1).mean(0)-

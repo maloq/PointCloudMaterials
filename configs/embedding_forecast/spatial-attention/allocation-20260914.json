@@ -1,0 +1,241 @@
+{
+  "node": "node51",
+  "allocation": 991772,
+  "deadline_utc": "2026-09-14T15:24:45+00:00",
+  "cwd": "${storage:repo}",
+  "output": "${storage:output}/embedding_forecast/spatial-attention-20260914",
+  "steps": [
+    {
+      "name": "train-history12_attention32_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.training_methods.embedding_forecast",
+      "dependencies": [
+        {
+          "path": "${storage:cache}/embedding-forecast-center-geometry-20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ],
+      "arguments": [
+        "--config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/history12_attention32_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/runtime.json"
+      ],
+      "minimum_remaining_seconds": 8100,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/fits/history12_attention32_mixture4-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history12_attention32_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "dependencies": [],
+      "arguments": [
+        "--plan",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/analysis.json",
+        "--run",
+        "history12_attention32_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/local/history12_attention32_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history12_attention32_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.training_methods.embedding_forecast",
+      "dependencies": [
+        {
+          "path": "${storage:cache}/embedding-forecast-center-geometry-20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ],
+      "arguments": [
+        "--config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/history12_attention32_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/runtime.json"
+      ],
+      "minimum_remaining_seconds": 8100,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/fits/history12_attention32_mixture4-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history12_attention32_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "dependencies": [],
+      "arguments": [
+        "--plan",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/analysis.json",
+        "--run",
+        "history12_attention32_mixture4",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/local/history12_attention32_mixture4-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "paired-history12",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.research.forecast_spatial_mixture.compare",
+      "dependencies": [],
+      "arguments": [
+        "--plan",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/analysis12.json"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": []
+    },
+    {
+      "name": "train-history3_attention32_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.training_methods.embedding_forecast",
+      "dependencies": [
+        {
+          "path": "${storage:cache}/embedding-forecast-center-geometry-20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ],
+      "arguments": [
+        "--config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/history3_attention32_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260913",
+        "--runtime-config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/runtime.json"
+      ],
+      "minimum_remaining_seconds": 8400,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/fits/history3_attention32_mixture4-seed20260913/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history3_attention32_mixture4-seed20260913",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "dependencies": [],
+      "arguments": [
+        "--plan",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/analysis.json",
+        "--run",
+        "history3_attention32_mixture4",
+        "--seed",
+        "20260913"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/local/history3_attention32_mixture4-seed20260913/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-history3_attention32_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.training_methods.embedding_forecast",
+      "dependencies": [
+        {
+          "path": "${storage:cache}/embedding-forecast-center-geometry-20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ],
+      "arguments": [
+        "--config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/history3_attention32_mixture4.json",
+        "--stage",
+        "train",
+        "--seed",
+        "20260914",
+        "--runtime-config",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/runtime.json"
+      ],
+      "minimum_remaining_seconds": 4200,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/fits/history3_attention32_mixture4-seed20260914/technical/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "local-history3_attention32_mixture4-seed20260914",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.research.forecast_spatial_mixture.evaluate",
+      "dependencies": [],
+      "arguments": [
+        "--plan",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/analysis.json",
+        "--run",
+        "history3_attention32_mixture4",
+        "--seed",
+        "20260914"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/local/history3_attention32_mixture4-seed20260914/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "paired-all",
+      "source": "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/source",
+      "module": "src.research.forecast_spatial_mixture.compare",
+      "dependencies": [],
+      "arguments": [
+        "--plan",
+        "${storage:output}/embedding_forecast/spatial-attention-20260914/technical/recipes/analysis.json"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": []
+    }
+  ]
+}

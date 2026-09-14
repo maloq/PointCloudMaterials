@@ -3,6 +3,7 @@
 import json
 import math
 import numpy as np
+import pytest
 import torch
 
 from src.experiment_runner.registry import sha256, write_json
@@ -12,6 +13,7 @@ from src.training_methods.embedding_forecast.context_mixture import (
 from src.training_methods.embedding_forecast.model import EmbeddingForecaster
 from src.training_methods.embedding_forecast.spatial import SpatialWindowDataset, SpatialResidentWindows
 from src.training_methods.embedding_forecast.run import train
+from src.training_methods.embedding_forecast.runtime import forecast_loader, validation_loader_on_device, execution_settings
 from test_embedding_forecast import cache_fixture
 
 
@@ -70,7 +72,8 @@ def test_spatial_mixture_gradients_reach_both_history_and_distribution():
         assert torch.isfinite(layer.weight.grad).all() and layer.weight.grad.abs().sum() > 0
 
 
-def test_spatial_gather_uses_same_source_and_only_history_frames(tmp_path):
+@pytest.mark.parametrize('prepooled', [False, True])
+def test_spatial_gather_uses_same_source_and_only_history_frames(tmp_path, prepooled):
     cache = tmp_path/'cache'; manifest = cache_fixture(cache)
     spatial = tmp_path/'spatial'; spatial.mkdir()
     records = []
@@ -80,7 +83,12 @@ def test_spatial_gather_uses_same_source_and_only_history_frames(tmp_path):
         neighbors = np.repeat(((np.arange(n)[:,None]+1)%n)[:,None,:],t,axis=1).astype(np.uint16)
         np.save(directory/'neighbors.npy',neighbors)
         np.save(directory/'radii_A.npy',np.full((n,t,2),5.,dtype=np.float32))
-        records.append(dict(directory=record['directory'],checksums={name:sha256(directory/name) for name in ['neighbors.npy','radii_A.npy']}))
+        files = ['neighbors.npy','radii_A.npy']
+        if prepooled:
+            values = np.load(cache/record['directory']/'embeddings.npy')
+            np.save(directory/'pooled_embeddings.npy', values[(np.arange(n)+1)%n])
+            files.append('pooled_embeddings.npy')
+        records.append(dict(directory=record['directory'],checksums={name:sha256(directory/name) for name in files}))
     write_json(spatial/'manifest.json',dict(state='complete',base_cache_manifest_sha256=sha256(cache/'manifest.json'),records=records))
     dataset = SpatialWindowDataset(cache,manifest,'train',1.5,2.25,.75,3.,spatial_root=spatial)
     resident = SpatialResidentWindows(dataset,'cpu',spatial)
@@ -91,6 +99,20 @@ def test_spatial_gather_uses_same_source_and_only_history_frames(tmp_path):
         columns = dataset.history_skip+origin*dataset.stride+np.arange(dataset.history_steps)
         expected = values[(center+1)%len(values),columns]
         torch.testing.assert_close(batch['spatial'][row],torch.from_numpy(expected),rtol=0,atol=0)
+    if torch.cuda.is_available():
+        runtime = dict(loader='resident', log_every_steps=0, validation_residency='staged_device')
+        loader = forecast_loader(dataset, dict(batch_size=3), False, 4, 'cpu', runtime)
+        originals = {name: getattr(loader.dataset, name) for name in ('embeddings', 'offsets', 'spatial', 'radii')}
+        expected = next(iter(loader))
+        rng = torch.get_rng_state().clone()
+        with pytest.raises(RuntimeError, match='evaluation interrupted'):
+            with validation_loader_on_device(loader, 'cuda', runtime):
+                assert all(getattr(loader.dataset, name).is_cuda for name in originals)
+                for key, value in next(iter(loader)).items():
+                    torch.testing.assert_close(value.cpu(), expected[key], rtol=0, atol=0)
+                raise RuntimeError('evaluation interrupted')
+        assert all(getattr(loader.dataset, name) is value for name, value in originals.items())
+        torch.testing.assert_close(torch.get_rng_state(), rng, rtol=0, atol=0)
 
 
 def test_mixture_fits_and_exports_with_existing_training_entry_point(tmp_path):
@@ -107,14 +129,48 @@ def test_mixture_fits_and_exports_with_existing_training_entry_point(tmp_path):
     assert saved['state']=='complete'
 
 
-def test_host_validation_execution_retains_training_and_selection(tmp_path):
+@pytest.mark.parametrize('device', ['cpu', pytest.param('cuda', marks=pytest.mark.skipif(
+    not torch.cuda.is_available(), reason='CUDA is required for transfer/training parity'))])
+def test_host_validation_execution_retains_training_and_selection(tmp_path, device):
     cache_fixture(tmp_path/'cache')
     model = variant()
     config = dict(data=dict(cache=str(tmp_path/'cache')),output=str(tmp_path/'device'),history_ps=1.5,
         anchor_history_ps=1.5,horizons_ps=[.75,1.5,2.25],stride_ps=.75,seeds=[4],variants=[model],
         comparisons=[],bin_comparisons=[],training=dict(epochs=2,patience=2,batch_size=16,workers=0,cpu_threads=1,
         scale_floor_fraction=.05,learning_rate=.002,weight_decay=.0001,minimum_lr_fraction=.1,gradient_clip=5.))
-    ordinary = train(config,model,4,'cpu',runtime=dict(loader='resident',log_every_steps=0))
+    ordinary = train(config,model,4,device,runtime=dict(loader='resident',log_every_steps=0))
     config['output'] = str(tmp_path/'host')
-    host = train(config,model,4,'cpu',runtime=dict(loader='resident',log_every_steps=0,validation_residency='host'))
+    host = train(config,model,4,device,runtime=dict(loader='resident',log_every_steps=0,validation_residency='host'))
     assert ordinary == host
+    config['output'] = str(tmp_path/'staged')
+    staged = train(config,model,4,device,runtime=dict(loader='resident',log_every_steps=0,validation_residency='staged_device'))
+    assert ordinary == staged
+
+
+def test_staged_validation_requires_resident_loader():
+    with pytest.raises(ValueError, match='requires the resident loader'):
+        execution_settings(dict(loader='mmap',log_every_steps=0,validation_residency='staged_device'))
+
+
+@pytest.mark.parametrize('neighbors_count', [8, 32, 128, 512])
+def test_broad_context_pooling_keeps_same_frame_means_and_storage_precision(neighbors_count):
+    from src.training_methods.embedding_forecast.spatial import pool_neighbors
+    count = neighbors_count+1; frames = 5
+    values = (torch.arange(count)[:, None, None]+torch.arange(frames)[None, :, None]*2).expand(-1, -1, 256).half()
+    # Every other center, cyclically ordered; all times have exactly the same identities.
+    indices = (torch.arange(count)[:, None]+torch.arange(1, count)[None]) % count
+    indices = indices[:, None].expand(-1, frames, -1)
+    pooled = pool_neighbors(values, indices)
+    expected = ((torch.arange(count).float().sum()-torch.arange(count))/(count-1))[:, None, None]+torch.arange(frames)[None, :, None]*2
+    torch.testing.assert_close(pooled, expected.expand_as(pooled).half(), rtol=0, atol=0)
+
+
+def test_spatial_preparation_failure_is_visible_to_queued_training(tmp_path):
+    from src.training_methods.embedding_forecast.spatial import prepare
+    cache = tmp_path/'cache'; cache.mkdir()
+    write_json(cache/'manifest.json', dict(state='incomplete', shards=[]))
+    output = tmp_path/'spatial'
+    with pytest.raises(ValueError, match='completed embedding producer'):
+        prepare(dict(output=str(output), embedding_cache=str(cache), neighbors=32))
+    status = json.loads((output/'status.json').read_text())
+    assert status['state'] == 'failed' and 'completed embedding producer' in status['error']

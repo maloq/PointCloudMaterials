@@ -50,3 +50,9 @@ On September 13 the live queue contained only GPU allocations 990987, 991149 and
 experiment/output paths; no simulation controller remained active. Historical
 external batch scripts were left unchanged. For a new launch use the maintained
 commands and current recipes; old exact launcher paths remain in the STORE repo copy.
+
+- [Million-atom Al launch, 2026-09-13](al_crystallization/MILLION_ATOMS_20260913.md):
+  same crystallization source protocol as the recent 100k Al run, without branches, capped at 400 ps after melting; full melt saved; Slurm job 991395.
+
+- [Remaining 520 K sources, 2026-09-13](independent_al_sources/RECOVERY_20260913.md):
+  six of thirty initially complete; remaining 24 submitted as Slurm array 991371.

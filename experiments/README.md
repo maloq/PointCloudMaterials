@@ -13,7 +13,8 @@ The dated folder name is the start date; older experiments below support current
 | [Embedding forecast](embedding_forecast_20260911/README.md) | Direct versus autoregressive trajectories, completed pilot and enlarged fits; exact continuation and target-encoder provenance |
 | [Observed history](forecast_context_20260913/README.md) | [24 completed fits](forecast_context_20260913/RESULTS.md), matched 0–24 ps history comparison |
 | [Local crystallization](forecast_crystallization_20260913/README.md) | [Completed physical assay](forecast_crystallization_20260913/RESULTS.md), transition/timing readouts and [next questions](forecast_crystallization_20260913/NEXT_EXPERIMENTS.md) |
-| [Spatial context and mixtures](forecast_spatial_mixture_20260913/README.md) | Active matched 12-fit study and [14 new short-history fits](forecast_spatial_mixture_20260913/SHORT_HISTORY.md); current paired reference fits retained |
+| [Spatial context and mixtures](forecast_spatial_mixture_20260913/README.md) | [Completed results](forecast_spatial_mixture_20260913/SPATIAL_CONTEXT_RESULTS.md): 12 ps history / 32 neighbors gives 56.86% transition F1; original, short-history and larger-context sweeps completed |
+| [Learned spatial attention](forecast_spatial_attention_20260914/README.md) | Individual neighbor embeddings and relative geometry; matched 32-center attention versus mean pooling at 3/12 ps |
 | [Relaxed MACE / VICReg](mace_vicreg_relaxed_20260910/README.md) | [September 11 comparison](mace_vicreg_relaxed_20260910/RESULTS_20260911.md); supplies the frozen target encoder for every forecast |
 | [Full-data MACE / VICReg](mace_vicreg_full_20260910/README.md) | September 11 analysis and retained full-data reference checkpoint |
 | [Al topology denoising](mace_al_denoising_20260910/README.md) | Older dependency: selected independent sources, relaxation targets, frozen MACE model and controlled denoising results |

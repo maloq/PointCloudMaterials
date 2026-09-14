@@ -5,6 +5,12 @@ scale floor. Histories end at the anchor. Targets are either separate `(0,3]`, `
 `(6,9]` ps means (or the configured horizons) or the complete future path. They are
 not cumulative means. Autoregressive evaluation always rolls out predictions.
 
+Individual-neighbor spatial-attention forecasts retain these trajectory metrics.
+Their learned geometry, attention diagnostics and sample-weighted gradient
+accumulation are defined in `forecast_spatial_mixture.md`. Optional microbatches
+retain one optimizer update per original batch; the partial final batch uses its
+actual sample count. An explicit validation swap changes tensor residency only.
+
 | Metric | Calculation |
 | --- | --- |
 | `mse` | Mean squared error over target times/bins and embedding dimensions for each window, in standardized coordinates. |
@@ -103,3 +109,18 @@ source-weighted selection criterion apply. Validation batches are copied to the
 model device. This avoids retaining both spatial splits in GPU memory and preserves
 the configured training batch and optimizer updates. Test evaluation remains resident
 on the compute device after the training loaders are released.
+
+`validation_residency: staged_device` stores the same validation tensors in host
+RAM between epochs, copies the complete split to the GPU for each validation pass,
+then releases those GPU copies before the next training batch. Spatial means are
+copied after pooling, without recomputation or rounding. This changes execution
+time and peak memory only: batches, sampler order, RNG, precision, metric formulas
+and checkpoint selection are unchanged. `validation_s` includes transfer and release.
+# Prepooled broad spatial inputs
+
+Spatial-context runs may use the producer's explicit `prepool_embeddings` option:
+reduce neighbor embeddings in float32 at the same observed frame and store in the
+base embedding dtype, with checksums. Training/evaluation load those exact values.
+Broad gathers are memory bounded; original eight-neighbor gathering is unchanged.
+Training rejects a cache whose neighbor count differs from the model configuration.
+Losses, test weighting, normalization, sampling and model selection are unchanged.

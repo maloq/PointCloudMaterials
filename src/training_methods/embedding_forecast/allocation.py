@@ -26,7 +26,7 @@ def dependency_state(spec):
 def execute(plan):
     root = Path(plan['output'])/'technical'
     root.mkdir(parents=True, exist_ok=True)
-    progress = root/'allocation-status.json'
+    progress = Path(plan['status_path']) if 'status_path' in plan else root/'allocation-status.json'
     if progress.exists():
         raise FileExistsError(f'Allocation plan was already started: {progress}; inspect its retained attempt.')
     if socket.gethostname() != plan['node'] or os.environ['SLURM_JOB_ID'] != str(plan['allocation']):
@@ -41,7 +41,7 @@ def execute(plan):
         temporary.replace(progress)
 
     bootstrap = ('import runpy,sys;sys.path.insert(0,sys.argv.pop(1));'
-                 'runpy.run_module(sys.argv.pop(1),run_name="__main__")')
+                 'runpy.run_module(sys.argv.pop(1),run_name="__main__",alter_sys=True)')
     try:
         for index, step in enumerate(plan['steps']):
             status(state='waiting', current=step['name'], step=index, steps=len(plan['steps']))

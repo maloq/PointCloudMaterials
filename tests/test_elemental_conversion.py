@@ -192,3 +192,60 @@ def test_source_input_preserves_material_lattice_and_atom_count(protocol, materi
     config['atom_count'] = 100001
     with pytest.raises(ValueError):
         melt_input(config)
+
+
+@pytest.mark.parametrize('crystallized', [False, True])
+def test_source_cap_saves_restart_without_claiming_crystallization(tmp_path, monkeypatch, crystallized):
+    from src.simulation.campaigns import elemental
+    from src.project_runtime.paths import load_json
+    config = load_json('configs/simulation/al_crystallization.json')
+    config.update(max_source_steps=400000, source_limit_policy='save_state',
+                  branch_target_fractions=[], branch_velocity_seeds=[])
+    completed = []
+    def execute(config, directory, text, marker):
+        directory.mkdir(exist_ok=True)
+        if directory.name == 'melt':
+            (directory/'liquid.restart.bin').write_bytes(b'full precision melt restart')
+            np.savetxt(directory/'msd.dat', [[0,0],[1,0],[2,20]])
+        else:
+            assert 'variable cycle loop 100' in text
+            assert 'SOURCE_DURATION_LIMIT_REACHED' in text and 'quit 1' not in text
+            assert 'write_restart final.restart.bin' in text
+            assert marker == 'SOURCE_RUN_COMPLETE'
+            progress = dict(step=200000 if crystallized else 400000,
+                            crystallization_complete=crystallized)
+            (tmp_path/'source_progress.json').write_text(json.dumps(progress))
+    monkeypatch.setattr(elemental, 'execute', execute)
+    monkeypatch.setattr(elemental, 'structure', lambda *args: dict(
+        atom_count=config['atom_count'], crystal_fraction=0.0))
+    monkeypatch.setattr(elemental, 'complete_trajectory', lambda c,d,s,o: completed.append((s,o)))
+    assert elemental.crystallization_source(config,tmp_path)==[]
+    saved=json.loads((tmp_path/'melt_state.json').read_text())
+    assert saved['sha256']==elemental.sha256(tmp_path/'melt/liquid.restart.bin')
+    assert saved['melt_time_ps']==300
+    assert completed[0][1]['crystallization_complete']==crystallized
+    assert completed[0][1]['stop_reason']==('crystallization_complete' if crystallized else 'duration_limit')
+
+
+def test_melt_trajectory_conversion_retains_native_liquid_restart(branch):
+    from src.simulation.campaigns.elemental import complete_trajectory, melt_input
+    from src.project_runtime.paths import load_json
+    recipe=load_json('configs/simulation/al_crystallization.json')
+    recipe['save_melt_trajectory']=True
+    text=melt_input(recipe)
+    assert 'dump trajectory all custom 100 trajectory.lammpstrj id type x y z' in text
+    assert text.index('dump trajectory') < text.index('run 300000')
+    assert 'write_restart liquid.restart.bin' in text
+    config=dict(material='Al',atom_count=2,dump_every_steps=100,timestep_ps=0.001,
+                potential_files=[],position_storage_dtype='float16',delete_verified_source_text=True)
+    restart=branch/'liquid.restart.bin';restart.write_bytes(b'exact liquid velocities and integration state')
+    (branch/'trajectory.lammpstrj').write_text(frame(0)+frame(100))
+    complete_trajectory(config,branch,100,{'protocol':'continuous melt preparation'},
+                        restart_name='liquid.restart.bin')
+    assert restart.read_bytes()==b'exact liquid velocities and integration state'
+    binary=TemporalLAMMPSBinaryTrajectory.load(branch/'trajectory_binary_float16')
+    assert binary.frame_count==2 and binary.positions.dtype==np.float16
+    binary.verify_checksums()
+    outcome=json.loads((branch/'outcome.json').read_text())
+    assert outcome['final_restart_file']=='liquid.restart.bin'
+    assert not (branch/'trajectory.lammpstrj').exists()
