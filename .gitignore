@@ -5,7 +5,24 @@ machine.local.yaml
 log
 lightning_logs
 checkpoints
-output
+# Output is local by default. Publish compact reports and summary tables only.
+# Gitignore matches paths, not file sizes; review sizes before staging.
+/output/**
+!/output/**/
+!/output/**/README.md
+!/output/**/RESULTS.md
+!/output/**/tables/*.csv
+!/output/**/tables/METRICS.md
+# Training history is noisy; publish collected comparison/score tables instead.
+/output/**/tables/metrics.csv
+# Keep only the frozen metric contract from each run's technical directory.
+/output/**/technical/**
+!/output/**/technical/metric-contract.json
+# These operational/generated trees never belong in a results publication.
+/output/maintenance/
+/output/registry/
+/output/synthetic_data/
+/output/temporal_cache/
 outputs
 spd_modelnet_experiments
 wandb

@@ -66,6 +66,40 @@ copies when changing topology. Preserve old exported docs; do not rewrite histor
 results to imply they were evaluated under a new formula. Retired workflows retain
 their dated methods descriptions and source snapshots rather than invented glossaries.
 
+## Publishing compact output to GitHub
+
+The root `.gitignore` allows a small, text-only results subset under `output/`:
+
+- `README.md` and `RESULTS.md` reports outside technical/operational trees.
+- Direct `tables/*.csv` summary exports and their `tables/METRICS.md` definitions.
+- The run's `technical/metric-contract.json`, preserving exported metric hashes.
+
+Per-epoch `tables/metrics.csv` histories stay ignored; publish collected comparison
+or score tables instead. Everything else stays ignored by default, including
+plots, HTML galleries, arrays, model weights, logs and configuration/source
+snapshots. Nested technical trees, `output/maintenance/`, `output/registry/`,
+`output/synthetic_data/` and `output/temporal_cache/` remain excluded. The legacy
+`outputs/` root remains ignored.
+
+At setup on September 14, 2026, these rules exposed **131 files totaling 529,299
+bytes (about 517 KiB)**; the largest was **64,480 bytes (about 63 KiB)**, compared
+with roughly 20 GB of local output. This is a measured snapshot, not a size or
+file-count limit: `.gitignore` can match names and paths but cannot filter by
+bytes. Review new/changed CSVs before staging, particularly if an exporter starts
+writing per-sample rows into a summary filename. Ignore rules also do not affect
+files already tracked by Git; no output files were tracked when this was set up.
+
+Preview the eligible files before adding selected results:
+
+```bash
+git ls-files --others --exclude-standard -- output/
+git add --dry-run -- output/
+```
+
+Changing ignore rules does not stage, commit or push any outputs, and it does not
+delete local artifacts. Full results remain in their documented research storage;
+GitHub receives only the selected compact reports and tables.
+
 ## Storage and quick cleanup
 
 ```bash
