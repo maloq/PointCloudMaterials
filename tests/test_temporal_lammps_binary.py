@@ -93,7 +93,7 @@ def test_temporal_datamodule_lifecycle_and_batched_identity(
     import torch
     from omegaconf import OmegaConf
 
-    from src.data_utils.data_modules.temporal_lammps import (
+    from src.data.data_modules.temporal_lammps import (
         TemporalLAMMPSDataModule,
     )
 

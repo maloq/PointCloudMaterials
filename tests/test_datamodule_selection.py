@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 from omegaconf import OmegaConf
 
-from src.data_utils.data_modules import registry
+from src.data import loaders as registry
 from src.training_methods import trainer
 
 
@@ -73,7 +73,7 @@ def test_trainer_rejects_unknown_kind(monkeypatch, tmp_path):
 def test_temporal_sampler_distributed_order_and_subset_boundary(drop_last):
     from torch.utils.data import DistributedSampler, SequentialSampler, Subset
 
-    from src.data_utils.data_modules.temporal_window import (
+    from src.data.data_modules.temporal_window import (
         TemporalWindowBatchSampler,
     )
 
@@ -112,7 +112,7 @@ def test_temporal_sampler_distributed_order_and_subset_boundary(drop_last):
 def test_temporal_sampler_epoch_replay():
     from torch.utils.data import SequentialSampler
 
-    from src.data_utils.data_modules.temporal_window import (
+    from src.data.data_modules.temporal_window import (
         TemporalWindowBatchSampler,
     )
 

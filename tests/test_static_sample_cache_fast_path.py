@@ -115,7 +115,7 @@ def test_static_datamodule_preserves_cached_split_and_lifecycle(
 ):
     from omegaconf import OmegaConf
 
-    from src.data_utils.data_modules import static
+    from src.data.data_modules import static
 
     cache_dir = tmp_path / "cache"
     metadata = _write_cache(cache_dir, return_coords=True)

@@ -1,9 +1,9 @@
 """Select concrete datamodules for ordinary training workflows."""
 
-from src.data_utils.data_kinds import normalize_data_kind
-from src.data_utils.data_modules.static import StaticPointCloudDataModule
-from src.data_utils.data_modules.synthetic import SyntheticPointCloudDataModule
-from src.data_utils.data_modules.temporal_lammps import TemporalLAMMPSDataModule
+from src.data.kinds import normalize_data_kind
+from src.data.data_modules.static import StaticPointCloudDataModule
+from src.data.data_modules.synthetic import SyntheticPointCloudDataModule
+from src.data.data_modules.temporal_lammps import TemporalLAMMPSDataModule
 
 
 def create_datamodule(cfg, model_class=None):

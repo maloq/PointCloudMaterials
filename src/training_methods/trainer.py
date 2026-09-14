@@ -20,7 +20,7 @@ import wandb
 
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
-from src.data_utils.data_modules import create_datamodule
+from src.data.loaders import create_datamodule
 torch.set_float32_matmul_precision('high')
 
 logger = setup_logging()

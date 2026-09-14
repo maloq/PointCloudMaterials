@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.func import functional_call
 
-from src.data_utils.data_kinds import normalize_data_kind
+from src.data.kinds import normalize_data_kind
 from src.training_methods.shared.base_ssl_module import BaseSSLModule
 from src.utils.pointcloud_ops import crop_to_num_points
 from src.training_methods.shared.optimizers import get_optimizers_and_scheduler

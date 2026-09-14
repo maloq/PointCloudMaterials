@@ -12,7 +12,7 @@ from omegaconf import DictConfig
 
 sys.path.append(os.getcwd())
 
-from src.data_utils.data_modules import create_datamodule
+from src.data.loaders import create_datamodule
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint, resolve_config_path
 
