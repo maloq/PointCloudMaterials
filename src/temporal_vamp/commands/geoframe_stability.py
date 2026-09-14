@@ -16,8 +16,8 @@ import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf
 
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
-from src.data_utils.shooting_dataset import (
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
+from src.data.shooting import (
     build_periodic_environment_batch,
     resolve_shooting_trajectory_path,
 )

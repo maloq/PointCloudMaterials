@@ -13,7 +13,7 @@ from src.data_utils.data_module import (
     TemporalLAMMPSDataModule,
     _resolve_temporal_window_start_frames,
 )
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.temporal import TemporalLAMMPSDumpDataset
 from src.training_methods.contrastive_learning.vicreg_module import VICRegModule
 from src.utils.model_utils import load_model_from_checkpoint
 

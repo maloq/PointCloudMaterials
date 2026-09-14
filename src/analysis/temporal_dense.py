@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf
 
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.temporal import TemporalLAMMPSDumpDataset
 
 from .analysis_dataloaders import (
     _BatchedConcatDataset,

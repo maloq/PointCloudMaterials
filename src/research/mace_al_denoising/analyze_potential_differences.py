@@ -17,8 +17,8 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from src.analysis.liquid_structure import ORDER_NAMES, bond_order, persistence_image
-from src.data_utils.conversion.relaxation import read_relaxed
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
+from src.data.conversion.relaxation import read_relaxed
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.simulation.relaxation import sha256
 
 

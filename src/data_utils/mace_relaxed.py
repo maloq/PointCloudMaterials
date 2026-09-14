@@ -10,8 +10,8 @@ import time
 import numpy as np
 from scipy.spatial import cKDTree
 from src.analysis.liquid_structure import persistence_image
-from src.data_utils.conversion.relaxation import read_relaxed
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.conversion.relaxation import read_relaxed
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.data_utils.temporal_campaign import write_json
 from src.simulation.relaxation import relax_frame,sha256
 

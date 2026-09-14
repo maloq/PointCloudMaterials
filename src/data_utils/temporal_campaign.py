@@ -10,8 +10,8 @@ import numpy as np
 from numpy.lib.format import open_memmap
 from scipy.spatial import cKDTree
 
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.analysis.liquid_structure import nonaffine_displacement
 
 ROOT=Path(__file__).resolve().parents[2]

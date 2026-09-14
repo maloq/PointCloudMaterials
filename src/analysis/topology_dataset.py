@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 from src.data_utils.relaxed_histories import RelaxedHistoryDataset
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
 
 
 class RelaxedTopologyAnalysisDataset(Dataset):

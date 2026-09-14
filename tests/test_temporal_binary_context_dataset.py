@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 
 from src.data_utils.temporal_binary_context_dataset import TemporalBinaryContextDataset
-from src.data_utils.temporal_lammps_binary import write_temporal_lammps_binary
+from src.data.trajectories.lammps import write_temporal_lammps_binary
 from src.temporal_vamp.simulation_catalog import CatalogEntry, SimulationMetadata
 
 

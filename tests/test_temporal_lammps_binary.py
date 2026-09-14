@@ -5,12 +5,12 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.data_utils.temporal_lammps_binary import (
+from src.data.trajectories.lammps import (
     TemporalLAMMPSBinaryTrajectory,
     binary_path_for_dump,
     write_temporal_lammps_binary,
 )
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.temporal import TemporalLAMMPSDumpDataset
 
 
 def test_binary_replaces_missing_text_path_for_dataset(tmp_path: Path) -> None:

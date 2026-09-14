@@ -13,8 +13,8 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
-from src.data_utils.shooting_dataset import resolve_shooting_trajectory_path
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
+from src.data.shooting import resolve_shooting_trajectory_path
 from src.temporal_vamp.embeddings import FrozenEncoder
 from src.temporal_vamp.evaluation import CovariancePCA
 from src.temporal_vamp.predictability_map import FittedDenseProbe

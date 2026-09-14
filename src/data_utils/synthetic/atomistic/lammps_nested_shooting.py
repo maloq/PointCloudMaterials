@@ -28,11 +28,11 @@ from ase import Atoms
 from ase.data import atomic_masses, atomic_numbers
 from ase.io import write
 
-from src.data_utils.shooting_binary import (
+from src.data.trajectories.shooting import (
     ShootingBinaryTrajectory,
     convert_shooting_trajectory,
 )
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.temporal import TemporalLAMMPSDumpDataset
 from src.data_utils.synthetic.atomistic.transition_analysis import (
     CRYSTALLINE_STRUCTURE_TYPES,
 )

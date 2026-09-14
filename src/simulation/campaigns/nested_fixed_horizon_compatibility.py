@@ -24,13 +24,13 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.data_utils.shooting_binary import (  # noqa: E402
+from src.data.trajectories.shooting import (  # noqa: E402
     ShootingBinaryTrajectory,
     binary_directory_sizes,
     compose_shooting_binary_trajectories,
     convert_shooting_trajectory,
 )
-from src.data_utils.temporal_lammps_dataset import (  # noqa: E402
+from src.data.temporal import (  # noqa: E402
     TemporalLAMMPSDumpDataset,
 )
 

@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from omegaconf import OmegaConf
 
-from src.data_utils.shooting_dataset import (
+from src.data.shooting import (
     load_shooting_campaign_snapshot,
     load_shooting_campaigns_snapshot,
 )

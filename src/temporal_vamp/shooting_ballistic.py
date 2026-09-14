@@ -14,11 +14,11 @@ import numpy as np
 import torch
 from matplotlib import pyplot as plt
 
-from src.data_utils.shooting_binary_dataset import (
+from src.data.shooting_binary_dataset import (
     ShootingBallisticEnvironmentDataset,
     make_shooting_environment_loader,
 )
-from src.data_utils.shooting_dataset import (
+from src.data.shooting import (
     ShootingCampaignSnapshot,
     shooting_snapshot_sha256,
 )

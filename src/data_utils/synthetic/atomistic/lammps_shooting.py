@@ -30,7 +30,7 @@ from ase import Atoms
 from ase.data import atomic_masses, atomic_numbers
 from ase.io import write
 
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.temporal import TemporalLAMMPSDumpDataset
 from src.temporal_vamp.simulation_catalog import (
     CatalogEntry,
     discover_simulation_catalog,
@@ -1095,7 +1095,7 @@ def run_branch(
 
 
 def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
-    from src.data_utils.shooting_dataset import validate_complete_shooting_branch
+    from src.data.shooting import validate_complete_shooting_branch
 
     root = Path(campaign_root).expanduser().resolve()
     manifest = _load_json(root / "manifest.json")

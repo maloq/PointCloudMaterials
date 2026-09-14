@@ -17,7 +17,7 @@ import numpy as np
 import torch
 from omegaconf import OmegaConf
 
-from src.data_utils.shooting_dataset import load_predictive_shooting_snapshot
+from src.data.shooting import load_predictive_shooting_snapshot
 from src.temporal_vamp.embeddings import load_frozen_encoder
 from src.temporal_vamp.geoframe_temporal_variability import (
     analyze_temporal_embeddings,

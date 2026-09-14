@@ -30,18 +30,18 @@ if str(REPOSITORY_ROOT) not in sys.path:
 
 from src.simulation.campaigns import predictive_dynamics as campaign  # noqa: E402
 from src.project_runtime.paths import storage_path
-from src.data_utils.shooting_binary import (  # noqa: E402
+from src.data.trajectories.shooting import (  # noqa: E402
     ShootingBinaryTrajectory,
     binary_directory_sizes,
     compose_shooting_binary_trajectories,
     convert_shooting_trajectory,
 )
-from src.data_utils.shooting_dataset import validate_complete_shooting_branch  # noqa: E402
+from src.data.shooting import validate_complete_shooting_branch  # noqa: E402
 from src.data_utils.synthetic.atomistic.lammps_shooting import (  # noqa: E402
     _lammps_command,
     _lammps_environment,
 )
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset  # noqa: E402
+from src.data.temporal import TemporalLAMMPSDumpDataset  # noqa: E402
 
 
 DESIGN_NAME = "predictive_dynamics_fixed15_float32_exact_csld"

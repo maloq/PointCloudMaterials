@@ -6,12 +6,12 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from src.data_utils.shooting_dataset import (
+from src.data.shooting import (
     build_periodic_environment_batch,
     load_shooting_campaign_snapshot,
     load_shooting_campaigns_snapshot,
 )
-from src.data_utils.shooting_text_conversion import (
+from src.data.conversion.shooting_text import (
     load_lammps_shooting_frames_for_conversion,
 )
 from src.temporal_vamp.shooting_embeddings import (
@@ -27,7 +27,7 @@ from src.temporal_vamp.shooting_predictor import (
 )
 from src.temporal_vamp.shooting_multiscale import build_multiscale_feature_variants
 from src.temporal_vamp.shooting_spatial import SpatialContextTransformer
-from src.data_utils.conversion.shooting import convert_campaign
+from src.data.conversion.shooting import convert_campaign
 
 
 def _write_shooting_dump(path: Path) -> None:

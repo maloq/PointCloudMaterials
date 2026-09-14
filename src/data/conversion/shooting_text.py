@@ -13,7 +13,7 @@ from typing import Sequence
 
 import numpy as np
 
-from src.data_utils.shooting_dataset import ShootingFrame
+from src.data.shooting import ShootingFrame
 
 
 _FRAME_MARKER = b"ITEM: TIMESTEP\n"

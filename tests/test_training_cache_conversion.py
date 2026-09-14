@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from src.data_utils.conversion.training_cache import convert_file
+from src.data.conversion.training_cache import convert_file
 from src.data_utils.pretrained_mace import Quadruplets
 
 

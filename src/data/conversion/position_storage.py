@@ -8,7 +8,7 @@ import shutil
 
 import numpy as np
 
-from src.data_utils.temporal_lammps_binary import (
+from src.data.trajectories.lammps import (
     TemporalLAMMPSBinaryTrajectory, write_temporal_lammps_binary,
 )
 

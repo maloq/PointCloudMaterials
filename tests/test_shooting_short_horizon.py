@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.data_utils.shooting_binary_dataset import propagate_ballistic_positions
+from src.data.shooting_binary_dataset import propagate_ballistic_positions
 from src.temporal_vamp.shooting_outcomes import classify_endpoint_frames
 from src.temporal_vamp.shooting_short_horizon import (
     _aggregate_branch_predictions,

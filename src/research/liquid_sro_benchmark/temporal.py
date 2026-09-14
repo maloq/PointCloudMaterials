@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT))
 import numpy as np
 import torch
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.models.encoders.smooth_density import SmoothDensity
 from src.research.liquid_sro_benchmark.prepare import frame_geometry
 from src.research.liquid_sro_benchmark.robustness import descriptors,edges,pca,sort_clouds

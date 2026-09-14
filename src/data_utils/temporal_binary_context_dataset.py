@@ -18,11 +18,11 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 
 from src.baselines.descriptor_baselines import SteinhardtDescriptorBaseline
-from src.data_utils.shooting_dataset import (
+from src.data.shooting import (
     ShootingPositionFrame,
     build_periodic_environment_batch,
 )
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.temporal_vamp.simulation_catalog import CatalogEntry
 
 

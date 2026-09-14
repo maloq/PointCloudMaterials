@@ -13,11 +13,11 @@ import torch
 from numpy.lib.format import open_memmap
 
 from src.baselines.descriptor_baselines import SteinhardtDescriptorBaseline
-from src.data_utils.shooting_binary_dataset import (
+from src.data.shooting_binary_dataset import (
     ShootingBinaryEnvironmentDataset,
     make_shooting_environment_loader,
 )
-from src.data_utils.shooting_dataset import (
+from src.data.shooting import (
     ShootingCampaignSnapshot,
     resolve_shooting_trajectory_path,
     shooting_snapshot_sha256,

@@ -11,10 +11,10 @@ import numpy as np
 import torch
 
 from src.analysis.liquid_structure import persistence_image
-from src.data_utils.conversion.relaxation import read_relaxed
+from src.data.conversion.relaxation import read_relaxed
 from src.data_utils.mace_history import history_clouds
 from src.data_utils.mace_relaxed import paired_clouds
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.data_utils.temporal_campaign import write_json
 from src.simulation.relaxation import relax_frame, sha256
 

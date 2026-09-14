@@ -22,7 +22,7 @@ from src.simulation.campaigns.unseeded_meam_ensemble import (  # noqa: E402
     prepare as prepare_ensemble,
     run as run_ensemble,
 )
-from src.data_utils.temporal_lammps_dataset import (  # noqa: E402
+from src.data.temporal import (  # noqa: E402
     TemporalLAMMPSDumpDataset,
 )
 from src.temporal_vamp.simulation_catalog import (  # noqa: E402

@@ -11,8 +11,8 @@ from typing import Any, Sequence
 import numpy as np
 from matplotlib import pyplot as plt
 
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
-from src.data_utils.shooting_dataset import (
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
+from src.data.shooting import (
     ShootingCampaignSnapshot,
     resolve_shooting_trajectory_path,
     shooting_snapshot_sha256,

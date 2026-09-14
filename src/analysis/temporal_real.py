@@ -12,7 +12,7 @@ from src.data.static_sources import resolve_auto_cutoff_config
 from src.data_utils.data_modules.temporal_window import (
     _identity_batch_collate,
 )
-from src.data_utils.temporal_lammps_dataset import (
+from src.data.temporal import (
     TemporalLAMMPSDumpDataset,
     estimate_lammps_dump_cutoff_radius,
 )

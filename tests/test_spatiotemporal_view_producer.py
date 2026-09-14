@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import numpy as np
 
 from src.data_utils.spatiotemporal_views import local_views, periodic_tree, prepare_branch
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 
 
 def test_configured_views_preserve_identity_scale_and_split(tmp_path, monkeypatch):

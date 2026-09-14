@@ -19,7 +19,7 @@ from omegaconf import DictConfig, OmegaConf
 
 matplotlib.use("Agg")
 
-from src.data_utils.shooting_dataset import load_predictive_shooting_snapshot
+from src.data.shooting import load_predictive_shooting_snapshot
 from src.temporal_vamp.embeddings import load_frozen_encoder
 from src.temporal_vamp.predictive_atlas import (
     _bootstrap_gain,

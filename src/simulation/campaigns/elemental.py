@@ -143,7 +143,7 @@ def complete_trajectory(config, directory, steps, origin, *, restart_name='final
 
 def verify_completed_branch(config, directory, branch):
     """Only reuse checksum-verified complete data from this exact Ta protocol."""
-    from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+    from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 
     outcome = json.loads((directory / 'outcome.json').read_text())
     expected = {'state': 'complete', 'material': config['material'],

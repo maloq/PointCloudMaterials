@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.data_utils.conversion.embedding_cache import convert_cache
+from src.data.conversion.embedding_cache import convert_cache
 from src.experiment_runner.registry import sha256, write_json
 from src.training_methods.embedding_forecast.data import WindowDataset, verify_cache
 

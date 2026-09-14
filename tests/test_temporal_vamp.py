@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.temporal import TemporalLAMMPSDumpDataset
 from src.temporal_vamp.data import (
     TemporalPairDataset,
     contiguous_temporal_split,

@@ -20,8 +20,8 @@ import numpy as np
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.data_utils.temporal_lammps_binary import write_temporal_lammps_binary
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.trajectories.lammps import write_temporal_lammps_binary
+from src.data.temporal import TemporalLAMMPSDumpDataset
 
 
 def utc_now() -> str:

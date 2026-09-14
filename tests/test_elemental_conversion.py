@@ -4,8 +4,8 @@ import json
 import numpy as np
 import pytest
 
-from src.data_utils.conversion.cli import main
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.conversion.cli import main
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 
 
 def frame(step, second_id=2):
@@ -112,7 +112,7 @@ def test_resume_verifies_completed_binary_and_parent(branch, damage):
 
 
 def test_float16_rounding_and_periodic_reader(branch):
-    from src.data_utils.temporal_lammps_dataset import _sanitize_periodic_points
+    from src.data.temporal import _sanitize_periodic_points
     (branch / 'trajectory.lammpstrj').write_text(
         (frame(0) + frame(100)).replace('1 1 0 1 2', '1 1 8.999 1.1234 2'))
     main(['elemental', str(branch), '--delete-source'])
@@ -129,8 +129,8 @@ def test_float16_rounding_and_periodic_reader(branch):
 
 
 def test_binary_float16_migration_preserves_arrays_and_legacy_path(branch):
-    from src.data_utils.conversion.position_storage import compress
-    from src.data_utils.temporal_lammps_binary import resolve_temporal_lammps_artifact
+    from src.data.conversion.position_storage import compress
+    from src.data.trajectories.lammps import resolve_temporal_lammps_artifact
     (branch / 'trajectory.lammpstrj').write_text(frame(0) + frame(100))
     main(['elemental', str(branch), '--storage-dtype', 'float32', '--delete-source'])
     old_path = branch / 'trajectory_binary_float32'

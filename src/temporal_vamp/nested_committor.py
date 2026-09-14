@@ -30,8 +30,8 @@ from sklearn.metrics import log_loss, roc_auc_score
 from sklearn.model_selection import GroupKFold
 from sklearn.preprocessing import StandardScaler
 
-from src.data_utils.shooting_binary import FORMAT_NAME, ShootingBinaryTrajectory
-from src.data_utils.shooting_dataset import (
+from src.data.trajectories.shooting import FORMAT_NAME, ShootingBinaryTrajectory
+from src.data.shooting import (
     ShootingPositionFrame,
     build_periodic_environment_batch,
 )

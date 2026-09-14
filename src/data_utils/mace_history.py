@@ -7,7 +7,7 @@ import numpy as np
 import torch
 
 from src.data_utils.temporal_campaign import write_json
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.simulation.relaxation import sha256
 
 

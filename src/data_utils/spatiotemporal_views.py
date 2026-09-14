@@ -103,7 +103,7 @@ class SpatiotemporalViewDataModule(pl.LightningDataModule):
 def prepare_branch(task):
     source, output, branch_index, seed = task
     from numpy.lib.format import open_memmap
-    from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+    from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
     trajectory = TemporalLAMMPSBinaryTrajectory.load(source["path"])
     if trajectory.frame_count != source["frame_count"]:
         raise ValueError(f"Unexpected frame count: {source['path']}")

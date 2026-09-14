@@ -8,7 +8,7 @@ from typing import Any, Sequence
 
 import numpy as np
 
-from src.data_utils.temporal_lammps_binary import BINARY_SUFFIX
+from src.data.trajectories.lammps import BINARY_SUFFIX
 
 
 @dataclass(frozen=True)

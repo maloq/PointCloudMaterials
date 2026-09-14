@@ -19,14 +19,14 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.data_utils.temporal_lammps_binary import (  # noqa: E402
+from src.data.trajectories.lammps import (  # noqa: E402
     FORMAT_NAME,
     TemporalLAMMPSBinaryTrajectory,
     binary_directory_sizes,
     binary_path_for_dump,
     write_temporal_lammps_binary,
 )
-from src.data_utils.temporal_lammps_dataset import (  # noqa: E402
+from src.data.temporal import (  # noqa: E402
     TemporalLAMMPSDumpDataset,
 )
 

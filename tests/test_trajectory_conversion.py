@@ -5,10 +5,10 @@ import json
 import numpy as np
 import pytest
 
-from src.data_utils.conversion.cli import main
-from src.data_utils.conversion.audit_temporal import audit_campaign
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
+from src.data.conversion.cli import main
+from src.data.conversion.audit_temporal import audit_campaign
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
+from src.data.temporal import TemporalLAMMPSDumpDataset
 
 
 @pytest.fixture
@@ -71,8 +71,8 @@ def test_changed_coordinate_archive_does_not_delete_source(temporal_campaign):
 
 @pytest.mark.parametrize('delete_source', [False, True])
 def test_elemental_conversion_preserves_coordinates_before_optional_text_removal(tmp_path, delete_source):
-    from src.data_utils.conversion.elemental import convert
-    from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+    from src.data.conversion.elemental import convert
+    from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 
     metadata = dict(state='dynamics_complete', frame_count=2, atom_count=2, dump_every_steps=50)
     (tmp_path / 'metadata.json').write_text(json.dumps(metadata))

@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.data_utils.temporal_lammps_binary import (
+from src.data.trajectories.lammps import (
     binary_path_for_dump,
     write_temporal_lammps_binary,
 )

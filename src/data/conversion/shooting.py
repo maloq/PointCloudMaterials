@@ -22,14 +22,14 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.data_utils.shooting_binary import (  # noqa: E402
+from src.data.trajectories.shooting import (  # noqa: E402
     FORMAT_NAME,
     SCHEMA_VERSION,
     ShootingBinaryTrajectory,
     binary_directory_sizes,
     convert_shooting_trajectory,
 )
-from src.data_utils.shooting_dataset import (  # noqa: E402
+from src.data.shooting import (  # noqa: E402
     validate_complete_shooting_branch,
 )
 

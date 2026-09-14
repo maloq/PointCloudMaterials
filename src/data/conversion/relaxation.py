@@ -3,9 +3,9 @@ import argparse
 import json
 from pathlib import Path
 import numpy as np
-from src.data_utils.temporal_lammps_dataset import TemporalLAMMPSDumpDataset
-from src.data_utils.temporal_lammps_binary import write_temporal_lammps_binary
-from src.data_utils.conversion.position_storage import QuantizationError
+from src.data.temporal import TemporalLAMMPSDumpDataset
+from src.data.trajectories.lammps import write_temporal_lammps_binary
+from src.data.conversion.position_storage import QuantizationError
 from src.data_utils.temporal_campaign import write_json
 from src.simulation.relaxation import sha256
 

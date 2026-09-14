@@ -2,8 +2,8 @@
 import json
 from pathlib import Path
 
-from src.data_utils.conversion.position_storage import compress
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.conversion.position_storage import compress
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.simulation.campaigns.elemental import complete_trajectory, sequence, sha256
 
 REPO = Path(__file__).resolve().parents[3]

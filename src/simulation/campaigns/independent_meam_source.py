@@ -34,7 +34,7 @@ from src.simulation.campaigns.common import (  # noqa: E402
 from src.simulation.campaigns.unseeded_meam_crystallization import (  # noqa: E402
     _liquid_validation,
 )
-from src.data_utils.shooting_binary import (  # noqa: E402
+from src.data.trajectories.shooting import (  # noqa: E402
     ShootingBinaryTrajectory,
     convert_shooting_trajectory,
 )
@@ -42,7 +42,7 @@ from src.data_utils.synthetic.atomistic.transition_analysis import (  # noqa: E4
     CRYSTALLINE_STRUCTURE_TYPES,
     STRUCTURE_NAMES,
 )
-from src.data_utils.temporal_lammps_dataset import (  # noqa: E402
+from src.data.temporal import (  # noqa: E402
     TemporalLAMMPSDumpDataset,
 )
 

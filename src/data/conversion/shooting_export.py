@@ -18,12 +18,12 @@ from typing import Any, Callable, Sequence
 import numpy as np
 from scipy.spatial import cKDTree
 
-from src.data_utils.shooting_binary import (
+from src.data.trajectories.shooting import (
     ShootingBinaryTrajectory,
     binary_directory_sizes,
     convert_shooting_trajectory,
 )
-from src.data_utils.shooting_text_conversion import (
+from src.data.conversion.shooting_text import (
     load_lammps_shooting_frames_for_conversion,
 )
 

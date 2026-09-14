@@ -36,14 +36,14 @@ if str(REPOSITORY_ROOT) not in sys.path:
 
 from src.project_runtime.paths import storage_path, resolve_config
 from src.simulation.campaigns.independent_meam_source import _ptm_progress  # noqa: E402
-from src.data_utils.shooting_binary import (  # noqa: E402
+from src.data.trajectories.shooting import (  # noqa: E402
     FORMAT_NAME,
     ShootingBinaryTrajectory,
     binary_directory_sizes,
     compose_shooting_binary_trajectories,
     convert_shooting_trajectory,
 )
-from src.data_utils.shooting_dataset import (  # noqa: E402
+from src.data.shooting import (  # noqa: E402
     resolve_shooting_trajectory_path,
     validate_complete_shooting_branch,
 )

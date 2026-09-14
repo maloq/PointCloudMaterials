@@ -18,15 +18,15 @@ from scipy.spatial import cKDTree
 from sklearn.linear_model import Ridge
 from sklearn.neighbors import NearestNeighbors
 
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
-from src.data_utils.shooting_dataset import (
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
+from src.data.shooting import (
     ShootingCampaignSnapshot,
     ShootingPositionFrame,
     build_periodic_environment_batch,
     resolve_shooting_trajectory_path,
     shooting_snapshot_sha256,
 )
-from src.data_utils.temporal_lammps_binary import TemporalLAMMPSBinaryTrajectory
+from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.temporal_vamp.embeddings import FrozenEncoder
 from src.temporal_vamp.evaluation import CovariancePCA
 from src.temporal_vamp.shooting_context import ShootingContextTokenCache

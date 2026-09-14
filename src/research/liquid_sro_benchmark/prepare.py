@@ -16,7 +16,7 @@ sys.path.insert(0,str(ROOT))
 import numpy as np
 from scipy.spatial import cKDTree
 from src.analysis.liquid_structure import bond_order,persistence_image,nonaffine_displacement
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.research.smooth_temporal_encoder.prepare import write_json
 
 

@@ -3,14 +3,14 @@ import argparse
 import json
 from pathlib import Path
 
-from src.data_utils.conversion.shooting import (
+from src.data.conversion.shooting import (
     _expected_timesteps,
     _load_json_object,
     _sha256_file,
     _validate_binary_for_migration,
 )
-from src.data_utils.shooting_binary import ShootingBinaryTrajectory
-from src.data_utils.shooting_dataset import validate_complete_shooting_branch
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
+from src.data.shooting import validate_complete_shooting_branch
 
 
 def audit_campaign(root: Path, *, require_source_deleted: bool = False) -> dict:

@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.data_utils.temporal_lammps_dataset import (
+from src.data.temporal import (
     TemporalLAMMPSDumpDataset,
     inspect_lammps_dump_file,
 )

@@ -7,24 +7,24 @@ import numpy as np
 import pytest
 import torch
 
-from src.data_utils.shooting_binary import (
+from src.data.trajectories.shooting import (
     ShootingBinaryTrajectory,
     binary_directory_sizes,
     compose_shooting_binary_trajectories,
     convert_shooting_trajectory,
 )
-from src.data_utils.shooting_binary_dataset import (
+from src.data.shooting_binary_dataset import (
     ShootingBinaryEnvironmentDataset,
     make_shooting_environment_loader,
 )
-from src.data_utils.shooting_dataset import (
+from src.data.shooting import (
     load_shooting_campaign_snapshot,
     resolve_shooting_trajectory_path,
 )
-from src.data_utils.shooting_text_conversion import (
+from src.data.conversion.shooting_text import (
     load_lammps_shooting_frames_for_conversion,
 )
-from src.data_utils.conversion.shooting import convert_campaign
+from src.data.conversion.shooting import convert_campaign
 
 
 def _write_shooting_dump(
@@ -305,8 +305,8 @@ def test_complete_campaign_conversion_preserves_or_deletes_only_branch_root_text
     assert repeated["migrated_complete_branch_count"] == 2
     assert repeated["migrated_now_count"] == 0
 
-    from src.data_utils.conversion.cli import main as conversion_main
-    from src.data_utils.conversion.audit_shooting import audit_campaign
+    from src.data.conversion.cli import main as conversion_main
+    from src.data.conversion.audit_shooting import audit_campaign
 
     assert audit_campaign(tmp_path)["retained_sources"] == (0 if delete_source else 2)
     if not delete_source:
