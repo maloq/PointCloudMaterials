@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 import torch
 from src.data_utils.pretrained_mace import Quadruplets
 from src.data_utils.temporal_campaign import write_json
-from src.training_methods.pretrained_mace import Learner
+from src.training_methods.pretrained_mace.train import Learner
 from src.training_methods.mace_performance import encode_views as encode
 from src.data_utils.pretrained_mace_gpu import GPUQuadruplets
 
