@@ -514,15 +514,14 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
 
         return TemporalSSLModule
     if model_type == "temporal_motif_field":
-        from src.training_methods.temporal_motif_field.temporal_motif_field_module import (
-            TemporalMotifFieldModule,
+        raise ValueError(
+            "temporal_motif_field is retired. Use the experiment's recorded "
+            "source snapshot to analyze its checkpoints."
         )
-
-        return TemporalMotifFieldModule
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
         "Expected one of ['vicreg', 'visreg', 'temporal_vicreg', "
-        "'temporal_motif_field', 'density_encoder', 'pretrained_mace_encoder'], "
+        "'density_encoder', 'pretrained_mace_encoder'], "
         f"got {model_type!r}."
     )
 

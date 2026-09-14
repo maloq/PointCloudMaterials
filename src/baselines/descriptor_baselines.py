@@ -939,20 +939,21 @@ class SOAPDescriptorBaseline(DescriptorBaseline):
         sigma: float,
     ):
         try:
-            from src.training_methods.SOAP.predict_soap_pca import build_soap
+            from dscribe.descriptors import SOAP
         except ModuleNotFoundError as exc:
             raise ModuleNotFoundError(
                 "SOAP baseline requires the optional dependencies 'dscribe' and 'ase'. "
                 "Install them before running descriptor.name=soap."
             ) from exc
-        return build_soap(
+        return SOAP(
             species=[species],
             r_cut=r_cut,
             n_max=n_max,
             l_max=l_max,
             sigma=sigma,
             periodic=False,
-            compression_mode="off",
+            compression={"mode": "off", "species_weighting": None},
+            sparse=False,
             dtype="float64",
         )
 
