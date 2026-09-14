@@ -216,11 +216,11 @@ missing raw input at lazy construction, delayed missing-file errors, cached
 representative reuse, invalid cache ordering, NPY/OFF ingestion and a known pooled
 cutoff quantile. Source-cutoff estimation must not modify NumPy's global RNG.
 
-A tied-distance lattice exposed an existing eager/lazy point-order difference.
+A tied-distance lattice exposed an existing eager/lazy point-array difference.
 The characterization therefore records the lazy output from the pinned baseline
 separately; it does not assume equality to eager sampling or change either
-algorithm. The different scalar/batched neighbor-query ordering is a candidate
-for later scientific review, not an algorithm fix authorized by this extraction.
+algorithm. Scalar/batched neighbor-query ordering may explain this; its scientific impact
+requires separate review and is not resolved by this extraction.
 
 Real-data baseline diagnostics use the complete 166 ps aluminum source, 160 points,
 seed 42, automatic cutoff settings from the active static recipe, zero overlap,
@@ -243,3 +243,90 @@ CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
 The first draft assertion that eager and lazy lattice point arrays were identical
 failed against baseline; the corrected characterization preserves the separate
 lazy result. No existing focused test failed.
+
+### Static extraction results
+
+Characterization commit: `8ab6311`; production extraction: `6b4660a`.
+`LazyStaticAnalysisDataset` no longer imports `PointCloudDataset` or private helpers
+from `data_load`. All five operations have one implementation in
+`src/data/static_sources.py`; their old private definitions are removed. Static,
+synthetic and both temporal configuration consumers call the same public functions.
+The extracted implementations were compared by Python AST against `f9d490b`,
+allowing only public-name substitutions and docstring changes: all five matched.
+Numerical operations, error messages, scalar types and required fields are retained.
+The compact sequence retains its original `typing.Sequence` base.
+
+The focused command above plus `tests/test_analysis_storage.py` passed **40 tests**
+in 36.23 seconds. Static-cache bulk loading now also explicitly exercises spawned
+workers, verifying current dataset/sequence serialization and duplicate requests.
+This does not certify loading historical pickles containing the old private
+sequence class; those must use their original frozen source. Dataset class import
+paths themselves are unchanged. No speculative compatibility shim was added.
+
+### Real-data comparison
+
+Every baseline/refactored repetition agrees exactly on:
+
+- 13,824 samples and automatic radius **9.186229173717608**;
+- the complete sample-cache fingerprint;
+- SHA-256 of the full float32 point array and coordinate array;
+- SHA-256 of four lazy representative requests, including a repeated index.
+
+The initial three-repetition comparison ran alongside focused tests. Preparation
+medians were 3.418 s before and 3.587 s after; first lazy-load medians were 1.311 s
+and 1.384 s. Because this indicated a possible slowdown, the comparison was repeated
+sequentially without concurrent tests. The baseline ran from a temporary detached
+checkout of `f9d490b`, while both processes used the same working directory, input,
+configuration, seeds and batch order. That clean temporary checkout was removed
+after the diagnostic completed; the baseline remains available in Git.
+
+Isolated three-repetition comparison, median (range):
+
+| Measurement | Baseline | Refactored |
+| --- | --- | --- |
+| New sample-cache preparation, s | 3.431 (3.322–3.435) | 3.291 (3.258–3.294) |
+| Warm iteration, samples/s | 109,727 (107,792–136,689) | 136,710 (128,464–137,018) |
+| Lazy metadata construction, ms | 2.655 (2.652–3.435) | 3.313 (2.709–3.754) |
+| First four representatives, s | 1.295 (1.291–1.325) | 1.305 (1.285–1.332) |
+| Repeated four representatives, ms | 0.678 (0.658–0.746) | 0.721 (0.707–0.770) |
+| Whole-process peak RSS, MiB | 1,089.79 | 1,090.98 |
+
+The initial slowdown did not persist. These small repeated measurements show
+system variability, not a demonstrated speedup or a reliable sub-millisecond
+regression. The unchanged numerical bodies and full-array identity support the
+behavioral comparison; RSS includes framework imports and both dataset paths.
+No GPU memory/performance or complete six-frame production run was measured.
+
+The disposable diagnostic is
+`output/maintenance/static-source-refactor-20260914/technical/compare_static.py`.
+It uses the existing `PointCloudDataset` arguments and lazy-analysis class;
+no maintained command or parallel dataset implementation was introduced:
+
+```bash
+CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=. \
+  conda run -n pointnet python \
+  output/maintenance/static-source-refactor-20260914/technical/compare_static.py \
+  output/maintenance/static-source-refactor-20260914/technical/RESULT.json
+```
+
+For baseline reproduction, set `PYTHONPATH` to a separate checkout of `f9d490b`
+while retaining the main repository working directory. The JSON files and logs
+retain all repetitions and hashes. Temporary caches are created independently;
+this command does not rebuild an existing research cache.
+
+### Static slice integration
+
+The full CPU suite (`python -m pytest tests -q -rs` with the environment above)
+passed **514 tests**, with **8 CUDA-only skips**, 361 warnings and no failures,
+in 387.01 seconds. This adds four passing tests to the 510-pass baseline.
+The skipped checks are the same forecast device-gather/transfer, spatial-attention,
+fused-MACE and BF16 GPU cases listed in the preceding integration record.
+`git diff --check` passes; the new source module fits PEP 8's 79-column limit.
+The full suite also validates the unchanged current metric contracts and forecast
+continuation gates. No real retained-checkpoint inference/warm-start/exact-resume
+certification is claimed by this data-operation extraction.
+
+Remaining ownership work is deliberately separate: dataset-class/SOAP separation,
+additional temporal and simulation ownership changes, and any scientific repair
+of the eager/lazy discrepancy. No generators, archived protocols, private source
+snapshots or existing data products were deleted in this slice.
