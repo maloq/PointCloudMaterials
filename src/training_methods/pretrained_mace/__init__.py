@@ -1,11 +1,3 @@
-"""Pretrained mace training and saved-object imports."""
+"""Pretrained mace saved-object class imports."""
 
-from .train import (
-    Learner,
-    fit_scaling,
-    validate,
-    summarize_data,
-    train,
-    run,
-    main,
-)
+from .train import Learner
