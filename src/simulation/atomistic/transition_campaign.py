@@ -73,7 +73,6 @@ from .transition_resumable import (
 )
 from .validation import diagnose_system
 
-
 RAW_ARTIFACTS = (
     "endpoint.traj",
     "endpoint_forces.npy",
@@ -103,19 +102,25 @@ def _write_trace(path: Path, trace: ThermodynamicTrace) -> None:
         np.savez(handle, **trace.__dict__)
 
 
-def _load_trace(path: Path, *, atom_count: int, context: str) -> ThermodynamicTrace:
+def _load_trace(
+    path: Path, *, atom_count: int, context: str
+) -> ThermodynamicTrace:
     with np.load(path) as stored:
-        trace = ThermodynamicTrace(**{name: stored[name] for name in stored.files})
+        trace = ThermodynamicTrace(
+            **{name: stored[name] for name in stored.files}
+        )
     validate_thermodynamic_trace(trace, atom_count=atom_count, context=context)
     return trace
 
 
-def _branch_for_task(config: TransitionCampaignConfig, task: TransitionCampaignTask):
+def _branch_for_task(
+    config: TransitionCampaignConfig, task: TransitionCampaignTask
+):
     branch = config.transition.temperature_runs[task.branch_index]
     if branch.name != task.branch_name:
         raise RuntimeError(
-            f"{task.run_name}: queue branch={task.branch_name!r} differs from config "
-            f"index={task.branch_index} name={branch.name!r}."
+            f"{task.run_name}: queue branch={task.branch_name!r} differs from"
+            f" config index={task.branch_index} name={branch.name!r}."
         )
     return branch
 
@@ -129,13 +134,19 @@ def _validate_artifact_commit(
 ) -> tuple[dict[str, object], str]:
     metadata_path = directory / metadata_name
     if not metadata_path.is_file():
-        raise RuntimeError(f"{directory}: committed directory has no {metadata_name}.")
+        raise RuntimeError(
+            f"{directory}: committed directory has no {metadata_name}."
+        )
     with metadata_path.open("r", encoding="utf-8") as handle:
         metadata = json.load(handle)
     digests = metadata.get(artifact_key)
     if not isinstance(digests, dict):
-        raise RuntimeError(f"{metadata_path}: {artifact_key} must be a mapping.")
-    if expected_artifacts is not None and set(digests) != set(expected_artifacts):
+        raise RuntimeError(
+            f"{metadata_path}: {artifact_key} must be a mapping."
+        )
+    if expected_artifacts is not None and set(digests) != set(
+        expected_artifacts
+    ):
         raise RuntimeError(
             f"{metadata_path}: {artifact_key} must contain exactly "
             f"{list(expected_artifacts)}, got {sorted(digests)}."
@@ -143,17 +154,21 @@ def _validate_artifact_commit(
     for relative, expected in digests.items():
         artifact = directory / relative
         if not artifact.is_file():
-            raise RuntimeError(f"{metadata_path}: missing committed artifact {artifact}.")
+            raise RuntimeError(
+                f"{metadata_path}: missing committed artifact {artifact}."
+            )
         observed = _sha256(artifact)
         if observed != expected:
             raise RuntimeError(
-                f"{metadata_path}: SHA-256 mismatch for {relative}: expected={expected}, "
-                f"observed={observed}."
+                f"{metadata_path}: SHA-256 mismatch for {relative}:"
+                f" expected={expected}, observed={observed}."
             )
     return metadata, _sha256(metadata_path)
 
 
-def _raw_directory(config: TransitionCampaignConfig, task: TransitionCampaignTask) -> Path:
+def _raw_directory(
+    config: TransitionCampaignConfig, task: TransitionCampaignTask
+) -> Path:
     return config.output_root / "raw" / task.run_name
 
 
@@ -175,24 +190,30 @@ def _write_raw_commit(
             artifact_key="raw_artifacts_sha256",
             expected_artifacts=RAW_ARTIFACTS,
         )
-        if metadata.get("campaign_config") != config.to_dict() or metadata.get(
-            "execution_provenance"
-        ) != provenance.to_dict() or metadata.get(
-            "source_evidence"
-        ) != config.source_evidence or metadata.get("task") != task.__dict__:
+        if (
+            metadata.get("campaign_config") != config.to_dict()
+            or metadata.get("execution_provenance") != provenance.to_dict()
+            or metadata.get("source_evidence") != config.source_evidence
+            or metadata.get("task") != task.__dict__
+        ):
             raise RuntimeError(
-                f"{final}: existing raw commit belongs to another campaign/runtime/task."
+                f"{final}: existing raw commit belongs to another"
+                " campaign/runtime/task."
             )
         return final, digest
     final.parent.mkdir(parents=True, exist_ok=True)
-    staging = Path(tempfile.mkdtemp(prefix=f".{final.name}.staging-", dir=final.parent))
+    staging = Path(
+        tempfile.mkdtemp(prefix=f".{final.name}.staging-", dir=final.parent)
+    )
     try:
         endpoint = atoms.copy()
         endpoint.calc = None
         endpoint.wrap()
         write(staging / "endpoint.traj", endpoint, format="traj")
         np.save(staging / "endpoint_forces.npy", endpoint_forces)
-        _write_trace(staging / "equilibration_trajectory.npz", equilibration_trace)
+        _write_trace(
+            staging / "equilibration_trajectory.npz", equilibration_trace
+        )
         _write_trace(staging / "trajectory.npz", production_trace)
         metadata = {
             "schema_version": 1,
@@ -204,8 +225,12 @@ def _write_raw_commit(
                 name: _sha256(staging / name) for name in RAW_ARTIFACTS
             },
         }
-        with (staging / "raw_commit.json").open("w", encoding="utf-8") as handle:
-            json.dump(metadata, handle, indent=2, sort_keys=True, allow_nan=False)
+        with (staging / "raw_commit.json").open(
+            "w", encoding="utf-8"
+        ) as handle:
+            json.dump(
+                metadata, handle, indent=2, sort_keys=True, allow_nan=False
+            )
             handle.write("\n")
         staging.replace(final)
     except BaseException:
@@ -233,13 +258,18 @@ def run_transition_task(
             artifact_key="raw_artifacts_sha256",
             expected_artifacts=RAW_ARTIFACTS,
         )
-        if metadata.get("campaign_config") != config.to_dict() or metadata.get(
-            "execution_provenance"
-        ) != provenance.to_dict() or metadata.get(
-            "source_evidence"
-        ) != config.source_evidence or metadata.get("task") != task.__dict__:
-            raise RuntimeError(f"{existing}: committed raw task identity mismatch.")
-        progress(f"{task.run_name}: recovered atomically committed raw trajectory")
+        if (
+            metadata.get("campaign_config") != config.to_dict()
+            or metadata.get("execution_provenance") != provenance.to_dict()
+            or metadata.get("source_evidence") != config.source_evidence
+            or metadata.get("task") != task.__dict__
+        ):
+            raise RuntimeError(
+                f"{existing}: committed raw task identity mismatch."
+            )
+        progress(
+            f"{task.run_name}: recovered atomically committed raw trajectory"
+        )
         return existing, digest
 
     branch = _branch_for_task(config, task)
@@ -259,8 +289,9 @@ def run_transition_task(
         trace_buffer = ThermodynamicTraceBuffer()
         trace_buffer.sample(atoms, 0)
         progress(
-            f"{task.run_name}: started continuous MTK-NPT, "
-            f"simulation_seed={task.simulation_seed}, temperature={branch.temperature_K} K"
+            f"{task.run_name}: started continuous MTK-NPT,"
+            f" simulation_seed={task.simulation_seed},"
+            f" temperature={branch.temperature_K} K"
         )
     else:
         atoms = checkpoint.atoms
@@ -270,14 +301,15 @@ def run_transition_task(
         )
         trace_buffer = ThermodynamicTraceBuffer(checkpoint.trace)
         progress(
-            f"{task.run_name}: resumed exact MTK state at global step={dynamics.nsteps}"
+            f"{task.run_name}: resumed exact MTK state at global"
+            f" step={dynamics.nsteps}"
         )
 
     total_steps = branch.equilibration_steps + branch.production_steps
     if dynamics.nsteps > total_steps:
         raise RuntimeError(
-            f"{task.run_name}: checkpoint step={dynamics.nsteps} exceeds configured "
-            f"continuous trajectory end={total_steps}."
+            f"{task.run_name}: checkpoint step={dynamics.nsteps} exceeds"
+            f" configured continuous trajectory end={total_steps}."
         )
     sample_interval = config.transition.sample_interval
     while dynamics.nsteps < total_steps:
@@ -308,11 +340,13 @@ def run_transition_task(
             },
         )
         progress(
-            f"{task.run_name}: committed exact MTK checkpoint at step={dynamics.nsteps}"
+            f"{task.run_name}: committed exact MTK checkpoint at"
+            f" step={dynamics.nsteps}"
         )
 
     continuous_trace = trace_buffer.finish(
-        atom_count=len(atoms), context=f"{task.run_name} completed continuous trace"
+        atom_count=len(atoms),
+        context=f"{task.run_name} completed continuous trace",
     )
     equilibration_mask = continuous_trace.step <= branch.equilibration_steps
     production_mask = continuous_trace.step >= branch.equilibration_steps
@@ -330,9 +364,10 @@ def run_transition_task(
         step_offset=branch.equilibration_steps,
     )
     endpoint_forces = np.asarray(atoms.get_forces(), dtype=np.float64)
-    if endpoint_forces.shape != (len(atoms), 3) or not np.isfinite(
-        endpoint_forces
-    ).all():
+    if (
+        endpoint_forces.shape != (len(atoms), 3)
+        or not np.isfinite(endpoint_forces).all()
+    ):
         raise FloatingPointError(
             f"{task.run_name}: endpoint forces must be finite with shape "
             f"{(len(atoms), 3)}, got {endpoint_forces.shape}."
@@ -365,8 +400,8 @@ def run_md_worker(
     )
     provenance = bind_transition_campaign_execution_provenance(provenance)
     progress(
-        f"{worker_name}: loaded one persistent calculator for the dynamic transition "
-        f"queue; source_atoms={len(prepared.atoms)}"
+        f"{worker_name}: loaded one persistent calculator for the dynamic"
+        f" transition queue; source_atoms={len(prepared.atoms)}"
     )
     while True:
         task = claim_md_task(config, worker_name=worker_name)
@@ -391,12 +426,14 @@ def run_md_worker(
             error = traceback.format_exc()
             fail_task(config, task=task, error=error, analysis=False)
             raise RuntimeError(
-                f"{worker_name}: MD task {task.run_name} failed; traceback persisted in "
-                "transition_campaign.sqlite3."
+                f"{worker_name}: MD task {task.run_name} failed; traceback"
+                " persisted in transition_campaign.sqlite3."
             )
 
 
-def _provenance_from_dict(value: object, *, context: str) -> ExecutionProvenance:
+def _provenance_from_dict(
+    value: object, *, context: str
+) -> ExecutionProvenance:
     if not isinstance(value, dict) or set(value) != {
         "calculator",
         "runtime",
@@ -405,9 +442,13 @@ def _provenance_from_dict(value: object, *, context: str) -> ExecutionProvenance
         raise RuntimeError(f"{context}: invalid execution_provenance mapping.")
     calculator = value["calculator"]
     if not isinstance(calculator, dict):
-        raise RuntimeError(f"{context}: calculator provenance must be a mapping.")
+        raise RuntimeError(
+            f"{context}: calculator provenance must be a mapping."
+        )
     calculator_value = dict(calculator)
-    calculator_value["available_heads"] = tuple(calculator_value["available_heads"])
+    calculator_value["available_heads"] = tuple(
+        calculator_value["available_heads"]
+    )
     return ExecutionProvenance(
         calculator=CalculatorProvenance(**calculator_value),
         runtime=dict(value["runtime"]),
@@ -437,7 +478,9 @@ def _validated_raw_commit(
     raw_value = row.get("raw_directory")
     anchored_digest = row.get("raw_commit_sha256")
     if not isinstance(raw_value, str) or not isinstance(anchored_digest, str):
-        raise RuntimeError(f"{run_name}: queue has no committed raw trajectory anchor.")
+        raise RuntimeError(
+            f"{run_name}: queue has no committed raw trajectory anchor."
+        )
     raw = Path(raw_value)
     metadata, observed_digest = _validate_artifact_commit(
         raw,
@@ -455,7 +498,9 @@ def _validated_raw_commit(
         or metadata.get("source_evidence") != config.source_evidence
         or metadata.get("task") != task_identity
     ):
-        raise RuntimeError(f"{raw}: raw commit identity differs from the active task.")
+        raise RuntimeError(
+            f"{raw}: raw commit identity differs from the active task."
+        )
     return raw, metadata, observed_digest
 
 
@@ -497,12 +542,18 @@ def analyze_transition_task(
             or metadata.get("analysis_execution_provenance")
             != analysis_execution_provenance
         ):
-            raise RuntimeError(f"{final}: committed analysis task identity mismatch.")
-        progress(f"{task.run_name}: recovered atomically committed deferred analysis")
+            raise RuntimeError(
+                f"{final}: committed analysis task identity mismatch."
+            )
+        progress(
+            f"{task.run_name}: recovered atomically committed deferred"
+            " analysis"
+        )
         return final, digest
 
     provenance = _provenance_from_dict(
-        raw_metadata.get("execution_provenance"), context=str(raw / "raw_commit.json")
+        raw_metadata.get("execution_provenance"),
+        context=str(raw / "raw_commit.json"),
     )
     atoms = read(raw / "endpoint.traj", format="traj")
     forces = np.load(raw / "endpoint_forces.npy")
@@ -552,7 +603,9 @@ def analyze_transition_task(
         branch_name=task.run_name,
         progress=progress,
     )
-    runtime_transition = replace(transition, generator=config.runtime_generator)
+    runtime_transition = replace(
+        transition, generator=config.runtime_generator
+    )
     diagnostics = diagnose_system(
         atoms,
         trace,
@@ -574,7 +627,9 @@ def analyze_transition_task(
     )
     final.parent.mkdir(parents=True, exist_ok=True)
     staging_root = Path(
-        tempfile.mkdtemp(prefix=f".{final.name}.analysis-staging-", dir=final.parent)
+        tempfile.mkdtemp(
+            prefix=f".{final.name}.analysis-staging-", dir=final.parent
+        )
     )
     staging = staging_root / "run"
     try:
@@ -599,8 +654,12 @@ def analyze_transition_task(
             "analysis_execution_provenance": analysis_execution_provenance,
             "analysis_artifacts_sha256": artifacts,
         }
-        with (staging / "analysis_commit.json").open("w", encoding="utf-8") as handle:
-            json.dump(commit, handle, indent=2, sort_keys=True, allow_nan=False)
+        with (staging / "analysis_commit.json").open(
+            "w", encoding="utf-8"
+        ) as handle:
+            json.dump(
+                commit, handle, indent=2, sort_keys=True, allow_nan=False
+            )
             handle.write("\n")
         staging.replace(final)
         staging_root.rmdir()
@@ -650,8 +709,8 @@ def run_analysis_worker(
             error = traceback.format_exc()
             fail_task(config, task=task, error=error, analysis=True)
             raise RuntimeError(
-                f"{worker_name}: analysis task {task.run_name} failed; traceback persisted "
-                "in transition_campaign.sqlite3."
+                f"{worker_name}: analysis task {task.run_name} failed;"
+                " traceback persisted in transition_campaign.sqlite3."
             )
 
 
@@ -669,7 +728,9 @@ def _velocity_summary(
     for row in rows:
         run_name = str(row["run_name"])
         directory = Path(str(row["analysis_directory"]))
-        with (directory / "metadata.json").open("r", encoding="utf-8") as handle:
+        with (directory / "metadata.json").open(
+            "r", encoding="utf-8"
+        ) as handle:
             metadata = json.load(handle)
         transition = metadata["transition"]
         replica = metadata["replica"]
@@ -699,7 +760,9 @@ def _velocity_summary(
                     transition["individual_interface_fit_r_squared"],
                     dtype=np.float64,
                 ),
-                velocity_fit_r_squared=float(transition["velocity_fit_r_squared"]),
+                velocity_fit_r_squared=float(
+                    transition["velocity_fit_r_squared"]
+                ),
                 velocity_fit_ols_standard_error_m_per_s=float(
                     transition["velocity_fit_ols_standard_error_m_per_s"]
                 ),
@@ -717,8 +780,8 @@ def _velocity_summary(
             first_provenance = provenance
         elif provenance != first_provenance:
             raise RuntimeError(
-                "Transition tasks have differing MD execution provenance; refusing to "
-                "pool replica velocities."
+                "Transition tasks have differing MD execution provenance;"
+                " refusing to pool replica velocities."
             )
         observed_analysis = analysis_commits[run_name][
             "analysis_execution_provenance"
@@ -727,15 +790,18 @@ def _velocity_summary(
             analysis_provenance = observed_analysis
         elif observed_analysis != analysis_provenance:
             raise RuntimeError(
-                "Transition tasks have differing deferred-analysis execution provenance; "
-                "refusing to pool replica velocities."
+                "Transition tasks have differing deferred-analysis execution"
+                " provenance; refusing to pool replica velocities."
             )
     if first_provenance is None:
         raise RuntimeError("No completed transition provenance was found.")
     if analysis_provenance is None:
-        raise RuntimeError("No completed deferred-analysis provenance was found.")
+        raise RuntimeError(
+            "No completed deferred-analysis provenance was found."
+        )
     md_provenance = _provenance_from_dict(
-        first_provenance, context="finalized transition MD execution provenance"
+        first_provenance,
+        context="finalized transition MD execution provenance",
     )
     summary = _generator_velocity_summary(
         config.transition,
@@ -752,14 +818,18 @@ def _velocity_summary(
             "analysis_execution_provenance": analysis_provenance,
             "runtime_generator": {
                 "config_file": str(config.runtime_generator.config_path),
-                "config_file_sha256": _sha256(config.runtime_generator.config_path),
-                "config_sha256": hashlib.sha256(
-                    json.dumps(
-                        config.runtime_generator.to_dict(),
-                        sort_keys=True,
-                        separators=(",", ":"),
-                    ).encode("utf-8")
-                ).hexdigest(),
+                "config_file_sha256": _sha256(
+                    config.runtime_generator.config_path
+                ),
+                "config_sha256": (
+                    hashlib.sha256(
+                        json.dumps(
+                            config.runtime_generator.to_dict(),
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        ).encode("utf-8")
+                    ).hexdigest()
+                ),
             },
             "campaign_execution": asdict(config.execution),
         }
@@ -772,10 +842,13 @@ def finalize_transition_campaign(config: TransitionCampaignConfig) -> Path:
     unfinished = [
         row["run_name"]
         for row in rows
-        if row["md_status"] != "complete" or row["analysis_status"] != "complete"
+        if row["md_status"] != "complete"
+        or row["analysis_status"] != "complete"
     ]
     if unfinished:
-        raise RuntimeError(f"Cannot finalize transition campaign; unfinished={unfinished}.")
+        raise RuntimeError(
+            f"Cannot finalize transition campaign; unfinished={unfinished}."
+        )
     raw_commits: dict[str, dict[str, object]] = {}
     analysis_commits: dict[str, dict[str, object]] = {}
     active_analysis_provenance = (
@@ -798,11 +871,13 @@ def finalize_transition_campaign(config: TransitionCampaignConfig) -> Path:
         )
         if digest != row["analysis_commit_sha256"]:
             raise RuntimeError(
-                f"{row['run_name']}: SQLite analysis digest differs from committed output."
+                f"{row['run_name']}: SQLite analysis digest differs from"
+                " committed output."
             )
         if (
             analysis_metadata.get("campaign_config") != config.to_dict()
-            or analysis_metadata.get("source_evidence") != config.source_evidence
+            or analysis_metadata.get("source_evidence")
+            != config.source_evidence
             or analysis_metadata.get("task") != task_identity
             or analysis_metadata.get("raw_commit_sha256") != raw_digest
             or not isinstance(
@@ -812,8 +887,9 @@ def finalize_transition_campaign(config: TransitionCampaignConfig) -> Path:
             != active_analysis_provenance
         ):
             raise RuntimeError(
-                f"{run_name}: analysis commit is not bound to the active campaign, "
-                "source, task, raw commit, and current deferred-analysis provenance."
+                f"{run_name}: analysis commit is not bound to the active"
+                " campaign, source, task, raw commit, and current"
+                " deferred-analysis provenance."
             )
         raw_commits[run_name] = raw_metadata
         analysis_commits[run_name] = analysis_metadata
@@ -829,16 +905,27 @@ def finalize_transition_campaign(config: TransitionCampaignConfig) -> Path:
             config.output_root / "transition_overview.png", summary
         )
         first = {
-            branch.name: config.output_root / branch.name / "replica_000" / "visualizations"
+            branch.name: (
+                config.output_root
+                / branch.name
+                / "replica_000"
+                / "visualizations"
+            )
             for branch in config.transition.temperature_runs
         }
         write_phase_rdf_overview(
             config.output_root / "phase_rdf_overview.png",
-            {name: directory / "phase_rdf.png" for name, directory in first.items()},
+            {
+                name: directory / "phase_rdf.png"
+                for name, directory in first.items()
+            },
         )
         write_structure_slice_overview(
             config.output_root / "structure_slice_overview.png",
-            {name: directory / "structure_slice.png" for name, directory in first.items()},
+            {
+                name: directory / "structure_slice.png"
+                for name, directory in first.items()
+            },
         )
     manifest = {
         "schema_version": 3,
@@ -865,13 +952,15 @@ def finalize_transition_campaign(config: TransitionCampaignConfig) -> Path:
         },
         "scientific_scope": {
             "supported_claim": (
-                "Replica statistics for spatially tracked seeded planar-interface "
-                "velocities under the selected calculator and finite protocol."
+                "Replica statistics for spatially tracked seeded"
+                " planar-interface velocities under the selected calculator"
+                " and finite protocol."
             ),
             "unsupported_claim": (
-                "Homogeneous nucleation rates or potential-independent kinetics. A "
-                "zero-velocity interpolation remains conditional on cell size, "
-                "orientation, duration, PTM coordinate, and MLIP."
+                "Homogeneous nucleation rates or potential-independent"
+                " kinetics. A zero-velocity interpolation remains conditional"
+                " on cell size, orientation, duration, PTM coordinate, and"
+                " MLIP."
             ),
         },
     }
@@ -881,7 +970,10 @@ def finalize_transition_campaign(config: TransitionCampaignConfig) -> Path:
 
 
 def _write_status(
-    config: TransitionCampaignConfig, *, status: str, detail: object | None = None
+    config: TransitionCampaignConfig,
+    *,
+    status: str,
+    detail: object | None = None,
 ) -> None:
     _write_json_atomic(
         config.output_root / "campaign_status.json",
@@ -916,7 +1008,8 @@ def _spawn(
     log_path.parent.mkdir(parents=True, exist_ok=True)
     handle = log_path.open("ab")
     handle.write(
-        f"\n=== started epoch={time.time():.6f}; command={command!r} ===\n".encode()
+        f"\n=== started epoch={time.time():.6f}; command={command!r} ===\n"
+        .encode()
     )
     handle.flush()
     parent_pid = os.getpid()
@@ -925,7 +1018,9 @@ def _spawn(
         libc = ctypes.CDLL(None, use_errno=True)
         if libc.prctl(1, signal.SIGTERM) != 0:
             error_number = ctypes.get_errno()
-            raise OSError(error_number, "prctl(PR_SET_PDEATHSIG, SIGTERM) failed")
+            raise OSError(
+                error_number, "prctl(PR_SET_PDEATHSIG, SIGTERM) failed"
+            )
         if os.getppid() != parent_pid:
             os.kill(os.getpid(), signal.SIGTERM)
 
@@ -941,7 +1036,7 @@ def _spawn(
 
 
 def _run_processes(
-    processes: list[tuple[str, subprocess.Popen[bytes], object]]
+    processes: list[tuple[str, subprocess.Popen[bytes], object]],
 ) -> dict[str, int]:
     codes: dict[str, int] = {}
     for name, process, handle in processes:
@@ -959,7 +1054,9 @@ def run_transition_campaign(
     retry_failed: bool = False,
 ) -> None:
     if not devices or any(not item.strip() for item in devices):
-        raise ValueError(f"At least one non-empty CUDA device is required, got {devices}.")
+        raise ValueError(
+            f"At least one non-empty CUDA device is required, got {devices}."
+        )
     if len(set(devices)) != len(devices):
         raise ValueError(f"CUDA devices must be unique, got {devices}.")
     config.output_root.mkdir(parents=True, exist_ok=True)
@@ -968,11 +1065,15 @@ def run_transition_campaign(
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise RuntimeError(f"Transition campaign is already running: {lock_path}.") from exc
+            raise RuntimeError(
+                f"Transition campaign is already running: {lock_path}."
+            ) from exc
         initialize_transition_queue(config, retry_failed=retry_failed)
         rows = campaign_rows(config)
         queued = sum(row["md_status"] == "queued" for row in rows)
-        _write_status(config, status="md_running", detail={"devices": list(devices)})
+        _write_status(
+            config, status="md_running", detail={"devices": list(devices)}
+        )
         base = os.environ.copy()
         processes: list[tuple[str, subprocess.Popen[bytes], object]] = []
         for device in devices[:queued]:
@@ -980,7 +1081,9 @@ def run_transition_campaign(
             environment = base.copy()
             environment["CUDA_VISIBLE_DEVICES"] = device
             process, handle = _spawn(
-                command=_worker_command(config, role="worker", worker_name=name),
+                command=_worker_command(
+                    config, role="worker", worker_name=name
+                ),
                 log_path=config.output_root / "logs" / f"{name}.log",
                 environment=environment,
             )
@@ -996,9 +1099,13 @@ def run_transition_campaign(
                 f"Transition MD workers failed: {detail}. Inspect "
                 f"{config.output_root / 'logs'}."
             )
-        unfinished = [row["run_name"] for row in rows if row["md_status"] != "complete"]
+        unfinished = [
+            row["run_name"] for row in rows if row["md_status"] != "complete"
+        ]
         if unfinished:
-            _write_status(config, status="paused", detail={"unfinished_md": unfinished})
+            _write_status(
+                config, status="paused", detail={"unfinished_md": unfinished}
+            )
             return
         _write_status(
             config,
@@ -1021,22 +1128,31 @@ def run_deferred_transition_analysis(
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise RuntimeError(f"Transition campaign is already running: {lock_path}.") from exc
+            raise RuntimeError(
+                f"Transition campaign is already running: {lock_path}."
+            ) from exc
         initialize_transition_queue(config, retry_failed=retry_failed)
         rows = campaign_rows(config)
-        unfinished = [row["run_name"] for row in rows if row["md_status"] != "complete"]
+        unfinished = [
+            row["run_name"] for row in rows if row["md_status"] != "complete"
+        ]
         if unfinished:
             raise RuntimeError(
-                f"Deferred analysis requires completed MD; unfinished={unfinished}."
+                "Deferred analysis requires completed MD;"
+                f" unfinished={unfinished}."
             )
         pending = sum(row["analysis_status"] == "pending" for row in rows)
-        _write_status(config, status="analysis_running", detail={"workers": workers})
+        _write_status(
+            config, status="analysis_running", detail={"workers": workers}
+        )
         base = os.environ.copy()
         processes: list[tuple[str, subprocess.Popen[bytes], object]] = []
         for index in range(min(workers, pending)):
             name = f"transition_analysis_{index:02d}"
             process, handle = _spawn(
-                command=_worker_command(config, role="analyzer", worker_name=name),
+                command=_worker_command(
+                    config, role="analyzer", worker_name=name
+                ),
                 log_path=config.output_root / "logs" / f"{name}.log",
                 environment=base,
             )
@@ -1048,7 +1164,9 @@ def run_deferred_transition_analysis(
         if failures or nonzero:
             detail = {"process_exit_codes": nonzero, "failed_tasks": failures}
             _write_status(config, status="failed", detail=detail)
-            raise RuntimeError(f"Deferred transition analysis failed: {detail}.")
+            raise RuntimeError(
+                f"Deferred transition analysis failed: {detail}."
+            )
         manifest = finalize_transition_campaign(config)
         _write_status(config, status="complete")
         return manifest

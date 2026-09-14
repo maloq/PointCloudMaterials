@@ -21,7 +21,6 @@ from .provenance import (
 from .simulation import ThermodynamicTrace, build_initial_solid, run_npt
 from .validation import SystemDiagnostics, diagnose_system
 
-
 LIQUID_ENVIRONMENT_FORMAT = "replica_{index:03d}_bulk_liquid"
 
 
@@ -102,14 +101,18 @@ def _simulate_liquid(
             metadata={"purpose": "liquid-source parent solid"},
         )
     else:
-        progress(f"{solid_stage}: loaded checkpoint from {checkpoints.directory}")
+        progress(
+            f"{solid_stage}: loaded checkpoint from {checkpoints.directory}"
+        )
         solid = solid_checkpoint.atoms
         solid.calc = calculator
 
     liquid_stage = f"{replica_name}.homogeneous_source_liquid"
     liquid_checkpoint = checkpoints.load(liquid_stage)
     if liquid_checkpoint is not None:
-        progress(f"{liquid_stage}: loaded checkpoint from {checkpoints.directory}")
+        progress(
+            f"{liquid_stage}: loaded checkpoint from {checkpoints.directory}"
+        )
         liquid = liquid_checkpoint.atoms
         liquid.calc = calculator
         return liquid, liquid_checkpoint.trace
@@ -173,7 +176,13 @@ def _write_liquid_source(
         )
     )
     try:
-        for environment_name, random_seed, atoms, trace, diagnostics in replicas:
+        for (
+            environment_name,
+            random_seed,
+            atoms,
+            trace,
+            diagnostics,
+        ) in replicas:
             _write_environment(
                 staging_root / environment_name,
                 name=environment_name,
@@ -202,18 +211,21 @@ def _write_liquid_source(
             "repository_reference_number_densities_per_A3": None,
             "scientific_scope": {
                 "supported_claim": (
-                    "A reusable pressure- and temperature-equilibrated bulk-liquid starting "
-                    "configuration for independent homogeneous-crystallization replicas under "
-                    "the exactly recorded Hamiltonian and preparation protocol."
+                    "A reusable pressure- and temperature-equilibrated"
+                    " bulk-liquid starting configuration for independent"
+                    " homogeneous-crystallization replicas under the exactly"
+                    " recorded Hamiltonian and preparation protocol."
                 ),
                 "unsupported_claim": (
-                    "An equilibrium melting point, a nucleation rate, or any solid-liquid "
-                    "interface property. This liquid-only producer deliberately performs no "
-                    "interface preparation."
+                    "An equilibrium melting point, a nucleation rate, or any"
+                    " solid-liquid interface property. This liquid-only"
+                    " producer deliberately performs no interface preparation."
                 ),
             },
         }
-        with (staging_root / "manifest.json").open("w", encoding="utf-8") as handle:
+        with (staging_root / "manifest.json").open(
+            "w", encoding="utf-8"
+        ) as handle:
             json.dump(manifest, handle, indent=2)
         staging_root.replace(output_root)
     except BaseException:
@@ -232,13 +244,15 @@ def generate_homogeneous_liquid_source(
     """Generate only the reusable liquid artifact required by homogeneous runs."""
     if config.output.overwrite:
         raise ValueError(
-            "Homogeneous liquid sources are immutable: output.overwrite must be false. "
-            "Select a new output.root_dir when the model or preparation protocol changes."
+            "Homogeneous liquid sources are immutable: output.overwrite must"
+            " be false. Select a new output.root_dir when the model or"
+            " preparation protocol changes."
         )
     if config.output.root_dir.exists():
         raise FileExistsError(
-            f"Immutable homogeneous liquid source already exists: {config.output.root_dir}. "
-            "Reuse that path or select a new path; this producer never replaces it."
+            "Immutable homogeneous liquid source already exists:"
+            f" {config.output.root_dir}. Reuse that path or select a new path;"
+            " this producer never replaces it."
         )
     validate_potential_qualification(
         config,
@@ -269,9 +283,12 @@ def generate_homogeneous_liquid_source(
     diagnostics_by_name: dict[str, SystemDiagnostics] = {}
     for replica_index, random_seed in enumerate(config.random_seeds):
         replica_name = f"replica_{replica_index:03d}"
-        environment_name = LIQUID_ENVIRONMENT_FORMAT.format(index=replica_index)
+        environment_name = LIQUID_ENVIRONMENT_FORMAT.format(
+            index=replica_index
+        )
         progress(
-            f"{environment_name}: preparing liquid-only source with random_seed={random_seed}"
+            f"{environment_name}: preparing liquid-only source with"
+            f" random_seed={random_seed}"
         )
         liquid, liquid_trace = _simulate_liquid(
             config,
@@ -292,14 +309,16 @@ def generate_homogeneous_liquid_source(
             diagnostics.ptm_structure_fractions[name]
             for name in ("fcc", "hcp", "bcc")
         )
-        maximum_fraction = config.validation.maximum_liquid_crystalline_fraction
+        maximum_fraction = (
+            config.validation.maximum_liquid_crystalline_fraction
+        )
         if crystalline_fraction > maximum_fraction:
             raise RuntimeError(
-                f"{environment_name}: PTM recognizes crystalline fraction="
-                f"{crystalline_fraction:.6f}, above "
-                "validation.maximum_liquid_crystalline_fraction="
-                f"{maximum_fraction:.6f}. Increase melting or liquid equilibration before "
-                "using this state for homogeneous nucleation."
+                f"{environment_name}: PTM recognizes crystalline"
+                f" fraction={crystalline_fraction:.6f}, above"
+                f" validation.maximum_liquid_crystalline_fraction={maximum_fraction:.6f}."
+                " Increase melting or liquid equilibration before using this"
+                " state for homogeneous nucleation."
             )
         prepared.append(
             (environment_name, random_seed, liquid, liquid_trace, diagnostics)

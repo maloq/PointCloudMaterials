@@ -45,34 +45,51 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         elapsed_time = time.time() - start_time
         if not initialized_now:
             logger.print(
-                f"Reusing existing temporal LAMMPS dataset split for stage={stage!r} "
-                f"(split_seed={self.split_seed})."
+                "Reusing existing temporal LAMMPS dataset split for"
+                f" stage={stage!r} (split_seed={self.split_seed})."
             )
         logger.print(f"Temporal train dataset size: {len(self.train_dataset)}")
         logger.print(f"Temporal val dataset size: {len(self.val_dataset)}")
         logger.print(f"Temporal test dataset size: {len(self.test_dataset)}")
-        logger.print(f"Temporal dataloader prep took {elapsed_time:.4f} seconds")
+        logger.print(
+            f"Temporal dataloader prep took {elapsed_time:.4f} seconds"
+        )
 
     def _build_datasets(self):
         data_cfg = self.cfg.data
         ctx = "TemporalLAMMPSDataModule.data"
         dump_file = _cfg_get(data_cfg, "dump_file", context=ctx)
         if dump_file is None or str(dump_file).strip() == "":
-            raise ValueError("Temporal LAMMPS data configuration must provide data.dump_file")
+            raise ValueError(
+                "Temporal LAMMPS data configuration must provide"
+                " data.dump_file"
+            )
         cache_dir = _cfg_get(data_cfg, "cache_dir", default=None, context=ctx)
 
-        sequence_length = int(_cfg_get(data_cfg, "sequence_length", context=ctx))
+        sequence_length = int(
+            _cfg_get(data_cfg, "sequence_length", context=ctx)
+        )
         num_points = int(_cfg_get(data_cfg, "num_points", context=ctx))
-        frame_stride = int(_cfg_get(data_cfg, "frame_stride", default=1, context=ctx))
-        window_stride = int(_cfg_get(data_cfg, "window_stride", default=1, context=ctx))
-        frame_start = int(_cfg_get(data_cfg, "frame_start", default=0, context=ctx))
-        frame_stop_raw = _cfg_get(data_cfg, "frame_stop", default=None, context=ctx)
+        frame_stride = int(
+            _cfg_get(data_cfg, "frame_stride", default=1, context=ctx)
+        )
+        window_stride = int(
+            _cfg_get(data_cfg, "window_stride", default=1, context=ctx)
+        )
+        frame_start = int(
+            _cfg_get(data_cfg, "frame_start", default=0, context=ctx)
+        )
+        frame_stop_raw = _cfg_get(
+            data_cfg, "frame_stop", default=None, context=ctx
+        )
         frame_stop = None if frame_stop_raw is None else int(frame_stop_raw)
 
         # Scalar invariants (sequence_length>0, num_points>0, frame_start>=0, stride>0) are
         # validated inside `TemporalLAMMPSDumpDataset.__init__` / `_resolve_temporal_window_start_frames`.
 
-        scan = TemporalLAMMPSDumpDataset.scan_dump_file(dump_file, cache_dir=cache_dir)
+        scan = TemporalLAMMPSDumpDataset.scan_dump_file(
+            dump_file, cache_dir=cache_dir
+        )
         radius = self._resolve_radius(
             dump_file=dump_file,
             data_cfg=data_cfg,
@@ -87,11 +104,15 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             frame_stop=frame_stop,
             window_stride=window_stride,
         )
-        train_anchor_frames, val_anchor_frames = _split_temporal_window_start_frames(
-            anchor_frames,
-            train_ratio=float(_cfg_get(data_cfg, "train_ratio", context=ctx)),
-            seed=self.split_seed,
-            context="TemporalLAMMPSDataModule._build_datasets",
+        train_anchor_frames, val_anchor_frames = (
+            _split_temporal_window_start_frames(
+                anchor_frames,
+                train_ratio=float(
+                    _cfg_get(data_cfg, "train_ratio", context=ctx)
+                ),
+                seed=self.split_seed,
+                context="TemporalLAMMPSDataModule._build_datasets",
+            )
         )
         common_kwargs = dict(
             dump_file=dump_file,
@@ -102,37 +123,80 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             window_stride=window_stride,
             frame_start=frame_start,
             frame_stop=frame_stop,
-            center_selection_mode=_cfg_get(data_cfg, "center_selection_mode", context=ctx),
+            center_selection_mode=_cfg_get(
+                data_cfg, "center_selection_mode", context=ctx
+            ),
             center_atom_ids=_to_container(
-                _cfg_get(data_cfg, "center_atom_ids", default=None, context=ctx)
+                _cfg_get(
+                    data_cfg, "center_atom_ids", default=None, context=ctx
+                )
             ),
-            center_atom_stride=_cfg_get(data_cfg, "center_atom_stride", default=None, context=ctx),
-            max_center_atoms=_cfg_get(data_cfg, "max_center_atoms", default=None, context=ctx),
+            center_atom_stride=_cfg_get(
+                data_cfg, "center_atom_stride", default=None, context=ctx
+            ),
+            max_center_atoms=_cfg_get(
+                data_cfg, "max_center_atoms", default=None, context=ctx
+            ),
             center_selection_seed=int(
-                _cfg_get(data_cfg, "center_selection_seed", default=0, context=ctx)
+                _cfg_get(
+                    data_cfg, "center_selection_seed", default=0, context=ctx
+                )
             ),
-            center_grid_overlap=_cfg_get(data_cfg, "center_grid_overlap", default=None, context=ctx),
+            center_grid_overlap=_cfg_get(
+                data_cfg, "center_grid_overlap", default=None, context=ctx
+            ),
             center_grid_reference_frame_index=_cfg_get(
-                data_cfg, "center_grid_reference_frame_index", default=None, context=ctx
+                data_cfg,
+                "center_grid_reference_frame_index",
+                default=None,
+                context=ctx,
             ),
-            normalize=bool(_cfg_get(data_cfg, "normalize", default=True, context=ctx)),
+            normalize=bool(
+                _cfg_get(data_cfg, "normalize", default=True, context=ctx)
+            ),
             center_neighborhoods=bool(
-                _cfg_get(data_cfg, "center_neighborhoods", default=True, context=ctx)
+                _cfg_get(
+                    data_cfg, "center_neighborhoods", default=True, context=ctx
+                )
             ),
             selection_method=str(
-                _cfg_get(data_cfg, "selection_method", default="closest", context=ctx)
+                _cfg_get(
+                    data_cfg,
+                    "selection_method",
+                    default="closest",
+                    context=ctx,
+                )
             ),
             cache_dir=cache_dir,
-            rebuild_cache=bool(_cfg_get(data_cfg, "rebuild_cache", default=False, context=ctx)),
-            tree_cache_size=int(_cfg_get(data_cfg, "tree_cache_size", default=4, context=ctx)),
+            rebuild_cache=bool(
+                _cfg_get(data_cfg, "rebuild_cache", default=False, context=ctx)
+            ),
+            tree_cache_size=int(
+                _cfg_get(data_cfg, "tree_cache_size", default=4, context=ctx)
+            ),
             precompute_neighbor_indices=bool(
-                _cfg_get(data_cfg, "precompute_neighbor_indices", default=False, context=ctx)
+                _cfg_get(
+                    data_cfg,
+                    "precompute_neighbor_indices",
+                    default=False,
+                    context=ctx,
+                )
             ),
             build_lock_timeout_sec=float(
-                _cfg_get(data_cfg, "build_lock_timeout_sec", default=7200.0, context=ctx)
+                _cfg_get(
+                    data_cfg,
+                    "build_lock_timeout_sec",
+                    default=7200.0,
+                    context=ctx,
+                )
             ),
             build_lock_stale_sec=float(
-                _cfg_get(data_cfg, "build_lock_stale_sec", default=86400.0, context=ctx)
+                _cfg_get(
+                    data_cfg,
+                    "build_lock_stale_sec",
+                    default=86400.0,
+                    context=ctx,
+                )
             ),
         )
 
@@ -146,20 +210,28 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         )
         return train_ds, val_ds
 
-    def _resolve_radius(self, *, dump_file, data_cfg, frame_start: int, num_points: int) -> float:
+    def _resolve_radius(
+        self, *, dump_file, data_cfg, frame_start: int, num_points: int
+    ) -> float:
         ctx = "TemporalLAMMPSDataModule.data"
         radius_raw = _cfg_get(data_cfg, "radius", default=None, context=ctx)
         auto_cutoff_cfg = resolve_auto_cutoff_config(
-            _to_container(_cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)),
+            _to_container(
+                _cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)
+            ),
         )
         if auto_cutoff_cfg is not None:
             if radius_raw is not None:
                 raise ValueError(
-                    "Temporal LAMMPS data: data.radius and data.auto_cutoff.enabled=true are "
-                    "mutually exclusive — set exactly one. "
-                    f"Got data.radius={float(radius_raw)!r} and data.auto_cutoff={dict(auto_cutoff_cfg)!r}."
+                    "Temporal LAMMPS data: data.radius and"
+                    " data.auto_cutoff.enabled=true are mutually exclusive —"
+                    " set exactly one. Got"
+                    f" data.radius={float(radius_raw)!r} and"
+                    f" data.auto_cutoff={dict(auto_cutoff_cfg)!r}."
                 )
-            reference_frame_index = int(auto_cutoff_cfg["reference_frame_index"])
+            reference_frame_index = int(
+                auto_cutoff_cfg["reference_frame_index"]
+            )
             estimation = estimate_lammps_dump_cutoff_radius(
                 dump_file,
                 reference_frame_index=reference_frame_index,
@@ -168,7 +240,9 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
                     int(auto_cutoff_cfg["target_points"]),
                 ),
                 quantile=float(auto_cutoff_cfg["quantile"]),
-                estimation_samples=int(auto_cutoff_cfg["estimation_samples_per_file"]),
+                estimation_samples=int(
+                    auto_cutoff_cfg["estimation_samples_per_file"]
+                ),
                 seed=int(auto_cutoff_cfg["seed"]),
                 safety_factor=float(auto_cutoff_cfg["safety_factor"]),
                 boundary_margin=auto_cutoff_cfg["boundary_margin"],
@@ -186,13 +260,16 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
 
         if radius_raw is None:
             raise ValueError(
-                "Temporal LAMMPS data requires either data.radius or data.auto_cutoff.enabled=true."
+                "Temporal LAMMPS data requires either data.radius or"
+                " data.auto_cutoff.enabled=true."
             )
 
         radius_value = float(radius_raw)
         if radius_value <= 0.0:
             raise ValueError(f"data.radius must be > 0, got {radius_value}.")
-        logger.print(f"Temporal LAMMPS radius: {radius_value:.6f} (source=data.radius)")
+        logger.print(
+            f"Temporal LAMMPS radius: {radius_value:.6f} (source=data.radius)"
+        )
         return radius_value
 
     def _temporal_loader(
@@ -244,11 +321,17 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         )
 
     def train_dataloader(self):
-        mixed_windows_per_batch_raw = getattr(self.cfg, "temporal_train_windows_per_batch", None)
+        mixed_windows_per_batch_raw = getattr(
+            self.cfg, "temporal_train_windows_per_batch", None
+        )
         if mixed_windows_per_batch_raw is None:
             mixed_windows_per_batch = min(
                 int(self.batch_size),
-                int(getattr(self.train_dataset, "window_count", self.batch_size)),
+                int(
+                    getattr(
+                        self.train_dataset, "window_count", self.batch_size
+                    )
+                ),
             )
         else:
             mixed_windows_per_batch = int(mixed_windows_per_batch_raw)

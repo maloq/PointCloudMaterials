@@ -44,15 +44,17 @@ def _write_branch_rdf(
     metadata_path = branch_dir / "metadata.json"
     for path in (trajectory_path, atom_table_path, metadata_path):
         if not path.is_file():
-            raise FileNotFoundError(f"Cannot add phase RDF: required artifact is missing: {path}.")
+            raise FileNotFoundError(
+                f"Cannot add phase RDF: required artifact is missing: {path}."
+            )
 
     trace = load_transition_trace(trajectory_path)
     atom_table = np.load(atom_table_path, mmap_mode="r")
     prepared_phase_ids = np.asarray(atom_table["phase_id"], dtype=np.int64)
     if len(prepared_phase_ids) != trace.positions_A.shape[1]:
         raise RuntimeError(
-            f"{branch_dir}: atom table has {len(prepared_phase_ids)} rows but trajectory "
-            f"frames have {trace.positions_A.shape[1]} atoms."
+            f"{branch_dir}: atom table has {len(prepared_phase_ids)} rows but"
+            f" trajectory frames have {trace.positions_A.shape[1]} atoms."
         )
 
     analysis = analyze_phase_rdf(
@@ -102,14 +104,15 @@ def add_phase_rdf_to_transition_dataset(
     manifest_path = output_root / "manifest.json"
     if not manifest_path.is_file():
         raise FileNotFoundError(
-            f"Cannot add phase RDF before transition generation completes: {manifest_path}."
+            "Cannot add phase RDF before transition generation completes:"
+            f" {manifest_path}."
         )
     with manifest_path.open("r", encoding="utf-8") as handle:
         manifest = json.load(handle)
     if manifest["dataset_name"] != config.dataset_name:
         raise RuntimeError(
-            f"{manifest_path}: dataset_name={manifest['dataset_name']!r} does not match "
-            f"configuration dataset_name={config.dataset_name!r}."
+            f"{manifest_path}: dataset_name={manifest['dataset_name']!r} does"
+            f" not match configuration dataset_name={config.dataset_name!r}."
         )
 
     branch_images: dict[str, Path] = {}

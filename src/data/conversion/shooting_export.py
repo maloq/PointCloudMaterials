@@ -27,7 +27,6 @@ from src.data.conversion.shooting_text import (
     load_lammps_shooting_frames_for_conversion,
 )
 
-
 _EXPECTED_COLUMNS = ("id", "type", "x", "y", "z", "vx", "vy", "vz")
 
 
@@ -37,7 +36,9 @@ def _load_json_object(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         value = json.load(handle)
     if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
+        raise TypeError(
+            f"Expected a JSON object in {path}, got {type(value).__name__}."
+        )
     return value
 
 
@@ -45,18 +46,26 @@ def _validated_complete_branches(
     campaign_root: Path,
     *,
     branch_indices: Sequence[int] | None,
-) -> tuple[dict[str, Any], tuple[int, ...], list[tuple[dict[str, Any], dict[str, Any], Path]]]:
+) -> tuple[
+    dict[str, Any],
+    tuple[int, ...],
+    list[tuple[dict[str, Any], dict[str, Any], Path]],
+]:
     manifest_path = campaign_root / "manifest.json"
     manifest = _load_json_object(manifest_path)
-    if manifest.get("campaign_type") != "position_conditioned_langevin_nvt_shooting":
+    if (
+        manifest.get("campaign_type")
+        != "position_conditioned_langevin_nvt_shooting"
+    ):
         raise ValueError(
-            f"Unsupported campaign_type={manifest.get('campaign_type')!r} in {manifest_path}."
+            f"Unsupported campaign_type={manifest.get('campaign_type')!r} in"
+            f" {manifest_path}."
         )
     protocol = manifest["protocol"]
     if tuple(protocol["dump_columns"]) != _EXPECTED_COLUMNS:
         raise ValueError(
-            f"Binary shooting conversion requires columns {_EXPECTED_COLUMNS}, "
-            f"got {tuple(protocol['dump_columns'])} in {manifest_path}."
+            f"Binary shooting conversion requires columns {_EXPECTED_COLUMNS},"
+            f" got {tuple(protocol['dump_columns'])} in {manifest_path}."
         )
     sample_interval = int(protocol["sample_interval_steps"])
     run_steps = int(protocol["run_steps"])
@@ -68,21 +77,30 @@ def _validated_complete_branches(
     timesteps = tuple(range(0, run_steps + 1, sample_interval))
     if len(timesteps) != int(protocol["expected_frame_count"]):
         raise RuntimeError(
-            f"Campaign frame contract is inconsistent: generated={len(timesteps)}, "
-            f"expected={protocol['expected_frame_count']}, manifest={manifest_path}."
+            "Campaign frame contract is inconsistent:"
+            f" generated={len(timesteps)},"
+            f" expected={protocol['expected_frame_count']},"
+            f" manifest={manifest_path}."
         )
 
-    by_index = {int(branch["branch_index"]): branch for branch in manifest["branches"]}
+    by_index = {
+        int(branch["branch_index"]): branch for branch in manifest["branches"]
+    }
     if branch_indices is None:
         selected_indices = tuple(sorted(by_index))
     else:
         selected_indices = tuple(int(value) for value in branch_indices)
         if len(set(selected_indices)) != len(selected_indices):
-            raise ValueError(f"Duplicate --branch-index values: {selected_indices}.")
-        missing = [value for value in selected_indices if value not in by_index]
+            raise ValueError(
+                f"Duplicate --branch-index values: {selected_indices}."
+            )
+        missing = [
+            value for value in selected_indices if value not in by_index
+        ]
         if missing:
             raise ValueError(
-                f"Requested branch indices are absent from {manifest_path}: {missing}."
+                f"Requested branch indices are absent from {manifest_path}:"
+                f" {missing}."
             )
 
     validated: list[tuple[dict[str, Any], dict[str, Any], Path]] = []
@@ -93,8 +111,9 @@ def _validated_complete_branches(
         outcome = _load_json_object(outcome_path)
         if outcome.get("state") != "complete":
             raise RuntimeError(
-                f"Refusing to convert an incomplete branch: branch_index={branch_index}, "
-                f"state={outcome.get('state')!r}, outcome={outcome_path}."
+                "Refusing to convert an incomplete branch:"
+                f" branch_index={branch_index},"
+                f" state={outcome.get('state')!r}, outcome={outcome_path}."
             )
         for key in (
             "branch_index",
@@ -113,7 +132,7 @@ def _validated_complete_branches(
         ):
             if outcome.get(key) != branch[key]:
                 raise RuntimeError(
-                    f"Completed outcome disagrees with its campaign manifest: "
+                    "Completed outcome disagrees with its campaign manifest: "
                     f"branch_index={branch_index}, key={key!r}, "
                     f"manifest={branch[key]!r}, outcome={outcome.get(key)!r}, "
                     f"path={outcome_path}."
@@ -124,19 +143,22 @@ def _validated_complete_branches(
             or int(outcome["last_timestep"]) != timesteps[-1]
         ):
             raise RuntimeError(
-                f"Completed branch violates the campaign frame contract: "
+                "Completed branch violates the campaign frame contract: "
                 f"branch_index={branch_index}, outcome={outcome_path}."
             )
         trajectory = branch_dir / "trajectory.lammpstrj"
         if not trajectory.is_file() or trajectory.stat().st_size <= 0:
             raise FileNotFoundError(
-                f"Completed branch trajectory is missing or empty: {trajectory}"
+                "Completed branch trajectory is missing or empty:"
+                f" {trajectory}"
             )
         if trajectory.stat().st_size != int(outcome["trajectory_size_bytes"]):
             raise RuntimeError(
-                f"Completed branch trajectory size changed: branch_index={branch_index}, "
-                f"outcome_size={outcome['trajectory_size_bytes']}, "
-                f"observed_size={trajectory.stat().st_size}, path={trajectory}."
+                "Completed branch trajectory size changed:"
+                f" branch_index={branch_index},"
+                f" outcome_size={outcome['trajectory_size_bytes']},"
+                f" observed_size={trajectory.stat().st_size},"
+                f" path={trajectory}."
             )
         restart = branch_dir / "final.restart.bin"
         if not restart.is_file() or restart.stat().st_size <= 0:
@@ -145,9 +167,10 @@ def _validated_complete_branches(
             )
         if restart.stat().st_size != int(outcome["restart_size_bytes"]):
             raise RuntimeError(
-                f"Completed branch restart size changed: branch_index={branch_index}, "
-                f"outcome_size={outcome['restart_size_bytes']}, "
-                f"observed_size={restart.stat().st_size}, path={restart}."
+                "Completed branch restart size changed:"
+                f" branch_index={branch_index},"
+                f" outcome_size={outcome['restart_size_bytes']},"
+                f" observed_size={restart.stat().st_size}, path={restart}."
             )
         validated.append((branch, outcome, trajectory))
     return manifest, timesteps, validated
@@ -164,11 +187,14 @@ def _vector_error_metrics(
     candidate_values = getattr(candidate, field)
     if reference_values.shape != candidate_values.shape:
         raise RuntimeError(
-            f"Cannot compare binary {field}: reference_shape={reference_values.shape}, "
-            f"candidate_shape={candidate_values.shape}."
+            f"Cannot compare binary {field}:"
+            f" reference_shape={reference_values.shape},"
+            f" candidate_shape={candidate_values.shape}."
         )
     rng = np.random.default_rng(20260901)
-    samples_per_frame = max(1, int(np.ceil(sample_count / reference.frame_count)))
+    samples_per_frame = max(
+        1, int(np.ceil(sample_count / reference.frame_count))
+    )
     sampled_absolute_errors: list[np.ndarray] = []
     squared_error_sum = 0.0
     absolute_error_sum = 0.0
@@ -217,7 +243,9 @@ def _geometry_error_metrics(
     *,
     center_count: int,
 ) -> dict[str, float | int | list[int]]:
-    frame_indices = sorted({0, reference.frame_count // 2, reference.frame_count - 1})
+    frame_indices = sorted(
+        {0, reference.frame_count // 2, reference.frame_count - 1}
+    )
     rng = np.random.default_rng(20260901)
     centers = np.sort(
         rng.choice(
@@ -247,8 +275,12 @@ def _geometry_error_metrics(
         )
         reference_neighbors = np.asarray(reference_neighbors)[:, 1:]
         candidate_neighbors = np.asarray(candidate_neighbors)[:, 1:]
-        for ref_ids, low_ids in zip(reference_neighbors, candidate_neighbors, strict=True):
-            retained += len(set(ref_ids.tolist()).intersection(low_ids.tolist()))
+        for ref_ids, low_ids in zip(
+            reference_neighbors, candidate_neighbors, strict=True
+        ):
+            retained += len(
+                set(ref_ids.tolist()).intersection(low_ids.tolist())
+            )
         compared_neighbors += int(reference_neighbors.size)
 
         reference_delta = (
@@ -263,7 +295,9 @@ def _geometry_error_metrics(
         candidate_delta -= np.rint(candidate_delta / box_lengths) * box_lengths
         reference_distances = np.linalg.norm(reference_delta, axis=-1)
         candidate_distances = np.linalg.norm(candidate_delta, axis=-1)
-        distance_errors.append(np.abs(candidate_distances - reference_distances).reshape(-1))
+        distance_errors.append(
+            np.abs(candidate_distances - reference_distances).reshape(-1)
+        )
     errors = np.concatenate(distance_errors)
     return {
         "sampled_frame_indices": frame_indices,
@@ -271,8 +305,12 @@ def _geometry_error_metrics(
         "neighbors_per_center": neighbor_count,
         "neighbor_set_retention_fraction": retained / compared_neighbors,
         "same_neighbor_distance_mean_absolute_error_A": float(np.mean(errors)),
-        "same_neighbor_distance_p99_absolute_error_A": float(np.quantile(errors, 0.99)),
-        "same_neighbor_distance_maximum_absolute_error_A": float(np.max(errors)),
+        "same_neighbor_distance_p99_absolute_error_A": float(
+            np.quantile(errors, 0.99)
+        ),
+        "same_neighbor_distance_maximum_absolute_error_A": float(
+            np.max(errors)
+        ),
     }
 
 
@@ -288,7 +326,9 @@ def _benchmark(
     loader: Callable[[], dict[int, Any]], *, repetitions: int
 ) -> dict[str, float | int]:
     if repetitions <= 0:
-        raise ValueError(f"benchmark repetitions must be positive, got {repetitions}.")
+        raise ValueError(
+            f"benchmark repetitions must be positive, got {repetitions}."
+        )
     elapsed: list[float] = []
     checksum: float | None = None
     for _ in range(repetitions):
@@ -300,8 +340,8 @@ def _benchmark(
             checksum = observed
         elif not np.isclose(observed, checksum, rtol=0.0, atol=1.0e-5):
             raise RuntimeError(
-                f"Benchmark loader returned inconsistent checksums: first={checksum}, "
-                f"observed={observed}."
+                "Benchmark loader returned inconsistent checksums:"
+                f" first={checksum}, observed={observed}."
             )
     return {
         "repetitions": repetitions,
@@ -326,15 +366,18 @@ def _convert(args: argparse.Namespace) -> None:
         raise ValueError(f"Duplicate --dtype values: {storage_dtypes}.")
     if int(args.precision_sample_count) <= 0:
         raise ValueError(
-            f"--precision-sample-count must be positive, got {args.precision_sample_count}."
+            "--precision-sample-count must be positive, got"
+            f" {args.precision_sample_count}."
         )
     if int(args.geometry_centers) <= 0:
         raise ValueError(
-            f"--geometry-centers must be positive, got {args.geometry_centers}."
+            "--geometry-centers must be positive, got"
+            f" {args.geometry_centers}."
         )
     if int(args.benchmark_repetitions) <= 0:
         raise ValueError(
-            f"--benchmark-repetitions must be positive, got {args.benchmark_repetitions}."
+            "--benchmark-repetitions must be positive, got"
+            f" {args.benchmark_repetitions}."
         )
 
     report: dict[str, Any] = {
@@ -352,7 +395,8 @@ def _convert(args: argparse.Namespace) -> None:
         for dtype_name in storage_dtypes:
             target = branch_output / f"trajectory_{dtype_name}"
             print(
-                f"[shooting-binary] converting branch={branch['branch_index']} "
+                "[shooting-binary] converting"
+                f" branch={branch['branch_index']} "
                 f"dtype={dtype_name} source={trajectory} target={target}",
                 flush=True,
             )
@@ -372,10 +416,13 @@ def _convert(args: argparse.Namespace) -> None:
             dtype_reports[dtype_name] = {
                 "path": str(target),
                 **sizes,
-                "apparent_ratio_vs_text": sizes["apparent_bytes"]
-                / trajectory.stat().st_size,
-                "allocated_ratio_vs_text": sizes["allocated_bytes"]
-                / (trajectory.stat().st_blocks * 512),
+                "apparent_ratio_vs_text": (
+                    sizes["apparent_bytes"] / trajectory.stat().st_size
+                ),
+                "allocated_ratio_vs_text": (
+                    sizes["allocated_bytes"]
+                    / (trajectory.stat().st_blocks * 512)
+                ),
             }
 
         branch_report: dict[str, Any] = {
@@ -388,7 +435,8 @@ def _convert(args: argparse.Namespace) -> None:
         }
         if "float32" in converted and "float16" in converted:
             print(
-                f"[shooting-binary] measuring float16 precision branch={branch['branch_index']}",
+                "[shooting-binary] measuring float16 precision"
+                f" branch={branch['branch_index']}",
                 flush=True,
             )
             branch_report["float16_precision"] = {
@@ -414,10 +462,13 @@ def _convert(args: argparse.Namespace) -> None:
         if args.benchmark:
             benchmark_timesteps = tuple(
                 timesteps[index]
-                for index in np.linspace(0, len(timesteps) - 1, 5, dtype=np.int64)
+                for index in np.linspace(
+                    0, len(timesteps) - 1, 5, dtype=np.int64
+                )
             )
             print(
-                f"[shooting-binary] benchmarking branch={branch['branch_index']} "
+                "[shooting-binary] benchmarking"
+                f" branch={branch['branch_index']} "
                 f"timesteps={benchmark_timesteps}",
                 flush=True,
             )
@@ -434,7 +485,9 @@ def _convert(args: argparse.Namespace) -> None:
             }
             for dtype_name, binary in converted.items():
                 benchmarks[dtype_name] = _benchmark(
-                    lambda binary=binary: binary.load_frames(benchmark_timesteps),
+                    lambda binary=binary: binary.load_frames(
+                        benchmark_timesteps
+                    ),
                     repetitions=int(args.benchmark_repetitions),
                 )
                 benchmarks[dtype_name]["median_speedup_vs_text"] = (
@@ -446,7 +499,9 @@ def _convert(args: argparse.Namespace) -> None:
 
     report_path = output_root / "conversion_report.json"
     if report_path.exists():
-        raise FileExistsError(f"Refusing to overwrite conversion report: {report_path}")
+        raise FileExistsError(
+            f"Refusing to overwrite conversion report: {report_path}"
+        )
     with report_path.open("w", encoding="utf-8") as handle:
         json.dump(report, handle, indent=2, sort_keys=True)
         handle.write("\n")
@@ -456,8 +511,9 @@ def _convert(args: argparse.Namespace) -> None:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Convert strict-complete repository shooting branches into memory-mapped "
-            "binary arrays without modifying the source campaign."
+            "Convert strict-complete repository shooting branches into"
+            " memory-mapped binary arrays without modifying the source"
+            " campaign."
         )
     )
     parser.add_argument("--campaign-root", required=True)
@@ -469,11 +525,18 @@ def _build_parser() -> argparse.ArgumentParser:
         "--dtype",
         choices=("float32", "float16"),
         action="append",
-        help="Storage dtype; repeat to create both. Defaults to float32 and float16.",
+        help=(
+            "Storage dtype; repeat to create both. Defaults to float32 and"
+            " float16."
+        ),
     )
-    parser.add_argument("--precision-sample-count", type=int, default=1_000_000)
+    parser.add_argument(
+        "--precision-sample-count", type=int, default=1_000_000
+    )
     parser.add_argument("--geometry-centers", type=int, default=512)
-    parser.add_argument("--benchmark", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument(
+        "--benchmark", action=argparse.BooleanOptionalAction, default=True
+    )
     parser.add_argument("--benchmark-repetitions", type=int, default=3)
     return parser
 

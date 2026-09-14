@@ -28,7 +28,7 @@ class SyntheticPointCloudDataset(Dataset):
 
     Optimized for millions of atoms by using lazy metadata computation
     and pre-converted tensors.
-    
+
     Returns dict with keys:
         - "points": (N, 3) point cloud tensor
         - "class_id": scalar int64 tensor (category/phase index)
@@ -66,7 +66,10 @@ class SyntheticPointCloudDataset(Dataset):
     ) -> None:
         super().__init__()
         if not env_dirs:
-            raise ValueError("env_dirs must contain at least one synthetic dataset directory")
+            raise ValueError(
+                "env_dirs must contain at least one synthetic dataset"
+                " directory"
+            )
         self.radius = float(radius)
         self.sample_type = sample_type
         self.overlap_fraction = overlap_fraction
@@ -75,7 +78,11 @@ class SyntheticPointCloudDataset(Dataset):
         self.drop_edge_samples = drop_edge_samples
         self.pre_normalize = pre_normalize
         self.normalize = normalize
-        self.max_samples = max_samples if max_samples is not None and max_samples > 0 else None
+        self.max_samples = (
+            max_samples
+            if max_samples is not None and max_samples > 0
+            else None
+        )
         self.discard_mixed_phase = discard_mixed_phase
         self.sampling_method = sampling_method
         self.rotation_scale = float(rotation_scale)
@@ -84,7 +91,9 @@ class SyntheticPointCloudDataset(Dataset):
         self.scaling_range = float(scaling_range)
         self.normalization_scale = float(normalization_scale)
         self.track_augmentation = bool(track_augmentation)
-        self.allowed_classes = set(allowed_classes) if allowed_classes else None
+        self.allowed_classes = (
+            set(allowed_classes) if allowed_classes else None
+        )
         self._augmentation_metadata: Optional[List[Dict[str, Any]]] = None
         self.auto_cutoff_config = resolve_auto_cutoff_config(
             auto_cutoff_config,
@@ -103,17 +112,22 @@ class SyntheticPointCloudDataset(Dataset):
         # Class mapping (class_name -> class_id)
         self._class_to_idx: Dict[str, int] = {}
         self._instance_to_idx: Dict[Tuple[str, str], int] = {}
-        
+
         # Class properties for domain-specific info
         self._class_properties: Dict[str, Dict[str, Any]] = {}
 
         for env_index, env_dir in enumerate(env_dirs):
-            if self.max_samples is not None and len(self.samples) >= self.max_samples:
+            if (
+                self.max_samples is not None
+                and len(self.samples) >= self.max_samples
+            ):
                 break
             self._ingest_environment(env_dir, env_index)
 
         if not self.samples:
-            raise RuntimeError("SyntheticPointCloudDataset constructed with zero samples")
+            raise RuntimeError(
+                "SyntheticPointCloudDataset constructed with zero samples"
+            )
 
         # Build class properties based on detected classes
         self._build_class_properties()
@@ -121,18 +135,31 @@ class SyntheticPointCloudDataset(Dataset):
         if self.track_augmentation:
             self._augmentation_metadata = [None] * len(self.samples)
 
-        if self.source_radii and (len(self.source_radii) > 1 or self.auto_cutoff_config is not None):
+        if self.source_radii and (
+            len(self.source_radii) > 1 or self.auto_cutoff_config is not None
+        ):
             formatted = ", ".join(
                 f"{name}: {radius_val:.4f}"
-                for name, radius_val in sorted(self.source_radii.items(), key=lambda kv: kv[0])
+                for name, radius_val in sorted(
+                    self.source_radii.items(), key=lambda kv: kv[0]
+                )
             )
-            logger.print(f"Synthetic per-environment cutoff radii: {formatted}")
+            logger.print(
+                f"Synthetic per-environment cutoff radii: {formatted}"
+            )
 
-    def _ingest_environment(self, env_dir: Union[str, Path], env_index: int) -> None:
+    def _ingest_environment(
+        self, env_dir: Union[str, Path], env_index: int
+    ) -> None:
         env_path = Path(env_dir)
         if not env_path.exists():
-            raise FileNotFoundError(f"Synthetic environment directory {env_path} does not exist")
-        if self.max_samples is not None and len(self.samples) >= self.max_samples:
+            raise FileNotFoundError(
+                f"Synthetic environment directory {env_path} does not exist"
+            )
+        if (
+            self.max_samples is not None
+            and len(self.samples) >= self.max_samples
+        ):
             return
         atoms_path = env_path / "atoms.npy"
         atom_table_path = env_path / "atoms_full.npy"
@@ -145,16 +172,20 @@ class SyntheticPointCloudDataset(Dataset):
         if not metadata_path.exists():
             raise FileNotFoundError(f"metadata.json missing in {env_path}")
         if not phase_mapping_path.exists():
-            raise FileNotFoundError(f"phase_mapping.json missing in {env_path}")
+            raise FileNotFoundError(
+                f"phase_mapping.json missing in {env_path}"
+            )
 
         points = np.load(atoms_path)
         atom_table = np.load(atom_table_path)
         if points.ndim != 2 or points.shape[1] != 3:
-            raise ValueError(f"atoms.npy at {atoms_path} must have shape (N, 3)")
+            raise ValueError(
+                f"atoms.npy at {atoms_path} must have shape (N, 3)"
+            )
         if atom_table.shape != (points.shape[0],):
             raise ValueError(
-                f"atoms_full.npy at {atom_table_path} must have shape ({points.shape[0]},), "
-                f"got {atom_table.shape}."
+                f"atoms_full.npy at {atom_table_path} must have shape"
+                f" ({points.shape[0]},), got {atom_table.shape}."
             )
         if not np.array_equal(points, atom_table["position"]):
             raise ValueError(
@@ -172,15 +203,16 @@ class SyntheticPointCloudDataset(Dataset):
         schema_version = metadata["schema_version"]
         if schema_version != 3:
             raise ValueError(
-                "SyntheticPointCloudDataset only consumes the repository-owned atomistic "
-                "metadata schema version 3. "
-                f"env_path={env_path}, schema_version={schema_version!r}."
+                "SyntheticPointCloudDataset only consumes the"
+                " repository-owned atomistic metadata schema version 3."
+                f" env_path={env_path}, schema_version={schema_version!r}."
             )
         if metadata["environment_name"] != env_label:
             raise ValueError(
-                "Synthetic environment directory name does not match metadata.environment_name. "
-                f"env_path={env_path}, directory_name={env_label!r}, "
-                f"metadata_environment_name={metadata['environment_name']!r}."
+                "Synthetic environment directory name does not match"
+                f" metadata.environment_name. env_path={env_path},"
+                f" directory_name={env_label!r},"
+                f" metadata_environment_name={metadata['environment_name']!r}."
             )
         env_radius = self._resolve_environment_cutoff_radius(
             env_path=env_path,
@@ -197,10 +229,11 @@ class SyntheticPointCloudDataset(Dataset):
         samples = self._sample_points(points, env_radius)
         if not samples:
             raise RuntimeError(
-                "SyntheticPointCloudDataset produced zero samples for an environment. "
-                f"env_label={env_label!r}, env_path={env_path}, num_atoms={int(points.shape[0])}, "
-                f"sample_type={self.sample_type!r}, radius={env_radius}, "
-                f"n_samples={self.n_samples}, num_points={self.num_points}."
+                "SyntheticPointCloudDataset produced zero samples for an"
+                f" environment. env_label={env_label!r}, env_path={env_path},"
+                f" num_atoms={int(points.shape[0])},"
+                f" sample_type={self.sample_type!r}, radius={env_radius},"
+                f" n_samples={self.n_samples}, num_points={self.num_points}."
             )
 
         samples_before = len(self.samples)
@@ -214,7 +247,9 @@ class SyntheticPointCloudDataset(Dataset):
             # Check for phase purity if enabled
             if self.discard_mixed_phase:
                 # Query all atoms within the sampling radius
-                atom_indices = position_tree.query_ball_point(center, env_radius)
+                atom_indices = position_tree.query_ball_point(
+                    center, env_radius
+                )
                 if len(atom_indices) > 0:
                     sample_phases = atom_phase_ids[atom_indices]
                     unique_phases = np.unique(sample_phases)
@@ -247,7 +282,10 @@ class SyntheticPointCloudDataset(Dataset):
             )
             self._coords.append(torch.tensor(center, dtype=torch.float32))
 
-            if self.max_samples is not None and len(self.samples) >= self.max_samples:
+            if (
+                self.max_samples is not None
+                and len(self.samples) >= self.max_samples
+            ):
                 break
 
         samples_added = len(self.samples) - samples_before
@@ -283,7 +321,9 @@ class SyntheticPointCloudDataset(Dataset):
             source_files=["atoms.npy"],
             target_points=target_points,
             quantile=float(self.auto_cutoff_config["quantile"]),
-            estimation_samples_per_file=int(self.auto_cutoff_config["estimation_samples_per_file"]),
+            estimation_samples_per_file=int(
+                self.auto_cutoff_config["estimation_samples_per_file"]
+            ),
             seed=seed,
             safety_factor=float(self.auto_cutoff_config["safety_factor"]),
             boundary_margin=self.auto_cutoff_config["boundary_margin"],
@@ -327,11 +367,18 @@ class SyntheticPointCloudDataset(Dataset):
             )
         else:
             raise ValueError(f"Invalid sample type: {self.sample_type!r}")
-        return [(np.asarray(s, dtype=np.float32), np.asarray(c, dtype=np.float32)) for s, c in raw]
+        return [
+            (np.asarray(s, dtype=np.float32), np.asarray(c, dtype=np.float32))
+            for s, c in raw
+        ]
 
-    def _prepare_sample(self, sample_points: np.ndarray, sample_radius: float) -> np.ndarray:
+    def _prepare_sample(
+        self, sample_points: np.ndarray, sample_radius: float
+    ) -> np.ndarray:
         if self.pre_normalize and self.normalize:
-            norm = pc_normalize(sample_points, float(sample_radius)).astype(np.float32)
+            norm = pc_normalize(sample_points, float(sample_radius)).astype(
+                np.float32
+            )
             return norm * self.normalization_scale
         if self.normalize:
             return sample_points.astype(np.float32) * self.normalization_scale
@@ -340,7 +387,9 @@ class SyntheticPointCloudDataset(Dataset):
     @staticmethod
     def _group_class(class_name: str) -> str:
         """Group amorphous phases (but not intermediate) into one class."""
-        if class_name.startswith('amorphous_') and not class_name.startswith('intermediate_'):
+        if class_name.startswith('amorphous_') and not class_name.startswith(
+            'intermediate_'
+        ):
             return 'amorphous'
         return class_name
 
@@ -356,7 +405,7 @@ class SyntheticPointCloudDataset(Dataset):
         if instance_key not in self._instance_to_idx:
             self._instance_to_idx[instance_key] = len(self._instance_to_idx)
         return self._instance_to_idx[instance_key]
-    
+
     def _build_class_properties(self) -> None:
         """Build class properties dict with domain-specific info."""
         for class_name in self._class_to_idx.keys():
@@ -380,18 +429,18 @@ class SyntheticPointCloudDataset(Dataset):
                     "symmetry": None,
                     "cubic_symmetric": False,
                 }
-    
+
     @property
     def class_names(self) -> Dict[int, str]:
         """Return mapping from class_id to class name."""
         return {v: k for k, v in self._class_to_idx.items()}
-    
+
     @property
     def class_properties(self) -> Dict[str, Dict[str, Any]]:
         """Return class properties dict."""
         return self._class_properties
-    
-    @property 
+
+    @property
     def num_classes(self) -> int:
         """Return number of classes."""
         return len(self._class_to_idx)
@@ -401,12 +450,12 @@ class SyntheticPointCloudDataset(Dataset):
 
     def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
         """Return sample as dictionary with standardized keys.
-        
+
         Returns:
             Dict with keys:
                 - "points": (N, 3) point cloud tensor
                 - "class_id": scalar int64 tensor
-                - "instance_id": scalar int64 tensor  
+                - "instance_id": scalar int64 tensor
                 - "rotation": (3, 3) float32 rotation matrix tensor
                 - "coords": (3,) float32 sample center coordinates
         """
@@ -414,7 +463,9 @@ class SyntheticPointCloudDataset(Dataset):
         pc_tensor = self.samples[index].clone()
         if not self.pre_normalize and self.normalize:
             point_set = pc_tensor.numpy()
-            point_set = pc_normalize(point_set, float(self.sample_radii[index])).astype(np.float32)
+            point_set = pc_normalize(
+                point_set, float(self.sample_radii[index])
+            ).astype(np.float32)
             pc_tensor = torch.tensor(point_set, dtype=torch.float32)
 
         rotation = self._rotations[index].to(dtype=pc_tensor.dtype)
@@ -422,20 +473,30 @@ class SyntheticPointCloudDataset(Dataset):
         did_augment = False
 
         if self.rotation_scale > 0:
-            rot = self._random_rotation_matrix(pc_tensor.device, pc_tensor.dtype)
-            pc_tensor = (rot @ pc_tensor.transpose(0, 1)).transpose(0, 1).contiguous()
+            rot = self._random_rotation_matrix(
+                pc_tensor.device, pc_tensor.dtype
+            )
+            pc_tensor = (
+                (rot @ pc_tensor.transpose(0, 1)).transpose(0, 1).contiguous()
+            )
             rotation = rot @ rotation
             aug_info["rotation"] = rot.cpu().numpy()
             did_augment = True
 
         if self.scaling_range > 0:
-            scale = (torch.rand(1, dtype=pc_tensor.dtype, device=pc_tensor.device) * 2.0 - 1.0) * self.scaling_range + 1.0
+            scale = (
+                torch.rand(1, dtype=pc_tensor.dtype, device=pc_tensor.device)
+                * 2.0
+                - 1.0
+            ) * self.scaling_range + 1.0
             pc_tensor = pc_tensor * scale
             aug_info["scale"] = float(scale.item())
             did_augment = True
 
         if self.noise_scale > 0:
-            pc_tensor = pc_tensor + torch.randn_like(pc_tensor) * self.noise_scale
+            pc_tensor = (
+                pc_tensor + torch.randn_like(pc_tensor) * self.noise_scale
+            )
             aug_info["noise_scale"] = self.noise_scale
             did_augment = True
 
@@ -454,13 +515,17 @@ class SyntheticPointCloudDataset(Dataset):
         return {
             "points": pc_tensor,
             "class_id": torch.tensor(self._class_ids[index], dtype=torch.long),
-            "instance_id": torch.tensor(self._instance_ids[index], dtype=torch.long),
+            "instance_id": torch.tensor(
+                self._instance_ids[index], dtype=torch.long
+            ),
             "rotation": rotation.to(dtype=torch.float32),
             "coords": self._coords[index].clone(),
         }
 
     @staticmethod
-    def _random_rotation_matrix(device: torch.device, dtype: torch.dtype) -> torch.Tensor:
+    def _random_rotation_matrix(
+        device: torch.device, dtype: torch.dtype
+    ) -> torch.Tensor:
         rand_mat = torch.randn(3, 3, device=device, dtype=dtype)
         q, r = torch.linalg.qr(rand_mat)
         d = torch.diagonal(r).sign()

@@ -21,7 +21,6 @@ from typing import Any, Callable, Protocol
 
 import numpy as np
 
-
 JUMPY_FFS_SCHEMA_VERSION = 5
 
 
@@ -43,7 +42,10 @@ def _json_value(value: Any) -> Any:
 
 def _canonical_json(value: Any) -> str:
     return json.dumps(
-        _json_value(value), sort_keys=True, separators=(",", ":"), allow_nan=False
+        _json_value(value),
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
     )
 
 
@@ -91,9 +93,12 @@ class DynamicalState:
             dtype = np.asarray(getattr(self, name)).dtype
             if not np.issubdtype(dtype, np.floating):
                 raise TypeError(
-                    f"{context}: {name} must have a floating dtype, got {dtype}."
+                    f"{context}: {name} must have a floating dtype, got"
+                    f" {dtype}."
                 )
-        if not np.issubdtype(np.asarray(self.atomic_numbers).dtype, np.integer):
+        if not np.issubdtype(
+            np.asarray(self.atomic_numbers).dtype, np.integer
+        ):
             raise TypeError(
                 f"{context}: atomic_numbers must have an integer dtype, got "
                 f"{np.asarray(self.atomic_numbers).dtype}."
@@ -104,13 +109,16 @@ class DynamicalState:
                 f"{np.asarray(self.pbc).dtype}."
             )
         if atom_count == 0:
-            raise ValueError(f"{context}: a dynamical state must contain atoms.")
+            raise ValueError(
+                f"{context}: a dynamical state must contain atoms."
+            )
         for name in ("positions_A", "momenta", "cell_A", "masses"):
             values = np.asarray(getattr(self, name))
             if not np.isfinite(values).all():
                 indices = np.argwhere(~np.isfinite(values))[:10].tolist()
                 raise FloatingPointError(
-                    f"{context}: {name} contains non-finite values at indices={indices}."
+                    f"{context}: {name} contains non-finite values at"
+                    f" indices={indices}."
                 )
         if np.any(np.asarray(self.atomic_numbers) <= 0):
             raise ValueError(
@@ -121,25 +129,37 @@ class DynamicalState:
             raise ValueError(f"{context}: all atomic masses must be positive.")
         if not bool(np.all(np.asarray(self.pbc, dtype=bool))):
             raise ValueError(
-                f"{context}: homogeneous nucleation requires a fully periodic fixed cell, "
-                f"got pbc={np.asarray(self.pbc).tolist()}."
+                f"{context}: homogeneous nucleation requires a fully periodic"
+                f" fixed cell, got pbc={np.asarray(self.pbc).tolist()}."
             )
-        volume_A3 = float(np.linalg.det(np.asarray(self.cell_A, dtype=np.float64)))
+        volume_A3 = float(
+            np.linalg.det(np.asarray(self.cell_A, dtype=np.float64))
+        )
         if not math.isfinite(volume_A3) or volume_A3 <= 0.0:
             raise ValueError(
-                f"{context}: cell determinant must be finite and positive, got "
-                f"{volume_A3} A^3."
+                f"{context}: cell determinant must be finite and positive, got"
+                f" {volume_A3} A^3."
             )
-        if not isinstance(self.step, int) or isinstance(self.step, bool) or self.step < 0:
+        if (
+            not isinstance(self.step, int)
+            or isinstance(self.step, bool)
+            or self.step < 0
+        ):
             raise ValueError(
-                f"{context}: step must be a nonnegative integer, got {self.step!r}."
+                f"{context}: step must be a nonnegative integer, got"
+                f" {self.step!r}."
             )
-        if not isinstance(self.rng_state, dict) or "bit_generator" not in self.rng_state:
+        if (
+            not isinstance(self.rng_state, dict)
+            or "bit_generator" not in self.rng_state
+        ):
             raise TypeError(
-                f"{context}: rng_state must be a complete NumPy bit-generator state "
-                "mapping containing 'bit_generator'."
+                f"{context}: rng_state must be a complete NumPy bit-generator"
+                " state mapping containing 'bit_generator'."
             )
-        require_branchable_integrator(self.integrator_contract, context=context)
+        require_branchable_integrator(
+            self.integrator_contract, context=context
+        )
         if self.integrator_contract.get("ensemble") in {
             "mtk_npt",
             "isotropic_mtk_npt",
@@ -149,13 +169,14 @@ class DynamicalState:
                 or not self.extended_integrator_state
             ):
                 raise RuntimeError(
-                    f"{context}: MTK-NPT state is missing serialized thermostat-chain and "
-                    "barostat variables despite its branchable contract."
+                    f"{context}: MTK-NPT state is missing serialized"
+                    " thermostat-chain and barostat variables despite its"
+                    " branchable contract."
                 )
         elif self.extended_integrator_state is not None:
             raise RuntimeError(
-                f"{context}: Langevin-NVT has no hidden extended integrator state, but "
-                "extended_integrator_state was populated."
+                f"{context}: Langevin-NVT has no hidden extended integrator"
+                " state, but extended_integrator_state was populated."
             )
 
 
@@ -174,22 +195,24 @@ def require_branchable_integrator(
             )
         if contract.get("complete_restart_state") is not True:
             raise RuntimeError(
-                f"{context}: Langevin-NVT engine did not certify complete_restart_state=true."
+                f"{context}: Langevin-NVT engine did not certify"
+                " complete_restart_state=true."
             )
         return
     if ensemble in {"mtk_npt", "isotropic_mtk_npt"}:
         if contract.get("extended_integrator_state_serialized") is not True:
             raise RuntimeError(
-                f"{context}: refusing MTK-NPT branching because thermostat-chain and "
-                "barostat variables are not serialized. Saving only atoms, momenta, and "
-                "the cell does not define the same Markov state. Use the repository-owned "
-                "Langevin-NVT shot engine or implement and validate a complete MTK state "
-                "serializer first."
+                f"{context}: refusing MTK-NPT branching because"
+                " thermostat-chain and barostat variables are not serialized."
+                " Saving only atoms, momenta, and the cell does not define"
+                " the same Markov state. Use the repository-owned"
+                " Langevin-NVT shot engine or implement and validate a"
+                " complete MTK state serializer first."
             )
         return
     raise RuntimeError(
-        f"{context}: unsupported branching ensemble={ensemble!r}; the engine must provide "
-        "an explicit, audited restart-state contract."
+        f"{context}: unsupported branching ensemble={ensemble!r}; the engine"
+        " must provide an explicit, audited restart-state contract."
     )
 
 
@@ -207,9 +230,13 @@ class JumpyShotEngine(Protocol):
     @property
     def timestep_fs(self) -> float: ...
 
-    def branch(self, state: DynamicalState, *, random_seed: int) -> DynamicalState: ...
+    def branch(
+        self, state: DynamicalState, *, random_seed: int
+    ) -> DynamicalState: ...
 
-    def advance(self, state: DynamicalState, *, steps: int) -> DynamicalState: ...
+    def advance(
+        self, state: DynamicalState, *, steps: int
+    ) -> DynamicalState: ...
 
 
 @dataclass(frozen=True)
@@ -231,23 +258,25 @@ class JumpyFFSAlgorithmConfig:
     def validate(self) -> None:
         if len(self.interfaces_atoms) < 2:
             raise ValueError(
-                "jFFS requires at least two interfaces: an A-basin boundary and a B "
-                "target boundary."
+                "jFFS requires at least two interfaces: an A-basin boundary"
+                " and a B target boundary."
             )
         if any(
             not isinstance(value, int) or isinstance(value, bool) or value <= 0
             for value in self.interfaces_atoms
         ):
             raise ValueError(
-                f"interfaces_atoms must be positive integers, got "
+                "interfaces_atoms must be positive integers, got "
                 f"{self.interfaces_atoms}."
             )
         if any(
             right <= left
-            for left, right in zip(self.interfaces_atoms, self.interfaces_atoms[1:])
+            for left, right in zip(
+                self.interfaces_atoms, self.interfaces_atoms[1:]
+            )
         ):
             raise ValueError(
-                f"interfaces_atoms must be strictly increasing, got "
+                "interfaces_atoms must be strictly increasing, got "
                 f"{self.interfaces_atoms}."
             )
         positive_fields = {
@@ -262,20 +291,28 @@ class JumpyFFSAlgorithmConfig:
             "equilibration_checkpoint_interval_steps": (
                 self.equilibration_checkpoint_interval_steps
             ),
-            "shot_checkpoint_interval_steps": self.shot_checkpoint_interval_steps,
+            "shot_checkpoint_interval_steps": (
+                self.shot_checkpoint_interval_steps
+            ),
             "bootstrap_samples": self.bootstrap_samples,
             "bootstrap_block_crossings": self.bootstrap_block_crossings,
         }
         for name, value in positive_fields.items():
-            if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-                raise ValueError(f"{name} must be a positive integer, got {value!r}.")
+            if (
+                not isinstance(value, int)
+                or isinstance(value, bool)
+                or value <= 0
+            ):
+                raise ValueError(
+                    f"{name} must be a positive integer, got {value!r}."
+                )
         if (
             not isinstance(self.equilibration_steps, int)
             or isinstance(self.equilibration_steps, bool)
             or self.equilibration_steps < 0
         ):
             raise ValueError(
-                f"equilibration_steps must be a nonnegative integer, got "
+                "equilibration_steps must be a nonnegative integer, got "
                 f"{self.equilibration_steps!r}."
             )
         for name, steps in (
@@ -290,21 +327,30 @@ class JumpyFFSAlgorithmConfig:
                 self.basin_checkpoint_interval_steps,
             ),
             ("shot_max_steps", self.shot_max_steps),
-            ("shot_checkpoint_interval_steps", self.shot_checkpoint_interval_steps),
+            (
+                "shot_checkpoint_interval_steps",
+                self.shot_checkpoint_interval_steps,
+            ),
         ):
             if steps % self.cv_interval_steps != 0:
                 raise ValueError(
-                    f"{name}={steps} must be divisible by cv_interval_steps="
-                    f"{self.cv_interval_steps}; endpoints must be observed exactly."
+                    f"{name}={steps} must be divisible by"
+                    f" cv_interval_steps={self.cv_interval_steps}; endpoints"
+                    " must be observed exactly."
                 )
         if self.bootstrap_block_crossings > self.basin_target_crossings:
             raise ValueError(
-                "bootstrap_block_crossings cannot exceed basin_target_crossings; got "
-                f"{self.bootstrap_block_crossings} > {self.basin_target_crossings}."
+                "bootstrap_block_crossings cannot exceed"
+                " basin_target_crossings; got"
+                f" {self.bootstrap_block_crossings} >"
+                f" {self.basin_target_crossings}."
             )
-        if not isinstance(self.random_seed, int) or isinstance(self.random_seed, bool):
+        if not isinstance(self.random_seed, int) or isinstance(
+            self.random_seed, bool
+        ):
             raise TypeError(
-                f"random_seed must be an explicit integer, got {self.random_seed!r}."
+                "random_seed must be an explicit integer, got"
+                f" {self.random_seed!r}."
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -408,34 +454,43 @@ class JumpyFFSArtifactStore:
         expected_manifest = {
             "schema_version": JUMPY_FFS_SCHEMA_VERSION,
             "identity": _json_value(identity),
-            "identity_sha256": hashlib.sha256(
-                _canonical_json(identity).encode("utf-8")
-            ).hexdigest(),
+            "identity_sha256": (
+                hashlib.sha256(
+                    _canonical_json(identity).encode("utf-8")
+                ).hexdigest()
+            ),
         }
         if self.root.exists():
             if not resume:
                 raise FileExistsError(
-                    f"jFFS artifact directory already exists: {self.root}. Pass resume=true "
-                    "only to continue the exact same manifest-bound workflow."
+                    f"jFFS artifact directory already exists: {self.root}."
+                    " Pass resume=true only to continue the exact same"
+                    " manifest-bound workflow."
                 )
             if not self.manifest_path.is_file():
                 raise RuntimeError(
                     f"Cannot resume {self.root}: manifest is missing at "
                     f"{self.manifest_path}."
                 )
-            observed_manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+            observed_manifest = json.loads(
+                self.manifest_path.read_text(encoding="utf-8")
+            )
             if observed_manifest != expected_manifest:
                 raise RuntimeError(
-                    f"Cannot resume {self.root}: active algorithm, engine, CV, or volume "
-                    "does not match the stored manifest. Start a new output directory."
+                    f"Cannot resume {self.root}: active algorithm, engine, CV,"
+                    " or volume does not match the stored manifest. Start a"
+                    " new output directory."
                 )
         else:
             if resume:
                 raise FileNotFoundError(
-                    f"Cannot resume jFFS because output directory does not exist: {self.root}."
+                    "Cannot resume jFFS because output directory does not"
+                    f" exist: {self.root}."
                 )
             self.states_directory.mkdir(parents=True)
-            with self.state_audit_path.open("x", encoding="ascii") as audit_handle:
+            with self.state_audit_path.open(
+                "x", encoding="ascii"
+            ) as audit_handle:
                 audit_handle.flush()
                 os.fsync(audit_handle.fileno())
             _fsync_directory(self.root)
@@ -443,12 +498,13 @@ class JumpyFFSArtifactStore:
             self._write_json_atomic(self.manifest_path, expected_manifest)
         if not self.states_directory.is_dir():
             raise RuntimeError(
-                f"jFFS state directory is missing or not a directory: "
+                "jFFS state directory is missing or not a directory: "
                 f"{self.states_directory}."
             )
         if not self.state_audit_path.is_file():
             raise RuntimeError(
-                f"jFFS state SHA audit log is missing: {self.state_audit_path}."
+                "jFFS state SHA audit log is missing:"
+                f" {self.state_audit_path}."
             )
         audit_state_ids = self.state_audit_path.read_text(
             encoding="ascii"
@@ -457,7 +513,9 @@ class JumpyFFSArtifactStore:
             state_id
             for state_id in audit_state_ids
             if len(state_id) != 64
-            or any(character not in "0123456789abcdef" for character in state_id)
+            or any(
+                character not in "0123456789abcdef" for character in state_id
+            )
         )
         if invalid_audit_ids:
             raise RuntimeError(
@@ -472,8 +530,8 @@ class JumpyFFSArtifactStore:
         )
         if unaudited_blobs:
             raise RuntimeError(
-                f"{self.states_directory}: state blobs are missing from the durable SHA "
-                f"audit log: {unaudited_blobs}."
+                f"{self.states_directory}: state blobs are missing from the"
+                f" durable SHA audit log: {unaudited_blobs}."
             )
 
     @staticmethod
@@ -507,7 +565,9 @@ class JumpyFFSArtifactStore:
                 handle.flush()
                 os.fsync(handle.fileno())
             if state_id not in self._audited_state_ids:
-                with self.state_audit_path.open("a", encoding="ascii") as audit_handle:
+                with self.state_audit_path.open(
+                    "a", encoding="ascii"
+                ) as audit_handle:
                     audit_handle.write(f"{state_id}\n")
                     audit_handle.flush()
                     os.fsync(audit_handle.fileno())
@@ -520,7 +580,8 @@ class JumpyFFSArtifactStore:
         path = self.states_directory / f"{state_id}.npz"
         if not path.is_file():
             raise FileNotFoundError(
-                f"jFFS journal references missing dynamical state {state_id}: {path}."
+                f"jFFS journal references missing dynamical state {state_id}:"
+                f" {path}."
             )
         with np.load(path, allow_pickle=False) as stored:
             metadata = json.loads(str(stored["metadata_json"].item()))
@@ -534,14 +595,17 @@ class JumpyFFSArtifactStore:
                 step=int(metadata["step"]),
                 rng_state=metadata["rng_state"],
                 integrator_contract=metadata["integrator_contract"],
-                extended_integrator_state=metadata["extended_integrator_state"],
+                extended_integrator_state=metadata[
+                    "extended_integrator_state"
+                ],
             )
         state.validate(context=f"jFFS state loaded from {path}")
         observed_state_id = _state_sha256(state)
         if observed_state_id != state_id:
             raise RuntimeError(
-                f"jFFS state content hash mismatch for {path}: filename={state_id}, "
-                f"observed={observed_state_id}. The restart artifact is corrupt."
+                f"jFFS state content hash mismatch for {path}:"
+                f" filename={state_id}, observed={observed_state_id}. The"
+                " restart artifact is corrupt."
             )
         return state
 
@@ -561,7 +625,9 @@ class JumpyFFSArtifactStore:
             required.update(str(item["state_id"]) for item in basin["exits"])
         elif phase == "shooting":
             shooting = journal["shooting"]
-            required.update(str(item["state_id"]) for item in shooting["pending"])
+            required.update(
+                str(item["state_id"]) for item in shooting["pending"]
+            )
             active = shooting["active_trial"]
             if active is not None:
                 required.add(str(active["current_state_id"]))
@@ -570,17 +636,21 @@ class JumpyFFSArtifactStore:
             required.add(str(journal["terminal_invalid"]["state_id"]))
         elif phase not in {"analysis", "complete"}:
             raise RuntimeError(
-                f"Cannot determine live jFFS states for journal phase={phase!r}."
+                "Cannot determine live jFFS states for journal"
+                f" phase={phase!r}."
             )
         invalid = sorted(
             state_id
             for state_id in required
             if len(state_id) != 64
-            or any(character not in "0123456789abcdef" for character in state_id)
+            or any(
+                character not in "0123456789abcdef" for character in state_id
+            )
         )
         if invalid:
             raise RuntimeError(
-                f"jFFS journal contains invalid state SHA-256 identifiers: {invalid}."
+                "jFFS journal contains invalid state SHA-256 identifiers:"
+                f" {invalid}."
             )
         return required
 
@@ -603,7 +673,8 @@ class JumpyFFSArtifactStore:
         )
         if missing:
             raise RuntimeError(
-                f"Committed jFFS journal references missing restart states: {missing}."
+                "Committed jFFS journal references missing restart states:"
+                f" {missing}."
             )
         directory_changed = False
         for path in self.states_directory.glob("*.npz"):
@@ -622,7 +693,9 @@ class JumpyFFSArtifactStore:
         with self.journal_path.open("r", encoding="utf-8") as handle:
             value = json.load(handle)
         if not isinstance(value, dict):
-            raise TypeError(f"{self.journal_path}: journal root must be a mapping.")
+            raise TypeError(
+                f"{self.journal_path}: journal root must be a mapping."
+            )
         return value
 
 
@@ -641,14 +714,14 @@ def _evaluate_cv(
     value = collective_variable.evaluate(state)
     if not isinstance(value, (int, np.integer)) or isinstance(value, bool):
         raise TypeError(
-            f"{context}: largest-cluster collective variable must return an integer atom "
-            f"count, got {value!r} ({type(value).__name__})."
+            f"{context}: largest-cluster collective variable must return an"
+            f" integer atom count, got {value!r} ({type(value).__name__})."
         )
     result = int(value)
     if result < 0 or result > len(state.atomic_numbers):
         raise ValueError(
-            f"{context}: largest-cluster collective variable returned {result}, outside "
-            f"[0, atom_count={len(state.atomic_numbers)}]."
+            f"{context}: largest-cluster collective variable returned"
+            f" {result}, outside [0, atom_count={len(state.atomic_numbers)}]."
         )
     return result
 
@@ -657,7 +730,7 @@ def _rng_from_state(state: dict[str, Any]) -> np.random.Generator:
     bit_generator_name = state.get("bit_generator")
     if bit_generator_name != "PCG64":
         raise RuntimeError(
-            f"jFFS workflow RNG requires PCG64 for exact restart, got "
+            "jFFS workflow RNG requires PCG64 for exact restart, got "
             f"{bit_generator_name!r}."
         )
     rng = np.random.Generator(np.random.PCG64())
@@ -673,7 +746,9 @@ def _initial_journal(
     equilibration_steps: int,
     fixed_cell_A: np.ndarray,
 ) -> dict[str, Any]:
-    rng = np.random.default_rng(np.random.SeedSequence([random_seed, 0x53484F54]))
+    rng = np.random.default_rng(
+        np.random.SeedSequence([random_seed, 0x53484F54])
+    )
     return {
         "schema_version": JUMPY_FFS_SCHEMA_VERSION,
         "phase": "equilibration" if equilibration_steps else "basin",
@@ -742,8 +817,9 @@ def _advance_equilibration(
             )
         if state.step != previous_step + algorithm.cv_interval_steps:
             raise RuntimeError(
-                f"jFFS NVT equilibration engine advanced state.step from {previous_step} "
-                f"to {state.step}, expected {previous_step + algorithm.cv_interval_steps}."
+                "jFFS NVT equilibration engine advanced state.step from"
+                f" {previous_step} to {state.step}, expected"
+                f" {previous_step + algorithm.cv_interval_steps}."
             )
         _validate_fixed_cell(
             state,
@@ -765,10 +841,10 @@ def _advance_equilibration(
         if reached_basin_b:
             data["current_state_id"] = store.save_state(state)
             message = (
-                "The trajectory reached the B interface during pre-flux equilibration "
-                f"at step={data['completed_steps']}, largest_cluster_atoms={cv}. The "
-                "starting liquid is not a valid metastable-basin state for this jFFS "
-                "run."
+                "The trajectory reached the B interface during pre-flux"
+                f" equilibration at step={data['completed_steps']},"
+                f" largest_cluster_atoms={cv}. The starting liquid is not a"
+                " valid metastable-basin state for this jFFS run."
             )
             _set_terminal_invalid(
                 journal,
@@ -838,20 +914,24 @@ def _sample_basin_flux(
                 store.save_journal(journal)
                 durable_total_steps = int(basin["total_steps"])
             raise RuntimeError(
-                f"Basin flux sampling reached basin_max_steps="
-                f"{algorithm.basin_max_steps} with only {len(basin['exits'])}/{target} "
-                "outward crossings. Increase the explicitly reported observation time or "
-                "move the first interface after inspecting the basin CV distribution."
+                "Basin flux sampling reached"
+                f" basin_max_steps={algorithm.basin_max_steps} with only"
+                f" {len(basin['exits'])}/{target} outward crossings. Increase"
+                " the explicitly reported observation time or move the first"
+                " interface after inspecting the basin CV distribution."
             )
         previous_step = state.step
         state = engine.advance(state, steps=algorithm.cv_interval_steps)
         state.validate(context="jFFS basin-flux endpoint")
         if state.integrator_contract != engine.contract:
-            raise RuntimeError("jFFS basin propagation changed the active engine contract.")
+            raise RuntimeError(
+                "jFFS basin propagation changed the active engine contract."
+            )
         if state.step != previous_step + algorithm.cv_interval_steps:
             raise RuntimeError(
-                f"jFFS basin engine advanced state.step from {previous_step} to "
-                f"{state.step}, expected {previous_step + algorithm.cv_interval_steps}."
+                "jFFS basin engine advanced state.step from"
+                f" {previous_step} to {state.step}, expected"
+                f" {previous_step + algorithm.cv_interval_steps}."
             )
         _validate_fixed_cell(
             state,
@@ -859,7 +939,9 @@ def _sample_basin_flux(
             context="jFFS basin-flux endpoint",
         )
         basin["total_steps"] += algorithm.cv_interval_steps
-        cv = _evaluate_cv(collective_variable, state, context="jFFS basin flux")
+        cv = _evaluate_cv(
+            collective_variable, state, context="jFFS basin flux"
+        )
         basin["last_cv"] = cv
         crossing_committed = False
         if basin["armed"] and cv >= algorithm.interfaces_atoms[0]:
@@ -893,10 +975,11 @@ def _sample_basin_flux(
             terminal_message = None
             if reached_basin_b_early:
                 terminal_message = (
-                    "The continuous basin trajectory reached B before collecting the "
-                    f"requested flux sample ({len(basin['exits'])}/{target} crossings). "
-                    "It cannot be continued as metastable liquid without an explicit, "
-                    "statistically justified reinjection protocol."
+                    "The continuous basin trajectory reached B before"
+                    " collecting the requested flux sample"
+                    f" ({len(basin['exits'])}/{target} crossings). It cannot"
+                    " be continued as metastable liquid without an explicit,"
+                    " statistically justified reinjection protocol."
                 )
                 _set_terminal_invalid(
                     journal,
@@ -978,7 +1061,8 @@ def _start_trial(
     state.validate(context="new jFFS branch state")
     if state.integrator_contract != engine.contract:
         raise RuntimeError(
-            "New jFFS branch state integrator contract does not match the active engine."
+            "New jFFS branch state integrator contract does not match the"
+            " active engine."
         )
     _validate_fixed_cell(
         state,
@@ -996,30 +1080,43 @@ def _start_trial(
     changed_fields = [
         name
         for name in unchanged_fields
-        if not np.array_equal(getattr(state, name), getattr(parent_state, name))
+        if not np.array_equal(
+            getattr(state, name), getattr(parent_state, name)
+        )
     ]
     if state.step != parent_state.step:
         changed_fields.append("step")
-    if state.extended_integrator_state != parent_state.extended_integrator_state:
+    if (
+        state.extended_integrator_state
+        != parent_state.extended_integrator_state
+    ):
         changed_fields.append("extended_integrator_state")
     if changed_fields:
         raise RuntimeError(
-            "A jFFS branch may replace only the future stochastic RNG stream; it "
-            f"changed phase-space fields={changed_fields}."
+            "A jFFS branch may replace only the future stochastic RNG stream;"
+            f" it changed phase-space fields={changed_fields}."
         )
-    if _canonical_json(state.rng_state) == _canonical_json(parent_state.rng_state):
+    if _canonical_json(state.rng_state) == _canonical_json(
+        parent_state.rng_state
+    ):
         raise RuntimeError(
-            "jFFS branch retained the parent RNG state. Independent conditional shots "
-            "must start from identical phase space but distinct future noise streams."
+            "jFFS branch retained the parent RNG state. Independent"
+            " conditional shots must start from identical phase space but"
+            " distinct future noise streams."
         )
-    start_cv = _evaluate_cv(collective_variable, state, context="new jFFS branch")
-    observed_landing = _landing_interface(start_cv, tuple(journal["interfaces_atoms"]))
+    start_cv = _evaluate_cv(
+        collective_variable, state, context="new jFFS branch"
+    )
+    observed_landing = _landing_interface(
+        start_cv, tuple(journal["interfaces_atoms"])
+    )
     if observed_landing != parent["source_interface"]:
         raise RuntimeError(
-            "Branching changed or reclassified the parent configuration: stored "
-            f"source_interface={parent['source_interface']}, branch CV={start_cv}, "
-            f"observed_interface={observed_landing}. Branching may replace only the "
-            "future stochastic-noise stream, not phase space."
+            "Branching changed or reclassified the parent configuration:"
+            f" stored source_interface={parent['source_interface']}, branch"
+            f" CV={start_cv}, observed_interface={observed_landing}. Branching"
+            " may replace only the future stochastic-noise stream, not phase"
+            " space."
         )
     shooting["active_trial"] = {
         "parent_state_id": parent["state_id"],
@@ -1048,7 +1145,9 @@ def _finish_active_trial(
     active = shooting["active_trial"]
     parent = shooting["pending"][0]
     if active["source_interface"] != parent["source_interface"]:
-        raise RuntimeError("jFFS journal parent/active source interface is inconsistent.")
+        raise RuntimeError(
+            "jFFS journal parent/active source interface is inconsistent."
+        )
     trial_weight = float(active["parent_weight"]) / algorithm.trials_per_state
     record = {
         "root_id": active["root_id"],
@@ -1069,14 +1168,15 @@ def _finish_active_trial(
     if outcome == "higher_interface":
         if landing_interface <= active["source_interface"]:
             raise RuntimeError(
-                "Successful jFFS shot did not land above its source interface: "
-                f"source={active['source_interface']}, landing={landing_interface}."
+                "Successful jFFS shot did not land above its source"
+                f" interface: source={active['source_interface']},"
+                f" landing={landing_interface}."
             )
         final_interface = len(algorithm.interfaces_atoms) - 1
         if landing_interface == final_interface:
-            shooting["terminal_success_weight_by_root"][active["root_id"]] += (
-                trial_weight
-            )
+            shooting["terminal_success_weight_by_root"][
+                active["root_id"]
+            ] += trial_weight
         else:
             shooting["pending"].append(
                 {
@@ -1113,8 +1213,8 @@ def _run_shooting(
         if shooting["active_trial"] is None:
             if active_state is not None:
                 raise RuntimeError(
-                    "jFFS has an in-memory active shot state without an active journal "
-                    "record."
+                    "jFFS has an in-memory active shot state without an active"
+                    " journal record."
                 )
             parent = shooting["pending"][0]
             if parent["next_trial"] == algorithm.trials_per_state:
@@ -1136,12 +1236,14 @@ def _run_shooting(
             active["current_state_id"] = store.save_state(active_state)
             store.save_journal(journal)
             raise RuntimeError(
-                "A jFFS shot reached shot_max_steps without returning to basin A or "
-                "reaching a higher interface. Treating it as failure would bias the "
-                f"crossing probability. root_id={active['root_id']}, source_interface="
-                f"{active['source_interface']}, elapsed_steps={active['elapsed_steps']}, "
-                f"last_cv={active['last_cv']}. Increase shot_max_steps in a new "
-                "manifest-bound run or justify a censoring estimator."
+                "A jFFS shot reached shot_max_steps without returning to"
+                " basin A or reaching a higher interface. Treating it as"
+                " failure would bias the crossing probability."
+                f" root_id={active['root_id']},"
+                f" source_interface={active['source_interface']},"
+                f" elapsed_steps={active['elapsed_steps']},"
+                f" last_cv={active['last_cv']}. Increase shot_max_steps in a"
+                " new manifest-bound run or justify a censoring estimator."
             )
         previous_step = active_state.step
         active_state = engine.advance(
@@ -1149,12 +1251,14 @@ def _run_shooting(
         )
         active_state.validate(context="jFFS shooting endpoint")
         if active_state.integrator_contract != engine.contract:
-            raise RuntimeError("jFFS shot propagation changed the active engine contract.")
+            raise RuntimeError(
+                "jFFS shot propagation changed the active engine contract."
+            )
         if active_state.step != previous_step + algorithm.cv_interval_steps:
             raise RuntimeError(
-                f"jFFS shot engine advanced state.step from {previous_step} to "
-                f"{active_state.step}, expected "
-                f"{previous_step + algorithm.cv_interval_steps}."
+                f"jFFS shot engine advanced state.step from {previous_step} to"
+                f" {active_state.step}, expected"
+                f" {previous_step + algorithm.cv_interval_steps}."
             )
         _validate_fixed_cell(
             active_state,
@@ -1188,7 +1292,8 @@ def _run_shooting(
             store.save_journal(journal)
             active_state = None
         elif (
-            active["elapsed_steps"] % algorithm.shot_checkpoint_interval_steps == 0
+            active["elapsed_steps"] % algorithm.shot_checkpoint_interval_steps
+            == 0
         ):
             active["current_state_id"] = store.save_state(active_state)
             store.save_journal(journal)
@@ -1198,8 +1303,8 @@ def _run_shooting(
             and shooting["trial_records"]
         ):
             progress(
-                f"jFFS: completed {len(shooting['trial_records'])} weighted shots; "
-                f"pending parent states={len(shooting['pending'])}"
+                f"jFFS: completed {len(shooting['trial_records'])} weighted"
+                f" shots; pending parent states={len(shooting['pending'])}"
             )
     journal["phase"] = "analysis"
     store.save_journal(journal)
@@ -1210,8 +1315,12 @@ def _interface_statistics(
 ) -> tuple[dict[str, Any], ...]:
     rows: list[dict[str, Any]] = []
     for source in range(len(interfaces) - 1):
-        source_records = [item for item in records if item["source_interface"] == source]
-        source_weight = float(sum(item["trial_weight"] for item in source_records))
+        source_records = [
+            item for item in records if item["source_interface"] == source
+        ]
+        source_weight = float(
+            sum(item["trial_weight"] for item in source_records)
+        )
         landing_weight = {
             str(landing): float(
                 sum(
@@ -1224,7 +1333,8 @@ def _interface_statistics(
         }
         if source_weight:
             probabilities = {
-                key: value / source_weight for key, value in landing_weight.items()
+                key: value / source_weight
+                for key, value in landing_weight.items()
             }
             probability_sum = sum(probabilities.values())
             if not np.isclose(probability_sum, 1.0, rtol=0.0, atol=1.0e-12):
@@ -1260,7 +1370,8 @@ def _bootstrap_rate(
     count = len(intervals_steps)
     if root_success.shape != (count,):
         raise ValueError(
-            f"Bootstrap root_success has shape={root_success.shape}, expected {(count,)}."
+            f"Bootstrap root_success has shape={root_success.shape}, expected"
+            f" {(count,)}."
         )
     rng = np.random.default_rng(np.random.SeedSequence([seed, 0x424F4F54]))
     blocks_needed = math.ceil(count / block_size)
@@ -1273,11 +1384,13 @@ def _bootstrap_rate(
                 for start in starts
             ]
         )[:count]
-        elapsed_ps = float(np.sum(intervals_steps[indices])) * timestep_fs / 1000.0
+        elapsed_ps = (
+            float(np.sum(intervals_steps[indices])) * timestep_fs / 1000.0
+        )
         if elapsed_ps <= 0.0:
             raise RuntimeError(
-                f"Bootstrap sample {sample_index} has nonpositive elapsed time "
-                f"{elapsed_ps} ps."
+                f"Bootstrap sample {sample_index} has nonpositive elapsed time"
+                f" {elapsed_ps} ps."
             )
         flux = count / elapsed_ps
         probability = float(np.mean(root_success[indices]))
@@ -1303,7 +1416,8 @@ def _analyze(
     crossing_probability = float(sum(terminal_by_root.values()))
     if crossing_probability < -1.0e-14 or crossing_probability > 1.0 + 1.0e-12:
         raise RuntimeError(
-            f"Weighted jFFS crossing probability={crossing_probability} lies outside [0, 1]."
+            f"Weighted jFFS crossing probability={crossing_probability} lies"
+            " outside [0, 1]."
         )
     crossing_probability = min(1.0, max(0.0, crossing_probability))
     root_weight = 1.0 / crossing_count
@@ -1313,7 +1427,7 @@ def _analyze(
     )
     if np.any(root_success < -1.0e-14) or np.any(root_success > 1.0 + 1.0e-12):
         raise RuntimeError(
-            f"Per-exit descendant success probabilities are invalid: "
+            "Per-exit descendant success probabilities are invalid: "
             f"{root_success.tolist()}."
         )
     intervals_steps = np.asarray(
@@ -1321,12 +1435,14 @@ def _analyze(
     )
     if int(np.sum(intervals_steps)) != elapsed_steps:
         raise RuntimeError(
-            "Basin-flux accounting is inconsistent: inter-crossing intervals sum to "
-            f"{int(np.sum(intervals_steps))} steps but elapsed basin time is "
-            f"{elapsed_steps} steps."
+            "Basin-flux accounting is inconsistent: inter-crossing intervals"
+            f" sum to {int(np.sum(intervals_steps))} steps but elapsed basin"
+            f" time is {elapsed_steps} steps."
         )
     rate = flux_per_ps * crossing_probability / volume_A3
-    all_paths_failed = bool(np.allclose(root_success, 0.0, rtol=0.0, atol=1.0e-12))
+    all_paths_failed = bool(
+        np.allclose(root_success, 0.0, rtol=0.0, atol=1.0e-12)
+    )
     all_paths_succeeded = bool(
         np.allclose(root_success, 1.0, rtol=0.0, atol=1.0e-12)
     )
@@ -1336,11 +1452,12 @@ def _analyze(
         rate_bootstrap_standard_error = None
         uncertainty_status = "undefined_inadequate_boundary_sample"
         uncertainty_reason = (
-            "No A-to-B success was observed across the basin-exit descendant trees. "
-            "Resampling an all-zero success sample produces a degenerate zero-width "
-            "bootstrap interval and cannot quantify the upper uncertainty or rate bound. "
-            "Run enough additional independent shots to observe successes before "
-            "reporting a confidence interval."
+            "No A-to-B success was observed across the basin-exit descendant"
+            " trees. Resampling an all-zero success sample produces a"
+            " degenerate zero-width bootstrap interval and cannot quantify the"
+            " upper uncertainty or rate bound. Run enough additional"
+            " independent shots to observe successes before reporting a"
+            " confidence interval."
         )
         bootstrap_samples_used = 0
     elif all_paths_succeeded:
@@ -1349,10 +1466,11 @@ def _analyze(
         rate_bootstrap_standard_error = None
         uncertainty_status = "undefined_inadequate_boundary_sample"
         uncertainty_reason = (
-            "No A-to-B failure was observed across the basin-exit descendant trees. "
-            "Resampling an all-one success sample cannot quantify the lower uncertainty "
-            "of the crossing probability or rate. Run enough additional independent "
-            "shots to observe failures before reporting a confidence interval."
+            "No A-to-B failure was observed across the basin-exit descendant"
+            " trees. Resampling an all-one success sample cannot quantify the"
+            " lower uncertainty of the crossing probability or rate. Run"
+            " enough additional independent shots to observe failures before"
+            " reporting a confidence interval."
         )
         bootstrap_samples_used = 0
     else:
@@ -1378,13 +1496,15 @@ def _analyze(
     initial_weights: dict[str, float] = {}
     for landing in range(len(algorithm.interfaces_atoms)):
         initial_weights[str(landing)] = sum(
-            item["weight"] for item in exits if item["landing_interface"] == landing
+            item["weight"]
+            for item in exits
+            if item["landing_interface"] == landing
         )
     initial_probability_sum = sum(initial_weights.values())
     if not np.isclose(initial_probability_sum, 1.0, rtol=0.0, atol=1.0e-12):
         raise RuntimeError(
-            f"Initial jump landing probabilities sum to {initial_probability_sum}, "
-            "expected 1."
+            "Initial jump landing probabilities sum to"
+            f" {initial_probability_sum}, expected 1."
         )
     return JumpyFFSResult(
         basin_crossing_count=crossing_count,
@@ -1406,7 +1526,9 @@ def _analyze(
             journal["shooting"]["trial_records"], algorithm.interfaces_atoms
         ),
         initial_landing_probabilities=initial_weights,
-        root_success_probabilities=tuple(float(value) for value in root_success),
+        root_success_probabilities=tuple(
+            float(value) for value in root_success
+        ),
         trial_count=len(journal["shooting"]["trial_records"]),
         scientific_scope=result_scientific_scope,
         source_evidence=source_evidence,
@@ -1431,26 +1553,33 @@ def run_jumpy_ffs(
     initial_state.validate(context="initial jFFS state")
     if algorithm.interfaces_atoms[-1] > len(initial_state.atomic_numbers):
         raise ValueError(
-            f"Final jFFS interface={algorithm.interfaces_atoms[-1]} atoms exceeds "
-            f"system atom_count={len(initial_state.atomic_numbers)} and is unreachable."
+            f"Final jFFS interface={algorithm.interfaces_atoms[-1]} atoms"
+            " exceeds system"
+            f" atom_count={len(initial_state.atomic_numbers)} and is"
+            " unreachable."
         )
     require_branchable_integrator(engine.contract, context="jFFS shot engine")
     if initial_state.integrator_contract != engine.contract:
         raise RuntimeError(
-            "Initial state integrator contract does not exactly match the active engine. "
-            "Do not change ensemble, time step, thermostat, constraints, or calculator "
-            "identity when restarting or branching."
+            "Initial state integrator contract does not exactly match the"
+            " active engine. Do not change ensemble, time step, thermostat,"
+            " constraints, or calculator identity when restarting or"
+            " branching."
         )
     if not math.isfinite(engine.timestep_fs) or engine.timestep_fs <= 0.0:
         raise ValueError(
-            f"jFFS engine timestep_fs must be finite and positive, got "
+            "jFFS engine timestep_fs must be finite and positive, got "
             f"{engine.timestep_fs}."
         )
     initial_volume_A3 = float(np.linalg.det(initial_state.cell_A))
     if not isinstance(source_evidence, dict) or not source_evidence:
-        raise TypeError("jFFS source_evidence must be a non-empty provenance mapping.")
+        raise TypeError(
+            "jFFS source_evidence must be a non-empty provenance mapping."
+        )
     if not isinstance(scientific_scope, dict) or not scientific_scope:
-        raise TypeError("jFFS scientific_scope must be a non-empty claim-scope mapping.")
+        raise TypeError(
+            "jFFS scientific_scope must be a non-empty claim-scope mapping."
+        )
     identity = {
         "algorithm": algorithm.to_dict(),
         "engine_contract": engine.contract,
@@ -1461,12 +1590,18 @@ def run_jumpy_ffs(
         "source_evidence": source_evidence,
         "scientific_scope": scientific_scope,
     }
-    store = JumpyFFSArtifactStore(output_root, identity=identity, resume=resume)
+    store = JumpyFFSArtifactStore(
+        output_root, identity=identity, resume=resume
+    )
     journal = store.load_journal()
-    if journal is not None and journal.get("schema_version") != JUMPY_FFS_SCHEMA_VERSION:
+    if (
+        journal is not None
+        and journal.get("schema_version") != JUMPY_FFS_SCHEMA_VERSION
+    ):
         raise RuntimeError(
-            f"{store.journal_path}: expected schema_version="
-            f"{JUMPY_FFS_SCHEMA_VERSION}, got {journal.get('schema_version')!r}."
+            f"{store.journal_path}: expected"
+            f" schema_version={JUMPY_FFS_SCHEMA_VERSION}, got"
+            f" {journal.get('schema_version')!r}."
         )
     if journal is not None:
         store.garbage_collect_states(journal)
@@ -1476,17 +1611,18 @@ def run_jumpy_ffs(
         )
         if initial_cv >= algorithm.interfaces_atoms[-1]:
             raise RuntimeError(
-                f"Initial jFFS state has already reached basin B: largest_cluster_atoms="
-                f"{initial_cv}, B condition is CV >= {algorithm.interfaces_atoms[-1]}."
+                "Initial jFFS state has already reached basin B:"
+                f" largest_cluster_atoms={initial_cv}, B condition is CV >="
+                f" {algorithm.interfaces_atoms[-1]}."
             )
         if (
             algorithm.equilibration_steps == 0
             and initial_cv >= algorithm.interfaces_atoms[0]
         ):
             raise RuntimeError(
-                f"Initial jFFS state is outside basin A with no configured pre-flux "
-                f"equilibration: largest_cluster_atoms={initial_cv}, basin condition is "
-                f"CV < {algorithm.interfaces_atoms[0]}."
+                "Initial jFFS state is outside basin A with no configured"
+                f" pre-flux equilibration: largest_cluster_atoms={initial_cv},"
+                f" basin condition is CV < {algorithm.interfaces_atoms[0]}."
             )
         initial_state_id = store.save_state(initial_state)
         journal = _initial_journal(
@@ -1500,17 +1636,19 @@ def run_jumpy_ffs(
         store.save_journal(journal)
     elif journal.get("interfaces_atoms") != list(algorithm.interfaces_atoms):
         raise RuntimeError(
-            "Stored jFFS journal interfaces do not match the manifest-bound algorithm."
+            "Stored jFFS journal interfaces do not match the manifest-bound"
+            " algorithm."
         )
 
     if journal["phase"] == "terminal_invalid":
         terminal = journal["terminal_invalid"]
         raise RuntimeError(
-            "Cannot resume terminal-invalid jFFS workflow: "
-            f"origin_phase={terminal['origin_phase']}, "
-            f"reason_code={terminal['reason_code']}, "
-            f"observation_step={terminal['observation_step']}, cv={terminal['cv']}. "
-            f"Stored terminal failure: {terminal['message']}"
+            "Cannot resume terminal-invalid jFFS workflow:"
+            f" origin_phase={terminal['origin_phase']},"
+            f" reason_code={terminal['reason_code']},"
+            f" observation_step={terminal['observation_step']},"
+            f" cv={terminal['cv']}. Stored terminal failure:"
+            f" {terminal['message']}"
         )
 
     if journal["phase"] == "equilibration":
@@ -1559,21 +1697,26 @@ def run_jumpy_ffs(
     if journal["phase"] == "complete":
         stored_result = journal.get("result")
         if not isinstance(stored_result, dict):
-            raise RuntimeError("Completed jFFS journal is missing its result mapping.")
+            raise RuntimeError(
+                "Completed jFFS journal is missing its result mapping."
+            )
         result_path = store.root / "result.json"
         if not result_path.is_file():
             raise FileNotFoundError(
-                f"Completed jFFS journal references a missing result artifact: "
-                f"{result_path}."
+                "Completed jFFS journal references a missing result artifact:"
+                f" {result_path}."
             )
         persisted_result = json.loads(result_path.read_text(encoding="utf-8"))
         if persisted_result != stored_result:
             raise RuntimeError(
-                f"{result_path}: result does not match the completed restart journal."
+                f"{result_path}: result does not match the completed restart"
+                " journal."
             )
         return JumpyFFSResult(
             basin_crossing_count=int(stored_result["basin_crossing_count"]),
-            basin_elapsed_time_ps=float(stored_result["basin_elapsed_time_ps"]),
+            basin_elapsed_time_ps=float(
+                stored_result["basin_elapsed_time_ps"]
+            ),
             basin_flux_per_ps=float(stored_result["basin_flux_per_ps"]),
             volume_A3=float(stored_result["volume_A3"]),
             crossing_probability=float(stored_result["crossing_probability"]),
@@ -1596,9 +1739,7 @@ def run_jumpy_ffs(
             ),
             rate_bootstrap_standard_error_per_A3_ps=(
                 None
-                if stored_result[
-                    "rate_bootstrap_standard_error_per_A3_ps"
-                ]
+                if stored_result["rate_bootstrap_standard_error_per_A3_ps"]
                 is None
                 else float(
                     stored_result["rate_bootstrap_standard_error_per_A3_ps"]
@@ -1610,7 +1751,9 @@ def run_jumpy_ffs(
                 if stored_result["uncertainty_reason"] is None
                 else str(stored_result["uncertainty_reason"])
             ),
-            bootstrap_samples_used=int(stored_result["bootstrap_samples_used"]),
+            bootstrap_samples_used=int(
+                stored_result["bootstrap_samples_used"]
+            ),
             interface_statistics=tuple(stored_result["interface_statistics"]),
             initial_landing_probabilities={
                 str(key): float(value)

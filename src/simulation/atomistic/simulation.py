@@ -10,7 +10,10 @@ from ase.build import bulk
 from ase.constraints import FixAtoms, FixCom
 from ase.md.langevin import Langevin
 from ase.md.nose_hoover_chain import IsotropicMTKNPT
-from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary
+from ase.md.velocitydistribution import (
+    MaxwellBoltzmannDistribution,
+    Stationary,
+)
 
 from .config import GeneratorConfig
 
@@ -37,8 +40,8 @@ def validate_thermodynamic_trace(
 ) -> None:
     if trace.step.ndim != 1 or len(trace.step) == 0:
         raise ValueError(
-            f"{context}: step must have shape (frames,) with at least one frame, "
-            f"got shape={trace.step.shape}."
+            f"{context}: step must have shape (frames,) with at least one"
+            f" frame, got shape={trace.step.shape}."
         )
     frame_count = len(trace.step)
     expected_shapes = {
@@ -54,8 +57,9 @@ def validate_thermodynamic_trace(
         values = getattr(trace, name)
         if values.shape != expected_shape:
             raise ValueError(
-                f"{context}: {name} has shape={values.shape}, expected "
-                f"shape={expected_shape} for frames={frame_count}, atoms={atom_count}."
+                f"{context}: {name} has shape={values.shape}, expected"
+                f" shape={expected_shape} for frames={frame_count},"
+                f" atoms={atom_count}."
             )
         if not np.isfinite(values).all():
             bad_indices = np.argwhere(~np.isfinite(values))
@@ -65,33 +69,40 @@ def validate_thermodynamic_trace(
             )
     if trace.step.dtype != np.dtype(np.int64):
         raise TypeError(
-            f"{context}: step must have dtype=int64, got dtype={trace.step.dtype}."
+            f"{context}: step must have dtype=int64, got"
+            f" dtype={trace.step.dtype}."
         )
     if np.any(trace.step < 0) or np.any(np.diff(trace.step) <= 0):
         raise ValueError(
-            f"{context}: step values must be nonnegative and strictly increasing, "
-            f"got step={trace.step.tolist()}."
+            f"{context}: step values must be nonnegative and strictly"
+            f" increasing, got step={trace.step.tolist()}."
         )
     if np.any(trace.volume_A3 <= 0.0):
         invalid_frames = np.flatnonzero(trace.volume_A3 <= 0.0)
         raise ValueError(
-            f"{context}: volume_A3 must be positive; invalid frames="
-            f"{invalid_frames.tolist()}, values={trace.volume_A3[invalid_frames].tolist()}."
+            f"{context}: volume_A3 must be positive; invalid"
+            f" frames={invalid_frames.tolist()},"
+            f" values={trace.volume_A3[invalid_frames].tolist()}."
         )
     cell_volume_A3 = np.linalg.det(trace.cell_vectors_A)
     mismatched_frames = np.flatnonzero(
         ~np.isclose(cell_volume_A3, trace.volume_A3, rtol=1.0e-10, atol=1.0e-8)
     )
     if len(mismatched_frames):
-        relative_error = np.abs(
-            cell_volume_A3[mismatched_frames] - trace.volume_A3[mismatched_frames]
-        ) / trace.volume_A3[mismatched_frames]
+        relative_error = (
+            np.abs(
+                cell_volume_A3[mismatched_frames]
+                - trace.volume_A3[mismatched_frames]
+            )
+            / trace.volume_A3[mismatched_frames]
+        )
         raise ValueError(
-            f"{context}: det(cell_vectors_A) does not match volume_A3 at frames="
-            f"{mismatched_frames.tolist()}; determinant_A3="
-            f"{cell_volume_A3[mismatched_frames].tolist()}, recorded_volume_A3="
-            f"{trace.volume_A3[mismatched_frames].tolist()}, relative_error="
-            f"{relative_error.tolist()}. The trajectory/checkpoint is internally corrupt."
+            f"{context}: det(cell_vectors_A) does not match volume_A3 at"
+            f" frames={mismatched_frames.tolist()};"
+            f" determinant_A3={cell_volume_A3[mismatched_frames].tolist()},"
+            f" recorded_volume_A3={trace.volume_A3[mismatched_frames].tolist()},"
+            f" relative_error={relative_error.tolist()}. The"
+            " trajectory/checkpoint is internally corrupt."
         )
 
 
@@ -193,12 +204,14 @@ def _temporary_nvt_property_mode(
         return
     if requested_mode != "forces":
         raise ValueError(
-            f"NVT property mode must be null or 'forces', got {requested_mode!r}."
+            "NVT property mode must be null or 'forces', got"
+            f" {requested_mode!r}."
         )
     calculator = atoms.calc
     if calculator is None:
         raise RuntimeError(
-            "Cannot enable force-only NVT because the Atoms object has no calculator."
+            "Cannot enable force-only NVT because the Atoms object has no"
+            " calculator."
         )
     missing = object()
     original_mode = getattr(calculator, "md_property_mode", missing)
@@ -210,9 +223,9 @@ def _temporary_nvt_property_mode(
         return
     if original_mode is missing or not callable(mode_setter):
         raise TypeError(
-            "Force-only NVT requires both calculator.md_property_mode and callable "
-            "calculator.set_md_property_mode(); the attached calculator implements "
-            "only part of that contract."
+            "Force-only NVT requires both calculator.md_property_mode and"
+            " callable calculator.set_md_property_mode(); the attached"
+            " calculator implements only part of that contract."
         )
     if original_mode not in {"forces", "forces_stress"}:
         raise ValueError(
@@ -310,7 +323,9 @@ def run_nvt(
                     lambda: recorder.sample(dynamics.nsteps),
                     interval=config.dynamics.sample_interval,
                 )
-                progress(f"{stage}: {steps} NVT steps at {temperature_K:.1f} K")
+                progress(
+                    f"{stage}: {steps} NVT steps at {temperature_K:.1f} K"
+                )
                 dynamics.run(steps)
                 if steps % config.dynamics.sample_interval:
                     recorder.sample(steps)
@@ -354,7 +369,9 @@ def _quench(
         )
 
 
-def _liquid_slab_mask(atoms: Atoms, fraction: float) -> tuple[np.ndarray, tuple[float, float]]:
+def _liquid_slab_mask(
+    atoms: Atoms, fraction: float
+) -> tuple[np.ndarray, tuple[float, float]]:
     lower = 0.5 - fraction / 2.0
     upper = 0.5 + fraction / 2.0
     scaled_z = atoms.get_scaled_positions(wrap=True)[:, 2]
@@ -400,7 +417,9 @@ def simulate_systems(
         solid.wrap()
         checkpoints.save(solid_stage, solid, solid_trace)
     else:
-        progress(f"{solid_stage}: loaded checkpoint from {checkpoints.directory}")
+        progress(
+            f"{solid_stage}: loaded checkpoint from {checkpoints.directory}"
+        )
         solid, solid_trace = solid_checkpoint.atoms, solid_checkpoint.trace
         solid.calc = calculator
 
@@ -439,7 +458,9 @@ def simulate_systems(
         liquid.wrap()
         checkpoints.save(liquid_stage, liquid, liquid_trace)
     else:
-        progress(f"{liquid_stage}: loaded checkpoint from {checkpoints.directory}")
+        progress(
+            f"{liquid_stage}: loaded checkpoint from {checkpoints.directory}"
+        )
         liquid, liquid_trace = liquid_checkpoint.atoms, liquid_checkpoint.trace
         liquid.calc = calculator
 
@@ -449,11 +470,14 @@ def simulate_systems(
         interface.calc = calculator
         liquid_fraction = config.system.liquid_slab_fraction
         mixture_volume_A3 = (
-            (1.0 - liquid_fraction) * solid.get_volume()
-            + liquid_fraction * liquid.get_volume()
+            1.0 - liquid_fraction
+        ) * solid.get_volume() + liquid_fraction * liquid.get_volume()
+        volume_scale = (mixture_volume_A3 / interface.get_volume()) ** (
+            1.0 / 3.0
         )
-        volume_scale = (mixture_volume_A3 / interface.get_volume()) ** (1.0 / 3.0)
-        interface.set_cell(np.asarray(interface.cell) * volume_scale, scale_atoms=True)
+        interface.set_cell(
+            np.asarray(interface.cell) * volume_scale, scale_atoms=True
+        )
         liquid_mask, slab_bounds = _liquid_slab_mask(
             interface, liquid_fraction
         )
@@ -492,14 +516,20 @@ def simulate_systems(
             metadata={"slab_bounds_fractional": list(slab_bounds)},
         )
     else:
-        progress(f"{interface_stage}: loaded checkpoint from {checkpoints.directory}")
-        interface, interface_trace = interface_checkpoint.atoms, interface_checkpoint.trace
+        progress(
+            f"{interface_stage}: loaded checkpoint from"
+            f" {checkpoints.directory}"
+        )
+        interface, interface_trace = (
+            interface_checkpoint.atoms,
+            interface_checkpoint.trace,
+        )
         interface.calc = calculator
         slab_values = interface_checkpoint.metadata["slab_bounds_fractional"]
         if not isinstance(slab_values, list) or len(slab_values) != 2:
             raise ValueError(
-                "Interface checkpoint slab_bounds_fractional must be a two-item list, "
-                f"got {slab_values!r}."
+                "Interface checkpoint slab_bounds_fractional must be a"
+                f" two-item list, got {slab_values!r}."
             )
         slab_bounds = (float(slab_values[0]), float(slab_values[1]))
 

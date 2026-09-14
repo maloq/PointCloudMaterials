@@ -72,7 +72,9 @@ def initialize_campaign_queue(
         )
         existing_columns = {
             str(row["name"])
-            for row in connection.execute("PRAGMA table_info(replicas)").fetchall()
+            for row in connection.execute(
+                "PRAGMA table_info(replicas)"
+            ).fetchall()
         }
         for column_name in (
             "run_metadata_sha256",
@@ -87,7 +89,8 @@ def initialize_campaign_queue(
             config.to_dict(), sort_keys=True, separators=(",", ":")
         )
         observed = connection.execute(
-            "SELECT value_json FROM campaign_metadata WHERE key='campaign_config'"
+            "SELECT value_json FROM campaign_metadata WHERE"
+            " key='campaign_config'"
         ).fetchone()
         if observed is None:
             connection.execute(
@@ -100,13 +103,15 @@ def initialize_campaign_queue(
                 observed_config, config.to_dict()
             ):
                 raise RuntimeError(
-                    f"{campaign_database_path(config)}: persisted campaign configuration "
-                    "differs from the requested configuration beyond repository config "
-                    "file relocation. Use the original physical configuration or select "
-                    "a new output_root."
+                    f"{campaign_database_path(config)}: persisted campaign"
+                    " configuration differs from the requested configuration"
+                    " beyond repository config file relocation. Use the"
+                    " original physical configuration or select a new"
+                    " output_root."
                 )
             connection.execute(
-                "UPDATE campaign_metadata SET value_json=? WHERE key='campaign_config'",
+                "UPDATE campaign_metadata SET value_json=? WHERE"
+                " key='campaign_config'",
                 (serialized_config,),
             )
         existing = connection.execute(
@@ -119,8 +124,9 @@ def initialize_campaign_queue(
         ]
         if not existing:
             connection.executemany(
-                "INSERT INTO replicas(replica_index, replica_name, random_seed, "
-                "md_status, analysis_status) VALUES (?, ?, ?, 'queued', 'blocked')",
+                "INSERT INTO replicas(replica_index, replica_name,"
+                " random_seed, md_status, analysis_status) VALUES (?, ?, ?,"
+                " 'queued', 'blocked')",
                 expected,
             )
         else:
@@ -130,48 +136,53 @@ def initialize_campaign_queue(
             ]
             if observed_rows != expected:
                 raise RuntimeError(
-                    f"{campaign_database_path(config)}: persisted replica assignment "
-                    f"{observed_rows} differs from configured assignment {expected}."
+                    f"{campaign_database_path(config)}: persisted replica"
+                    f" assignment {observed_rows} differs from configured"
+                    f" assignment {expected}."
                 )
         connection.execute(
-            "UPDATE replicas SET md_status='queued', analysis_status='blocked', "
-            "md_worker=NULL, analysis_worker=NULL, outcome=NULL, raw_directory=NULL, "
-            "run_metadata_sha256=NULL, online_threshold_event_json=NULL, "
-            "full_analysis_sha256=NULL WHERE md_status='running'"
+            "UPDATE replicas SET md_status='queued',"
+            " analysis_status='blocked', md_worker=NULL, analysis_worker=NULL,"
+            " outcome=NULL, raw_directory=NULL, run_metadata_sha256=NULL,"
+            " online_threshold_event_json=NULL, full_analysis_sha256=NULL"
+            " WHERE md_status='running'"
         )
         connection.execute(
-            "UPDATE replicas SET analysis_status='pending', analysis_worker=NULL, "
-            "full_analysis_sha256=NULL "
-            "WHERE analysis_status='running' AND md_status='complete'"
+            "UPDATE replicas SET analysis_status='pending',"
+            " analysis_worker=NULL, full_analysis_sha256=NULL WHERE"
+            " analysis_status='running' AND md_status='complete'"
         )
         # A database created by the pre-anchor implementation can contain completed
         # rows without an external digest/event commit. Requeue those rows so the raw
         # artifacts are revalidated and anchored before analysis/finalize.
         connection.execute(
-            "UPDATE replicas SET md_status='queued', analysis_status='blocked', "
-            "md_worker=NULL, analysis_worker=NULL, outcome=NULL, raw_directory=NULL, "
-            "run_metadata_sha256=NULL, online_threshold_event_json=NULL, "
-            "full_analysis_sha256=NULL WHERE md_status='complete' AND "
-            "(run_metadata_sha256 IS NULL OR online_threshold_event_json IS NULL)"
+            "UPDATE replicas SET md_status='queued',"
+            " analysis_status='blocked', md_worker=NULL, analysis_worker=NULL,"
+            " outcome=NULL, raw_directory=NULL, run_metadata_sha256=NULL,"
+            " online_threshold_event_json=NULL, full_analysis_sha256=NULL"
+            " WHERE md_status='complete' AND (run_metadata_sha256 IS NULL OR"
+            " online_threshold_event_json IS NULL)"
         )
         connection.execute(
-            "UPDATE replicas SET analysis_status='pending', analysis_worker=NULL, "
-            "full_analysis_sha256=NULL WHERE md_status='complete' AND "
-            "analysis_status='complete' AND full_analysis_sha256 IS NULL"
+            "UPDATE replicas SET analysis_status='pending',"
+            " analysis_worker=NULL, full_analysis_sha256=NULL WHERE"
+            " md_status='complete' AND analysis_status='complete' AND"
+            " full_analysis_sha256 IS NULL"
         )
         if retry_failed:
             connection.execute(
-                "UPDATE replicas SET md_status='queued', analysis_status='blocked', "
-                "md_worker=NULL, analysis_worker=NULL, md_error=NULL, "
-                "analysis_error=NULL, outcome=NULL, raw_directory=NULL, "
-                "run_metadata_sha256=NULL, online_threshold_event_json=NULL, "
-                "full_analysis_sha256=NULL WHERE md_status='failed'"
+                "UPDATE replicas SET md_status='queued',"
+                " analysis_status='blocked', md_worker=NULL,"
+                " analysis_worker=NULL, md_error=NULL, analysis_error=NULL,"
+                " outcome=NULL, raw_directory=NULL, run_metadata_sha256=NULL,"
+                " online_threshold_event_json=NULL, full_analysis_sha256=NULL"
+                " WHERE md_status='failed'"
             )
             connection.execute(
-                "UPDATE replicas SET analysis_status='pending', analysis_worker=NULL, "
-                "analysis_error=NULL, full_analysis_sha256=NULL "
-                "WHERE md_status='complete' "
-                "AND analysis_status='failed'"
+                "UPDATE replicas SET analysis_status='pending',"
+                " analysis_worker=NULL, analysis_error=NULL,"
+                " full_analysis_sha256=NULL WHERE md_status='complete' AND"
+                " analysis_status='failed'"
             )
     finally:
         connection.close()
@@ -198,7 +209,8 @@ def claim_md_task(
         if updated != 1:
             connection.execute("ROLLBACK")
             raise RuntimeError(
-                f"Failed to atomically claim replica index={row['replica_index']}."
+                "Failed to atomically claim replica"
+                f" index={row['replica_index']}."
             )
         connection.execute("COMMIT")
         return CampaignReplicaTask(
@@ -223,13 +235,12 @@ def complete_md_task(
     run_metadata_sha256: str,
     online_threshold_event: dict[str, object],
 ) -> None:
-    if (
-        len(run_metadata_sha256) != 64
-        or any(character not in hexdigits for character in run_metadata_sha256)
+    if len(run_metadata_sha256) != 64 or any(
+        character not in hexdigits for character in run_metadata_sha256
     ):
         raise ValueError(
-            f"Replica {task.replica_name} run_metadata_sha256 must be a 64-character "
-            f"hexadecimal digest, got {run_metadata_sha256!r}."
+            f"Replica {task.replica_name} run_metadata_sha256 must be a"
+            f" 64-character hexadecimal digest, got {run_metadata_sha256!r}."
         )
     online_threshold_event_json = json.dumps(
         online_threshold_event,
@@ -240,11 +251,11 @@ def complete_md_task(
     connection = _connect(config)
     try:
         updated = connection.execute(
-            "UPDATE replicas SET md_status='complete', analysis_status='pending', "
-            "outcome=?, raw_directory=?, run_metadata_sha256=?, "
-            "online_threshold_event_json=?, full_analysis_sha256=NULL, md_error=NULL "
-            "WHERE replica_index=? "
-            "AND md_status='running'",
+            "UPDATE replicas SET md_status='complete',"
+            " analysis_status='pending', outcome=?, raw_directory=?,"
+            " run_metadata_sha256=?, online_threshold_event_json=?,"
+            " full_analysis_sha256=NULL, md_error=NULL WHERE replica_index=?"
+            " AND md_status='running'",
             (
                 outcome,
                 str(raw_directory),
@@ -255,7 +266,8 @@ def complete_md_task(
         ).rowcount
         if updated != 1:
             raise RuntimeError(
-                f"Replica {task.replica_name} cannot transition from running to complete."
+                f"Replica {task.replica_name} cannot transition from running"
+                " to complete."
             )
     finally:
         connection.close()
@@ -270,13 +282,15 @@ def fail_md_task(
     connection = _connect(config)
     try:
         updated = connection.execute(
-            "UPDATE replicas SET md_status='failed', analysis_status='blocked', "
-            "md_error=? WHERE replica_index=? AND md_status='running'",
+            "UPDATE replicas SET md_status='failed',"
+            " analysis_status='blocked', md_error=? WHERE replica_index=? AND"
+            " md_status='running'",
             (error, task.replica_index),
         ).rowcount
         if updated != 1:
             raise RuntimeError(
-                f"Replica {task.replica_name} cannot transition from running to failed."
+                f"Replica {task.replica_name} cannot transition from running"
+                " to failed."
             )
     finally:
         connection.close()
@@ -304,7 +318,8 @@ def claim_analysis_task(
         if updated != 1:
             connection.execute("ROLLBACK")
             raise RuntimeError(
-                f"Failed to atomically claim analysis for index={row['replica_index']}."
+                "Failed to atomically claim analysis for"
+                f" index={row['replica_index']}."
             )
         connection.execute("COMMIT")
         return CampaignReplicaTask(
@@ -326,25 +341,25 @@ def complete_analysis_task(
     task: CampaignReplicaTask,
     full_analysis_sha256: str,
 ) -> None:
-    if (
-        len(full_analysis_sha256) != 64
-        or any(character not in hexdigits for character in full_analysis_sha256)
+    if len(full_analysis_sha256) != 64 or any(
+        character not in hexdigits for character in full_analysis_sha256
     ):
         raise ValueError(
-            f"Replica {task.replica_name} full_analysis_sha256 must be a 64-character "
-            f"hexadecimal digest, got {full_analysis_sha256!r}."
+            f"Replica {task.replica_name} full_analysis_sha256 must be a"
+            f" 64-character hexadecimal digest, got {full_analysis_sha256!r}."
         )
     connection = _connect(config)
     try:
         updated = connection.execute(
-            "UPDATE replicas SET analysis_status='complete', full_analysis_sha256=?, "
-            "analysis_error=NULL "
-            "WHERE replica_index=? AND analysis_status='running'",
+            "UPDATE replicas SET analysis_status='complete',"
+            " full_analysis_sha256=?, analysis_error=NULL WHERE"
+            " replica_index=? AND analysis_status='running'",
             (full_analysis_sha256, task.replica_index),
         ).rowcount
         if updated != 1:
             raise RuntimeError(
-                f"Replica {task.replica_name} analysis cannot transition to complete."
+                f"Replica {task.replica_name} analysis cannot transition to"
+                " complete."
             )
     finally:
         connection.close()
@@ -365,13 +380,16 @@ def fail_analysis_task(
         ).rowcount
         if updated != 1:
             raise RuntimeError(
-                f"Replica {task.replica_name} analysis cannot transition to failed."
+                f"Replica {task.replica_name} analysis cannot transition to"
+                " failed."
             )
     finally:
         connection.close()
 
 
-def campaign_rows(config: HomogeneousCampaignConfig) -> list[dict[str, object]]:
+def campaign_rows(
+    config: HomogeneousCampaignConfig,
+) -> list[dict[str, object]]:
     connection = _connect(config)
     try:
         rows = connection.execute(

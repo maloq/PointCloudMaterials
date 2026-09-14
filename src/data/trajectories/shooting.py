@@ -22,7 +22,6 @@ from src.data.conversion.shooting_text import (
     load_lammps_shooting_frames_for_conversion,
 )
 
-
 FORMAT_NAME = "pointcloudmaterials.shooting_trajectory"
 SCHEMA_VERSION = 1
 STORAGE_DTYPES = ("float32", "float16")
@@ -39,7 +38,9 @@ _ARRAY_FILES = {
 
 def _load_json_object(path: Path) -> dict[str, Any]:
     if not path.is_file():
-        raise FileNotFoundError(f"Required shooting-binary manifest is missing: {path}")
+        raise FileNotFoundError(
+            f"Required shooting-binary manifest is missing: {path}"
+        )
     with path.open("r", encoding="utf-8") as handle:
         value = json.load(handle)
     if not isinstance(value, dict):
@@ -91,13 +92,15 @@ class ShootingBinaryTrajectory:
         manifest = _load_json_object(root / "manifest.json")
         if manifest.get("format") != FORMAT_NAME:
             raise ValueError(
-                f"Unsupported shooting-binary format in {root / 'manifest.json'}: "
-                f"expected={FORMAT_NAME!r}, observed={manifest.get('format')!r}."
+                "Unsupported shooting-binary format in"
+                f" {root / 'manifest.json'}: expected={FORMAT_NAME!r},"
+                f" observed={manifest.get('format')!r}."
             )
         if int(manifest.get("schema_version", -1)) != SCHEMA_VERSION:
             raise ValueError(
-                f"Unsupported shooting-binary schema in {root / 'manifest.json'}: "
-                f"expected={SCHEMA_VERSION}, observed={manifest.get('schema_version')!r}."
+                "Unsupported shooting-binary schema in"
+                f" {root / 'manifest.json'}: expected={SCHEMA_VERSION},"
+                f" observed={manifest.get('schema_version')!r}."
             )
         if manifest.get("state") != "complete":
             raise RuntimeError(
@@ -109,20 +112,22 @@ class ShootingBinaryTrajectory:
         descriptions = manifest.get("arrays")
         if not isinstance(descriptions, dict):
             raise TypeError(
-                f"Shooting-binary manifest arrays must be a JSON object: {root / 'manifest.json'}."
+                "Shooting-binary manifest arrays must be a JSON object:"
+                f" {root / 'manifest.json'}."
             )
         for name, default_filename in _ARRAY_FILES.items():
             description = descriptions.get(name)
             if not isinstance(description, dict):
                 raise KeyError(
-                    f"Shooting-binary manifest is missing array description {name!r}: "
-                    f"{root / 'manifest.json'}."
+                    "Shooting-binary manifest is missing array description"
+                    f" {name!r}: {root / 'manifest.json'}."
                 )
             filename = description.get("file")
             if filename != default_filename:
                 raise ValueError(
-                    f"Unexpected file for shooting-binary array {name!r}: "
-                    f"expected={default_filename!r}, observed={filename!r}, root={root}."
+                    f"Unexpected file for shooting-binary array {name!r}:"
+                    f" expected={default_filename!r}, observed={filename!r},"
+                    f" root={root}."
                 )
             array_path = root / filename
             if not array_path.is_file():
@@ -130,14 +135,20 @@ class ShootingBinaryTrajectory:
                     f"Shooting-binary array {name!r} is missing: {array_path}"
                 )
             values = np.load(array_path, mmap_mode="r", allow_pickle=False)
-            expected_shape = tuple(int(value) for value in description["shape"])
+            expected_shape = tuple(
+                int(value) for value in description["shape"]
+            )
             expected_dtype = np.dtype(str(description["dtype"]))
-            if values.shape != expected_shape or values.dtype != expected_dtype:
+            if (
+                values.shape != expected_shape
+                or values.dtype != expected_dtype
+            ):
                 raise RuntimeError(
-                    f"Shooting-binary array contract changed for {name!r}: "
-                    f"expected_shape={expected_shape}, observed_shape={values.shape}, "
-                    f"expected_dtype={expected_dtype.name}, observed_dtype={values.dtype.name}, "
-                    f"path={array_path}."
+                    f"Shooting-binary array contract changed for {name!r}:"
+                    f" expected_shape={expected_shape},"
+                    f" observed_shape={values.shape},"
+                    f" expected_dtype={expected_dtype.name},"
+                    f" observed_dtype={values.dtype.name}, path={array_path}."
                 )
             arrays[name] = values
 
@@ -157,13 +168,15 @@ class ShootingBinaryTrajectory:
         for name, expected_shape in expected_shapes.items():
             if arrays[name].shape != expected_shape:
                 raise RuntimeError(
-                    f"Shooting-binary semantic shape mismatch for {name!r}: "
-                    f"expected={expected_shape}, observed={arrays[name].shape}, root={root}."
+                    f"Shooting-binary semantic shape mismatch for {name!r}:"
+                    f" expected={expected_shape},"
+                    f" observed={arrays[name].shape}, root={root}."
                 )
         storage_dtype = str(manifest["storage_dtype"])
         if storage_dtype not in STORAGE_DTYPES:
             raise ValueError(
-                f"Unsupported shooting-binary storage_dtype={storage_dtype!r} in {root}."
+                "Unsupported shooting-binary"
+                f" storage_dtype={storage_dtype!r} in {root}."
             )
         expected_vector_dtype = np.dtype(storage_dtype)
         if (
@@ -171,20 +184,27 @@ class ShootingBinaryTrajectory:
             or arrays["velocities"].dtype != expected_vector_dtype
         ):
             raise RuntimeError(
-                f"Shooting-binary vector dtype disagrees with storage_dtype={storage_dtype}: "
-                f"positions={arrays['positions'].dtype}, velocities={arrays['velocities'].dtype}."
+                "Shooting-binary vector dtype disagrees with"
+                f" storage_dtype={storage_dtype}:"
+                f" positions={arrays['positions'].dtype},"
+                f" velocities={arrays['velocities'].dtype}."
             )
         if not np.array_equal(
             arrays["atom_ids"], np.arange(1, atom_count + 1, dtype=np.int64)
         ):
             raise RuntimeError(
-                f"Shooting-binary atom IDs are not exactly 1..{atom_count}: {root}."
+                f"Shooting-binary atom IDs are not exactly 1..{atom_count}:"
+                f" {root}."
             )
         if np.any(arrays["box_high"] <= arrays["box_low"]):
-            raise RuntimeError(f"Shooting-binary trajectory has non-positive box lengths: {root}.")
+            raise RuntimeError(
+                "Shooting-binary trajectory has non-positive box lengths:"
+                f" {root}."
+            )
         if np.any(np.diff(arrays["timesteps"]) <= 0):
             raise RuntimeError(
-                f"Shooting-binary timesteps must be strictly increasing: {root}."
+                "Shooting-binary timesteps must be strictly increasing:"
+                f" {root}."
             )
         return cls(root=root, manifest=manifest, **arrays)
 
@@ -200,22 +220,33 @@ class ShootingBinaryTrajectory:
     def storage_dtype(self) -> np.dtype[Any]:
         return np.dtype(str(self.manifest["storage_dtype"]))
 
-    def _frame_indices(self, timesteps: Sequence[int]) -> tuple[tuple[int, ...], tuple[int, ...]]:
+    def _frame_indices(
+        self, timesteps: Sequence[int]
+    ) -> tuple[tuple[int, ...], tuple[int, ...]]:
         requested = tuple(sorted({int(value) for value in timesteps}))
         if not requested or requested[0] < 0:
             raise ValueError(
-                f"Requested shooting timesteps must be nonempty and nonnegative: {requested}."
+                "Requested shooting timesteps must be nonempty and"
+                f" nonnegative: {requested}."
             )
         timestep_to_index = {
-            int(timestep): index for index, timestep in enumerate(self.timesteps.tolist())
+            int(timestep): index
+            for index, timestep in enumerate(self.timesteps.tolist())
         }
-        missing = [timestep for timestep in requested if timestep not in timestep_to_index]
+        missing = [
+            timestep
+            for timestep in requested
+            if timestep not in timestep_to_index
+        ]
         if missing:
             raise RuntimeError(
-                f"Requested timesteps are absent from binary shooting trajectory {self.root}: "
-                f"missing={missing}, available={self.timesteps.tolist()}."
+                "Requested timesteps are absent from binary shooting"
+                f" trajectory {self.root}: missing={missing},"
+                f" available={self.timesteps.tolist()}."
             )
-        return requested, tuple(timestep_to_index[value] for value in requested)
+        return requested, tuple(
+            timestep_to_index[value] for value in requested
+        )
 
     def load_position_frames(
         self, timesteps: Sequence[int]
@@ -231,15 +262,18 @@ class ShootingBinaryTrajectory:
             box_lengths = box_high - box_low
             if np.any(positions < 0.0):
                 raise RuntimeError(
-                    f"Decoded shooting positions contain negative wrapped coordinates: "
-                    f"root={self.root}, timestep={timestep}, minimum={float(positions.min())}."
+                    "Decoded shooting positions contain negative wrapped"
+                    f" coordinates: root={self.root}, timestep={timestep},"
+                    f" minimum={float(positions.min())}."
                 )
             # float16 rounding can move a value just below L to exactly L. The text
             # reader has the same half-open [0, L) contract for periodic cKDTree.
             if np.any(positions >= box_lengths[None, :]):
                 positions = np.minimum(
                     positions,
-                    np.nextafter(box_lengths, np.zeros_like(box_lengths))[None, :],
+                    np.nextafter(box_lengths, np.zeros_like(box_lengths))[
+                        None, :
+                    ],
                 )
             frames[timestep] = ShootingPositionFrame(
                 timestep=timestep,
@@ -251,13 +285,17 @@ class ShootingBinaryTrajectory:
             )
         return frames
 
-    def load_frames(self, timesteps: Sequence[int]) -> dict[int, ShootingFrame]:
+    def load_frames(
+        self, timesteps: Sequence[int]
+    ) -> dict[int, ShootingFrame]:
         """Load requested frames, including velocities, as float32 consumer views."""
 
         position_frames = self.load_position_frames(timesteps)
         _, indices = self._frame_indices(tuple(position_frames))
         frames: dict[int, ShootingFrame] = {}
-        for (timestep, position_frame), index in zip(position_frames.items(), indices):
+        for (timestep, position_frame), index in zip(
+            position_frames.items(), indices
+        ):
             frames[timestep] = ShootingFrame(
                 timestep=timestep,
                 atom_ids=position_frame.atom_ids,
@@ -265,7 +303,9 @@ class ShootingBinaryTrajectory:
                 positions=position_frame.positions,
                 box_low=position_frame.box_low,
                 box_high=position_frame.box_high,
-                velocities=np.asarray(self.velocities[index], dtype=np.float32),
+                velocities=np.asarray(
+                    self.velocities[index], dtype=np.float32
+                ),
             )
         return frames
 
@@ -277,14 +317,15 @@ class ShootingBinaryTrajectory:
             expected = str(self.manifest["arrays"][name].get("sha256", ""))
             if len(expected) != 64:
                 raise RuntimeError(
-                    f"Shooting-binary manifest has no valid SHA-256 for array {name!r}: "
-                    f"{self.root / 'manifest.json'}."
+                    "Shooting-binary manifest has no valid SHA-256 for array"
+                    f" {name!r}: {self.root / 'manifest.json'}."
                 )
             observed[name] = _array_sha256(getattr(self, name))
             if observed[name] != expected:
                 raise RuntimeError(
-                    f"Shooting-binary checksum mismatch for array {name!r}: "
-                    f"expected={expected}, observed={observed[name]}, root={self.root}."
+                    f"Shooting-binary checksum mismatch for array {name!r}:"
+                    f" expected={expected}, observed={observed[name]},"
+                    f" root={self.root}."
                 )
         return observed
 
@@ -305,27 +346,33 @@ def convert_shooting_trajectory(
     dtype_name = str(storage_dtype)
     if dtype_name not in STORAGE_DTYPES:
         raise ValueError(
-            f"storage_dtype must be one of {STORAGE_DTYPES}, got {storage_dtype!r}."
+            f"storage_dtype must be one of {STORAGE_DTYPES}, got"
+            f" {storage_dtype!r}."
         )
     requested = tuple(int(value) for value in timesteps)
     if not requested or tuple(sorted(set(requested))) != requested:
         raise ValueError(
-            f"Conversion timesteps must be nonempty, unique, and increasing: {requested}."
+            "Conversion timesteps must be nonempty, unique, and increasing:"
+            f" {requested}."
         )
     if int(atom_count) <= 0:
         raise ValueError(f"atom_count must be positive, got {atom_count}.")
     if not source.is_file() or source.stat().st_size <= 0:
-        raise FileNotFoundError(f"Source shooting trajectory is missing or empty: {source}")
+        raise FileNotFoundError(
+            f"Source shooting trajectory is missing or empty: {source}"
+        )
     if target.exists():
         raise FileExistsError(
-            f"Refusing to overwrite existing binary shooting trajectory: {target}"
+            "Refusing to overwrite existing binary shooting trajectory:"
+            f" {target}"
         )
 
     target.parent.mkdir(parents=True, exist_ok=True)
     building = target.parent / f".{target.name}.building-{os.getpid()}"
     if building.exists():
         raise FileExistsError(
-            f"Refusing to reuse an existing interrupted conversion directory: {building}"
+            "Refusing to reuse an existing interrupted conversion directory:"
+            f" {building}"
         )
     building.mkdir()
 
@@ -336,7 +383,7 @@ def convert_shooting_trajectory(
     )
     if tuple(frames) != requested:
         raise RuntimeError(
-            f"Parsed shooting timesteps differ from the conversion contract: "
+            "Parsed shooting timesteps differ from the conversion contract: "
             f"expected={requested}, observed={tuple(frames)}, source={source}."
         )
     first = frames[requested[0]]
@@ -344,11 +391,13 @@ def convert_shooting_trajectory(
         frame = frames[timestep]
         if not np.array_equal(frame.atom_ids, first.atom_ids):
             raise RuntimeError(
-                f"Atom IDs changed between shooting frames: source={source}, timestep={timestep}."
+                f"Atom IDs changed between shooting frames: source={source},"
+                f" timestep={timestep}."
             )
         if not np.array_equal(frame.atom_types, first.atom_types):
             raise RuntimeError(
-                f"Atom types changed between shooting frames: source={source}, timestep={timestep}."
+                f"Atom types changed between shooting frames: source={source},"
+                f" timestep={timestep}."
             )
 
     frame_count = len(requested)
@@ -376,13 +425,13 @@ def convert_shooting_trajectory(
         frame = frames[timestep]
         if not np.all(np.isfinite(frame.positions)):
             raise RuntimeError(
-                f"Shooting positions contain non-finite values: source={source}, "
-                f"timestep={timestep}."
+                "Shooting positions contain non-finite values:"
+                f" source={source}, timestep={timestep}."
             )
         if not np.all(np.isfinite(frame.velocities)):
             raise RuntimeError(
-                f"Shooting velocities contain non-finite values: source={source}, "
-                f"timestep={timestep}."
+                "Shooting velocities contain non-finite values:"
+                f" source={source}, timestep={timestep}."
             )
         if dtype_name == "float16":
             float16_limit = float(np.finfo(np.float16).max)
@@ -392,17 +441,24 @@ def convert_shooting_trajectory(
             )
             if maximum > float16_limit:
                 raise OverflowError(
-                    f"Shooting values exceed the finite float16 range: source={source}, "
-                    f"timestep={timestep}, maximum_absolute_value={maximum}, "
-                    f"float16_limit={float16_limit}."
+                    "Shooting values exceed the finite float16 range:"
+                    f" source={source}, timestep={timestep},"
+                    f" maximum_absolute_value={maximum},"
+                    f" float16_limit={float16_limit}."
                 )
-        source_position_digest.update(np.ascontiguousarray(frame.positions).tobytes())
-        source_velocity_digest.update(np.ascontiguousarray(frame.velocities).tobytes())
+        source_position_digest.update(
+            np.ascontiguousarray(frame.positions).tobytes()
+        )
+        source_velocity_digest.update(
+            np.ascontiguousarray(frame.velocities).tobytes()
+        )
         stored_position_digest.update(
             np.ascontiguousarray(frame.positions, dtype=vector_dtype).tobytes()
         )
         stored_velocity_digest.update(
-            np.ascontiguousarray(frame.velocities, dtype=vector_dtype).tobytes()
+            np.ascontiguousarray(
+                frame.velocities, dtype=vector_dtype
+            ).tobytes()
         )
         positions[frame_index] = frame.positions
         velocities[frame_index] = frame.velocities
@@ -416,11 +472,17 @@ def convert_shooting_trajectory(
     timesteps_array = np.asarray(requested, dtype=np.int64)
     atom_ids = np.asarray(first.atom_ids, dtype=np.int64)
     atom_types = np.asarray(first.atom_types, dtype=np.int32)
-    np.save(building / _ARRAY_FILES["timesteps"], timesteps_array, allow_pickle=False)
+    np.save(
+        building / _ARRAY_FILES["timesteps"],
+        timesteps_array,
+        allow_pickle=False,
+    )
     np.save(building / _ARRAY_FILES["box_low"], box_low, allow_pickle=False)
     np.save(building / _ARRAY_FILES["box_high"], box_high, allow_pickle=False)
     np.save(building / _ARRAY_FILES["atom_ids"], atom_ids, allow_pickle=False)
-    np.save(building / _ARRAY_FILES["atom_types"], atom_types, allow_pickle=False)
+    np.save(
+        building / _ARRAY_FILES["atom_types"], atom_types, allow_pickle=False
+    )
     for filename in _ARRAY_FILES.values():
         with (building / filename).open("rb") as handle:
             os.fsync(handle.fileno())
@@ -430,19 +492,21 @@ def convert_shooting_trajectory(
         building / _ARRAY_FILES["positions"], mmap_mode="r", allow_pickle=False
     )
     stored_velocities = np.load(
-        building / _ARRAY_FILES["velocities"], mmap_mode="r", allow_pickle=False
+        building / _ARRAY_FILES["velocities"],
+        mmap_mode="r",
+        allow_pickle=False,
     )
     observed_position_sha256 = _array_sha256(stored_positions)
     observed_velocity_sha256 = _array_sha256(stored_velocities)
     if observed_position_sha256 != stored_position_digest.hexdigest():
         raise RuntimeError(
-            f"Stored position checksum differs from converted source values: source={source}, "
-            f"target={building}."
+            "Stored position checksum differs from converted source values:"
+            f" source={source}, target={building}."
         )
     if observed_velocity_sha256 != stored_velocity_digest.hexdigest():
         raise RuntimeError(
-            f"Stored velocity checksum differs from converted source values: source={source}, "
-            f"target={building}."
+            "Stored velocity checksum differs from converted source values:"
+            f" source={source}, target={building}."
         )
     arrays = {
         "positions": _array_description(
@@ -484,8 +548,8 @@ def convert_shooting_trajectory(
         "created_at": datetime.now(timezone.utc).isoformat(),
         "storage_dtype": dtype_name,
         "coordinate_convention": (
-            "positions are wrapped float32 consumer coordinates relative to box_low "
-            "in the half-open periodic interval [0, box_high-box_low)"
+            "positions are wrapped float32 consumer coordinates relative to"
+            " box_low in the half-open periodic interval [0, box_high-box_low)"
         ),
         "velocity_units": "angstrom_per_ps",
         "atom_count": int(atom_count),
@@ -529,21 +593,26 @@ def compose_shooting_binary_trajectories(
 
     sources = tuple(source_trajectories)
     if not sources:
-        raise ValueError("Binary trajectory composition requires at least one source.")
+        raise ValueError(
+            "Binary trajectory composition requires at least one source."
+        )
     requested = tuple(int(value) for value in timesteps)
     if not requested or tuple(sorted(set(requested))) != requested:
         raise ValueError(
-            f"Composition timesteps must be nonempty, unique, and increasing: {requested}."
+            "Composition timesteps must be nonempty, unique, and increasing:"
+            f" {requested}."
         )
     dtype_name = str(storage_dtype)
     if dtype_name not in STORAGE_DTYPES:
         raise ValueError(
-            f"storage_dtype must be one of {STORAGE_DTYPES}, got {storage_dtype!r}."
+            f"storage_dtype must be one of {STORAGE_DTYPES}, got"
+            f" {storage_dtype!r}."
         )
     target = Path(output_dir).expanduser().resolve()
     if target.exists():
         raise FileExistsError(
-            f"Refusing to overwrite existing binary shooting trajectory: {target}"
+            "Refusing to overwrite existing binary shooting trajectory:"
+            f" {target}"
         )
 
     first = sources[0]
@@ -553,29 +622,35 @@ def compose_shooting_binary_trajectories(
         source.verify_checksums()
         if source.atom_count != first.atom_count:
             raise RuntimeError(
-                "Cannot compose shooting binaries with different atom counts: "
-                f"first={first.atom_count}, source={source.atom_count}, root={source.root}."
+                "Cannot compose shooting binaries with different atom counts:"
+                f" first={first.atom_count}, source={source.atom_count},"
+                f" root={source.root}."
             )
-        if not np.array_equal(source.atom_ids, first.atom_ids) or not np.array_equal(
-            source.atom_types, first.atom_types
-        ):
+        if not np.array_equal(
+            source.atom_ids, first.atom_ids
+        ) or not np.array_equal(source.atom_types, first.atom_types):
             raise RuntimeError(
-                f"Cannot compose shooting binaries with different atom identity: {source.root}."
+                "Cannot compose shooting binaries with different atom"
+                f" identity: {source.root}."
             )
         for frame_index, timestep in enumerate(source.timesteps.tolist()):
             frame_sources.setdefault(int(timestep), (source, frame_index))
-    missing = [timestep for timestep in requested if timestep not in frame_sources]
+    missing = [
+        timestep for timestep in requested if timestep not in frame_sources
+    ]
     if missing:
         raise RuntimeError(
-            "Binary trajectory segments do not cover the requested composition: "
-            f"missing={missing}, sources={[str(source.root) for source in sources]}."
+            "Binary trajectory segments do not cover the requested"
+            f" composition: missing={missing},"
+            f" sources={[str(source.root) for source in sources]}."
         )
 
     target.parent.mkdir(parents=True, exist_ok=True)
     building = target.parent / f".{target.name}.building-{os.getpid()}"
     if building.exists():
         raise FileExistsError(
-            f"Refusing to reuse an interrupted composition directory: {building}"
+            "Refusing to reuse an interrupted composition directory:"
+            f" {building}"
         )
     building.mkdir()
     frame_count = len(requested)
@@ -599,14 +674,18 @@ def compose_shooting_binary_trajectories(
     semantic_velocity_digest = hashlib.sha256()
     for output_index, timestep in enumerate(requested):
         source, source_index = frame_sources[timestep]
-        source_positions = np.asarray(source.positions[source_index], dtype=np.float32)
-        source_velocities = np.asarray(source.velocities[source_index], dtype=np.float32)
+        source_positions = np.asarray(
+            source.positions[source_index], dtype=np.float32
+        )
+        source_velocities = np.asarray(
+            source.velocities[source_index], dtype=np.float32
+        )
         if not np.all(np.isfinite(source_positions)) or not np.all(
             np.isfinite(source_velocities)
         ):
             raise RuntimeError(
-                f"Cannot compose non-finite frame values: source={source.root}, "
-                f"timestep={timestep}."
+                "Cannot compose non-finite frame values:"
+                f" source={source.root}, timestep={timestep}."
             )
         if dtype_name == "float16":
             maximum = max(
@@ -615,11 +694,16 @@ def compose_shooting_binary_trajectories(
             )
             if maximum > float(np.finfo(np.float16).max):
                 raise OverflowError(
-                    f"Composed frame exceeds float16 range: source={source.root}, "
-                    f"timestep={timestep}, maximum_absolute_value={maximum}."
+                    "Composed frame exceeds float16 range:"
+                    f" source={source.root}, timestep={timestep},"
+                    f" maximum_absolute_value={maximum}."
                 )
-        semantic_position_digest.update(np.ascontiguousarray(source_positions).tobytes())
-        semantic_velocity_digest.update(np.ascontiguousarray(source_velocities).tobytes())
+        semantic_position_digest.update(
+            np.ascontiguousarray(source_positions).tobytes()
+        )
+        semantic_velocity_digest.update(
+            np.ascontiguousarray(source_velocities).tobytes()
+        )
         positions[output_index] = source_positions
         velocities[output_index] = source_velocities
         box_low[output_index] = source.box_low[source_index]
@@ -632,15 +716,23 @@ def compose_shooting_binary_trajectories(
     timesteps_array = np.asarray(requested, dtype=np.int64)
     atom_ids = np.asarray(first.atom_ids, dtype=np.int64)
     atom_types = np.asarray(first.atom_types, dtype=np.int32)
-    np.save(building / _ARRAY_FILES["timesteps"], timesteps_array, allow_pickle=False)
+    np.save(
+        building / _ARRAY_FILES["timesteps"],
+        timesteps_array,
+        allow_pickle=False,
+    )
     np.save(building / _ARRAY_FILES["box_low"], box_low, allow_pickle=False)
     np.save(building / _ARRAY_FILES["box_high"], box_high, allow_pickle=False)
     np.save(building / _ARRAY_FILES["atom_ids"], atom_ids, allow_pickle=False)
-    np.save(building / _ARRAY_FILES["atom_types"], atom_types, allow_pickle=False)
+    np.save(
+        building / _ARRAY_FILES["atom_types"], atom_types, allow_pickle=False
+    )
 
     arrays: dict[str, dict[str, Any]] = {}
     for name, filename in _ARRAY_FILES.items():
-        values = np.load(building / filename, mmap_mode="r", allow_pickle=False)
+        values = np.load(
+            building / filename, mmap_mode="r", allow_pickle=False
+        )
         arrays[name] = _array_description(
             values,
             filename,
@@ -653,8 +745,8 @@ def compose_shooting_binary_trajectories(
         "created_at": datetime.now(timezone.utc).isoformat(),
         "storage_dtype": dtype_name,
         "coordinate_convention": (
-            "positions decode to float32 coordinates relative to box_low in the "
-            "half-open periodic interval [0, box_high-box_low)"
+            "positions decode to float32 coordinates relative to box_low in"
+            " the half-open periodic interval [0, box_high-box_low)"
         ),
         "velocity_units": "angstrom_per_ps",
         "atom_count": first.atom_count,
@@ -696,10 +788,14 @@ def binary_directory_sizes(path: str | Path) -> dict[str, int]:
     root = Path(path).expanduser().resolve()
     files = [entry for entry in root.iterdir() if entry.is_file()]
     if not files:
-        raise RuntimeError(f"Binary shooting directory contains no files: {root}")
+        raise RuntimeError(
+            f"Binary shooting directory contains no files: {root}"
+        )
     return {
         "apparent_bytes": sum(entry.stat().st_size for entry in files),
-        "allocated_bytes": sum(entry.stat().st_blocks * 512 for entry in files),
+        "allocated_bytes": sum(
+            entry.stat().st_blocks * 512 for entry in files
+        ),
     }
 
 

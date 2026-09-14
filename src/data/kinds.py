@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 def normalize_data_kind(kind: str) -> str:
     return kind.strip().lower()
 

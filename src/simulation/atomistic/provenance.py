@@ -28,7 +28,6 @@ from .config import (
     potential_calculator_settings,
 )
 
-
 ATOMISTIC_PACKAGE_ROOT = Path(__file__).resolve().parent
 PRODUCER_COMPATIBILITY_PATH = (
     REPOSITORY_ROOT
@@ -178,7 +177,9 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _qualification_scope_dict(config: GeneratorConfig) -> dict[str, object] | None:
+def _qualification_scope_dict(
+    config: GeneratorConfig,
+) -> dict[str, object] | None:
     qualification = config.potential.qualification
     if qualification is None:
         return None
@@ -223,20 +224,24 @@ def configured_mace_provenance(
         and qualification.implementation_class != implementation_class
     ):
         raise RuntimeError(
-            f"Potential qualification requires calculator implementation="
-            f"{qualification.implementation_class!r}, but the loaded calculator is "
-            f"{implementation_class!r}."
+            "Potential qualification requires calculator"
+            f" implementation={qualification.implementation_class!r}, but the"
+            f" loaded calculator is {implementation_class!r}."
         )
     validation_report = config.potential.validation_report
     validation_report_sha256 = None
     if validation_report is not None:
         validation_report_sha256 = _sha256_file(validation_report)
-        if validation_report_sha256 != config.potential.validation_report_sha256:
+        if (
+            validation_report_sha256
+            != config.potential.validation_report_sha256
+        ):
             raise RuntimeError(
-                f"Potential validation report changed after configuration load: path="
-                f"{validation_report}, loaded_sha256="
-                f"{config.potential.validation_report_sha256}, observed_sha256="
-                f"{validation_report_sha256}. Reload and revalidate the configuration."
+                "Potential validation report changed after configuration"
+                f" load: path={validation_report},"
+                f" loaded_sha256={config.potential.validation_report_sha256},"
+                f" observed_sha256={validation_report_sha256}. Reload and"
+                " revalidate the configuration."
             )
     return CalculatorProvenance(
         source="configured_mace_model",
@@ -272,22 +277,23 @@ def injected_calculator_provenance(
     normalized_identity = identity.strip()
     if not normalized_identity:
         raise ValueError(
-            "injected_calculator_identity must be a non-empty, scientifically meaningful "
-            "identifier for the actual calculator used."
+            "injected_calculator_identity must be a non-empty, scientifically"
+            " meaningful identifier for the actual calculator used."
         )
     if not isinstance(calculator, Calculator):
         raise TypeError(
-            "Injected atomistic calculators must be ASE Calculator instances so their "
-            f"Hamiltonian parameters can be recorded, got {_implementation_class(calculator)}."
+            "Injected atomistic calculators must be ASE Calculator instances"
+            " so their Hamiltonian parameters can be recorded, got"
+            f" {_implementation_class(calculator)}."
         )
     ase_parameters = dict(calculator.parameters)
     try:
         json.dumps(ase_parameters, sort_keys=True, separators=(",", ":"))
     except (TypeError, ValueError) as exc:
         raise TypeError(
-            f"Injected calculator {normalized_identity!r} has non-JSON ASE parameters="
-            f"{ase_parameters!r}. Provide a calculator whose Hamiltonian parameters can be "
-            "persisted exactly."
+            f"Injected calculator {normalized_identity!r} has non-JSON ASE"
+            f" parameters={ase_parameters!r}. Provide a calculator whose"
+            " Hamiltonian parameters can be persisted exactly."
         ) from exc
     return CalculatorProvenance(
         source="injected_calculator",
@@ -336,14 +342,16 @@ def _runtime_provenance(calculator: CalculatorProvenance) -> dict[str, object]:
         if device.startswith("cuda"):
             if not torch.cuda.is_available():
                 raise RuntimeError(
-                    f"Cannot record execution provenance for device={device!r}: "
-                    "torch.cuda.is_available() is false."
+                    "Cannot record execution provenance for"
+                    f" device={device!r}: torch.cuda.is_available() is false."
                 )
             device_index = torch.device(device).index
             if device_index is None:
                 device_index = torch.cuda.current_device()
             result["cuda_device_index"] = device_index
-            result["cuda_device_name"] = torch.cuda.get_device_name(device_index)
+            result["cuda_device_name"] = torch.cuda.get_device_name(
+                device_index
+            )
     return result
 
 
@@ -403,8 +411,9 @@ def bind_transition_campaign_execution_provenance(
     return transition_provenance
 
 
-def build_transition_deferred_analysis_provenance(
-) -> DeferredAnalysisExecutionProvenance:
+def build_transition_deferred_analysis_provenance() -> (
+    DeferredAnalysisExecutionProvenance
+):
     provenance = DeferredAnalysisExecutionProvenance(
         runtime={
             "python": platform.python_version(),
@@ -438,7 +447,10 @@ def producer_code_is_compatible(
     if observed == expected:
         return True
     required_provenance_keys = {"algorithm", "scope", "files", "sha256"}
-    if not isinstance(observed, dict) or set(observed) != required_provenance_keys:
+    if (
+        not isinstance(observed, dict)
+        or set(observed) != required_provenance_keys
+    ):
         return False
     if (
         observed["algorithm"] != "sha256"
@@ -449,9 +461,10 @@ def producer_code_is_compatible(
         return False
     if not PRODUCER_COMPATIBILITY_PATH.is_file():
         raise FileNotFoundError(
-            "Producer code changed and the audited compatibility certificate is missing: "
-            f"{PRODUCER_COMPATIBILITY_PATH}. Regenerate the artifact or restore the "
-            "certificate; do not bypass provenance validation."
+            "Producer code changed and the audited compatibility certificate"
+            f" is missing: {PRODUCER_COMPATIBILITY_PATH}. Regenerate the"
+            " artifact or restore the certificate; do not bypass provenance"
+            " validation."
         )
     with PRODUCER_COMPATIBILITY_PATH.open("r", encoding="utf-8") as handle:
         certificate = json.load(handle)
@@ -460,8 +473,8 @@ def producer_code_is_compatible(
         "migrations",
     }:
         raise RuntimeError(
-            f"{PRODUCER_COMPATIBILITY_PATH}: expected exactly schema_version and "
-            "migrations."
+            f"{PRODUCER_COMPATIBILITY_PATH}: expected exactly schema_version"
+            " and migrations."
         )
     if certificate["schema_version"] != 1:
         raise RuntimeError(
@@ -482,10 +495,14 @@ def producer_code_is_compatible(
         "equivalence_basis",
     }
     for migration in migrations:
-        if not isinstance(migration, dict) or set(migration) != expected_migration_keys:
+        if (
+            not isinstance(migration, dict)
+            or set(migration) != expected_migration_keys
+        ):
             raise RuntimeError(
-                f"{PRODUCER_COMPATIBILITY_PATH}: every migration must contain exactly "
-                f"{sorted(expected_migration_keys)}, got {migration!r}."
+                f"{PRODUCER_COMPATIBILITY_PATH}: every migration must contain"
+                f" exactly {sorted(expected_migration_keys)}, got"
+                f" {migration!r}."
             )
         if (
             migration["files"] == observed["files"]
@@ -508,8 +525,8 @@ def _normalized_schema4_calculator_settings(
 
     if not isinstance(value, dict):
         raise TypeError(
-            f"{manifest_path}: execution_provenance.calculator.settings must be a "
-            f"mapping, got {type(value).__name__}."
+            f"{manifest_path}: execution_provenance.calculator.settings must"
+            f" be a mapping, got {type(value).__name__}."
         )
     allowed = {
         "device",
@@ -530,15 +547,20 @@ def _normalized_schema4_calculator_settings(
     unknown = sorted(set(value) - allowed)
     if unknown:
         raise KeyError(
-            f"{manifest_path}: unsupported calculator settings in schema-4 provenance: "
-            f"{unknown}."
+            f"{manifest_path}: unsupported calculator settings in schema-4"
+            f" provenance: {unknown}."
         )
-    required_legacy = {"device", "default_dtype", "enable_cueq", "neighbor_skin_A"}
+    required_legacy = {
+        "device",
+        "default_dtype",
+        "enable_cueq",
+        "neighbor_skin_A",
+    }
     missing_legacy = sorted(required_legacy - set(value))
     if missing_legacy:
         raise RuntimeError(
-            f"{manifest_path}: calculator settings omit required schema-4 fields="
-            f"{missing_legacy}."
+            f"{manifest_path}: calculator settings omit required schema-4"
+            f" fields={missing_legacy}."
         )
     normalized = dict(value)
     normalized.setdefault("enable_oeq", DEFAULT_ENABLE_OEQ)
@@ -579,46 +601,54 @@ def validate_configured_source_manifest(
 ) -> dict[str, object]:
     if manifest.get("schema_version") != 4:
         raise RuntimeError(
-            f"{manifest_path}: expected current phase-context schema_version=4, got "
-            f"{manifest.get('schema_version')!r}. Legacy artifacts must be regenerated."
+            f"{manifest_path}: expected current phase-context"
+            f" schema_version=4, got {manifest.get('schema_version')!r}."
+            " Legacy artifacts must be regenerated."
         )
     expected_config = config.to_dict()
     observed_config = manifest.get("config")
     if observed_config != expected_config:
         relocated_config = (
-            dict(observed_config) if isinstance(observed_config, dict) else None
+            dict(observed_config)
+            if isinstance(observed_config, dict)
+            else None
         )
         if relocated_config is not None:
             relocated_config["config_path"] = expected_config["config_path"]
         if relocated_config != expected_config:
             raise RuntimeError(
-                f"{manifest_path}: source generator configuration differs from the "
-                "active source_generator_config beyond its repository file location. "
-                "The source may use stale preparation dynamics, validation settings, "
-                "cell handling, or model metadata; regenerate it with the active "
-                "configuration before deriving another dataset."
+                f"{manifest_path}: source generator configuration differs from"
+                " the active source_generator_config beyond its repository"
+                " file location. The source may use stale preparation"
+                " dynamics, validation settings, cell handling, or model"
+                " metadata; regenerate it with the active configuration"
+                " before deriving another dataset."
             )
     execution = manifest.get("execution_provenance")
     if not isinstance(execution, dict):
         raise RuntimeError(
-            f"{manifest_path}: source dataset has no execution_provenance mapping. Legacy "
-            "artifacts cannot establish calculator, runtime, or producer-code identity and "
-            "must be regenerated."
+            f"{manifest_path}: source dataset has no execution_provenance"
+            " mapping. Legacy artifacts cannot establish calculator, runtime,"
+            " or producer-code identity and must be regenerated."
         )
     execution_keys = set(execution)
     if execution_keys != {"calculator", "runtime", "producer_code"}:
         raise RuntimeError(
-            f"{manifest_path}: execution_provenance must contain exactly calculator, runtime, "
-            f"and producer_code; got keys={sorted(execution_keys)}."
+            f"{manifest_path}: execution_provenance must contain exactly"
+            " calculator, runtime, and producer_code; got"
+            f" keys={sorted(execution_keys)}."
         )
     calculator = execution.get("calculator")
     if not isinstance(calculator, dict):
         raise RuntimeError(
-            f"{manifest_path}: execution_provenance.calculator must be a mapping."
+            f"{manifest_path}: execution_provenance.calculator must be a"
+            " mapping."
         )
     calculator_for_comparison = dict(calculator)
-    calculator_for_comparison["settings"] = _normalized_schema4_calculator_settings(
-        calculator.get("settings"), manifest_path=manifest_path
+    calculator_for_comparison["settings"] = (
+        _normalized_schema4_calculator_settings(
+            calculator.get("settings"), manifest_path=manifest_path
+        )
     )
     expected_calculator_fields = {
         "source": "configured_mace_model",
@@ -654,29 +684,38 @@ def validate_configured_source_manifest(
         "settings": potential_calculator_settings(config.potential),
     }
     mismatches = {
-        name: {"observed": calculator_for_comparison.get(name), "expected": expected}
+        name: {
+            "observed": calculator_for_comparison.get(name),
+            "expected": expected,
+        }
         for name, expected in expected_calculator_fields.items()
         if calculator_for_comparison.get(name) != expected
     }
     if mismatches:
         raise RuntimeError(
-            f"{manifest_path}: source calculator provenance does not match the configured "
-            f"Hamiltonian and usage qualification: mismatches={mismatches}."
+            f"{manifest_path}: source calculator provenance does not match the"
+            " configured Hamiltonian and usage qualification:"
+            f" mismatches={mismatches}."
         )
     available_heads = calculator.get("available_heads")
     if (
         not isinstance(available_heads, list)
         or not available_heads
-        or any(not isinstance(head, str) or not head for head in available_heads)
+        or any(
+            not isinstance(head, str) or not head for head in available_heads
+        )
         or config.potential.head not in available_heads
     ):
         raise RuntimeError(
-            f"{manifest_path}: calculator.available_heads={available_heads!r} does not "
-            f"contain the selected head={config.potential.head!r}."
+            f"{manifest_path}:"
+            f" calculator.available_heads={available_heads!r} does not contain"
+            f" the selected head={config.potential.head!r}."
         )
     runtime = execution.get("runtime")
     if not isinstance(runtime, dict):
-        raise TypeError(f"{manifest_path}: execution_provenance.runtime must be a mapping.")
+        raise TypeError(
+            f"{manifest_path}: execution_provenance.runtime must be a mapping."
+        )
     required_runtime_fields = {
         "python",
         "numpy",
@@ -699,7 +738,9 @@ def validate_configured_source_manifest(
     if config.potential.enable_oeq:
         required_runtime_fields.add("openequivariance")
     if config.potential.device.startswith("cuda"):
-        required_runtime_fields.update({"cuda_device_index", "cuda_device_name"})
+        required_runtime_fields.update(
+            {"cuda_device_index", "cuda_device_name"}
+        )
     missing_runtime_fields = sorted(required_runtime_fields - set(runtime))
     empty_runtime_fields = sorted(
         field
@@ -708,8 +749,8 @@ def validate_configured_source_manifest(
     )
     if missing_runtime_fields or empty_runtime_fields:
         raise RuntimeError(
-            f"{manifest_path}: execution runtime provenance is incomplete; missing="
-            f"{missing_runtime_fields}, null={empty_runtime_fields}."
+            f"{manifest_path}: execution runtime provenance is incomplete;"
+            f" missing={missing_runtime_fields}, null={empty_runtime_fields}."
         )
     producer_code = execution.get("producer_code")
     expected_producer_code = (
@@ -719,14 +760,15 @@ def validate_configured_source_manifest(
     )
     if not producer_code_is_compatible(producer_code, expected_producer_code):
         raise RuntimeError(
-            f"{manifest_path}: source producer-code provenance does not match the active "
-            f"atomistic package; observed={producer_code!r}, expected="
-            f"{expected_producer_code!r}. Regenerate the source before deriving new data."
+            f"{manifest_path}: source producer-code provenance does not match"
+            f" the active atomistic package; observed={producer_code!r},"
+            f" expected={expected_producer_code!r}. Regenerate the source"
+            " before deriving new data."
         )
     if manifest.get("potential_sha256") != config.potential.sha256:
         raise RuntimeError(
-            f"{manifest_path}: compatibility potential_sha256="
-            f"{manifest.get('potential_sha256')!r} differs from configured sha256="
-            f"{config.potential.sha256!r}."
+            f"{manifest_path}: compatibility"
+            f" potential_sha256={manifest.get('potential_sha256')!r} differs"
+            f" from configured sha256={config.potential.sha256!r}."
         )
     return calculator

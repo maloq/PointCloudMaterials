@@ -14,7 +14,6 @@ import numpy as np
 from numpy.lib.format import open_memmap
 from src.project_runtime.paths import resolve_path
 
-
 FORMAT_NAME = "pointcloudmaterials.temporal_lammps_trajectory"
 SCHEMA_VERSION = 1
 BINARY_SUFFIX = "_binary_float32"
@@ -32,7 +31,8 @@ def binary_path_for_dump(path: str | Path) -> Path:
     dump_path = Path(path).expanduser().resolve()
     if dump_path.suffix != ".lammpstrj":
         raise ValueError(
-            f"Expected a .lammpstrj path when deriving a temporal binary path, got {dump_path}."
+            "Expected a .lammpstrj path when deriving a temporal binary path,"
+            f" got {dump_path}."
         )
     return dump_path.parent / f"{dump_path.stem}{BINARY_SUFFIX}"
 
@@ -51,7 +51,8 @@ def resolve_temporal_lammps_artifact(path: str | Path) -> Path:
             if manifest.get("format") == FORMAT_NAME:
                 return requested
         raise ValueError(
-            f"Directory is not a temporal LAMMPS binary trajectory: {requested}"
+            "Directory is not a temporal LAMMPS binary trajectory:"
+            f" {requested}"
         )
     if requested.suffix == ".lammpstrj":
         replacement = binary_path_for_dump(requested)
@@ -60,12 +61,16 @@ def resolve_temporal_lammps_artifact(path: str | Path) -> Path:
         if len(candidates) == 1:
             return candidates.pop()
         if len(candidates) > 1:
-            raise RuntimeError(f"Ambiguous binary replacements for {requested}: {candidates}")
+            raise RuntimeError(
+                f"Ambiguous binary replacements for {requested}: {candidates}"
+            )
         raise FileNotFoundError(
             "LAMMPS trajectory is absent in both supported forms: "
             f"text={requested}, binary={replacement}."
         )
-    raise FileNotFoundError(f"Temporal LAMMPS trajectory artifact is missing: {requested}")
+    raise FileNotFoundError(
+        f"Temporal LAMMPS trajectory artifact is missing: {requested}"
+    )
 
 
 def _array_sha256(values: np.ndarray) -> str:
@@ -109,20 +114,27 @@ class TemporalLAMMPSBinaryTrajectory:
         root = resolve_path(path).resolve()
         manifest_path = root / "manifest.json"
         if not manifest_path.is_file():
-            raise FileNotFoundError(f"Temporal binary manifest is missing: {manifest_path}")
+            raise FileNotFoundError(
+                f"Temporal binary manifest is missing: {manifest_path}"
+            )
         with manifest_path.open("r", encoding="utf-8") as handle:
             manifest = json.load(handle)
         if not isinstance(manifest, dict):
-            raise TypeError(f"Temporal binary manifest must be a JSON object: {manifest_path}")
+            raise TypeError(
+                "Temporal binary manifest must be a JSON object:"
+                f" {manifest_path}"
+            )
         if manifest.get("format") != FORMAT_NAME:
             raise ValueError(
-                f"Unsupported temporal binary format in {manifest_path}: "
-                f"expected={FORMAT_NAME!r}, observed={manifest.get('format')!r}."
+                f"Unsupported temporal binary format in {manifest_path}:"
+                f" expected={FORMAT_NAME!r},"
+                f" observed={manifest.get('format')!r}."
             )
         if int(manifest.get("schema_version", -1)) != SCHEMA_VERSION:
             raise ValueError(
-                f"Unsupported temporal binary schema in {manifest_path}: "
-                f"expected={SCHEMA_VERSION}, observed={manifest.get('schema_version')!r}."
+                f"Unsupported temporal binary schema in {manifest_path}:"
+                f" expected={SCHEMA_VERSION},"
+                f" observed={manifest.get('schema_version')!r}."
             )
         if manifest.get("state") != "complete":
             raise RuntimeError(
@@ -131,31 +143,47 @@ class TemporalLAMMPSBinaryTrajectory:
             )
         if manifest.get("storage_dtype") not in {"float32", "float16"}:
             raise ValueError(
-                f"Temporal binary storage must be float32 or float16, got {manifest.get('storage_dtype')!r}."
+                "Temporal binary storage must be float32 or float16, got"
+                f" {manifest.get('storage_dtype')!r}."
             )
 
         descriptions = manifest.get("arrays")
         if not isinstance(descriptions, dict):
-            raise TypeError(f"Temporal binary arrays must be a JSON object: {manifest_path}")
+            raise TypeError(
+                "Temporal binary arrays must be a JSON object:"
+                f" {manifest_path}"
+            )
         arrays: dict[str, np.ndarray] = {}
         for name, filename in _ARRAY_FILES.items():
             description = descriptions.get(name)
-            if not isinstance(description, dict) or description.get("file") != filename:
+            if (
+                not isinstance(description, dict)
+                or description.get("file") != filename
+            ):
                 raise ValueError(
-                    f"Temporal binary array description is invalid for {name!r}: {manifest_path}"
+                    "Temporal binary array description is invalid for"
+                    f" {name!r}: {manifest_path}"
                 )
             array_path = root / filename
             if not array_path.is_file():
-                raise FileNotFoundError(f"Temporal binary array is missing: {array_path}")
+                raise FileNotFoundError(
+                    f"Temporal binary array is missing: {array_path}"
+                )
             values = np.load(array_path, mmap_mode="r", allow_pickle=False)
-            expected_shape = tuple(int(value) for value in description["shape"])
+            expected_shape = tuple(
+                int(value) for value in description["shape"]
+            )
             expected_dtype = np.dtype(str(description["dtype"]))
-            if values.shape != expected_shape or values.dtype != expected_dtype:
+            if (
+                values.shape != expected_shape
+                or values.dtype != expected_dtype
+            ):
                 raise RuntimeError(
-                    f"Temporal binary array contract changed for {name!r}: "
-                    f"expected_shape={expected_shape}, observed_shape={values.shape}, "
-                    f"expected_dtype={expected_dtype.name}, observed_dtype={values.dtype.name}, "
-                    f"path={array_path}."
+                    f"Temporal binary array contract changed for {name!r}:"
+                    f" expected_shape={expected_shape},"
+                    f" observed_shape={values.shape},"
+                    f" expected_dtype={expected_dtype.name},"
+                    f" observed_dtype={values.dtype.name}, path={array_path}."
                 )
             arrays[name] = values
 
@@ -172,8 +200,9 @@ class TemporalLAMMPSBinaryTrajectory:
         for name, expected_shape in expected_shapes.items():
             if arrays[name].shape != expected_shape:
                 raise RuntimeError(
-                    f"Temporal binary semantic shape mismatch for {name!r}: "
-                    f"expected={expected_shape}, observed={arrays[name].shape}, root={root}."
+                    f"Temporal binary semantic shape mismatch for {name!r}:"
+                    f" expected={expected_shape},"
+                    f" observed={arrays[name].shape}, root={root}."
                 )
         expected_dtypes = {
             "positions": np.dtype(manifest["storage_dtype"]),
@@ -186,17 +215,27 @@ class TemporalLAMMPSBinaryTrajectory:
         for name, expected_dtype in expected_dtypes.items():
             if arrays[name].dtype != expected_dtype:
                 raise RuntimeError(
-                    f"Temporal binary dtype mismatch for {name!r}: expected={expected_dtype.name}, "
-                    f"observed={arrays[name].dtype.name}, root={root}."
+                    f"Temporal binary dtype mismatch for {name!r}:"
+                    f" expected={expected_dtype.name},"
+                    f" observed={arrays[name].dtype.name}, root={root}."
                 )
         if not np.array_equal(
             arrays["atom_ids"], np.arange(1, atom_count + 1, dtype=np.int64)
         ):
-            raise RuntimeError(f"Temporal binary atom IDs are not exactly 1..{atom_count}: {root}")
+            raise RuntimeError(
+                f"Temporal binary atom IDs are not exactly 1..{atom_count}:"
+                f" {root}"
+            )
         if np.any(arrays["box_high"] <= arrays["box_low"]):
-            raise RuntimeError(f"Temporal binary trajectory has non-positive box lengths: {root}")
+            raise RuntimeError(
+                "Temporal binary trajectory has non-positive box lengths:"
+                f" {root}"
+            )
         if frame_count > 1 and np.any(np.diff(arrays["timesteps"]) <= 0):
-            raise RuntimeError(f"Temporal binary timesteps are not strictly increasing: {root}")
+            raise RuntimeError(
+                "Temporal binary timesteps are not strictly increasing:"
+                f" {root}"
+            )
         return cls(root=root, manifest=manifest, **arrays)
 
     @property
@@ -213,13 +252,15 @@ class TemporalLAMMPSBinaryTrajectory:
             expected = str(self.manifest["arrays"][name].get("sha256", ""))
             if len(expected) != 64:
                 raise RuntimeError(
-                    f"Temporal binary manifest has no valid checksum for {name!r}: {self.root}"
+                    "Temporal binary manifest has no valid checksum for"
+                    f" {name!r}: {self.root}"
                 )
             observed[name] = _array_sha256(getattr(self, name))
             if observed[name] != expected:
                 raise RuntimeError(
-                    f"Temporal binary checksum mismatch for {name!r}: expected={expected}, "
-                    f"observed={observed[name]}, root={self.root}."
+                    f"Temporal binary checksum mismatch for {name!r}:"
+                    f" expected={expected}, observed={observed[name]},"
+                    f" root={self.root}."
                 )
         return observed
 
@@ -246,11 +287,18 @@ def write_temporal_lammps_binary(
 
     target = Path(output_dir).expanduser().resolve()
     if target.exists():
-        raise FileExistsError(f"Refusing to overwrite temporal binary trajectory: {target}")
-    if positions.dtype not in (np.dtype("float32"), np.dtype("float16")) or positions.ndim != 3 or positions.shape[2] != 3:
+        raise FileExistsError(
+            f"Refusing to overwrite temporal binary trajectory: {target}"
+        )
+    if (
+        positions.dtype not in (np.dtype("float32"), np.dtype("float16"))
+        or positions.ndim != 3
+        or positions.shape[2] != 3
+    ):
         raise ValueError(
-            f"positions must be repository-produced float32/float16 (frames, atoms, 3), got "
-            f"shape={positions.shape}, dtype={positions.dtype}."
+            "positions must be repository-produced float32/float16 (frames,"
+            f" atoms, 3), got shape={positions.shape},"
+            f" dtype={positions.dtype}."
         )
     frame_count, atom_count, _ = positions.shape
     typed_arrays = {
@@ -270,39 +318,61 @@ def write_temporal_lammps_binary(
     for name, expected_shape in expected_shapes.items():
         if typed_arrays[name].shape != expected_shape:
             raise ValueError(
-                f"Temporal binary input {name!r} has shape={typed_arrays[name].shape}, "
-                f"expected={expected_shape}."
+                f"Temporal binary input {name!r} has"
+                f" shape={typed_arrays[name].shape},"
+                f" expected={expected_shape}."
             )
     if not np.array_equal(
         typed_arrays["atom_ids"], np.arange(1, atom_count + 1, dtype=np.int64)
     ):
-        raise ValueError(f"Temporal binary atom IDs must be exactly 1..{atom_count}.")
+        raise ValueError(
+            f"Temporal binary atom IDs must be exactly 1..{atom_count}."
+        )
     box_lengths = typed_arrays["box_high"] - typed_arrays["box_low"]
     if np.any(box_lengths <= 0.0):
-        raise ValueError("Temporal binary box bounds contain a non-positive length.")
+        raise ValueError(
+            "Temporal binary box bounds contain a non-positive length."
+        )
     # Trajectories can be tens of GiB memmaps. Validate a frame at a time rather
     # than allocating boolean arrays covering every frame at once.
     for frame_index, frame in enumerate(positions):
         if not np.all(np.isfinite(frame)):
-            raise ValueError(f"Temporal binary positions contain non-finite values at frame {frame_index}.")
+            raise ValueError(
+                "Temporal binary positions contain non-finite values at frame"
+                f" {frame_index}."
+            )
         upper = box_lengths[frame_index]
-        outside = (frame > upper.astype(np.float16)) if positions.dtype == np.float16 else (frame >= upper)
+        outside = (
+            (frame > upper.astype(np.float16))
+            if positions.dtype == np.float16
+            else (frame >= upper)
+        )
         if np.any(frame < 0.0) or np.any(outside):
             raise ValueError(
-                f"Temporal binary positions at frame {frame_index} must use wrapped "
-                "coordinates relative to box_low in [0, L)."
+                f"Temporal binary positions at frame {frame_index} must use"
+                " wrapped coordinates relative to box_low in [0, L)."
             )
 
     target.parent.mkdir(parents=True, exist_ok=True)
     building = target.parent / f".{target.name}.building-{os.getpid()}"
     if building.exists():
-        raise FileExistsError(f"Interrupted temporal binary build already exists: {building}")
+        raise FileExistsError(
+            f"Interrupted temporal binary build already exists: {building}"
+        )
     building.mkdir()
     if consume_positions_file is not None:
-        if not isinstance(positions, np.memmap) or Path(positions.filename).resolve() != consume_positions_file.resolve():
-            raise ValueError('Consumed positions file must be the supplied positions memmap')
+        if (
+            not isinstance(positions, np.memmap)
+            or Path(positions.filename).resolve()
+            != consume_positions_file.resolve()
+        ):
+            raise ValueError(
+                'Consumed positions file must be the supplied positions memmap'
+            )
         positions.flush()
-        os.replace(consume_positions_file, building / _ARRAY_FILES["positions"])
+        os.replace(
+            consume_positions_file, building / _ARRAY_FILES["positions"]
+        )
     else:
         stored_positions = open_memmap(
             building / _ARRAY_FILES["positions"],
@@ -315,14 +385,20 @@ def write_temporal_lammps_binary(
         stored_positions.flush()
         del stored_positions
     for name in ("timesteps", "box_low", "box_high", "atom_ids", "atom_types"):
-        np.save(building / _ARRAY_FILES[name], typed_arrays[name], allow_pickle=False)
+        np.save(
+            building / _ARRAY_FILES[name],
+            typed_arrays[name],
+            allow_pickle=False,
+        )
     for filename in _ARRAY_FILES.values():
         with (building / filename).open("rb") as handle:
             os.fsync(handle.fileno())
 
     arrays: dict[str, dict[str, Any]] = {}
     for name, filename in _ARRAY_FILES.items():
-        values = np.load(building / filename, mmap_mode="r", allow_pickle=False)
+        values = np.load(
+            building / filename, mmap_mode="r", allow_pickle=False
+        )
         arrays[name] = _array_description(values, filename)
     manifest = {
         "format": FORMAT_NAME,
@@ -331,8 +407,9 @@ def write_temporal_lammps_binary(
         "created_at": datetime.now(timezone.utc).isoformat(),
         "storage_dtype": positions.dtype.name,
         "coordinate_convention": (
-            "positions are wrapped Cartesian coordinates in angstrom relative to box_low "
-            "in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again"
+            "positions are wrapped Cartesian coordinates in angstrom relative"
+            " to box_low in [0, box_high-box_low) before storage quantization;"
+            " decode to float32 and wrap again"
         ),
         "atom_count": atom_count,
         "frame_count": frame_count,
@@ -356,10 +433,14 @@ def binary_directory_sizes(path: str | Path) -> dict[str, int]:
     root = Path(path).expanduser().resolve()
     files = [entry for entry in root.iterdir() if entry.is_file()]
     if not files:
-        raise RuntimeError(f"Temporal binary directory contains no files: {root}")
+        raise RuntimeError(
+            f"Temporal binary directory contains no files: {root}"
+        )
     return {
         "apparent_bytes": sum(entry.stat().st_size for entry in files),
-        "allocated_bytes": sum(entry.stat().st_blocks * 512 for entry in files),
+        "allocated_bytes": sum(
+            entry.stat().st_blocks * 512 for entry in files
+        ),
     }
 
 

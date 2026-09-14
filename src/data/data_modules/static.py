@@ -36,8 +36,12 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
             if self.max_samples > 0:
                 max_train = min(self.max_samples, len(self.train_dataset))
                 max_val = min(self.max_samples, len(self.val_dataset))
-                self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
-                self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+                self.train_dataset = torch.utils.data.Subset(
+                    self.train_dataset, range(max_train)
+                )
+                self.val_dataset = torch.utils.data.Subset(
+                    self.val_dataset, range(max_val)
+                )
                 self.test_dataset = self.val_dataset
             self._datasets_initialized = True
             initialized_now = True
@@ -57,25 +61,54 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
         data_cfg = self.cfg.data
         ctx = "StaticPointCloudDataModule.data"
 
-        data_sources_raw = _cfg_get(data_cfg, "data_sources", default=None, context=ctx)
-        data_files_raw = _cfg_get(data_cfg, "data_files", default=None, context=ctx)
-        auto_cutoff_cfg = _to_container(_cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx))
-        sample_cache_cfg = _to_container(_cfg_get(data_cfg, "sample_cache", default=None, context=ctx))
+        data_sources_raw = _cfg_get(
+            data_cfg, "data_sources", default=None, context=ctx
+        )
+        data_files_raw = _cfg_get(
+            data_cfg, "data_files", default=None, context=ctx
+        )
+        auto_cutoff_cfg = _to_container(
+            _cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)
+        )
+        sample_cache_cfg = _to_container(
+            _cfg_get(data_cfg, "sample_cache", default=None, context=ctx)
+        )
         dataset_common_kwargs = dict(
             radius=_cfg_get(data_cfg, "radius", context=ctx),
             sample_type=_cfg_get(data_cfg, "sample_type", context=ctx),
-            overlap_fraction=_cfg_get(data_cfg, "overlap_fraction", default=0.0, context=ctx),
-            n_samples=_cfg_get(data_cfg, "n_samples", default=1000, context=ctx),
+            overlap_fraction=_cfg_get(
+                data_cfg, "overlap_fraction", default=0.0, context=ctx
+            ),
+            n_samples=_cfg_get(
+                data_cfg, "n_samples", default=1000, context=ctx
+            ),
             num_points=_cfg_get(data_cfg, "num_points", context=ctx),
             return_coords=self.return_coords,
-            drop_edge_samples=bool(_cfg_get(data_cfg, "drop_edge_samples", default=True, context=ctx)),
-            edge_drop_layers=_cfg_get(data_cfg, "edge_drop_layers", default=None, context=ctx),
-            pre_normalize=bool(_cfg_get(data_cfg, "pre_normalize", default=True, context=ctx)),
-            normalize=bool(_cfg_get(data_cfg, "normalize", default=True, context=ctx)),
-            sampling_method=_cfg_get(data_cfg, "sampling_method", default="drop_farthest", context=ctx),
+            drop_edge_samples=bool(
+                _cfg_get(
+                    data_cfg, "drop_edge_samples", default=True, context=ctx
+                )
+            ),
+            edge_drop_layers=_cfg_get(
+                data_cfg, "edge_drop_layers", default=None, context=ctx
+            ),
+            pre_normalize=bool(
+                _cfg_get(data_cfg, "pre_normalize", default=True, context=ctx)
+            ),
+            normalize=bool(
+                _cfg_get(data_cfg, "normalize", default=True, context=ctx)
+            ),
+            sampling_method=_cfg_get(
+                data_cfg,
+                "sampling_method",
+                default="drop_farthest",
+                context=ctx,
+            ),
             auto_cutoff_config=auto_cutoff_cfg,
             sample_cache_config=sample_cache_cfg,
-            atomic_context=_to_container(_cfg_get(data_cfg, "atomic_context", default=None, context=ctx)),
+            atomic_context=_to_container(
+                _cfg_get(data_cfg, "atomic_context", default=None, context=ctx)
+            ),
         )
 
         if data_sources_raw is not None:
@@ -88,7 +121,10 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
             file_list = _to_container(data_files_raw)
             data_path = _cfg_get(data_cfg, "data_path", context=ctx)
             if not data_path:
-                raise ValueError("data_path is required when using data_files (single-source mode)")
+                raise ValueError(
+                    "data_path is required when using data_files"
+                    " (single-source mode)"
+                )
             full_dataset = PointCloudDataset(
                 root=data_path,
                 data_files=file_list,
@@ -96,15 +132,20 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
             )
         else:
             raise ValueError(
-                "Data config must provide either 'data_sources' (multi-material) "
-                "or 'data_files' + 'data_path' (single-material)"
+                "Data config must provide either 'data_sources'"
+                " (multi-material) or 'data_files' + 'data_path'"
+                " (single-material)"
             )
 
-        train_ratio = float(_cfg_get(data_cfg, "train_ratio", default=0.8, context=ctx))
+        train_ratio = float(
+            _cfg_get(data_cfg, "train_ratio", default=0.8, context=ctx)
+        )
         train_size = int(train_ratio * len(full_dataset))
         val_size = len(full_dataset) - train_size
         if train_size <= 0 or val_size <= 0:
-            raise ValueError("Dataset split resulted in empty train or val set")
+            raise ValueError(
+                "Dataset split resulted in empty train or val set"
+            )
         train_ds, val_ds = _seeded_random_split(
             full_dataset,
             [train_size, val_size],

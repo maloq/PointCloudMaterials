@@ -36,7 +36,6 @@ from src.temporal_vamp.simulation_catalog import (
     discover_simulation_catalog,
 )
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_VERSION = 1
 EXPECTED_ATOM_COUNT = 70_304
@@ -83,7 +82,9 @@ class ShootingConfig:
 def _mapping(parent: dict[str, Any], key: str, path: Path) -> dict[str, Any]:
     value = parent.get(key)
     if not isinstance(value, dict):
-        raise TypeError(f"{path}: {key} must be a mapping, got {type(value).__name__}.")
+        raise TypeError(
+            f"{path}: {key} must be a mapping, got {type(value).__name__}."
+        )
     return value
 
 
@@ -106,16 +107,22 @@ def _repo_path(value: Any, *, context: str, path: Path) -> Path:
 
 def _positive_float(value: Any, *, context: str, path: Path) -> float:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
-        raise TypeError(f"{path}: {context} must be an explicit number, got {value!r}.")
+        raise TypeError(
+            f"{path}: {context} must be an explicit number, got {value!r}."
+        )
     result = float(value)
     if not math.isfinite(result) or result <= 0.0:
-        raise ValueError(f"{path}: {context} must be finite and > 0, got {result}.")
+        raise ValueError(
+            f"{path}: {context} must be finite and > 0, got {result}."
+        )
     return result
 
 
 def _positive_integer(value: Any, *, context: str, path: Path) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-        raise TypeError(f"{path}: {context} must be a positive integer, got {value!r}.")
+        raise TypeError(
+            f"{path}: {context} must be a positive integer, got {value!r}."
+        )
     return value
 
 
@@ -139,7 +146,9 @@ def _load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         document = json.load(handle)
     if not isinstance(document, dict):
-        raise TypeError(f"{path}: expected a JSON object, got {type(document).__name__}.")
+        raise TypeError(
+            f"{path}: expected a JSON object, got {type(document).__name__}."
+        )
     return document
 
 
@@ -147,9 +156,12 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
     config_path = Path(path).expanduser().resolve()
     with config_path.open("r", encoding="utf-8") as handle:
         from src.project_runtime.paths import resolve_config
+
         raw = resolve_config(yaml.safe_load(handle))
     if not isinstance(raw, dict):
-        raise TypeError(f"{config_path}: top-level configuration must be a mapping.")
+        raise TypeError(
+            f"{config_path}: top-level configuration must be a mapping."
+        )
     _reject_unknown(
         raw,
         {"campaign", "sources", "potential", "dynamics", "execution"},
@@ -175,19 +187,35 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
     )
     _reject_unknown(
         sources,
-        {"root", "campaign_globs", "temperatures_K", "expected_source_counts", "parent_offsets_ps"},
+        {
+            "root",
+            "campaign_globs",
+            "temperatures_K",
+            "expected_source_counts",
+            "parent_offsets_ps",
+        },
         context="sources",
         path=config_path,
     )
     _reject_unknown(
         potential,
-        {"library_file", "parameter_file", "library_sha256", "parameter_sha256"},
+        {
+            "library_file",
+            "parameter_file",
+            "library_sha256",
+            "parameter_sha256",
+        },
         context="potential",
         path=config_path,
     )
     _reject_unknown(
         dynamics,
-        {"timestep_fs", "duration_ps", "sample_interval_steps", "thermostat_time_fs"},
+        {
+            "timestep_fs",
+            "duration_ps",
+            "sample_interval_steps",
+            "thermostat_time_fs",
+        },
         context="dynamics",
         path=config_path,
     )
@@ -214,38 +242,60 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
     if not isinstance(campaign_globs, list) or not all(
         isinstance(value, str) and value for value in campaign_globs
     ):
-        raise TypeError(f"{config_path}: sources.campaign_globs must be a non-empty list of strings.")
+        raise TypeError(
+            f"{config_path}: sources.campaign_globs must be a non-empty list"
+            " of strings."
+        )
     if not campaign_globs:
-        raise ValueError(f"{config_path}: sources.campaign_globs cannot be empty.")
+        raise ValueError(
+            f"{config_path}: sources.campaign_globs cannot be empty."
+        )
     if not isinstance(temperatures, list) or not temperatures:
-        raise TypeError(f"{config_path}: sources.temperatures_K must be a non-empty list.")
+        raise TypeError(
+            f"{config_path}: sources.temperatures_K must be a non-empty list."
+        )
     temperatures_K = tuple(
-        _positive_float(value, context="sources.temperatures_K[]", path=config_path)
+        _positive_float(
+            value, context="sources.temperatures_K[]", path=config_path
+        )
         for value in temperatures
     )
     if len(set(temperatures_K)) != len(temperatures_K):
-        raise ValueError(f"{config_path}: sources.temperatures_K must be unique.")
+        raise ValueError(
+            f"{config_path}: sources.temperatures_K must be unique."
+        )
     if not isinstance(source_counts, dict) or set(source_counts) != {
         f"{temperature:g}" for temperature in temperatures_K
     }:
         raise ValueError(
-            f"{config_path}: sources.expected_source_counts keys must exactly match "
-            f"temperatures_K; got {source_counts!r}."
+            f"{config_path}: sources.expected_source_counts keys must exactly"
+            f" match temperatures_K; got {source_counts!r}."
         )
     expected_source_counts = {
-        key: _positive_integer(value, context=f"sources.expected_source_counts.{key}", path=config_path)
+        key: _positive_integer(
+            value,
+            context=f"sources.expected_source_counts.{key}",
+            path=config_path,
+        )
         for key, value in source_counts.items()
     }
     if not isinstance(offsets, list) or not offsets:
-        raise TypeError(f"{config_path}: sources.parent_offsets_ps must be a non-empty list.")
+        raise TypeError(
+            f"{config_path}: sources.parent_offsets_ps must be a non-empty"
+            " list."
+        )
     parent_offsets_ps = tuple(float(value) for value in offsets)
-    if any(not math.isfinite(value) or value >= 0.0 for value in parent_offsets_ps):
+    if any(
+        not math.isfinite(value) or value >= 0.0 for value in parent_offsets_ps
+    ):
         raise ValueError(
-            f"{config_path}: every parent offset must be finite and strictly before nucleation; "
-            f"got {parent_offsets_ps}."
+            f"{config_path}: every parent offset must be finite and strictly"
+            f" before nucleation; got {parent_offsets_ps}."
         )
     if len(set(parent_offsets_ps)) != len(parent_offsets_ps):
-        raise ValueError(f"{config_path}: sources.parent_offsets_ps must be unique.")
+        raise ValueError(
+            f"{config_path}: sources.parent_offsets_ps must be unique."
+        )
     if parent_indices_value is None:
         parent_indices = None
     else:
@@ -253,36 +303,53 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
             not isinstance(parent_indices_value, list)
             or not parent_indices_value
             or not all(
-                isinstance(value, int) and not isinstance(value, bool) and value >= 0
+                isinstance(value, int)
+                and not isinstance(value, bool)
+                and value >= 0
                 for value in parent_indices_value
             )
         ):
             raise TypeError(
-                f"{config_path}: campaign.parent_indices must be a non-empty list "
-                f"of nonnegative integers when provided."
+                f"{config_path}: campaign.parent_indices must be a non-empty"
+                " list of nonnegative integers when provided."
             )
         parent_indices = tuple(parent_indices_value)
         if len(set(parent_indices)) != len(parent_indices):
-            raise ValueError(f"{config_path}: campaign.parent_indices must be unique.")
-    if not isinstance(validation_seeds, list) or not validation_seeds or not all(
-        isinstance(value, int) and not isinstance(value, bool) for value in validation_seeds
+            raise ValueError(
+                f"{config_path}: campaign.parent_indices must be unique."
+            )
+    if (
+        not isinstance(validation_seeds, list)
+        or not validation_seeds
+        or not all(
+            isinstance(value, int) and not isinstance(value, bool)
+            for value in validation_seeds
+        )
     ):
         raise TypeError(
-            f"{config_path}: campaign.validation_source_velocity_seeds must be a non-empty integer list."
+            f"{config_path}: campaign.validation_source_velocity_seeds must be"
+            " a non-empty integer list."
         )
 
     sha_values = {}
     for key in ("library_sha256", "parameter_sha256"):
         value = potential.get(key)
-        if not isinstance(value, str) or len(value) != 64 or any(
-            character not in "0123456789abcdef" for character in value
+        if (
+            not isinstance(value, str)
+            or len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value)
         ):
-            raise TypeError(f"{config_path}: potential.{key} must be 64 lowercase hexadecimal characters.")
+            raise TypeError(
+                f"{config_path}: potential.{key} must be 64 lowercase"
+                " hexadecimal characters."
+            )
         sha_values[key] = value
     for key in ("partition", "time_limit", "memory"):
         value = execution.get(key)
         if not isinstance(value, str) or not value:
-            raise TypeError(f"{config_path}: execution.{key} must be a non-empty string.")
+            raise TypeError(
+                f"{config_path}: execution.{key} must be a non-empty string."
+            )
     launcher = execution.get("launcher")
     supported_launchers = {"srun_pmi2", "local_mpiexec"}
     if launcher not in supported_launchers:
@@ -293,45 +360,95 @@ def load_shooting_config(path: str | Path) -> ShootingConfig:
 
     result = ShootingConfig(
         config_path=config_path,
-        output_root=_repo_path(campaign.get("output_root"), context="campaign.output_root", path=config_path),
-        source_root=_repo_path(sources.get("root"), context="sources.root", path=config_path),
+        output_root=_repo_path(
+            campaign.get("output_root"),
+            context="campaign.output_root",
+            path=config_path,
+        ),
+        source_root=_repo_path(
+            sources.get("root"), context="sources.root", path=config_path
+        ),
         source_campaign_globs=tuple(campaign_globs),
         temperatures_K=temperatures_K,
         expected_source_counts=expected_source_counts,
         parent_offsets_ps=parent_offsets_ps,
         parent_indices=parent_indices,
-        branches_per_parent=_positive_integer(campaign.get("branches_per_parent"), context="campaign.branches_per_parent", path=config_path),
-        campaign_seed=_positive_integer(campaign.get("campaign_seed"), context="campaign.campaign_seed", path=config_path),
-        validation_source_velocity_seeds=tuple(int(value) for value in validation_seeds),
-        library_potential=_repo_path(potential.get("library_file"), context="potential.library_file", path=config_path),
-        parameter_potential=_repo_path(potential.get("parameter_file"), context="potential.parameter_file", path=config_path),
+        branches_per_parent=_positive_integer(
+            campaign.get("branches_per_parent"),
+            context="campaign.branches_per_parent",
+            path=config_path,
+        ),
+        campaign_seed=_positive_integer(
+            campaign.get("campaign_seed"),
+            context="campaign.campaign_seed",
+            path=config_path,
+        ),
+        validation_source_velocity_seeds=tuple(
+            int(value) for value in validation_seeds
+        ),
+        library_potential=_repo_path(
+            potential.get("library_file"),
+            context="potential.library_file",
+            path=config_path,
+        ),
+        parameter_potential=_repo_path(
+            potential.get("parameter_file"),
+            context="potential.parameter_file",
+            path=config_path,
+        ),
         library_sha256=sha_values["library_sha256"],
         parameter_sha256=sha_values["parameter_sha256"],
-        timestep_fs=_positive_float(dynamics.get("timestep_fs"), context="dynamics.timestep_fs", path=config_path),
-        duration_ps=_positive_float(dynamics.get("duration_ps"), context="dynamics.duration_ps", path=config_path),
-        sample_interval_steps=_positive_integer(dynamics.get("sample_interval_steps"), context="dynamics.sample_interval_steps", path=config_path),
-        thermostat_time_fs=_positive_float(dynamics.get("thermostat_time_fs"), context="dynamics.thermostat_time_fs", path=config_path),
-        mpi_ranks=_positive_integer(execution.get("mpi_ranks"), context="execution.mpi_ranks", path=config_path),
+        timestep_fs=_positive_float(
+            dynamics.get("timestep_fs"),
+            context="dynamics.timestep_fs",
+            path=config_path,
+        ),
+        duration_ps=_positive_float(
+            dynamics.get("duration_ps"),
+            context="dynamics.duration_ps",
+            path=config_path,
+        ),
+        sample_interval_steps=_positive_integer(
+            dynamics.get("sample_interval_steps"),
+            context="dynamics.sample_interval_steps",
+            path=config_path,
+        ),
+        thermostat_time_fs=_positive_float(
+            dynamics.get("thermostat_time_fs"),
+            context="dynamics.thermostat_time_fs",
+            path=config_path,
+        ),
+        mpi_ranks=_positive_integer(
+            execution.get("mpi_ranks"),
+            context="execution.mpi_ranks",
+            path=config_path,
+        ),
         launcher=launcher,
         partition=str(execution["partition"]),
         time_limit=str(execution["time_limit"]),
         memory=str(execution["memory"]),
-        array_concurrency=_positive_integer(execution.get("array_concurrency"), context="execution.array_concurrency", path=config_path),
+        array_concurrency=_positive_integer(
+            execution.get("array_concurrency"),
+            context="execution.array_concurrency",
+            path=config_path,
+        ),
     )
     if result.run_steps * result.timestep_fs / 1000.0 != result.duration_ps:
         raise ValueError(
-            f"{config_path}: duration_ps={result.duration_ps} is not an exact integer number "
-            f"of timestep_fs={result.timestep_fs} steps."
+            f"{config_path}: duration_ps={result.duration_ps} is not an exact"
+            f" integer number of timestep_fs={result.timestep_fs} steps."
         )
     if result.run_steps % result.sample_interval_steps != 0:
         raise ValueError(
-            f"{config_path}: run_steps={result.run_steps} must be divisible by "
-            f"sample_interval_steps={result.sample_interval_steps}."
+            f"{config_path}: run_steps={result.run_steps} must be divisible by"
+            f" sample_interval_steps={result.sample_interval_steps}."
         )
     if len(set(result.validation_source_velocity_seeds)) != len(
         result.validation_source_velocity_seeds
     ):
-        raise ValueError(f"{config_path}: validation source velocity seeds must be unique.")
+        raise ValueError(
+            f"{config_path}: validation source velocity seeds must be unique."
+        )
     return result
 
 
@@ -343,31 +460,38 @@ def select_parent_frame_indices(
 ) -> tuple[int, ...]:
     times = np.asarray(frame_times_ps, dtype=np.float64)
     if times.ndim != 1 or times.size < 2 or np.any(np.diff(times) <= 0.0):
-        raise ValueError(f"Expected strictly increasing 1D frame times, got shape={times.shape}.")
+        raise ValueError(
+            "Expected strictly increasing 1D frame times, got"
+            f" shape={times.shape}."
+        )
     indices: list[int] = []
     half_interval = float(np.min(np.diff(times))) / 2.0 + 1.0e-9
     for offset in offsets_ps:
         target = float(nucleation_time_ps) + float(offset)
         if target < times[0] or target > times[-1]:
             raise ValueError(
-                f"Parent target time {target} ps (nucleation={nucleation_time_ps}, "
-                f"offset={offset}) is outside [{times[0]}, {times[-1]}] ps."
+                f"Parent target time {target} ps"
+                f" (nucleation={nucleation_time_ps}, offset={offset}) is"
+                f" outside [{times[0]}, {times[-1]}] ps."
             )
         index = int(np.argmin(np.abs(times - target)))
         if abs(float(times[index]) - target) > half_interval:
             raise ValueError(
-                f"No source frame is sufficiently close to target={target} ps; nearest is "
-                f"frame {index} at {times[index]} ps."
+                f"No source frame is sufficiently close to target={target} ps;"
+                f" nearest is frame {index} at {times[index]} ps."
             )
         indices.append(index)
     if len(set(indices)) != len(indices):
         raise ValueError(
-            f"Parent offsets {offsets_ps} resolve to duplicate frame indices {indices}."
+            f"Parent offsets {offsets_ps} resolve to duplicate frame indices"
+            f" {indices}."
         )
     return tuple(indices)
 
 
-def branch_random_seeds(campaign_seed: int, parent_index: int, shot_index: int) -> tuple[int, int]:
+def branch_random_seeds(
+    campaign_seed: int, parent_index: int, shot_index: int
+) -> tuple[int, int]:
     state = np.random.SeedSequence(
         [int(campaign_seed), int(parent_index), int(shot_index)]
     ).generate_state(2, dtype=np.uint32)
@@ -428,7 +552,8 @@ def _source_npz(entry: CatalogEntry) -> Path:
     path = entry.trajectory_path.parent / "trajectory.npz"
     if not path.is_file():
         raise FileNotFoundError(
-            f"Catalog trajectory has no repository-produced coordinate archive: {path}."
+            "Catalog trajectory has no repository-produced coordinate"
+            f" archive: {path}."
         )
     return path
 
@@ -436,7 +561,8 @@ def _source_npz(entry: CatalogEntry) -> Path:
 def _source_split(entry: CatalogEntry, config: ShootingConfig) -> str:
     return (
         "validation"
-        if entry.metadata.velocity_seed in config.validation_source_velocity_seeds
+        if entry.metadata.velocity_seed
+        in config.validation_source_velocity_seeds
         else "train"
     )
 
@@ -452,7 +578,9 @@ def _selected_sources(config: ShootingConfig) -> tuple[CatalogEntry, ...]:
         require_periodic=True,
     )
     selected = tuple(
-        entry for entry in catalog if entry.metadata.temperature_K in config.temperatures_K
+        entry
+        for entry in catalog
+        if entry.metadata.temperature_K in config.temperatures_K
     )
     observed_counts = {
         f"{temperature:g}": sum(
@@ -462,13 +590,18 @@ def _selected_sources(config: ShootingConfig) -> tuple[CatalogEntry, ...]:
     }
     if observed_counts != config.expected_source_counts:
         raise RuntimeError(
-            f"Selected source counts do not match the checksum-bound campaign design: "
-            f"observed={observed_counts}, expected={config.expected_source_counts}."
+            "Selected source counts do not match the checksum-bound campaign"
+            f" design: observed={observed_counts},"
+            f" expected={config.expected_source_counts}."
         )
     for entry in selected:
-        if not entry.metadata.nucleation_observed or entry.metadata.nucleation_time_ps is None:
+        if (
+            not entry.metadata.nucleation_observed
+            or entry.metadata.nucleation_time_ps is None
+        ):
             raise RuntimeError(
-                f"Selected transition source has no detected nucleation event: {entry.run_id}."
+                "Selected transition source has no detected nucleation event:"
+                f" {entry.run_id}."
             )
     return tuple(sorted(selected, key=lambda item: item.run_id))
 
@@ -476,19 +609,22 @@ def _selected_sources(config: ShootingConfig) -> tuple[CatalogEntry, ...]:
 def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
     if config.output_root.exists():
         raise FileExistsError(
-            f"Shooting campaign output already exists and will not be overwritten: {config.output_root}."
+            "Shooting campaign output already exists and will not be"
+            f" overwritten: {config.output_root}."
         )
     for potential_path, expected_hash in (
         (config.library_potential, config.library_sha256),
         (config.parameter_potential, config.parameter_sha256),
     ):
         if not potential_path.is_file():
-            raise FileNotFoundError(f"Required 2NN-MEAM potential is absent: {potential_path}.")
+            raise FileNotFoundError(
+                f"Required 2NN-MEAM potential is absent: {potential_path}."
+            )
         observed_hash = _sha256(potential_path)
         if observed_hash != expected_hash:
             raise RuntimeError(
-                f"Potential checksum mismatch for {potential_path}: expected={expected_hash}, "
-                f"observed={observed_hash}."
+                f"Potential checksum mismatch for {potential_path}:"
+                f" expected={expected_hash}, observed={observed_hash}."
             )
 
     sources = _selected_sources(config)
@@ -499,19 +635,29 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
         else set(config.parent_indices)
     )
     invalid_parent_indices = sorted(
-        index for index in requested_parent_indices if index >= possible_parent_count
+        index
+        for index in requested_parent_indices
+        if index >= possible_parent_count
     )
     if invalid_parent_indices:
         raise IndexError(
-            f"Requested campaign.parent_indices are outside [0, {possible_parent_count}): "
-            f"{invalid_parent_indices}."
+            "Requested campaign.parent_indices are outside [0,"
+            f" {possible_parent_count}): {invalid_parent_indices}."
         )
     config.output_root.mkdir(parents=True)
     for name in ("parents", "branches", "potential", "slurm"):
         (config.output_root / name).mkdir()
-    shutil.copy2(config.library_potential, config.output_root / "potential" / config.library_potential.name)
-    shutil.copy2(config.parameter_potential, config.output_root / "potential" / config.parameter_potential.name)
-    shutil.copy2(config.config_path, config.output_root / "campaign_config.yaml")
+    shutil.copy2(
+        config.library_potential,
+        config.output_root / "potential" / config.library_potential.name,
+    )
+    shutil.copy2(
+        config.parameter_potential,
+        config.output_root / "potential" / config.parameter_potential.name,
+    )
+    shutil.copy2(
+        config.config_path, config.output_root / "campaign_config.yaml"
+    )
 
     parents: list[dict[str, Any]] = []
     source_documents: list[dict[str, Any]] = []
@@ -535,11 +681,17 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             required = {"step", "positions_A", "cell_vectors_A"}
             missing = sorted(required.difference(archive.files))
             if missing:
-                raise KeyError(f"{archive_path}: source archive is missing arrays {missing}.")
+                raise KeyError(
+                    f"{archive_path}: source archive is missing arrays"
+                    f" {missing}."
+                )
             steps = np.asarray(archive["step"], dtype=np.int64)
-            if not np.array_equal(steps, np.asarray(metadata.progress_steps, dtype=np.int64)):
+            if not np.array_equal(
+                steps, np.asarray(metadata.progress_steps, dtype=np.int64)
+            ):
                 raise RuntimeError(
-                    f"{archive_path}: coordinate steps disagree with crystallization progress metadata."
+                    f"{archive_path}: coordinate steps disagree with"
+                    " crystallization progress metadata."
                 )
             for offset_index, (offset_ps, frame_index) in enumerate(
                 zip(config.parent_offsets_ps, frame_indices)
@@ -547,19 +699,28 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
                 parent_index = source_parent_start + offset_index
                 if parent_index not in requested_parent_indices:
                     continue
-                positions_A = np.asarray(archive["positions_A"][frame_index], dtype=np.float64)
-                cell_A = np.asarray(archive["cell_vectors_A"][frame_index], dtype=np.float64)
-                if positions_A.shape != (EXPECTED_ATOM_COUNT, 3) or cell_A.shape != (3, 3):
+                positions_A = np.asarray(
+                    archive["positions_A"][frame_index], dtype=np.float64
+                )
+                cell_A = np.asarray(
+                    archive["cell_vectors_A"][frame_index], dtype=np.float64
+                )
+                if positions_A.shape != (
+                    EXPECTED_ATOM_COUNT,
+                    3,
+                ) or cell_A.shape != (3, 3):
                     raise RuntimeError(
-                        f"{archive_path}: invalid parent shapes at frame={frame_index}: "
-                        f"positions={positions_A.shape}, cell={cell_A.shape}."
+                        f"{archive_path}: invalid parent shapes at"
+                        f" frame={frame_index}: positions={positions_A.shape},"
+                        f" cell={cell_A.shape}."
                     )
                 off_diagonal = cell_A.copy()
                 off_diagonal[np.diag_indices(3)] = 0.0
                 if np.any(np.abs(off_diagonal) > 1.0e-10):
                     raise RuntimeError(
-                        f"{archive_path}: LAMMPS shooting currently requires the repository's "
-                        f"orthogonal cells; got cell={cell_A.tolist()}."
+                        f"{archive_path}: LAMMPS shooting currently requires"
+                        " the repository's orthogonal cells; got"
+                        f" cell={cell_A.tolist()}."
                     )
                 phase = f"pre_nucleation_{abs(offset_ps):g}ps"
                 parent_id = (
@@ -595,12 +756,18 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
                     "phase": phase,
                     "source_frame_index": frame_index,
                     "source_frame_step": int(steps[frame_index]),
-                    "source_frame_time_ps": float(metadata.progress_times_ps[frame_index]),
-                    "source_crystalline_fraction": float(metadata.crystalline_fraction[frame_index]),
+                    "source_frame_time_ps": float(
+                        metadata.progress_times_ps[frame_index]
+                    ),
+                    "source_crystalline_fraction": float(
+                        metadata.crystalline_fraction[frame_index]
+                    ),
                     "source_largest_crystalline_cluster_atoms": int(
                         metadata.largest_crystalline_cluster_atoms[frame_index]
                     ),
-                    "data_file": str(data_path.relative_to(config.output_root)),
+                    "data_file": str(
+                        data_path.relative_to(config.output_root)
+                    ),
                     "data_sha256": _sha256(data_path),
                 }
                 _write_json_atomic(parent_dir / "metadata.json", parent)
@@ -629,7 +796,10 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             )
             for seed in (velocity_seed, thermostat_seed):
                 if seed in observed_seeds:
-                    raise RuntimeError(f"Random-seed collision while preparing branch {branch_index}: {seed}.")
+                    raise RuntimeError(
+                        "Random-seed collision while preparing branch"
+                        f" {branch_index}: {seed}."
+                    )
                 observed_seeds.add(seed)
             branch_id = f"branch_{branch_index:04d}_{parent['parent_id']}_shot_{shot_index:02d}"
             branch_dir = config.output_root / "branches" / branch_id
@@ -673,12 +843,12 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
         "scientific_contract": {
             "exact_restart": False,
             "reason": (
-                "Archived sources contain positions and cells but not velocities or serialized "
-                "NPT thermostat/barostat state."
+                "Archived sources contain positions and cells but not"
+                " velocities or serialized NPT thermostat/barostat state."
             ),
             "interpretation": (
-                "Independent fixed-cell Langevin-NVT futures conditioned on each archived "
-                "position under the same 2NN-MEAM Hamiltonian."
+                "Independent fixed-cell Langevin-NVT futures conditioned on"
+                " each archived position under the same 2NN-MEAM Hamiltonian."
             ),
             "no_equilibration_after_branching": True,
         },
@@ -689,9 +859,13 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             "temperatures_K": list(config.temperatures_K),
             "parent_offsets_ps": list(config.parent_offsets_ps),
             "parent_indices": (
-                None if config.parent_indices is None else list(config.parent_indices)
+                None
+                if config.parent_indices is None
+                else list(config.parent_indices)
             ),
-            "validation_source_velocity_seeds": list(config.validation_source_velocity_seeds),
+            "validation_source_velocity_seeds": list(
+                config.validation_source_velocity_seeds
+            ),
         },
         "potential": {
             "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
@@ -706,7 +880,9 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             "duration_ps": config.duration_ps,
             "run_steps": config.run_steps,
             "sample_interval_steps": config.sample_interval_steps,
-            "sample_interval_ps": config.sample_interval_steps * config.timestep_fs / 1000.0,
+            "sample_interval_ps": (
+                config.sample_interval_steps * config.timestep_fs / 1000.0
+            ),
             "expected_frame_count": config.expected_frame_count,
             "thermostat_time_fs": config.thermostat_time_fs,
             "dump_columns": ["id", "type", "x", "y", "z", "vx", "vy", "vz"],
@@ -725,7 +901,9 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
             "parents": len(parents),
             "branches": len(branches),
             "branches_by_split": {
-                split: sum(branch["source_split"] == split for branch in branches)
+                split: sum(
+                    branch["source_split"] == split for branch in branches
+                )
                 for split in ("train", "validation")
             },
         },
@@ -848,7 +1026,9 @@ def _lammps_environment() -> dict[str, str]:
         }
     )
     environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
-        f":{environment['LD_LIBRARY_PATH']}" if environment.get("LD_LIBRARY_PATH") else ""
+        f":{environment['LD_LIBRARY_PATH']}"
+        if environment.get("LD_LIBRARY_PATH")
+        else ""
     )
     return environment
 
@@ -856,16 +1036,21 @@ def _lammps_environment() -> dict[str, str]:
 def _lammps_command(*, mpi_ranks: int, launcher: str) -> list[str]:
     lmp = Path(sys.prefix) / "bin" / "lmp"
     if not lmp.is_file():
-        raise FileNotFoundError(f"Required pointnet LAMMPS executable is absent: {lmp}.")
+        raise FileNotFoundError(
+            f"Required pointnet LAMMPS executable is absent: {lmp}."
+        )
     if launcher == "srun_pmi2":
         if "SLURM_JOB_ID" not in os.environ:
             raise RuntimeError(
-                "The srun_pmi2 launcher requires a Slurm allocation, but SLURM_JOB_ID is absent. "
-                "Submit slurm/run_branch.sbatch instead of running a production branch locally."
+                "The srun_pmi2 launcher requires a Slurm allocation, but"
+                " SLURM_JOB_ID is absent. Submit slurm/run_branch.sbatch"
+                " instead of running a production branch locally."
             )
         srun = shutil.which("srun")
         if srun is None:
-            raise FileNotFoundError("The configured srun_pmi2 launcher requires srun on PATH.")
+            raise FileNotFoundError(
+                "The configured srun_pmi2 launcher requires srun on PATH."
+            )
         return [
             srun,
             "--mpi=pmi2",
@@ -882,13 +1067,15 @@ def _lammps_command(*, mpi_ranks: int, launcher: str) -> list[str]:
     if launcher == "local_mpiexec":
         if "SLURM_JOB_ID" in os.environ:
             raise RuntimeError(
-                "The local_mpiexec launcher refuses to run inside a Slurm allocation. "
-                f"Detected SLURM_JOB_ID={os.environ['SLURM_JOB_ID']!r}."
+                "The local_mpiexec launcher refuses to run inside a Slurm"
+                " allocation. Detected"
+                f" SLURM_JOB_ID={os.environ['SLURM_JOB_ID']!r}."
             )
         mpiexec = shutil.which("mpiexec")
         if mpiexec is None:
             raise FileNotFoundError(
-                "The local_mpiexec launcher requires the pointnet mpiexec executable on PATH."
+                "The local_mpiexec launcher requires the pointnet mpiexec"
+                " executable on PATH."
             )
         return [
             mpiexec,
@@ -916,8 +1103,9 @@ def _materialize_missing_branch_input(
         missing = [path.name for path in required if not path.is_file()]
         if missing:
             raise RuntimeError(
-                f"Incomplete branch input directory {branch_dir}: missing {missing}. "
-                "Inspect it before resubmitting; existing directories are never repaired in place."
+                f"Incomplete branch input directory {branch_dir}: missing"
+                f" {missing}. Inspect it before resubmitting; existing"
+                " directories are never repaired in place."
             )
         return branch_dir
 
@@ -955,26 +1143,37 @@ def run_branch(
         raise TypeError(f"{root / 'manifest.json'}: branches must be a list.")
     index = int(task_index)
     if index < 0 or index >= len(branches):
-        raise IndexError(f"task_index={index} is outside [0, {len(branches)}).")
+        raise IndexError(
+            f"task_index={index} is outside [0, {len(branches)})."
+        )
     branch = branches[index]
     branch_dir = root / branch["branch_dir"]
     outcome_path = branch_dir / "outcome.json"
     if outcome_path.is_file():
         outcome = _load_json(outcome_path)
         if outcome.get("state") != "complete":
-            raise RuntimeError(f"Existing outcome is not complete: {outcome_path}.")
-        print(f"Branch {branch['branch_id']} is already complete; leaving artifacts unchanged.")
+            raise RuntimeError(
+                f"Existing outcome is not complete: {outcome_path}."
+            )
+        print(
+            f"Branch {branch['branch_id']} is already complete; leaving"
+            " artifacts unchanged."
+        )
         return outcome
     branch_dir = _materialize_missing_branch_input(root, manifest, branch)
     partial = [
         path.name
-        for path in (branch_dir / "trajectory.lammpstrj", branch_dir / "final.restart.bin")
+        for path in (
+            branch_dir / "trajectory.lammpstrj",
+            branch_dir / "final.restart.bin",
+        )
         if path.exists()
     ]
     if partial:
         raise RuntimeError(
-            f"Branch {branch['branch_id']} has partial artifacts {partial} but no complete outcome. "
-            f"Inspect {branch_dir} before explicitly removing or archiving the partial run."
+            f"Branch {branch['branch_id']} has partial artifacts {partial} but"
+            f" no complete outcome. Inspect {branch_dir} before explicitly"
+            " removing or archiving the partial run."
         )
     status_path = branch_dir / "status.json"
     _write_json_atomic(
@@ -990,7 +1189,8 @@ def run_branch(
     )
     if (launcher_override is None) != (mpi_ranks_override is None):
         raise ValueError(
-            "launcher_override and mpi_ranks_override must be provided together."
+            "launcher_override and mpi_ranks_override must be provided"
+            " together."
         )
     manifest_mpi_ranks = int(manifest["execution"]["mpi_ranks_per_branch"])
     manifest_launcher = str(manifest["execution"]["launcher"])
@@ -1000,12 +1200,14 @@ def run_branch(
     else:
         if launcher_override != "local_mpiexec":
             raise ValueError(
-                "The explicit execution override is restricted to launcher='local_mpiexec'; "
-                f"got {launcher_override!r}."
+                "The explicit execution override is restricted to"
+                f" launcher='local_mpiexec'; got {launcher_override!r}."
             )
         mpi_ranks = int(mpi_ranks_override)
         if mpi_ranks <= 0:
-            raise ValueError(f"mpi_ranks_override must be positive, got {mpi_ranks}.")
+            raise ValueError(
+                f"mpi_ranks_override must be positive, got {mpi_ranks}."
+            )
         launcher = launcher_override
     command = _lammps_command(mpi_ranks=mpi_ranks, launcher=launcher)
     running_status = _load_json(status_path)
@@ -1048,7 +1250,8 @@ def run_branch(
     for artifact in (trajectory, restart, branch_dir / "lammps.log"):
         if not artifact.is_file() or artifact.stat().st_size == 0:
             raise RuntimeError(
-                f"LAMMPS reported success but required artifact is absent or empty: {artifact}."
+                "LAMMPS reported success but required artifact is absent or"
+                f" empty: {artifact}."
             )
     scan = TemporalLAMMPSDumpDataset.scan_dump_file(trajectory)
     expected_frame_count = int(manifest["protocol"]["expected_frame_count"])
@@ -1061,13 +1264,15 @@ def run_branch(
     if (
         scan.num_atoms != int(manifest["atom_count"])
         or scan.frame_count != expected_frame_count
-        or tuple(scan.atom_columns) != tuple(manifest["protocol"]["dump_columns"])
+        or tuple(scan.atom_columns)
+        != tuple(manifest["protocol"]["dump_columns"])
         or not np.array_equal(scan.timesteps, expected_steps)
     ):
         raise RuntimeError(
-            f"Completed dump validation failed for {trajectory}: atoms={scan.num_atoms}, "
-            f"frames={scan.frame_count}, columns={scan.atom_columns}, "
-            f"timesteps=[{scan.timesteps[0]}, {scan.timesteps[-1]}]."
+            f"Completed dump validation failed for {trajectory}:"
+            f" atoms={scan.num_atoms}, frames={scan.frame_count},"
+            f" columns={scan.atom_columns}, timesteps=[{scan.timesteps[0]},"
+            f" {scan.timesteps[-1]}]."
         )
     outcome = {
         **branch,
@@ -1113,10 +1318,12 @@ def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
         outcomes.append(outcome)
     if missing:
         raise RuntimeError(
-            f"Cannot summarize an incomplete campaign: {len(missing)} branches have no "
-            f"complete outcome; first missing={missing[:10]}."
+            f"Cannot summarize an incomplete campaign: {len(missing)} branches"
+            f" have no complete outcome; first missing={missing[:10]}."
         )
-    elapsed = np.asarray([outcome["elapsed_seconds"] for outcome in outcomes], dtype=np.float64)
+    elapsed = np.asarray(
+        [outcome["elapsed_seconds"] for outcome in outcomes], dtype=np.float64
+    )
     summary = {
         "schema_version": SCHEMA_VERSION,
         "state": "complete",
@@ -1124,7 +1331,8 @@ def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
         "branch_count": len(outcomes),
         "branch_counts_by_temperature_and_split": {
             f"{temperature:g}K_{split}": sum(
-                outcome["temperature_K"] == temperature and outcome["source_split"] == split
+                outcome["temperature_K"] == temperature
+                and outcome["source_split"] == split
                 for outcome in outcomes
             )
             for temperature in manifest["source_config"]["temperatures_K"]
@@ -1179,8 +1387,9 @@ def run_local_campaign(
     manifest = _load_json(root / "manifest.json")
     if manifest["execution"]["launcher"] != "local_mpiexec":
         raise RuntimeError(
-            f"Local campaign execution requires launcher='local_mpiexec', got "
-            f"{manifest['execution']['launcher']!r} in {root / 'manifest.json'}."
+            "Local campaign execution requires launcher='local_mpiexec', got"
+            f" {manifest['execution']['launcher']!r} in"
+            f" {root / 'manifest.json'}."
         )
     if "SLURM_JOB_ID" in os.environ:
         raise RuntimeError(
@@ -1189,10 +1398,14 @@ def run_local_campaign(
         )
     branches = manifest["branches"]
     if not isinstance(branches, list) or not branches:
-        raise TypeError(f"{root / 'manifest.json'}: branches must be a non-empty list.")
+        raise TypeError(
+            f"{root / 'manifest.json'}: branches must be a non-empty list."
+        )
     start = int(start_index)
     if start < 0 or start > len(branches):
-        raise IndexError(f"start_index={start} is outside [0, {len(branches)}].")
+        raise IndexError(
+            f"start_index={start} is outside [0, {len(branches)}]."
+        )
 
     lock_path = root / "local_campaign.lock"
     with lock_path.open("a+", encoding="utf-8") as lock:
@@ -1200,7 +1413,8 @@ def run_local_campaign(
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as error:
             raise RuntimeError(
-                f"Another local campaign driver holds the execution lock: {lock_path}."
+                "Another local campaign driver holds the execution lock:"
+                f" {lock_path}."
             ) from error
         started_at = datetime.now(timezone.utc).isoformat()
         lock.seek(0)
@@ -1254,7 +1468,9 @@ def run_local_campaign(
             raise
 
 
-def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, Any]:
+def submit_next_wave(
+    campaign_root: str | Path, start_index: int
+) -> dict[str, Any]:
     """Submit one QOS-sized array wave and its dependent successor controller.
 
     The successor uses ``afterany`` so an isolated node or launcher failure cannot
@@ -1265,10 +1481,14 @@ def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, A
     manifest = _load_json(root / "manifest.json")
     branches = manifest["branches"]
     if not isinstance(branches, list) or not branches:
-        raise TypeError(f"{root / 'manifest.json'}: branches must be a non-empty list.")
+        raise TypeError(
+            f"{root / 'manifest.json'}: branches must be a non-empty list."
+        )
     start = int(start_index)
     if start < 0 or start >= len(branches):
-        raise IndexError(f"start_index={start} is outside [0, {len(branches)}).")
+        raise IndexError(
+            f"start_index={start} is outside [0, {len(branches)})."
+        )
     wave_size = int(manifest["execution"]["array_concurrency"])
     stop = min(start + wave_size - 1, len(branches) - 1)
     array_spec = f"{start}-{stop}%{wave_size}"
@@ -1286,8 +1506,9 @@ def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, A
     array_job_id = array_submission.stdout.strip()
     if not array_job_id.isdigit():
         raise RuntimeError(
-            f"Slurm returned an invalid array job ID for wave {array_spec}: "
-            f"stdout={array_submission.stdout!r}, stderr={array_submission.stderr!r}."
+            f"Slurm returned an invalid array job ID for wave {array_spec}:"
+            f" stdout={array_submission.stdout!r},"
+            f" stderr={array_submission.stderr!r}."
         )
     if stop + 1 < len(branches):
         successor_kind = "controller"
@@ -1319,8 +1540,9 @@ def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, A
     successor_job_id = successor_submission.stdout.strip()
     if not successor_job_id.isdigit():
         raise RuntimeError(
-            f"Slurm returned an invalid {successor_kind} job ID after wave {array_spec}: "
-            f"stdout={successor_submission.stdout!r}, stderr={successor_submission.stderr!r}."
+            f"Slurm returned an invalid {successor_kind} job ID after wave"
+            f" {array_spec}: stdout={successor_submission.stdout!r},"
+            f" stderr={successor_submission.stderr!r}."
         )
     record = {
         "submitted_at": datetime.now(timezone.utc).isoformat(),

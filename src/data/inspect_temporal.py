@@ -25,17 +25,25 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--dump-file",
         required=True,
-        help="Path to the LAMMPS dump file (for example datasets/dump_Pure_Al_500K.pos).",
+        help=(
+            "Path to the LAMMPS dump file (for example"
+            " datasets/dump_Pure_Al_500K.pos)."
+        ),
     )
     parser.add_argument(
         "--build-cache",
         action="store_true",
-        help="Instantiate TemporalLAMMPSDumpDataset after inspection to build/reuse the persistent cache.",
+        help=(
+            "Instantiate TemporalLAMMPSDumpDataset after inspection to"
+            " build/reuse the persistent cache."
+        ),
     )
     parser.add_argument(
         "--cache-dir",
         default=None,
-        help="Optional cache directory override. Default: <dump>.temporal_cache",
+        help=(
+            "Optional cache directory override. Default: <dump>.temporal_cache"
+        ),
     )
     parser.add_argument("--sequence-length", type=int, default=4)
     parser.add_argument("--num-points", type=int, default=128)
@@ -75,7 +83,9 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--rebuild-cache",
         action="store_true",
-        help="Force a rebuild of the cache, ignoring any existing valid cache.",
+        help=(
+            "Force a rebuild of the cache, ignoring any existing valid cache."
+        ),
     )
     return parser
 

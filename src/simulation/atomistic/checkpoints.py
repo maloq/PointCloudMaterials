@@ -13,7 +13,6 @@ from ase.io import read, write
 from .provenance import ExecutionProvenance
 from .simulation import ThermodynamicTrace, validate_thermodynamic_trace
 
-
 CHECKPOINT_SCHEMA_VERSION = 2
 
 
@@ -74,7 +73,8 @@ class CheckpointStore:
                 observed_manifest = json.load(handle)
             if observed_manifest != expected_manifest:
                 raise RuntimeError(
-                    f"Checkpoint manifest does not match the active configuration: {manifest_path}."
+                    "Checkpoint manifest does not match the active"
+                    f" configuration: {manifest_path}."
                 )
         else:
             temporary = manifest_path.with_suffix(".json.tmp")
@@ -86,13 +86,16 @@ class CheckpointStore:
         atoms_path = self.directory / f"{stage}.traj"
         trace_path = self.directory / f"{stage}.trace.npz"
         metadata_path = self.directory / f"{stage}.json"
-        existing = [path.exists() for path in (atoms_path, trace_path, metadata_path)]
+        existing = [
+            path.exists() for path in (atoms_path, trace_path, metadata_path)
+        ]
         if not any(existing):
             return None
         if not all(existing):
             raise RuntimeError(
-                f"Incomplete checkpoint for stage={stage!r} in {self.directory}; "
-                f"atoms={existing[0]}, trace={existing[1]}, metadata={existing[2]}."
+                f"Incomplete checkpoint for stage={stage!r} in"
+                f" {self.directory}; atoms={existing[0]}, trace={existing[1]},"
+                f" metadata={existing[2]}."
             )
         atoms = read(atoms_path, format="traj")
         with np.load(trace_path) as stored:
@@ -101,7 +104,9 @@ class CheckpointStore:
                 temperature_K=stored["temperature_K"],
                 pressure_GPa=stored["pressure_GPa"],
                 volume_A3=stored["volume_A3"],
-                potential_energy_eV_per_atom=stored["potential_energy_eV_per_atom"],
+                potential_energy_eV_per_atom=stored[
+                    "potential_energy_eV_per_atom"
+                ],
                 positions_A=stored["positions_A"],
                 cell_vectors_A=stored["cell_vectors_A"],
             )
@@ -117,7 +122,9 @@ class CheckpointStore:
         )
         with metadata_path.open("r", encoding="utf-8") as handle:
             metadata = json.load(handle)
-        return SimulationCheckpoint(atoms=atoms, trace=trace, metadata=metadata)
+        return SimulationCheckpoint(
+            atoms=atoms, trace=trace, metadata=metadata
+        )
 
     def save(
         self,
@@ -130,12 +137,16 @@ class CheckpointStore:
         validate_thermodynamic_trace(
             trace,
             atom_count=len(atoms),
-            context=f"checkpoint stage={stage!r} before save to {self.directory}",
+            context=(
+                f"checkpoint stage={stage!r} before save to {self.directory}"
+            ),
         )
         _validate_checkpoint_endpoint(
             atoms,
             trace,
-            context=f"checkpoint stage={stage!r} before save to {self.directory}",
+            context=(
+                f"checkpoint stage={stage!r} before save to {self.directory}"
+            ),
         )
         atoms_path = self.directory / f"{stage}.traj"
         trace_path = self.directory / f"{stage}.trace.npz"
@@ -172,13 +183,14 @@ def _validate_checkpoint_endpoint(
     trace_cell = np.asarray(trace.cell_vectors_A[-1], dtype=np.float64)
     if not np.allclose(atom_cell, trace_cell, rtol=1.0e-12, atol=1.0e-10):
         raise RuntimeError(
-            f"{context}: checkpoint .traj cell does not match the last trace cell; "
+            f"{context}: checkpoint .traj cell does not match the last trace"
+            " cell; "
             f"maximum_absolute_difference_A={float(np.max(np.abs(atom_cell - trace_cell))):.6g}."
         )
     if not bool(np.all(atoms.pbc)):
         raise RuntimeError(
-            f"{context}: checkpoint endpoint must be periodic in all axes, got "
-            f"pbc={atoms.pbc.tolist()}."
+            f"{context}: checkpoint endpoint must be periodic in all axes, got"
+            f" pbc={atoms.pbc.tolist()}."
         )
     atom_positions = np.asarray(atoms.positions, dtype=np.float64)
     trace_positions = np.asarray(trace.positions_A[-1], dtype=np.float64)
@@ -204,9 +216,9 @@ def _validate_checkpoint_endpoint(
     endpoint_tolerance_A = 8.0 * position_precision * coordinate_scale_A
     if maximum_difference_A > endpoint_tolerance_A:
         raise RuntimeError(
-            f"{context}: checkpoint .traj positions do not match the last trace positions "
-            "under the periodic minimum-image convention; "
-            f"maximum_atom_displacement_A={maximum_difference_A:.6g}, "
-            f"trace_dtype={trace_position_dtype}, "
-            f"precision_tolerance_A={endpoint_tolerance_A:.6g}."
+            f"{context}: checkpoint .traj positions do not match the last"
+            " trace positions under the periodic minimum-image convention;"
+            f" maximum_atom_displacement_A={maximum_difference_A:.6g},"
+            f" trace_dtype={trace_position_dtype},"
+            f" precision_tolerance_A={endpoint_tolerance_A:.6g}."
         )

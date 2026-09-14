@@ -31,7 +31,10 @@ from .homogeneous_liquid_source import (
     generate_homogeneous_liquid_source,
 )
 from .transition_config import TransitionConfig, load_transition_config
-from .transition_generator import TransitionGenerationResult, generate_transition_dataset
+from .transition_generator import (
+    TransitionGenerationResult,
+    generate_transition_dataset,
+)
 from .transition_rdf import add_phase_rdf_to_transition_dataset
 
 __all__ = [

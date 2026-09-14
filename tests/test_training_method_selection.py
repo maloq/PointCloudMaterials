@@ -7,16 +7,20 @@ from src.training_methods.registry import resolve_training_method
 
 @pytest.mark.parametrize(
     "name,expected,analysis",
-    [("vicreg", "VICRegModule", True),
-     ("visreg", "VICRegModule", True),
-     ("contrastive", "VICRegModule", True),
-     ("temporal_ssl", "TemporalSSLModule", False),
-     ("temporal_vicreg", "TemporalSSLModule", False)],
+    [
+        ("vicreg", "VICRegModule", True),
+        ("visreg", "VICRegModule", True),
+        ("contrastive", "VICRegModule", True),
+        ("temporal_ssl", "TemporalSSLModule", False),
+        ("temporal_vicreg", "TemporalSSLModule", False),
+    ],
 )
 def test_method_aliases_and_analysis(name, expected, analysis):
-    for cfg in (SimpleNamespace(model_type=name),
-                SimpleNamespace(training_method=name),
-                SimpleNamespace(method={"name": name})):
+    for cfg in (
+        SimpleNamespace(model_type=name),
+        SimpleNamespace(training_method=name),
+        SimpleNamespace(method={"name": name}),
+    ):
         module, policy = resolve_training_method(cfg)
         assert module.__name__ == expected
         assert policy is analysis

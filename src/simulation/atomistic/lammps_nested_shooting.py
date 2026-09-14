@@ -41,7 +41,6 @@ from src.temporal_vamp.simulation_catalog import (
     discover_simulation_catalog,
 )
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_VERSION = 1
 EXPECTED_ATOM_COUNT = 70_304
@@ -121,7 +120,9 @@ def _load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         document = json.load(handle)
     if not isinstance(document, dict):
-        raise TypeError(f"{path}: expected a JSON object, got {type(document).__name__}.")
+        raise TypeError(
+            f"{path}: expected a JSON object, got {type(document).__name__}."
+        )
     return document
 
 
@@ -152,7 +153,9 @@ def _array_sha256(values: np.ndarray) -> str:
 
 def _resolve_path(value: object, *, context: str, config_path: Path) -> Path:
     if not isinstance(value, str) or not value:
-        raise TypeError(f"{config_path}: {context} must be a nonempty path string.")
+        raise TypeError(
+            f"{config_path}: {context} must be a nonempty path string."
+        )
     path = Path(value).expanduser()
     if not path.is_absolute():
         path = REPOSITORY_ROOT / path
@@ -161,20 +164,32 @@ def _resolve_path(value: object, *, context: str, config_path: Path) -> Path:
 
 def _positive_int(value: object, *, context: str, config_path: Path) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-        raise TypeError(f"{config_path}: {context} must be a positive integer, got {value!r}.")
+        raise TypeError(
+            f"{config_path}: {context} must be a positive integer, got"
+            f" {value!r}."
+        )
     return value
 
 
-def _positive_float(value: object, *, context: str, config_path: Path) -> float:
+def _positive_float(
+    value: object, *, context: str, config_path: Path
+) -> float:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
-        raise TypeError(f"{config_path}: {context} must be a number, got {value!r}.")
+        raise TypeError(
+            f"{config_path}: {context} must be a number, got {value!r}."
+        )
     result = float(value)
     if not math.isfinite(result) or result <= 0.0:
-        raise ValueError(f"{config_path}: {context} must be finite and positive, got {result}.")
+        raise ValueError(
+            f"{config_path}: {context} must be finite and positive, got"
+            f" {result}."
+        )
     return result
 
 
-def _required_mapping(parent: dict[str, Any], key: str, path: Path) -> dict[str, Any]:
+def _required_mapping(
+    parent: dict[str, Any], key: str, path: Path
+) -> dict[str, Any]:
     value = parent.get(key)
     if not isinstance(value, dict):
         raise TypeError(f"{path}: {key} must be a mapping.")
@@ -186,7 +201,9 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
     with config_path.open("r", encoding="utf-8") as handle:
         raw = yaml.safe_load(handle)
     if not isinstance(raw, dict):
-        raise TypeError(f"{config_path}: top-level configuration must be a mapping.")
+        raise TypeError(
+            f"{config_path}: top-level configuration must be a mapping."
+        )
     expected_top = {
         "campaign",
         "sources",
@@ -199,8 +216,8 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
     }
     if set(raw) != expected_top:
         raise KeyError(
-            f"{config_path}: top-level keys must be exactly {sorted(expected_top)}, "
-            f"got {sorted(raw)}."
+            f"{config_path}: top-level keys must be exactly"
+            f" {sorted(expected_top)}, got {sorted(raw)}."
         )
     campaign = _required_mapping(raw, "campaign", config_path)
     sources = _required_mapping(raw, "sources", config_path)
@@ -213,21 +230,28 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
 
     source_group_values = sources.get("groups")
     if not isinstance(source_group_values, list) or not source_group_values:
-        raise TypeError(f"{config_path}: sources.groups must be a nonempty list.")
+        raise TypeError(
+            f"{config_path}: sources.groups must be a nonempty list."
+        )
     source_groups: list[SourceGroup] = []
     for index, value in enumerate(source_group_values):
-        if not isinstance(value, dict) or set(value) != {"root", "campaign_globs"}:
+        if not isinstance(value, dict) or set(value) != {
+            "root",
+            "campaign_globs",
+        }:
             raise TypeError(
-                f"{config_path}: sources.groups[{index}] must contain only root and "
-                "campaign_globs."
+                f"{config_path}: sources.groups[{index}] must contain only"
+                " root and campaign_globs."
             )
         globs = value["campaign_globs"]
-        if not isinstance(globs, list) or not globs or not all(
-            isinstance(item, str) and item for item in globs
+        if (
+            not isinstance(globs, list)
+            or not globs
+            or not all(isinstance(item, str) and item for item in globs)
         ):
             raise TypeError(
-                f"{config_path}: sources.groups[{index}].campaign_globs must be a "
-                "nonempty string list."
+                f"{config_path}: sources.groups[{index}].campaign_globs must"
+                " be a nonempty string list."
             )
         source_groups.append(
             SourceGroup(
@@ -241,8 +265,13 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
         )
 
     temperature_values = sources.get("temperatures")
-    expected_temperature_keys = {f"{temperature:g}" for temperature in TEMPERATURES_K}
-    if not isinstance(temperature_values, dict) or set(temperature_values) != expected_temperature_keys:
+    expected_temperature_keys = {
+        f"{temperature:g}" for temperature in TEMPERATURES_K
+    }
+    if (
+        not isinstance(temperature_values, dict)
+        or set(temperature_values) != expected_temperature_keys
+    ):
         raise KeyError(
             f"{config_path}: sources.temperatures keys must be exactly "
             f"{sorted(expected_temperature_keys)}."
@@ -258,15 +287,17 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
         }
         if not isinstance(value, dict) or set(value) != required_keys:
             raise KeyError(
-                f"{config_path}: sources.temperatures.{key} keys must be exactly "
-                f"{sorted(required_keys)}."
+                f"{config_path}: sources.temperatures.{key} keys must be"
+                f" exactly {sorted(required_keys)}."
             )
         temperatures.append(
             TemperatureProtocol(
                 temperature_K=temperature_K,
                 expected_source_count=_positive_int(
                     value["expected_source_count"],
-                    context=f"sources.temperatures.{key}.expected_source_count",
+                    context=(
+                        f"sources.temperatures.{key}.expected_source_count"
+                    ),
                     config_path=config_path,
                 ),
                 expected_basin_a_max_cluster_atoms=_positive_int(
@@ -292,7 +323,8 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
     )
     if calibration_quantile >= 1.0:
         raise ValueError(
-            f"{config_path}: selection.liquid_calibration_quantile must be below 1."
+            f"{config_path}: selection.liquid_calibration_quantile must be"
+            " below 1."
         )
     ptm_rmsd_cutoff = _positive_float(
         basins.get("ptm_rmsd_cutoff"),
@@ -300,15 +332,22 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
         config_path=config_path,
     )
     if ptm_rmsd_cutoff > 1.0:
-        raise ValueError(f"{config_path}: basins.ptm_rmsd_cutoff is normalized and must be <= 1.")
+        raise ValueError(
+            f"{config_path}: basins.ptm_rmsd_cutoff is normalized and must be"
+            " <= 1."
+        )
 
     hash_values: dict[str, str] = {}
     for key in ("library_sha256", "parameter_sha256"):
         value = potential.get(key)
-        if not isinstance(value, str) or len(value) != 64 or any(
-            character not in "0123456789abcdef" for character in value
+        if (
+            not isinstance(value, str)
+            or len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value)
         ):
-            raise TypeError(f"{config_path}: potential.{key} must be lowercase SHA-256.")
+            raise TypeError(
+                f"{config_path}: potential.{key} must be lowercase SHA-256."
+            )
         hash_values[key] = value
 
     result = NestedShootingConfig(
@@ -415,22 +454,35 @@ def load_nested_shooting_config(path: str | Path) -> NestedShootingConfig:
     )
     if not result.partition or not result.time_limit or not result.memory:
         raise ValueError(f"{config_path}: execution strings cannot be empty.")
-    if abs(result.monitor_interval_steps * result.timestep_fs / 1000.0 - result.monitor_interval_ps) > 1e-12:
+    if (
+        abs(
+            result.monitor_interval_steps * result.timestep_fs / 1000.0
+            - result.monitor_interval_ps
+        )
+        > 1e-12
+    ):
         raise ValueError(
-            f"{config_path}: monitor_interval_ps={result.monitor_interval_ps} is not an "
-            f"integer number of timestep_fs={result.timestep_fs} steps."
+            f"{config_path}:"
+            f" monitor_interval_ps={result.monitor_interval_ps} is not an"
+            f" integer number of timestep_fs={result.timestep_fs} steps."
         )
     for protocol in result.temperatures:
-        run_steps = int(round(protocol.maximum_duration_ps * 1000.0 / result.timestep_fs))
-        if run_steps * result.timestep_fs / 1000.0 != protocol.maximum_duration_ps:
+        run_steps = int(
+            round(protocol.maximum_duration_ps * 1000.0 / result.timestep_fs)
+        )
+        if (
+            run_steps * result.timestep_fs / 1000.0
+            != protocol.maximum_duration_ps
+        ):
             raise ValueError(
                 f"{config_path}: {protocol.maximum_duration_ps} ps at "
                 f"{protocol.temperature_K:g} K is not an integer step count."
             )
         if run_steps % result.monitor_interval_steps != 0:
             raise ValueError(
-                f"{config_path}: maximum duration at {protocol.temperature_K:g} K must "
-                "contain a whole number of monitor intervals."
+                f"{config_path}: maximum duration at"
+                f" {protocol.temperature_K:g} K must contain a whole number of"
+                " monitor intervals."
             )
     return result
 
@@ -482,29 +534,37 @@ def multirate_output_steps(
     maximum_step = int(round(maximum_duration_ps * 1000.0 / timestep_fs))
     if not steps or steps[0] != 0 or steps[-1] != maximum_step:
         raise RuntimeError(
-            f"Multirate schedule does not span [0, {maximum_step}]: first/last="
-            f"{steps[:1]}/{steps[-1:]}."
+            f"Multirate schedule does not span [0, {maximum_step}]:"
+            f" first/last={steps[:1]}/{steps[-1:]}."
         )
     if any(next_step <= step for step, next_step in zip(steps, steps[1:])):
-        raise RuntimeError(f"Multirate output steps are not strictly increasing: {steps}.")
+        raise RuntimeError(
+            f"Multirate output steps are not strictly increasing: {steps}."
+        )
     return steps
 
 
 def _source_npz(entry: CatalogEntry) -> Path:
     path = entry.trajectory_path.parent / "trajectory.npz"
     if not path.is_file():
-        raise FileNotFoundError(f"Source catalog entry has no trajectory.npz: {path}")
+        raise FileNotFoundError(
+            f"Source catalog entry has no trajectory.npz: {path}"
+        )
     return path
 
 
-def _discover_sources(config: NestedShootingConfig) -> tuple[tuple[str, CatalogEntry], ...]:
+def _discover_sources(
+    config: NestedShootingConfig,
+) -> tuple[tuple[str, CatalogEntry], ...]:
     discovered: list[tuple[str, CatalogEntry]] = []
     seen_replica_dirs: set[Path] = set()
     for group_index, group in enumerate(config.source_groups):
         entries = discover_simulation_catalog(
             group.root,
             campaign_globs=group.campaign_globs,
-            cache_root=config.output_root / "source_catalog_cache" / f"group_{group_index:02d}",
+            cache_root=config.output_root
+            / "source_catalog_cache"
+            / f"group_{group_index:02d}",
             required_atom_count=EXPECTED_ATOM_COUNT,
             required_potential_parameter_sha256=config.parameter_sha256,
             required_crystal_seed=None,
@@ -513,16 +573,22 @@ def _discover_sources(config: NestedShootingConfig) -> tuple[tuple[str, CatalogE
         for entry in entries:
             replica_dir = entry.trajectory_path.parent.resolve()
             if replica_dir in seen_replica_dirs:
-                raise RuntimeError(f"Source replica was selected more than once: {replica_dir}")
+                raise RuntimeError(
+                    "Source replica was selected more than once:"
+                    f" {replica_dir}"
+                )
             seen_replica_dirs.add(replica_dir)
             source_run_id = f"source_group_{group_index:02d}/{entry.run_id}"
             discovered.append((source_run_id, entry))
     selected = [
-        item for item in discovered if item[1].metadata.temperature_K in TEMPERATURES_K
+        item
+        for item in discovered
+        if item[1].metadata.temperature_K in TEMPERATURES_K
     ]
     observed_counts = {
         f"{temperature:g}": sum(
-            entry.metadata.temperature_K == temperature for _, entry in selected
+            entry.metadata.temperature_K == temperature
+            for _, entry in selected
         )
         for temperature in TEMPERATURES_K
     }
@@ -532,11 +598,14 @@ def _discover_sources(config: NestedShootingConfig) -> tuple[tuple[str, CatalogE
     }
     if observed_counts != expected_counts:
         raise RuntimeError(
-            "Nested shooting source counts differ from the checksum-bound design: "
-            f"observed={observed_counts}, expected={expected_counts}."
+            "Nested shooting source counts differ from the checksum-bound"
+            f" design: observed={observed_counts}, expected={expected_counts}."
         )
     for source_run_id, entry in selected:
-        if not entry.metadata.nucleation_observed or entry.metadata.nucleation_time_ps is None:
+        if (
+            not entry.metadata.nucleation_observed
+            or entry.metadata.nucleation_time_ps is None
+        ):
             raise RuntimeError(
                 f"Transition-parent source did not nucleate: {source_run_id}."
             )
@@ -568,8 +637,8 @@ def _source_splits(
         final_count = remaining - model_count
         if min(train_count, model_count, final_count) < 1:
             raise RuntimeError(
-                f"At least three sources are required at {temperature_K:g} K to create "
-                f"source-grouped splits; got {len(ranked)}."
+                f"At least three sources are required at {temperature_K:g} K"
+                f" to create source-grouped splits; got {len(ranked)}."
             )
         for index, run_id in enumerate(ranked):
             if index < train_count:
@@ -593,22 +662,29 @@ def _calibrate_basin_a(
         for source_run_id, entry in sources:
             if entry.metadata.temperature_K != protocol.temperature_K:
                 continue
-            times = np.asarray(entry.metadata.progress_times_ps, dtype=np.float64)
-            clusters = np.asarray(
-                entry.metadata.largest_crystalline_cluster_atoms, dtype=np.int64
+            times = np.asarray(
+                entry.metadata.progress_times_ps, dtype=np.float64
             )
-            selected = clusters[times <= config.calibration_duration_ps + 1.0e-12]
+            clusters = np.asarray(
+                entry.metadata.largest_crystalline_cluster_atoms,
+                dtype=np.int64,
+            )
+            selected = clusters[
+                times <= config.calibration_duration_ps + 1.0e-12
+            ]
             if selected.size == 0:
                 raise RuntimeError(
-                    f"No liquid-calibration frames at {protocol.temperature_K:g} K in "
-                    f"{source_run_id}."
+                    "No liquid-calibration frames at"
+                    f" {protocol.temperature_K:g} K in {source_run_id}."
                 )
             samples.extend(int(value) for value in selected)
             source_sample_counts[source_run_id] = int(selected.size)
-        threshold = int(math.ceil(float(np.quantile(samples, config.calibration_quantile))))
+        threshold = int(
+            math.ceil(float(np.quantile(samples, config.calibration_quantile)))
+        )
         if threshold != protocol.expected_basin_a_max_cluster_atoms:
             raise RuntimeError(
-                f"Temperature-calibrated basin-A threshold changed at "
+                "Temperature-calibrated basin-A threshold changed at "
                 f"{protocol.temperature_K:g} K: observed={threshold}, "
                 f"expected={protocol.expected_basin_a_max_cluster_atoms}."
             )
@@ -642,7 +718,9 @@ def _candidate_pool(
     splits: dict[str, str],
     calibration: dict[float, dict[str, Any]],
 ) -> dict[float, list[CandidateFrame]]:
-    pools: dict[float, list[CandidateFrame]] = {temperature: [] for temperature in TEMPERATURES_K}
+    pools: dict[float, list[CandidateFrame]] = {
+        temperature: [] for temperature in TEMPERATURES_K
+    }
     for source_run_id, entry in sources:
         metadata = entry.metadata
         temperature_K = metadata.temperature_K
@@ -650,7 +728,9 @@ def _candidate_pool(
         steps = np.asarray(metadata.progress_steps, dtype=np.int64)
         times = np.asarray(metadata.progress_times_ps, dtype=np.float64)
         fractions = np.asarray(metadata.crystalline_fraction, dtype=np.float64)
-        clusters = np.asarray(metadata.largest_crystalline_cluster_atoms, dtype=np.int64)
+        clusters = np.asarray(
+            metadata.largest_crystalline_cluster_atoms, dtype=np.int64
+        )
         assert metadata.nucleation_time_ps is not None
         for frame_index in range(len(steps)):
             if times[frame_index] >= metadata.nucleation_time_ps:
@@ -701,7 +781,8 @@ def _select_transition_candidates(
         eligible = [
             candidate
             for candidate in remaining
-            if source_counts.get(candidate.source_run_id, 0) < maximum_per_source
+            if source_counts.get(candidate.source_run_id, 0)
+            < maximum_per_source
         ]
         if not eligible:
             raise RuntimeError(
@@ -717,7 +798,9 @@ def _select_transition_candidates(
             ),
         )
         selected.append(chosen)
-        source_counts[chosen.source_run_id] = source_counts.get(chosen.source_run_id, 0) + 1
+        source_counts[chosen.source_run_id] = (
+            source_counts.get(chosen.source_run_id, 0) + 1
+        )
         remaining.remove(chosen)
     return selected
 
@@ -743,7 +826,9 @@ def _select_basin_controls(
         steps = np.asarray(metadata.progress_steps, dtype=np.int64)
         times = np.asarray(metadata.progress_times_ps, dtype=np.float64)
         fractions = np.asarray(metadata.crystalline_fraction, dtype=np.float64)
-        clusters = np.asarray(metadata.largest_crystalline_cluster_atoms, dtype=np.int64)
+        clusters = np.asarray(
+            metadata.largest_crystalline_cluster_atoms, dtype=np.int64
+        )
         liquid_indices = np.flatnonzero(clusters <= basin_a_max)
         crystal_indices = np.flatnonzero(clusters >= basin_b_min)
         if liquid_indices.size:
@@ -778,8 +863,9 @@ def _select_basin_controls(
             )
     if len(liquid) < count_each or len(crystal) < count_each:
         raise RuntimeError(
-            f"Insufficient basin controls at {temperature_K:g} K: "
-            f"liquid={len(liquid)}, crystal={len(crystal)}, requested={count_each}."
+            f"Insufficient basin controls at {temperature_K:g} K:"
+            f" liquid={len(liquid)}, crystal={len(crystal)},"
+            f" requested={count_each}."
         )
     selected: list[CandidateFrame] = []
     for role_candidates in (liquid, crystal):
@@ -788,13 +874,15 @@ def _select_basin_controls(
                 candidate
                 for candidate in role_candidates
                 if candidate not in selected
-                and source_counts.get(candidate.source_run_id, 0) < maximum_per_source
+                and source_counts.get(candidate.source_run_id, 0)
+                < maximum_per_source
             ]
             if not eligible:
                 raise RuntimeError(
-                    f"Cannot select {count_each} controls of role "
-                    f"{role_candidates[0].basin_role!r} at {temperature_K:g} K "
-                    f"without exceeding {maximum_per_source} parents per source."
+                    f"Cannot select {count_each} controls of role"
+                    f" {role_candidates[0].basin_role!r} at"
+                    f" {temperature_K:g} K without exceeding"
+                    f" {maximum_per_source} parents per source."
                 )
             chosen = min(
                 eligible,
@@ -804,7 +892,9 @@ def _select_basin_controls(
                 ),
             )
             selected.append(chosen)
-            source_counts[chosen.source_run_id] = source_counts.get(chosen.source_run_id, 0) + 1
+            source_counts[chosen.source_run_id] = (
+                source_counts.get(chosen.source_run_id, 0) + 1
+            )
     return selected
 
 
@@ -821,8 +911,12 @@ def render_nested_lammps_input(
     maximum_steps: int,
 ) -> str:
     monitor_iterations = maximum_steps // monitor_interval_steps
-    monitor_runner = REPOSITORY_ROOT / "src/simulation/campaigns/meam_nested_shooting.py"
-    pointnet_python = Path("/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python")
+    monitor_runner = (
+        REPOSITORY_ROOT / "src/simulation/campaigns/meam_nested_shooting.py"
+    )
+    pointnet_python = Path(
+        "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python"
+    )
     return f"""# Transition-balanced nested shooting branch generated by PointCloudMaterials.
 # Identical momentum_seed values deliberately identify fixed-(X,v) thermostat futures.
 log lammps.log
@@ -927,7 +1021,9 @@ def _write_schedule(
 
 def _write_slurm_scripts(config: NestedShootingConfig) -> None:
     root = config.output_root
-    runner = REPOSITORY_ROOT / "src/simulation/campaigns/meam_nested_shooting.py"
+    runner = (
+        REPOSITORY_ROOT / "src/simulation/campaigns/meam_nested_shooting.py"
+    )
     common = f"""set -euo pipefail
 source /home/infres/vmorozov/miniconda3/etc/profile.d/conda.sh
 conda activate pointnet
@@ -995,7 +1091,8 @@ python {runner} submit-next-wave --campaign-root {root} --start-index "${{NESTED
 def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
     if config.output_root.exists():
         raise FileExistsError(
-            f"Nested shooting output exists and will not be overwritten: {config.output_root}"
+            "Nested shooting output exists and will not be overwritten:"
+            f" {config.output_root}"
         )
     shortest_duration = min(
         protocol.maximum_duration_ps for protocol in config.temperatures
@@ -1011,7 +1108,9 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
         (config.parameter_potential, config.parameter_sha256),
     ):
         if not potential_path.is_file():
-            raise FileNotFoundError(f"Required MEAM potential is missing: {potential_path}")
+            raise FileNotFoundError(
+                f"Required MEAM potential is missing: {potential_path}"
+            )
         observed = _sha256_file(potential_path)
         if observed != expected_sha256:
             raise RuntimeError(
@@ -1054,25 +1153,37 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
         selected.extend(transition)
         selected.extend(controls)
 
-    if max(selection_counts_by_source.values()) > config.maximum_parents_per_source_run:
+    if (
+        max(selection_counts_by_source.values())
+        > config.maximum_parents_per_source_run
+    ):
         raise RuntimeError(
-            f"Parent selection exceeded the source-run cap: {selection_counts_by_source}."
+            "Parent selection exceeded the source-run cap:"
+            f" {selection_counts_by_source}."
         )
 
     root = config.output_root
     root.mkdir(parents=True)
     for name in ("parents", "branches", "potential", "slurm"):
         (root / name).mkdir()
-    shutil.copy2(config.library_potential, root / "potential" / config.library_potential.name)
-    shutil.copy2(config.parameter_potential, root / "potential" / config.parameter_potential.name)
+    shutil.copy2(
+        config.library_potential,
+        root / "potential" / config.library_potential.name,
+    )
+    shutil.copy2(
+        config.parameter_potential,
+        root / "potential" / config.parameter_potential.name,
+    )
     shutil.copy2(config.config_path, root / "campaign_config.yaml")
 
     selected.sort(
         key=lambda candidate: (
             candidate.entry.metadata.temperature_K,
-            {"transition_candidate": 0, "liquid_control": 1, "crystal_control": 2}[
-                candidate.basin_role
-            ],
+            {
+                "transition_candidate": 0,
+                "liquid_control": 1,
+                "crystal_control": 2,
+            }[candidate.basin_role],
             candidate.largest_cluster_atoms,
             candidate.source_run_id,
         )
@@ -1090,21 +1201,31 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
             required = {"step", "positions_A", "cell_vectors_A"}
             missing = sorted(required.difference(archive.files))
             if missing:
-                raise KeyError(f"{archive_path}: missing source arrays {missing}.")
+                raise KeyError(
+                    f"{archive_path}: missing source arrays {missing}."
+                )
             source_steps = np.asarray(archive["step"], dtype=np.int64)
             for parent_index, candidate in archive_candidates:
-                if int(source_steps[candidate.frame_index]) != candidate.source_step:
+                if (
+                    int(source_steps[candidate.frame_index])
+                    != candidate.source_step
+                ):
                     raise RuntimeError(
-                        f"{archive_path}: candidate progress step changed at frame "
-                        f"{candidate.frame_index}."
+                        f"{archive_path}: candidate progress step changed at"
+                        f" frame {candidate.frame_index}."
                     )
                 positions_A = np.asarray(
-                    archive["positions_A"][candidate.frame_index], dtype=np.float64
+                    archive["positions_A"][candidate.frame_index],
+                    dtype=np.float64,
                 )
                 cell_A = np.asarray(
-                    archive["cell_vectors_A"][candidate.frame_index], dtype=np.float64
+                    archive["cell_vectors_A"][candidate.frame_index],
+                    dtype=np.float64,
                 )
-                if positions_A.shape != (EXPECTED_ATOM_COUNT, 3) or cell_A.shape != (3, 3):
+                if positions_A.shape != (
+                    EXPECTED_ATOM_COUNT,
+                    3,
+                ) or cell_A.shape != (3, 3):
                     raise RuntimeError(
                         f"Invalid selected parent shapes in {archive_path}: "
                         f"positions={positions_A.shape}, cell={cell_A.shape}."
@@ -1113,7 +1234,8 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
                 off_diagonal[np.diag_indices(3)] = 0.0
                 if np.any(np.abs(off_diagonal) > 1.0e-10):
                     raise RuntimeError(
-                        f"Nested LAMMPS shooting requires orthogonal source cells: {cell_A.tolist()}."
+                        "Nested LAMMPS shooting requires orthogonal source"
+                        f" cells: {cell_A.tolist()}."
                     )
                 temperature_K = candidate.entry.metadata.temperature_K
                 parent_id = (
@@ -1143,12 +1265,18 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
                     "temperature_K": temperature_K,
                     "source_run_id": candidate.source_run_id,
                     "source_split": candidate.source_split,
-                    "source_velocity_seed": candidate.entry.metadata.velocity_seed,
+                    "source_velocity_seed": (
+                        candidate.entry.metadata.velocity_seed
+                    ),
                     "source_frame_index": candidate.frame_index,
                     "source_frame_step": candidate.source_step,
                     "source_frame_time_ps": candidate.source_time_ps,
-                    "source_crystalline_fraction": candidate.crystalline_fraction,
-                    "source_largest_crystalline_cluster_atoms": candidate.largest_cluster_atoms,
+                    "source_crystalline_fraction": (
+                        candidate.crystalline_fraction
+                    ),
+                    "source_largest_crystalline_cluster_atoms": (
+                        candidate.largest_cluster_atoms
+                    ),
                     "source_coordinate_archive": str(archive_path),
                     "source_coordinate_archive_sha256": archive_sha256,
                     "data_file": str(data_path.relative_to(root)),
@@ -1156,7 +1284,9 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
                     "basin_a_max_cluster_atoms": int(
                         calibration[temperature_K]["basin_a_max_cluster_atoms"]
                     ),
-                    "basin_b_min_cluster_atoms": config.crystal_basin_min_cluster_atoms,
+                    "basin_b_min_cluster_atoms": (
+                        config.crystal_basin_min_cluster_atoms
+                    ),
                 }
                 _write_json_atomic(parent_dir / "metadata.json", parent)
                 parents_by_index[parent_index] = parent
@@ -1173,7 +1303,9 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
         parent_index = int(parent["parent_index"])
         temperature_K = float(parent["temperature_K"])
         maximum_duration_ps = maximum_duration_by_temperature[temperature_K]
-        maximum_steps = int(round(maximum_duration_ps * 1000.0 / config.timestep_fs))
+        maximum_steps = int(
+            round(maximum_duration_ps * 1000.0 / config.timestep_fs)
+        )
         output_steps = multirate_output_steps(
             timestep_fs=config.timestep_fs,
             maximum_duration_ps=maximum_duration_ps,
@@ -1181,7 +1313,9 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
         sentinel = maximum_steps + config.monitor_interval_steps
         for momentum_index in range(config.momentum_samples_per_parent):
             expected_momentum_seed: int | None = None
-            for thermostat_index in range(config.thermostat_futures_per_momentum):
+            for thermostat_index in range(
+                config.thermostat_futures_per_momentum
+            ):
                 momentum_seed, thermostat_seed = nested_random_seeds(
                     config.campaign_seed,
                     parent_index,
@@ -1191,15 +1325,20 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
                 if expected_momentum_seed is None:
                     expected_momentum_seed = momentum_seed
                     if momentum_seed in seen_momentum_seeds:
-                        raise RuntimeError(f"Nested momentum-seed collision: {momentum_seed}.")
+                        raise RuntimeError(
+                            f"Nested momentum-seed collision: {momentum_seed}."
+                        )
                     seen_momentum_seeds.add(momentum_seed)
                 elif momentum_seed != expected_momentum_seed:
                     raise RuntimeError(
-                        f"Momentum seed changed across thermostat futures for parent={parent_index}, "
-                        f"momentum_index={momentum_index}."
+                        "Momentum seed changed across thermostat futures for"
+                        f" parent={parent_index},"
+                        f" momentum_index={momentum_index}."
                     )
                 if thermostat_seed in seen_thermostat_seeds:
-                    raise RuntimeError(f"Nested thermostat-seed collision: {thermostat_seed}.")
+                    raise RuntimeError(
+                        f"Nested thermostat-seed collision: {thermostat_seed}."
+                    )
                 seen_thermostat_seeds.add(thermostat_seed)
                 branch_index = len(branches)
                 branch_id = (
@@ -1228,12 +1367,18 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
                     "basin_a_max_cluster_atoms": parent[
                         "basin_a_max_cluster_atoms"
                     ],
-                    "basin_b_min_cluster_atoms": config.crystal_basin_min_cluster_atoms,
-                    "basin_persistence_frames": config.basin_persistence_frames,
+                    "basin_b_min_cluster_atoms": (
+                        config.crystal_basin_min_cluster_atoms
+                    ),
+                    "basin_persistence_frames": (
+                        config.basin_persistence_frames
+                    ),
                     "monitor_interval_steps": config.monitor_interval_steps,
                     "timestep_fs": config.timestep_fs,
                     "ptm_rmsd_cutoff": config.ptm_rmsd_cutoff,
-                    "crystalline_cluster_cutoff_A": config.crystalline_cluster_cutoff_A,
+                    "crystalline_cluster_cutoff_A": (
+                        config.crystalline_cluster_cutoff_A
+                    ),
                 }
                 _write_json_atomic(branch_dir / "metadata.json", branch)
                 (branch_dir / "in.lammps").write_text(
@@ -1280,22 +1425,29 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
         "schema_version": SCHEMA_VERSION,
         "state": "prepared",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "campaign_type": "transition_balanced_nested_langevin_nvt_shooting_pilot",
+        "campaign_type": (
+            "transition_balanced_nested_langevin_nvt_shooting_pilot"
+        ),
         "scientific_contract": {
-            "parent_coordinate": "connected PTM largest crystalline cluster atoms",
+            "parent_coordinate": (
+                "connected PTM largest crystalline cluster atoms"
+            ),
             "source_split_unit": "independent source run and every descendant",
             "nested_randomness": (
-                "momentum_seed is shared by thermostat children; thermostat_seed is unique"
+                "momentum_seed is shared by thermostat children;"
+                " thermostat_seed is unique"
             ),
             "first_passage": (
-                "single uninterrupted LAMMPS process checked every monitor interval; "
-                "persistent A or B arrival fixes the label, then the same process continues "
-                "to maximum duration so fixed-horizon frames remain available; a branch "
-                "with no arrival by maximum duration is censored"
+                "single uninterrupted LAMMPS process checked every monitor"
+                " interval; persistent A or B arrival fixes the label, then"
+                " the same process continues to maximum duration so"
+                " fixed-horizon frames remain available; a branch with no"
+                " arrival by maximum duration is censored"
             ),
             "temporary_text_policy": (
-                "LAMMPS text is a branch-local staging artifact and is deleted only after "
-                f"the {NESTED_STORAGE_DTYPE} binary and observables pass validation"
+                "LAMMPS text is a branch-local staging artifact and is"
+                f" deleted only after the {NESTED_STORAGE_DTYPE} binary and"
+                " observables pass validation"
             ),
         },
         "atom_count": EXPECTED_ATOM_COUNT,
@@ -1309,7 +1461,9 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
             "persistence_frames": config.basin_persistence_frames,
             "monitor_interval_ps": config.monitor_interval_ps,
             "ptm_rmsd_cutoff": config.ptm_rmsd_cutoff,
-            "cluster_connectivity_cutoff_A": config.crystalline_cluster_cutoff_A,
+            "cluster_connectivity_cutoff_A": (
+                config.crystalline_cluster_cutoff_A
+            ),
         },
         "output_cadence": {
             "0_to_0.3_ps": "0.03 ps",
@@ -1320,8 +1474,8 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
             "exact_confirmed_basin_crossing_frame": True,
             "fixed_horizons_ps": list(FIXED_HORIZONS_PS),
             "storage": (
-                "pointcloudmaterials.shooting_trajectory float16 memory-mapped vectors "
-                "decoded to float32 by consumers"
+                "pointcloudmaterials.shooting_trajectory float16 memory-mapped"
+                " vectors decoded to float32 by consumers"
             ),
         },
         "execution": {
@@ -1339,20 +1493,25 @@ def prepare_nested_campaign(config: NestedShootingConfig) -> dict[str, Any]:
             "sources": len(sources),
             "parents": len(parents),
             "transition_parents": sum(
-                parent["basin_role"] == "transition_candidate" for parent in parents
+                parent["basin_role"] == "transition_candidate"
+                for parent in parents
             ),
             "control_parents": sum(
-                parent["basin_role"] != "transition_candidate" for parent in parents
+                parent["basin_role"] != "transition_candidate"
+                for parent in parents
             ),
             "branches": len(branches),
             "branches_by_temperature": {
                 f"{temperature:g}": sum(
-                    branch["temperature_K"] == temperature for branch in branches
+                    branch["temperature_K"] == temperature
+                    for branch in branches
                 )
                 for temperature in TEMPERATURES_K
             },
             "branches_by_split": {
-                split: sum(branch["source_split"] == split for branch in branches)
+                split: sum(
+                    branch["source_split"] == split for branch in branches
+                )
                 for split in SPLIT_NAMES
             },
         },
@@ -1379,7 +1538,9 @@ def evaluate_monitor_frame(branch_dir: str | Path) -> dict[str, Any]:
     metadata = _load_json(root / "metadata.json")
     frame_path = root / "monitor_frame.lammpstrj"
     if not frame_path.is_file() or frame_path.stat().st_size == 0:
-        raise FileNotFoundError(f"Online PTM monitor frame is missing or empty: {frame_path}")
+        raise FileNotFoundError(
+            f"Online PTM monitor frame is missing or empty: {frame_path}"
+        )
     try:
         from ovito.io import import_file
         from ovito.modifiers import (
@@ -1388,7 +1549,8 @@ def evaluate_monitor_frame(branch_dir: str | Path) -> dict[str, Any]:
         )
     except ImportError as exc:
         raise ImportError(
-            "Nested shooting online stopping requires OVITO in the pointnet environment."
+            "Nested shooting online stopping requires OVITO in the pointnet"
+            " environment."
         ) from exc
 
     pipeline = import_file(str(frame_path), sort_particles=True)
@@ -1396,25 +1558,32 @@ def evaluate_monitor_frame(branch_dir: str | Path) -> dict[str, Any]:
     observed_atom_count = int(data.particles.count)
     if observed_atom_count != EXPECTED_ATOM_COUNT:
         raise RuntimeError(
-            f"Online PTM frame atom count changed: expected={EXPECTED_ATOM_COUNT}, "
-            f"observed={observed_atom_count}, path={frame_path}."
+            "Online PTM frame atom count changed:"
+            f" expected={EXPECTED_ATOM_COUNT}, observed={observed_atom_count},"
+            f" path={frame_path}."
         )
     observed_step = int(data.attributes.get("Timestep", -1))
     if observed_step < 0:
-        raise RuntimeError(f"OVITO did not expose the LAMMPS timestep for {frame_path}.")
+        raise RuntimeError(
+            f"OVITO did not expose the LAMMPS timestep for {frame_path}."
+        )
     monitor_interval_steps = int(metadata["monitor_interval_steps"])
     if observed_step <= 0 or observed_step % monitor_interval_steps != 0:
         raise RuntimeError(
-            f"Online PTM frame step is not a positive monitor checkpoint: "
+            "Online PTM frame step is not a positive monitor checkpoint: "
             f"step={observed_step}, interval={monitor_interval_steps}."
         )
 
     ptm = PolyhedralTemplateMatchingModifier()
     ptm.rmsd_cutoff = float(metadata["ptm_rmsd_cutoff"])
     data.apply(ptm)
-    structure_types = np.asarray(data.particles["Structure Type"], dtype=np.int32)
+    structure_types = np.asarray(
+        data.particles["Structure Type"], dtype=np.int32
+    )
     crystalline = np.isin(structure_types, CRYSTALLINE_STRUCTURE_TYPES)
-    data.particles_.create_property("Selection", data=crystalline.astype(np.int32))
+    data.particles_.create_property(
+        "Selection", data=crystalline.astype(np.int32)
+    )
     clusters = ClusterAnalysisModifier(
         cutoff=float(metadata["crystalline_cluster_cutoff_A"]),
         only_selected=True,
@@ -1422,9 +1591,15 @@ def evaluate_monitor_frame(branch_dir: str | Path) -> dict[str, Any]:
     )
     data.apply(clusters)
     crystalline_fraction = float(np.mean(crystalline))
-    largest_cluster_atoms = int(data.attributes["ClusterAnalysis.largest_size"])
-    basin_a = largest_cluster_atoms <= int(metadata["basin_a_max_cluster_atoms"])
-    basin_b = largest_cluster_atoms >= int(metadata["basin_b_min_cluster_atoms"])
+    largest_cluster_atoms = int(
+        data.attributes["ClusterAnalysis.largest_size"]
+    )
+    basin_a = largest_cluster_atoms <= int(
+        metadata["basin_a_max_cluster_atoms"]
+    )
+    basin_b = largest_cluster_atoms >= int(
+        metadata["basin_b_min_cluster_atoms"]
+    )
     if basin_a and basin_b:
         raise RuntimeError(
             f"Basin definitions overlap for branch {metadata['branch_id']}: "
@@ -1436,26 +1611,31 @@ def evaluate_monitor_frame(branch_dir: str | Path) -> dict[str, Any]:
         state = _load_json(state_path)
         if state.get("branch_id") != metadata["branch_id"]:
             raise RuntimeError(
-                f"Online monitor state belongs to another branch: {state_path}."
+                "Online monitor state belongs to another branch:"
+                f" {state_path}."
             )
         if state.get("first_passage_outcome") is not None:
             raise RuntimeError(
-                f"Online PTM monitor was invoked after a terminal basin event: {state_path}."
+                "Online PTM monitor was invoked after a terminal basin event:"
+                f" {state_path}."
             )
         observations = state.get("observations")
         if not isinstance(observations, list) or not observations:
-            raise RuntimeError(f"Online monitor state has invalid observations: {state_path}.")
+            raise RuntimeError(
+                f"Online monitor state has invalid observations: {state_path}."
+            )
         previous_step = int(observations[-1]["timestep"])
         if observed_step - previous_step != monitor_interval_steps:
             raise RuntimeError(
-                f"Online PTM checkpoints are not contiguous: previous={previous_step}, "
-                f"current={observed_step}, interval={monitor_interval_steps}."
+                "Online PTM checkpoints are not contiguous:"
+                f" previous={previous_step}, current={observed_step},"
+                f" interval={monitor_interval_steps}."
             )
     else:
         if observed_step != monitor_interval_steps:
             raise RuntimeError(
-                f"First online PTM checkpoint must be step {monitor_interval_steps}, "
-                f"got {observed_step}."
+                "First online PTM checkpoint must be step"
+                f" {monitor_interval_steps}, got {observed_step}."
             )
         state = {
             "schema_version": SCHEMA_VERSION,
@@ -1511,7 +1691,9 @@ def evaluate_monitor_frame(branch_dir: str | Path) -> dict[str, Any]:
     _write_json_atomic(state_path, state)
     decision_path = root / "monitor_decision.txt"
     temporary_decision = root / f".monitor_decision.tmp-{os.getpid()}"
-    temporary_decision.write_text("1\n" if outcome is not None else "0\n", encoding="ascii")
+    temporary_decision.write_text(
+        "1\n" if outcome is not None else "0\n", encoding="ascii"
+    )
     temporary_decision.replace(decision_path)
     return state
 
@@ -1527,17 +1709,23 @@ def _lammps_environment() -> dict[str, str]:
         }
     )
     environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
-        f":{environment['LD_LIBRARY_PATH']}" if environment.get("LD_LIBRARY_PATH") else ""
+        f":{environment['LD_LIBRARY_PATH']}"
+        if environment.get("LD_LIBRARY_PATH")
+        else ""
     )
     return environment
 
 
 def _lammps_command(mpi_ranks: int) -> list[str]:
     if "SLURM_JOB_ID" not in os.environ:
-        raise RuntimeError("Nested shooting production branches require a Slurm allocation.")
+        raise RuntimeError(
+            "Nested shooting production branches require a Slurm allocation."
+        )
     lmp = Path(sys.prefix) / "bin" / "lmp"
     if not lmp.is_file():
-        raise FileNotFoundError(f"pointnet LAMMPS executable is missing: {lmp}")
+        raise FileNotFoundError(
+            f"pointnet LAMMPS executable is missing: {lmp}"
+        )
     srun = shutil.which("srun")
     if srun is None:
         raise FileNotFoundError("Nested shooting requires srun on PATH.")
@@ -1561,15 +1749,18 @@ def _load_initial_forces(path: Path, atom_count: int) -> np.ndarray:
     expected_line_count = 9 + atom_count
     if len(lines) != expected_line_count:
         raise RuntimeError(
-            f"Initial-state dump line count changed: expected={expected_line_count}, "
-            f"observed={len(lines)}, path={path}."
+            "Initial-state dump line count changed:"
+            f" expected={expected_line_count}, observed={len(lines)},"
+            f" path={path}."
         )
     if lines[0] != "ITEM: TIMESTEP" or int(lines[1]) != 0:
         raise RuntimeError(f"Initial-state dump is not timestep zero: {path}.")
     if lines[2] != "ITEM: NUMBER OF ATOMS" or int(lines[3]) != atom_count:
         raise RuntimeError(f"Initial-state atom count changed: {path}.")
     if lines[4] != "ITEM: BOX BOUNDS pp pp pp":
-        raise RuntimeError(f"Initial-state box is not orthogonal periodic: {path}.")
+        raise RuntimeError(
+            f"Initial-state box is not orthogonal periodic: {path}."
+        )
     expected_header = "ITEM: ATOMS id type x y z vx vy vz fx fy fz"
     if lines[8] != expected_header:
         raise RuntimeError(
@@ -1579,54 +1770,75 @@ def _load_initial_forces(path: Path, atom_count: int) -> np.ndarray:
     table = np.fromstring("\n".join(lines[9:]), sep=" ", dtype=np.float64)
     if table.size != atom_count * 11:
         raise RuntimeError(
-            f"Initial-state atom table is truncated: values={table.size}, path={path}."
+            f"Initial-state atom table is truncated: values={table.size},"
+            f" path={path}."
         )
     table = table.reshape(atom_count, 11)
     ids = table[:, 0].astype(np.int64)
     order = np.argsort(ids, kind="mergesort")
-    if not np.array_equal(ids[order], np.arange(1, atom_count + 1, dtype=np.int64)):
-        raise RuntimeError(f"Initial-state IDs are not exactly 1..{atom_count}: {path}.")
+    if not np.array_equal(
+        ids[order], np.arange(1, atom_count + 1, dtype=np.int64)
+    ):
+        raise RuntimeError(
+            f"Initial-state IDs are not exactly 1..{atom_count}: {path}."
+        )
     forces = table[:, 8:11].astype(np.float32)[order]
     if not np.all(np.isfinite(forces)):
-        raise RuntimeError(f"Initial-state forces contain nonfinite values: {path}.")
+        raise RuntimeError(
+            f"Initial-state forces contain nonfinite values: {path}."
+        )
     return forces
 
 
 def _load_sampled_temperatures(
     branch_dir: Path, expected_timesteps: np.ndarray
 ) -> np.ndarray:
-    initial_tokens = (branch_dir / "initial_temperature.txt").read_text(
-        encoding="ascii"
-    ).split()
+    initial_tokens = (
+        (branch_dir / "initial_temperature.txt")
+        .read_text(encoding="ascii")
+        .split()
+    )
     if len(initial_tokens) != 2 or int(initial_tokens[0]) != 0:
         raise RuntimeError(
-            f"Invalid initial temperature record: {branch_dir / 'initial_temperature.txt'}."
+            "Invalid initial temperature record:"
+            f" {branch_dir / 'initial_temperature.txt'}."
         )
     records: dict[int, float] = {0: float(initial_tokens[1])}
     temperature_path = branch_dir / "sampled_temperature.tsv"
     lines = temperature_path.read_text(encoding="ascii").splitlines()
     if not lines or lines[0].split() != ["step", "temperature_K"]:
-        raise RuntimeError(f"Invalid sampled-temperature header: {temperature_path}.")
+        raise RuntimeError(
+            f"Invalid sampled-temperature header: {temperature_path}."
+        )
     for line in lines[1:]:
         tokens = line.split()
         if len(tokens) != 2:
-            raise RuntimeError(f"Invalid sampled-temperature row {line!r} in {temperature_path}.")
+            raise RuntimeError(
+                f"Invalid sampled-temperature row {line!r} in"
+                f" {temperature_path}."
+            )
         step = int(tokens[0])
         value = float(tokens[1])
         if step in records:
-            raise RuntimeError(f"Duplicate sampled temperature at step={step}: {temperature_path}.")
+            raise RuntimeError(
+                f"Duplicate sampled temperature at step={step}:"
+                f" {temperature_path}."
+            )
         records[step] = value
     expected = [int(value) for value in expected_timesteps]
     missing = [step for step in expected if step not in records]
     extras = sorted(set(records).difference(expected))
     if missing or extras:
         raise RuntimeError(
-            f"Sampled temperatures do not match stored frames: missing={missing}, extras={extras}, "
-            f"path={temperature_path}."
+            "Sampled temperatures do not match stored frames:"
+            f" missing={missing}, extras={extras}, path={temperature_path}."
         )
     values = np.asarray([records[step] for step in expected], dtype=np.float32)
     if not np.all(np.isfinite(values)) or np.any(values <= 0.0):
-        raise RuntimeError(f"Sampled temperatures are nonfinite or nonpositive: {temperature_path}.")
+        raise RuntimeError(
+            "Sampled temperatures are nonfinite or nonpositive:"
+            f" {temperature_path}."
+        )
     return values
 
 
@@ -1644,7 +1856,8 @@ def _write_observables(
         [value["timestep"] for value in observations], dtype=np.int64
     )
     crystalline_fraction = np.asarray(
-        [value["crystalline_fraction"] for value in observations], dtype=np.float32
+        [value["crystalline_fraction"] for value in observations],
+        dtype=np.float32,
     )
     largest_cluster_atoms = np.asarray(
         [value["largest_crystalline_cluster_atoms"] for value in observations],
@@ -1656,7 +1869,9 @@ def _write_observables(
             handle,
             saved_timesteps=np.asarray(saved_timesteps, dtype=np.int64),
             temperature_K=np.asarray(temperatures_K, dtype=np.float32),
-            initial_forces_eV_per_A=np.asarray(initial_forces, dtype=np.float32),
+            initial_forces_eV_per_A=np.asarray(
+                initial_forces, dtype=np.float32
+            ),
             monitor_timesteps=monitor_timesteps,
             ptm_crystalline_fraction=crystalline_fraction,
             largest_crystalline_cluster_atoms=largest_cluster_atoms,
@@ -1666,7 +1881,9 @@ def _write_observables(
     arrays = {
         "saved_timesteps": np.asarray(saved_timesteps, dtype=np.int64),
         "temperature_K": np.asarray(temperatures_K, dtype=np.float32),
-        "initial_forces_eV_per_A": np.asarray(initial_forces, dtype=np.float32),
+        "initial_forces_eV_per_A": np.asarray(
+            initial_forces, dtype=np.float32
+        ),
         "monitor_timesteps": monitor_timesteps,
         "ptm_crystalline_fraction": crystalline_fraction,
         "largest_crystalline_cluster_atoms": largest_cluster_atoms,
@@ -1689,15 +1906,21 @@ def _write_observables(
 
 def _validate_observables(path: Path, description: dict[str, Any]) -> None:
     if _sha256_file(path) != description["sha256"]:
-        raise RuntimeError(f"Nested observables file checksum mismatch: {path}.")
+        raise RuntimeError(
+            f"Nested observables file checksum mismatch: {path}."
+        )
     with np.load(path, allow_pickle=False) as archive:
         if set(archive.files) != set(description["arrays"]):
             raise RuntimeError(f"Nested observables arrays changed: {path}.")
         for name, expected in description["arrays"].items():
             values = np.asarray(archive[name])
-            if list(values.shape) != expected["shape"] or values.dtype.name != expected["dtype"]:
+            if (
+                list(values.shape) != expected["shape"]
+                or values.dtype.name != expected["dtype"]
+            ):
                 raise RuntimeError(
-                    f"Nested observable {name!r} shape/dtype changed in {path}."
+                    f"Nested observable {name!r} shape/dtype changed in"
+                    f" {path}."
                 )
             if _array_sha256(values) != expected["sha256"]:
                 raise RuntimeError(
@@ -1705,7 +1928,9 @@ def _validate_observables(path: Path, description: dict[str, Any]) -> None:
                 )
 
 
-def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
+def run_nested_branch(
+    campaign_root: str | Path, task_index: int
+) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
     manifest = _load_json(root / "manifest.json")
     branches = manifest.get("branches")
@@ -1713,15 +1938,23 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
         raise TypeError(f"{root / 'manifest.json'}: branches must be a list.")
     index = int(task_index)
     if index < 0 or index >= len(branches):
-        raise IndexError(f"task_index={index} is outside [0, {len(branches)}).")
+        raise IndexError(
+            f"task_index={index} is outside [0, {len(branches)})."
+        )
     branch = branches[index]
     branch_dir = root / str(branch["branch_dir"])
     outcome_path = branch_dir / "outcome.json"
     if outcome_path.is_file():
         outcome = _load_json(outcome_path)
         if outcome.get("state") != "complete":
-            raise RuntimeError(f"Existing nested branch outcome is not complete: {outcome_path}.")
-        print(f"Nested branch {branch['branch_id']} is already complete; leaving it unchanged.")
+            raise RuntimeError(
+                "Existing nested branch outcome is not complete:"
+                f" {outcome_path}."
+            )
+        print(
+            f"Nested branch {branch['branch_id']} is already complete; leaving"
+            " it unchanged."
+        )
         return outcome
     partial_names = [
         name
@@ -1744,8 +1977,9 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
     ]
     if partial_names:
         raise RuntimeError(
-            f"Nested branch {branch['branch_id']} has partial artifacts {partial_names} but no "
-            f"complete outcome. Archive the attempt before resubmitting: {branch_dir}."
+            f"Nested branch {branch['branch_id']} has partial artifacts"
+            f" {partial_names} but no complete outcome. Archive the attempt"
+            f" before resubmitting: {branch_dir}."
         )
 
     status_path = branch_dir / "status.json"
@@ -1765,7 +1999,8 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
         allocated_tasks = int(os.environ.get("SLURM_NTASKS", "0"))
         if allocated_tasks != mpi_ranks:
             raise RuntimeError(
-                f"Nested branch received SLURM_NTASKS={allocated_tasks}, expected {mpi_ranks}."
+                f"Nested branch received SLURM_NTASKS={allocated_tasks},"
+                f" expected {mpi_ranks}."
             )
         command = _lammps_command(mpi_ranks)
         started = time.monotonic()
@@ -1782,8 +2017,8 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
         elapsed_seconds = time.monotonic() - started
         if completed.returncode != 0:
             raise RuntimeError(
-                f"Nested LAMMPS branch {branch['branch_id']} failed with return code "
-                f"{completed.returncode}; inspect {stdout_path}."
+                f"Nested LAMMPS branch {branch['branch_id']} failed with"
+                f" return code {completed.returncode}; inspect {stdout_path}."
             )
 
         trajectory_path = branch_dir / "trajectory.lammpstrj"
@@ -1799,11 +2034,14 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
         ):
             if not artifact.is_file() or artifact.stat().st_size == 0:
                 raise RuntimeError(
-                    f"Nested LAMMPS reported success but artifact is missing or empty: {artifact}."
+                    "Nested LAMMPS reported success but artifact is missing"
+                    f" or empty: {artifact}."
                 )
 
         scan = TemporalLAMMPSDumpDataset.scan_dump_file(trajectory_path)
-        if scan.num_atoms != EXPECTED_ATOM_COUNT or tuple(scan.atom_columns) != (
+        if scan.num_atoms != EXPECTED_ATOM_COUNT or tuple(
+            scan.atom_columns
+        ) != (
             "id",
             "type",
             "x",
@@ -1820,22 +2058,28 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
         monitor_state = _load_json(monitor_state_path)
         observations = monitor_state.get("observations")
         if not isinstance(observations, list) or not observations:
-            raise RuntimeError(f"Nested monitor state has no observations: {monitor_state_path}.")
+            raise RuntimeError(
+                "Nested monitor state has no observations:"
+                f" {monitor_state_path}."
+            )
         last_step = int(scan.timesteps[-1])
         expected_steps = np.asarray(branch["output_steps"], dtype=np.int64)
         if not np.array_equal(scan.timesteps, expected_steps):
             raise RuntimeError(
-                f"Nested dump does not match the multirate schedule: expected={expected_steps.tolist()}, "
-                f"observed={scan.timesteps.tolist()}, path={trajectory_path}."
+                "Nested dump does not match the multirate schedule:"
+                f" expected={expected_steps.tolist()},"
+                f" observed={scan.timesteps.tolist()}, path={trajectory_path}."
             )
         first_passage_outcome = monitor_state.get("first_passage_outcome")
         censored = first_passage_outcome is None
         if censored:
-            if int(observations[-1]["timestep"]) != int(branch["maximum_steps"]):
+            if int(observations[-1]["timestep"]) != int(
+                branch["maximum_steps"]
+            ):
                 raise RuntimeError(
-                    f"Censored nested monitor stopped before maximum duration: "
-                    f"monitor={observations[-1]['timestep']}, "
-                    f"maximum={branch['maximum_steps']}."
+                    "Censored nested monitor stopped before maximum duration:"
+                    f" monitor={observations[-1]['timestep']},"
+                    f" maximum={branch['maximum_steps']}."
                 )
         elif int(observations[-1]["timestep"]) != int(
             monitor_state["first_passage_confirmation_timestep"]
@@ -1847,8 +2091,8 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
             )
         if last_step != int(branch["maximum_steps"]):
             raise RuntimeError(
-                f"Nested fixed-horizon trajectory stopped early: last={last_step}, "
-                f"maximum={branch['maximum_steps']}."
+                "Nested fixed-horizon trajectory stopped early:"
+                f" last={last_step}, maximum={branch['maximum_steps']}."
             )
 
         source_size = trajectory_path.stat().st_size
@@ -1871,7 +2115,9 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
             },
         )
         binary.verify_checksums()
-        initial_forces = _load_initial_forces(initial_state_path, EXPECTED_ATOM_COUNT)
+        initial_forces = _load_initial_forces(
+            initial_state_path, EXPECTED_ATOM_COUNT
+        )
         temperatures_K = _load_sampled_temperatures(branch_dir, scan.timesteps)
         observables_path = branch_dir / "observables.npz"
         observables = _write_observables(
@@ -1916,7 +2162,9 @@ def run_nested_branch(campaign_root: str | Path, task_index: int) -> dict[str, A
             "first_passage_confirmation_timestep": monitor_state.get(
                 "first_passage_confirmation_timestep"
             ),
-            "first_passage_time_ps": monitor_state.get("first_passage_time_ps"),
+            "first_passage_time_ps": monitor_state.get(
+                "first_passage_time_ps"
+            ),
             "censored": censored,
             "trajectory_artifact": {
                 "format": "pointcloudmaterials.shooting_trajectory",
@@ -1958,7 +2206,9 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
     branches = manifest.get("branches")
     parents = manifest.get("parents")
     if not isinstance(branches, list) or not isinstance(parents, list):
-        raise TypeError(f"{root / 'manifest.json'}: parents and branches must be lists.")
+        raise TypeError(
+            f"{root / 'manifest.json'}: parents and branches must be lists."
+        )
     outcomes: list[dict[str, Any]] = []
     missing: list[str] = []
     for branch in branches:
@@ -1968,13 +2218,19 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
             continue
         outcome = _load_json(outcome_path)
         if outcome.get("state") != "complete":
-            raise RuntimeError(f"Nested branch outcome is not complete: {outcome_path}.")
+            raise RuntimeError(
+                f"Nested branch outcome is not complete: {outcome_path}."
+            )
         input_artifact = outcome.get("input_artifact")
         if not isinstance(input_artifact, dict):
-            raise RuntimeError(f"Nested outcome has no checksum-bound input: {outcome_path}.")
+            raise RuntimeError(
+                f"Nested outcome has no checksum-bound input: {outcome_path}."
+            )
         input_path = Path(str(input_artifact["path"]))
         if _sha256_file(input_path) != input_artifact["sha256"]:
-            raise RuntimeError(f"Nested branch input checksum changed: {input_path}.")
+            raise RuntimeError(
+                f"Nested branch input checksum changed: {input_path}."
+            )
         binary = ShootingBinaryTrajectory.load(
             Path(str(outcome["trajectory_artifact"]["path"]))
         )
@@ -1986,7 +2242,8 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
             or int(binary.timesteps[-1]) != int(outcome["last_timestep"])
         ):
             raise RuntimeError(
-                f"Nested binary trajectory disagrees with outcome: {outcome_path}."
+                "Nested binary trajectory disagrees with outcome:"
+                f" {outcome_path}."
             )
         observables_description = outcome["observables_artifact"]
         _validate_observables(
@@ -1995,8 +2252,8 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
         outcomes.append(outcome)
     if missing:
         raise RuntimeError(
-            f"Cannot summarize incomplete nested campaign: missing={len(missing)}, "
-            f"first={missing[:10]}."
+            "Cannot summarize incomplete nested campaign:"
+            f" missing={len(missing)}, first={missing[:10]}."
         )
 
     expected_children = int(
@@ -2011,19 +2268,28 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
         ]
         if len(selected) != expected_children:
             raise RuntimeError(
-                f"Nested parent {parent['parent_id']} has {len(selected)} children; "
-                f"expected {expected_children}."
+                f"Nested parent {parent['parent_id']} has"
+                f" {len(selected)} children; expected {expected_children}."
             )
         by_momentum: dict[int, list[dict[str, Any]]] = {}
         for outcome in selected:
-            by_momentum.setdefault(int(outcome["momentum_index"]), []).append(outcome)
+            by_momentum.setdefault(int(outcome["momentum_index"]), []).append(
+                outcome
+            )
         for momentum_index, children in by_momentum.items():
-            momentum_seeds = {int(child["momentum_seed"]) for child in children}
-            thermostat_seeds = {int(child["thermostat_seed"]) for child in children}
-            if len(momentum_seeds) != 1 or len(thermostat_seeds) != len(children):
+            momentum_seeds = {
+                int(child["momentum_seed"]) for child in children
+            }
+            thermostat_seeds = {
+                int(child["thermostat_seed"]) for child in children
+            }
+            if len(momentum_seeds) != 1 or len(thermostat_seeds) != len(
+                children
+            ):
                 raise RuntimeError(
-                    f"Nested seed structure changed for parent={parent['parent_id']}, "
-                    f"momentum_index={momentum_index}."
+                    "Nested seed structure changed for"
+                    f" parent={parent['parent_id']},"
+                    f" momentum_index={momentum_index}."
                 )
         counts = {
             "basin_A_liquid": sum(
@@ -2065,17 +2331,25 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
         "completed_at": datetime.now(timezone.utc).isoformat(),
         "branch_count": len(outcomes),
         "parent_count": len(parent_summaries),
-        "outcome_counts": {
-            outcome_name: sum(
-                outcome["first_passage_outcome"] == outcome_name for outcome in outcomes
-            )
-            for outcome_name in ("basin_A_liquid", "basin_B_crystal")
-        }
-        | {"censored": sum(bool(outcome["censored"]) for outcome in outcomes)},
+        "outcome_counts": (
+            {
+                outcome_name: sum(
+                    outcome["first_passage_outcome"] == outcome_name
+                    for outcome in outcomes
+                )
+                for outcome_name in ("basin_A_liquid", "basin_B_crystal")
+            }
+            | {
+                "censored": sum(
+                    bool(outcome["censored"]) for outcome in outcomes
+                )
+            }
+        ),
         "counts_by_temperature": {
             f"{temperature:g}": {
                 "branches": sum(
-                    outcome["temperature_K"] == temperature for outcome in outcomes
+                    outcome["temperature_K"] == temperature
+                    for outcome in outcomes
                 ),
                 "basin_A_liquid": sum(
                     outcome["temperature_K"] == temperature
@@ -2096,11 +2370,14 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
             for temperature in TEMPERATURES_K
         },
         "counts_by_source_split": {
-            split: sum(outcome["source_split"] == split for outcome in outcomes)
+            split: sum(
+                outcome["source_split"] == split for outcome in outcomes
+            )
             for split in SPLIT_NAMES
         },
         "mixed_transition_parent_count": sum(
-            bool(parent["retain_as_mixed_parent"]) for parent in parent_summaries
+            bool(parent["retain_as_mixed_parent"])
+            for parent in parent_summaries
         ),
         "maximum_censoring_fraction_by_temperature": max(
             sum(
@@ -2108,7 +2385,9 @@ def summarize_nested_campaign(campaign_root: str | Path) -> dict[str, Any]:
                 and bool(outcome["censored"])
                 for outcome in outcomes
             )
-            / sum(outcome["temperature_K"] == temperature for outcome in outcomes)
+            / sum(
+                outcome["temperature_K"] == temperature for outcome in outcomes
+            )
             for temperature in TEMPERATURES_K
         ),
         "parents": parent_summaries,
@@ -2148,14 +2427,19 @@ def submit_next_nested_wave(
     manifest = _load_json(root / "manifest.json")
     branches = manifest.get("branches")
     if not isinstance(branches, list) or not branches:
-        raise TypeError(f"{root / 'manifest.json'}: branches must be nonempty.")
+        raise TypeError(
+            f"{root / 'manifest.json'}: branches must be nonempty."
+        )
     start = int(start_index)
     if start < 0 or start >= len(branches):
-        raise IndexError(f"start_index={start} is outside [0, {len(branches)}).")
+        raise IndexError(
+            f"start_index={start} is outside [0, {len(branches)})."
+        )
     conflicts = _active_submission_conflicts(root)
     if conflicts:
         raise RuntimeError(
-            f"Refusing duplicate nested submission while jobs remain active: {conflicts}."
+            "Refusing duplicate nested submission while jobs remain active:"
+            f" {conflicts}."
         )
     wave_size = int(manifest["execution"]["array_concurrency"])
     stop = min(start + wave_size - 1, len(branches) - 1)
@@ -2174,8 +2458,9 @@ def submit_next_nested_wave(
     array_job_id = array_submission.stdout.strip()
     if not array_job_id.isdigit():
         raise RuntimeError(
-            f"Slurm returned invalid nested array ID: stdout={array_submission.stdout!r}, "
-            f"stderr={array_submission.stderr!r}."
+            "Slurm returned invalid nested array ID:"
+            f" stdout={array_submission.stdout!r},"
+            f" stderr={array_submission.stderr!r}."
         )
     if stop + 1 < len(branches):
         successor_kind = "controller"
@@ -2203,8 +2488,9 @@ def submit_next_nested_wave(
     successor_job_id = successor_submission.stdout.strip()
     if not successor_job_id.isdigit():
         raise RuntimeError(
-            f"Slurm returned invalid nested {successor_kind} ID: "
-            f"stdout={successor_submission.stdout!r}, stderr={successor_submission.stderr!r}."
+            f"Slurm returned invalid nested {successor_kind} ID:"
+            f" stdout={successor_submission.stdout!r},"
+            f" stderr={successor_submission.stderr!r}."
         )
     record = {
         "submitted_at": datetime.now(timezone.utc).isoformat(),

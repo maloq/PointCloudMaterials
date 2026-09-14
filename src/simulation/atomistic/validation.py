@@ -34,7 +34,9 @@ class SystemDiagnostics:
             "maximum_force_eV_per_A": self.maximum_force_eV_per_A,
             "mean_sampled_temperature_K": self.mean_sampled_temperature_K,
             "mean_sampled_pressure_GPa": self.mean_sampled_pressure_GPa,
-            "mean_sampled_number_density_per_A3": self.mean_sampled_number_density_per_A3,
+            "mean_sampled_number_density_per_A3": (
+                self.mean_sampled_number_density_per_A3
+            ),
             "ptm_normalized_rmsd_cutoff": self.ptm_normalized_rmsd_cutoff,
             "ptm_structure_fractions": self.ptm_structure_fractions,
         }
@@ -67,8 +69,9 @@ def _ptm_structure_fractions(
         from ovito.pipeline import Pipeline, StaticSource
     except ImportError as exc:
         raise ImportError(
-            "Physical endpoint validation requires OVITO's Polyhedral Template Matching "
-            "implementation. Install the repository requirements in the pointnet environment."
+            "Physical endpoint validation requires OVITO's Polyhedral Template"
+            " Matching implementation. Install the repository requirements in"
+            " the pointnet environment."
         ) from exc
     pipeline = Pipeline(source=StaticSource(data=ase_to_ovito(atoms)))
     modifier = PolyhedralTemplateMatchingModifier()
@@ -79,7 +82,8 @@ def _ptm_structure_fractions(
     names = ("OTHER", "FCC", "HCP", "BCC", "ICO")
     return {
         name.lower(): float(
-            int(data.attributes[f"PolyhedralTemplateMatching.counts.{name}"]) / atom_count
+            int(data.attributes[f"PolyhedralTemplateMatching.counts.{name}"])
+            / atom_count
         )
         for name in names
     }
@@ -103,39 +107,46 @@ def diagnose_system(
     maximum_force = float(np.max(force_norms))
     if maximum_force > config.validation.maximum_force_eV_per_A:
         raise RuntimeError(
-            f"{name}: maximum force {maximum_force:.6f} eV/A exceeds "
-            f"validation.maximum_force_eV_per_A="
-            f"{config.validation.maximum_force_eV_per_A:.6f}. Increase equilibration, "
-            "reduce the timestep, or use a potential valid for these configurations."
+            f"{name}: maximum force {maximum_force:.6f} eV/A exceeds"
+            f" validation.maximum_force_eV_per_A={config.validation.maximum_force_eV_per_A:.6f}."
+            " Increase equilibration, reduce the timestep, or use a potential"
+            " valid for these configurations."
         )
 
     search_cutoff = max(5.0, 2.0 * config.validation.minimum_pair_distance_A)
     minimum_distance = _minimum_pair_distance(atoms, search_cutoff)
     if minimum_distance < config.validation.minimum_pair_distance_A:
         raise RuntimeError(
-            f"{name}: minimum periodic pair distance {minimum_distance:.6f} A is below "
-            f"validation.minimum_pair_distance_A="
+            f"{name}: minimum periodic pair distance {minimum_distance:.6f} A"
+            " is below "
+            "validation.minimum_pair_distance_A="
             f"{config.validation.minimum_pair_distance_A:.6f} A."
         )
 
     sampled_pressure = float(np.mean(_tail(trace.pressure_GPa)))
     pressure_error = abs(sampled_pressure - config.dynamics.pressure_GPa)
-    if require_pressure_convergence and pressure_error > config.validation.maximum_pressure_error_GPa:
+    if (
+        require_pressure_convergence
+        and pressure_error > config.validation.maximum_pressure_error_GPa
+    ):
         raise RuntimeError(
-            f"{name}: tail-mean pressure is {sampled_pressure:.6f} GPa, "
-            f"target is {config.dynamics.pressure_GPa:.6f} GPa, and error "
-            f"{pressure_error:.6f} GPa exceeds validation.maximum_pressure_error_GPa="
-            f"{config.validation.maximum_pressure_error_GPa:.6f}. Run longer NPT equilibration."
+            f"{name}: tail-mean pressure is {sampled_pressure:.6f} GPa, target"
+            f" is {config.dynamics.pressure_GPa:.6f} GPa, and error"
+            f" {pressure_error:.6f} GPa exceeds"
+            f" validation.maximum_pressure_error_GPa={config.validation.maximum_pressure_error_GPa:.6f}."
+            " Run longer NPT equilibration."
         )
     sampled_temperature = float(np.mean(_tail(trace.temperature_K)))
-    temperature_error = abs(sampled_temperature - config.dynamics.target_temperature_K)
+    temperature_error = abs(
+        sampled_temperature - config.dynamics.target_temperature_K
+    )
     if temperature_error > config.validation.maximum_temperature_error_K:
         raise RuntimeError(
-            f"{name}: tail-mean temperature is {sampled_temperature:.3f} K, target is "
-            f"{config.dynamics.target_temperature_K:.3f} K, and error "
-            f"{temperature_error:.3f} K exceeds validation.maximum_temperature_error_K="
-            f"{config.validation.maximum_temperature_error_K:.3f}. Run longer or adjust "
-            "the thermostat time."
+            f"{name}: tail-mean temperature is {sampled_temperature:.3f} K,"
+            f" target is {config.dynamics.target_temperature_K:.3f} K, and"
+            f" error {temperature_error:.3f} K exceeds"
+            f" validation.maximum_temperature_error_K={config.validation.maximum_temperature_error_K:.3f}."
+            " Run longer or adjust the thermostat time."
         )
 
     atom_count = len(atoms)
@@ -166,7 +177,8 @@ def load_reference_densities(cache_dir: Path) -> dict[str, float]:
     for required_path in (manifest_path, low_path, high_path):
         if not required_path.is_file():
             raise FileNotFoundError(
-                f"Reference density cache is incomplete: missing {required_path}."
+                "Reference density cache is incomplete: missing"
+                f" {required_path}."
             )
     import json
 
@@ -175,7 +187,11 @@ def load_reference_densities(cache_dir: Path) -> dict[str, float]:
     atom_count = int(manifest["num_atoms"])
     box_low = np.load(low_path, mmap_mode="r")
     box_high = np.load(high_path, mmap_mode="r")
-    if box_low.shape != box_high.shape or box_low.ndim != 2 or box_low.shape[1] != 3:
+    if (
+        box_low.shape != box_high.shape
+        or box_low.ndim != 2
+        or box_low.shape[1] != 3
+    ):
         raise ValueError(
             "Reference cache box arrays must both have shape (frames, 3), got "
             f"box_low={box_low.shape}, box_high={box_high.shape}."
@@ -202,18 +218,24 @@ def validate_reference_densities(
         )
     reference = load_reference_densities(cache_dir)
     comparisons = {
-        "solid_bulk": diagnostics["bulk_solid"].mean_sampled_number_density_per_A3,
-        "liquid_bulk": diagnostics["bulk_liquid"].mean_sampled_number_density_per_A3,
+        "solid_bulk": (
+            diagnostics["bulk_solid"].mean_sampled_number_density_per_A3
+        ),
+        "liquid_bulk": (
+            diagnostics["bulk_liquid"].mean_sampled_number_density_per_A3
+        ),
     }
     for phase_name, observed in comparisons.items():
         expected = reference[phase_name]
         relative_error = abs(observed - expected) / expected
         if relative_error > tolerance:
             raise RuntimeError(
-                f"{phase_name}: simulated number density {observed:.8f} atom/A^3 differs "
-                f"from repository MD reference {expected:.8f} atom/A^3 by "
-                f"{relative_error:.2%}, above allowed {tolerance:.2%}. The selected "
-                "potential/thermodynamic protocol is not validated for this benchmark."
+                f"{phase_name}: simulated number density"
+                f" {observed:.8f} atom/A^3 differs from repository MD"
+                f" reference {expected:.8f} atom/A^3 by {relative_error:.2%},"
+                f" above allowed {tolerance:.2%}. The selected"
+                " potential/thermodynamic protocol is not validated for this"
+                " benchmark."
             )
     return reference
 
@@ -236,36 +258,55 @@ def validate_systems(
             require_pressure_convergence=False,
         ),
     }
-    solid_fcc_fraction = diagnostics["bulk_solid"].ptm_structure_fractions["fcc"]
+    solid_fcc_fraction = diagnostics["bulk_solid"].ptm_structure_fractions[
+        "fcc"
+    ]
     if solid_fcc_fraction < config.validation.minimum_solid_fcc_fraction:
         raise RuntimeError(
-            f"bulk_solid: PTM recognizes only {solid_fcc_fraction:.2%} FCC atoms, below "
-            f"validation.minimum_solid_fcc_fraction="
-            f"{config.validation.minimum_solid_fcc_fraction:.2%}. The solid endpoint did not "
-            "retain the declared FCC phase."
+            f"bulk_solid: PTM recognizes only {solid_fcc_fraction:.2%} FCC"
+            " atoms, below"
+            f" validation.minimum_solid_fcc_fraction={config.validation.minimum_solid_fcc_fraction:.2%}."
+            " The solid endpoint did not retain the declared FCC phase."
         )
     liquid_ptm = diagnostics["bulk_liquid"].ptm_structure_fractions
-    liquid_crystalline_fraction = liquid_ptm["fcc"] + liquid_ptm["hcp"] + liquid_ptm["bcc"]
-    if liquid_crystalline_fraction > config.validation.maximum_liquid_crystalline_fraction:
+    liquid_crystalline_fraction = (
+        liquid_ptm["fcc"] + liquid_ptm["hcp"] + liquid_ptm["bcc"]
+    )
+    if (
+        liquid_crystalline_fraction
+        > config.validation.maximum_liquid_crystalline_fraction
+    ):
         raise RuntimeError(
-            f"bulk_liquid: PTM recognizes {liquid_crystalline_fraction:.2%} atoms as "
-            "FCC/HCP/BCC, above validation.maximum_liquid_crystalline_fraction="
-            f"{config.validation.maximum_liquid_crystalline_fraction:.2%}. Increase melt time "
-            "or temperature; the liquid endpoint is still crystalline."
+            "bulk_liquid: PTM recognizes"
+            f" {liquid_crystalline_fraction:.2%} atoms as FCC/HCP/BCC, above"
+            f" validation.maximum_liquid_crystalline_fraction={config.validation.maximum_liquid_crystalline_fraction:.2%}."
+            " Increase melt time or temperature; the liquid endpoint is still"
+            " crystalline."
         )
-    interface_ptm = diagnostics["solid_liquid_interface"].ptm_structure_fractions
+    interface_ptm = diagnostics[
+        "solid_liquid_interface"
+    ].ptm_structure_fractions
     interface_crystalline_fraction = (
         interface_ptm["fcc"] + interface_ptm["hcp"] + interface_ptm["bcc"]
     )
-    interface_minimum = config.validation.minimum_interface_crystalline_fraction
-    interface_maximum = config.validation.maximum_interface_crystalline_fraction
-    if not interface_minimum <= interface_crystalline_fraction <= interface_maximum:
+    interface_minimum = (
+        config.validation.minimum_interface_crystalline_fraction
+    )
+    interface_maximum = (
+        config.validation.maximum_interface_crystalline_fraction
+    )
+    if (
+        not interface_minimum
+        <= interface_crystalline_fraction
+        <= interface_maximum
+    ):
         raise RuntimeError(
-            "solid_liquid_interface: PTM recognizes "
-            f"{interface_crystalline_fraction:.2%} atoms as FCC/HCP/BCC, outside required "
-            f"mixed-state interval [{interface_minimum:.2%}, {interface_maximum:.2%}]. "
-            "Adjust interface_evolution_steps, melt_steps, or the slab size; the snapshot "
-            "must contain both crystalline and non-crystalline populations."
+            "solid_liquid_interface: PTM recognizes"
+            f" {interface_crystalline_fraction:.2%} atoms as FCC/HCP/BCC,"
+            f" outside required mixed-state interval [{interface_minimum:.2%},"
+            f" {interface_maximum:.2%}]. Adjust interface_evolution_steps,"
+            " melt_steps, or the slab size; the snapshot must contain both"
+            " crystalline and non-crystalline populations."
         )
     reference = validate_reference_densities(diagnostics, config)
     return diagnostics, reference

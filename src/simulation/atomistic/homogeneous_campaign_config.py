@@ -20,7 +20,6 @@ from .potential_selection import (
     POTENTIAL_SELECTION_SCHEMA_VERSION,
 )
 
-
 ANALYSIS_MODES = ("asynchronous", "deferred")
 RUNTIME_POTENTIAL_FIELDS = {
     "autocast_dtype",
@@ -54,7 +53,9 @@ def campaign_config_matches_after_path_relocation(
             expected_homogeneous, dict
         ):
             return False
-        relocated_homogeneous["config_path"] = expected_homogeneous["config_path"]
+        relocated_homogeneous["config_path"] = expected_homogeneous[
+            "config_path"
+        ]
         relocated_generator = relocated_homogeneous["generator"]
         expected_generator = expected_homogeneous["generator"]
         if not isinstance(relocated_generator, dict) or not isinstance(
@@ -131,7 +132,9 @@ def campaign_config_is_monotonic_measurement_extension(
         # These are labels/locations only.  Every physical, numerical, source,
         # potential, cadence, and stopping-policy field remains exact below.
         observed_homogeneous["steps"] = expected_steps
-        observed_homogeneous["dataset_name"] = expected_homogeneous["dataset_name"]
+        observed_homogeneous["dataset_name"] = expected_homogeneous[
+            "dataset_name"
+        ]
         observed_output["root_dir"] = expected_output["root_dir"]
         extended["output_root"] = expected["output_root"]
     except KeyError:
@@ -199,10 +202,15 @@ def _repo_path(value: Any) -> Path:
 
 
 def _integer(value: Any, *, name: str, path: Path, minimum: int) -> int:
-    if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
+    if (
+        not isinstance(value, int)
+        or isinstance(value, bool)
+        or value < minimum
+    ):
         comparator = ">= 0" if minimum == 0 else "> 0"
         raise ValueError(
-            f"{path}: execution.{name} must be an integer {comparator}, got {value!r}."
+            f"{path}: execution.{name} must be an integer {comparator}, got"
+            f" {value!r}."
         )
     return value
 
@@ -247,9 +255,10 @@ def _validate_runtime_generator(
         mismatches["potential"] = potential_mismatches
     if mismatches:
         raise RuntimeError(
-            f"{path}: runtime_generator_config differs from the immutable source "
-            f"generator outside the approved runtime potential fields: {mismatches}. "
-            f"Only {sorted(RUNTIME_POTENTIAL_FIELDS)} may differ."
+            f"{path}: runtime_generator_config differs from the immutable"
+            " source generator outside the approved runtime potential fields:"
+            f" {mismatches}. Only {sorted(RUNTIME_POTENTIAL_FIELDS)} may"
+            " differ."
         )
 
 
@@ -265,14 +274,17 @@ def _validate_potential_selection_report(
     report_path = _repo_path(value)
     if not report_path.is_file():
         raise FileNotFoundError(
-            f"{config_path}: requested potential_selection_report does not exist: "
-            f"{report_path}. Run the explicit potential-selection command first; the "
-            "campaign will not fall back to its generator model silently."
+            f"{config_path}: requested potential_selection_report does not"
+            f" exist: {report_path}. Run the explicit potential-selection"
+            " command first; the campaign will not fall back to its generator"
+            " model silently."
         )
     with report_path.open("r", encoding="utf-8") as handle:
         report = json.load(handle)
     if not isinstance(report, dict):
-        raise TypeError(f"{report_path}: potential-selection report must be a mapping.")
+        raise TypeError(
+            f"{report_path}: potential-selection report must be a mapping."
+        )
     if (
         report.get("schema_version") != POTENTIAL_SELECTION_SCHEMA_VERSION
         or report.get("report_type") != "al_crystallization_mlip_selection"
@@ -287,7 +299,8 @@ def _validate_potential_selection_report(
     selected_config_value = report.get("selected_generator_config")
     if not isinstance(selected_config_value, str) or not selected_config_value:
         raise TypeError(
-            f"{report_path}: selected_generator_config must be a non-empty path string."
+            f"{report_path}: selected_generator_config must be a non-empty"
+            " path string."
         )
     selected_config_path = _repo_path(selected_config_value)
     if not selected_config_path.is_file():
@@ -305,30 +318,33 @@ def _validate_potential_selection_report(
             checksum = inputs.get(f"{role}_generator_config_sha256")
             if not isinstance(checksum, str) or len(checksum) != 64:
                 raise TypeError(
-                    f"{report_path}: inputs.{role}_generator_config_sha256 must be a "
-                    "64-character SHA-256 string."
+                    f"{report_path}: inputs.{role}_generator_config_sha256"
+                    " must be a 64-character SHA-256 string."
                 )
             selected_checksum = checksum
             selected_role = role
             break
     if selected_checksum is None or selected_role is None:
         raise RuntimeError(
-            f"{report_path}: selected_generator_config={selected_config_path} is not one "
-            "of the report's hashed baseline/candidate generator inputs."
+            f"{report_path}:"
+            f" selected_generator_config={selected_config_path} is not one of"
+            " the report's hashed baseline/candidate generator inputs."
         )
     observed_selected_checksum = _sha256(selected_config_path)
     if observed_selected_checksum != selected_checksum:
         raise RuntimeError(
-            f"{report_path}: selected generator config changed after selection: recorded "
-            f"SHA-256={selected_checksum}, observed={observed_selected_checksum}."
+            f"{report_path}: selected generator config changed after"
+            f" selection: recorded SHA-256={selected_checksum},"
+            f" observed={observed_selected_checksum}."
         )
     if selected_config_path != homogeneous.generator.config_path:
         raise RuntimeError(
-            f"{config_path}: selection report chose generator config "
-            f"{selected_config_path}, but homogeneous source_generator_config resolves to "
-            f"{homogeneous.generator.config_path}. Campaign size, thermodynamic protocol, "
-            "fixed-shape budgets, and model settings must come from the exact selected "
-            "production config, not merely a config using the same model."
+            f"{config_path}: selection report chose generator config"
+            f" {selected_config_path}, but homogeneous source_generator_config"
+            f" resolves to {homogeneous.generator.config_path}. Campaign size,"
+            " thermodynamic protocol, fixed-shape budgets, and model settings"
+            " must come from the exact selected production config, not merely"
+            " a config using the same model."
         )
     selected_config = load_config(selected_config_path)
     campaign_potential = homogeneous.generator.potential
@@ -339,18 +355,22 @@ def _validate_potential_selection_report(
             "campaign": getattr(campaign_potential, field),
         }
         for field in ("model_name", "sha256", "head", "family")
-        if getattr(selected_potential, field) != getattr(campaign_potential, field)
+        if getattr(selected_potential, field)
+        != getattr(campaign_potential, field)
     }
     if identity_mismatches:
         raise RuntimeError(
-            f"{config_path}: campaign source_generator_config does not use the potential "
-            f"selected by {report_path}: mismatches={identity_mismatches}. Create the "
-            "liquid-source/homogeneous configs for the selected model explicitly."
+            f"{config_path}: campaign source_generator_config does not use the"
+            f" potential selected by {report_path}:"
+            f" mismatches={identity_mismatches}. Create the"
+            " liquid-source/homogeneous configs for the selected model"
+            " explicitly."
         )
     if report.get("selected_model_name") != campaign_potential.model_name:
         raise RuntimeError(
-            f"{report_path}: selected_model_name={report.get('selected_model_name')!r} "
-            f"differs from campaign model_name={campaign_potential.model_name!r}."
+            f"{report_path}:"
+            f" selected_model_name={report.get('selected_model_name')!r} differs"
+            f" from campaign model_name={campaign_potential.model_name!r}."
         )
 
     projection = report.get("runtime_projection")
@@ -360,12 +380,16 @@ def _validate_potential_selection_report(
         )
     if projection.get("is_selection_or_launch_gate") is not False:
         raise RuntimeError(
-            f"{report_path}: runtime_projection.is_selection_or_launch_gate must be "
-            "false."
+            f"{report_path}: runtime_projection.is_selection_or_launch_gate"
+            " must be false."
         )
     workers = projection.get("workers")
     makespan_safety_factor = projection.get("makespan_safety_factor")
-    if not isinstance(workers, int) or isinstance(workers, bool) or workers <= 0:
+    if (
+        not isinstance(workers, int)
+        or isinstance(workers, bool)
+        or workers <= 0
+    ):
         raise TypeError(
             f"{report_path}: runtime_projection.workers must be a "
             f"positive integer, got {workers!r}."
@@ -377,14 +401,15 @@ def _validate_potential_selection_report(
         or float(makespan_safety_factor) < 1.0
     ):
         raise ValueError(
-            f"{report_path}: makespan_safety_factor must be finite and >= 1, got "
-            f"{makespan_safety_factor!r}."
+            f"{report_path}: makespan_safety_factor must be finite and >= 1,"
+            f" got {makespan_safety_factor!r}."
         )
 
     selected_projection = projection.get(selected_role)
     if not isinstance(selected_projection, dict):
         raise TypeError(
-            f"{report_path}: runtime_projection.{selected_role} must be a mapping."
+            f"{report_path}: runtime_projection.{selected_role} must be a"
+            " mapping."
         )
     projected_model_name = selected_projection.get("model_name")
     projected_homogeneous_value = selected_projection.get("homogeneous_config")
@@ -399,13 +424,14 @@ def _validate_potential_selection_report(
     )
     if projected_model_name != campaign_potential.model_name:
         raise RuntimeError(
-            f"{report_path}: selected {selected_role} runtime projection is for "
-            f"model={projected_model_name!r}, expected "
-            f"{campaign_potential.model_name!r}."
+            f"{report_path}: selected {selected_role} runtime projection is"
+            f" for model={projected_model_name!r}, expected"
+            f" {campaign_potential.model_name!r}."
         )
     if not isinstance(projected_homogeneous_value, str):
         raise TypeError(
-            f"{report_path}: selected homogeneous_config must be a path string."
+            f"{report_path}: selected homogeneous_config must be a path"
+            " string."
         )
     projected_homogeneous_path = _repo_path(projected_homogeneous_value)
     if projected_homogeneous_path != homogeneous.config_path:
@@ -414,10 +440,9 @@ def _validate_potential_selection_report(
             f"config {projected_homogeneous_path}, but this campaign uses "
             f"{homogeneous.config_path}."
         )
-    if (
-        not isinstance(projected_homogeneous_sha256, str)
-        or projected_homogeneous_sha256 != _sha256(homogeneous.config_path)
-    ):
+    if not isinstance(
+        projected_homogeneous_sha256, str
+    ) or projected_homogeneous_sha256 != _sha256(homogeneous.config_path):
         raise RuntimeError(
             f"{report_path}: selected homogeneous workload changed after its "
             f"runtime projection: {homogeneous.config_path}."
@@ -429,14 +454,15 @@ def _validate_potential_selection_report(
         or float(projected_makespan_seconds) < 0.0
     ):
         raise ValueError(
-            f"{report_path}: selected projected_makespan_seconds must be finite and "
-            f"nonnegative, got {projected_makespan_seconds!r}."
+            f"{report_path}: selected projected_makespan_seconds must be"
+            f" finite and nonnegative, got {projected_makespan_seconds!r}."
         )
     if projected_source_evidence != source_evidence:
         raise RuntimeError(
-            f"{report_path}: selected runtime projection source artifacts differ "
-            f"from this campaign's immutable source: projected="
-            f"{projected_source_evidence!r}, campaign={source_evidence!r}."
+            f"{report_path}: selected runtime projection source artifacts"
+            " differ from this campaign's immutable source:"
+            f" projected={projected_source_evidence!r},"
+            f" campaign={source_evidence!r}."
         )
     runtime_controls: dict[str, int | float | bool] = {
         "workers": workers,
@@ -452,7 +478,9 @@ def _bind_source_evidence(
     *,
     config_path: Path,
 ) -> dict[str, dict[str, str]]:
-    source_directory = homogeneous.source_dataset / homogeneous.source_environment
+    source_directory = (
+        homogeneous.source_dataset / homogeneous.source_environment
+    )
     paths = {
         "manifest": homogeneous.source_dataset / "manifest.json",
         "metadata": source_directory / "metadata.json",
@@ -462,21 +490,25 @@ def _bind_source_evidence(
     missing = [str(path) for path in paths.values() if not path.is_file()]
     if missing:
         raise FileNotFoundError(
-            f"{config_path}: immutable homogeneous source evidence is incomplete; "
-            f"missing={missing}. Generate the configured liquid source before loading the "
-            "campaign. No path-only or unverified source fallback is permitted."
+            f"{config_path}: immutable homogeneous source evidence is"
+            f" incomplete; missing={missing}. Generate the configured liquid"
+            " source before loading the campaign. No path-only or unverified"
+            " source fallback is permitted."
         )
     manifest_path = paths["manifest"]
     with manifest_path.open("r", encoding="utf-8") as handle:
         manifest = json.load(handle)
     if not isinstance(manifest, dict):
-        raise TypeError(f"{manifest_path}: immutable source manifest must be a mapping.")
+        raise TypeError(
+            f"{manifest_path}: immutable source manifest must be a mapping."
+        )
     if manifest.get("source_kind") != "immutable_homogeneous_liquid_only":
         raise RuntimeError(
-            f"{manifest_path}: optimized campaign requires source_kind="
-            "'immutable_homogeneous_liquid_only', got "
-            f"{manifest.get('source_kind')!r}. Generate the dedicated liquid source; "
-            "a general phase-context artifact is not the configured reusable source."
+            f"{manifest_path}: optimized campaign requires"
+            " source_kind='immutable_homogeneous_liquid_only', got"
+            f" {manifest.get('source_kind')!r}. Generate the dedicated liquid"
+            " source; a general phase-context artifact is not the configured"
+            " reusable source."
         )
     if manifest.get("interface_preparation_performed") is not False:
         raise RuntimeError(
@@ -508,9 +540,10 @@ def load_homogeneous_campaign_config(
     missing_root = sorted(expected_root_keys - set(raw))
     if unknown_root or missing_root:
         raise KeyError(
-            f"{config_path}: campaign root requires keys={sorted(expected_root_keys)} "
-            f"and permits optional keys={sorted(optional_root_keys)}; "
-            f"missing={missing_root}, unsupported={unknown_root}."
+            f"{config_path}: campaign root requires"
+            f" keys={sorted(expected_root_keys)} and permits optional"
+            f" keys={sorted(optional_root_keys)}; missing={missing_root},"
+            f" unsupported={unknown_root}."
         )
     execution_raw = raw["execution"]
     if not isinstance(execution_raw, dict):
@@ -546,8 +579,8 @@ def load_homogeneous_campaign_config(
             or not runtime_generator_value.strip()
         ):
             raise TypeError(
-                f"{config_path}: runtime_generator_config must be a non-empty path "
-                f"string, got {runtime_generator_value!r}."
+                f"{config_path}: runtime_generator_config must be a non-empty"
+                f" path string, got {runtime_generator_value!r}."
             )
         runtime_generator = load_config(_repo_path(runtime_generator_value))
         _validate_runtime_generator(
@@ -601,63 +634,72 @@ def load_homogeneous_campaign_config(
     stop_on_event = execution_raw["stop_on_event"]
     if not isinstance(stop_on_event, bool):
         raise TypeError(
-            f"{config_path}: execution.stop_on_event must be true or false, got "
-            f"{stop_on_event!r}."
+            f"{config_path}: execution.stop_on_event must be true or false,"
+            f" got {stop_on_event!r}."
         )
     if not stop_on_event and post_event_steps:
         raise ValueError(
-            f"{config_path}: execution.post_event_steps={post_event_steps} requires "
-            "execution.stop_on_event=true; a full-duration trajectory already contains "
-            "all configured post-event growth."
+            f"{config_path}:"
+            f" execution.post_event_steps={post_event_steps} requires"
+            " execution.stop_on_event=true; a full-duration trajectory"
+            " already contains all configured post-event growth."
         )
     analysis_mode = execution_raw["analysis_mode"]
     if analysis_mode not in ANALYSIS_MODES:
         raise ValueError(
-            f"{config_path}: execution.analysis_mode must be one of {ANALYSIS_MODES}, "
-            f"got {analysis_mode!r}."
+            f"{config_path}: execution.analysis_mode must be one of"
+            f" {ANALYSIS_MODES}, got {analysis_mode!r}."
         )
     if analysis_mode == "asynchronous" and analysis_workers == 0:
         raise ValueError(
-            f"{config_path}: asynchronous analysis requires analysis_workers > 0."
+            f"{config_path}: asynchronous analysis requires analysis_workers"
+            " > 0."
         )
     if analysis_mode == "deferred" and analysis_workers != 0:
         raise ValueError(
-            f"{config_path}: deferred analysis requires analysis_workers=0; run the "
-            "separate analyze command with an explicit worker count later."
+            f"{config_path}: deferred analysis requires analysis_workers=0;"
+            " run the separate analyze command with an explicit worker count"
+            " later."
         )
     if homogeneous.equilibration_steps % event_check_interval:
         raise ValueError(
-            f"{config_path}: equilibration_steps={homogeneous.equilibration_steps} must be "
-            f"divisible by event_check_interval={event_check_interval} so the online event "
-            "series contains the exact waiting-time origin."
+            f"{config_path}:"
+            f" equilibration_steps={homogeneous.equilibration_steps} must be"
+            f" divisible by event_check_interval={event_check_interval} so the"
+            " online event series contains the exact waiting-time origin."
         )
     if homogeneous.steps % event_check_interval:
         raise ValueError(
-            f"{config_path}: steps={homogeneous.steps} must be divisible by "
-            f"event_check_interval={event_check_interval} so a no-event trajectory is "
-            "right-censored at an observed online frame."
+            f"{config_path}: steps={homogeneous.steps} must be divisible by"
+            f" event_check_interval={event_check_interval} so a no-event"
+            " trajectory is right-censored at an observed online frame."
         )
     if homogeneous.sample_interval % event_check_interval:
         raise ValueError(
-            f"{config_path}: sample_interval={homogeneous.sample_interval} must be "
-            f"divisible by event_check_interval={event_check_interval}. Online control "
-            "must contain every saved scientific-analysis frame plus optional denser "
-            "frames; it may not skip or shift the configured event observations."
+            f"{config_path}:"
+            f" sample_interval={homogeneous.sample_interval} must be divisible"
+            f" by event_check_interval={event_check_interval}. Online control"
+            " must contain every saved scientific-analysis frame plus"
+            " optional denser frames; it may not skip or shift the configured"
+            " event observations."
         )
     # Dense checks are monitoring/control data only. Event persistence is evaluated on
     # the original saved-frame cadence, so neither a sub-cadence dip nor an apparent
     # between-frame onset changes the repository's event definition.
-    online_persistence_frames = homogeneous.analysis.threshold_persistence_frames
+    online_persistence_frames = (
+        homogeneous.analysis.threshold_persistence_frames
+    )
     if post_event_steps > homogeneous.steps:
         raise ValueError(
-            f"{config_path}: post_event_steps={post_event_steps} exceeds the configured "
-            f"measurement duration steps={homogeneous.steps}."
+            f"{config_path}: post_event_steps={post_event_steps} exceeds the"
+            f" configured measurement duration steps={homogeneous.steps}."
         )
     output_root = _repo_path(raw["output_root"])
     if output_root == homogeneous.source_dataset:
         raise ValueError(
-            f"{config_path}: output_root and immutable source_dataset both resolve to "
-            f"{output_root}; campaign output must never mutate its source."
+            f"{config_path}: output_root and immutable source_dataset both"
+            f" resolve to {output_root}; campaign output must never mutate its"
+            " source."
         )
     return HomogeneousCampaignConfig(
         homogeneous=homogeneous,

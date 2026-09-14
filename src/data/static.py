@@ -31,22 +31,35 @@ logger = setup_logging()
 _STATIC_SAMPLE_CACHE_VERSION = 1
 
 
-def _split_source_sample_limit(source_max_samples: int | None, n_files: int) -> list[int | None]:
+def _split_source_sample_limit(
+    source_max_samples: int | None, n_files: int
+) -> list[int | None]:
     if source_max_samples is None:
         return [None] * int(n_files)
     limit = int(source_max_samples)
     if limit <= 0:
-        raise ValueError(f"source max_samples must be > 0 when set, got {source_max_samples!r}.")
+        raise ValueError(
+            "source max_samples must be > 0 when set, got"
+            f" {source_max_samples!r}."
+        )
     if n_files <= 0:
-        raise ValueError(f"Cannot split source max_samples={limit} across n_files={n_files}.")
+        raise ValueError(
+            f"Cannot split source max_samples={limit} across"
+            f" n_files={n_files}."
+        )
     base = limit // int(n_files)
     remainder = limit % int(n_files)
-    return [base + (1 if file_idx < remainder else 0) for file_idx in range(int(n_files))]
+    return [
+        base + (1 if file_idx < remainder else 0)
+        for file_idx in range(int(n_files))
+    ]
 
 
 def _safe_cache_stem(*parts: Any) -> str:
     raw = "__".join(str(part) for part in parts)
-    safe = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in raw).strip("_")
+    safe = "".join(
+        ch if ch.isalnum() or ch in "._-" else "_" for ch in raw
+    ).strip("_")
     return safe or "shard"
 
 
@@ -70,9 +83,13 @@ def _sample_single_file(
         if max_samples <= 0:
             return []
     if sample_type == 'regular':
-        regular_max_samples = max_samples if max_samples is not None else int(2e32)
+        regular_max_samples = (
+            max_samples if max_samples is not None else int(2e32)
+        )
         return get_regular_samples(
-            points, size=radius, n_points=n_points,
+            points,
+            size=radius,
+            n_points=n_points,
             overlap_fraction=overlap_fraction,
             return_coords=return_coords,
             max_samples=regular_max_samples,
@@ -81,10 +98,15 @@ def _sample_single_file(
             sampling_method=sampling_method,
         )
     elif sample_type == 'random':
-        random_n_samples = max_samples if max_samples is not None else int(n_samples)
+        random_n_samples = (
+            max_samples if max_samples is not None else int(n_samples)
+        )
         return get_random_samples(
-            points, n_samples=random_n_samples, size=radius,
-            n_points=n_points, return_coords=return_coords,
+            points,
+            n_samples=random_n_samples,
+            size=radius,
+            n_points=n_points,
+            return_coords=return_coords,
             sampling_method=sampling_method,
         )
     else:
@@ -128,10 +150,15 @@ def read_and_sample_files(
     all_samples: list = []
 
     if n_files > 1 and max_workers > 1:
-        logger.info(f"Processing {n_files} files in parallel with {max_workers} workers")
+        logger.info(
+            f"Processing {n_files} files in parallel with"
+            f" {max_workers} workers"
+        )
         with ProcessPoolExecutor(max_workers=max_workers) as pool:
             futures = [
-                pool.submit(_sample_single_file, fp, *args, max_samples=file_limit)
+                pool.submit(
+                    _sample_single_file, fp, *args, max_samples=file_limit
+                )
                 for fp, file_limit in zip(filepaths, file_limits)
             ]
             for future in futures:
@@ -139,35 +166,41 @@ def read_and_sample_files(
                 all_samples.extend(file_samples)
     else:
         for fp, file_limit in zip(filepaths, file_limits):
-            file_samples = _sample_single_file(fp, *args, max_samples=file_limit)
+            file_samples = _sample_single_file(
+                fp, *args, max_samples=file_limit
+            )
             all_samples.extend(file_samples)
 
     if not all_samples:
         raise ValueError(f"No samples found for {data_files} in {root}")
-    if source_max_samples is not None and len(all_samples) > int(source_max_samples):
+    if source_max_samples is not None and len(all_samples) > int(
+        source_max_samples
+    ):
         all_samples = all_samples[: int(source_max_samples)]
     return all_samples
 
 
 class PointCloudDataset(Dataset):
-    def __init__(self,
-                 root: str = "",
-                 data_files: list[str] | None = None,
-                 data_sources: list[dict] | None = None,
-                 return_coords=False,
-                 sample_type='regular',
-                 radius=8,
-                 overlap_fraction=0.0,
-                 n_samples=1000,
-                 num_points=100,
-                 drop_edge_samples=True,
-                 edge_drop_layers: int | None = None,
-                 pre_normalize=True,
-                 normalize=True,
-                 sampling_method="drop_farthest",
-                 auto_cutoff_config: dict[str, Any] | None = None,
-                 sample_cache_config: dict[str, Any] | None = None,
-                 atomic_context: dict[str, Any] | None = None):
+    def __init__(
+        self,
+        root: str = "",
+        data_files: list[str] | None = None,
+        data_sources: list[dict] | None = None,
+        return_coords=False,
+        sample_type='regular',
+        radius=8,
+        overlap_fraction=0.0,
+        n_samples=1000,
+        num_points=100,
+        drop_edge_samples=True,
+        edge_drop_layers: int | None = None,
+        pre_normalize=True,
+        normalize=True,
+        sampling_method="drop_farthest",
+        auto_cutoff_config: dict[str, Any] | None = None,
+        sample_cache_config: dict[str, Any] | None = None,
+        atomic_context: dict[str, Any] | None = None,
+    ):
         """Initialize the dataset with samples from point cloud files.
 
         Supports the two repository configuration modes:
@@ -236,11 +269,17 @@ class PointCloudDataset(Dataset):
             )
             if atomic_context is not None:
                 from src.data.atomic_context import attach_atomic_context
-                attach_atomic_context(self, atomic_context, cache_cfg["cache_dir"])
+
+                attach_atomic_context(
+                    self, atomic_context, cache_cfg["cache_dir"]
+                )
             return
 
         if atomic_context is not None:
-            raise ValueError("atomic_context requires an existing static sample cache with coordinates")
+            raise ValueError(
+                "atomic_context requires an existing static sample cache with"
+                " coordinates"
+            )
         all_sample_radii: list[float] = []
         all_samples: list = []
 
@@ -251,10 +290,17 @@ class PointCloudDataset(Dataset):
             src_radius = float(source["resolved_radius"])
 
             samples = read_and_sample_files(
-                src_root, src_files, src_radius, self.num_points,
-                overlap_fraction, sample_type, n_samples,
-                return_coords, sampling_method,
-                self.drop_edge_samples, self.edge_drop_layers,
+                src_root,
+                src_files,
+                src_radius,
+                self.num_points,
+                overlap_fraction,
+                sample_type,
+                n_samples,
+                return_coords,
+                sampling_method,
+                self.drop_edge_samples,
+                self.edge_drop_layers,
                 source_max_samples=source["max_samples"],
             )
             all_samples.extend(samples)
@@ -277,7 +323,9 @@ class PointCloudDataset(Dataset):
         if self.pre_normalize and self.normalize:
             self.samples = [
                 pc_normalize(sample, sample_radius).astype(np.float32)
-                for sample, sample_radius in zip(self.samples, self.sample_radii)
+                for sample, sample_radius in zip(
+                    self.samples, self.sample_radii
+                )
             ]
         elif not self.normalize:
             print("Point Cloud normalization skipped")
@@ -285,7 +333,9 @@ class PointCloudDataset(Dataset):
         if len(self.source_radii) > 1:
             formatted = ", ".join(
                 f"{name}: {radius_val:.4f}"
-                for name, radius_val in sorted(self.source_radii.items(), key=lambda kv: kv[0])
+                for name, radius_val in sorted(
+                    self.source_radii.items(), key=lambda kv: kv[0]
+                )
             )
             logger.print(f"Per-source cutoff radii: {formatted}")
 
@@ -298,7 +348,8 @@ class PointCloudDataset(Dataset):
         cache_dir = sample_cache_config["cache_dir"]
         if cache_dir is None or not str(cache_dir).strip():
             raise ValueError(
-                "data.sample_cache.cache_dir is required when data.sample_cache.enabled=true."
+                "data.sample_cache.cache_dir is required when"
+                " data.sample_cache.enabled=true."
             )
         return {
             "enabled": True,
@@ -324,8 +375,9 @@ class PointCloudDataset(Dataset):
                 file_path = Path(str(source["root"])) / str(file_name)
                 if not file_path.exists():
                     raise FileNotFoundError(
-                        "Cannot build static sample-cache request because a source file is missing: "
-                        f"source={source['name']!r}, path={file_path}."
+                        "Cannot build static sample-cache request because a"
+                        f" source file is missing: source={source['name']!r},"
+                        f" path={file_path}."
                     )
                 stat = file_path.stat()
                 file_entries.append(
@@ -351,7 +403,9 @@ class PointCloudDataset(Dataset):
             "sample_type": str(sample_type),
             "num_points": int(self.num_points),
             "overlap_fraction": float(overlap_fraction),
-            "n_samples": int(n_samples) if str(sample_type) == "random" else None,
+            "n_samples": (
+                int(n_samples) if str(sample_type) == "random" else None
+            ),
             "return_coords": bool(return_coords),
             "normalize": bool(normalize),
             "drop_edge_samples": bool(self.drop_edge_samples),
@@ -362,7 +416,9 @@ class PointCloudDataset(Dataset):
 
     @staticmethod
     def _sample_cache_fingerprint(cache_request: dict[str, Any]) -> str:
-        payload = json.dumps(cache_request, sort_keys=True, separators=(",", ":"))
+        payload = json.dumps(
+            cache_request, sort_keys=True, separators=(",", ":")
+        )
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
     def _load_or_build_sample_cache(
@@ -382,9 +438,10 @@ class PointCloudDataset(Dataset):
         if building_marker.exists():
             if not cache_cfg["rebuild"]:
                 raise RuntimeError(
-                    "Static sample cache appears incomplete from an interrupted build. "
-                    f"cache_dir={cache_dir}. Set data.sample_cache.rebuild=true to delete "
-                    "the incomplete cache and rebuild it."
+                    "Static sample cache appears incomplete from an"
+                    f" interrupted build. cache_dir={cache_dir}. Set"
+                    " data.sample_cache.rebuild=true to delete the incomplete"
+                    " cache and rebuild it."
                 )
             self._remove_cache_dir_for_rebuild(cache_dir)
 
@@ -393,10 +450,12 @@ class PointCloudDataset(Dataset):
                 metadata = json.load(handle)
             observed_fingerprint = metadata["fingerprint"]
             if observed_fingerprint == expected_fingerprint:
-                load_dir, load_metadata = self._stage_sample_cache_if_configured(
-                    source_cache_dir=cache_dir,
-                    metadata=metadata,
-                    cache_cfg=cache_cfg,
+                load_dir, load_metadata = (
+                    self._stage_sample_cache_if_configured(
+                        source_cache_dir=cache_dir,
+                        metadata=metadata,
+                        cache_cfg=cache_cfg,
+                    )
                 )
                 self._load_sample_cache_from_metadata(
                     cache_dir=load_dir,
@@ -405,19 +464,22 @@ class PointCloudDataset(Dataset):
                 return
             if not cache_cfg["rebuild"]:
                 raise RuntimeError(
-                    "Static sample cache metadata does not match the requested dataset. "
-                    f"cache_dir={cache_dir}, expected_fingerprint={expected_fingerprint}, "
-                    f"observed_fingerprint={observed_fingerprint}. Set "
-                    "data.sample_cache.rebuild=true to overwrite this cache in place."
+                    "Static sample cache metadata does not match the"
+                    f" requested dataset. cache_dir={cache_dir},"
+                    f" expected_fingerprint={expected_fingerprint},"
+                    f" observed_fingerprint={observed_fingerprint}. Set"
+                    " data.sample_cache.rebuild=true to overwrite this cache"
+                    " in place."
                 )
             if cache_dir.exists():
                 self._remove_cache_dir_for_rebuild(cache_dir)
         elif cache_dir.exists() and any(cache_dir.iterdir()):
             if not cache_cfg["rebuild"]:
                 raise RuntimeError(
-                    "Static sample cache directory exists but metadata.json is missing. "
-                    f"cache_dir={cache_dir}. Set data.sample_cache.rebuild=true to delete "
-                    "the incomplete cache and rebuild it."
+                    "Static sample cache directory exists but metadata.json"
+                    f" is missing. cache_dir={cache_dir}. Set"
+                    " data.sample_cache.rebuild=true to delete the incomplete"
+                    " cache and rebuild it."
                 )
             self._remove_cache_dir_for_rebuild(cache_dir)
 
@@ -436,7 +498,9 @@ class PointCloudDataset(Dataset):
             metadata=metadata,
             cache_cfg=cache_cfg,
         )
-        self._load_sample_cache_from_metadata(cache_dir=load_dir, metadata=load_metadata)
+        self._load_sample_cache_from_metadata(
+            cache_dir=load_dir, metadata=load_metadata
+        )
 
     @staticmethod
     def _cache_copy_matches(
@@ -452,7 +516,10 @@ class PointCloudDataset(Dataset):
             with staged_metadata_path.open("r", encoding="utf-8") as handle:
                 staged_metadata = json.load(handle)
         except (OSError, json.JSONDecodeError) as exc:
-            return False, f"metadata is unreadable: {staged_metadata_path}: {exc}"
+            return (
+                False,
+                f"metadata is unreadable: {staged_metadata_path}: {exc}",
+            )
         if staged_metadata.get("fingerprint") != metadata.get("fingerprint"):
             return False, "metadata fingerprint differs from the source cache"
 
@@ -470,9 +537,13 @@ class PointCloudDataset(Dataset):
             if not staged_path.is_file():
                 return False, f"staged cache file is missing: {staged_path}"
             if source_path.stat().st_size != staged_path.stat().st_size:
-                return False, (
-                    f"file size differs for {relative_path}: "
-                    f"source={source_path.stat().st_size}, staged={staged_path.stat().st_size}"
+                return (
+                    False,
+                    (
+                        f"file size differs for {relative_path}:"
+                        f" source={source_path.stat().st_size},"
+                        f" staged={staged_path.stat().st_size}"
+                    ),
                 )
         return True, "cache fingerprint and file sizes match"
 
@@ -495,8 +566,8 @@ class PointCloudDataset(Dataset):
             )
         if staged_cache_dir.resolve() == source_cache_dir.resolve():
             raise ValueError(
-                "data.sample_cache.local_cache_dir must differ from cache_dir, "
-                f"both resolve to {staged_cache_dir.resolve()}."
+                "data.sample_cache.local_cache_dir must differ from"
+                f" cache_dir, both resolve to {staged_cache_dir.resolve()}."
             )
 
         stage_parent = staged_cache_dir.parent
@@ -513,13 +584,16 @@ class PointCloudDataset(Dataset):
                 )
                 if matches:
                     logger.print(
-                        f"[sample_cache] using node-local staged cache at {staged_cache_dir}."
+                        "[sample_cache] using node-local staged cache at"
+                        f" {staged_cache_dir}."
                     )
-                    with (staged_cache_dir / "metadata.json").open("r", encoding="utf-8") as handle:
+                    with (staged_cache_dir / "metadata.json").open(
+                        "r", encoding="utf-8"
+                    ) as handle:
                         return staged_cache_dir, json.load(handle)
                 logger.print(
-                    "[sample_cache] replacing invalid node-local staged cache: "
-                    f"path={staged_cache_dir}, reason={reason}."
+                    "[sample_cache] replacing invalid node-local staged"
+                    f" cache: path={staged_cache_dir}, reason={reason}."
                 )
                 self._remove_cache_dir_for_rebuild(staged_cache_dir)
 
@@ -531,12 +605,17 @@ class PointCloudDataset(Dataset):
             available_bytes = shutil.disk_usage(stage_parent).free
             if available_bytes < source_bytes:
                 raise RuntimeError(
-                    "Insufficient space for node-local static sample cache. "
-                    f"source={source_cache_dir}, destination={staged_cache_dir}, "
-                    f"required_bytes={source_bytes}, available_bytes={available_bytes}."
+                    "Insufficient space for node-local static sample cache."
+                    f" source={source_cache_dir},"
+                    f" destination={staged_cache_dir},"
+                    f" required_bytes={source_bytes},"
+                    f" available_bytes={available_bytes}."
                 )
 
-            staging_dir = stage_parent / f".{staged_cache_dir.name}.staging-{os.getpid()}"
+            staging_dir = (
+                stage_parent
+                / f".{staged_cache_dir.name}.staging-{os.getpid()}"
+            )
             if staging_dir.exists():
                 self._remove_cache_dir_for_rebuild(staging_dir)
             logger.print(
@@ -545,7 +624,9 @@ class PointCloudDataset(Dataset):
                 f"bytes={source_bytes}."
             )
             try:
-                shutil.copytree(source_cache_dir, staging_dir, copy_function=shutil.copy2)
+                shutil.copytree(
+                    source_cache_dir, staging_dir, copy_function=shutil.copy2
+                )
                 matches, reason = self._cache_copy_matches(
                     source_cache_dir=source_cache_dir,
                     staged_cache_dir=staging_dir,
@@ -553,8 +634,9 @@ class PointCloudDataset(Dataset):
                 )
                 if not matches:
                     raise RuntimeError(
-                        "Node-local static sample cache validation failed after copy. "
-                        f"source={source_cache_dir}, staging_dir={staging_dir}, reason={reason}."
+                        "Node-local static sample cache validation failed"
+                        f" after copy. source={source_cache_dir},"
+                        f" staging_dir={staging_dir}, reason={reason}."
                     )
                 staging_dir.rename(staged_cache_dir)
             except Exception:
@@ -562,18 +644,27 @@ class PointCloudDataset(Dataset):
                     self._remove_cache_dir_for_rebuild(staging_dir)
                 raise
 
-            logger.print(f"[sample_cache] staged node-local cache at {staged_cache_dir}.")
-            with (staged_cache_dir / "metadata.json").open("r", encoding="utf-8") as handle:
+            logger.print(
+                "[sample_cache] staged node-local cache at"
+                f" {staged_cache_dir}."
+            )
+            with (staged_cache_dir / "metadata.json").open(
+                "r", encoding="utf-8"
+            ) as handle:
                 return staged_cache_dir, json.load(handle)
 
     @staticmethod
     def _remove_cache_dir_for_rebuild(cache_dir: Path) -> None:
         resolved = cache_dir.resolve()
-        forbidden = {Path("/").resolve(), Path.cwd().resolve(), Path.home().resolve()}
+        forbidden = {
+            Path("/").resolve(),
+            Path.cwd().resolve(),
+            Path.home().resolve(),
+        }
         if resolved in forbidden:
             raise RuntimeError(
-                "Refusing to delete unsafe sample cache directory during rebuild: "
-                f"{resolved}."
+                "Refusing to delete unsafe sample cache directory during"
+                f" rebuild: {resolved}."
             )
         if cache_dir.exists():
             shutil.rmtree(cache_dir)
@@ -613,12 +704,16 @@ class PointCloudDataset(Dataset):
             source_root = str(source["root"])
             source_radius = float(source["resolved_radius"])
             source_files = list(source["files"])
-            file_limits = _split_source_sample_limit(source["max_samples"], len(source_files))
+            file_limits = _split_source_sample_limit(
+                source["max_samples"], len(source_files)
+            )
             remaining = source["max_samples"]
             remaining = None if remaining is None else int(remaining)
             source_count = 0
 
-            for file_index, (file_name, file_limit) in enumerate(zip(source_files, file_limits)):
+            for file_index, (file_name, file_limit) in enumerate(
+                zip(source_files, file_limits)
+            ):
                 if remaining is not None and remaining <= 0:
                     break
                 effective_limit = file_limit
@@ -626,9 +721,9 @@ class PointCloudDataset(Dataset):
                     effective_limit = min(int(effective_limit), remaining)
                 filepath = os.path.join(source_root, str(file_name))
                 logger.print(
-                    "[sample_cache] building shard "
-                    f"source={source_name!r}, file={file_name!r}, "
-                    f"radius={source_radius:.6f}, max_samples={effective_limit}."
+                    f"[sample_cache] building shard source={source_name!r},"
+                    f" file={file_name!r}, radius={source_radius:.6f},"
+                    f" max_samples={effective_limit}."
                 )
                 samples = _sample_single_file(
                     filepath,
@@ -647,16 +742,27 @@ class PointCloudDataset(Dataset):
                     samples = samples[:remaining]
                 if not samples:
                     raise RuntimeError(
-                        "Static sample cache shard produced zero samples. "
-                        f"source={source_name!r}, file={file_name!r}, path={filepath}, "
-                        f"radius={source_radius}, max_samples={effective_limit}."
+                        "Static sample cache shard produced zero samples."
+                        f" source={source_name!r}, file={file_name!r},"
+                        f" path={filepath}, radius={source_radius},"
+                        f" max_samples={effective_limit}."
                     )
 
-                shard_stem = _safe_cache_stem(source_name, file_index, Path(str(file_name)).stem)
+                shard_stem = _safe_cache_stem(
+                    source_name, file_index, Path(str(file_name)).stem
+                )
                 sample_relpath = f"shards/{shard_stem}.samples.npy"
-                coords_relpath = f"shards/{shard_stem}.coords.npy" if self.return_coords else None
+                coords_relpath = (
+                    f"shards/{shard_stem}.coords.npy"
+                    if self.return_coords
+                    else None
+                )
                 sample_path = cache_dir / sample_relpath
-                coords_path = cache_dir / coords_relpath if coords_relpath is not None else None
+                coords_path = (
+                    cache_dir / coords_relpath
+                    if coords_relpath is not None
+                    else None
+                )
                 shard_count = self._write_sample_cache_shard(
                     samples=samples,
                     sample_path=sample_path,
@@ -684,13 +790,17 @@ class PointCloudDataset(Dataset):
 
             if source_count <= 0:
                 raise RuntimeError(
-                    "Static sample cache source produced zero samples. "
-                    f"source={source_name!r}, root={source_root}, files={source_files}."
+                    "Static sample cache source produced zero samples."
+                    f" source={source_name!r}, root={source_root},"
+                    f" files={source_files}."
                 )
             metadata["source_counts"][source_name] = int(source_count)
 
         if total_samples <= 0:
-            raise RuntimeError(f"Static sample cache build produced zero samples in {cache_dir}.")
+            raise RuntimeError(
+                "Static sample cache build produced zero samples in"
+                f" {cache_dir}."
+            )
 
         metadata["total_samples"] = int(total_samples)
         metadata_path = cache_dir / "metadata.json"
@@ -699,7 +809,8 @@ class PointCloudDataset(Dataset):
             handle.write("\n")
         building_marker.unlink()
         logger.print(
-            f"[sample_cache] built {total_samples} ready-to-train samples at {cache_dir}."
+            f"[sample_cache] built {total_samples} ready-to-train samples at"
+            f" {cache_dir}."
         )
 
     def _write_sample_cache_shard(
@@ -723,7 +834,8 @@ class PointCloudDataset(Dataset):
         if self.return_coords:
             if coords_path is None:
                 raise RuntimeError(
-                    "coords_path must be provided when return_coords=True while writing sample cache."
+                    "coords_path must be provided when return_coords=True"
+                    " while writing sample cache."
                 )
             coords_array = np.lib.format.open_memmap(
                 coords_path,
@@ -740,20 +852,24 @@ class PointCloudDataset(Dataset):
             sample_np = np.asarray(sample_points, dtype=np.float32)
             if sample_np.shape != (self.num_points, 3):
                 raise ValueError(
-                    "Static sample cache expected each sample to have shape "
-                    f"({self.num_points}, 3), got {sample_np.shape}. "
-                    f"source={source_name!r}, file={file_name!r}, sample_index={sample_index}."
+                    "Static sample cache expected each sample to have shape"
+                    f" ({self.num_points}, 3), got {sample_np.shape}."
+                    f" source={source_name!r}, file={file_name!r},"
+                    f" sample_index={sample_index}."
                 )
             if self.normalize:
-                sample_np = pc_normalize(sample_np, radius).astype(np.float32, copy=False)
+                sample_np = pc_normalize(sample_np, radius).astype(
+                    np.float32, copy=False
+                )
             sample_array[sample_index] = sample_np
             if coords_array is not None:
                 coords_np = np.asarray(coords, dtype=np.float32)
                 if coords_np.shape != (3,):
                     raise ValueError(
-                        "Static sample cache expected coords to have shape (3,), "
-                        f"got {coords_np.shape}. source={source_name!r}, "
-                        f"file={file_name!r}, sample_index={sample_index}."
+                        "Static sample cache expected coords to have shape"
+                        f" (3,), got {coords_np.shape}."
+                        f" source={source_name!r}, file={file_name!r},"
+                        f" sample_index={sample_index}."
                     )
                 coords_array[sample_index] = coords_np
 
@@ -782,15 +898,17 @@ class PointCloudDataset(Dataset):
         cached_num_points = int(request["num_points"])
         if cached_num_points != int(self.num_points):
             raise RuntimeError(
-                "Static sample cache num_points mismatch after metadata validation. "
-                f"cache_dir={cache_dir}, cached={cached_num_points}, requested={self.num_points}."
+                "Static sample cache num_points mismatch after metadata"
+                f" validation. cache_dir={cache_dir},"
+                f" cached={cached_num_points}, requested={self.num_points}."
             )
         cached_return_coords = bool(request["return_coords"])
         if cached_return_coords != bool(self.return_coords):
             raise RuntimeError(
-                "Static sample cache return_coords mismatch after metadata validation. "
-                f"cache_dir={cache_dir}, cached={cached_return_coords}, "
-                f"requested={self.return_coords}."
+                "Static sample cache return_coords mismatch after metadata"
+                f" validation. cache_dir={cache_dir},"
+                f" cached={cached_return_coords},"
+                f" requested={self.return_coords}."
             )
 
         sample_arrays: list[np.ndarray] = []
@@ -804,15 +922,16 @@ class PointCloudDataset(Dataset):
             sample_path = cache_dir / shard["samples_path"]
             if not sample_path.exists():
                 raise FileNotFoundError(
-                    "Static sample cache metadata references a missing samples shard: "
-                    f"{sample_path}."
+                    "Static sample cache metadata references a missing"
+                    f" samples shard: {sample_path}."
                 )
             sample_array = np.load(sample_path, mmap_mode="r")
             expected_shape = (count, int(self.num_points), 3)
             if tuple(sample_array.shape) != expected_shape:
                 raise RuntimeError(
-                    "Static sample cache samples shard has unexpected shape. "
-                    f"path={sample_path}, expected={expected_shape}, got={sample_array.shape}."
+                    "Static sample cache samples shard has unexpected shape."
+                    f" path={sample_path}, expected={expected_shape},"
+                    f" got={sample_array.shape}."
                 )
             if sample_array.dtype != np.float32:
                 raise RuntimeError(
@@ -825,22 +944,24 @@ class PointCloudDataset(Dataset):
             if self.return_coords:
                 if coords_relpath is None:
                     raise RuntimeError(
-                        "Static sample cache is missing coords_path for a return_coords=True request. "
-                        f"sample_path={sample_path}."
+                        "Static sample cache is missing coords_path for a"
+                        " return_coords=True request."
+                        f" sample_path={sample_path}."
                     )
                 coords_path = cache_dir / coords_relpath
                 if not coords_path.exists():
                     raise FileNotFoundError(
-                        "Static sample cache metadata references a missing coords shard: "
-                        f"{coords_path}."
+                        "Static sample cache metadata references a missing"
+                        f" coords shard: {coords_path}."
                     )
                 coord_array = np.load(coords_path, mmap_mode="r")
                 expected_coords_shape = (count, 3)
                 if tuple(coord_array.shape) != expected_coords_shape:
                     raise RuntimeError(
-                        "Static sample cache coords shard has unexpected shape. "
-                        f"path={coords_path}, expected={expected_coords_shape}, "
-                        f"got={coord_array.shape}."
+                        "Static sample cache coords shard has unexpected"
+                        f" shape. path={coords_path},"
+                        f" expected={expected_coords_shape},"
+                        f" got={coord_array.shape}."
                     )
                 if coord_array.dtype != np.float32:
                     raise RuntimeError(
@@ -864,7 +985,9 @@ class PointCloudDataset(Dataset):
 
         self._cache_sample_arrays = sample_arrays
         self._cache_coord_arrays = coord_arrays
-        self._cache_cumulative_counts = np.cumsum(counts, dtype=np.int64).tolist()
+        self._cache_cumulative_counts = np.cumsum(
+            counts, dtype=np.int64
+        ).tolist()
         self._cache_total_samples = total_samples
         self.samples = None
         self.coords = None
@@ -872,12 +995,15 @@ class PointCloudDataset(Dataset):
         self.sample_radii = ShardValueSequence(radii, counts)
         logger.info(f"Point set shape: {sample_arrays[0].shape[1:]}")
         logger.print(
-            f"[sample_cache] loaded {total_samples} ready-to-train samples from {cache_dir}."
+            f"[sample_cache] loaded {total_samples} ready-to-train samples"
+            f" from {cache_dir}."
         )
         if len(self.source_radii) > 1:
             formatted = ", ".join(
                 f"{name}: {radius_val:.4f}"
-                for name, radius_val in sorted(self.source_radii.items(), key=lambda kv: kv[0])
+                for name, radius_val in sorted(
+                    self.source_radii.items(), key=lambda kv: kv[0]
+                )
             )
             logger.print(f"Per-source cutoff radii: {formatted}")
 
@@ -900,7 +1026,9 @@ class PointCloudDataset(Dataset):
         if auto_cutoff_config is None:
             return float(default_radius)
 
-        target_points = max(int(auto_cutoff_config["target_points"]), int(num_points))
+        target_points = max(
+            int(auto_cutoff_config["target_points"]), int(num_points)
+        )
 
         seed = int(auto_cutoff_config["seed"]) + int(source["index"])
         estimated_radius, coverage = estimate_source_cutoff_radius(
@@ -908,7 +1036,9 @@ class PointCloudDataset(Dataset):
             source_files=source_files,
             target_points=target_points,
             quantile=float(auto_cutoff_config["quantile"]),
-            estimation_samples_per_file=int(auto_cutoff_config["estimation_samples_per_file"]),
+            estimation_samples_per_file=int(
+                auto_cutoff_config["estimation_samples_per_file"]
+            ),
             seed=seed,
             safety_factor=float(auto_cutoff_config["safety_factor"]),
             boundary_margin=auto_cutoff_config["boundary_margin"],
@@ -933,9 +1063,16 @@ class PointCloudDataset(Dataset):
         if idx < 0:
             idx += total
         if idx < 0 or idx >= total:
-            raise IndexError(f"PointCloudDataset cache index {index} out of range for length {total}.")
+            raise IndexError(
+                f"PointCloudDataset cache index {index} out of range for"
+                f" length {total}."
+            )
         shard_idx = bisect.bisect_right(self._cache_cumulative_counts, idx)
-        previous = 0 if shard_idx == 0 else int(self._cache_cumulative_counts[shard_idx - 1])
+        previous = (
+            0
+            if shard_idx == 0
+            else int(self._cache_cumulative_counts[shard_idx - 1])
+        )
         return shard_idx, idx - previous
 
     def __getitem__(self, index):
@@ -947,19 +1084,26 @@ class PointCloudDataset(Dataset):
                 coord_array = self._cache_coord_arrays[shard_idx]
                 if coord_array is None:
                     raise RuntimeError(
-                        "Cached PointCloudDataset was requested with return_coords=True, "
-                        f"but shard {shard_idx} has no coords array."
+                        "Cached PointCloudDataset was requested with"
+                        f" return_coords=True, but shard {shard_idx} has no"
+                        " coords array."
                     )
-                sample["coords"] = torch.tensor(coord_array[local_idx], dtype=torch.float32)
+                sample["coords"] = torch.tensor(
+                    coord_array[local_idx], dtype=torch.float32
+                )
             return sample
 
         point_set = self.samples[index]
         if not self.pre_normalize and self.normalize:
-            point_set = pc_normalize(point_set, float(self.sample_radii[index])).astype(np.float32)
+            point_set = pc_normalize(
+                point_set, float(self.sample_radii[index])
+            ).astype(np.float32)
         point_set_tensor = torch.tensor(point_set, dtype=torch.float32)
         sample = {"points": point_set_tensor}
         if self.return_coords:
-            sample["coords"] = torch.tensor(self.coords[index], dtype=torch.float32)
+            sample["coords"] = torch.tensor(
+                self.coords[index], dtype=torch.float32
+            )
         return sample
 
     def __getitems__(self, indices):
@@ -974,19 +1118,30 @@ class PointCloudDataset(Dataset):
             )
         global_indices = global_indices.copy()
         global_indices[global_indices < 0] += int(self._cache_total_samples)
-        invalid = (global_indices < 0) | (global_indices >= int(self._cache_total_samples))
+        invalid = (global_indices < 0) | (
+            global_indices >= int(self._cache_total_samples)
+        )
         if np.any(invalid):
             bad_indices = global_indices[invalid][:10].tolist()
             raise IndexError(
-                "PointCloudDataset batched cache indices are out of range. "
-                f"dataset_length={self._cache_total_samples}, invalid_indices={bad_indices}."
+                "PointCloudDataset batched cache indices are out of range."
+                f" dataset_length={self._cache_total_samples},"
+                f" invalid_indices={bad_indices}."
             )
 
         batch_size = int(global_indices.size)
-        point_batch = np.empty((batch_size, self.num_points, 3), dtype=np.float32)
-        coord_batch = np.empty((batch_size, 3), dtype=np.float32) if self.return_coords else None
+        point_batch = np.empty(
+            (batch_size, self.num_points, 3), dtype=np.float32
+        )
+        coord_batch = (
+            np.empty((batch_size, 3), dtype=np.float32)
+            if self.return_coords
+            else None
+        )
         cumulative = np.asarray(self._cache_cumulative_counts, dtype=np.int64)
-        shard_indices = np.searchsorted(cumulative, global_indices, side="right")
+        shard_indices = np.searchsorted(
+            cumulative, global_indices, side="right"
+        )
 
         for shard_idx in np.unique(shard_indices):
             output_positions = np.flatnonzero(shard_indices == shard_idx)
@@ -995,20 +1150,25 @@ class PointCloudDataset(Dataset):
             local_order = np.argsort(local_indices, kind="stable")
             sorted_output_positions = output_positions[local_order]
             sorted_local_indices = local_indices[local_order]
-            point_batch[sorted_output_positions] = self._cache_sample_arrays[shard_idx][
-                sorted_local_indices
-            ]
+            point_batch[sorted_output_positions] = self._cache_sample_arrays[
+                shard_idx
+            ][sorted_local_indices]
             if coord_batch is not None:
                 coord_array = self._cache_coord_arrays[shard_idx]
                 if coord_array is None:
                     raise RuntimeError(
-                        "Cached PointCloudDataset was requested with return_coords=True, "
-                        f"but shard {shard_idx} has no coords array."
+                        "Cached PointCloudDataset was requested with"
+                        f" return_coords=True, but shard {shard_idx} has no"
+                        " coords array."
                     )
-                coord_batch[sorted_output_positions] = coord_array[sorted_local_indices]
+                coord_batch[sorted_output_positions] = coord_array[
+                    sorted_local_indices
+                ]
 
         point_tensor = torch.from_numpy(point_batch)
-        coord_tensor = torch.from_numpy(coord_batch) if coord_batch is not None else None
+        coord_tensor = (
+            torch.from_numpy(coord_batch) if coord_batch is not None else None
+        )
         samples = []
         for batch_index in range(batch_size):
             sample = {"points": point_tensor[batch_index]}

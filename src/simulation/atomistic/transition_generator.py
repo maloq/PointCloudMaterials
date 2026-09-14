@@ -26,7 +26,10 @@ from .artifacts import (
 from .checkpoints import CheckpointStore
 from .config import validate_potential_qualification
 from .generator import select_calculator
-from .provenance import ExecutionProvenance, validate_configured_source_manifest
+from .provenance import (
+    ExecutionProvenance,
+    validate_configured_source_manifest,
+)
 from .simulation import ThermodynamicTrace, build_initial_solid, run_npt
 from .transition_analysis import (
     STRUCTURE_NAMES,
@@ -89,7 +92,9 @@ def _load_prepared_interface(config: TransitionConfig) -> PreparedInterface:
         trajectory_path,
     ):
         if not path.is_file():
-            raise FileNotFoundError(f"Transition source dataset is missing required file: {path}.")
+            raise FileNotFoundError(
+                f"Transition source dataset is missing required file: {path}."
+            )
 
     with source_manifest_path.open("r", encoding="utf-8") as handle:
         source_manifest = json.load(handle)
@@ -100,50 +105,66 @@ def _load_prepared_interface(config: TransitionConfig) -> PreparedInterface:
     )
     with interface_metadata_path.open("r", encoding="utf-8") as handle:
         interface_metadata = json.load(handle)
-    region_definition = interface_metadata["intermediate_regions"][0]["definition"]
+    region_definition = interface_metadata["intermediate_regions"][0][
+        "definition"
+    ]
     slab_values = region_definition["slab_bounds_fractional"]
     slab_bounds = (float(slab_values[0]), float(slab_values[1]))
     if not 0.0 < slab_bounds[0] < slab_bounds[1] < 1.0:
         raise RuntimeError(
-            f"{interface_metadata_path}: slab_bounds_fractional must satisfy "
-            f"0 < lower < upper < 1 for the repository's central liquid slab, got "
-            f"{slab_bounds}."
+            f"{interface_metadata_path}: slab_bounds_fractional must satisfy 0"
+            " < lower < upper < 1 for the repository's central liquid slab,"
+            f" got {slab_bounds}."
         )
     with np.load(trajectory_path) as trajectory:
-        matching_frames = np.flatnonzero(trajectory["step"] == config.source_frame_step)
+        matching_frames = np.flatnonzero(
+            trajectory["step"] == config.source_frame_step
+        )
         if len(matching_frames) != 1:
             raise RuntimeError(
-                f"{trajectory_path}: expected exactly one frame at step "
-                f"{config.source_frame_step}, found indices={matching_frames.tolist()}."
+                f"{trajectory_path}: expected exactly one frame at step"
+                f" {config.source_frame_step}, found"
+                f" indices={matching_frames.tolist()}."
             )
         frame_index = int(matching_frames[0])
-        positions_A = np.asarray(trajectory["positions_A"][frame_index], dtype=np.float64)
-        cell_A = np.asarray(trajectory["cell_vectors_A"][frame_index], dtype=np.float64)
+        positions_A = np.asarray(
+            trajectory["positions_A"][frame_index], dtype=np.float64
+        )
+        cell_A = np.asarray(
+            trajectory["cell_vectors_A"][frame_index], dtype=np.float64
+        )
         if "volume_A3" not in trajectory.files:
             raise RuntimeError(
-                f"{trajectory_path}: source trajectory has no volume_A3 array and cannot "
-                "verify the selected cell. Regenerate the legacy source dataset."
+                f"{trajectory_path}: source trajectory has no volume_A3 array"
+                " and cannot verify the selected cell. Regenerate the legacy"
+                " source dataset."
             )
         stored_volume_A3 = float(trajectory["volume_A3"][frame_index])
     cell_volume_A3 = float(abs(np.linalg.det(cell_A)))
-    if not np.isclose(cell_volume_A3, stored_volume_A3, rtol=1.0e-10, atol=1.0e-8):
+    if not np.isclose(
+        cell_volume_A3, stored_volume_A3, rtol=1.0e-10, atol=1.0e-8
+    ):
         raise RuntimeError(
-            f"{trajectory_path}: selected source frame step={config.source_frame_step} has "
-            f"det(cell)={cell_volume_A3:.12g} A^3 but stored volume="
-            f"{stored_volume_A3:.12g} A^3. Regenerate the stale/corrupted source trajectory."
+            f"{trajectory_path}: selected source frame"
+            f" step={config.source_frame_step} has"
+            f" det(cell)={cell_volume_A3:.12g} A^3 but stored"
+            f" volume={stored_volume_A3:.12g} A^3. Regenerate the"
+            " stale/corrupted source trajectory."
         )
     expected_atom_count = len(build_initial_solid(config.generator))
     if len(positions_A) != expected_atom_count:
         raise RuntimeError(
-            f"Transition source contains {len(positions_A)} atoms but the source generator "
-            f"configuration declares {expected_atom_count}."
+            f"Transition source contains {len(positions_A)} atoms but the"
+            f" source generator configuration declares {expected_atom_count}."
         )
     numbers = np.full(
         expected_atom_count,
         atomic_numbers[config.generator.system.chemical_symbol],
         dtype=np.int32,
     )
-    atoms = Atoms(numbers=numbers, positions=positions_A, cell=cell_A, pbc=True)
+    atoms = Atoms(
+        numbers=numbers, positions=positions_A, cell=cell_A, pbc=True
+    )
     labels = label_interface(
         atoms,
         slab_bounds,
@@ -218,8 +239,8 @@ def _simulate_branch(
         checkpoints.save(continuous_stage, atoms, continuous_trace)
     else:
         progress(
-            f"{branch.name}: loaded replica seed {random_seed} continuous NPT checkpoint "
-            f"from {checkpoints.directory}"
+            f"{branch.name}: loaded replica seed {random_seed} continuous NPT"
+            f" checkpoint from {checkpoints.directory}"
         )
         atoms = checkpoint.atoms
         atoms.calc = calculator
@@ -228,9 +249,10 @@ def _simulate_branch(
     production_mask = continuous_trace.step >= branch.equilibration_steps
     if not np.any(continuous_trace.step == branch.equilibration_steps):
         raise RuntimeError(
-            f"{branch.name}: continuous NPT trace has no frame at equilibration boundary step "
-            f"{branch.equilibration_steps}; sample_interval={config.sample_interval} must divide "
-            "equilibration_steps exactly."
+            f"{branch.name}: continuous NPT trace has no frame at"
+            f" equilibration boundary step {branch.equilibration_steps};"
+            f" sample_interval={config.sample_interval} must divide"
+            " equilibration_steps exactly."
         )
     equilibration_trace = _slice_trace(
         continuous_trace, equilibration_mask, step_offset=0
@@ -363,14 +385,16 @@ def _write_branch(
             "equilibration_excluded_from_production": True,
             "continuous_integrator_across_equilibration_boundary": True,
             "interface_coordinate": (
-                "PTM order-profile threshold crossing in the fractional cell; signed advance "
-                "uses the initial interface-normal cell height and removes affine barostat "
-                "strain. Positive velocity denotes crystal growth."
+                "PTM order-profile threshold crossing in the fractional cell;"
+                " signed advance uses the initial interface-normal cell height"
+                " and removes affine barostat strain. Positive velocity"
+                " denotes crystal growth."
             ),
             "ptm_normalized_rmsd_cutoff": config.analysis.ptm_rmsd_cutoff,
             "phase_audit": (
-                "PTM is used only to audit phase-front motion. Per-atom phase_id values retain "
-                "the initial prepared-region provenance and are not PTM labels."
+                "PTM is used only to audit phase-front motion. Per-atom"
+                " phase_id values retain the initial prepared-region"
+                " provenance and are not PTM labels."
             ),
         },
         "transition": {
@@ -406,14 +430,24 @@ def _write_branch(
             "minimum_steady_profile_contrast": float(
                 np.min(
                     result.analysis.profile_contrast[
-                        (result.analysis.step >= result.analysis.velocity_fit_start_step)
-                        & (result.analysis.step <= result.analysis.velocity_fit_end_step)
+                        (
+                            result.analysis.step
+                            >= result.analysis.velocity_fit_start_step
+                        )
+                        & (
+                            result.analysis.step
+                            <= result.analysis.velocity_fit_end_step
+                        )
                     ]
                 )
             ),
             "thermodynamic_stationarity": asdict(result.analysis.stationarity),
-            "initial_crystalline_fraction": float(result.analysis.crystalline_fraction[0]),
-            "final_crystalline_fraction": float(result.analysis.crystalline_fraction[-1]),
+            "initial_crystalline_fraction": float(
+                result.analysis.crystalline_fraction[0]
+            ),
+            "final_crystalline_fraction": float(
+                result.analysis.crystalline_fraction[-1]
+            ),
         },
         "rdf": phase_rdf_metadata(
             result.phase_rdf,
@@ -424,11 +458,15 @@ def _write_branch(
     }
     with (directory / "metadata.json").open("w", encoding="utf-8") as handle:
         json.dump(metadata, handle, indent=2)
-    with (directory / "phase_mapping.json").open("w", encoding="utf-8") as handle:
+    with (directory / "phase_mapping.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
         json.dump(
             {
                 "name_to_id": PHASE_TO_ID,
-                "id_to_name": {str(value): key for key, value in PHASE_TO_ID.items()},
+                "id_to_name": {
+                    str(value): key for key, value in PHASE_TO_ID.items()
+                },
             },
             handle,
             indent=2,
@@ -466,12 +504,15 @@ def _resolve_zero_velocity(
     overlapping = [
         item
         for item in temperature_summaries
-        if item["confidence_interval_95_m_per_s"][0] <= 0.0
+        if item["confidence_interval_95_m_per_s"][0]
+        <= 0.0
         <= item["confidence_interval_95_m_per_s"][1]
     ]
     robust_pairs: list[tuple[dict[str, object], dict[str, object]]] = []
     reverse_sign_pairs: list[tuple[dict[str, object], dict[str, object]]] = []
-    for lower, upper in zip(temperature_summaries[:-1], temperature_summaries[1:]):
+    for lower, upper in zip(
+        temperature_summaries[:-1], temperature_summaries[1:]
+    ):
         lower_interval = lower["confidence_interval_95_m_per_s"]
         upper_interval = upper["confidence_interval_95_m_per_s"]
         if lower_interval[0] > 0.0 and upper_interval[1] < 0.0:
@@ -482,10 +523,11 @@ def _resolve_zero_velocity(
         zero_velocity: dict[str, object] = {
             "status": "unresolved",
             "reason": (
-                "At least one adjacent higher-temperature point reverses robustly from "
-                "negative melting velocity to positive growth velocity. The resolved "
-                "velocity-temperature response is non-monotonic, so no unique physical "
-                "zero-velocity bracket is reported."
+                "At least one adjacent higher-temperature point reverses"
+                " robustly from negative melting velocity to positive growth"
+                " velocity. The resolved velocity-temperature response is"
+                " non-monotonic, so no unique physical zero-velocity bracket"
+                " is reported."
             ),
             "reverse_sign_temperature_pairs_K": [
                 [lower["temperature_K"], upper["temperature_K"]]
@@ -501,17 +543,18 @@ def _resolve_zero_velocity(
         overlap_detail = ""
         if overlapping:
             overlap_detail = (
-                " The following sampled temperatures have 95% confidence intervals that "
-                "overlap zero: "
-                f"{[item['temperature_K'] for item in overlapping]}."
+                " The following sampled temperatures have 95% confidence"
+                " intervals that overlap zero:"
+                f" {[item['temperature_K'] for item in overlapping]}."
             )
         zero_velocity = {
             "status": "unresolved",
             "reason": (
-                "No adjacent temperature pair has a positive lower-temperature velocity and "
-                "negative higher-temperature velocity with both 95% confidence intervals "
-                "excluding zero. Add replicas, extend stationary trajectories, and/or refine "
-                f"the temperature grid.{overlap_detail}"
+                "No adjacent temperature pair has a positive"
+                " lower-temperature velocity and negative higher-temperature"
+                " velocity with both 95% confidence intervals excluding zero."
+                " Add replicas, extend stationary trajectories, and/or refine"
+                f" the temperature grid.{overlap_detail}"
             ),
             "temperatures_with_zero_overlapping_confidence_interval_K": [
                 item["temperature_K"] for item in overlapping
@@ -522,9 +565,10 @@ def _resolve_zero_velocity(
         zero_velocity = {
             "status": "unresolved",
             "reason": (
-                "Multiple adjacent temperature pairs show robust positive-to-negative sign "
-                "changes. The velocity-temperature response is non-monotonic at the current "
-                "sampling precision, so a unique zero-velocity bracket is not defined."
+                "Multiple adjacent temperature pairs show robust"
+                " positive-to-negative sign changes. The velocity-temperature"
+                " response is non-monotonic at the current sampling precision,"
+                " so a unique zero-velocity bracket is not defined."
             ),
             "candidate_bracket_temperature_K": [
                 [lower["temperature_K"], upper["temperature_K"]]
@@ -543,30 +587,38 @@ def _resolve_zero_velocity(
         interpolated_temperature = lower_temperature - (
             lower_velocity * temperature_difference / velocity_difference
         )
-        lower_derivative = -temperature_difference * upper_velocity / (
-            velocity_difference**2
+        lower_derivative = (
+            -temperature_difference * upper_velocity / (velocity_difference**2)
         )
-        upper_derivative = temperature_difference * lower_velocity / (
-            velocity_difference**2
+        upper_derivative = (
+            temperature_difference * lower_velocity / (velocity_difference**2)
         )
         interpolation_standard_error = float(
             np.sqrt(
-                (lower_derivative * float(lower["standard_error_m_per_s"])) ** 2
-                + (upper_derivative * float(upper["standard_error_m_per_s"])) ** 2
+                (lower_derivative * float(lower["standard_error_m_per_s"]))
+                ** 2
+                + (upper_derivative * float(upper["standard_error_m_per_s"]))
+                ** 2
             )
         )
         zero_velocity = {
             "status": "resolved_for_this_finite_protocol",
             "reason": (
-                "Adjacent replica-mean velocities change sign and both 95% confidence "
-                "intervals exclude zero. The interpolation is descriptive and does not include "
-                "independent interface-preparation, finite-size, orientation, duration, "
-                "order-parameter, or MLIP model error."
+                "Adjacent replica-mean velocities change sign and both 95%"
+                " confidence intervals exclude zero. The interpolation is"
+                " descriptive and does not include independent"
+                " interface-preparation, finite-size, orientation, duration,"
+                " order-parameter, or MLIP model error."
             ),
             "bracket_temperature_K": [lower_temperature, upper_temperature],
             "interpolated_temperature_K": interpolated_temperature,
-            "propagated_replica_standard_error_K": interpolation_standard_error,
-            "method": "linear interpolation of adjacent replica-mean spatial front velocities",
+            "propagated_replica_standard_error_K": (
+                interpolation_standard_error
+            ),
+            "method": (
+                "linear interpolation of adjacent replica-mean spatial front"
+                " velocities"
+            ),
             "other_temperatures_with_zero_overlapping_confidence_interval_K": [
                 item["temperature_K"] for item in overlapping
             ],
@@ -585,8 +637,8 @@ def _velocity_summary(
         from scipy.stats import t as student_t
     except ImportError as exc:
         raise ImportError(
-            "Direct-coexistence replica confidence intervals require scipy in the pointnet "
-            "environment."
+            "Direct-coexistence replica confidence intervals require scipy in"
+            " the pointnet environment."
         ) from exc
 
     temperature_summaries: list[dict[str, object]] = []
@@ -629,7 +681,9 @@ def _velocity_summary(
                     {
                         "run_name": run_name,
                         "replica_index": result.replica_index,
-                        "configured_replica_seed": result.configured_replica_seed,
+                        "configured_replica_seed": (
+                            result.configured_replica_seed
+                        ),
                         "simulation_seed": result.simulation_seed,
                         "velocity_m_per_s": (
                             result.analysis.fitted_interface_velocity_m_per_s
@@ -640,7 +694,9 @@ def _velocity_summary(
                         "individual_front_fit_r_squared": (
                             result.analysis.individual_interface_fit_r_squared.tolist()
                         ),
-                        "fit_r_squared": result.analysis.velocity_fit_r_squared,
+                        "fit_r_squared": (
+                            result.analysis.velocity_fit_r_squared
+                        ),
                         "fit_ols_standard_error_m_per_s": (
                             result.analysis.velocity_fit_ols_standard_error_m_per_s
                         ),
@@ -671,11 +727,17 @@ def _velocity_summary(
                         "artifacts": {
                             filename: {
                                 "path": str(
-                                    config.output.root_dir / run_name / filename
+                                    config.output.root_dir
+                                    / run_name
+                                    / filename
                                 ),
-                                "sha256": hashlib.sha256(
-                                    (staging_root / run_name / filename).read_bytes()
-                                ).hexdigest(),
+                                "sha256": (
+                                    hashlib.sha256(
+                                        (
+                                            staging_root / run_name / filename
+                                        ).read_bytes()
+                                    ).hexdigest()
+                                ),
                             }
                             for filename in (
                                 "trajectory.npz",
@@ -720,13 +782,13 @@ def _velocity_summary(
             "settings": execution_provenance.calculator.settings,
         },
         "protocol": {
-            "config_sha256": hashlib.sha256(
-                serialized_config.encode("utf-8")
-            ).hexdigest(),
+            "config_sha256": (
+                hashlib.sha256(serialized_config.encode("utf-8")).hexdigest()
+            ),
             "config_file": str(config.config_path),
-            "config_file_sha256": hashlib.sha256(
-                config.config_path.read_bytes()
-            ).hexdigest(),
+            "config_file_sha256": (
+                hashlib.sha256(config.config_path.read_bytes()).hexdigest()
+            ),
             "chemical_symbol": config.generator.system.chemical_symbol,
             "pressure_GPa": config.generator.dynamics.pressure_GPa,
             "timestep_fs": config.generator.dynamics.timestep_fs,
@@ -737,20 +799,24 @@ def _velocity_summary(
             "initial_lattice_constant_A": (
                 config.generator.system.initial_lattice_constant_A
             ),
-            "prepared_source_cell_vectors_A": np.asarray(
-                prepared.atoms.cell, dtype=np.float64
-            ).tolist(),
+            "prepared_source_cell_vectors_A": (
+                np.asarray(prepared.atoms.cell, dtype=np.float64).tolist()
+            ),
             "interface_normal_fractional_cell_axis": [0, 0, 1],
             "interface_normal_crystal_direction": "[001]",
             "source": {
                 "generator_config": str(config.generator.config_path),
-                "generator_config_sha256": hashlib.sha256(
-                    config.generator.config_path.read_bytes()
-                ).hexdigest(),
+                "generator_config_sha256": (
+                    hashlib.sha256(
+                        config.generator.config_path.read_bytes()
+                    ).hexdigest()
+                ),
                 "dataset": str(config.source_dataset),
-                "dataset_manifest_sha256": hashlib.sha256(
-                    (config.source_dataset / "manifest.json").read_bytes()
-                ).hexdigest(),
+                "dataset_manifest_sha256": (
+                    hashlib.sha256(
+                        (config.source_dataset / "manifest.json").read_bytes()
+                    ).hexdigest()
+                ),
                 "environment": config.source_interface_environment,
                 "frame_step": config.source_frame_step,
             },
@@ -771,12 +837,15 @@ def _velocity_summary(
                 for branch in config.temperature_runs
             ],
         },
-        "velocity_sign_convention": "positive is crystal growth; negative is melting",
+        "velocity_sign_convention": (
+            "positive is crystal growth; negative is melting"
+        ),
         "uncertainty_scope": (
-            "Student-t intervals quantify independent-velocity trajectory variation "
-            "conditional on one shared prepared interface configuration. They do not include "
-            "independent interface-preparation, size, orientation, order-parameter, or MLIP "
-            "uncertainty."
+            "Student-t intervals quantify independent-velocity trajectory"
+            " variation conditional on one shared prepared interface"
+            " configuration. They do not include independent"
+            " interface-preparation, size, orientation, order-parameter, or"
+            " MLIP uncertainty."
         ),
         "temperatures": temperature_summaries,
         "zero_velocity_bracket_K": zero_velocity.get("bracket_temperature_K"),
@@ -792,20 +861,26 @@ def _write_velocity_summary_visualization(
         [item["temperature_K"] for item in temperatures], dtype=np.float64
     )
     mean_velocity = np.asarray(
-        [item["mean_velocity_m_per_s"] for item in temperatures], dtype=np.float64
+        [item["mean_velocity_m_per_s"] for item in temperatures],
+        dtype=np.float64,
     )
     confidence_interval = np.asarray(
         [item["confidence_interval_95_m_per_s"] for item in temperatures],
         dtype=np.float64,
     )
     errors = np.vstack(
-        (mean_velocity - confidence_interval[:, 0], confidence_interval[:, 1] - mean_velocity)
+        (
+            mean_velocity - confidence_interval[:, 0],
+            confidence_interval[:, 1] - mean_velocity,
+        )
     )
     figure, axis = plt.subplots(figsize=(8.5, 6.0), constrained_layout=True)
     for item in temperatures:
         run_temperatures = np.full(len(item["runs"]), item["temperature_K"])
         run_velocities = [run["velocity_m_per_s"] for run in item["runs"]]
-        axis.scatter(run_temperatures, run_velocities, color="#8d99ae", alpha=0.7)
+        axis.scatter(
+            run_temperatures, run_velocities, color="#8d99ae", alpha=0.7
+        )
     axis.errorbar(
         temperature_K,
         mean_velocity,
@@ -827,7 +902,9 @@ def _write_velocity_summary_visualization(
     axis.set(
         xlabel="temperature (K)",
         ylabel="spatial interface velocity (m/s)",
-        title=f"Direct-coexistence temperature grid: {zero_velocity['status']}",
+        title=(
+            f"Direct-coexistence temperature grid: {zero_velocity['status']}"
+        ),
     )
     axis.legend()
     figure.savefig(path, dpi=180)
@@ -843,12 +920,14 @@ def _write_dataset(
     output_root = config.output.root_dir
     if output_root.exists() and not config.output.overwrite:
         raise FileExistsError(
-            f"Transition output already exists: {output_root}. Remove it or explicitly set "
-            "output.overwrite=true."
+            f"Transition output already exists: {output_root}. Remove it or"
+            " explicitly set output.overwrite=true."
         )
     output_root.parent.mkdir(parents=True, exist_ok=True)
     staging_root = Path(
-        tempfile.mkdtemp(prefix=f".{output_root.name}.staging-", dir=output_root.parent)
+        tempfile.mkdtemp(
+            prefix=f".{output_root.name}.staging-", dir=output_root.parent
+        )
     )
     try:
         for branch_name, result in results.items():
@@ -862,7 +941,9 @@ def _write_dataset(
         velocity_summary = _velocity_summary(
             config, results, execution_provenance, prepared, staging_root
         )
-        with (staging_root / "velocity_summary.json").open("w", encoding="utf-8") as handle:
+        with (staging_root / "velocity_summary.json").open(
+            "w", encoding="utf-8"
+        ) as handle:
             json.dump(velocity_summary, handle, indent=2)
         if config.output.create_visualizations:
             _write_velocity_summary_visualization(
@@ -875,20 +956,24 @@ def _write_dataset(
             write_phase_rdf_overview(
                 staging_root / "phase_rdf_overview.png",
                 {
-                    branch_name: staging_root
-                    / relative_path
-                    / "visualizations"
-                    / "phase_rdf.png"
+                    branch_name: (
+                        staging_root
+                        / relative_path
+                        / "visualizations"
+                        / "phase_rdf.png"
+                    )
                     for branch_name, relative_path in first_replica_results.items()
                 },
             )
             write_structure_slice_overview(
                 staging_root / "structure_slice_overview.png",
                 {
-                    branch_name: staging_root
-                    / relative_path
-                    / "visualizations"
-                    / "structure_slice.png"
+                    branch_name: (
+                        staging_root
+                        / relative_path
+                        / "visualizations"
+                        / "structure_slice.png"
+                    )
                     for branch_name, relative_path in first_replica_results.items()
                 },
             )
@@ -906,21 +991,25 @@ def _write_dataset(
             "velocity_summary": "velocity_summary.json",
             "scientific_scope": {
                 "supported_claim": (
-                    "Replica statistics for spatially tracked seeded planar-interface velocities "
-                    "under the selected calculator, temperature grid, pressure, equilibration, "
-                    "and finite steady fitting windows."
+                    "Replica statistics for spatially tracked seeded"
+                    " planar-interface velocities under the selected"
+                    " calculator, temperature grid, pressure, equilibration,"
+                    " and finite steady fitting windows."
                 ),
                 "unsupported_claim": (
-                    "Homogeneous nucleation rates or potential-independent kinetics. A resolved "
-                    "zero-velocity interpolation remains conditional on this cell size, "
-                    "orientation, trajectory duration, PTM order coordinate, and MLIP. "
-                    "Quantitative real-Al thermodynamics or kinetics remain unsupported while "
-                    "the selected potential is marked exploratory rather than scientifically "
-                    "qualified for this protocol."
+                    "Homogeneous nucleation rates or potential-independent"
+                    " kinetics. A resolved zero-velocity interpolation remains"
+                    " conditional on this cell size, orientation, trajectory"
+                    " duration, PTM order coordinate, and MLIP. Quantitative"
+                    " real-Al thermodynamics or kinetics remain unsupported"
+                    " while the selected potential is marked exploratory"
+                    " rather than scientifically qualified for this protocol."
                 ),
             },
         }
-        with (staging_root / "manifest.json").open("w", encoding="utf-8") as handle:
+        with (staging_root / "manifest.json").open(
+            "w", encoding="utf-8"
+        ) as handle:
             json.dump(manifest, handle, indent=2)
         if output_root.exists():
             shutil.rmtree(output_root)
@@ -940,9 +1029,10 @@ def generate_transition_dataset(
 ) -> TransitionGenerationResult:
     if config.output.root_dir.exists() and not config.output.overwrite:
         raise FileExistsError(
-            f"Transition output already exists: {config.output.root_dir}. Remove it or "
-            "explicitly set output.overwrite=true. This check is performed before loading "
-            "the source, constructing the calculator, or running MD."
+            f"Transition output already exists: {config.output.root_dir}."
+            " Remove it or explicitly set output.overwrite=true. This check"
+            " is performed before loading the source, constructing the"
+            " calculator, or running MD."
         )
     transition_temperatures_K = tuple(
         branch.temperature_K for branch in config.temperature_runs
@@ -967,9 +1057,9 @@ def generate_transition_dataset(
         injected_calculator_identity=injected_calculator_identity,
     )
     progress(
-        f"Generating {config.dataset_name!r}: {len(prepared.atoms)} atoms, "
-        f"{len(config.temperature_runs)} temperatures x {len(config.random_seeds)} "
-        "direct-coexistence replicas"
+        f"Generating {config.dataset_name!r}: {len(prepared.atoms)} atoms,"
+        f" {len(config.temperature_runs)} temperatures x"
+        f" {len(config.random_seeds)} direct-coexistence replicas"
     )
     checkpoints = CheckpointStore(config, execution_provenance)
     prepared_phase_ids = np.fromiter(
@@ -981,7 +1071,9 @@ def generate_transition_dataset(
     for branch_index, branch in enumerate(config.temperature_runs):
         for replica_index, random_seed in enumerate(config.random_seeds):
             simulation_seed = int(
-                np.random.SeedSequence([random_seed, branch_index]).generate_state(1)[0]
+                np.random.SeedSequence(
+                    [random_seed, branch_index]
+                ).generate_state(1)[0]
             )
             run_name = f"{branch.name}/replica_{replica_index:03d}"
             atoms, equilibration_trace, trace = _simulate_branch(
@@ -1049,7 +1141,9 @@ def generate_transition_dataset(
     branch_dirs = _write_dataset(
         config, prepared, results, execution_provenance
     )
-    progress(f"Wrote {len(branch_dirs)} transition runs to {config.output.root_dir}")
+    progress(
+        f"Wrote {len(branch_dirs)} transition runs to {config.output.root_dir}"
+    )
     return TransitionGenerationResult(
         output_root=config.output.root_dir,
         branch_dirs=branch_dirs,

@@ -12,7 +12,9 @@ logger = setup_logging()
 
 def pc_normalize(pc: np.ndarray, radius: float) -> np.ndarray:
     """Normalize a point cloud by a fixed, positive cutoff radius."""
-    assert radius > 0, f"pc_normalize requires radius > 0, got radius={radius!r}"
+    assert (
+        radius > 0
+    ), f"pc_normalize requires radius > 0, got radius={radius!r}"
     return pc / radius
 
 
@@ -25,7 +27,7 @@ def farthest_point_sample(point, npoint):
         centroids: sampled pointcloud index, [npoint, D]
     """
     N, D = point.shape
-    xyz = point[:,:3]
+    xyz = point[:, :3]
     centroids = np.zeros((npoint,))
     distance = np.ones((N,)) * 1e10
     farthest = np.random.randint(0, N)
@@ -94,7 +96,9 @@ def calculate_stride(size: float, overlap_fraction: float) -> float:
     return stride
 
 
-def compute_dimensions(min_coords: np.ndarray, max_coords: np.ndarray, stride: float) -> np.ndarray:
+def compute_dimensions(
+    min_coords: np.ndarray, max_coords: np.ndarray, stride: float
+) -> np.ndarray:
     dims = np.ceil((max_coords - min_coords) / stride).astype(int)
     return dims
 
@@ -137,16 +141,20 @@ def generate_samples(
     max_samples: int,
     drop_edge_samples: bool = True,
     edge_drop_layers: int | None = None,
-    sampling_method: str = "drop_farthest"
+    sampling_method: str = "drop_farthest",
 ) -> Tuple[List, int, int]:
     drop_func = _resolve_drop_func(sampling_method)
-    resolved_edge_drop_layers = _resolve_edge_drop_layers(drop_edge_samples, edge_drop_layers)
+    resolved_edge_drop_layers = _resolve_edge_drop_layers(
+        drop_edge_samples, edge_drop_layers
+    )
 
     if resolved_edge_drop_layers > 0:
         ranges = [
-            (resolved_edge_drop_layers, int(d) - resolved_edge_drop_layers)
-            if int(d) >= (2 * resolved_edge_drop_layers + 1)
-            else (0, 0)
+            (
+                (resolved_edge_drop_layers, int(d) - resolved_edge_drop_layers)
+                if int(d) >= (2 * resolved_edge_drop_layers + 1)
+                else (0, 0)
+            )
             for d in dims
         ]
     else:
@@ -154,9 +162,10 @@ def generate_samples(
 
     if any(s >= e for s, e in ranges):
         raise ValueError(
-            "generate_samples: no valid grid indices remain after edge-layer trimming. "
-            f"dims={np.asarray(dims).tolist()}, edge_drop_layers={resolved_edge_drop_layers}, "
-            f"ranges={ranges}, size={size}, stride={stride}."
+            "generate_samples: no valid grid indices remain after edge-layer"
+            f" trimming. dims={np.asarray(dims).tolist()},"
+            f" edge_drop_layers={resolved_edge_drop_layers}, ranges={ranges},"
+            f" size={size}, stride={stride}."
         )
 
     # Vectorized grid center computation via meshgrid
@@ -217,17 +226,17 @@ def get_regular_samples(
     max_samples: int = 2e32,
     drop_edge_samples: bool = True,
     edge_drop_layers: int | None = None,
-    sampling_method: str = "drop_farthest"
+    sampling_method: str = "drop_farthest",
 ) -> List[Tuple[np.ndarray, Tuple[float, float, float]]]:
     """
     Divide point cloud into regular samples covering the entire data space with optional overlap.
 
-    This function partitions the input point cloud into a grid of regularly spaced sampling regions 
-    (spheric) based on the provided size and overlap fraction. For spheric samples, the regions are spheres with 
-    radius 'size'. To ensure uniformity, each sample is adjusted to contain exactly n_points by 
-    appropriately dropping or adding points. Only regions that fully fit within the adjusted data space 
-    (after applying the necessary padding) are considered, thus avoiding partial samples along the edges. 
-    A KDTree is employed for efficient neighborhood queries, and the function logs the average number of 
+    This function partitions the input point cloud into a grid of regularly spaced sampling regions
+    (spheric) based on the provided size and overlap fraction. For spheric samples, the regions are spheres with
+    radius 'size'. To ensure uniformity, each sample is adjusted to contain exactly n_points by
+    appropriately dropping or adding points. Only regions that fully fit within the adjusted data space
+    (after applying the necessary padding) are considered, thus avoiding partial samples along the edges.
+    A KDTree is employed for efficient neighborhood queries, and the function logs the average number of
     points added and dropped per sample during this adjustment.
 
     Parameters:
@@ -240,10 +249,10 @@ def get_regular_samples(
     overlap_fraction : float, optional
         The fractional overlap between adjacent sample regions. This value should be less than 1.
     return_coords : bool, optional
-        If True, each sample is returned as a tuple (sample_points, sample_center), where sample_center 
+        If True, each sample is returned as a tuple (sample_points, sample_center), where sample_center
         is a tuple (x, y, z); otherwise, only the sample_points array is returned.
     n_points : int, optional
-        The desired number of points in each sample. Points in a sample will be dropped or added 
+        The desired number of points in each sample. Points in a sample will be dropped or added
         to meet this exact count.
     max_samples : int, optional
         The maximum number of samples to generate. The function stops sampling once this number is reached,
@@ -259,15 +268,17 @@ def get_regular_samples(
     --------
     List[Tuple[np.ndarray, Tuple[float, float, float]]]
         A list of samples extracted from the point cloud. Each entry in the list is:
-          - an np.ndarray of shape (n_points, 3) if return_coords is False, or 
+          - an np.ndarray of shape (n_points, 3) if return_coords is False, or
           - a tuple (sample_points, sample_center) if return_coords is True,
         where sample_center is a tuple containing the (x, y, z) coordinates of the sample's center.
     """
     tree = KDTree(points)
     min_coords, max_coords = get_min_max_coords(points)
     stride = calculate_stride(size, overlap_fraction)
-    resolved_edge_drop_layers = _resolve_edge_drop_layers(drop_edge_samples, edge_drop_layers)
-    
+    resolved_edge_drop_layers = _resolve_edge_drop_layers(
+        drop_edge_samples, edge_drop_layers
+    )
+
     padding = size
     min_center = min_coords + padding
     max_center = max_coords - padding
@@ -275,9 +286,11 @@ def get_regular_samples(
     # Ensure min_center is less than max_center along all dimensions
     if np.any(min_center >= max_center):
         raise ValueError(
-            "get_regular_samples: sampling region collapsed after boundary padding. "
-            f"min_coords={min_coords.tolist()}, max_coords={max_coords.tolist()}, "
-            f"size={size}, padding={padding}. Use a smaller radius or a larger simulation box."
+            "get_regular_samples: sampling region collapsed after boundary"
+            f" padding. min_coords={min_coords.tolist()},"
+            f" max_coords={max_coords.tolist()}, size={size},"
+            f" padding={padding}. Use a smaller radius or a larger simulation"
+            " box."
         )
 
     # Grid dimensions
@@ -292,45 +305,77 @@ def get_regular_samples(
         dropped_padding = max(total_no_padding - total_padded, 0)
         pct_padding = 100.0 * dropped_padding / total_no_padding
         logger.print(
-            f"Edge exclusion (padding): dropped {dropped_padding}/{total_no_padding} centers "
-            f"({pct_padding:.2f}%)"
+            "Edge exclusion (padding): dropped"
+            f" {dropped_padding}/{total_no_padding} centers"
+            f" ({pct_padding:.2f}%)"
         )
     else:
-        logger.print("Edge exclusion (padding): insufficient grid to estimate (0 total)")
-    
+        logger.print(
+            "Edge exclusion (padding): insufficient grid to estimate (0 total)"
+        )
+
     # Ensure dimensions are non-negative
     if np.any(dims <= 0):
         raise ValueError(
-            "get_regular_samples: sampling grid has a non-positive dimension. "
-            f"dims={dims.tolist()}, min_center={min_center.tolist()}, max_center={max_center.tolist()}, "
-            f"stride={stride}. Check radius vs. box size and overlap_fraction."
+            "get_regular_samples: sampling grid has a non-positive dimension."
+            f" dims={dims.tolist()}, min_center={min_center.tolist()},"
+            f" max_center={max_center.tolist()}, stride={stride}. Check radius"
+            " vs. box size and overlap_fraction."
         )
 
     samples, added_points, dropped_points = generate_samples(
-        points, tree, min_center, stride, size, dims, 
-        n_points, return_coords, max_samples, drop_edge_samples, resolved_edge_drop_layers, sampling_method
+        points,
+        tree,
+        min_center,
+        stride,
+        size,
+        dims,
+        n_points,
+        return_coords,
+        max_samples,
+        drop_edge_samples,
+        resolved_edge_drop_layers,
+        sampling_method,
     )
 
     if len(samples) > 0:
         avg_added = round(added_points / len(samples), 2)
         avg_dropped = round(dropped_points / len(samples), 2)
         logger.print(f"Generated {len(samples)} samples.")
-        logger.print(f"Avg added {avg_added} points, avg dropped {avg_dropped} points per sample.")
+        logger.print(
+            f"Avg added {avg_added} points, avg dropped {avg_dropped} points"
+            " per sample."
+        )
         if resolved_edge_drop_layers > 0 and total_padded > 0:
-            keep_i = dims[0] - 2 * resolved_edge_drop_layers if dims[0] >= (2 * resolved_edge_drop_layers + 1) else 0
-            keep_j = dims[1] - 2 * resolved_edge_drop_layers if dims[1] >= (2 * resolved_edge_drop_layers + 1) else 0
-            keep_k = dims[2] - 2 * resolved_edge_drop_layers if dims[2] >= (2 * resolved_edge_drop_layers + 1) else 0
-            kept_interior = int(max(keep_i, 0) * max(keep_j, 0) * max(keep_k, 0))
+            keep_i = (
+                dims[0] - 2 * resolved_edge_drop_layers
+                if dims[0] >= (2 * resolved_edge_drop_layers + 1)
+                else 0
+            )
+            keep_j = (
+                dims[1] - 2 * resolved_edge_drop_layers
+                if dims[1] >= (2 * resolved_edge_drop_layers + 1)
+                else 0
+            )
+            keep_k = (
+                dims[2] - 2 * resolved_edge_drop_layers
+                if dims[2] >= (2 * resolved_edge_drop_layers + 1)
+                else 0
+            )
+            kept_interior = int(
+                max(keep_i, 0) * max(keep_j, 0) * max(keep_k, 0)
+            )
             dropped_edges = max(total_padded - kept_interior, 0)
             pct_edges = 100.0 * dropped_edges / total_padded
             logger.print(
-                f"Additional edge-layer drop (edge_drop_layers={resolved_edge_drop_layers}): "
-                f"dropped {dropped_edges}/{total_padded} centers ({pct_edges:.2f}%), "
-                f"kept interior {kept_interior}"
+                "Additional edge-layer drop"
+                f" (edge_drop_layers={resolved_edge_drop_layers}): dropped"
+                f" {dropped_edges}/{total_padded} centers ({pct_edges:.2f}%),"
+                f" kept interior {kept_interior}"
             )
     else:
         logger.print("No samples were generated with the given parameters.")
-        
+
     return samples
 
 
@@ -340,7 +385,7 @@ def get_random_samples(
     size: float,
     n_points: int,
     return_coords: bool = False,
-    sampling_method: str = "drop_farthest"
+    sampling_method: str = "drop_farthest",
 ) -> List[np.ndarray]:
     """Same as get_regular_samples but with random center points.
 
@@ -402,7 +447,9 @@ def get_random_samples(
 
     # Rare fallback: if batch didn't produce enough, generate individually
     while len(samples) < n_samples:
-        center = np.random.uniform(low=min_coords + size, high=max_coords - size)
+        center = np.random.uniform(
+            low=min_coords + size, high=max_coords - size
+        )
         _, nearest_index = tree.query(center)
         center = points[nearest_index]
         nbrs = tree.query_ball_point(center, size)
@@ -425,5 +472,7 @@ def get_random_samples(
 
     avg_added = round(total_added / len(samples), 2)
     avg_dropped = round(total_dropped / len(samples), 2)
-    logger.print(f"Avg added {avg_added} points, avg dropped {avg_dropped} points")
+    logger.print(
+        f"Avg added {avg_added} points, avg dropped {avg_dropped} points"
+    )
     return samples

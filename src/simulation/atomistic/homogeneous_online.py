@@ -40,8 +40,9 @@ class OnlineCrystallinityDetector:
             )
         except ImportError as exc:
             raise ImportError(
-                "Online crystallinity stopping requires OVITO PTM and cluster analysis. "
-                "Install the repository requirements in the pointnet environment."
+                "Online crystallinity stopping requires OVITO PTM and cluster"
+                " analysis. Install the repository requirements in the"
+                " pointnet environment."
             ) from exc
         self._ase_to_ovito = ase_to_ovito
         self._ptm = PolyhedralTemplateMatchingModifier()
@@ -68,9 +69,13 @@ class OnlineCrystallinityDetector:
         )
         data = self._ase_to_ovito(analysis_atoms)
         data.apply(self._ptm)
-        structure_types = np.asarray(data.particles["Structure Type"], dtype=np.int32)
+        structure_types = np.asarray(
+            data.particles["Structure Type"], dtype=np.int32
+        )
         crystalline = np.isin(structure_types, CRYSTALLINE_STRUCTURE_TYPES)
-        data.particles_.create_property("Selection", data=crystalline.astype(np.int32))
+        data.particles_.create_property(
+            "Selection", data=crystalline.astype(np.int32)
+        )
         data.apply(self._clusters)
         return OnlineCrystallinityObservation(
             measurement_step=measurement_step,
@@ -101,7 +106,7 @@ class OnlineThresholdTracker:
             or event_cadence_steps <= 0
         ):
             raise ValueError(
-                f"event_cadence_steps must be a positive integer, got "
+                "event_cadence_steps must be a positive integer, got "
                 f"{event_cadence_steps!r}."
             )
         self.event_cadence_steps = event_cadence_steps
@@ -127,7 +132,10 @@ class OnlineThresholdTracker:
         if not event_observations:
             return None
         values = np.asarray(
-            [item.largest_crystalline_cluster_atoms for item in event_observations],
+            [
+                item.largest_crystalline_cluster_atoms
+                for item in event_observations
+            ],
             dtype=np.int64,
         )
         indices = first_persistent_threshold_run(
@@ -150,8 +158,9 @@ class OnlineThresholdTracker:
             previous_step = self._observations[-1].measurement_step
             if observation.measurement_step <= previous_step:
                 raise ValueError(
-                    "Online crystallinity measurement steps must increase strictly: "
-                    f"previous={previous_step}, new={observation.measurement_step}."
+                    "Online crystallinity measurement steps must increase"
+                    f" strictly: previous={previous_step},"
+                    f" new={observation.measurement_step}."
                 )
         self._observations.append(observation)
         if self._event is None:
@@ -166,10 +175,12 @@ def online_observations_to_arrays(
             [item.measurement_step for item in observations], dtype=np.int64
         ),
         "crystalline_fraction": np.asarray(
-            [item.crystalline_fraction for item in observations], dtype=np.float64
+            [item.crystalline_fraction for item in observations],
+            dtype=np.float64,
         ),
         "crystalline_cluster_count": np.asarray(
-            [item.crystalline_cluster_count for item in observations], dtype=np.int64
+            [item.crystalline_cluster_count for item in observations],
+            dtype=np.int64,
         ),
         "largest_crystalline_cluster_atoms": np.asarray(
             [item.largest_crystalline_cluster_atoms for item in observations],
@@ -184,7 +195,8 @@ def online_observations_from_arrays(
     lengths = {name: len(values) for name, values in arrays.items()}
     if len(set(lengths.values())) != 1:
         raise RuntimeError(
-            f"Online crystallinity checkpoint arrays have inconsistent lengths: {lengths}."
+            "Online crystallinity checkpoint arrays have inconsistent"
+            f" lengths: {lengths}."
         )
     return tuple(
         OnlineCrystallinityObservation(

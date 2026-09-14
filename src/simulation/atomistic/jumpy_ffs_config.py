@@ -65,7 +65,9 @@ def _repo_path(value: Any) -> Path:
 def _mapping(parent: dict[str, Any], key: str, path: Path) -> dict[str, Any]:
     value = parent.get(key)
     if not isinstance(value, dict):
-        raise TypeError(f"{path}: {key} must be a mapping, got {type(value).__name__}.")
+        raise TypeError(
+            f"{path}: {key} must be a mapping, got {type(value).__name__}."
+        )
     return value
 
 
@@ -79,18 +81,26 @@ def _reject_unknown(
 
 def _positive_float(value: Any, *, context: str, path: Path) -> float:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
-        raise TypeError(f"{path}: {context} must be an explicit number, got {value!r}.")
+        raise TypeError(
+            f"{path}: {context} must be an explicit number, got {value!r}."
+        )
     result = float(value)
     if not math.isfinite(result) or result <= 0.0:
-        raise ValueError(f"{path}: {context} must be finite and > 0, got {result}.")
+        raise ValueError(
+            f"{path}: {context} must be finite and > 0, got {result}."
+        )
     return result
 
 
 def _integer(value: Any, *, context: str, path: Path, minimum: int) -> int:
     if not isinstance(value, int) or isinstance(value, bool):
-        raise TypeError(f"{path}: {context} must be an integer, got {value!r}.")
+        raise TypeError(
+            f"{path}: {context} must be an integer, got {value!r}."
+        )
     if value < minimum:
-        raise ValueError(f"{path}: {context} must be >= {minimum}, got {value}.")
+        raise ValueError(
+            f"{path}: {context} must be >= {minimum}, got {value}."
+        )
     return value
 
 
@@ -110,21 +120,24 @@ def _validate_potential_selection_report(
 ) -> tuple[Path, str, str]:
     if not isinstance(value, str) or not value.strip():
         raise TypeError(
-            f"{config_path}: potential_selection_report must be a non-empty path "
-            "string. jFFS will not run either MPA-0 or MH-1 without an explicit "
-            "model-selection result."
+            f"{config_path}: potential_selection_report must be a non-empty"
+            " path string. jFFS will not run either MPA-0 or MH-1 without an"
+            " explicit model-selection result."
         )
     report_path = _repo_path(value)
     if not report_path.is_file():
         raise FileNotFoundError(
-            f"{config_path}: potential_selection_report does not exist: {report_path}. "
-            "Run the checksum-bound potential-selection workflow first; jFFS will not "
-            "fall back to its configured model silently."
+            f"{config_path}: potential_selection_report does not exist:"
+            f" {report_path}. Run the checksum-bound potential-selection"
+            " workflow first; jFFS will not fall back to its configured model"
+            " silently."
         )
     with report_path.open("r", encoding="utf-8") as handle:
         report = json.load(handle)
     if not isinstance(report, dict):
-        raise TypeError(f"{report_path}: potential-selection report must be a mapping.")
+        raise TypeError(
+            f"{report_path}: potential-selection report must be a mapping."
+        )
     if (
         report.get("schema_version") != POTENTIAL_SELECTION_SCHEMA_VERSION
         or report.get("report_type") != "al_crystallization_mlip_selection"
@@ -139,15 +152,17 @@ def _validate_potential_selection_report(
     selected_config_value = report.get("selected_generator_config")
     if not isinstance(selected_config_value, str) or not selected_config_value:
         raise TypeError(
-            f"{report_path}: selected_generator_config must be a non-empty path string."
+            f"{report_path}: selected_generator_config must be a non-empty"
+            " path string."
         )
     selected_config_path = _repo_path(selected_config_value)
     if selected_config_path != generator.config_path:
         raise RuntimeError(
-            f"{config_path}: selection report chose generator config "
-            f"{selected_config_path}, but source_generator_config resolves to "
-            f"{generator.config_path}. jFFS source preparation, fixed-shape budgets, "
-            "model, and head must come from the exact selected production config."
+            f"{config_path}: selection report chose generator config"
+            f" {selected_config_path}, but source_generator_config resolves to"
+            f" {generator.config_path}. jFFS source preparation, fixed-shape"
+            " budgets, model, and head must come from the exact selected"
+            " production config."
         )
     if not selected_config_path.is_file():
         raise FileNotFoundError(
@@ -169,25 +184,29 @@ def _validate_potential_selection_report(
             if (
                 not isinstance(checksum, str)
                 or len(checksum) != 64
-                or any(character not in "0123456789abcdef" for character in checksum)
+                or any(
+                    character not in "0123456789abcdef"
+                    for character in checksum
+                )
             ):
                 raise TypeError(
-                    f"{report_path}: inputs.{role}_generator_config_sha256 must be "
-                    "64 lowercase hexadecimal characters."
+                    f"{report_path}: inputs.{role}_generator_config_sha256"
+                    " must be 64 lowercase hexadecimal characters."
                 )
             selected_checksum = checksum
             break
     if selected_checksum is None or selected_role is None:
         raise RuntimeError(
-            f"{report_path}: selected_generator_config={selected_config_path} is not one "
-            "of the report's SHA-bound baseline/candidate generator inputs."
+            f"{report_path}:"
+            f" selected_generator_config={selected_config_path} is not one of"
+            " the report's SHA-bound baseline/candidate generator inputs."
         )
     observed_config_sha256 = _sha256(selected_config_path)
     if observed_config_sha256 != selected_checksum:
         raise RuntimeError(
-            f"{report_path}: selected {selected_role} generator config changed after "
-            f"selection: recorded SHA-256={selected_checksum}, observed="
-            f"{observed_config_sha256}."
+            f"{report_path}: selected {selected_role} generator config changed"
+            f" after selection: recorded SHA-256={selected_checksum},"
+            f" observed={observed_config_sha256}."
         )
     selected_generator = load_config(selected_config_path)
     selected_potential = selected_generator.potential
@@ -198,18 +217,20 @@ def _validate_potential_selection_report(
             "configured": getattr(configured_potential, field),
         }
         for field in ("model_name", "sha256", "head", "family")
-        if getattr(selected_potential, field) != getattr(configured_potential, field)
+        if getattr(selected_potential, field)
+        != getattr(configured_potential, field)
     }
     if identity_mismatches:
         raise RuntimeError(
-            f"{config_path}: source_generator_config does not use the potential selected "
-            f"by {report_path}: mismatches={identity_mismatches}."
+            f"{config_path}: source_generator_config does not use the"
+            f" potential selected by {report_path}:"
+            f" mismatches={identity_mismatches}."
         )
     if report.get("selected_model_name") != configured_potential.model_name:
         raise RuntimeError(
-            f"{report_path}: selected_model_name="
-            f"{report.get('selected_model_name')!r} differs from jFFS model_name="
-            f"{configured_potential.model_name!r}."
+            f"{report_path}:"
+            f" selected_model_name={report.get('selected_model_name')!r} differs"
+            f" from jFFS model_name={configured_potential.model_name!r}."
         )
     return report_path, _sha256(report_path), selected_checksum
 
@@ -249,9 +270,9 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
     ensemble = raw.get("ensemble")
     if ensemble != "langevin_nvt":
         raise RuntimeError(
-            f"{config_path}: ensemble must be exactly 'langevin_nvt', got "
-            f"{ensemble!r}. MTK-NPT branch checkpoints in this repository do not serialize "
-            "thermostat-chain and barostat state."
+            f"{config_path}: ensemble must be exactly 'langevin_nvt', got"
+            f" {ensemble!r}. MTK-NPT branch checkpoints in this repository do"
+            " not serialize thermostat-chain and barostat state."
         )
     cv_raw = _mapping(raw, "cv", config_path)
     basin_raw = _mapping(raw, "basin", config_path)
@@ -261,7 +282,13 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
     shot_calculator_raw = _mapping(raw, "shot_calculator", config_path)
     _reject_unknown(
         cv_raw,
-        {"type", "ptm_rmsd_cutoff", "cluster_cutoff_A", "interval_steps", "interfaces_atoms"},
+        {
+            "type",
+            "ptm_rmsd_cutoff",
+            "cluster_cutoff_A",
+            "interval_steps",
+            "interfaces_atoms",
+        },
         context="cv",
         path=config_path,
     )
@@ -283,7 +310,9 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
         context="uncertainty",
         path=config_path,
     )
-    _reject_unknown(output_raw, {"root_dir"}, context="output", path=config_path)
+    _reject_unknown(
+        output_raw, {"root_dir"}, context="output", path=config_path
+    )
     _reject_unknown(
         shot_calculator_raw,
         {"md_property_mode"},
@@ -292,8 +321,9 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
     )
     if shot_calculator_raw.get("md_property_mode") != "forces":
         raise ValueError(
-            f"{config_path}: shot_calculator.md_property_mode must be exactly 'forces' "
-            "for fixed-cell Langevin-NVT; stress is unused and must not be evaluated."
+            f"{config_path}: shot_calculator.md_property_mode must be exactly"
+            " 'forces' for fixed-cell Langevin-NVT; stress is unused and must"
+            " not be evaluated."
         )
     if cv_raw.get("type") != "ptm_largest_crystalline_cluster_atoms":
         raise ValueError(
@@ -304,8 +334,8 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
     interfaces_raw = cv_raw.get("interfaces_atoms")
     if not isinstance(interfaces_raw, list):
         raise TypeError(
-            f"{config_path}: cv.interfaces_atoms must be a list of integer cluster "
-            f"sizes, got {interfaces_raw!r}."
+            f"{config_path}: cv.interfaces_atoms must be a list of integer"
+            f" cluster sizes, got {interfaces_raw!r}."
         )
     interfaces = tuple(
         _integer(
@@ -335,9 +365,10 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
     )
     if timestep_fs != generator.dynamics.timestep_fs:
         raise ValueError(
-            f"{config_path}: timestep_fs={timestep_fs} must match the source generator's "
-            f"qualified timestep_fs={generator.dynamics.timestep_fs}; jFFS cannot silently "
-            "change integration stability assumptions."
+            f"{config_path}: timestep_fs={timestep_fs} must match the source"
+            " generator's qualified"
+            f" timestep_fs={generator.dynamics.timestep_fs}; jFFS cannot"
+            " silently change integration stability assumptions."
         )
     algorithm = JumpyFFSAlgorithmConfig(
         interfaces_atoms=interfaces,
@@ -422,8 +453,8 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
     )
     if ptm_rmsd_cutoff > 1.0:
         raise ValueError(
-            f"{config_path}: cv.ptm_rmsd_cutoff is normalized and must be <= 1, got "
-            f"{ptm_rmsd_cutoff}."
+            f"{config_path}: cv.ptm_rmsd_cutoff is normalized and must be <="
+            f" 1, got {ptm_rmsd_cutoff}."
         )
     temperature_K = _positive_float(
         raw.get("temperature_K"), context="temperature_K", path=config_path
@@ -458,26 +489,32 @@ def load_jumpy_ffs_config(path: str | Path) -> JumpyFFSRunConfig:
         config_path=config_path,
     )
     if not config.dataset_name or config.dataset_name == "None":
-        raise ValueError(f"{config_path}: dataset_name must be a non-empty string.")
+        raise ValueError(
+            f"{config_path}: dataset_name must be a non-empty string."
+        )
     if not config.source_environment or config.source_environment == "None":
-        raise ValueError(f"{config_path}: source_environment must be a non-empty string.")
+        raise ValueError(
+            f"{config_path}: source_environment must be a non-empty string."
+        )
     if config.generator.dynamics.target_temperature_K != config.temperature_K:
         raise ValueError(
-            f"{config_path}: source generator target_temperature_K="
-            f"{config.generator.dynamics.target_temperature_K} does not match jFFS "
-            f"temperature_K={config.temperature_K}. Fixed-volume NVT shots must start from "
-            "a liquid whose cell was NPT-equilibrated at the same temperature and pressure; "
-            "do not cool a differently equilibrated cell at fixed volume."
+            f"{config_path}: source generator"
+            f" target_temperature_K={config.generator.dynamics.target_temperature_K} does"
+            f" not match jFFS temperature_K={config.temperature_K}."
+            " Fixed-volume NVT shots must start from a liquid whose cell was"
+            " NPT-equilibrated at the same temperature and pressure; do not"
+            " cool a differently equilibrated cell at fixed volume."
         )
     if (
         config.source_frame_step
         != config.generator.dynamics.target_equilibration_steps
     ):
         raise ValueError(
-            f"{config_path}: source_frame_step={config.source_frame_step} must select the "
-            "NPT liquid equilibration endpoint at target_equilibration_steps="
-            f"{config.generator.dynamics.target_equilibration_steps}. An earlier frame "
-            "does not provide the final pressure-equilibrated fixed volume."
+            f"{config_path}: source_frame_step={config.source_frame_step} must"
+            " select the NPT liquid equilibration endpoint at"
+            f" target_equilibration_steps={config.generator.dynamics.target_equilibration_steps}."
+            " An earlier frame does not provide the final"
+            " pressure-equilibrated fixed volume."
         )
     validate_potential_qualification(
         config.generator,

@@ -60,7 +60,9 @@ class HomogeneousSurvivalAnalysis:
     def to_dict(self) -> dict[str, object]:
         return {
             "replica_count": len(self.observations),
-            "observed_event_count": int(sum(item.event_observed for item in self.observations)),
+            "observed_event_count": int(
+                sum(item.event_observed for item in self.observations)
+            ),
             "right_censored_count": int(
                 sum(not item.event_observed for item in self.observations)
             ),
@@ -83,10 +85,11 @@ class HomogeneousSurvivalAnalysis:
             "rate_estimate": None,
             "rate_estimate_status": "not_computed",
             "rate_estimate_reason": (
-                "A non-parametric survival curve does not by itself establish a stationary "
-                "Poisson nucleation process. A rate additionally requires validated "
-                "metastable-liquid stationarity, a model-specific undercooling, volume and "
-                "finite-size convergence, and enough independent events."
+                "A non-parametric survival curve does not by itself establish"
+                " a stationary Poisson nucleation process. A rate additionally"
+                " requires validated metastable-liquid stationarity, a"
+                " model-specific undercooling, volume and finite-size"
+                " convergence, and enough independent events."
             ),
         }
 
@@ -96,20 +99,28 @@ def analyze_replica_survival(
 ) -> HomogeneousSurvivalAnalysis:
     """Construct a Kaplan-Meier curve from event times and right-censored replicas."""
     if not observations:
-        raise ValueError("Survival analysis requires at least one replica observation.")
+        raise ValueError(
+            "Survival analysis requires at least one replica observation."
+        )
     if len({item.replica_name for item in observations}) != len(observations):
         raise ValueError("Survival analysis replica names must be unique.")
     if len({item.random_seed for item in observations}) != len(observations):
         raise ValueError("Survival analysis random seeds must be unique.")
     for item in observations:
-        if not np.isfinite(item.observation_time_ps) or item.observation_time_ps < 0.0:
+        if (
+            not np.isfinite(item.observation_time_ps)
+            or item.observation_time_ps < 0.0
+        ):
             raise ValueError(
-                f"Replica {item.replica_name!r} has invalid observation_time_ps="
-                f"{item.observation_time_ps}."
+                f"Replica {item.replica_name!r} has invalid"
+                f" observation_time_ps={item.observation_time_ps}."
             )
 
     times = np.unique(
-        np.asarray([item.observation_time_ps for item in observations], dtype=np.float64)
+        np.asarray(
+            [item.observation_time_ps for item in observations],
+            dtype=np.float64,
+        )
     )
     at_risk = np.empty(len(times), dtype=np.int64)
     events = np.empty(len(times), dtype=np.int64)
@@ -135,7 +146,8 @@ def analyze_replica_survival(
 
     if remaining != 0:
         raise RuntimeError(
-            f"Survival accounting left {remaining} replicas at risk after all observations."
+            f"Survival accounting left {remaining} replicas at risk after all"
+            " observations."
         )
     return HomogeneousSurvivalAnalysis(
         time_ps=times,
@@ -156,8 +168,8 @@ def first_persistent_threshold_run(
     """Return the inclusive (onset, confirmation) indices of the first sustained crossing."""
     if values.ndim != 1:
         raise ValueError(
-            f"Persistent threshold analysis requires a one-dimensional series, got "
-            f"shape={values.shape}."
+            "Persistent threshold analysis requires a one-dimensional series,"
+            f" got shape={values.shape}."
         )
     if threshold <= 0:
         raise ValueError(f"threshold must be positive, got {threshold}.")
@@ -199,22 +211,26 @@ def analyze_homogeneous_crystallization(
         )
     except ImportError as exc:
         raise ImportError(
-            "Homogeneous crystallization analysis requires OVITO for PTM, connected "
-            "cluster analysis, and RDF calculation. Install the repository requirements "
-            "in the pointnet environment."
+            "Homogeneous crystallization analysis requires OVITO for PTM,"
+            " connected cluster analysis, and RDF calculation. Install the"
+            " repository requirements in the pointnet environment."
         ) from exc
 
     frame_count, atom_count, _ = trace.positions_A.shape
     progress(
-        f"homogeneous_crystallization: PTM, connected-cluster, and RDF audit of {frame_count} "
-        f"frames ({atom_count} atoms/frame)"
+        "homogeneous_crystallization: PTM, connected-cluster, and RDF audit"
+        f" of {frame_count} frames ({atom_count} atoms/frame)"
     )
-    structure_fractions = np.empty((frame_count, len(STRUCTURE_NAMES)), dtype=np.float64)
+    structure_fractions = np.empty(
+        (frame_count, len(STRUCTURE_NAMES)), dtype=np.float64
+    )
     crystalline_fraction = np.empty(frame_count, dtype=np.float64)
     cluster_count = np.empty(frame_count, dtype=np.int64)
     largest_cluster = np.empty(frame_count, dtype=np.int64)
     rdf_g_r = np.empty((frame_count, rdf_bins), dtype=np.float64)
-    numbers = np.full(atom_count, atomic_numbers[chemical_symbol], dtype=np.int32)
+    numbers = np.full(
+        atom_count, atomic_numbers[chemical_symbol], dtype=np.int32
+    )
     ptm = PolyhedralTemplateMatchingModifier()
     ptm.rmsd_cutoff = ptm_rmsd_cutoff
     clusters = ClusterAnalysisModifier(
@@ -231,13 +247,17 @@ def analyze_homogeneous_crystallization(
     for frame_index, (positions_A, cell_A) in enumerate(
         zip(trace.positions_A, trace.cell_vectors_A)
     ):
-        atoms = Atoms(numbers=numbers, positions=positions_A, cell=cell_A, pbc=True)
+        atoms = Atoms(
+            numbers=numbers, positions=positions_A, cell=cell_A, pbc=True
+        )
         data = ase_to_ovito(atoms)
         data.apply(ptm)
-        structure_types = np.asarray(data.particles["Structure Type"], dtype=np.int32)
-        counts = np.bincount(
-            structure_types, minlength=len(STRUCTURE_NAMES)
-        )[: len(STRUCTURE_NAMES)]
+        structure_types = np.asarray(
+            data.particles["Structure Type"], dtype=np.int32
+        )
+        counts = np.bincount(structure_types, minlength=len(STRUCTURE_NAMES))[
+            : len(STRUCTURE_NAMES)
+        ]
         structure_fractions[frame_index] = counts / atom_count
         crystalline = np.isin(structure_types, CRYSTALLINE_STRUCTURE_TYPES)
         crystalline_fraction[frame_index] = float(np.mean(crystalline))
@@ -260,7 +280,9 @@ def analyze_homogeneous_crystallization(
         rdf_g_r[frame_index] = rdf_values[:, 1]
 
     if rdf_distance_A is None:
-        raise RuntimeError("Homogeneous crystallization analysis received an empty trace.")
+        raise RuntimeError(
+            "Homogeneous crystallization analysis received an empty trace."
+        )
     time_ps = trace.step.astype(np.float64) * timestep_fs / 1000.0
     persistent_run = first_persistent_threshold_run(
         largest_cluster,
@@ -308,7 +330,9 @@ def write_homogeneous_progress_visualization(
     pressure_GPa: float,
     simulation_title: str = "Homogeneous crystallization from supercooled liquid",
 ) -> None:
-    figure, axes = plt.subplots(2, 2, figsize=(13.0, 9.0), constrained_layout=True)
+    figure, axes = plt.subplots(
+        2, 2, figsize=(13.0, 9.0), constrained_layout=True
+    )
     for structure_name, color, fractions in zip(
         STRUCTURE_NAMES,
         STRUCTURE_COLORS,
@@ -327,7 +351,9 @@ def write_homogeneous_progress_visualization(
         linewidth=1.5,
         label="FCC+HCP+BCC",
     )
-    axes[0, 0].set(xlabel="time (ps)", ylabel="PTM structure fraction", ylim=(0.0, 1.0))
+    axes[0, 0].set(
+        xlabel="time (ps)", ylabel="PTM structure fraction", ylim=(0.0, 1.0)
+    )
     axes[0, 0].legend(ncol=2)
 
     axes[0, 1].plot(
@@ -340,18 +366,26 @@ def write_homogeneous_progress_visualization(
         color="black",
         linestyle="--",
         label=(
-            f"analysis threshold ({analysis.nucleus_size_threshold_atoms} atoms for "
-            f"{analysis.threshold_persistence_frames} frames)"
+            "analysis threshold"
+            f" ({analysis.nucleus_size_threshold_atoms} atoms for"
+            f" {analysis.threshold_persistence_frames} frames)"
         ),
     )
-    axes[0, 1].set(xlabel="time (ps)", ylabel="largest connected crystalline cluster (atoms)")
+    axes[0, 1].set(
+        xlabel="time (ps)",
+        ylabel="largest connected crystalline cluster (atoms)",
+    )
     axes[0, 1].legend()
 
     temperature_axis = axes[1, 0]
     pressure_axis = temperature_axis.twinx()
-    temperature_axis.plot(analysis.time_ps, trace.temperature_K, color="#f4a261")
+    temperature_axis.plot(
+        analysis.time_ps, trace.temperature_K, color="#f4a261"
+    )
     temperature_axis.axhline(temperature_K, color="#f4a261", linestyle="--")
-    pressure_axis.plot(analysis.time_ps, trace.pressure_GPa, color="#457b9d", alpha=0.8)
+    pressure_axis.plot(
+        analysis.time_ps, trace.pressure_GPa, color="#457b9d", alpha=0.8
+    )
     pressure_axis.axhline(pressure_GPa, color="#457b9d", linestyle="--")
     temperature_axis.set(xlabel="time (ps)", ylabel="temperature (K)")
     pressure_axis.set_ylabel("pressure (GPa)")
@@ -374,14 +408,16 @@ def write_homogeneous_progress_visualization(
 
     if analysis.nucleation_observed:
         result_text = (
-            f"persistent threshold onset at {analysis.nucleation_time_ps:.2f} ps; "
-            f"confirmed at {analysis.confirmation_time_ps:.2f} ps"
+            "persistent threshold onset at"
+            f" {analysis.nucleation_time_ps:.2f} ps; confirmed at"
+            f" {analysis.confirmation_time_ps:.2f} ps"
         )
     else:
-        result_text = "no persistent threshold-sized crystalline cluster observed"
+        result_text = (
+            "no persistent threshold-sized crystalline cluster observed"
+        )
     figure.suptitle(
-        f"{simulation_title} at {temperature_K:.0f} K\n"
-        f"{result_text}"
+        f"{simulation_title} at {temperature_K:.0f} K\n{result_text}"
     )
     figure.savefig(path, dpi=180)
     plt.close(figure)
@@ -403,8 +439,15 @@ def write_homogeneous_rdf_visualization(
             color=color,
             label=f"t={analysis.time_ps[frame_index]:.2f} ps",
         )
-    axis.set(xlabel="pair distance (Å)", ylabel="g(r)", xlim=(0.0, analysis.rdf_distance_A[-1]))
+    axis.set(
+        xlabel="pair distance (Å)",
+        ylabel="g(r)",
+        xlim=(0.0, analysis.rdf_distance_A[-1]),
+    )
     axis.legend()
-    axis.set_title(f"Total Al RDF during homogeneous crystallization at {temperature_K:.0f} K")
+    axis.set_title(
+        "Total Al RDF during homogeneous crystallization at"
+        f" {temperature_K:.0f} K"
+    )
     figure.savefig(path, dpi=180)
     plt.close(figure)

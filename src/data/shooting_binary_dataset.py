@@ -60,12 +60,18 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
         self.snapshot = snapshot
         self.branches = tuple(branches)
         if not self.branches:
-            raise ValueError("Shooting binary environment dataset requires at least one branch.")
-        self.timesteps = tuple(int(value) for value in timesteps)
-        if not self.timesteps or tuple(sorted(set(self.timesteps))) != self.timesteps:
             raise ValueError(
-                "Shooting environment timesteps must be nonempty, unique, and increasing; "
-                f"got {self.timesteps}."
+                "Shooting binary environment dataset requires at least one"
+                " branch."
+            )
+        self.timesteps = tuple(int(value) for value in timesteps)
+        if (
+            not self.timesteps
+            or tuple(sorted(set(self.timesteps))) != self.timesteps
+        ):
+            raise ValueError(
+                "Shooting environment timesteps must be nonempty, unique, and"
+                f" increasing; got {self.timesteps}."
             )
         self.center_atom_ids = np.asarray(center_atom_ids, dtype=np.int64)
         atom_count = int(snapshot.manifest["atom_count"])
@@ -79,22 +85,24 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
             or int(self.center_atom_ids[-1]) > atom_count
         ):
             raise ValueError(
-                "center_atom_ids must be a nonempty sorted unique int64 array within "
-                f"[1, {atom_count}], got shape={self.center_atom_ids.shape}."
+                "center_atom_ids must be a nonempty sorted unique int64 array"
+                f" within [1, {atom_count}], got"
+                f" shape={self.center_atom_ids.shape}."
             )
         self.num_points = int(num_points)
         self.radius = float(radius)
         self.spatial_context_center_count = int(spatial_context_center_count)
         if self.num_points <= 0 or self.num_points > atom_count:
             raise ValueError(
-                f"num_points must be in [1, {atom_count}], got {self.num_points}."
+                f"num_points must be in [1, {atom_count}], got"
+                f" {self.num_points}."
             )
         if self.radius <= 0.0:
             raise ValueError(f"radius must be positive, got {self.radius}.")
         if not 0 <= self.spatial_context_center_count < self.num_points:
             raise ValueError(
-                "spatial_context_center_count must be in [0, num_points); "
-                f"got {self.spatial_context_center_count} and {self.num_points}."
+                "spatial_context_center_count must be in [0, num_points); got"
+                f" {self.spatial_context_center_count} and {self.num_points}."
             )
 
         paths: list[Path] = []
@@ -107,9 +115,11 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
             path = resolve_shooting_trajectory_path(root, branch)
             if not path.is_dir():
                 raise RuntimeError(
-                    "Shooting training requires a completed binary trajectory artifact. "
-                    f"branch={branch['branch_id']}, resolved_path={path}. Run "
-                    "src/data_utils/conversion/shooting.py for this campaign first."
+                    "Shooting training requires a completed binary trajectory"
+                    f" artifact. branch={branch['branch_id']},"
+                    f" resolved_path={path}. Run"
+                    " src/data_utils/conversion/shooting.py for this campaign"
+                    " first."
                 )
             paths.append(path)
         self.trajectory_paths = tuple(paths)
@@ -126,12 +136,16 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
     def __getitem__(self, index: int) -> dict[str, Any]:
         branch = self.branches[index]
         parent = self.parents[index]
-        trajectory = ShootingBinaryTrajectory.load(self.trajectory_paths[index])
+        trajectory = ShootingBinaryTrajectory.load(
+            self.trajectory_paths[index]
+        )
         expected_atom_count = int(self.snapshot.manifest["atom_count"])
         if trajectory.atom_count != expected_atom_count:
             raise RuntimeError(
-                f"Shooting branch atom count changed: branch={branch['branch_id']}, "
-                f"expected={expected_atom_count}, observed={trajectory.atom_count}."
+                "Shooting branch atom count changed:"
+                f" branch={branch['branch_id']},"
+                f" expected={expected_atom_count},"
+                f" observed={trajectory.atom_count}."
             )
         frames = trajectory.load_position_frames(self.timesteps)
         environments = [
@@ -152,9 +166,15 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
             campaign_root = Path(str(branch["campaign_root"]))
             campaign_index = int(branch["campaign_index"])
             branch_uid = str(branch["branch_uid"])
-        timestep_ps = float(self.snapshot.manifest["protocol"]["timestep_fs"]) / 1000.0
-        relative_times_ps = np.asarray(self.timesteps, dtype=np.float64) * timestep_ps
-        absolute_times_ps = relative_times_ps + float(parent["source_frame_time_ps"])
+        timestep_ps = (
+            float(self.snapshot.manifest["protocol"]["timestep_fs"]) / 1000.0
+        )
+        relative_times_ps = (
+            np.asarray(self.timesteps, dtype=np.float64) * timestep_ps
+        )
+        absolute_times_ps = relative_times_ps + float(
+            parent["source_frame_time_ps"]
+        )
         sample: dict[str, Any] = {
             "dataset_index": index,
             "branch_id": str(branch["branch_id"]),
@@ -188,21 +208,33 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
             "relative_times_ps": torch.from_numpy(relative_times_ps),
             "absolute_times_ps": torch.from_numpy(absolute_times_ps),
             "box_low": torch.from_numpy(
-                np.stack([frames[value].box_low for value in self.timesteps], axis=0)
+                np.stack(
+                    [frames[value].box_low for value in self.timesteps], axis=0
+                )
             ),
             "box_high": torch.from_numpy(
-                np.stack([frames[value].box_high for value in self.timesteps], axis=0)
+                np.stack(
+                    [frames[value].box_high for value in self.timesteps],
+                    axis=0,
+                )
             ),
             "box_lengths": torch.from_numpy(
-                np.stack([frames[value].box_lengths for value in self.timesteps], axis=0)
+                np.stack(
+                    [frames[value].box_lengths for value in self.timesteps],
+                    axis=0,
+                )
             ),
             "atom_ids": torch.from_numpy(self.center_atom_ids),
             "atom_types": torch.from_numpy(
                 np.asarray(trajectory.atom_types[self.center_atom_ids - 1])
             ),
-            "points": torch.stack([value.points for value in environments], dim=0),
+            "points": torch.stack(
+                [value.points for value in environments], dim=0
+            ),
             "center_positions": torch.from_numpy(
-                np.stack([value.center_positions for value in environments], axis=0)
+                np.stack(
+                    [value.center_positions for value in environments], axis=0
+                )
             ),
         }
         campaign_type = str(self.snapshot.manifest["campaign_type"])
@@ -212,29 +244,44 @@ class ShootingBinaryEnvironmentDataset(Dataset[dict[str, Any]]):
                 nucleation_time_ps=float(parent["nucleation_time_ps"]),
                 parent_offset_ps=float(parent["parent_offset_ps"]),
             )
-        elif campaign_type == "fixed_horizon_compatibility_from_nested_first_passage":
+        elif (
+            campaign_type
+            == "fixed_horizon_compatibility_from_nested_first_passage"
+        ):
             sample.update(
                 basin_role=str(parent["basin_role"]),
-                basin_a_max_cluster_atoms=int(parent["basin_a_max_cluster_atoms"]),
-                basin_b_min_cluster_atoms=int(parent["basin_b_min_cluster_atoms"]),
+                basin_a_max_cluster_atoms=int(
+                    parent["basin_a_max_cluster_atoms"]
+                ),
+                basin_b_min_cluster_atoms=int(
+                    parent["basin_b_min_cluster_atoms"]
+                ),
             )
         else:
             raise ValueError(
-                f"Unsupported shooting dataset campaign_type={campaign_type!r}."
+                "Unsupported shooting dataset"
+                f" campaign_type={campaign_type!r}."
             )
         if self.spatial_context_center_count > 0:
             context_points = [value.context_points for value in environments]
-            context_offsets = [value.context_center_offsets for value in environments]
-            context_atom_ids = [value.context_center_atom_ids for value in environments]
+            context_offsets = [
+                value.context_center_offsets for value in environments
+            ]
+            context_atom_ids = [
+                value.context_center_atom_ids for value in environments
+            ]
             if (
                 any(value is None for value in context_points)
                 or any(value is None for value in context_offsets)
                 or any(value is None for value in context_atom_ids)
             ):
                 raise RuntimeError(
-                    f"Context construction returned missing arrays for branch={branch['branch_id']}."
+                    "Context construction returned missing arrays for"
+                    f" branch={branch['branch_id']}."
                 )
-            sample["context_points"] = torch.stack(context_points, dim=0)  # type: ignore[arg-type]
+            sample["context_points"] = torch.stack(
+                context_points, dim=0
+            )  # type: ignore[arg-type]
             sample["context_center_offsets"] = torch.from_numpy(
                 np.stack(context_offsets, axis=0)  # type: ignore[arg-type]
             )
@@ -278,7 +325,9 @@ class ShootingBallisticEnvironmentDataset(ShootingBinaryEnvironmentDataset):
             )
 
     def __getitem__(self, index: int) -> dict[str, Any]:
-        trajectory = ShootingBinaryTrajectory.load(self.trajectory_paths[index])
+        trajectory = ShootingBinaryTrajectory.load(
+            self.trajectory_paths[index]
+        )
         frame = trajectory.load_frames([0])[0]
         positions = np.asarray(frame.positions, dtype=np.float32)
         velocities = np.asarray(frame.velocities, dtype=np.float32)
@@ -307,7 +356,9 @@ class ShootingBallisticEnvironmentDataset(ShootingBinaryEnvironmentDataset):
             )
         return {
             "dataset_index": index,
-            "points": torch.stack([value.points for value in environments], dim=0),
+            "points": torch.stack(
+                [value.points for value in environments], dim=0
+            ),
         }
 
 
@@ -324,8 +375,9 @@ def make_shooting_environment_loader(
     resolved_workers = int(num_workers)
     if resolved_batch_size <= 0 or resolved_workers < 0:
         raise ValueError(
-            "Shooting environment loader requires batch_size>0 and num_workers>=0; "
-            f"got batch_size={resolved_batch_size}, num_workers={resolved_workers}."
+            "Shooting environment loader requires batch_size>0 and"
+            f" num_workers>=0; got batch_size={resolved_batch_size},"
+            f" num_workers={resolved_workers}."
         )
     kwargs: dict[str, Any] = {}
     if resolved_workers > 0:

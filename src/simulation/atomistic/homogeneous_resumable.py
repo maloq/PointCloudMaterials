@@ -27,7 +27,6 @@ from .homogeneous_online import (
 from .provenance import ExecutionProvenance, producer_code_is_compatible
 from .simulation import ThermodynamicTrace, validate_thermodynamic_trace
 
-
 REPLICA_CHECKPOINT_SCHEMA_VERSION = 1
 SNAPSHOT_ARTIFACT_NAMES = (
     "atoms.traj",
@@ -81,20 +80,24 @@ class ThermodynamicTraceBuffer:
                 trace.potential_energy_eV_per_atom.tolist()
             )
             self.positions_A = [frame.copy() for frame in trace.positions_A]
-            self.cell_vectors_A = [frame.copy() for frame in trace.cell_vectors_A]
+            self.cell_vectors_A = [
+                frame.copy() for frame in trace.cell_vectors_A
+            ]
 
     def sample(self, atoms: Atoms, step: int) -> None:
         if self.step and step <= self.step[-1]:
             raise ValueError(
-                f"Thermodynamic trace steps must increase strictly: previous={self.step[-1]}, "
-                f"new={step}."
+                "Thermodynamic trace steps must increase strictly:"
+                f" previous={self.step[-1]}, new={step}."
             )
         atom_count = len(atoms)
         self.step.append(step)
         self.temperature_K.append(float(atoms.get_temperature()))
         self.pressure_GPa.append(
             float(
-                -np.trace(atoms.get_stress(voigt=False, include_ideal_gas=True))
+                -np.trace(
+                    atoms.get_stress(voigt=False, include_ideal_gas=True)
+                )
                 / 3.0
                 / units.GPa
             )
@@ -122,7 +125,9 @@ class ThermodynamicTraceBuffer:
             positions_A=np.stack(self.positions_A),
             cell_vectors_A=np.stack(self.cell_vectors_A),
         )
-        validate_thermodynamic_trace(trace, atom_count=atom_count, context=context)
+        validate_thermodynamic_trace(
+            trace, atom_count=atom_count, context=context
+        )
         return trace
 
 
@@ -135,31 +140,40 @@ def _sha256_file(path: Path) -> str:
 
 
 def _snapshot_digests(snapshot: Path) -> dict[str, str]:
-    return {name: _sha256_file(snapshot / name) for name in SNAPSHOT_ARTIFACT_NAMES}
+    return {
+        name: _sha256_file(snapshot / name) for name in SNAPSHOT_ARTIFACT_NAMES
+    }
 
 
 def _load_and_verify_snapshot_manifest(snapshot: Path) -> dict[str, object]:
     manifest_path = snapshot / "snapshot_manifest.json"
     if not manifest_path.is_file():
         raise RuntimeError(
-            f"{snapshot}: committed checkpoint has no snapshot_manifest.json with "
-            "artifact content hashes."
+            f"{snapshot}: committed checkpoint has no snapshot_manifest.json"
+            " with artifact content hashes."
         )
     with manifest_path.open("r", encoding="utf-8") as handle:
         manifest = json.load(handle)
-    expected_keys = {"schema_version", "completed_global_step", "artifacts_sha256"}
+    expected_keys = {
+        "schema_version",
+        "completed_global_step",
+        "artifacts_sha256",
+    }
     if not isinstance(manifest, dict) or set(manifest) != expected_keys:
         raise RuntimeError(
-            f"{manifest_path}: keys must be exactly {sorted(expected_keys)}, got "
+            f"{manifest_path}: keys must be exactly {sorted(expected_keys)},"
+            " got "
             f"{sorted(manifest) if isinstance(manifest, dict) else type(manifest).__name__}."
         )
     if manifest["schema_version"] != REPLICA_CHECKPOINT_SCHEMA_VERSION:
         raise RuntimeError(
-            f"{manifest_path}: schema_version={manifest['schema_version']!r}, expected "
-            f"{REPLICA_CHECKPOINT_SCHEMA_VERSION}."
+            f"{manifest_path}: schema_version={manifest['schema_version']!r},"
+            f" expected {REPLICA_CHECKPOINT_SCHEMA_VERSION}."
         )
     digests = manifest["artifacts_sha256"]
-    if not isinstance(digests, dict) or set(digests) != set(SNAPSHOT_ARTIFACT_NAMES):
+    if not isinstance(digests, dict) or set(digests) != set(
+        SNAPSHOT_ARTIFACT_NAMES
+    ):
         raise RuntimeError(
             f"{manifest_path}: artifacts_sha256 must contain exactly "
             f"{list(SNAPSHOT_ARTIFACT_NAMES)}, got "
@@ -169,14 +183,16 @@ def _load_and_verify_snapshot_manifest(snapshot: Path) -> dict[str, object]:
         artifact_path = snapshot / name
         if not artifact_path.is_file():
             raise RuntimeError(
-                f"{manifest_path}: hashed checkpoint artifact is missing: {artifact_path}."
+                f"{manifest_path}: hashed checkpoint artifact is missing:"
+                f" {artifact_path}."
             )
         observed_sha256 = _sha256_file(artifact_path)
         if observed_sha256 != expected_sha256:
             raise RuntimeError(
-                f"{manifest_path}: checkpoint artifact SHA-256 mismatch for {name}: "
-                f"recorded={expected_sha256}, observed={observed_sha256}. The checkpoint "
-                "is corrupt and cannot be resumed."
+                f"{manifest_path}: checkpoint artifact SHA-256 mismatch for"
+                f" {name}: recorded={expected_sha256},"
+                f" observed={observed_sha256}. The checkpoint is corrupt and"
+                " cannot be resumed."
             )
     return manifest
 
@@ -184,8 +200,8 @@ def _load_and_verify_snapshot_manifest(snapshot: Path) -> dict[str, object]:
 def _load_and_verify_named_snapshot(snapshot: Path) -> dict[str, object]:
     if snapshot.is_symlink() or not snapshot.is_dir():
         raise RuntimeError(
-            f"{snapshot}: checkpoint snapshot must be a real directory, not a file or "
-            "symbolic link."
+            f"{snapshot}: checkpoint snapshot must be a real directory, not a"
+            " file or symbolic link."
         )
     manifest = _load_and_verify_snapshot_manifest(snapshot)
     completed_step = manifest["completed_global_step"]
@@ -195,14 +211,15 @@ def _load_and_verify_named_snapshot(snapshot: Path) -> dict[str, object]:
         or completed_step < 0
     ):
         raise RuntimeError(
-            f"{snapshot / 'snapshot_manifest.json'}: completed_global_step must be a "
-            f"non-negative integer, got {completed_step!r}."
+            f"{snapshot / 'snapshot_manifest.json'}: completed_global_step"
+            f" must be a non-negative integer, got {completed_step!r}."
         )
     expected_name = f"step_{completed_step:012d}"
     if snapshot.name != expected_name:
         raise RuntimeError(
-            f"{snapshot}: checkpoint directory name is inconsistent with its verified "
-            f"completed_global_step={completed_step}; expected {expected_name!r}."
+            f"{snapshot}: checkpoint directory name is inconsistent with its"
+            f" verified completed_global_step={completed_step}; expected"
+            f" {expected_name!r}."
         )
     with (snapshot / "metadata.json").open("r", encoding="utf-8") as handle:
         metadata = json.load(handle)
@@ -246,10 +263,14 @@ def build_mtk_dynamics(
         return dynamics
     atom_count = len(atoms)
     expected_atom_shape = (atom_count, 3)
-    if state.q.shape != expected_atom_shape or state.p.shape != expected_atom_shape:
+    if (
+        state.q.shape != expected_atom_shape
+        or state.p.shape != expected_atom_shape
+    ):
         raise RuntimeError(
-            "MTK checkpoint atom arrays do not match the source system: "
-            f"q={state.q.shape}, p={state.p.shape}, expected={expected_atom_shape}."
+            "MTK checkpoint atom arrays do not match the source system:"
+            f" q={state.q.shape}, p={state.p.shape},"
+            f" expected={expected_atom_shape}."
         )
     expected_cell = state.cell0 * np.exp(state.eps)
     if not np.allclose(
@@ -261,11 +282,15 @@ def build_mtk_dynamics(
         )
     if not np.allclose(atoms.positions, state.q, rtol=1.0e-12, atol=1.0e-10):
         raise RuntimeError(
-            "MTK checkpoint Atoms positions differ from the serialized integrator q state."
+            "MTK checkpoint Atoms positions differ from the serialized"
+            " integrator q state."
         )
-    if not np.allclose(atoms.get_momenta(), state.p, rtol=1.0e-12, atol=1.0e-10):
+    if not np.allclose(
+        atoms.get_momenta(), state.p, rtol=1.0e-12, atol=1.0e-10
+    ):
         raise RuntimeError(
-            "MTK checkpoint Atoms momenta differ from the serialized integrator p state."
+            "MTK checkpoint Atoms momenta differ from the serialized"
+            " integrator p state."
         )
     thermostat = dynamics._thermostat
     barostat = dynamics._barostat
@@ -276,10 +301,13 @@ def build_mtk_dynamics(
         or state.barostat_p_xi.shape != barostat._p_xi.shape
     ):
         raise RuntimeError(
-            "MTK checkpoint thermostat/barostat chain shapes do not match this ASE "
+            "MTK checkpoint thermostat/barostat chain shapes do not match this"
+            " ASE "
             "integrator: thermostat_eta="
-            f"{state.thermostat_eta.shape}/{thermostat._eta.shape}, thermostat_p_eta="
-            f"{state.thermostat_p_eta.shape}/{thermostat._p_eta.shape}, barostat_xi="
+            f"{state.thermostat_eta.shape}/{thermostat._eta.shape},"
+            " thermostat_p_eta="
+            f"{state.thermostat_p_eta.shape}/{thermostat._p_eta.shape},"
+            " barostat_xi="
             f"{state.barostat_xi.shape}/{barostat._xi.shape}, barostat_p_xi="
             f"{state.barostat_p_xi.shape}/{barostat._p_xi.shape}."
         )
@@ -313,7 +341,9 @@ def capture_mtk_state(dynamics: IsotropicMTKNPT) -> MTKState:
         thermostat_p_eta=np.asarray(
             dynamics._thermostat._p_eta, dtype=np.float64
         ).copy(),
-        barostat_xi=np.asarray(dynamics._barostat._xi, dtype=np.float64).copy(),
+        barostat_xi=np.asarray(
+            dynamics._barostat._xi, dtype=np.float64
+        ).copy(),
         barostat_p_xi=np.asarray(
             dynamics._barostat._p_xi, dtype=np.float64
         ).copy(),
@@ -334,9 +364,9 @@ def _campaign_identity(
         "replica_name": replica_name,
         "random_seed": random_seed,
     }
-    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    encoded = json.dumps(
+        identity, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
     return {**identity, "identity_sha256": hashlib.sha256(encoded).hexdigest()}
 
 
@@ -400,13 +430,15 @@ def _checkpoint_runtime_is_portable(
                 or device_index < 0
             ):
                 raise RuntimeError(
-                    f"Checkpoint {name} cuda_device_index must be a non-negative "
-                    f"integer, got {device_index!r}."
+                    f"Checkpoint {name} cuda_device_index must be a"
+                    f" non-negative integer, got {device_index!r}."
                 )
         observed_name = observed["cuda_device_name"]
         expected_name = expected["cuda_device_name"]
         if observed_name != expected_name:
-            h100_name = re.compile(r"^NVIDIA H100(?:\s|$)", flags=re.IGNORECASE)
+            h100_name = re.compile(
+                r"^NVIDIA H100(?:\s|$)", flags=re.IGNORECASE
+            )
             if (
                 not isinstance(observed_name, str)
                 or not isinstance(expected_name, str)
@@ -431,13 +463,22 @@ def _checkpoint_identity_migration_record(
         or not isinstance(observed_campaign, dict)
         or not isinstance(expected_campaign, dict)
     ):
-        raise TypeError("Checkpoint identity migration inputs must contain mappings.")
+        raise TypeError(
+            "Checkpoint identity migration inputs must contain mappings."
+        )
     observed_runtime = observed_execution["runtime"]
     expected_runtime = expected_execution["runtime"]
-    if not isinstance(observed_runtime, dict) or not isinstance(expected_runtime, dict):
-        raise TypeError("Checkpoint identity migration runtime records must be mappings.")
+    if not isinstance(observed_runtime, dict) or not isinstance(
+        expected_runtime, dict
+    ):
+        raise TypeError(
+            "Checkpoint identity migration runtime records must be mappings."
+        )
     runtime_host_changes = {
-        field: {"observed": observed_runtime.get(field), "active": expected_runtime.get(field)}
+        field: {
+            "observed": observed_runtime.get(field),
+            "active": expected_runtime.get(field),
+        }
         for field in ("platform", "cuda_device_index", "cuda_device_name")
         if observed_runtime.get(field) != expected_runtime.get(field)
     }
@@ -446,7 +487,9 @@ def _checkpoint_identity_migration_record(
     if not isinstance(observed_homogeneous, dict) or not isinstance(
         expected_homogeneous, dict
     ):
-        raise TypeError("Checkpoint campaign homogeneous records must be mappings.")
+        raise TypeError(
+            "Checkpoint campaign homogeneous records must be mappings."
+        )
     return {
         "schema_version": 2,
         "migration": "certified_checkpoint_identity_migration_v2",
@@ -462,12 +505,13 @@ def _checkpoint_identity_migration_record(
             "active_output_root": expected_campaign["output_root"],
         },
         "equivalence_basis": (
-            "The model, calculator settings, source evidence, integration state, "
-            "software stack, CUDA toolkit, cuDNN, and CuEq versions are exact. Only "
-            "the Linux kernel placement, logical CUDA index, H100 product name, "
-            "repository output labels/locations, and a strictly longer full-duration "
-            "measurement endpoint may differ. The next segment resumes the hashed "
-            "MTK-NPT state without reconstructing or modifying checkpoint tensors."
+            "The model, calculator settings, source evidence, integration"
+            " state, software stack, CUDA toolkit, cuDNN, and CuEq versions"
+            " are exact. Only the Linux kernel placement, logical CUDA index,"
+            " H100 product name, repository output labels/locations, and a"
+            " strictly longer full-duration measurement endpoint may differ."
+            " The next segment resumes the hashed MTK-NPT state without"
+            " reconstructing or modifying checkpoint tensors."
         ),
     }
 
@@ -480,8 +524,9 @@ def _write_checkpoint_identity_migration(
 ) -> None:
     migration_directory = directory / "identity_migrations"
     migration_directory.mkdir(exist_ok=True)
-    migration_path = migration_directory / (
-        f"{observed['identity_sha256']}_to_{expected['identity_sha256']}.json"
+    migration_path = (
+        migration_directory
+        / f"{observed['identity_sha256']}_to_{expected['identity_sha256']}.json"
     )
     record = _checkpoint_identity_migration_record(observed, expected)
     if migration_path.exists():
@@ -489,8 +534,8 @@ def _write_checkpoint_identity_migration(
             existing = json.load(handle)
         if existing != record:
             raise RuntimeError(
-                f"{migration_path}: existing checkpoint identity migration differs "
-                "from the exact requested transition."
+                f"{migration_path}: existing checkpoint identity migration"
+                " differs from the exact requested transition."
             )
         return
     temporary = migration_path.with_suffix(".json.tmp")
@@ -508,7 +553,9 @@ def _compatible_checkpoint_identity_migration(
     if not isinstance(observed, dict) or set(observed) != set(expected):
         return None
     observed_payload = {
-        key: value for key, value in observed.items() if key != "identity_sha256"
+        key: value
+        for key, value in observed.items()
+        if key != "identity_sha256"
     }
     observed_digest = hashlib.sha256(
         json.dumps(
@@ -517,7 +564,8 @@ def _compatible_checkpoint_identity_migration(
     ).hexdigest()
     if observed.get("identity_sha256") != observed_digest:
         raise RuntimeError(
-            "Checkpoint manifest identity_sha256 does not match its serialized identity."
+            "Checkpoint manifest identity_sha256 does not match its serialized"
+            " identity."
         )
     observed_execution = observed_payload.get("execution_provenance")
     expected_execution = expected.get("execution_provenance")
@@ -527,7 +575,9 @@ def _compatible_checkpoint_identity_migration(
         return None
     if set(observed_execution) != set(expected_execution):
         return None
-    if observed_execution.get("calculator") != expected_execution.get("calculator"):
+    if observed_execution.get("calculator") != expected_execution.get(
+        "calculator"
+    ):
         return None
     if not _checkpoint_runtime_is_portable(
         observed_execution.get("runtime"), expected_execution.get("runtime")
@@ -560,7 +610,9 @@ def _compatible_checkpoint_identity_migration(
         return None
     migrated["campaign_config"] = deepcopy(expected_campaign_config)
     migrated_digest = hashlib.sha256(
-        json.dumps(migrated, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        json.dumps(migrated, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
     ).hexdigest()
     migrated["identity_sha256"] = migrated_digest
     return migrated if migrated == expected else None
@@ -594,9 +646,9 @@ class ResumableReplicaCheckpointStore:
                 )
                 if migrated is None:
                     raise RuntimeError(
-                        f"{manifest_path}: checkpoint identity differs from the active "
-                        "campaign, potential/runtime, replica name, or random seed. "
-                        "Refusing an ambiguous resume."
+                        f"{manifest_path}: checkpoint identity differs from"
+                        " the active campaign, potential/runtime, replica"
+                        " name, or random seed. Refusing an ambiguous resume."
                     )
                 _write_checkpoint_identity_migration(
                     self.directory,
@@ -624,12 +676,15 @@ class ResumableReplicaCheckpointStore:
             verified_steps: set[int] = set()
             for candidate in snapshots:
                 candidate_manifest = _load_and_verify_named_snapshot(candidate)
-                candidate_step = int(candidate_manifest["completed_global_step"])
+                candidate_step = int(
+                    candidate_manifest["completed_global_step"]
+                )
                 if candidate_step in verified_steps:
                     raise RuntimeError(
-                        f"{self.directory}: multiple verified checkpoint snapshots "
-                        f"claim completed_global_step={candidate_step}; recovery is "
-                        "ambiguous."
+                        f"{self.directory}: multiple verified checkpoint"
+                        " snapshots claim"
+                        f" completed_global_step={candidate_step}; recovery is"
+                        " ambiguous."
                     )
                 verified_steps.add(candidate_step)
                 verified_snapshots.append(
@@ -644,8 +699,8 @@ class ResumableReplicaCheckpointStore:
             snapshot_name = latest_path.read_text(encoding="utf-8").strip()
             if not snapshot_name or Path(snapshot_name).name != snapshot_name:
                 raise RuntimeError(
-                    f"{latest_path}: checkpoint pointer must contain exactly one "
-                    f"snapshot directory name, got {snapshot_name!r}."
+                    f"{latest_path}: checkpoint pointer must contain exactly"
+                    f" one snapshot directory name, got {snapshot_name!r}."
                 )
             snapshot = self.directory / snapshot_name
             snapshot_manifest = _load_and_verify_named_snapshot(snapshot)
@@ -656,10 +711,13 @@ class ResumableReplicaCheckpointStore:
             "integrator": snapshot / "mtk_state.npz",
             "metadata": snapshot / "metadata.json",
         }
-        missing = [name for name, path in required.items() if not path.is_file()]
+        missing = [
+            name for name, path in required.items() if not path.is_file()
+        ]
         if missing:
             raise RuntimeError(
-                f"{snapshot}: LATEST checkpoint is incomplete; missing files={missing}."
+                f"{snapshot}: LATEST checkpoint is incomplete; missing"
+                f" files={missing}."
             )
         atoms = read(required["atoms"], format="traj")
         with np.load(required["trace"]) as stored:
@@ -700,8 +758,8 @@ class ResumableReplicaCheckpointStore:
             metadata = json.load(handle)
         if not isinstance(metadata, dict):
             raise RuntimeError(
-                f"{required['metadata']}: checkpoint metadata must be a JSON mapping, "
-                f"got {type(metadata).__name__}."
+                f"{required['metadata']}: checkpoint metadata must be a JSON"
+                f" mapping, got {type(metadata).__name__}."
             )
         if state.nsteps != metadata.get("completed_global_step"):
             raise RuntimeError(
@@ -710,7 +768,8 @@ class ResumableReplicaCheckpointStore:
             )
         if state.nsteps != snapshot_manifest["completed_global_step"]:
             raise RuntimeError(
-                f"{snapshot}: MTK nsteps={state.nsteps} differs from hashed snapshot "
+                f"{snapshot}: MTK nsteps={state.nsteps} differs from hashed"
+                " snapshot "
                 "manifest completed_global_step="
                 f"{snapshot_manifest['completed_global_step']!r}."
             )
@@ -741,8 +800,9 @@ class ResumableReplicaCheckpointStore:
             )
         if metadata.get("completed_global_step") != completed_step:
             raise RuntimeError(
-                "Checkpoint metadata completed_global_step must equal the captured MTK "
-                f"nsteps={completed_step}, got {metadata.get('completed_global_step')!r}."
+                "Checkpoint metadata completed_global_step must equal the"
+                f" captured MTK nsteps={completed_step}, got"
+                f" {metadata.get('completed_global_step')!r}."
             )
         validate_thermodynamic_trace(
             trace,
@@ -752,17 +812,24 @@ class ResumableReplicaCheckpointStore:
         snapshot_name = f"step_{completed_step:012d}"
         final_snapshot = self.directory / snapshot_name
         staging = Path(
-            tempfile.mkdtemp(prefix=f".{snapshot_name}.staging-", dir=self.directory)
+            tempfile.mkdtemp(
+                prefix=f".{snapshot_name}.staging-", dir=self.directory
+            )
         )
         try:
             write(staging / "atoms.traj", atoms, format="traj")
             with (staging / "trace.npz").open("wb") as handle:
                 np.savez(handle, **trace.__dict__)
             with (staging / "online_crystallinity.npz").open("wb") as handle:
-                np.savez(handle, **online_observations_to_arrays(online_observations))
+                np.savez(
+                    handle,
+                    **online_observations_to_arrays(online_observations),
+                )
             with (staging / "mtk_state.npz").open("wb") as handle:
                 np.savez(handle, **integrator_state.__dict__)
-            with (staging / "metadata.json").open("w", encoding="utf-8") as handle:
+            with (staging / "metadata.json").open(
+                "w", encoding="utf-8"
+            ) as handle:
                 json.dump(metadata, handle, indent=2)
             snapshot_manifest = {
                 "schema_version": REPLICA_CHECKPOINT_SCHEMA_VERSION,
@@ -774,12 +841,15 @@ class ResumableReplicaCheckpointStore:
             ) as handle:
                 json.dump(snapshot_manifest, handle, indent=2, sort_keys=True)
             if final_snapshot.exists():
-                committed_manifest = _load_and_verify_named_snapshot(final_snapshot)
+                committed_manifest = _load_and_verify_named_snapshot(
+                    final_snapshot
+                )
                 if committed_manifest != snapshot_manifest:
                     raise RuntimeError(
-                        f"{final_snapshot}: refusing to replace a committed same-step "
-                        "checkpoint with different artifact hashes. This indicates "
-                        "non-idempotent replay or state corruption."
+                        f"{final_snapshot}: refusing to replace a committed"
+                        " same-step checkpoint with different artifact"
+                        " hashes. This indicates non-idempotent replay or"
+                        " state corruption."
                     )
                 shutil.rmtree(staging)
             else:

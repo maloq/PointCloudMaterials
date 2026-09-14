@@ -2,7 +2,6 @@
 
 from typing import Any
 
-
 _MODEL_TYPE_ALIASES = {
     "vicreg": "contrastive",
     "visreg": "contrastive",
@@ -10,7 +9,6 @@ _MODEL_TYPE_ALIASES = {
     "temporal_vicreg": "temporal_ssl",
     "temporal_ssl": "temporal_ssl",
 }
-
 
 
 def _method_name_from_cfg(cfg: Any) -> str | None:
@@ -32,8 +30,9 @@ def _method_name_from_cfg(cfg: Any) -> str | None:
     return None
 
 
-
-def resolve_training_method(cfg: Any = None, *, method_name: str | None = None):
+def resolve_training_method(
+    cfg: Any = None, *, method_name: str | None = None
+):
     """Return the concrete module class and its default analysis policy."""
     resolved_name = (
         str(method_name).strip().lower() if method_name is not None else None

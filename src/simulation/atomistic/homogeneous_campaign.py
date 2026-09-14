@@ -48,7 +48,10 @@ from .homogeneous_campaign_queue import (
     initialize_campaign_queue,
 )
 from .homogeneous_config import trajectory_sample_steps
-from .homogeneous_generator import _load_source_liquid, _runtime_generator_config
+from .homogeneous_generator import (
+    _load_source_liquid,
+    _runtime_generator_config,
+)
 from .homogeneous_online import (
     OnlineCrystallinityDetector,
     OnlineThresholdTracker,
@@ -69,9 +72,11 @@ from .simulation import (
     set_maxwell_boltzmann_velocities,
     validate_thermodynamic_trace,
 )
-from .transition_analysis import STRUCTURE_NAMES, write_structure_slice_visualization
+from .transition_analysis import (
+    STRUCTURE_NAMES,
+    write_structure_slice_visualization,
+)
 from .validation import SystemDiagnostics, diagnose_system
-
 
 CAMPAIGN_SCHEMA_VERSION = 2
 MD_OUTCOMES = (
@@ -178,8 +183,8 @@ def _validate_raw_artifact_hashes(
             )
     if failures:
         raise RuntimeError(
-            f"{metadata_path}: committed raw replica artifact integrity failed: "
-            f"{failures}."
+            f"{metadata_path}: committed raw replica artifact integrity"
+            f" failed: {failures}."
         )
 
 
@@ -202,7 +207,9 @@ def _load_trace(path: Path) -> ThermodynamicTrace:
             temperature_K=stored["temperature_K"],
             pressure_GPa=stored["pressure_GPa"],
             volume_A3=stored["volume_A3"],
-            potential_energy_eV_per_atom=stored["potential_energy_eV_per_atom"],
+            potential_energy_eV_per_atom=stored[
+                "potential_energy_eV_per_atom"
+            ],
             positions_A=stored["positions_A"],
             cell_vectors_A=stored["cell_vectors_A"],
         )
@@ -216,9 +223,9 @@ def _slice_continuous_trace(
     boundary = np.flatnonzero(trace.step == equilibration_steps)
     if len(boundary) != 1:
         raise RuntimeError(
-            "Continuous campaign trace must contain exactly one equilibration/measurement "
-            f"boundary at global step={equilibration_steps}, found "
-            f"indices={boundary.tolist()}."
+            "Continuous campaign trace must contain exactly one"
+            " equilibration/measurement boundary at global"
+            f" step={equilibration_steps}, found indices={boundary.tolist()}."
         )
 
     def sliced(mask: np.ndarray, offset: int) -> ThermodynamicTrace:
@@ -267,8 +274,8 @@ def _validated_raw_event_and_outcome(
         actual_measurement_steps, bool
     ):
         raise RuntimeError(
-            f"{metadata_path}: actual_measurement_steps must be an integer, got "
-            f"{actual_measurement_steps!r}."
+            f"{metadata_path}: actual_measurement_steps must be an integer,"
+            f" got {actual_measurement_steps!r}."
         )
     trajectory_path = replica_directory / "trajectory.npz"
     with np.load(trajectory_path) as stored:
@@ -280,8 +287,10 @@ def _validated_raw_event_and_outcome(
         or int(trajectory_steps[-1]) != actual_measurement_steps
     ):
         raise RuntimeError(
-            f"{metadata_path}: actual_measurement_steps={actual_measurement_steps} is "
-            f"inconsistent with {trajectory_path} steps={trajectory_steps.tolist()}."
+            f"{metadata_path}:"
+            f" actual_measurement_steps={actual_measurement_steps} is"
+            " inconsistent with"
+            f" {trajectory_path} steps={trajectory_steps.tolist()}."
         )
 
     online_path = replica_directory / "online_crystallinity.npz"
@@ -299,9 +308,10 @@ def _validated_raw_event_and_outcome(
     )
     if observed_steps != expected_steps:
         raise RuntimeError(
-            f"{online_path}: committed online observation steps={observed_steps} "
-            f"differ from expected={expected_steps} through actual_measurement_steps="
-            f"{actual_measurement_steps}."
+            f"{online_path}: committed online observation"
+            f" steps={observed_steps} differ from"
+            f" expected={expected_steps} through"
+            f" actual_measurement_steps={actual_measurement_steps}."
         )
     tracker = OnlineThresholdTracker(
         threshold_atoms=homogeneous.analysis.nucleus_size_threshold_atoms,
@@ -346,9 +356,9 @@ def _validated_raw_event_and_outcome(
         expected_outcome = "right_censored"
     if actual_measurement_steps != expected_final_step:
         raise RuntimeError(
-            f"{metadata_path}: raw online observables imply final measurement step="
-            f"{expected_final_step}, but metadata/trajectory end at "
-            f"{actual_measurement_steps}."
+            f"{metadata_path}: raw online observables imply final measurement"
+            f" step={expected_final_step}, but metadata/trajectory end at"
+            f" {actual_measurement_steps}."
         )
     outcome = metadata.get("outcome")
     if outcome != expected_outcome:
@@ -360,7 +370,9 @@ def _validated_raw_event_and_outcome(
     timestep_fs = homogeneous.generator.dynamics.timestep_fs
     expected_event_document: dict[str, object] = {
         "observed": event is not None,
-        "observable_name": "online_persistent_crystalline_cluster_threshold_event",
+        "observable_name": (
+            "online_persistent_crystalline_cluster_threshold_event"
+        ),
         "nucleus_size_threshold_atoms": (
             homogeneous.analysis.nucleus_size_threshold_atoms
         ),
@@ -377,7 +389,9 @@ def _validated_raw_event_and_outcome(
             homogeneous.sample_interval * timestep_fs / 1000.0
         ),
         "dense_monitoring_frames_used_for_persistence": False,
-        "online_persistence_frames": config.execution.online_persistence_frames,
+        "online_persistence_frames": (
+            config.execution.online_persistence_frames
+        ),
         "configured_saved_persistence_frames": (
             homogeneous.analysis.threshold_persistence_frames
         ),
@@ -387,7 +401,9 @@ def _validated_raw_event_and_outcome(
             * homogeneous.sample_interval
         ),
         "onset_step": None if event is None else event.onset_step,
-        "confirmation_step": None if event is None else event.confirmation_step,
+        "confirmation_step": (
+            None if event is None else event.confirmation_step
+        ),
         "onset_time_ps": (
             None if event is None else event.onset_step * timestep_fs / 1000.0
         ),
@@ -400,10 +416,10 @@ def _validated_raw_event_and_outcome(
     observed_event_document = metadata.get("online_threshold_event")
     if observed_event_document != expected_event_document:
         raise RuntimeError(
-            f"{metadata_path}: online_threshold_event does not match the event "
-            f"recomputed from hashed raw observations: observed="
-            f"{observed_event_document!r}, "
-            f"expected={expected_event_document!r}."
+            f"{metadata_path}: online_threshold_event does not match the event"
+            " recomputed from hashed raw observations:"
+            f" observed={observed_event_document!r},"
+            f" expected={expected_event_document!r}."
         )
     expected_observation_label = {
         "event_stopped": expected_outcome == "event_stopped",
@@ -433,8 +449,8 @@ def _validated_raw_event_and_outcome(
     }
     if mismatches:
         raise RuntimeError(
-            f"{metadata_path}: event/outcome metadata is internally inconsistent: "
-            f"{mismatches}."
+            f"{metadata_path}: event/outcome metadata is internally"
+            f" inconsistent: {mismatches}."
         )
     return expected_outcome, expected_event_document
 
@@ -449,7 +465,9 @@ def _validate_database_raw_commit(
     row: dict[str, object] | None = None,
 ) -> tuple[dict[str, object], dict[str, object]]:
     anchored_row = (
-        campaign_row(config, replica_index=task.replica_index) if row is None else row
+        campaign_row(config, replica_index=task.replica_index)
+        if row is None
+        else row
     )
     expected_assignment = {
         "replica_name": task.replica_name,
@@ -464,15 +482,16 @@ def _validate_database_raw_commit(
     }
     if assignment_mismatches:
         raise RuntimeError(
-            f"{metadata_path}: SQLite raw-commit assignment differs from the replica: "
-            f"{assignment_mismatches}."
+            f"{metadata_path}: SQLite raw-commit assignment differs from the"
+            f" replica: {assignment_mismatches}."
         )
     expected_metadata_sha256 = anchored_row.get("run_metadata_sha256")
     observed_metadata_sha256 = _sha256_file(metadata_path)
     if expected_metadata_sha256 != observed_metadata_sha256:
         raise RuntimeError(
-            f"{metadata_path}: externally anchored run-metadata SHA-256 mismatch: "
-            f"SQLite={expected_metadata_sha256!r}, observed={observed_metadata_sha256}."
+            f"{metadata_path}: externally anchored run-metadata SHA-256"
+            f" mismatch: SQLite={expected_metadata_sha256!r},"
+            f" observed={observed_metadata_sha256}."
         )
     expected_outcome, expected_event = _validated_raw_event_and_outcome(
         config,
@@ -483,25 +502,28 @@ def _validate_database_raw_commit(
     )
     if anchored_row.get("outcome") != expected_outcome:
         raise RuntimeError(
-            f"{metadata_path}: SQLite outcome={anchored_row.get('outcome')!r} differs "
-            f"from hashed raw-observable outcome={expected_outcome!r}."
+            f"{metadata_path}: SQLite"
+            f" outcome={anchored_row.get('outcome')!r} differs from hashed"
+            f" raw-observable outcome={expected_outcome!r}."
         )
     event_json = anchored_row.get("online_threshold_event_json")
     if not isinstance(event_json, str):
         raise RuntimeError(
-            f"{metadata_path}: SQLite has no online-threshold-event commit anchor."
+            f"{metadata_path}: SQLite has no online-threshold-event commit"
+            " anchor."
         )
     try:
         anchored_event = json.loads(event_json)
     except json.JSONDecodeError as exc:
         raise RuntimeError(
-            f"{metadata_path}: SQLite online-threshold-event anchor is invalid JSON."
+            f"{metadata_path}: SQLite online-threshold-event anchor is invalid"
+            " JSON."
         ) from exc
     if anchored_event != expected_event:
         raise RuntimeError(
-            f"{metadata_path}: SQLite online-threshold-event anchor differs from "
-            f"hashed raw observables: SQLite={anchored_event!r}, "
-            f"expected={expected_event!r}."
+            f"{metadata_path}: SQLite online-threshold-event anchor differs"
+            f" from hashed raw observables: SQLite={anchored_event!r},"
+            f" expected={expected_event!r}."
         )
     return anchored_row, expected_event
 
@@ -584,29 +606,36 @@ def _begin_calculator_performance_session(
             ),
             worker_metrics_at_session_start=worker_metrics,
         )
-    if prior_performance["schema_version"] != CALCULATOR_PERFORMANCE_SCHEMA_VERSION:
+    if (
+        prior_performance["schema_version"]
+        != CALCULATOR_PERFORMANCE_SCHEMA_VERSION
+    ):
         raise RuntimeError(
-            f"Checkpoint calculator_performance schema_version="
+            "Checkpoint calculator_performance schema_version="
             f"{prior_performance['schema_version']!r}; expected "
             f"{CALCULATOR_PERFORMANCE_SCHEMA_VERSION}."
         )
     current_available = worker_metrics is not None
     if prior_performance["graph_cache_metrics_available"] != current_available:
         raise RuntimeError(
-            "Calculator graph-cache metric availability changed across exact checkpoint "
-            f"resume: checkpoint={prior_performance['graph_cache_metrics_available']}, current="
-            f"{current_available}."
+            "Calculator graph-cache metric availability changed across exact"
+            " checkpoint resume:"
+            f" checkpoint={prior_performance['graph_cache_metrics_available']},"
+            f" current={current_available}."
         )
     coverage_start = int(prior_performance["coverage_start_global_step"])
     if prior_performance["completed_global_step"] != completed_global_step:
         raise RuntimeError(
-            "Checkpoint calculator performance endpoint differs from its MTK state: "
-            f"performance={prior_performance['completed_global_step']}, "
-            f"MTK={completed_global_step}."
+            "Checkpoint calculator performance endpoint differs from its MTK"
+            " state:"
+            f" performance={prior_performance['completed_global_step']},"
+            f" MTK={completed_global_step}."
         )
     if current_available:
         prior_counters = {
-            field: int(prior_performance["graph_cache"]["replica_counters"][field])
+            field: int(
+                prior_performance["graph_cache"]["replica_counters"][field]
+            )
             for field in CALCULATOR_GRAPH_COUNTER_FIELDS
         }
     else:
@@ -630,8 +659,8 @@ def _calculator_performance_snapshot(
     worker_start_metrics = session.worker_metrics_at_session_start
     if (worker_current_metrics is None) != (worker_start_metrics is None):
         raise RuntimeError(
-            "Calculator graph-cache metric availability changed within one replica "
-            "execution session."
+            "Calculator graph-cache metric availability changed within one"
+            " replica execution session."
         )
     elapsed_seconds = session.prior_elapsed_seconds + (
         time.perf_counter() - session.started_at
@@ -643,10 +672,13 @@ def _calculator_performance_snapshot(
     available = worker_current_metrics is not None
     graph_cache: dict[str, object] | None
     if available:
-        if worker_start_metrics is None or session.prior_replica_counters is None:
+        if (
+            worker_start_metrics is None
+            or session.prior_replica_counters is None
+        ):
             raise RuntimeError(
-                "Available calculator graph-cache metrics lack the required session "
-                "baseline or prior replica counters."
+                "Available calculator graph-cache metrics lack the required"
+                " session baseline or prior replica counters."
             )
         session_delta: dict[str, int] = {}
         replica_cumulative: dict[str, int] = {}
@@ -655,8 +687,9 @@ def _calculator_performance_snapshot(
             start_value = int(worker_start_metrics[field])
             if current_value < start_value:
                 raise RuntimeError(
-                    f"Calculator worker-lifetime counter {field!r} decreased within "
-                    f"replica execution: start={start_value}, current={current_value}."
+                    f"Calculator worker-lifetime counter {field!r} decreased"
+                    f" within replica execution: start={start_value},"
+                    f" current={current_value}."
                 )
             delta = current_value - start_value
             session_delta[field] = delta
@@ -686,7 +719,9 @@ def _calculator_performance_snapshot(
         "completed_global_step": completed_global_step,
         "measured_global_steps": measured_global_steps,
         "elapsed_seconds": elapsed_seconds,
-        "measured_steps_per_second": float(measured_global_steps / elapsed_seconds),
+        "measured_steps_per_second": float(
+            measured_global_steps / elapsed_seconds
+        ),
         "graph_cache": graph_cache,
     }
 
@@ -732,7 +767,8 @@ def _replica_initial_state_design(
         "source_environment": homogeneous.source_environment,
         "source_frame_step": homogeneous.source_frame_step,
         "replica_variation": (
-            "independent Maxwell-Boltzmann momenta generated from each replica seed"
+            "independent Maxwell-Boltzmann momenta generated from each replica"
+            " seed"
         ),
         "pre_measurement_mtk_npt_equilibration_steps": (
             homogeneous.equilibration_steps
@@ -743,8 +779,9 @@ def _replica_initial_state_design(
             / 1000.0
         ),
         "statistical_interpretation": (
-            "conditional velocity-replica ensemble from one liquid coordinate/cell "
-            "configuration; it is not an independently sampled configuration ensemble"
+            "conditional velocity-replica ensemble from one liquid"
+            " coordinate/cell configuration; it is not an independently"
+            " sampled configuration ensemble"
         ),
     }
 
@@ -776,7 +813,8 @@ def _load_existing_raw_result(
     metadata_path = raw_directory / "run_metadata.json"
     if not metadata_path.is_file():
         raise RuntimeError(
-            f"{raw_directory}: replica directory exists without run_metadata.json."
+            f"{raw_directory}: replica directory exists without"
+            " run_metadata.json."
         )
     with metadata_path.open("r", encoding="utf-8") as handle:
         metadata = json.load(handle)
@@ -792,7 +830,9 @@ def _load_existing_raw_result(
     for name, value in expected.items():
         observed_value = metadata.get(name)
         matches = (
-            campaign_config_matches_after_path_relocation(observed_value, value)
+            campaign_config_matches_after_path_relocation(
+                observed_value, value
+            )
             if name == "campaign_config" and isinstance(value, dict)
             else observed_value == value
         )
@@ -800,8 +840,8 @@ def _load_existing_raw_result(
             mismatches[name] = {"observed": observed_value, "expected": value}
     if mismatches:
         raise RuntimeError(
-            f"{metadata_path}: committed raw replica does not match the active campaign: "
-            f"mismatches={mismatches}."
+            f"{metadata_path}: committed raw replica does not match the active"
+            f" campaign: mismatches={mismatches}."
         )
     _validate_raw_artifact_hashes(raw_directory, metadata_path, metadata)
     outcome, online_threshold_event = _validated_raw_event_and_outcome(
@@ -836,7 +876,9 @@ def _write_raw_replica(
     replicas_root.mkdir(parents=True, exist_ok=True)
     raw_directory = replicas_root / task.replica_name
     staging = Path(
-        tempfile.mkdtemp(prefix=f".{task.replica_name}.staging-", dir=replicas_root)
+        tempfile.mkdtemp(
+            prefix=f".{task.replica_name}.staging-", dir=replicas_root
+        )
     )
     event = tracker.event
     timestep_fs = config.homogeneous.generator.dynamics.timestep_fs
@@ -864,15 +906,18 @@ def _write_raw_replica(
             "campaign_config": config.to_dict(),
             "execution_provenance": execution_provenance.to_dict(),
             "source_evidence": config.source_evidence,
-            "replica_initial_state_design": _replica_initial_state_design(config),
+            "replica_initial_state_design": _replica_initial_state_design(
+                config
+            ),
             "calculator_performance": calculator_performance,
             "raw_artifacts_sha256": raw_artifacts_sha256,
             "outcome": outcome,
             "observation_label": {
                 "event_stopped": outcome == "event_stopped",
                 "right_censored": outcome == "right_censored",
-                "full_duration_after_event": outcome
-                == "event_observed_full_duration",
+                "full_duration_after_event": (
+                    outcome == "event_observed_full_duration"
+                ),
                 "left_censored": outcome == "left_censored",
                 "invalid_initial_liquid": outcome == "invalid_initial_liquid",
             },
@@ -902,7 +947,9 @@ def _write_raw_replica(
             },
             "online_threshold_event": {
                 "observed": event is not None,
-                "observable_name": "online_persistent_crystalline_cluster_threshold_event",
+                "observable_name": (
+                    "online_persistent_crystalline_cluster_threshold_event"
+                ),
                 "nucleus_size_threshold_atoms": (
                     config.homogeneous.analysis.nucleus_size_threshold_atoms
                 ),
@@ -912,9 +959,13 @@ def _write_raw_replica(
                 "cluster_neighbor_cutoff_A": (
                     config.homogeneous.analysis.crystalline_cluster_cutoff_A
                 ),
-                "event_check_interval_steps": config.execution.event_check_interval,
+                "event_check_interval_steps": (
+                    config.execution.event_check_interval
+                ),
                 "event_check_interval_ps": (
-                    config.execution.event_check_interval * timestep_fs / 1000.0
+                    config.execution.event_check_interval
+                    * timestep_fs
+                    / 1000.0
                 ),
                 "event_definition_interval_steps": (
                     config.homogeneous.sample_interval
@@ -933,7 +984,10 @@ def _write_raw_replica(
                     config.homogeneous.sample_interval
                 ),
                 "physical_persistence_span_steps": (
-                    (config.homogeneous.analysis.threshold_persistence_frames - 1)
+                    (
+                        config.homogeneous.analysis.threshold_persistence_frames
+                        - 1
+                    )
                     * config.homogeneous.sample_interval
                 ),
                 "onset_step": None if event is None else event.onset_step,
@@ -951,7 +1005,9 @@ def _write_raw_replica(
                     else event.confirmation_step * timestep_fs / 1000.0
                 ),
             },
-            "post_event_growth_steps_requested": config.execution.post_event_steps,
+            "post_event_growth_steps_requested": (
+                config.execution.post_event_steps
+            ),
             "post_event_growth_steps_observed": (
                 None
                 if event is None
@@ -962,9 +1018,10 @@ def _write_raw_replica(
             ),
             "endpoint_diagnostics": diagnostics.to_dict(),
             "scientific_label": (
-                "event-driven stopping changes only post-confirmation trajectory length; "
-                "the waiting-time event is the online onset. Event-stopped trajectories "
-                "and no-event right-censored trajectories are explicitly distinct."
+                "event-driven stopping changes only post-confirmation"
+                " trajectory length; the waiting-time event is the online"
+                " onset. Event-stopped trajectories and no-event"
+                " right-censored trajectories are explicitly distinct."
             ),
         }
         _write_json_atomic(staging / "run_metadata.json", metadata)
@@ -974,12 +1031,14 @@ def _write_raw_replica(
         raise
     metadata_path = raw_directory / "run_metadata.json"
     _validate_raw_artifact_hashes(raw_directory, metadata_path, metadata)
-    validated_outcome, online_threshold_event = _validated_raw_event_and_outcome(
-        config,
-        task=task,
-        replica_directory=raw_directory,
-        metadata_path=metadata_path,
-        metadata=metadata,
+    validated_outcome, online_threshold_event = (
+        _validated_raw_event_and_outcome(
+            config,
+            task=task,
+            replica_directory=raw_directory,
+            metadata_path=metadata_path,
+            metadata=metadata,
+        )
     )
     return CampaignReplicaRunResult(
         outcome=validated_outcome,
@@ -1058,9 +1117,10 @@ def run_campaign_replica(
         ]
         if observed_online_steps != expected_online_steps:
             raise RuntimeError(
-                f"{task.replica_name}: checkpoint online observation steps="
-                f"{observed_online_steps} differ from expected={expected_online_steps} "
-                f"at completed_global_step={dynamics.nsteps}."
+                f"{task.replica_name}: checkpoint online observation"
+                f" steps={observed_online_steps} differ from"
+                f" expected={expected_online_steps} at"
+                f" completed_global_step={dynamics.nsteps}."
             )
         progress(
             f"{task.replica_name}: resumed exact MTK state at global step="
@@ -1079,7 +1139,8 @@ def run_campaign_replica(
         checkpoint_trace = trace_buffer.finish(
             atom_count=len(atoms),
             context=(
-                f"{task.replica_name} checkpoint at global step={completed_step}"
+                f"{task.replica_name} checkpoint at global"
+                f" step={completed_step}"
             ),
         )
         checkpoints.save(
@@ -1101,8 +1162,8 @@ def run_campaign_replica(
         )
         last_committed_step = completed_step
         progress(
-            f"{task.replica_name}: committed resumable {reason} checkpoint through "
-            f"global step={completed_step}"
+            f"{task.replica_name}: committed resumable {reason} checkpoint"
+            f" through global step={completed_step}"
         )
 
     natural_end = homogeneous.equilibration_steps + homogeneous.steps
@@ -1116,9 +1177,13 @@ def run_campaign_replica(
             int(dynamics.nsteps) + config.execution.chunk_steps,
             _termination_target(config, tracker),
         )
-        while dynamics.nsteps < min(chunk_end, _termination_target(config, tracker)):
+        while dynamics.nsteps < min(
+            chunk_end, _termination_target(config, tracker)
+        ):
             current_step = int(dynamics.nsteps)
-            next_sample_index = bisect_right(coordinate_sample_steps, current_step)
+            next_sample_index = bisect_right(
+                coordinate_sample_steps, current_step
+            )
             next_sample_step = (
                 coordinate_sample_steps[next_sample_index]
                 if next_sample_index < len(coordinate_sample_steps)
@@ -1140,11 +1205,14 @@ def run_campaign_replica(
             if current_step == next_sample_step:
                 trace_buffer.sample(atoms, current_step)
             if current_step == next_event_step and current_step <= natural_end:
-                measurement_step = current_step - homogeneous.equilibration_steps
+                measurement_step = (
+                    current_step - homogeneous.equilibration_steps
+                )
                 if measurement_step < 0:
                     raise RuntimeError(
-                        f"{task.replica_name}: computed negative online measurement_step="
-                        f"{measurement_step} at global step={current_step}."
+                        f"{task.replica_name}: computed negative online"
+                        f" measurement_step={measurement_step} at global"
+                        f" step={current_step}."
                     )
                 observation = detector.evaluate(
                     atoms, measurement_step=measurement_step
@@ -1166,17 +1234,18 @@ def run_campaign_replica(
     completed_global_step = int(dynamics.nsteps)
     if completed_global_step > natural_end:
         raise RuntimeError(
-            f"{task.replica_name}: completed global step={completed_global_step} exceeds "
-            f"natural end={natural_end}."
+            f"{task.replica_name}: completed global"
+            f" step={completed_global_step} exceeds natural end={natural_end}."
         )
     if trace_buffer.step[-1] != completed_global_step:
         raise RuntimeError(
-            f"{task.replica_name}: final checkpoint at global step={completed_global_step} "
-            f"does not contain its endpoint trace frame; last trace step="
-            f"{trace_buffer.step[-1]}."
+            f"{task.replica_name}: final checkpoint at global"
+            f" step={completed_global_step} does not contain its endpoint"
+            f" trace frame; last trace step={trace_buffer.step[-1]}."
         )
     continuous_trace = trace_buffer.finish(
-        atom_count=len(atoms), context=f"{task.replica_name} completed continuous trace"
+        atom_count=len(atoms),
+        context=f"{task.replica_name} completed continuous trace",
     )
     equilibration_trace, measurement_trace = _slice_continuous_trace(
         continuous_trace, equilibration_steps=homogeneous.equilibration_steps
@@ -1197,9 +1266,9 @@ def run_campaign_replica(
     else:
         if completed_global_step != natural_end:
             raise RuntimeError(
-                f"{task.replica_name}: no event but trajectory ended at global step="
-                f"{completed_global_step}, before natural end={natural_end}; it cannot be "
-                "labeled as right-censored."
+                f"{task.replica_name}: no event but trajectory ended at global"
+                f" step={completed_global_step}, before natural"
+                f" end={natural_end}; it cannot be labeled as right-censored."
             )
         outcome = "right_censored"
     diagnostics = diagnose_system(
@@ -1284,8 +1353,8 @@ def run_md_worker(
             error = traceback.format_exc()
             fail_md_task(config, task=task, error=error)
             raise RuntimeError(
-                f"{worker_name}: replica {task.replica_name} failed; the full traceback "
-                "was persisted in campaign.sqlite3."
+                f"{worker_name}: replica {task.replica_name} failed; the full"
+                " traceback was persisted in campaign.sqlite3."
             )
 
 
@@ -1304,7 +1373,9 @@ def _analysis_to_dict(
         "maximum_cluster_atoms": int(
             np.max(analysis.largest_crystalline_cluster_atoms)
         ),
-        "initial_crystalline_fraction": float(analysis.crystalline_fraction[0]),
+        "initial_crystalline_fraction": float(
+            analysis.crystalline_fraction[0]
+        ),
         "final_crystalline_fraction": float(analysis.crystalline_fraction[-1]),
     }
 
@@ -1363,8 +1434,12 @@ def _audit_online_offline_shared_frames(
         if observation is None:
             continue
         shared_steps.append(step)
-        offline_largest = int(analysis.largest_crystalline_cluster_atoms[frame_index])
-        offline_cluster_count = int(analysis.crystalline_cluster_count[frame_index])
+        offline_largest = int(
+            analysis.largest_crystalline_cluster_atoms[frame_index]
+        )
+        offline_cluster_count = int(
+            analysis.crystalline_cluster_count[frame_index]
+        )
         offline_fraction = float(analysis.crystalline_fraction[frame_index])
         if (
             offline_largest != observation.largest_crystalline_cluster_atoms
@@ -1372,25 +1447,28 @@ def _audit_online_offline_shared_frames(
             or offline_fraction != observation.crystalline_fraction
         ):
             raise RuntimeError(
-                f"{online_path}: online/offline PTM cluster observables disagree at shared "
-                f"measurement step={step}: online=(largest="
-                f"{observation.largest_crystalline_cluster_atoms}, clusters="
-                f"{observation.crystalline_cluster_count}, fraction="
-                f"{observation.crystalline_fraction}), offline=(largest={offline_largest}, "
-                f"clusters={offline_cluster_count}, fraction={offline_fraction}). Event "
-                "control and offline scientific analysis must use identical observables."
+                f"{online_path}: online/offline PTM cluster observables"
+                f" disagree at shared measurement step={step}:"
+                f" online=(largest={observation.largest_crystalline_cluster_atoms},"
+                f" clusters={observation.crystalline_cluster_count},"
+                f" fraction={observation.crystalline_fraction}),"
+                f" offline=(largest={offline_largest},"
+                f" clusters={offline_cluster_count},"
+                f" fraction={offline_fraction}). Event control and offline"
+                " scientific analysis must use identical observables."
             )
     if not shared_steps:
         raise RuntimeError(
-            f"{online_path}: online and offline traces have no shared measurement step."
+            f"{online_path}: online and offline traces have no shared"
+            " measurement step."
         )
     return {
         "status": "exact_match",
         "shared_frame_count": len(shared_steps),
         "shared_measurement_steps": shared_steps,
         "comparison": (
-            "largest crystalline cluster, crystalline cluster count, and crystalline "
-            "fraction are exactly equal at every shared frame"
+            "largest crystalline cluster, crystalline cluster count, and"
+            " crystalline fraction are exactly equal at every shared frame"
         ),
     }
 
@@ -1426,7 +1504,8 @@ def analyze_campaign_replica(
         or metadata.get("source_evidence") != config.source_evidence
     ):
         raise RuntimeError(
-            f"{metadata_path}: raw trajectory identity does not match analysis task."
+            f"{metadata_path}: raw trajectory identity does not match analysis"
+            " task."
         )
     _validate_raw_artifact_hashes(replica_directory, metadata_path, metadata)
     queue_row, anchored_online_event = _validate_database_raw_commit(
@@ -1458,8 +1537,8 @@ def analyze_campaign_replica(
             unanchored_analysis = json.load(handle)
         if unanchored_analysis.get("run_metadata_sha256") is None:
             progress(
-                f"{task.replica_name}: replacing pre-anchor full analysis from "
-                "externally verified raw artifacts"
+                f"{task.replica_name}: replacing pre-anchor full analysis from"
+                " externally verified raw artifacts"
             )
             analysis_path.unlink()
     if analysis_path.is_file():
@@ -1468,9 +1547,9 @@ def analyze_campaign_replica(
             observed_analysis_sha256 = _sha256_file(analysis_path)
             if anchored_analysis_sha256 != observed_analysis_sha256:
                 raise RuntimeError(
-                    f"{analysis_path}: externally anchored full-analysis SHA-256 "
-                    f"mismatch: SQLite={anchored_analysis_sha256!r}, "
-                    f"observed={observed_analysis_sha256}."
+                    f"{analysis_path}: externally anchored full-analysis"
+                    f" SHA-256 mismatch: SQLite={anchored_analysis_sha256!r},"
+                    f" observed={observed_analysis_sha256}."
                 )
         with analysis_path.open("r", encoding="utf-8") as handle:
             committed_analysis = json.load(handle)
@@ -1489,7 +1568,9 @@ def analyze_campaign_replica(
         for name, value in expected_identity.items():
             observed_value = committed_analysis.get(name)
             matches = (
-                campaign_config_matches_after_path_relocation(observed_value, value)
+                campaign_config_matches_after_path_relocation(
+                    observed_value, value
+                )
                 if name == "campaign_config" and isinstance(value, dict)
                 else observed_value == value
             )
@@ -1508,9 +1589,9 @@ def analyze_campaign_replica(
             expected_analysis_artifacts
         ):
             raise RuntimeError(
-                f"{analysis_path}: committed analysis artifacts_sha256 must contain "
-                f"exactly {sorted(expected_analysis_artifacts)}, got "
-                f"{observed_artifact_names!r}."
+                f"{analysis_path}: committed analysis artifacts_sha256 must"
+                f" contain exactly {sorted(expected_analysis_artifacts)}, got"
+                f" {observed_artifact_names!r}."
             )
         artifact_failures: list[dict[str, str]] = []
         for relative_path, expected_sha256 in artifact_digests.items():
@@ -1531,15 +1612,18 @@ def analyze_campaign_replica(
                 )
         if mismatches or artifact_failures:
             raise RuntimeError(
-                f"{analysis_path}: committed analysis is inconsistent; identity "
-                f"mismatches={mismatches}, artifact failures={artifact_failures}."
+                f"{analysis_path}: committed analysis is inconsistent;"
+                f" identity mismatches={mismatches}, artifact"
+                f" failures={artifact_failures}."
             )
         return _sha256_file(analysis_path)
     trace = _load_trace(replica_directory / "trajectory.npz")
     validate_thermodynamic_trace(
         trace,
         atom_count=trace.positions_A.shape[1],
-        context=f"offline analysis input {replica_directory / 'trajectory.npz'}",
+        context=(
+            f"offline analysis input {replica_directory / 'trajectory.npz'}"
+        ),
     )
     homogeneous = config.homogeneous
     analysis = analyze_homogeneous_crystallization(
@@ -1597,13 +1681,14 @@ def analyze_campaign_replica(
         "queue_outcome": queue_row["outcome"],
         "queue_online_threshold_event": anchored_online_event,
         "analysis_role": (
-            "offline full-trajectory PTM/cluster/RDF audit; MD stopping used the "
-            "separately persisted online detector"
+            "offline full-trajectory PTM/cluster/RDF audit; MD stopping used"
+            " the separately persisted online detector"
         ),
         "event_frame_policy": (
-            "Only frames on the configured sample_interval cadence enter the offline "
-            "persistent-event audit. An extra event-stop endpoint may be structurally "
-            "analyzed but never shortens the configured persistence span."
+            "Only frames on the configured sample_interval cadence enter the"
+            " offline persistent-event audit. An extra event-stop endpoint may"
+            " be structurally analyzed but never shortens the configured"
+            " persistence span."
         ),
         "saved_frame_analysis": _analysis_to_dict(analysis),
         "online_offline_shared_frame_audit": shared_audit,
@@ -1651,7 +1736,9 @@ def analyze_campaign_replica(
                     replica_directory / "visualizations" / "total_rdf.png"
                 ),
                 "visualizations/structure_slice.png": (
-                    replica_directory / "visualizations" / "structure_slice.png"
+                    replica_directory
+                    / "visualizations"
+                    / "structure_slice.png"
                 ),
             }
         )
@@ -1688,8 +1775,9 @@ def run_analysis_worker(
                 error = traceback.format_exc()
                 fail_analysis_task(config, task=task, error=error)
                 raise RuntimeError(
-                    f"{worker_name}: offline analysis for {task.replica_name} failed; "
-                    "the full traceback was persisted in campaign.sqlite3."
+                    f"{worker_name}: offline analysis for"
+                    f" {task.replica_name} failed; the full traceback was"
+                    " persisted in campaign.sqlite3."
                 )
             continue
         rows = campaign_rows(config)
@@ -1711,11 +1799,13 @@ def finalize_campaign(config: HomogeneousCampaignConfig) -> Path:
             "analysis_status": row["analysis_status"],
         }
         for row in rows
-        if row["md_status"] != "complete" or row["analysis_status"] != "complete"
+        if row["md_status"] != "complete"
+        or row["analysis_status"] != "complete"
     ]
     if incomplete:
         raise RuntimeError(
-            f"Campaign cannot be finalized with incomplete replicas: {incomplete}."
+            "Campaign cannot be finalized with incomplete replicas:"
+            f" {incomplete}."
         )
     observations: list[ReplicaObservation] = []
     outcomes: dict[str, int] = {name: 0 for name in MD_OUTCOMES}
@@ -1724,14 +1814,22 @@ def finalize_campaign(config: HomogeneousCampaignConfig) -> Path:
     for row in rows:
         replica_name = str(row["replica_name"])
         metadata_path = (
-            config.output_root / "replicas" / replica_name / "run_metadata.json"
+            config.output_root
+            / "replicas"
+            / replica_name
+            / "run_metadata.json"
         )
         analysis_path = (
-            config.output_root / "replicas" / replica_name / "full_analysis.json"
+            config.output_root
+            / "replicas"
+            / replica_name
+            / "full_analysis.json"
         )
         with metadata_path.open("r", encoding="utf-8") as handle:
             metadata = json.load(handle)
-        _validate_raw_artifact_hashes(metadata_path.parent, metadata_path, metadata)
+        _validate_raw_artifact_hashes(
+            metadata_path.parent, metadata_path, metadata
+        )
         task = CampaignReplicaTask(
             replica_index=int(row["replica_index"]),
             replica_name=replica_name,
@@ -1747,8 +1845,8 @@ def finalize_campaign(config: HomogeneousCampaignConfig) -> Path:
         )
         if not analysis_path.is_file():
             raise FileNotFoundError(
-                f"{analysis_path}: queue marks analysis complete but the commit marker "
-                "is missing."
+                f"{analysis_path}: queue marks analysis complete but the"
+                " commit marker is missing."
             )
         analyze_campaign_replica(
             config,
@@ -1772,7 +1870,8 @@ def finalize_campaign(config: HomogeneousCampaignConfig) -> Path:
             onset_time_ps = online_event.get("onset_time_ps")
             if not isinstance(onset_time_ps, (int, float)):
                 raise RuntimeError(
-                    f"{metadata_path}: event outcome has no numeric online onset time."
+                    f"{metadata_path}: event outcome has no numeric online"
+                    " onset time."
                 )
             observations.append(
                 ReplicaObservation(
@@ -1820,8 +1919,9 @@ def finalize_campaign(config: HomogeneousCampaignConfig) -> Path:
             },
         )
         raise RuntimeError(
-            "Campaign contains left-censored or invalid-initial-liquid replicas and cannot "
-            f"produce a Kaplan-Meier curve: {invalid_records}. Details: {invalid_path}."
+            "Campaign contains left-censored or invalid-initial-liquid"
+            " replicas and cannot produce a Kaplan-Meier curve:"
+            f" {invalid_records}. Details: {invalid_path}."
         )
     survival = analyze_replica_survival(tuple(observations))
     survival_document = survival.to_dict()
@@ -1829,9 +1929,10 @@ def finalize_campaign(config: HomogeneousCampaignConfig) -> Path:
         _replica_initial_state_design(config)
     )
     survival_document["statistical_scope"] = (
-        "The Kaplan-Meier curve is descriptive and conditional on one shared liquid "
-        "coordinate/cell configuration with independently randomized momenta. It does "
-        "not quantify uncertainty over independently sampled liquid configurations."
+        "The Kaplan-Meier curve is descriptive and conditional on one shared"
+        " liquid coordinate/cell configuration with independently randomized"
+        " momenta. It does not quantify uncertainty over independently sampled"
+        " liquid configurations."
     )
     _write_json_atomic(
         config.output_root / "survival_summary.json", survival_document
@@ -1884,17 +1985,20 @@ def finalize_campaign(config: HomogeneousCampaignConfig) -> Path:
         "replica_initial_state_design": _replica_initial_state_design(config),
         "scientific_scope": {
             "supported_claim": (
-                "A descriptive conditional waiting-time survival curve across randomized "
-                "momenta from one shared liquid coordinate/cell configuration, for the "
-                "configured online PTM connected-cluster event. The original saved-frame "
-                "persistence definition is preserved while denser frames monitor control, "
-                "and stopped/full-duration/right-censored outcomes remain explicit."
+                "A descriptive conditional waiting-time survival curve across"
+                " randomized momenta from one shared liquid coordinate/cell"
+                " configuration, for the configured online PTM"
+                " connected-cluster event. The original saved-frame"
+                " persistence definition is preserved while denser frames"
+                " monitor control, and stopped/full-duration/right-censored"
+                " outcomes remain explicit."
             ),
             "unsupported_claim": (
-                "Independent-configuration ensemble uncertainty, a converged homogeneous "
-                "nucleation rate, a committor-derived critical nucleus, or potential-"
-                "independent kinetics without a decorrelated source bank plus separate "
-                "stationarity, finite-size, model, and undercooling validation."
+                "Independent-configuration ensemble uncertainty, a converged"
+                " homogeneous nucleation rate, a committor-derived critical"
+                " nucleus, or potential-independent kinetics without a"
+                " decorrelated source bank plus separate stationarity,"
+                " finite-size, model, and undercooling validation."
             ),
         },
     }
@@ -1982,7 +2086,9 @@ def _worker_command(
     return command
 
 
-def _failure_records(config: HomogeneousCampaignConfig) -> list[dict[str, object]]:
+def _failure_records(
+    config: HomogeneousCampaignConfig,
+) -> list[dict[str, object]]:
     return [
         row
         for row in campaign_rows(config)
@@ -1997,24 +2103,29 @@ def run_optimized_campaign(
     retry_failed: bool = False,
 ) -> Path | None:
     if not devices or any(not device.strip() for device in devices):
-        raise ValueError(f"At least one non-empty CUDA device is required, got {devices}.")
+        raise ValueError(
+            f"At least one non-empty CUDA device is required, got {devices}."
+        )
     if len(set(devices)) != len(devices):
         raise ValueError(f"CUDA devices must be unique, got {devices}.")
     selection_report = config.potential_selection_report
     if selection_report is not None:
         observed_selection_sha256 = _sha256_file(selection_report)
-        if observed_selection_sha256 != config.potential_selection_report_sha256:
+        if (
+            observed_selection_sha256
+            != config.potential_selection_report_sha256
+        ):
             raise RuntimeError(
-                "Potential-selection report changed after campaign configuration load: "
-                f"path={selection_report}, loaded_sha256="
-                f"{config.potential_selection_report_sha256}, observed_sha256="
-                f"{observed_selection_sha256}."
+                "Potential-selection report changed after campaign"
+                f" configuration load: path={selection_report},"
+                f" loaded_sha256={config.potential_selection_report_sha256},"
+                f" observed_sha256={observed_selection_sha256}."
             )
         runtime_controls = config.potential_selection_runtime_controls
         if runtime_controls is None:
             raise RuntimeError(
-                f"{selection_report}: optimized campaign has no validated runtime "
-                "projection evidence."
+                f"{selection_report}: optimized campaign has no validated"
+                " runtime projection evidence."
             )
     config.output_root.mkdir(parents=True, exist_ok=True)
     lock_path = config.output_root / "campaign.lock"
@@ -2023,7 +2134,8 @@ def run_optimized_campaign(
             fcntl.flock(lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise RuntimeError(
-                f"Campaign is already controlled by another process: {lock_path}."
+                "Campaign is already controlled by another process:"
+                f" {lock_path}."
             ) from exc
         initialize_campaign_queue(config, retry_failed=retry_failed)
         _write_campaign_status(
@@ -2081,7 +2193,10 @@ def run_optimized_campaign(
             name: code for name, code in exit_codes.items() if code != 0
         }
         if nonzero or failures:
-            detail = {"process_exit_codes": nonzero, "failed_replicas": failures}
+            detail = {
+                "process_exit_codes": nonzero,
+                "failed_replicas": failures,
+            }
             _write_campaign_status(config, status="failed", detail=detail)
             raise RuntimeError(
                 f"Optimized campaign workers failed: {detail}. Inspect "
@@ -2096,8 +2211,8 @@ def run_optimized_campaign(
                 "reason": "workers_exited_before_campaign_completion",
                 "remaining_replica_count": len(unfinished_md),
                 "resume_command": (
-                    "invoke the same campaign config again after resolving why the "
-                    "workers exited"
+                    "invoke the same campaign config again after resolving why"
+                    " the workers exited"
                 ),
             }
             _write_campaign_status(config, status="paused", detail=detail)
@@ -2107,8 +2222,9 @@ def run_optimized_campaign(
                 config,
                 status="awaiting_offline_analysis",
                 detail=(
-                    "Run the analyze command with explicit CPU worker count; GPU MD is "
-                    "complete and no MACE model is needed for analysis."
+                    "Run the analyze command with explicit CPU worker count;"
+                    " GPU MD is complete and no MACE model is needed for"
+                    " analysis."
                 ),
             )
             return None
@@ -2124,7 +2240,9 @@ def run_deferred_campaign_analysis(
     retry_failed: bool = False,
 ) -> Path:
     if workers <= 0:
-        raise ValueError(f"Offline analysis workers must be positive, got {workers}.")
+        raise ValueError(
+            f"Offline analysis workers must be positive, got {workers}."
+        )
     config.output_root.mkdir(parents=True, exist_ok=True)
     lock_path = config.output_root / "campaign.lock"
     with lock_path.open("a+b") as lock_handle:
@@ -2132,16 +2250,20 @@ def run_deferred_campaign_analysis(
             fcntl.flock(lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise RuntimeError(
-                f"Campaign is already controlled by another process: {lock_path}."
+                "Campaign is already controlled by another process:"
+                f" {lock_path}."
             ) from exc
         initialize_campaign_queue(config, retry_failed=retry_failed)
         rows = campaign_rows(config)
         unfinished_md = [
-            row["replica_name"] for row in rows if row["md_status"] != "complete"
+            row["replica_name"]
+            for row in rows
+            if row["md_status"] != "complete"
         ]
         if unfinished_md:
             raise RuntimeError(
-                f"Offline analysis requires completed MD; unfinished={unfinished_md}."
+                "Offline analysis requires completed MD;"
+                f" unfinished={unfinished_md}."
             )
         _write_campaign_status(config, status="offline_analysis_running")
         pending_count = sum(
@@ -2172,7 +2294,10 @@ def run_deferred_campaign_analysis(
             name: code for name, code in exit_codes.items() if code != 0
         }
         if nonzero or failures:
-            detail = {"process_exit_codes": nonzero, "failed_replicas": failures}
+            detail = {
+                "process_exit_codes": nonzero,
+                "failed_replicas": failures,
+            }
             _write_campaign_status(config, status="failed", detail=detail)
             raise RuntimeError(f"Offline campaign analysis failed: {detail}.")
         manifest_path = finalize_campaign(config)

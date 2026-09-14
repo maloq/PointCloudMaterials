@@ -96,7 +96,9 @@ def _repo_path(value: Any) -> Path:
 def _mapping(raw: dict[str, Any], key: str, path: Path) -> dict[str, Any]:
     value = raw.get(key)
     if not isinstance(value, dict):
-        raise TypeError(f"{path}: {key} must be a mapping, got {type(value).__name__}.")
+        raise TypeError(
+            f"{path}: {key} must be a mapping, got {type(value).__name__}."
+        )
     return value
 
 
@@ -110,7 +112,9 @@ def _reject_unknown(
 
 def _positive_int(value: Any, context: str, path: Path) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-        raise ValueError(f"{path}: {context} must be a positive integer, got {value!r}.")
+        raise ValueError(
+            f"{path}: {context} must be a positive integer, got {value!r}."
+        )
     return value
 
 
@@ -171,7 +175,9 @@ def load_homogeneous_crystallization_config(
         config_path,
     )
     source_frame_step = raw["source_frame_step"]
-    if not isinstance(source_frame_step, int) or isinstance(source_frame_step, bool):
+    if not isinstance(source_frame_step, int) or isinstance(
+        source_frame_step, bool
+    ):
         raise TypeError(
             f"{config_path}: source_frame_step must be an integer, got "
             f"{source_frame_step!r}."
@@ -179,20 +185,25 @@ def load_homogeneous_crystallization_config(
     random_seeds = raw["random_seeds"]
     if not isinstance(random_seeds, list) or not random_seeds:
         raise TypeError(
-            f"{config_path}: random_seeds must be a non-empty list of unique integers, "
-            f"got {random_seeds!r}."
+            f"{config_path}: random_seeds must be a non-empty list of unique"
+            f" integers, got {random_seeds!r}."
         )
-    if any(not isinstance(seed, int) or isinstance(seed, bool) for seed in random_seeds):
+    if any(
+        not isinstance(seed, int) or isinstance(seed, bool)
+        for seed in random_seeds
+    ):
         raise TypeError(
             f"{config_path}: every random_seeds entry must be an integer, got "
             f"{random_seeds!r}."
         )
     if len(set(random_seeds)) != len(random_seeds):
         raise ValueError(
-            f"{config_path}: random_seeds must be unique so replicas are independent, "
-            f"got {random_seeds!r}."
+            f"{config_path}: random_seeds must be unique so replicas are"
+            f" independent, got {random_seeds!r}."
         )
-    temperature_K = _positive_float(raw["temperature_K"], "temperature_K", config_path)
+    temperature_K = _positive_float(
+        raw["temperature_K"], "temperature_K", config_path
+    )
     equilibration_steps = _positive_int(
         raw["equilibration_steps"], "equilibration_steps", config_path
     )
@@ -212,14 +223,16 @@ def load_homogeneous_crystallization_config(
     )
     if steps % sample_interval != 0:
         raise ValueError(
-            f"{config_path}: steps={steps} must be divisible by sample_interval="
-            f"{sample_interval} so the measured trace includes its endpoint."
+            f"{config_path}: steps={steps} must be divisible by"
+            f" sample_interval={sample_interval} so the measured trace"
+            " includes its endpoint."
         )
     if equilibration_steps % sample_interval != 0:
         raise ValueError(
-            f"{config_path}: equilibration_steps={equilibration_steps} must be divisible "
-            f"by sample_interval={sample_interval} so one continuous MTK-NPT trace contains "
-            "the exact equilibration/measurement boundary."
+            f"{config_path}: equilibration_steps={equilibration_steps} must be"
+            f" divisible by sample_interval={sample_interval} so one"
+            " continuous MTK-NPT trace contains the exact"
+            " equilibration/measurement boundary."
         )
     ptm_rmsd_cutoff = _positive_float(
         analysis_raw["ptm_rmsd_cutoff"],
@@ -228,8 +241,8 @@ def load_homogeneous_crystallization_config(
     )
     if ptm_rmsd_cutoff > 1.0:
         raise ValueError(
-            f"{config_path}: analysis.ptm_rmsd_cutoff is a dimensionless normalized "
-            f"RMSD and must be <= 1, got {ptm_rmsd_cutoff}."
+            f"{config_path}: analysis.ptm_rmsd_cutoff is a dimensionless"
+            f" normalized RMSD and must be <= 1, got {ptm_rmsd_cutoff}."
         )
     threshold_persistence_frames = _positive_int(
         analysis_raw["threshold_persistence_frames"],
@@ -239,9 +252,9 @@ def load_homogeneous_crystallization_config(
     measured_frame_count = steps // sample_interval + 1
     if threshold_persistence_frames > measured_frame_count:
         raise ValueError(
-            f"{config_path}: analysis.threshold_persistence_frames="
-            f"{threshold_persistence_frames} exceeds the {measured_frame_count} saved "
-            "measurement frames."
+            f"{config_path}:"
+            f" analysis.threshold_persistence_frames={threshold_persistence_frames} exceeds"
+            f" the {measured_frame_count} saved measurement frames."
         )
 
     generator = load_config(_repo_path(raw["source_generator_config"]))
@@ -250,20 +263,23 @@ def load_homogeneous_crystallization_config(
         steps_per_ps = round(exact_steps_per_ps)
         if not math.isclose(exact_steps_per_ps, steps_per_ps, abs_tol=1.0e-12):
             raise ValueError(
-                f"{config_path}: trajectory_samples_per_ps requires an integer number "
-                f"of MD steps per ps, but timestep_fs="
-                f"{generator.dynamics.timestep_fs} gives {exact_steps_per_ps}."
+                f"{config_path}: trajectory_samples_per_ps requires an integer"
+                " number of MD steps per ps, but"
+                f" timestep_fs={generator.dynamics.timestep_fs} gives"
+                f" {exact_steps_per_ps}."
             )
         if trajectory_samples_per_ps > steps_per_ps:
             raise ValueError(
-                f"{config_path}: trajectory_samples_per_ps="
-                f"{trajectory_samples_per_ps} exceeds {steps_per_ps} MD steps per ps."
+                f"{config_path}:"
+                f" trajectory_samples_per_ps={trajectory_samples_per_ps} exceeds"
+                f" {steps_per_ps} MD steps per ps."
             )
         if equilibration_steps % steps_per_ps or steps % steps_per_ps:
             raise ValueError(
-                f"{config_path}: exact trajectory_samples_per_ps scheduling requires "
-                f"equilibration_steps={equilibration_steps} and steps={steps} to be "
-                f"whole-ps multiples of {steps_per_ps} MD steps."
+                f"{config_path}: exact trajectory_samples_per_ps scheduling"
+                f" requires equilibration_steps={equilibration_steps} and"
+                f" steps={steps} to be whole-ps multiples of {steps_per_ps} MD"
+                " steps."
             )
     config = HomogeneousCrystallizationConfig(
         dataset_name=str(raw["dataset_name"]),
@@ -290,7 +306,9 @@ def load_homogeneous_crystallization_config(
             ),
             threshold_persistence_frames=threshold_persistence_frames,
             rdf_cutoff_A=_positive_float(
-                analysis_raw["rdf_cutoff_A"], "analysis.rdf_cutoff_A", config_path
+                analysis_raw["rdf_cutoff_A"],
+                "analysis.rdf_cutoff_A",
+                config_path,
             ),
             rdf_bins=_positive_int(
                 analysis_raw["rdf_bins"], "analysis.rdf_bins", config_path

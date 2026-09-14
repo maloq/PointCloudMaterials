@@ -42,11 +42,17 @@ class LangevinNVTShotEngine:
             ("friction_time_fs", friction_time_fs),
         ):
             if not np.isfinite(value) or value <= 0.0:
-                raise ValueError(f"{name} must be finite and > 0, got {value}.")
-        if not isinstance(execution_provenance, dict) or not execution_provenance:
+                raise ValueError(
+                    f"{name} must be finite and > 0, got {value}."
+                )
+        if (
+            not isinstance(execution_provenance, dict)
+            or not execution_provenance
+        ):
             raise TypeError(
-                "execution_provenance must be the non-empty repository provenance mapping; "
-                "jFFS restarts may not silently change Hamiltonian or calculator runtime."
+                "execution_provenance must be the non-empty repository"
+                " provenance mapping; jFFS restarts may not silently change"
+                " Hamiltonian or calculator runtime."
             )
         self.calculator = calculator
         self.temperature_K = float(temperature_K)
@@ -87,17 +93,21 @@ class LangevinNVTShotEngine:
         random_seed: int,
     ) -> DynamicalState:
         if len(atoms) == 0:
-            raise ValueError("Cannot initialize a jFFS engine state with zero atoms.")
+            raise ValueError(
+                "Cannot initialize a jFFS engine state with zero atoms."
+            )
         if not bool(np.all(atoms.pbc)):
             raise ValueError(
-                f"jFFS homogeneous crystallization requires pbc=[true,true,true], got "
-                f"{atoms.pbc.tolist()}."
+                "jFFS homogeneous crystallization requires"
+                f" pbc=[true,true,true], got {atoms.pbc.tolist()}."
             )
         rng = np.random.default_rng(random_seed)
         initialized = atoms.copy()
         set_maxwell_boltzmann_velocities(initialized, self.temperature_K, rng)
         initialized.set_constraint(FixCom())
-        initialized.set_momenta(initialized.get_momenta(), apply_constraint=True)
+        initialized.set_momenta(
+            initialized.get_momenta(), apply_constraint=True
+        )
         initialized.set_constraint()
         state = self._state_from_atoms(initialized, step=0, rng=rng)
         state.validate(context="initialized Langevin-NVT state")
@@ -106,7 +116,9 @@ class LangevinNVTShotEngine:
     def branch(
         self, state: DynamicalState, *, random_seed: int
     ) -> DynamicalState:
-        self._validate_state_contract(state, context="jFFS parent before branching")
+        self._validate_state_contract(
+            state, context="jFFS parent before branching"
+        )
         rng = np.random.default_rng(random_seed)
         branched = DynamicalState(
             positions_A=np.asarray(state.positions_A).copy(),
@@ -124,9 +136,13 @@ class LangevinNVTShotEngine:
         return branched
 
     def advance(self, state: DynamicalState, *, steps: int) -> DynamicalState:
-        self._validate_state_contract(state, context="Langevin-NVT state before advance")
+        self._validate_state_contract(
+            state, context="Langevin-NVT state before advance"
+        )
         if not isinstance(steps, int) or isinstance(steps, bool) or steps <= 0:
-            raise ValueError(f"Langevin-NVT advance steps must be positive, got {steps!r}.")
+            raise ValueError(
+                f"Langevin-NVT advance steps must be positive, got {steps!r}."
+            )
         rng = self._rng_from_state(state.rng_state)
         atoms = Atoms(
             numbers=np.asarray(state.atomic_numbers, dtype=np.int32),
@@ -155,8 +171,8 @@ class LangevinNVTShotEngine:
         )
         if not np.array_equal(result.cell_A, state.cell_A):
             raise RuntimeError(
-                "Langevin-NVT shot changed the simulation cell. The jFFS rate uses one "
-                "fixed volume and cannot mix cell states."
+                "Langevin-NVT shot changed the simulation cell. The jFFS rate"
+                " uses one fixed volume and cannot mix cell states."
             )
         result.validate(context="Langevin-NVT state after advance")
         return result
@@ -171,8 +187,8 @@ class LangevinNVTShotEngine:
         momenta = atoms.get_momenta()
         if momenta is None:
             raise RuntimeError(
-                "Langevin-NVT restart state is missing momenta; initialize velocities "
-                "before constructing a shot state."
+                "Langevin-NVT restart state is missing momenta; initialize"
+                " velocities before constructing a shot state."
             )
         return DynamicalState(
             positions_A=np.asarray(atoms.positions, dtype=np.float64).copy(),
@@ -187,15 +203,20 @@ class LangevinNVTShotEngine:
             extended_integrator_state=None,
         )
 
-    def _validate_state_contract(self, state: DynamicalState, *, context: str) -> None:
+    def _validate_state_contract(
+        self, state: DynamicalState, *, context: str
+    ) -> None:
         state.validate(context=context)
         if state.integrator_contract != self._contract:
             raise RuntimeError(
-                f"{context}: stored integrator contract differs from the active "
-                "Langevin-NVT engine. A branch may not change Hamiltonian, ASE algorithm, "
-                "temperature, time step, friction, fixed cell, or constraints."
+                f"{context}: stored integrator contract differs from the"
+                " active Langevin-NVT engine. A branch may not change"
+                " Hamiltonian, ASE algorithm, temperature, time step,"
+                " friction, fixed cell, or constraints."
             )
-        require_branchable_integrator(state.integrator_contract, context=context)
+        require_branchable_integrator(
+            state.integrator_contract, context=context
+        )
 
     @staticmethod
     def _rng_from_state(state: dict[str, Any]) -> np.random.Generator:
@@ -212,15 +233,21 @@ class LangevinNVTShotEngine:
 class PTMLargestCrystallineClusterCV:
     """Integer size of the largest connected PTM FCC/HCP/BCC cluster."""
 
-    def __init__(self, *, ptm_rmsd_cutoff: float, cluster_cutoff_A: float) -> None:
-        if not np.isfinite(ptm_rmsd_cutoff) or not 0.0 < ptm_rmsd_cutoff <= 1.0:
+    def __init__(
+        self, *, ptm_rmsd_cutoff: float, cluster_cutoff_A: float
+    ) -> None:
+        if (
+            not np.isfinite(ptm_rmsd_cutoff)
+            or not 0.0 < ptm_rmsd_cutoff <= 1.0
+        ):
             raise ValueError(
                 "ptm_rmsd_cutoff must be a normalized value in (0, 1], got "
                 f"{ptm_rmsd_cutoff}."
             )
         if not np.isfinite(cluster_cutoff_A) or cluster_cutoff_A <= 0.0:
             raise ValueError(
-                f"cluster_cutoff_A must be finite and > 0, got {cluster_cutoff_A}."
+                "cluster_cutoff_A must be finite and > 0, got"
+                f" {cluster_cutoff_A}."
             )
         try:
             import ovito
@@ -230,8 +257,8 @@ class PTMLargestCrystallineClusterCV:
             )
         except ImportError as exc:
             raise ImportError(
-                "Online jFFS cluster evaluation requires OVITO PTM. Install the "
-                "repository requirements in the pointnet environment."
+                "Online jFFS cluster evaluation requires OVITO PTM. Install"
+                " the repository requirements in the pointnet environment."
             ) from exc
         self.ptm_rmsd_cutoff = float(ptm_rmsd_cutoff)
         self.cluster_cutoff_A = float(cluster_cutoff_A)
@@ -252,8 +279,9 @@ class PTMLargestCrystallineClusterCV:
             "cluster_cutoff_A": self.cluster_cutoff_A,
             "ovito_version": ovito.version_string,
             "sampling_semantics": (
-                "first observation at each fixed CV cadence; jumps land at the highest "
-                "configured interface not exceeding the observed integer cluster size"
+                "first observation at each fixed CV cadence; jumps land at the"
+                " highest configured interface not exceeding the observed"
+                " integer cluster size"
             ),
         }
 
@@ -267,7 +295,8 @@ class PTMLargestCrystallineClusterCV:
             from ovito.io.ase import ase_to_ovito
         except ImportError as exc:
             raise ImportError(
-                "Online jFFS cluster evaluation requires OVITO PTM and cluster analysis."
+                "Online jFFS cluster evaluation requires OVITO PTM and cluster"
+                " analysis."
             ) from exc
         atoms = Atoms(
             numbers=state.atomic_numbers,
@@ -277,14 +306,18 @@ class PTMLargestCrystallineClusterCV:
         )
         data = ase_to_ovito(atoms)
         data.apply(self._ptm)
-        structure_types = np.asarray(data.particles["Structure Type"], dtype=np.int32)
+        structure_types = np.asarray(
+            data.particles["Structure Type"], dtype=np.int32
+        )
         crystalline = np.isin(structure_types, CRYSTALLINE_STRUCTURE_TYPES)
-        data.particles_.create_property("Selection", data=crystalline.astype(np.int32))
+        data.particles_.create_property(
+            "Selection", data=crystalline.astype(np.int32)
+        )
         data.apply(self._clusters)
         largest = int(data.attributes["ClusterAnalysis.largest_size"])
         if largest < 0 or largest > len(state.atomic_numbers):
             raise RuntimeError(
-                f"OVITO returned invalid largest crystalline cluster size={largest} for "
-                f"atom_count={len(state.atomic_numbers)}."
+                "OVITO returned invalid largest crystalline cluster"
+                f" size={largest} for atom_count={len(state.atomic_numbers)}."
             )
         return largest

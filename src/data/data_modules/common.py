@@ -5,6 +5,7 @@ from torch.utils.data import random_split
 from omegaconf import MISSING, OmegaConf
 
 from src.utils.logging_config import setup_logging
+
 logger = setup_logging()
 
 
@@ -15,10 +16,19 @@ _REQUIRED = object()
 
 def _cfg_has(cfg: Any, key: str) -> bool:
     """Return True if ``cfg`` defines ``key`` and the value is not the OmegaConf MISSING sentinel."""
-    return key in cfg and OmegaConf.select(cfg, key, default=MISSING) is not MISSING
+    return (
+        key in cfg
+        and OmegaConf.select(cfg, key, default=MISSING) is not MISSING
+    )
 
 
-def _cfg_get(cfg: Any, key: str, *, default: Any = _REQUIRED, context: str = "data config") -> Any:
+def _cfg_get(
+    cfg: Any,
+    key: str,
+    *,
+    default: Any = _REQUIRED,
+    context: str = "data config",
+) -> Any:
     """Strictly fetch ``key`` from ``cfg``.
 
     - If ``default`` is not provided, a missing key raises ``KeyError`` with ``context``
@@ -30,8 +40,8 @@ def _cfg_get(cfg: Any, key: str, *, default: Any = _REQUIRED, context: str = "da
         return cfg[key]
     if default is _REQUIRED:
         raise KeyError(
-            f"{context}: required key {key!r} is missing. "
-            "Set it explicitly in the config; unclear defaults are not allowed."
+            f"{context}: required key {key!r} is missing. Set it explicitly in"
+            " the config; unclear defaults are not allowed."
         )
     return default
 
@@ -59,7 +69,9 @@ def _seeded_random_split(dataset, lengths: list[int], *, seed: int):
     """
     generator = torch.Generator()
     generator.manual_seed(int(seed))
-    return random_split(dataset, [int(v) for v in lengths], generator=generator)
+    return random_split(
+        dataset, [int(v) for v in lengths], generator=generator
+    )
 
 
 def _resolve_temporal_window_start_frames(
@@ -89,16 +101,18 @@ def _resolve_temporal_window_start_frames(
         raise ValueError(f"frame_count must be > 0, got {frame_count}")
     if frame_start >= frame_count:
         raise ValueError(
-            f"frame_start must be < frame_count, got frame_start={frame_start}, "
-            f"frame_count={frame_count}."
+            "frame_start must be < frame_count, got"
+            f" frame_start={frame_start}, frame_count={frame_count}."
         )
     if stop <= frame_start:
         raise ValueError(
-            f"frame_stop must be > frame_start, got frame_start={frame_start}, frame_stop={stop}."
+            f"frame_stop must be > frame_start, got frame_start={frame_start},"
+            f" frame_stop={stop}."
         )
     if stop > frame_count:
         raise ValueError(
-            f"frame_stop must be <= frame_count, got frame_stop={stop}, frame_count={frame_count}."
+            f"frame_stop must be <= frame_count, got frame_stop={stop},"
+            f" frame_count={frame_count}."
         )
 
     last_required_frame = frame_start + (sequence_length - 1) * frame_stride
@@ -120,7 +134,9 @@ def _split_temporal_window_start_frames(
 
     train_ratio = float(train_ratio)
     if not (0.0 < train_ratio < 1.0):
-        raise ValueError(f"{context}: train_ratio must be in (0, 1), got {train_ratio}")
+        raise ValueError(
+            f"{context}: train_ratio must be in (0, 1), got {train_ratio}"
+        )
 
     num_frames = len(anchor_frames)
     train_size = int(train_ratio * num_frames)

@@ -17,8 +17,8 @@ def get_optimizers_and_scheduler(hparams, parameters):
         raise ValueError(f"learning_rate must be > 0, got {learning_rate}.")
     if not 0.0 <= minimum_lr <= learning_rate:
         raise ValueError(
-            "scheduler_min_lr must be between zero and learning_rate; "
-            f"got scheduler_min_lr={minimum_lr}, learning_rate={learning_rate}."
+            "scheduler_min_lr must be between zero and learning_rate; got"
+            f" scheduler_min_lr={minimum_lr}, learning_rate={learning_rate}."
         )
 
     optimizer = torch.optim.AdamW(
@@ -30,14 +30,18 @@ def get_optimizers_and_scheduler(hparams, parameters):
         hparams.swa_epoch_start + 1 if hparams.enable_swa else hparams.epochs
     )
     if epochs_before_swa < 1:
-        raise ValueError(f"Cosine scheduler requires at least one epoch, got {epochs_before_swa}.")
+        raise ValueError(
+            "Cosine scheduler requires at least one epoch, got"
+            f" {epochs_before_swa}."
+        )
 
     warmup_epochs = int(hparams.warmup_epochs) if hparams.warmup_enabled else 0
     if hparams.warmup_enabled:
         if not 0 < warmup_epochs < epochs_before_swa:
             raise ValueError(
-                "warmup_epochs must leave at least one epoch for cosine decay; "
-                f"got warmup_epochs={warmup_epochs}, scheduled_epochs={epochs_before_swa}."
+                "warmup_epochs must leave at least one epoch for cosine"
+                f" decay; got warmup_epochs={warmup_epochs},"
+                f" scheduled_epochs={epochs_before_swa}."
             )
         if not 0.0 < hparams.warmup_start_factor <= 1.0:
             raise ValueError(
@@ -79,11 +83,26 @@ def cached_sample_count(cache: dict[str, list[torch.Tensor]]) -> int:
     return sum(latents.shape[0] for latents in cache["latents"])
 
 
-def build_step_cosine_scheduler(optimizer,*,total_steps,warmup_steps,start_factor,min_lr):
+def build_step_cosine_scheduler(
+    optimizer, *, total_steps, warmup_steps, start_factor, min_lr
+):
     """The repository linear-warmup/cosine shape measured in optimizer updates."""
-    if not 0<=warmup_steps<total_steps:
-        raise ValueError(f'Warmup must leave cosine steps: warmup={warmup_steps}, total={total_steps}')
-    cosine=torch.optim.lr_scheduler.CosineAnnealingLR(optimizer,T_max=total_steps-warmup_steps,eta_min=min_lr)
-    if warmup_steps==0:return cosine
-    warmup=torch.optim.lr_scheduler.LinearLR(optimizer,start_factor=start_factor,end_factor=1.,total_iters=warmup_steps)
-    return torch.optim.lr_scheduler.SequentialLR(optimizer,schedulers=[warmup,cosine],milestones=[warmup_steps])
+    if not 0 <= warmup_steps < total_steps:
+        raise ValueError(
+            f'Warmup must leave cosine steps: warmup={warmup_steps},'
+            f' total={total_steps}'
+        )
+    cosine = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=total_steps - warmup_steps, eta_min=min_lr
+    )
+    if warmup_steps == 0:
+        return cosine
+    warmup = torch.optim.lr_scheduler.LinearLR(
+        optimizer,
+        start_factor=start_factor,
+        end_factor=1.0,
+        total_iters=warmup_steps,
+    )
+    return torch.optim.lr_scheduler.SequentialLR(
+        optimizer, schedulers=[warmup, cosine], milestones=[warmup_steps]
+    )

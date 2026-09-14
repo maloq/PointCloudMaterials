@@ -22,15 +22,16 @@ def add_structure_slices_to_transition_datasets(
         manifest_path = dataset_root / "manifest.json"
         if not manifest_path.is_file():
             raise FileNotFoundError(
-                f"Cannot create structure slices before transition generation completes: "
-                f"{manifest_path}."
+                "Cannot create structure slices before transition generation"
+                f" completes: {manifest_path}."
             )
         with manifest_path.open("r", encoding="utf-8") as handle:
             manifest = json.load(handle)
         if manifest["dataset_name"] != config.dataset_name:
             raise RuntimeError(
-                f"{manifest_path}: dataset_name={manifest['dataset_name']!r} does not match "
-                f"configuration dataset_name={config.dataset_name!r}."
+                f"{manifest_path}:"
+                f" dataset_name={manifest['dataset_name']!r} does not match"
+                f" configuration dataset_name={config.dataset_name!r}."
             )
 
         branch_images: dict[str, Path] = {}
@@ -43,17 +44,22 @@ def add_structure_slices_to_transition_datasets(
                 for path in (metadata_path, trajectory_path):
                     if not path.is_file():
                         raise FileNotFoundError(
-                            f"Cannot create structure slice: required artifact is missing: "
-                            f"{path}."
+                            "Cannot create structure slice: required artifact"
+                            f" is missing: {path}."
                         )
                 with metadata_path.open("r", encoding="utf-8") as handle:
                     metadata = json.load(handle)
-                slab_bounds = tuple(metadata["source"]["slab_bounds_fractional"])
+                slab_bounds = tuple(
+                    metadata["source"]["slab_bounds_fractional"]
+                )
                 trace = load_transition_trace(trajectory_path)
                 visualization_dir = branch_dir / "visualizations"
                 visualization_dir.mkdir(exist_ok=True)
                 image_path = visualization_dir / "structure_slice.png"
-                progress(f"{dataset_root.name}/{run_name}: rendering structure slices")
+                progress(
+                    f"{dataset_root.name}/{run_name}: rendering structure"
+                    " slices"
+                )
                 write_structure_slice_visualization(
                     image_path,
                     trace=trace,

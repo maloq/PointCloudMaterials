@@ -10,7 +10,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
@@ -29,7 +28,9 @@ def _load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         value = json.load(handle)
     if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
+        raise TypeError(
+            f"Expected a JSON object in {path}, got {type(value).__name__}."
+        )
     return value
 
 
@@ -44,27 +45,38 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def audit_campaign(root: Path, *, require_source_deleted: bool = False) -> dict[str, int | str | bool]:
+def audit_campaign(
+    root: Path, *, require_source_deleted: bool = False
+) -> dict[str, int | str | bool]:
     status = _load_json(root / "status.json")
     if status.get("state") != "complete":
         raise RuntimeError(
-            f"Audit root is not complete: root={root}, state={status.get('state')!r}."
+            f"Audit root is not complete: root={root},"
+            f" state={status.get('state')!r}."
         )
     residual_text = sorted(root.glob("**/trajectory.lammpstrj"))
     if require_source_deleted and residual_text:
         raise RuntimeError(
-            f"Completed migration root still contains text trajectories: {residual_text}"
+            "Completed migration root still contains text trajectories:"
+            f" {residual_text}"
         )
-    interrupted_builds = sorted(root.glob("**/.trajectory_binary_float32.building-*"))
+    interrupted_builds = sorted(
+        root.glob("**/.trajectory_binary_float32.building-*")
+    )
     if interrupted_builds:
         raise RuntimeError(
-            f"Completed migration root contains interrupted binary builds: {interrupted_builds}"
+            "Completed migration root contains interrupted binary builds:"
+            f" {interrupted_builds}"
         )
     binary_dirs = sorted(
-        path for path in root.glob("**/trajectory_binary_float32") if path.is_dir()
+        path
+        for path in root.glob("**/trajectory_binary_float32")
+        if path.is_dir()
     )
     if not binary_dirs:
-        raise RuntimeError(f"Completed migration root has no binary trajectories: {root}")
+        raise RuntimeError(
+            f"Completed migration root has no binary trajectories: {root}"
+        )
 
     source_bytes = 0
     binary_bytes = 0
@@ -74,16 +86,25 @@ def audit_campaign(root: Path, *, require_source_deleted: bool = False) -> dict[
         replica_dir = binary_dir.parent
         report = _load_json(replica_dir / "binary_migration_float32.json")
         if report.get("state") != "complete":
-            raise RuntimeError(f"Migration report is not complete: {replica_dir}")
+            raise RuntimeError(
+                f"Migration report is not complete: {replica_dir}"
+            )
         source_record = report["source_lammpstrj"]
         if require_source_deleted and not bool(source_record["deleted"]):
-            raise RuntimeError(f"Migration report does not record source deletion: {replica_dir}")
+            raise RuntimeError(
+                "Migration report does not record source deletion:"
+                f" {replica_dir}"
+            )
         original_path = Path(str(source_record["path"])).resolve()
         if original_path.exists():
             if source_record["deleted"]:
-                raise RuntimeError(f"Deleted source path still exists: {original_path}")
+                raise RuntimeError(
+                    f"Deleted source path still exists: {original_path}"
+                )
             if _sha256_file(original_path) != source_record["sha256"]:
-                raise RuntimeError(f"Retained source checksum changed: {original_path}")
+                raise RuntimeError(
+                    f"Retained source checksum changed: {original_path}"
+                )
         elif not source_record["deleted"]:
             raise RuntimeError(f"Retained source is missing: {original_path}")
 
@@ -93,22 +114,29 @@ def audit_campaign(root: Path, *, require_source_deleted: bool = False) -> dict[
         if (
             scan.frame_count != binary.frame_count
             or scan.num_atoms != binary.atom_count
-            or tuple(scan.atom_columns) != tuple(binary.manifest["atom_columns"])
+            or tuple(scan.atom_columns)
+            != tuple(binary.manifest["atom_columns"])
         ):
             raise RuntimeError(
-                f"Transparent reader scan disagrees with binary metadata: {binary_dir}"
+                "Transparent reader scan disagrees with binary metadata:"
+                f" {binary_dir}"
             )
         archive_record = report["coordinate_archive"]
         archive_path = Path(str(archive_record["path"])).resolve()
         observed_archive_sha256 = _sha256_file(archive_path)
         if observed_archive_sha256 != str(archive_record["sha256"]):
             raise RuntimeError(
-                f"Coordinate archive checksum changed after migration: {archive_path}"
+                "Coordinate archive checksum changed after migration:"
+                f" {archive_path}"
             )
         analysis = _load_json(replica_dir / "analysis.json")
-        if analysis.get("trajectory_binary_artifact", {}).get("state") != "complete":
+        if (
+            analysis.get("trajectory_binary_artifact", {}).get("state")
+            != "complete"
+        ):
             raise RuntimeError(
-                f"Replica analysis does not identify the complete binary artifact: {replica_dir}"
+                "Replica analysis does not identify the complete binary"
+                f" artifact: {replica_dir}"
             )
         all_deleted = all_deleted and bool(source_record["deleted"])
         if source_record["deleted"]:
@@ -132,20 +160,30 @@ def main(argv=None) -> None:
     parser.add_argument("campaign_roots", nargs="+", type=Path)
     parser.add_argument("--require-source-deleted", action="store_true")
     args = parser.parse_args(argv)
-    reports = [audit_campaign(path.expanduser().resolve(), require_source_deleted=args.require_source_deleted) for path in args.campaign_roots]
+    reports = [
+        audit_campaign(
+            path.expanduser().resolve(),
+            require_source_deleted=args.require_source_deleted,
+        )
+        for path in args.campaign_roots
+    ]
     print(
         json.dumps(
             {
                 "state": "complete",
                 "campaign_count": len(reports),
-                "replica_count": sum(int(report["replica_count"]) for report in reports),
+                "replica_count": sum(
+                    int(report["replica_count"]) for report in reports
+                ),
                 "source_size_bytes": sum(
                     int(report["source_size_bytes"]) for report in reports
                 ),
                 "binary_size_bytes": sum(
                     int(report["binary_size_bytes"]) for report in reports
                 ),
-                "freed_bytes": sum(int(report["freed_bytes"]) for report in reports),
+                "freed_bytes": sum(
+                    int(report["freed_bytes"]) for report in reports
+                ),
                 "campaigns": reports,
             },
             indent=2,

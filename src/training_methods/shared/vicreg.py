@@ -12,7 +12,6 @@ from src.training_methods.shared.config_warnings import (
 from src.training_methods.shared.invariant_utils import NormInvariantHead
 from src.utils.pointcloud_ops import crop_to_num_points, shift_to_neighbor
 
-
 _VIEW_POINTS_UNSET = object()
 _SUPPORTED_OBJECTIVES = {"vicreg", "visreg"}
 
@@ -103,11 +102,15 @@ class VICRegLoss(nn.Module):
         self.jitter_mode = str(jitter_mode).lower()
         self.jitter_scale = float(jitter_scale)
         self.drop_ratio = float(drop_ratio)
-        self.view_points = int(view_points) if view_points is not None else None
+        self.view_points = (
+            int(view_points) if view_points is not None else None
+        )
         self.neighbor_view = bool(neighbor_view)
         self.neighbor_view_mode = str(neighbor_view_mode).lower()
         self.neighbor_k = int(neighbor_k)
-        self.neighbor_max_relative_distance = max(0.0, float(neighbor_max_relative_distance))
+        self.neighbor_max_relative_distance = max(
+            0.0, float(neighbor_max_relative_distance)
+        )
         self.drop_apply_to_both = bool(drop_apply_to_both)
         self.rotation_mode = str(rotation_mode).lower()
         self.rotation_deg = float(rotation_deg)
@@ -124,7 +127,9 @@ class VICRegLoss(nn.Module):
         self.occlusion_slab_frac = float(occlusion_slab_frac)
         self.occlusion_cone_deg = float(occlusion_cone_deg)
         self.occlusion_prob = float(occlusion_prob)
-        self.projector_bn_eval_batch_stats = bool(projector_bn_eval_batch_stats)
+        self.projector_bn_eval_batch_stats = bool(
+            projector_bn_eval_batch_stats
+        )
         self.projector_mode = str(projector_mode).strip().lower()
         if self.projector_mode not in {"mlp", "identity"}:
             raise ValueError(
@@ -137,13 +142,18 @@ class VICRegLoss(nn.Module):
         self.radial_enabled = bool(radial_enabled)
         self.radial_beta1 = float(radial_beta1)
         self.radial_beta2 = float(radial_beta2)
-        self.radial_m = int(radial_m) if radial_m is not None and int(radial_m) > 0 else None
+        self.radial_m = (
+            int(radial_m)
+            if radial_m is not None and int(radial_m) > 0
+            else None
+        )
         self.radial_eps = max(float(radial_eps), 1e-12)
         if self.objective == "visreg" and self.radial_enabled:
             raise ValueError(
-                "vicreg_radial_enabled is incompatible with vicreg_objective='visreg'. "
-                "VISReg replaces covariance with center/scale/shape regularization; "
-                "disable radial regularization for a faithful VISReg objective."
+                "vicreg_radial_enabled is incompatible with"
+                " vicreg_objective='visreg'. VISReg replaces covariance with"
+                " center/scale/shape regularization; disable radial"
+                " regularization for a faithful VISReg objective."
             )
 
         self.visreg_lambda = float(visreg_lambda)
@@ -175,7 +185,9 @@ class VICRegLoss(nn.Module):
                 ("visreg_center_coeff", self.visreg_center_coeff),
             ):
                 if value < 0.0:
-                    raise ValueError(f"{name} must be >= 0 for VISReg, got {value}.")
+                    raise ValueError(
+                        f"{name} must be >= 0 for VISReg, got {value}."
+                    )
         self._visreg_cached_target_n = -1
         self._visreg_cached_target = None
 
@@ -194,9 +206,10 @@ class VICRegLoss(nn.Module):
             if self.projector_mode == "identity":
                 if projector_input_dim != self.embed_dim:
                     raise ValueError(
-                        "vicreg_projector_mode='identity' requires vicreg_embed_dim to match "
-                        "the encoder invariant dimension. "
-                        f"Got encoder_dim={projector_input_dim}, vicreg_embed_dim={self.embed_dim}."
+                        "vicreg_projector_mode='identity' requires"
+                        " vicreg_embed_dim to match the encoder invariant"
+                        f" dimension. Got encoder_dim={projector_input_dim},"
+                        f" vicreg_embed_dim={self.embed_dim}."
                     )
                 self.projector = nn.Identity()
             else:
@@ -214,6 +227,7 @@ class VICRegLoss(nn.Module):
                     nn.ReLU(inplace=True),
                     nn.Linear(self.embed_dim, self.embed_dim, bias=False),
                 )
+
     @classmethod
     def from_config(cls, cfg, *, input_dim):
         data_cfg = getattr(cfg, "data", None)
@@ -223,9 +237,13 @@ class VICRegLoss(nn.Module):
         if view_points is None and data_cfg is not None:
             view_points = getattr(data_cfg, "num_points", None)
 
-        jitter_mode = str(getattr(cfg, "vicreg_jitter_mode", "absolute")).lower()
+        jitter_mode = str(
+            getattr(cfg, "vicreg_jitter_mode", "absolute")
+        ).lower()
         jitter_scale_cfg = getattr(cfg, "vicreg_jitter_scale", None)
-        jitter_scale = cls._resolve_jitter_scale(cfg, jitter_mode=jitter_mode, jitter_scale=jitter_scale_cfg)
+        jitter_scale = cls._resolve_jitter_scale(
+            cfg, jitter_mode=jitter_mode, jitter_scale=jitter_scale_cfg
+        )
         radial_m = getattr(cfg, "vicreg_radial_m", None)
         if radial_m is not None:
             radial_m = int(radial_m)
@@ -247,23 +265,35 @@ class VICRegLoss(nn.Module):
         start_epoch = int(getattr(cfg, "vicreg_start_epoch", 0))
         jitter_std = float(getattr(cfg, "vicreg_jitter_std", 0.01))
         drop_ratio = float(getattr(cfg, "vicreg_drop_ratio", 0.2))
-        resolved_view_points = int(view_points) if view_points is not None else None
+        resolved_view_points = (
+            int(view_points) if view_points is not None else None
+        )
         neighbor_view = bool(getattr(cfg, "vicreg_neighbor_view", False))
-        neighbor_view_mode = str(getattr(cfg, "vicreg_neighbor_view_mode", "both"))
+        neighbor_view_mode = str(
+            getattr(cfg, "vicreg_neighbor_view_mode", "both")
+        )
         neighbor_k = int(getattr(cfg, "vicreg_neighbor_k", 8))
         neighbor_max_relative_distance = float(
             getattr(cfg, "vicreg_neighbor_max_relative_distance", 0.0)
         )
-        drop_apply_to_both = bool(getattr(cfg, "vicreg_drop_apply_to_both", True))
+        drop_apply_to_both = bool(
+            getattr(cfg, "vicreg_drop_apply_to_both", True)
+        )
         rotation_mode = str(getattr(cfg, "vicreg_rotation_mode", "none"))
         rotation_deg = float(getattr(cfg, "vicreg_rotation_deg", 0.0))
         mirror_prob = float(getattr(cfg, "vicreg_mirror_prob", 0.0))
         strain_std = float(getattr(cfg, "vicreg_strain_std", 0.0))
-        strain_volume_preserve = bool(getattr(cfg, "vicreg_strain_volume_preserve", True))
+        strain_volume_preserve = bool(
+            getattr(cfg, "vicreg_strain_volume_preserve", True)
+        )
         occlusion_mode = str(getattr(cfg, "vicreg_occlusion_mode", "none"))
         occlusion_view = str(getattr(cfg, "vicreg_occlusion_view", "second"))
-        occlusion_slab_frac = float(getattr(cfg, "vicreg_occlusion_slab_frac", 0.4))
-        occlusion_cone_deg = float(getattr(cfg, "vicreg_occlusion_cone_deg", 20.0))
+        occlusion_slab_frac = float(
+            getattr(cfg, "vicreg_occlusion_slab_frac", 0.4)
+        )
+        occlusion_cone_deg = float(
+            getattr(cfg, "vicreg_occlusion_cone_deg", 20.0)
+        )
         occlusion_prob = float(getattr(cfg, "vicreg_occlusion_prob", 1.0))
         std_eps = float(getattr(cfg, "vicreg_std_eps", 1e-4))
         std_target = float(getattr(cfg, "vicreg_std_target", 1.0))
@@ -272,7 +302,9 @@ class VICRegLoss(nn.Module):
         radial_beta2 = float(getattr(cfg, "vicreg_radial_beta2", 0.1))
         radial_eps = float(getattr(cfg, "vicreg_radial_eps", 1e-8))
         visreg_lambda = float(getattr(cfg, "visreg_lambda", 0.9))
-        visreg_num_projections = int(getattr(cfg, "visreg_num_projections", 4096))
+        visreg_num_projections = int(
+            getattr(cfg, "visreg_num_projections", 4096)
+        )
         visreg_scale_coeff = float(getattr(cfg, "visreg_scale_coeff", 1.0))
         visreg_shape_coeff = float(getattr(cfg, "visreg_shape_coeff", 1.0))
         visreg_center_coeff = float(getattr(cfg, "visreg_center_coeff", 1.0))
@@ -359,7 +391,9 @@ class VICRegLoss(nn.Module):
             and int(current_epoch) >= self.start_epoch
         )
 
-    def forward(self, features: torch.Tensor, *, profile_projector: bool = False) -> torch.Tensor:
+    def forward(
+        self, features: torch.Tensor, *, profile_projector: bool = False
+    ) -> torch.Tensor:
         return self._project(features)
 
     def project_features(self, features: torch.Tensor) -> torch.Tensor:
@@ -386,14 +420,26 @@ class VICRegLoss(nn.Module):
         if not self.should_run(current_epoch=current_epoch):
             return None, {}
         if views is None:
-            use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(device=pc.device)
-            apply_occlusion_a, apply_occlusion_b = self._resolve_pair_occlusion_flags(
-                use_neighbor_a=use_neighbor_a,
-                use_neighbor_b=use_neighbor_b,
-                device=pc.device,
+            use_neighbor_a, use_neighbor_b = self._resolve_neighbor_flags(
+                device=pc.device
             )
-            y_a = self._augment(pc, use_neighbor=use_neighbor_a, apply_occlusion=apply_occlusion_a)
-            y_b = self._augment(pc, use_neighbor=use_neighbor_b, apply_occlusion=apply_occlusion_b)
+            apply_occlusion_a, apply_occlusion_b = (
+                self._resolve_pair_occlusion_flags(
+                    use_neighbor_a=use_neighbor_a,
+                    use_neighbor_b=use_neighbor_b,
+                    device=pc.device,
+                )
+            )
+            y_a = self._augment(
+                pc,
+                use_neighbor=use_neighbor_a,
+                apply_occlusion=apply_occlusion_a,
+            )
+            y_b = self._augment(
+                pc,
+                use_neighbor=use_neighbor_b,
+                apply_occlusion=apply_occlusion_b,
+            )
         else:
             y_a = views["y_a"]
             y_b = views["y_b"]
@@ -464,21 +510,37 @@ class VICRegLoss(nn.Module):
 
     def compute_spatiotemporal_loss(self, *, features, temporal_weight: float):
         """Anchor/spatial and anchor/same-atom temporal VICReg, sharing the anchor."""
-        anchor, spatial, temporal = (self.project_features(value) for value in features)
+        anchor, spatial, temporal = (
+            self.project_features(value) for value in features
+        )
         spatial_loss, spatial_metrics = self._loss(anchor, spatial)
         temporal_loss, temporal_metrics = self._loss(anchor, temporal)
-        loss = (spatial_loss + temporal_weight * temporal_loss) / (1.0 + temporal_weight)
+        loss = (spatial_loss + temporal_weight * temporal_loss) / (
+            1.0 + temporal_weight
+        )
         if not torch.isfinite(loss):
-            raise FloatingPointError("Non-finite spatial/temporal VICReg loss; refusing to replace it with zero.")
-        metrics = {f"spatial_{key}": value for key, value in spatial_metrics.items()}
-        metrics.update({f"temporal_{key}": value for key, value in temporal_metrics.items()})
+            raise FloatingPointError(
+                "Non-finite spatial/temporal VICReg loss; refusing to replace"
+                " it with zero."
+            )
+        metrics = {
+            f"spatial_{key}": value for key, value in spatial_metrics.items()
+        }
+        metrics.update(
+            {
+                f"temporal_{key}": value
+                for key, value in temporal_metrics.items()
+            }
+        )
         metrics.update(spatial_loss=spatial_loss, temporal_loss=temporal_loss)
         # Also monitor the encoder before the projector; stability there is the goal.
         a, s, t = (value.detach().float() for value in features)
         metrics["encoder_temporal_mse"] = (a - t).square().mean()
         metrics["encoder_spatial_mse"] = (a - s).square().mean()
         metrics["encoder_std"] = a.std(dim=0).mean()
-        metrics["encoder_temporal_relative_mse"] = (a - t).square().mean() / a.var(dim=0).mean().clamp_min(1.e-8)
+        metrics["encoder_temporal_relative_mse"] = (
+            a - t
+        ).square().mean() / a.var(dim=0).mean().clamp_min(1.0e-8)
         return loss, metrics, (anchor, spatial, temporal)
 
     def _resolve_neighbor_flags(self, *, device) -> tuple[bool, bool]:
@@ -525,18 +587,29 @@ class VICRegLoss(nn.Module):
         )
 
     @staticmethod
-    def _expand_batch_mask(value: bool | torch.Tensor, *, batch_size: int, device) -> torch.Tensor:
+    def _expand_batch_mask(
+        value: bool | torch.Tensor, *, batch_size: int, device
+    ) -> torch.Tensor:
         if isinstance(value, bool):
-            return torch.full((batch_size,), value, dtype=torch.bool, device=device)
+            return torch.full(
+                (batch_size,), value, dtype=torch.bool, device=device
+            )
         mask = value.to(device=device)
         if mask.dim() == 0:
-            return torch.full((batch_size,), bool(mask.item()), dtype=torch.bool, device=device)
+            return torch.full(
+                (batch_size,),
+                bool(mask.item()),
+                dtype=torch.bool,
+                device=device,
+            )
         mask = mask.reshape(-1)
         if mask.dtype != torch.bool:
             mask = mask != 0
         return mask
 
-    def _apply_masked_occlusion(self, x: torch.Tensor, *, apply_mask: torch.Tensor) -> torch.Tensor:
+    def _apply_masked_occlusion(
+        self, x: torch.Tensor, *, apply_mask: torch.Tensor
+    ) -> torch.Tensor:
         # Short-circuit on the cheap Python attribute first so the `.item()`
         # sync below is only paid when occlusion is actually enabled (#3
         # hot-path cleanup).
@@ -554,18 +627,22 @@ class VICRegLoss(nn.Module):
             return x
         return torch.where(apply_mask.view(-1, 1, 1), occluded, x)
 
-    def _apply_masked_drop(self, x: torch.Tensor, *, apply_mask: torch.Tensor) -> torch.Tensor:
+    def _apply_masked_drop(
+        self, x: torch.Tensor, *, apply_mask: torch.Tensor
+    ) -> torch.Tensor:
         if self.drop_ratio <= 0:
             return x
         if not bool(apply_mask.any().item()):
             return x
 
         bsz, num_points, _ = x.shape
-        keep = (torch.rand(bsz, num_points, device=x.device) > self.drop_ratio)
+        keep = torch.rand(bsz, num_points, device=x.device) > self.drop_ratio
         keep[:, 0] = True
         weights = keep.float()
         weights = weights / (weights.sum(dim=1, keepdim=True) + 1e-8)
-        idx = torch.multinomial(weights, num_samples=num_points, replacement=True)
+        idx = torch.multinomial(
+            weights, num_samples=num_points, replacement=True
+        )
         dropped = x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
         return torch.where(apply_mask.view(-1, 1, 1), dropped, x)
 
@@ -590,13 +667,19 @@ class VICRegLoss(nn.Module):
             elif self.occlusion_view == "second":
                 apply_occlusion_mask = use_neighbor_mask
             elif self.occlusion_view == "both":
-                apply_occlusion_mask = torch.ones((bsz,), dtype=torch.bool, device=x.device)
+                apply_occlusion_mask = torch.ones(
+                    (bsz,), dtype=torch.bool, device=x.device
+                )
         else:
             apply_occlusion_mask = self._expand_batch_mask(
                 apply_occlusion, batch_size=bsz, device=x.device
             )
 
-        target_view_points = self.view_points if view_points is _VIEW_POINTS_UNSET else view_points
+        target_view_points = (
+            self.view_points
+            if view_points is _VIEW_POINTS_UNSET
+            else view_points
+        )
         if target_view_points is not None:
             x = crop_to_num_points(x, int(target_view_points))
         x = self._apply_mirror(x)
@@ -638,7 +721,9 @@ class VICRegLoss(nn.Module):
             normalize = getattr(data_cfg, "normalize", False)
             radius = getattr(data_cfg, "radius", None)
             if normalize and radius:
-                normalization_scale = getattr(data_cfg, "normalization_scale", 1.0)
+                normalization_scale = getattr(
+                    data_cfg, "normalization_scale", 1.0
+                )
                 phys_to_model = float(normalization_scale) / float(radius)
         return float(base_scale) * phys_to_model
 
@@ -658,7 +743,9 @@ class VICRegLoss(nn.Module):
             return False
         if self.occlusion_prob >= 1.0:
             return True
-        return bool((torch.rand((), device=device) < self.occlusion_prob).item())
+        return bool(
+            (torch.rand((), device=device) < self.occlusion_prob).item()
+        )
 
     def _resolve_pair_occlusion_flags(
         self,
@@ -669,7 +756,9 @@ class VICRegLoss(nn.Module):
     ) -> tuple[bool, bool]:
         if not self._sample_pair_occlusion(device=device):
             return False, False
-        return self._should_occlude(use_neighbor_a), self._should_occlude(use_neighbor_b)
+        return self._should_occlude(use_neighbor_a), self._should_occlude(
+            use_neighbor_b
+        )
 
     def _resolve_occlusion_mode(self, *, device) -> str:
         if self.occlusion_mode != "mixed":
@@ -693,7 +782,9 @@ class VICRegLoss(nn.Module):
                 return x
             max_rad = math.radians(max_deg)
             axis = self._random_unit_vectors(bsz, device=device, dtype=dtype)
-            angle = (torch.rand(bsz, device=device, dtype=dtype) * 2.0 - 1.0) * max_rad
+            angle = (
+                torch.rand(bsz, device=device, dtype=dtype) * 2.0 - 1.0
+            ) * max_rad
             R = self._axis_angle_to_matrix(axis, angle)
         return torch.matmul(x, R)
 
@@ -704,11 +795,17 @@ class VICRegLoss(nn.Module):
 
         batch_size = int(x.shape[0])
         if self.mirror_prob >= 1.0:
-            apply_mirror = torch.ones((batch_size,), dtype=torch.bool, device=x.device)
+            apply_mirror = torch.ones(
+                (batch_size,), dtype=torch.bool, device=x.device
+            )
         else:
-            apply_mirror = torch.rand((batch_size,), device=x.device) < self.mirror_prob
+            apply_mirror = (
+                torch.rand((batch_size,), device=x.device) < self.mirror_prob
+            )
         mirror_axis = torch.randint(0, 3, (batch_size,), device=x.device)
-        coordinate_sign = torch.ones((batch_size, 3), dtype=x.dtype, device=x.device)
+        coordinate_sign = torch.ones(
+            (batch_size, 3), dtype=x.dtype, device=x.device
+        )
         batch_indices = torch.arange(batch_size, device=x.device)
         coordinate_sign[batch_indices, mirror_axis] = torch.where(
             apply_mirror,
@@ -723,14 +820,23 @@ class VICRegLoss(nn.Module):
         bsz = x.shape[0]
         device = x.device
         dtype = x.dtype
-        strain_dtype = torch.float32 if dtype in (torch.float16, torch.bfloat16) else dtype
+        strain_dtype = (
+            torch.float32
+            if dtype in (torch.float16, torch.bfloat16)
+            else dtype
+        )
         rand = torch.randn(bsz, 3, 3, device=device, dtype=strain_dtype)
         strain = 0.5 * (rand + rand.transpose(-1, -2))
         if self.strain_volume_preserve:
             trace = strain.diagonal(dim1=-2, dim2=-1).sum(-1, keepdim=True)
-            strain = strain - (trace / 3.0).unsqueeze(-1) * torch.eye(3, device=device, dtype=strain_dtype)
+            strain = strain - (trace / 3.0).unsqueeze(-1) * torch.eye(
+                3, device=device, dtype=strain_dtype
+            )
         strain = strain * float(self.strain_std)
-        transform = torch.eye(3, device=device, dtype=strain_dtype).unsqueeze(0) + strain
+        transform = (
+            torch.eye(3, device=device, dtype=strain_dtype).unsqueeze(0)
+            + strain
+        )
         out = torch.matmul(x.to(dtype=strain_dtype), transform)
         return out.to(dtype=dtype)
 
@@ -747,7 +853,9 @@ class VICRegLoss(nn.Module):
         span = (proj_max - proj_min).clamp_min(1e-6)
         half_width = 0.5 * frac * span
         center = 0.5 * (proj_min + proj_max)
-        drop_mask = (proj - center.unsqueeze(-1)).abs() <= half_width.unsqueeze(-1)
+        drop_mask = (
+            proj - center.unsqueeze(-1)
+        ).abs() <= half_width.unsqueeze(-1)
         keep_mask = ~drop_mask
         return self._resample_masked(x, keep_mask)
 
@@ -766,7 +874,9 @@ class VICRegLoss(nn.Module):
         return self._resample_masked(x, keep_mask)
 
     @staticmethod
-    def _resample_masked(x: torch.Tensor, keep_mask: torch.Tensor) -> torch.Tensor:
+    def _resample_masked(
+        x: torch.Tensor, keep_mask: torch.Tensor
+    ) -> torch.Tensor:
         if keep_mask is None:
             return x
         bsz, num_points, _ = x.shape
@@ -780,17 +890,27 @@ class VICRegLoss(nn.Module):
             return x
         weights = keep_mask.float()
         weights = weights / (weights.sum(dim=1, keepdim=True) + 1e-8)
-        idx = torch.multinomial(weights, num_samples=num_points, replacement=True)
+        idx = torch.multinomial(
+            weights, num_samples=num_points, replacement=True
+        )
         return x.gather(1, idx.unsqueeze(-1).expand(-1, -1, 3))
 
     @staticmethod
-    def _random_unit_vectors(batch_size: int, *, device, dtype) -> torch.Tensor:
+    def _random_unit_vectors(
+        batch_size: int, *, device, dtype
+    ) -> torch.Tensor:
         v = torch.randn(batch_size, 3, device=device, dtype=dtype)
         return v / (v.norm(dim=-1, keepdim=True) + 1e-8)
 
     @staticmethod
-    def _random_rotation_matrices(batch_size: int, *, device, dtype) -> torch.Tensor:
-        rot_dtype = torch.float32 if dtype in (torch.float16, torch.bfloat16) else dtype
+    def _random_rotation_matrices(
+        batch_size: int, *, device, dtype
+    ) -> torch.Tensor:
+        rot_dtype = (
+            torch.float32
+            if dtype in (torch.float16, torch.bfloat16)
+            else dtype
+        )
         rand = torch.randn(batch_size, 3, 3, device=device, dtype=rot_dtype)
         q, r = torch.linalg.qr(rand)
         d = torch.diagonal(r, dim1=-2, dim2=-1).sign()
@@ -802,10 +922,16 @@ class VICRegLoss(nn.Module):
         return q.to(dtype=dtype)
 
     @staticmethod
-    def _axis_angle_to_matrix(axis: torch.Tensor, angle: torch.Tensor) -> torch.Tensor:
+    def _axis_angle_to_matrix(
+        axis: torch.Tensor, angle: torch.Tensor
+    ) -> torch.Tensor:
         dtype = axis.dtype
         device = axis.device
-        rot_dtype = torch.float32 if dtype in (torch.float16, torch.bfloat16) else dtype
+        rot_dtype = (
+            torch.float32
+            if dtype in (torch.float16, torch.bfloat16)
+            else dtype
+        )
         axis = axis.to(dtype=rot_dtype)
         angle = angle.to(dtype=rot_dtype)
         x, y, z = axis.unbind(dim=-1)
@@ -832,13 +958,18 @@ class VICRegLoss(nn.Module):
         return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
 
     def _gather_all(self, z: torch.Tensor) -> torch.Tensor:
-        if not (torch.distributed.is_available() and torch.distributed.is_initialized()):
+        if not (
+            torch.distributed.is_available()
+            and torch.distributed.is_initialized()
+        ):
             return z
         world_size = torch.distributed.get_world_size()
         if world_size <= 1:
             return z
 
-        local_size = torch.tensor([z.shape[0]], device=z.device, dtype=torch.long)
+        local_size = torch.tensor(
+            [z.shape[0]], device=z.device, dtype=torch.long
+        )
         sizes = [torch.zeros_like(local_size) for _ in range(world_size)]
         torch.distributed.all_gather(sizes, local_size)
         sizes = [int(size.item()) for size in sizes]
@@ -876,9 +1007,11 @@ class VICRegLoss(nn.Module):
         z = z - z.mean(dim=0)
         cov = (z.T @ z) / (n - 1)
         off = self._off_diagonal(cov)
-        return (off.pow(2).sum() / d)
+        return off.pow(2).sum() / d
 
-    def _radial_gaussianization_loss(self, z: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def _radial_gaussianization_loss(
+        self, z: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         n, d = z.shape
         r = torch.linalg.norm(z, dim=1)
 
@@ -894,22 +1027,35 @@ class VICRegLoss(nn.Module):
             m = min(max(1, int(m)), n - 1)
             r_sorted = torch.sort(r).values
             diffs = r_sorted[m:] - r_sorted[:-m]
-            ent_est = torch.log(((n + 1.0) / float(m)) * (diffs + self.radial_eps))
+            ent_est = torch.log(
+                ((n + 1.0) / float(m)) * (diffs + self.radial_eps)
+            )
             ent = self.radial_beta2 * ent_est.mean()
 
         return ce - ent, ce, ent
 
-    def _visreg_gaussian_quantiles(self, n: int, *, device, dtype) -> torch.Tensor:
+    def _visreg_gaussian_quantiles(
+        self, n: int, *, device, dtype
+    ) -> torch.Tensor:
         if n <= 0:
-            raise ValueError(f"VISReg requires a non-empty batch, got batch size {n}.")
-        if self._visreg_cached_target_n != int(n) or self._visreg_cached_target is None:
+            raise ValueError(
+                f"VISReg requires a non-empty batch, got batch size {n}."
+            )
+        if (
+            self._visreg_cached_target_n != int(n)
+            or self._visreg_cached_target is None
+        ):
             q = torch.arange(1, int(n) + 1, device=device, dtype=torch.float32)
             q = q / float(int(n) + 1)
-            self._visreg_cached_target = torch.erfinv(2.0 * q - 1.0).mul_(math.sqrt(2.0))
+            self._visreg_cached_target = torch.erfinv(2.0 * q - 1.0).mul_(
+                math.sqrt(2.0)
+            )
             self._visreg_cached_target_n = int(n)
         return self._visreg_cached_target.to(device=device, dtype=dtype)
 
-    def _visreg_regularization_loss(self, z_views: torch.Tensor) -> tuple[torch.Tensor, dict]:
+    def _visreg_regularization_loss(
+        self, z_views: torch.Tensor
+    ) -> tuple[torch.Tensor, dict]:
         num_views, n, d = z_views.shape
         if num_views <= 0:
             raise ValueError("VISReg requires at least one view.")
@@ -920,7 +1066,10 @@ class VICRegLoss(nn.Module):
         center_loss = mu.pow(2).mean()
 
         z_centered = z_views - mu
-        std = z_centered.norm(dim=1).div(math.sqrt(float(n))) + self.visreg_std_eps
+        std = (
+            z_centered.norm(dim=1).div(math.sqrt(float(n)))
+            + self.visreg_std_eps
+        )
         scale_loss = (std - 1.0).pow(2).mean()
 
         z_norm = z_centered / std.detach().unsqueeze(1)
@@ -954,12 +1103,16 @@ class VICRegLoss(nn.Module):
         }
         return reg_loss, metrics
 
-    def _visreg_loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
+    def _visreg_loss(
+        self, z_a: torch.Tensor, z_b: torch.Tensor
+    ) -> tuple[torch.Tensor, dict]:
         z_views = torch.stack((z_a, z_b), dim=0)
         global_mean = z_views.mean(dim=0, keepdim=True)
         pred_loss = (z_views - global_mean).pow(2).mean()
         reg_loss, metrics = self._visreg_regularization_loss(z_views)
-        loss = (1.0 - self.visreg_lambda) * pred_loss + self.visreg_lambda * reg_loss
+        loss = (
+            1.0 - self.visreg_lambda
+        ) * pred_loss + self.visreg_lambda * reg_loss
         metrics = {
             "visreg_pred": pred_loss,
             **metrics,
@@ -967,20 +1120,36 @@ class VICRegLoss(nn.Module):
         }
         return loss, metrics
 
-    def _vicreg_loss(self, z_a: torch.Tensor, z_b: torch.Tensor) -> tuple[torch.Tensor, dict]:
+    def _vicreg_loss(
+        self, z_a: torch.Tensor, z_b: torch.Tensor
+    ) -> tuple[torch.Tensor, dict]:
         n, _ = z_a.shape
         if n < 2:
             zero = z_a.new_tensor(0.0)
-            metrics = {"vicreg_sim": zero, "vicreg_std": zero, "vicreg_cov": zero}
+            metrics = {
+                "vicreg_sim": zero,
+                "vicreg_std": zero,
+                "vicreg_cov": zero,
+            }
             if self.radial_enabled:
                 metrics["vicreg_radial"] = zero
             return zero, metrics
 
         sim_loss = F.mse_loss(z_a, z_b)
         std_loss = 0.5 * (self._variance_loss(z_a) + self._variance_loss(z_b))
-        cov_loss = 0.5 * (self._covariance_loss(z_a) + self._covariance_loss(z_b))
-        loss = self.sim_coeff * sim_loss + self.std_coeff * std_loss + self.cov_coeff * cov_loss
-        metrics = {"vicreg_sim": sim_loss, "vicreg_std": std_loss, "vicreg_cov": cov_loss}
+        cov_loss = 0.5 * (
+            self._covariance_loss(z_a) + self._covariance_loss(z_b)
+        )
+        loss = (
+            self.sim_coeff * sim_loss
+            + self.std_coeff * std_loss
+            + self.cov_coeff * cov_loss
+        )
+        metrics = {
+            "vicreg_sim": sim_loss,
+            "vicreg_std": std_loss,
+            "vicreg_cov": cov_loss,
+        }
 
         if self.radial_enabled:
             radial_a, _, _ = self._radial_gaussianization_loss(z_a)
@@ -1004,9 +1173,9 @@ class VICRegLoss(nn.Module):
         z_b = self._gather_all(z_b)
         if z_a.shape != z_b.shape:
             raise ValueError(
-                "Contrastive view embeddings must have identical shapes before "
-                f"{self.objective.upper()} loss; got z_a={tuple(z_a.shape)}, "
-                f"z_b={tuple(z_b.shape)}."
+                "Contrastive view embeddings must have identical shapes"
+                f" before {self.objective.upper()} loss; got"
+                f" z_a={tuple(z_a.shape)}, z_b={tuple(z_b.shape)}."
             )
         if self.objective == "visreg":
             return self._visreg_loss(z_a, z_b)
@@ -1014,12 +1183,20 @@ class VICRegLoss(nn.Module):
 
     def _invariant(self, inv_z, eq_z):
         if self.invariant_head is None:
-            if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
+            if (
+                eq_z is None
+                and inv_z is not None
+                and inv_z.dim() == 3
+                and inv_z.shape[-1] == 3
+            ):
                 import warnings
+
                 warnings.warn(
-                    "No invariant_head: reinterpreting inv_z (3D, last_dim=3) as eq_z "
-                    f"and reducing via norm. Shape: {tuple(inv_z.shape)}. "
-                    "Contrastive training is norms-only, so equivariant tensors are reduced channel-wise.",
+                    "No invariant_head: reinterpreting inv_z (3D, last_dim=3)"
+                    " as eq_z and reducing via norm. Shape:"
+                    f" {tuple(inv_z.shape)}. Contrastive training is"
+                    " norms-only, so equivariant tensors are reduced"
+                    " channel-wise.",
                 )
                 eq_z = inv_z
                 inv_z = None

@@ -3,6 +3,7 @@
 Source files are retained by default. In-place conversions publish the existing
 reader metadata; only --delete-source removes verified source dumps.
 """
+
 from src.command_line import dispatch
 
 COMMANDS = {

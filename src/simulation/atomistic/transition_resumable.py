@@ -19,9 +19,13 @@ from .transition_campaign_config import TransitionCampaignConfig
 from .transition_campaign_queue import TransitionCampaignTask
 from .transition_config import TransitionBranchConfig
 
-
 TRANSITION_CHECKPOINT_SCHEMA_VERSION = 1
-CHECKPOINT_ARTIFACTS = ("atoms.traj", "trace.npz", "mtk_state.npz", "metadata.json")
+CHECKPOINT_ARTIFACTS = (
+    "atoms.traj",
+    "trace.npz",
+    "mtk_state.npz",
+    "metadata.json",
+)
 
 
 @dataclass(frozen=True)
@@ -51,7 +55,9 @@ def _identity(
         "execution_provenance": provenance.to_dict(),
         "task": task.__dict__,
     }
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    encoded = json.dumps(
+        payload, sort_keys=True, separators=(",", ":")
+    ).encode()
     return {**payload, "identity_sha256": hashlib.sha256(encoded).hexdigest()}
 
 
@@ -65,16 +71,21 @@ def _write_json_atomic(path: Path, value: object) -> None:
 
 def _verify_snapshot(snapshot: Path) -> dict[str, object]:
     if snapshot.is_symlink() or not snapshot.is_dir():
-        raise RuntimeError(f"{snapshot}: checkpoint snapshot must be a real directory.")
+        raise RuntimeError(
+            f"{snapshot}: checkpoint snapshot must be a real directory."
+        )
     manifest_path = snapshot / "snapshot_manifest.json"
     if not manifest_path.is_file():
-        raise RuntimeError(f"{snapshot}: committed checkpoint has no snapshot_manifest.json.")
+        raise RuntimeError(
+            f"{snapshot}: committed checkpoint has no snapshot_manifest.json."
+        )
     with manifest_path.open("r", encoding="utf-8") as handle:
         manifest = json.load(handle)
     required = {"schema_version", "completed_global_step", "artifacts_sha256"}
     if not isinstance(manifest, dict) or set(manifest) != required:
         raise RuntimeError(
-            f"{manifest_path}: keys must be exactly {sorted(required)}, got {manifest!r}."
+            f"{manifest_path}: keys must be exactly {sorted(required)}, got"
+            f" {manifest!r}."
         )
     step = manifest["completed_global_step"]
     if (
@@ -84,9 +95,13 @@ def _verify_snapshot(snapshot: Path) -> dict[str, object]:
         or step < 0
         or snapshot.name != f"step_{step:012d}"
     ):
-        raise RuntimeError(f"{manifest_path}: invalid checkpoint schema/step identity.")
+        raise RuntimeError(
+            f"{manifest_path}: invalid checkpoint schema/step identity."
+        )
     digests = manifest["artifacts_sha256"]
-    if not isinstance(digests, dict) or set(digests) != set(CHECKPOINT_ARTIFACTS):
+    if not isinstance(digests, dict) or set(digests) != set(
+        CHECKPOINT_ARTIFACTS
+    ):
         raise RuntimeError(
             f"{manifest_path}: artifacts_sha256 must contain exactly "
             f"{list(CHECKPOINT_ARTIFACTS)}."
@@ -94,12 +109,14 @@ def _verify_snapshot(snapshot: Path) -> dict[str, object]:
     for name, expected in digests.items():
         artifact = snapshot / name
         if not artifact.is_file():
-            raise RuntimeError(f"{manifest_path}: missing hashed artifact {artifact}.")
+            raise RuntimeError(
+                f"{manifest_path}: missing hashed artifact {artifact}."
+            )
         observed = _sha256(artifact)
         if observed != expected:
             raise RuntimeError(
-                f"{manifest_path}: SHA-256 mismatch for {name}: expected={expected}, "
-                f"observed={observed}."
+                f"{manifest_path}: SHA-256 mismatch for {name}:"
+                f" expected={expected}, observed={observed}."
             )
     return manifest
 
@@ -121,8 +138,9 @@ class TransitionCheckpointStore:
                 observed = json.load(handle)
             if observed != self.identity:
                 raise RuntimeError(
-                    f"{manifest_path}: checkpoint identity differs from the active "
-                    "campaign, runtime, branch, or seed; refusing an ambiguous resume."
+                    f"{manifest_path}: checkpoint identity differs from the"
+                    " active campaign, runtime, branch, or seed; refusing an"
+                    " ambiguous resume."
                 )
         else:
             _write_json_atomic(manifest_path, self.identity)
@@ -134,17 +152,23 @@ class TransitionCheckpointStore:
             if not snapshots:
                 return None
             verified = [
-                (int(_verify_snapshot(snapshot)["completed_global_step"]), snapshot)
+                (
+                    int(_verify_snapshot(snapshot)["completed_global_step"]),
+                    snapshot,
+                )
                 for snapshot in snapshots
             ]
             steps = [step for step, _ in verified]
             if len(set(steps)) != len(steps):
                 raise RuntimeError(
-                    f"{self.directory}: multiple checkpoint snapshots claim one step."
+                    f"{self.directory}: multiple checkpoint snapshots claim"
+                    " one step."
                 )
             _, snapshot = max(verified)
             temporary_pointer = self.directory / "LATEST.tmp"
-            temporary_pointer.write_text(f"{snapshot.name}\n", encoding="utf-8")
+            temporary_pointer.write_text(
+                f"{snapshot.name}\n", encoding="utf-8"
+            )
             temporary_pointer.replace(pointer)
         else:
             snapshot_name = pointer.read_text(encoding="utf-8").strip()
@@ -157,9 +181,13 @@ class TransitionCheckpointStore:
         manifest = _verify_snapshot(snapshot)
         atoms = read(snapshot / "atoms.traj", format="traj")
         with np.load(snapshot / "trace.npz") as stored:
-            trace = ThermodynamicTrace(**{name: stored[name] for name in stored.files})
+            trace = ThermodynamicTrace(
+                **{name: stored[name] for name in stored.files}
+            )
         validate_thermodynamic_trace(
-            trace, atom_count=len(atoms), context=f"transition checkpoint {snapshot}"
+            trace,
+            atom_count=len(atoms),
+            context=f"transition checkpoint {snapshot}",
         )
         with np.load(snapshot / "mtk_state.npz") as stored:
             state = MTKState(
@@ -175,7 +203,9 @@ class TransitionCheckpointStore:
                 barostat_xi=stored["barostat_xi"],
                 barostat_p_xi=stored["barostat_p_xi"],
             )
-        with (snapshot / "metadata.json").open("r", encoding="utf-8") as handle:
+        with (snapshot / "metadata.json").open(
+            "r", encoding="utf-8"
+        ) as handle:
             metadata = json.load(handle)
         expected_step = manifest["completed_global_step"]
         if (
@@ -184,11 +214,14 @@ class TransitionCheckpointStore:
             or int(trace.step[-1]) != expected_step
         ):
             raise RuntimeError(
-                f"{snapshot}: state/metadata/trace checkpoint endpoints disagree: "
-                f"state={state.nsteps}, metadata={metadata.get('completed_global_step')!r}, "
-                f"trace={int(trace.step[-1])}, manifest={expected_step}."
+                f"{snapshot}: state/metadata/trace checkpoint endpoints"
+                f" disagree: state={state.nsteps},"
+                f" metadata={metadata.get('completed_global_step')!r},"
+                f" trace={int(trace.step[-1])}, manifest={expected_step}."
             )
-        return TransitionCheckpoint(atoms=atoms, trace=trace, state=state, metadata=metadata)
+        return TransitionCheckpoint(
+            atoms=atoms, trace=trace, state=state, metadata=metadata
+        )
 
     def save(
         self,
@@ -199,18 +232,26 @@ class TransitionCheckpointStore:
         metadata: dict[str, object],
     ) -> None:
         step = state.nsteps
-        if metadata.get("completed_global_step") != step or int(trace.step[-1]) != step:
+        if (
+            metadata.get("completed_global_step") != step
+            or int(trace.step[-1]) != step
+        ):
             raise RuntimeError(
-                f"Checkpoint endpoint must equal MTK step={step}; metadata="
-                f"{metadata.get('completed_global_step')!r}, trace={int(trace.step[-1])}."
+                f"Checkpoint endpoint must equal MTK step={step};"
+                f" metadata={metadata.get('completed_global_step')!r},"
+                f" trace={int(trace.step[-1])}."
             )
         validate_thermodynamic_trace(
-            trace, atom_count=len(atoms), context=f"transition checkpoint step={step}"
+            trace,
+            atom_count=len(atoms),
+            context=f"transition checkpoint step={step}",
         )
         snapshot_name = f"step_{step:012d}"
         final = self.directory / snapshot_name
         staging = Path(
-            tempfile.mkdtemp(prefix=f".{snapshot_name}.staging-", dir=self.directory)
+            tempfile.mkdtemp(
+                prefix=f".{snapshot_name}.staging-", dir=self.directory
+            )
         )
         try:
             write(staging / "atoms.traj", atoms, format="traj")
@@ -218,13 +259,18 @@ class TransitionCheckpointStore:
                 np.savez(handle, **trace.__dict__)
             with (staging / "mtk_state.npz").open("wb") as handle:
                 np.savez(handle, **state.__dict__)
-            with (staging / "metadata.json").open("w", encoding="utf-8") as handle:
-                json.dump(metadata, handle, indent=2, sort_keys=True, allow_nan=False)
+            with (staging / "metadata.json").open(
+                "w", encoding="utf-8"
+            ) as handle:
+                json.dump(
+                    metadata, handle, indent=2, sort_keys=True, allow_nan=False
+                )
             snapshot_manifest = {
                 "schema_version": TRANSITION_CHECKPOINT_SCHEMA_VERSION,
                 "completed_global_step": step,
                 "artifacts_sha256": {
-                    name: _sha256(staging / name) for name in CHECKPOINT_ARTIFACTS
+                    name: _sha256(staging / name)
+                    for name in CHECKPOINT_ARTIFACTS
                 },
             }
             with (staging / "snapshot_manifest.json").open(
@@ -234,13 +280,16 @@ class TransitionCheckpointStore:
             if final.exists():
                 if _verify_snapshot(final) != snapshot_manifest:
                     raise RuntimeError(
-                        f"{final}: same-step checkpoint exists with different hashes."
+                        f"{final}: same-step checkpoint exists with different"
+                        " hashes."
                     )
                 shutil.rmtree(staging)
             else:
                 staging.replace(final)
             temporary_pointer = self.directory / "LATEST.tmp"
-            temporary_pointer.write_text(f"{snapshot_name}\n", encoding="utf-8")
+            temporary_pointer.write_text(
+                f"{snapshot_name}\n", encoding="utf-8"
+            )
             temporary_pointer.replace(self.directory / "LATEST")
         except BaseException:
             if staging.exists():
@@ -270,16 +319,25 @@ def build_transition_mtk_dynamics(
     if state is None:
         return dynamics
     expected_atom_shape = (len(atoms), 3)
-    if state.q.shape != expected_atom_shape or state.p.shape != expected_atom_shape:
+    if (
+        state.q.shape != expected_atom_shape
+        or state.p.shape != expected_atom_shape
+    ):
         raise RuntimeError(
-            f"MTK checkpoint q/p shapes {state.q.shape}/{state.p.shape} do not match "
-            f"atoms {expected_atom_shape}."
+            f"MTK checkpoint q/p shapes {state.q.shape}/{state.p.shape} do not"
+            f" match atoms {expected_atom_shape}."
         )
     expected_cell = state.cell0 * np.exp(state.eps)
-    if not np.allclose(atoms.cell.array, expected_cell, rtol=1e-12, atol=1e-10):
-        raise RuntimeError("MTK checkpoint cell is inconsistent with cell0 and eps.")
+    if not np.allclose(
+        atoms.cell.array, expected_cell, rtol=1e-12, atol=1e-10
+    ):
+        raise RuntimeError(
+            "MTK checkpoint cell is inconsistent with cell0 and eps."
+        )
     if not np.allclose(atoms.positions, state.q, rtol=1e-12, atol=1e-10):
-        raise RuntimeError("MTK checkpoint Atoms positions differ from q state.")
+        raise RuntimeError(
+            "MTK checkpoint Atoms positions differ from q state."
+        )
     if not np.allclose(atoms.get_momenta(), state.p, rtol=1e-12, atol=1e-10):
         raise RuntimeError("MTK checkpoint Atoms momenta differ from p state.")
     thermostat = dynamics._thermostat
@@ -298,7 +356,8 @@ def build_transition_mtk_dynamics(
     )
     if observed_shapes != expected_shapes:
         raise RuntimeError(
-            f"MTK chain shapes {observed_shapes} do not match ASE {expected_shapes}."
+            f"MTK chain shapes {observed_shapes} do not match ASE"
+            f" {expected_shapes}."
         )
     dynamics.nsteps = state.nsteps
     dynamics._q = state.q.copy()
@@ -324,11 +383,15 @@ def capture_mtk_state(dynamics: IsotropicMTKNPT) -> MTKState:
         p_eps=float(dynamics._p_eps),
         cell0=np.asarray(dynamics._cell0, dtype=np.float64).copy(),
         volume0=float(dynamics._volume0),
-        thermostat_eta=np.asarray(dynamics._thermostat._eta, dtype=np.float64).copy(),
+        thermostat_eta=np.asarray(
+            dynamics._thermostat._eta, dtype=np.float64
+        ).copy(),
         thermostat_p_eta=np.asarray(
             dynamics._thermostat._p_eta, dtype=np.float64
         ).copy(),
-        barostat_xi=np.asarray(dynamics._barostat._xi, dtype=np.float64).copy(),
+        barostat_xi=np.asarray(
+            dynamics._barostat._xi, dtype=np.float64
+        ).copy(),
         barostat_p_xi=np.asarray(
             dynamics._barostat._p_xi, dtype=np.float64
         ).copy(),

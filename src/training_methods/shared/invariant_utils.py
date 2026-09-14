@@ -14,7 +14,9 @@ class NormInvariantHead(nn.Module):
         self.output_dim = self.channels
         self.eps = float(eps)
 
-    def _coerce_eq_latent(self, eq_z: torch.Tensor | None) -> torch.Tensor | None:
+    def _coerce_eq_latent(
+        self, eq_z: torch.Tensor | None
+    ) -> torch.Tensor | None:
         if eq_z is None:
             return None
         if eq_z.dim() == 3:
@@ -22,13 +24,13 @@ class NormInvariantHead(nn.Module):
                 return eq_z
             if eq_z.shape[1] == 3:
                 warnings.warn(
-                    f"Transposing eq_z from shape {tuple(eq_z.shape)} to (B, C, 3). "
-                    "Ensure encoder output convention is correct.",
+                    f"Transposing eq_z from shape {tuple(eq_z.shape)} to (B,"
+                    " C, 3). Ensure encoder output convention is correct.",
                 )
                 return eq_z.transpose(1, 2).contiguous()
             raise ValueError(
-                f"Cannot coerce 3D eq_z with shape {tuple(eq_z.shape)} to (B, C, 3): "
-                "neither last dim nor dim-1 equals 3."
+                f"Cannot coerce 3D eq_z with shape {tuple(eq_z.shape)} to (B,"
+                " C, 3): neither last dim nor dim-1 equals 3."
             )
         if eq_z.dim() == 4 and eq_z.shape[-1] == 3:
             if eq_z.shape[1] == self.channels:
@@ -44,15 +46,17 @@ class NormInvariantHead(nn.Module):
             "Expected 3D (B, C, 3) or 4D (B, C, ?, 3)."
         )
 
-    def _fit_output_dim(self, feat: torch.Tensor | None) -> torch.Tensor | None:
+    def _fit_output_dim(
+        self, feat: torch.Tensor | None
+    ) -> torch.Tensor | None:
         if feat is None:
             return None
         if feat.dim() > 2:
             feat = feat.reshape(feat.shape[0], -1)
         if feat.dim() != 2:
             raise ValueError(
-                f"Expected 2D feature tensor after reshape, got dim={feat.dim()} "
-                f"shape={tuple(feat.shape)}."
+                "Expected 2D feature tensor after reshape, got"
+                f" dim={feat.dim()} shape={tuple(feat.shape)}."
             )
         if feat.shape[1] != self.output_dim:
             raise ValueError(
@@ -64,8 +68,15 @@ class NormInvariantHead(nn.Module):
     def _norms(self, eq_z: torch.Tensor) -> torch.Tensor:
         return torch.sqrt((eq_z * eq_z).sum(dim=-1) + self.eps)
 
-    def forward(self, inv_z: torch.Tensor | None, eq_z: torch.Tensor | None) -> torch.Tensor | None:
-        if eq_z is None and inv_z is not None and inv_z.dim() == 3 and inv_z.shape[-1] == 3:
+    def forward(
+        self, inv_z: torch.Tensor | None, eq_z: torch.Tensor | None
+    ) -> torch.Tensor | None:
+        if (
+            eq_z is None
+            and inv_z is not None
+            and inv_z.dim() == 3
+            and inv_z.shape[-1] == 3
+        ):
             eq_z = inv_z
             inv_z = None
 

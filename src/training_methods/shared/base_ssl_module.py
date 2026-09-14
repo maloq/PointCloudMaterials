@@ -1,7 +1,11 @@
 import torch
 import pytorch_lightning as pl
 
-from src.models import EncoderAdapter, build_encoder, resolve_encoder_output_dim
+from src.models import (
+    EncoderAdapter,
+    build_encoder,
+    resolve_encoder_output_dim,
+)
 from src.training_methods.shared.supervised_cache import (
     cache_limit_for_stage,
     cache_supervised_batch,
@@ -13,7 +17,10 @@ from src.training_methods.shared.swav import SwAVLoss
 from src.training_methods.shared.vicreg import VICRegLoss
 from src.utils.model_summary import make_model_summary_point_cloud
 from src.utils.pointcloud_ops import crop_to_num_points
-from src.training_methods.shared.optimizers import cached_sample_count, get_optimizers_and_scheduler
+from src.training_methods.shared.optimizers import (
+    cached_sample_count,
+    get_optimizers_and_scheduler,
+)
 
 
 def _validate_encoder_compile_mode(
@@ -24,15 +31,17 @@ def _validate_encoder_compile_mode(
 ) -> None:
     if (
         bool(compile_enabled)
-        and str(encoder_name) in {"GeoFrameTransformer", "GeoFrameTransformerV2"}
+        and str(encoder_name)
+        in {"GeoFrameTransformer", "GeoFrameTransformerV2"}
         and str(compile_mode) == "reduce-overhead"
     ):
         raise ValueError(
-            "encoder_compile_mode='reduce-overhead' is disabled for "
-            f"{encoder_name}. Its CUDA-graph path produced call-order-dependent "
-            "encoder outputs on the H100/PyTorch 2.11 stack, including different "
-            "embeddings for identical point clouds before and after warm-up. Use "
-            "encoder_compile_mode='default' or set compile_encoder=false."
+            "encoder_compile_mode='reduce-overhead' is disabled for"
+            f" {encoder_name}. Its CUDA-graph path produced"
+            " call-order-dependent encoder outputs on the H100/PyTorch 2.11"
+            " stack, including different embeddings for identical point"
+            " clouds before and after warm-up. Use"
+            " encoder_compile_mode='default' or set compile_encoder=false."
         )
 
 
@@ -57,9 +66,15 @@ class BaseSSLModule(pl.LightningModule):
         latent_dim = resolve_encoder_output_dim(self.encoder)
 
         self._compile_encoder = bool(getattr(cfg, "compile_encoder", False))
-        self._encoder_compile_mode = str(getattr(cfg, "encoder_compile_mode", "default"))
-        self._encoder_compile_fullgraph = bool(getattr(cfg, "encoder_compile_fullgraph", False))
-        self._encoder_compile_dynamic = bool(getattr(cfg, "encoder_compile_dynamic", False))
+        self._encoder_compile_mode = str(
+            getattr(cfg, "encoder_compile_mode", "default")
+        )
+        self._encoder_compile_fullgraph = bool(
+            getattr(cfg, "encoder_compile_fullgraph", False)
+        )
+        self._encoder_compile_dynamic = bool(
+            getattr(cfg, "encoder_compile_dynamic", False)
+        )
         encoder_cfg = getattr(cfg, "encoder", None)
         encoder_name = str(getattr(encoder_cfg, "name", ""))
         _validate_encoder_compile_mode(
@@ -77,8 +92,16 @@ class BaseSSLModule(pl.LightningModule):
         self.encoder_io = EncoderAdapter(self.encoder)
 
         data_cfg = getattr(cfg, "data", None)
-        self.sample_points = int(getattr(data_cfg, "num_points", 0)) if data_cfg is not None else 0
-        model_points = getattr(data_cfg, "model_points", None) if data_cfg is not None else None
+        self.sample_points = (
+            int(getattr(data_cfg, "num_points", 0))
+            if data_cfg is not None
+            else 0
+        )
+        model_points = (
+            getattr(data_cfg, "model_points", None)
+            if data_cfg is not None
+            else None
+        )
         if model_points is None:
             model_points = getattr(cfg, "model_points", None)
         if model_points is not None:
@@ -87,9 +110,14 @@ class BaseSSLModule(pl.LightningModule):
                 model_points = None
         self.model_points = model_points
 
-        if self.model_points is not None and self.sample_points and self.model_points > self.sample_points:
+        if (
+            self.model_points is not None
+            and self.sample_points
+            and self.model_points > self.sample_points
+        ):
             raise ValueError(
-                f"model_points ({self.model_points}) cannot exceed data.num_points ({self.sample_points})"
+                f"model_points ({self.model_points}) cannot exceed"
+                f" data.num_points ({self.sample_points})"
             )
         self._init_example_input(
             cfg,
@@ -102,12 +130,18 @@ class BaseSSLModule(pl.LightningModule):
         self.swav = SwAVLoss.from_config(cfg, input_dim=latent_dim)
 
         init_supervised_cache(self, cfg)
-        self.cache_train_supervised_metrics = bool(getattr(cfg, "cache_train_supervised_metrics", False))
+        self.cache_train_supervised_metrics = bool(
+            getattr(cfg, "cache_train_supervised_metrics", False)
+        )
         self._warned_cache_eq_fallback = False
         self._consecutive_nan_steps = 0
-        self._max_consecutive_nan_steps = int(getattr(cfg, "max_consecutive_nan_steps", 20))
+        self._max_consecutive_nan_steps = int(
+            getattr(cfg, "max_consecutive_nan_steps", 20)
+        )
         self._nonfinite_step_flag: torch.Tensor | None = None
-        self._nonfinite_check_stride = max(1, int(getattr(cfg, "nonfinite_check_stride", 8)))
+        self._nonfinite_check_stride = max(
+            1, int(getattr(cfg, "nonfinite_check_stride", 8))
+        )
 
     def _init_example_input(
         self,
@@ -117,13 +151,20 @@ class BaseSSLModule(pl.LightningModule):
         summary_sequence_length: int | None,
         require_summary_points: bool,
     ) -> None:
-        summary_points = self.model_points if self.model_points is not None else self.sample_points
+        summary_points = (
+            self.model_points
+            if self.model_points is not None
+            else self.sample_points
+        )
         if summary_points <= 0:
             if require_summary_points:
                 raise ValueError(
-                    f"{module_name} cannot create a PyTorch Lightning FLOP summary input because "
-                    f"data.num_points={self.sample_points!r} and data.model_points={self.model_points!r}. "
-                    "Set data.num_points or data.model_points to a positive point count."
+                    f"{module_name} cannot create a PyTorch Lightning FLOP"
+                    " summary input because"
+                    f" data.num_points={self.sample_points!r} and"
+                    f" data.model_points={self.model_points!r}. Set"
+                    " data.num_points or data.model_points to a positive"
+                    " point count."
                 )
             return
 
@@ -145,25 +186,33 @@ class BaseSSLModule(pl.LightningModule):
     def _shared_invariant(self, z_inv_model, eq_z):
         return self.vicreg._invariant(z_inv_model, eq_z)
 
-    def _forward_ssl_heads_for_summary(self, features: torch.Tensor | None) -> dict[str, torch.Tensor]:
+    def _forward_ssl_heads_for_summary(
+        self, features: torch.Tensor | None
+    ) -> dict[str, torch.Tensor]:
         head_outputs = {}
         if self.vicreg.projector is not None:
             if features is None:
                 raise RuntimeError(
-                    "Cannot profile contrastive FLOPs for the Lightning model summary because "
-                    "the encoder did not return invariant contrastive features."
+                    "Cannot profile contrastive FLOPs for the Lightning model"
+                    " summary because the encoder did not return invariant"
+                    " contrastive features."
                 )
-            head_outputs[f"{self.vicreg.metric_prefix}_projected"] = self.vicreg(
-                features,
-                profile_projector=True,
+            head_outputs[f"{self.vicreg.metric_prefix}_projected"] = (
+                self.vicreg(
+                    features,
+                    profile_projector=True,
+                )
             )
         if self.swav.projector is not None or self.swav.prototypes is not None:
             if features is None:
                 raise RuntimeError(
-                    "Cannot profile SwAV FLOPs for the Lightning model summary because "
-                    "the encoder did not return invariant contrastive features."
+                    "Cannot profile SwAV FLOPs for the Lightning model summary"
+                    " because the encoder did not return invariant contrastive"
+                    " features."
                 )
-            head_outputs["swav_logits"] = self.swav(features, profile_logits=True)
+            head_outputs["swav_logits"] = self.swav(
+                features, profile_logits=True
+            )
         return head_outputs
 
     def _status_print(self, message: str) -> None:
@@ -189,7 +238,9 @@ class BaseSSLModule(pl.LightningModule):
         if class_id is None:
             return None, None
 
-        pc_raw = pc_raw.to(device=self.device, dtype=self.dtype, non_blocking=True)
+        pc_raw = pc_raw.to(
+            device=self.device, dtype=self.dtype, non_blocking=True
+        )
         pc = self._prepare_model_input(pc_raw)
         encoded = self.encoder_io.encode(pc)
         z_inv_contrastive = self._contrastive_invariant_latent(
@@ -197,7 +248,9 @@ class BaseSSLModule(pl.LightningModule):
             encoded.equivariant,
         )
         encoder_features = (
-            z_inv_contrastive if z_inv_contrastive is not None else encoded.invariant
+            z_inv_contrastive
+            if z_inv_contrastive is not None
+            else encoded.invariant
         )
         if encoder_features is None:
             return None, None
@@ -207,22 +260,28 @@ class BaseSSLModule(pl.LightningModule):
     def _contrastive_invariant_latent(self, z_inv_model, eq_z):
         return self._shared_invariant(z_inv_model, eq_z)
 
-    def _output_representation(self, encoder_features: torch.Tensor) -> torch.Tensor:
+    def _output_representation(
+        self, encoder_features: torch.Tensor
+    ) -> torch.Tensor:
         if self.representation_source == "encoder":
             return encoder_features
         if self.representation_source == "vicreg_projector":
             if self.vicreg.projector is None:
                 raise RuntimeError(
-                    "representation_source='vicreg_projector' requires an active VICReg "
-                    "projector, but this model has no projector."
+                    "representation_source='vicreg_projector' requires an"
+                    " active VICReg projector, but this model has no"
+                    " projector."
                 )
             if not self.training and self.vicreg.projector_bn_eval_batch_stats:
                 raise RuntimeError(
-                    "Refusing to export representation_source='vicreg_projector' while "
-                    "vicreg_projector_bn_eval_batch_stats=true in eval mode. The same "
-                    "sample would receive different embeddings depending on its batch "
-                    "companions. Set vicreg_projector_bn_eval_batch_stats=false and "
-                    "reload the checkpoint, or export representation_source='encoder'."
+                    "Refusing to export"
+                    " representation_source='vicreg_projector' while"
+                    " vicreg_projector_bn_eval_batch_stats=true in eval mode."
+                    " The same sample would receive different embeddings"
+                    " depending on its batch companions. Set"
+                    " vicreg_projector_bn_eval_batch_stats=false and reload"
+                    " the checkpoint, or export"
+                    " representation_source='encoder'."
                 )
             return self.vicreg(encoder_features)
         raise AssertionError(
@@ -241,8 +300,9 @@ class BaseSSLModule(pl.LightningModule):
             return self._shared_invariant(None, eq_z)
         if z_inv_model is not None and not self._warned_cache_eq_fallback:
             self._status_print(
-                f"[{self.cache_warning_prefix}/cache] eq_z is missing at stage='{stage_name}'. "
-                "Falling back to encoder invariant output (z_inv_model) for cached z_inv_contrastive."
+                f"[{self.cache_warning_prefix}/cache] eq_z is missing at"
+                f" stage='{stage_name}'. Falling back to encoder invariant"
+                " output (z_inv_model) for cached z_inv_contrastive."
             )
             self._warned_cache_eq_fallback = True
         return self._shared_invariant(z_inv_model, None)
@@ -260,10 +320,12 @@ class BaseSSLModule(pl.LightningModule):
         )
         return (
             stage_l in self._supervised_cache
-            and (wants_supervised_metrics or wants_probe_metrics or wants_embedding_metrics)
             and (
-                stage_l != "train" or self.cache_train_supervised_metrics
+                wants_supervised_metrics
+                or wants_probe_metrics
+                or wants_embedding_metrics
             )
+            and (stage_l != "train" or self.cache_train_supervised_metrics)
         )
 
     def _cache_supervised_embeddings_if_needed(
@@ -288,17 +350,27 @@ class BaseSSLModule(pl.LightningModule):
             encoder_features=encoder_features,
         )
 
-    def _weighted_total_loss(self, losses: dict[str, torch.Tensor]) -> torch.Tensor:
+    def _weighted_total_loss(
+        self, losses: dict[str, torch.Tensor]
+    ) -> torch.Tensor:
         total_loss = None
         contrastive_key = getattr(self.vicreg, "metric_prefix", "vicreg")
         if contrastive_key in losses:
             vicreg_total = self.vicreg.weight * losses[contrastive_key]
-            total_loss = vicreg_total if total_loss is None else total_loss + vicreg_total
+            total_loss = (
+                vicreg_total
+                if total_loss is None
+                else total_loss + vicreg_total
+            )
         if "swav" in losses:
             swav_total = self.swav.weight * losses["swav"]
-            total_loss = swav_total if total_loss is None else total_loss + swav_total
+            total_loss = (
+                swav_total if total_loss is None else total_loss + swav_total
+            )
         if total_loss is None:
-            total_loss = torch.zeros((), device=self.device, dtype=torch.float32, requires_grad=True)
+            total_loss = torch.zeros(
+                (), device=self.device, dtype=torch.float32, requires_grad=True
+            )
         return total_loss
 
     def _finish_ssl_step(
@@ -315,7 +387,9 @@ class BaseSSLModule(pl.LightningModule):
         if print_first_eval_batch and stage != "train" and batch_idx == 0:
             parts = [f"[{stage}-diag] epoch={self.current_epoch} batch_idx=0"]
             visible_losses = {
-                key: value for key, value in losses.items() if not key.startswith("_")
+                key: value
+                for key, value in losses.items()
+                if not key.startswith("_")
             }
             for key, value in visible_losses.items():
                 parts.append(f"{key}={value.item():.6f}")
@@ -323,28 +397,42 @@ class BaseSSLModule(pl.LightningModule):
             parts.append(f"active_losses={list(visible_losses)}")
             self._status_print(" | ".join(parts))
 
-        if self._nonfinite_step_flag is None or self._nonfinite_step_flag.device != total_loss.device:
-            self._nonfinite_step_flag = torch.zeros((), dtype=torch.long, device=total_loss.device)
+        if (
+            self._nonfinite_step_flag is None
+            or self._nonfinite_step_flag.device != total_loss.device
+        ):
+            self._nonfinite_step_flag = torch.zeros(
+                (), dtype=torch.long, device=total_loss.device
+            )
         nonfinite_step = (~torch.isfinite(total_loss)).to(dtype=torch.long)
         self._nonfinite_step_flag = torch.where(
             nonfinite_step.bool(),
             self._nonfinite_step_flag + 1,
             torch.zeros_like(self._nonfinite_step_flag),
         )
-        if stage == "train" and ((batch_idx + 1) % self._nonfinite_check_stride == 0):
+        if stage == "train" and (
+            (batch_idx + 1) % self._nonfinite_check_stride == 0
+        ):
             observed = int(self._nonfinite_step_flag.item())
             self._consecutive_nan_steps = observed
             if observed >= self._max_consecutive_nan_steps:
                 raise RuntimeError(
-                    f"Training produced {observed} consecutive non-finite losses "
-                    f"(checked every {self._nonfinite_check_stride} steps). "
-                    "Halting to prevent silent divergence."
+                    f"Training produced {observed} consecutive non-finite"
+                    " losses (checked every"
+                    f" {self._nonfinite_check_stride} steps). Halting to"
+                    " prevent silent divergence."
                 )
-        total_loss = torch.nan_to_num(total_loss, nan=0.0, posinf=0.0, neginf=0.0)
+        total_loss = torch.nan_to_num(
+            total_loss, nan=0.0, posinf=0.0, neginf=0.0
+        )
 
         metrics_to_log = {"loss": total_loss}
         metrics_to_log.update(
-            {name: value for name, value in losses.items() if not name.startswith("_")}
+            {
+                name: value
+                for name, value in losses.items()
+                if not name.startswith("_")
+            }
         )
         for name, value in metrics_to_log.items():
             self._log_metric(
@@ -369,7 +457,9 @@ class BaseSSLModule(pl.LightningModule):
         return get_optimizers_and_scheduler(self.hparams, self.parameters())
 
     def on_after_backward(self) -> None:
-        if self.swav.should_freeze_prototypes(global_step=int(self.global_step)):
+        if self.swav.should_freeze_prototypes(
+            global_step=int(self.global_step)
+        ):
             self.swav.clear_prototype_gradients()
 
     def _log_metric(
@@ -400,7 +490,9 @@ class BaseSSLModule(pl.LightningModule):
         if batch_size is not None and "batch_size" not in log_kwargs:
             log_kwargs["batch_size"] = int(batch_size)
         if "sync_dist" not in log_kwargs:
-            is_train_step_only = (stage == "train") and on_step and not on_epoch
+            is_train_step_only = (
+                (stage == "train") and on_step and not on_epoch
+            )
             log_kwargs["sync_dist"] = not is_train_step_only
         if torch.is_tensor(value):
             value = value.detach()
@@ -408,16 +500,36 @@ class BaseSSLModule(pl.LightningModule):
         if name == "loss":
             callback_kwargs = dict(log_kwargs)
             callback_kwargs["logger"] = False
-            self.log(f"{stage}/loss", value, on_step=on_step, on_epoch=on_epoch, **callback_kwargs)
+            self.log(
+                f"{stage}/loss",
+                value,
+                on_step=on_step,
+                on_epoch=on_epoch,
+                **callback_kwargs,
+            )
 
             logger_kwargs = dict(log_kwargs)
             logger_kwargs["prog_bar"] = False
             logger_kwargs["logger"] = True
-            self.log(f"loss/{stage}", value, on_step=on_step, on_epoch=on_epoch, **logger_kwargs)
+            self.log(
+                f"loss/{stage}",
+                value,
+                on_step=on_step,
+                on_epoch=on_epoch,
+                **logger_kwargs,
+            )
             return
 
-        resolved_name = f"{stage}/{name}" if metric_name is None else str(metric_name)
-        self.log(resolved_name, value, on_step=on_step, on_epoch=on_epoch, **log_kwargs)
+        resolved_name = (
+            f"{stage}/{name}" if metric_name is None else str(metric_name)
+        )
+        self.log(
+            resolved_name,
+            value,
+            on_step=on_step,
+            on_epoch=on_epoch,
+            **log_kwargs,
+        )
 
     def _handle_epoch_boundary(self, stage: str, is_start: bool):
         if is_start:

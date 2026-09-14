@@ -12,7 +12,10 @@ import numpy as np
 import yaml
 from ase import Atoms, units
 from ase.md.nose_hoover_chain import IsotropicMTKNPT
-from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary
+from ase.md.velocitydistribution import (
+    MaxwellBoltzmannDistribution,
+    Stationary,
+)
 
 from .config import (
     REPOSITORY_ROOT,
@@ -136,19 +139,25 @@ def _repo_path(value: object) -> Path:
 def _positive_float(value: object, *, name: str, path: Path) -> float:
     result = float(value)
     if not np.isfinite(result) or result <= 0.0:
-        raise ValueError(f"{path}: {name} must be finite and > 0, got {result}.")
+        raise ValueError(
+            f"{path}: {name} must be finite and > 0, got {result}."
+        )
     return result
 
 
 def _positive_int(value: object, *, name: str, path: Path) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-        raise TypeError(f"{path}: {name} must be a positive integer, got {value!r}.")
+        raise TypeError(
+            f"{path}: {name} must be a positive integer, got {value!r}."
+        )
     return value
 
 
 def _nonnegative_int(value: object, *, name: str, path: Path) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value < 0:
-        raise TypeError(f"{path}: {name} must be a nonnegative integer, got {value!r}.")
+        raise TypeError(
+            f"{path}: {name} must be a nonnegative integer, got {value!r}."
+        )
     return value
 
 
@@ -166,7 +175,8 @@ def _parse_runtime_sweep(
     }
     if not isinstance(value, dict) or set(value) != sweep_keys:
         raise KeyError(
-            f"{config_path}: runtime_sweep keys must be exactly {sorted(sweep_keys)}."
+            f"{config_path}: runtime_sweep keys must be exactly"
+            f" {sorted(sweep_keys)}."
         )
     raw_variants = value["variants"]
     if not isinstance(raw_variants, list) or not raw_variants:
@@ -184,7 +194,10 @@ def _parse_runtime_sweep(
     variants: list[PotentialRuntimeVariant] = []
     for index, raw_variant in enumerate(raw_variants):
         context = f"runtime_sweep.variants[{index}]"
-        if not isinstance(raw_variant, dict) or set(raw_variant) != variant_keys:
+        if (
+            not isinstance(raw_variant, dict)
+            or set(raw_variant) != variant_keys
+        ):
             raise KeyError(
                 f"{config_path}: {context} keys must be exactly "
                 f"{sorted(variant_keys)}."
@@ -208,8 +221,8 @@ def _parse_runtime_sweep(
             or compile_mode not in SUPPORTED_COMPILE_MODES
         ):
             raise ValueError(
-                f"{config_path}: {context}.compile_mode must be null or one of "
-                f"{sorted(SUPPORTED_COMPILE_MODES)}, got {compile_mode!r}."
+                f"{config_path}: {context}.compile_mode must be null or one of"
+                f" {sorted(SUPPORTED_COMPILE_MODES)}, got {compile_mode!r}."
             )
         pad_num_atoms = _nonnegative_int(
             raw_variant["pad_num_atoms"],
@@ -223,16 +236,17 @@ def _parse_runtime_sweep(
         )
         if compile_mode is None and (pad_num_atoms != 0 or pad_num_edges != 0):
             raise ValueError(
-                f"{config_path}: uncompiled {context} requires zero atom/edge padding, "
-                f"got pad_num_atoms={pad_num_atoms}, pad_num_edges={pad_num_edges}."
+                f"{config_path}: uncompiled {context} requires zero atom/edge"
+                f" padding, got pad_num_atoms={pad_num_atoms},"
+                f" pad_num_edges={pad_num_edges}."
             )
         if compile_mode is not None and (
             pad_num_atoms == 0 or pad_num_edges == 0
         ):
             raise ValueError(
-                f"{config_path}: compiled {context} requires positive atom/edge "
-                f"padding, got pad_num_atoms={pad_num_atoms}, "
-                f"pad_num_edges={pad_num_edges}."
+                f"{config_path}: compiled {context} requires positive"
+                f" atom/edge padding, got pad_num_atoms={pad_num_atoms},"
+                f" pad_num_edges={pad_num_edges}."
             )
         variants.append(
             PotentialRuntimeVariant(
@@ -251,13 +265,15 @@ def _parse_runtime_sweep(
     names = [variant.name for variant in variants]
     if len(set(names)) != len(names):
         raise ValueError(
-            f"{config_path}: runtime variant names must be unique, got {names}."
+            f"{config_path}: runtime variant names must be unique, got"
+            f" {names}."
         )
     baseline_variant = value["baseline_variant"]
     if baseline_variant not in names:
         raise ValueError(
-            f"{config_path}: runtime_sweep.baseline_variant={baseline_variant!r} "
-            f"is not one of {names}."
+            f"{config_path}:"
+            f" runtime_sweep.baseline_variant={baseline_variant!r} is not one"
+            f" of {names}."
         )
     settings = [
         (
@@ -271,8 +287,8 @@ def _parse_runtime_sweep(
     ]
     if len(set(settings)) != len(settings):
         raise ValueError(
-            f"{config_path}: runtime variants contain duplicate effective controls: "
-            f"{settings}."
+            f"{config_path}: runtime variants contain duplicate effective"
+            f" controls: {settings}."
         )
     model_config = _repo_path(value["model_config"])
     homogeneous_config = _repo_path(value["initial_homogeneous_config"])
@@ -282,9 +298,9 @@ def _parse_runtime_sweep(
         or reference_kernel_backend not in REFERENCE_KERNEL_BACKENDS
     ):
         raise ValueError(
-            f"{config_path}: runtime_sweep.reference_kernel_backend must be one of "
-            f"{sorted(REFERENCE_KERNEL_BACKENDS)}, got "
-            f"{reference_kernel_backend!r}."
+            f"{config_path}: runtime_sweep.reference_kernel_backend must be"
+            f" one of {sorted(REFERENCE_KERNEL_BACKENDS)}, got"
+            f" {reference_kernel_backend!r}."
         )
     for path in (model_config, homogeneous_config):
         if not path.is_file():
@@ -329,8 +345,9 @@ def load_potential_performance_config(
     allowed_keys = required_keys | {"runtime_sweep"}
     if not required_keys.issubset(raw) or set(raw) - allowed_keys:
         raise KeyError(
-            f"{config_path}: performance config requires keys={sorted(required_keys)} "
-            f"and optionally runtime_sweep; observed={sorted(raw)}."
+            f"{config_path}: performance config requires"
+            f" keys={sorted(required_keys)} and optionally runtime_sweep;"
+            f" observed={sorted(raw)}."
         )
     runtime_sweep = _parse_runtime_sweep(
         raw.get("runtime_sweep"), config_path=config_path
@@ -340,9 +357,9 @@ def load_potential_performance_config(
         runtime_sweep is None and len(model_configs_raw) < 2
     ):
         raise TypeError(
-            f"{config_path}: model_configs must be a list containing at least two "
-            "config paths for the model-selection benchmark, or it may be empty when "
-            "runtime_sweep is configured."
+            f"{config_path}: model_configs must be a list containing at least"
+            " two config paths for the model-selection benchmark, or it may"
+            " be empty when runtime_sweep is configured."
         )
     model_configs = tuple(_repo_path(value) for value in model_configs_raw)
     for model_config in model_configs:
@@ -351,14 +368,13 @@ def load_potential_performance_config(
                 f"{config_path}: model config does not exist: {model_config}."
             )
     reference_model_configs_raw = raw["reference_model_configs"]
-    if (
-        not isinstance(reference_model_configs_raw, list)
-        or len(reference_model_configs_raw) != len(model_configs)
-    ):
+    if not isinstance(reference_model_configs_raw, list) or len(
+        reference_model_configs_raw
+    ) != len(model_configs):
         raise TypeError(
-            f"{config_path}: reference_model_configs must contain exactly one "
-            f"uncompiled reference for each of the {len(model_configs)} production "
-            "model configs."
+            f"{config_path}: reference_model_configs must contain exactly one"
+            " uncompiled reference for each of the"
+            f" {len(model_configs)} production model configs."
         )
     reference_model_configs = tuple(
         _repo_path(value) for value in reference_model_configs_raw
@@ -370,14 +386,13 @@ def load_potential_performance_config(
                 f"{reference_model_config}."
             )
     initial_homogeneous_configs_raw = raw["initial_homogeneous_configs"]
-    if (
-        not isinstance(initial_homogeneous_configs_raw, list)
-        or len(initial_homogeneous_configs_raw) != len(model_configs)
-    ):
+    if not isinstance(initial_homogeneous_configs_raw, list) or len(
+        initial_homogeneous_configs_raw
+    ) != len(model_configs):
         raise TypeError(
-            f"{config_path}: initial_homogeneous_configs must contain exactly one "
-            f"model-specific immutable source config for each of the "
-            f"{len(model_configs)} production model configs."
+            f"{config_path}: initial_homogeneous_configs must contain exactly"
+            " one model-specific immutable source config for each of the"
+            f" {len(model_configs)} production model configs."
         )
     initial_homogeneous_configs = tuple(
         _repo_path(value) for value in initial_homogeneous_configs_raw
@@ -396,7 +411,8 @@ def load_potential_performance_config(
     random_seed = raw["random_seed"]
     if not isinstance(random_seed, int) or isinstance(random_seed, bool):
         raise TypeError(
-            f"{config_path}: random_seed must be an integer, got {random_seed!r}."
+            f"{config_path}: random_seed must be an integer, got"
+            f" {random_seed!r}."
         )
     return PotentialPerformanceConfig(
         model_configs=model_configs,
@@ -410,7 +426,9 @@ def load_potential_performance_config(
             raw["timestep_fs"], name="timestep_fs", path=config_path
         ),
         thermostat_time_fs=_positive_float(
-            raw["thermostat_time_fs"], name="thermostat_time_fs", path=config_path
+            raw["thermostat_time_fs"],
+            name="thermostat_time_fs",
+            path=config_path,
         ),
         barostat_time_fs=_positive_float(
             raw["barostat_time_fs"], name="barostat_time_fs", path=config_path
@@ -419,7 +437,9 @@ def load_potential_performance_config(
             raw["warmup_steps"], name="warmup_steps", path=config_path
         ),
         measurement_blocks=_positive_int(
-            raw["measurement_blocks"], name="measurement_blocks", path=config_path
+            raw["measurement_blocks"],
+            name="measurement_blocks",
+            path=config_path,
         ),
         steps_per_block=_positive_int(
             raw["steps_per_block"], name="steps_per_block", path=config_path
@@ -456,10 +476,13 @@ def summarize_block_timings(
             f"shape={values.shape}, values={values.tolist()}."
         )
     if np.any(values <= 0.0):
-        raise ValueError(f"Every block duration must be positive, got {values.tolist()}.")
+        raise ValueError(
+            f"Every block duration must be positive, got {values.tolist()}."
+        )
     if not isinstance(steps_per_block, int) or steps_per_block <= 0:
         raise TypeError(
-            f"steps_per_block must be a positive integer, got {steps_per_block!r}."
+            "steps_per_block must be a positive integer, got"
+            f" {steps_per_block!r}."
         )
     seconds_per_step = values / steps_per_block
     total_steps = int(len(values) * steps_per_block)
@@ -506,8 +529,12 @@ def _cuda_memory_peaks(device: str) -> dict[str, int] | None:
     _synchronize_cuda(device)
     cuda_device = torch.device(device)
     return {
-        "peak_allocated_bytes": int(torch.cuda.max_memory_allocated(cuda_device)),
-        "peak_reserved_bytes": int(torch.cuda.max_memory_reserved(cuda_device)),
+        "peak_allocated_bytes": int(
+            torch.cuda.max_memory_allocated(cuda_device)
+        ),
+        "peak_reserved_bytes": int(
+            torch.cuda.max_memory_reserved(cuda_device)
+        ),
     }
 
 
@@ -562,8 +589,9 @@ def _synchronize_cuda(device: str) -> None:
 
     if not torch.cuda.is_available():
         raise RuntimeError(
-            "Performance config requests device='cuda', but torch.cuda.is_available() "
-            "is false. Run this benchmark on the intended production GPU."
+            "Performance config requests device='cuda', but"
+            " torch.cuda.is_available() is false. Run this benchmark on the"
+            " intended production GPU."
         )
     torch.cuda.synchronize(torch.device(device))
 
@@ -636,8 +664,12 @@ def _numerical_parity(
 ) -> dict[str, Any]:
     reference_energy = float(reference["energy_eV"])
     production_energy = float(production["energy_eV"])
-    reference_forces = np.asarray(reference["forces_eV_per_A"], dtype=np.float64)
-    production_forces = np.asarray(production["forces_eV_per_A"], dtype=np.float64)
+    reference_forces = np.asarray(
+        reference["forces_eV_per_A"], dtype=np.float64
+    )
+    production_forces = np.asarray(
+        production["forces_eV_per_A"], dtype=np.float64
+    )
     reference_stress = np.asarray(reference["stress_GPa"], dtype=np.float64)
     production_stress = np.asarray(production["stress_GPa"], dtype=np.float64)
     expected_force_shape = (atom_count, 3)
@@ -652,8 +684,9 @@ def _numerical_parity(
         )
     if reference_stress.shape != (3, 3) or production_stress.shape != (3, 3):
         raise ValueError(
-            "Numerical parity requires exact full stress tensors with shape=(3, 3); "
-            f"reference={reference_stress.shape}, production={production_stress.shape}."
+            "Numerical parity requires exact full stress tensors with"
+            f" shape=(3, 3); reference={reference_stress.shape},"
+            f" production={production_stress.shape}."
         )
     if not (
         np.isfinite(reference_energy)
@@ -664,13 +697,11 @@ def _numerical_parity(
         and np.isfinite(production_stress).all()
     ):
         raise FloatingPointError(
-            "Reference/production energy, force, and stress values must all be finite "
-            "before numerical parity is evaluated."
+            "Reference/production energy, force, and stress values must all be"
+            " finite before numerical parity is evaluated."
         )
     energy_difference = (
-        1000.0
-        * abs(production_energy - reference_energy)
-        / atom_count
+        1000.0 * abs(production_energy - reference_energy) / atom_count
     )
     force_difference = production_forces - reference_forces
     stress_difference = production_stress - reference_stress
@@ -688,7 +719,8 @@ def _numerical_parity(
     }
     if not np.isfinite(list(metrics.values())).all():
         raise FloatingPointError(
-            f"Compiled/reference numerical parity produced non-finite metrics: {metrics}."
+            "Compiled/reference numerical parity produced non-finite metrics:"
+            f" {metrics}."
         )
     thresholds = {
         "energy_difference_meV_per_atom": (
@@ -748,7 +780,8 @@ def _benchmark_model(
     production_values = {
         "forces_eV_per_A": np.asarray(atoms.get_forces(), dtype=np.float64),
         "stress_GPa": (
-            np.asarray(atoms.get_stress(voigt=False), dtype=np.float64) / units.GPa
+            np.asarray(atoms.get_stress(voigt=False), dtype=np.float64)
+            / units.GPa
         ),
         "energy_eV": float(atoms.get_potential_energy()),
     }
@@ -764,7 +797,9 @@ def _benchmark_model(
     parity["production_evaluation_seconds"] = parity_evaluation_seconds
     require_numerical_parity(parity, runtime_name=runtime_name)
     rng = np.random.default_rng(config.random_seed)
-    MaxwellBoltzmannDistribution(atoms, temperature_K=config.temperature_K, rng=rng)
+    MaxwellBoltzmannDistribution(
+        atoms, temperature_K=config.temperature_K, rng=rng
+    )
     Stationary(atoms, preserve_temperature=True)
     dynamics = IsotropicMTKNPT(
         atoms,
@@ -802,7 +837,9 @@ def _benchmark_model(
             "atom_count": len(atoms),
             "final_temperature_K": float(atoms.get_temperature()),
             "final_pressure_GPa": float(
-                -np.trace(atoms.get_stress(voigt=False, include_ideal_gas=True))
+                -np.trace(
+                    atoms.get_stress(voigt=False, include_ideal_gas=True)
+                )
                 / 3.0
                 / units.GPa
             ),
@@ -849,7 +886,7 @@ def _runtime_generator_config(
             ]
         except KeyError as exc:
             raise ValueError(
-                f"Unsupported runtime reference kernel backend="
+                "Unsupported runtime reference kernel backend="
                 f"{reference_kernel_backend!r}; expected one of "
                 f"{sorted(REFERENCE_KERNEL_BACKENDS)}."
             ) from exc
@@ -887,9 +924,10 @@ def _load_performance_source(
 ) -> tuple[Any, dict[str, Any]]:
     if homogeneous.generator.config_path != expected_generator.config_path:
         raise RuntimeError(
-            f"{homogeneous.config_path}: source_generator_config must be the exact "
-            f"performance model config {expected_generator.config_path}, got "
-            f"{homogeneous.generator.config_path}."
+            f"{homogeneous.config_path}: source_generator_config must be the"
+            " exact performance model config"
+            f" {expected_generator.config_path}, got"
+            f" {homogeneous.generator.config_path}."
         )
     source = _load_source_liquid(homogeneous)
     source_manifest_path = homogeneous.source_dataset / "manifest.json"
@@ -902,16 +940,18 @@ def _load_performance_source(
         or source_manifest.get("interface_preparation_performed") is not False
     ):
         raise RuntimeError(
-            f"{source_manifest_path}: performance timing requires the dedicated "
-            "immutable liquid-only producer with "
-            "interface_preparation_performed=false."
+            f"{source_manifest_path}: performance timing requires the"
+            " dedicated immutable liquid-only producer with"
+            " interface_preparation_performed=false."
         )
     if not isinstance(source.atoms, Atoms) or not np.all(source.atoms.pbc):
         raise ValueError(
-            f"{homogeneous.config_path}: expected one fully periodic ASE Atoms source "
-            "frame."
+            f"{homogeneous.config_path}: expected one fully periodic ASE Atoms"
+            " source frame."
         )
-    source_directory = homogeneous.source_dataset / homogeneous.source_environment
+    source_directory = (
+        homogeneous.source_dataset / homogeneous.source_environment
+    )
     evidence = {
         "homogeneous_config": str(homogeneous.config_path),
         "homogeneous_config_sha256": _sha256(homogeneous.config_path),
@@ -944,8 +984,9 @@ def _validate_performance_workload(
         initial_atoms.numbers, expected_atoms.numbers
     ):
         raise RuntimeError(
-            f"{generator_config.config_path}: expected the exact repository-produced "
-            f"system with {len(expected_atoms)} atoms, observed {len(initial_atoms)}."
+            f"{generator_config.config_path}: expected the exact"
+            f" repository-produced system with {len(expected_atoms)} atoms,"
+            f" observed {len(initial_atoms)}."
         )
     dynamics = generator_config.dynamics
     protocol_values = {
@@ -968,8 +1009,9 @@ def _validate_performance_workload(
     }
     if mismatches:
         raise RuntimeError(
-            "Performance protocol must match the exact generator dynamics; "
-            f"model={generator_config.potential.model_name!r}, mismatches={mismatches}."
+            "Performance protocol must match the exact generator dynamics;"
+            f" model={generator_config.potential.model_name!r},"
+            f" mismatches={mismatches}."
         )
 
 
@@ -982,7 +1024,9 @@ def _runtime_variant_comparison(
     ranking = [
         {
             "name": variant.name,
-            "steps_per_second": float(results[variant.name]["steps_per_second"]),
+            "steps_per_second": float(
+                results[variant.name]["steps_per_second"]
+            ),
             "speedup_vs_baseline": float(
                 results[variant.name]["steps_per_second"] / baseline_speed
             ),
@@ -1000,7 +1044,9 @@ def _runtime_variant_comparison(
         }
         for variant in variants
     ]
-    ranking.sort(key=lambda row: (-float(row["steps_per_second"]), str(row["name"])))
+    ranking.sort(
+        key=lambda row: (-float(row["steps_per_second"]), str(row["name"]))
+    )
     return {
         "baseline_variant": baseline_name,
         "fastest_parity_passing_variant": ranking[0]["name"],
@@ -1021,7 +1067,9 @@ def _run_runtime_variants(
     homogeneous = load_homogeneous_crystallization_config(
         sweep.initial_homogeneous_config
     )
-    source, source_evidence = _load_performance_source(homogeneous, base_config)
+    source, source_evidence = _load_performance_source(
+        homogeneous, base_config
+    )
     initial_atoms = source.atoms
     _validate_performance_workload(base_config, initial_atoms, config)
     bad_atom_budgets = {
@@ -1050,9 +1098,11 @@ def _run_runtime_variants(
                 f"{sweep.reference_kernel_backend} numerical reference for "
                 f"neighbor_skin_A={variant.neighbor_skin_A:g}"
             )
-            reference_cache[variant.neighbor_skin_A] = _evaluate_reference_state(
-                initial_atoms,
-                generator_config=reference_config,
+            reference_cache[variant.neighbor_skin_A] = (
+                _evaluate_reference_state(
+                    initial_atoms,
+                    generator_config=reference_config,
+                )
             )
         reference_values, reference_evidence = reference_cache[
             variant.neighbor_skin_A
@@ -1079,7 +1129,9 @@ def _run_runtime_variants(
                 "variant": variant.to_dict(),
                 "variant_canonical_sha256": variant.canonical_sha256,
                 "base_generator_config": str(base_config.config_path),
-                "base_generator_config_sha256": _sha256(base_config.config_path),
+                "base_generator_config_sha256": _sha256(
+                    base_config.config_path
+                ),
                 "effective_calculator_settings": potential_calculator_settings(
                     variant_config.potential
                 ),
@@ -1099,8 +1151,8 @@ def run_potential_performance_benchmark(
 ) -> dict[str, Any]:
     if config.output_json.exists():
         raise FileExistsError(
-            f"Performance output already exists: {config.output_json}. Remove it "
-            "explicitly or choose a new output path."
+            f"Performance output already exists: {config.output_json}. Remove"
+            " it explicitly or choose a new output path."
         )
     cuda_math = _disable_tf32()
     generator_configs = [load_config(path) for path in config.model_configs]
@@ -1109,7 +1161,9 @@ def run_potential_performance_benchmark(
     ]
     model_names = [item.potential.model_name for item in generator_configs]
     if len(set(model_names)) != len(model_names):
-        raise ValueError(f"Performance model names must be unique, got {model_names}.")
+        raise ValueError(
+            f"Performance model names must be unique, got {model_names}."
+        )
     reference_by_name = {
         item.potential.model_name: item for item in reference_generator_configs
     }
@@ -1117,7 +1171,8 @@ def run_potential_performance_benchmark(
         reference_by_name
     ) != set(model_names):
         raise ValueError(
-            "reference_model_configs must contain the same unique model names as "
+            "reference_model_configs must contain the same unique model"
+            " names as "
             f"model_configs; production={model_names}, reference="
             f"{[item.potential.model_name for item in reference_generator_configs]}."
         )
@@ -1136,7 +1191,8 @@ def run_potential_performance_benchmark(
         initial_by_name
     ) != set(model_names):
         raise ValueError(
-            "initial_homogeneous_configs must contain the same unique model names as "
+            "initial_homogeneous_configs must contain the same unique model"
+            " names as "
             f"model_configs; production={model_names}, initial="
             f"{[item.generator.potential.model_name for item in initial_homogeneous_configs]}."
         )
@@ -1175,7 +1231,9 @@ def run_potential_performance_benchmark(
             if getattr(production_potential, field)
             != getattr(reference_potential, field)
         }
-        production_settings = potential_calculator_settings(production_potential)
+        production_settings = potential_calculator_settings(
+            production_potential
+        )
         reference_settings = potential_calculator_settings(reference_potential)
         numerical_setting_keys = {
             "device",
@@ -1196,10 +1254,11 @@ def run_potential_performance_benchmark(
         }
         if identity_mismatches or setting_mismatches:
             raise RuntimeError(
-                f"Production/reference configs for {production_potential.model_name!r} "
-                "may differ only by compilation and padding; "
-                f"identity_mismatches={identity_mismatches}, "
-                f"calculator_setting_mismatches={setting_mismatches}."
+                "Production/reference configs for"
+                f" {production_potential.model_name!r} may differ only by"
+                " compilation and padding;"
+                f" identity_mismatches={identity_mismatches},"
+                f" calculator_setting_mismatches={setting_mismatches}."
             )
         if (
             reference_potential.compile_mode is not None
@@ -1207,8 +1266,9 @@ def run_potential_performance_benchmark(
             or reference_potential.pad_num_edges != 0
         ):
             raise RuntimeError(
-                f"Reference config {reference_config.config_path} must be uncompiled and "
-                "unpadded for an independent numerical-parity baseline."
+                f"Reference config {reference_config.config_path} must be"
+                " uncompiled and unpadded for an independent numerical-parity"
+                " baseline."
             )
         if (
             production_potential.compile_mode is None
@@ -1216,9 +1276,10 @@ def run_potential_performance_benchmark(
             or production_potential.pad_num_edges <= 0
         ):
             raise RuntimeError(
-                f"Production config {generator_config.config_path} must use compiled "
-                f"execution with pad_num_atoms={len(initial_atoms)} and a positive fixed "
-                "edge budget."
+                f"Production config {generator_config.config_path} must use"
+                " compiled execution with"
+                f" pad_num_atoms={len(initial_atoms)} and a positive fixed"
+                " edge budget."
             )
     results: dict[str, Any] = {}
     for generator_config in generator_configs:
@@ -1261,7 +1322,9 @@ def run_potential_performance_benchmark(
         report["runtime_variants"] = runtime_variants
         report["runtime_variant_comparison"] = runtime_comparison
     config.output_json.parent.mkdir(parents=True, exist_ok=True)
-    temporary = config.output_json.with_suffix(config.output_json.suffix + ".tmp")
+    temporary = config.output_json.with_suffix(
+        config.output_json.suffix + ".tmp"
+    )
     with temporary.open("w", encoding="utf-8") as handle:
         json.dump(report, handle, indent=2, sort_keys=True, allow_nan=False)
         handle.write("\n")

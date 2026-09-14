@@ -53,45 +53,55 @@ def _load_trajectory(
         cells = np.asarray(trajectory["cell_vectors_A"], dtype=np.float64)
 
     if steps.ndim != 1:
-        raise ValueError(f"{resolved}: step must have shape (F,), got {steps.shape}.")
+        raise ValueError(
+            f"{resolved}: step must have shape (F,), got {steps.shape}."
+        )
     if positions.ndim != 3 or positions.shape[2] != 3:
         raise ValueError(
-            f"{resolved}: positions_A must have shape (F, N, 3), got {positions.shape}."
+            f"{resolved}: positions_A must have shape (F, N, 3), got"
+            f" {positions.shape}."
         )
     if cells.shape != (positions.shape[0], 3, 3):
         raise ValueError(
-            f"{resolved}: cell_vectors_A must have shape {(positions.shape[0], 3, 3)}, "
-            f"got {cells.shape}."
+            f"{resolved}: cell_vectors_A must have shape"
+            f" {(positions.shape[0], 3, 3)}, got {cells.shape}."
         )
     if steps.shape[0] != positions.shape[0]:
         raise ValueError(
-            f"{resolved}: step has {steps.shape[0]} frames but positions_A has "
-            f"{positions.shape[0]} frames."
+            f"{resolved}: step has {steps.shape[0]} frames but positions_A has"
+            f" {positions.shape[0]} frames."
         )
     if positions.shape[1] == 0:
         raise ValueError(f"{resolved}: trajectory contains zero atoms.")
     if np.any(np.diff(steps) <= 0):
         raise ValueError(
-            f"{resolved}: step values must be strictly increasing, got {steps.tolist()}."
+            f"{resolved}: step values must be strictly increasing, got"
+            f" {steps.tolist()}."
         )
     if not np.isfinite(positions).all():
-        raise ValueError(f"{resolved}: positions_A contains non-finite values.")
+        raise ValueError(
+            f"{resolved}: positions_A contains non-finite values."
+        )
     if not np.isfinite(cells).all():
-        raise ValueError(f"{resolved}: cell_vectors_A contains non-finite values.")
+        raise ValueError(
+            f"{resolved}: cell_vectors_A contains non-finite values."
+        )
 
     off_diagonal = cells.copy()
     off_diagonal[:, np.arange(3), np.arange(3)] = 0.0
     maximum_tilt = float(np.max(np.abs(off_diagonal)))
     if maximum_tilt > 1.0e-10:
         raise NotImplementedError(
-            "The temporal LAMMPS loader currently supports orthorhombic boxes only. "
-            f"{resolved} has maximum off-diagonal cell component {maximum_tilt:.6g} A."
+            "The temporal LAMMPS loader currently supports orthorhombic boxes"
+            f" only. {resolved} has maximum off-diagonal cell component"
+            f" {maximum_tilt:.6g} A."
         )
     lengths = np.diagonal(cells, axis1=1, axis2=2)
     if np.any(lengths <= 0.0):
         bad_frames = np.flatnonzero(np.any(lengths <= 0.0, axis=1)).tolist()
         raise ValueError(
-            f"{resolved}: non-positive orthorhombic cell lengths at frames {bad_frames}."
+            f"{resolved}: non-positive orthorhombic cell lengths at frames"
+            f" {bad_frames}."
         )
     return steps, positions, lengths
 
@@ -108,7 +118,8 @@ def _write_lammps_dump(
     resolved = output_path.expanduser().resolve()
     if resolved.exists() and not force:
         raise FileExistsError(
-            f"Output dump already exists: {resolved}. Pass --force to replace it."
+            f"Output dump already exists: {resolved}. Pass --force to"
+            " replace it."
         )
     if atom_type <= 0:
         raise ValueError(f"atom_type must be positive, got {atom_type}.")
@@ -126,7 +137,9 @@ def _write_lammps_dump(
     table[:, 1] = atom_types
 
     try:
-        with temporary.open("w", encoding="utf-8", buffering=1024 * 1024) as handle:
+        with temporary.open(
+            "w", encoding="utf-8", buffering=1024 * 1024
+        ) as handle:
             for frame_index, timestep in enumerate(steps.tolist()):
                 lengths = box_lengths[frame_index]
                 wrapped = np.mod(

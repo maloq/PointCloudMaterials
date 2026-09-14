@@ -49,53 +49,78 @@ class TemporalWindowBatchSampler(BatchSampler):
         shuffle_window_block_size: int | None = None,
         shared_center_order: bool = False,
     ) -> None:
-        super().__init__(sampler=sampler, batch_size=int(batch_size), drop_last=bool(drop_last))
+        super().__init__(
+            sampler=sampler,
+            batch_size=int(batch_size),
+            drop_last=bool(drop_last),
+        )
         self.sampler = _EpochTrackingSampler(self.sampler)
-        self.dataset = dataset if dataset is not None else self._resolve_dataset_from_sampler(sampler)
+        self.dataset = (
+            dataset
+            if dataset is not None
+            else self._resolve_dataset_from_sampler(sampler)
+        )
         self.shuffle_windows = bool(shuffle_windows)
         self.shuffle_centers = bool(shuffle_centers)
         self.shared_center_order = bool(shared_center_order)
         self.mixed_windows_per_batch = (
-            None if mixed_windows_per_batch is None else int(mixed_windows_per_batch)
+            None
+            if mixed_windows_per_batch is None
+            else int(mixed_windows_per_batch)
         )
         self.shuffle_window_block_size = (
-            None if shuffle_window_block_size is None else int(shuffle_window_block_size)
+            None
+            if shuffle_window_block_size is None
+            else int(shuffle_window_block_size)
         )
 
-        if self.mixed_windows_per_batch is not None and self.mixed_windows_per_batch <= 0:
+        if (
+            self.mixed_windows_per_batch is not None
+            and self.mixed_windows_per_batch <= 0
+        ):
             raise ValueError(
                 "mixed_windows_per_batch must be > 0 when provided, "
                 f"got {self.mixed_windows_per_batch}."
             )
-        if self.shuffle_window_block_size is not None and self.shuffle_window_block_size <= 0:
+        if (
+            self.shuffle_window_block_size is not None
+            and self.shuffle_window_block_size <= 0
+        ):
             raise ValueError(
                 "shuffle_window_block_size must be > 0 when provided, "
                 f"got {self.shuffle_window_block_size}."
             )
         if self.dataset is None:
             raise TypeError(
-                "TemporalWindowBatchSampler requires either dataset=... or a sampler exposing "
-                "a dataset via .dataset or .data_source."
+                "TemporalWindowBatchSampler requires either dataset=... or a"
+                " sampler exposing a dataset via .dataset or .data_source."
             )
-        if not hasattr(self.dataset, "window_count") or not hasattr(self.dataset, "center_count"):
+        if not hasattr(self.dataset, "window_count") or not hasattr(
+            self.dataset, "center_count"
+        ):
             raise TypeError(
-                "TemporalWindowBatchSampler requires a dataset exposing window_count and center_count. "
-                f"Got dataset={type(self.dataset)}."
+                "TemporalWindowBatchSampler requires a dataset exposing"
+                " window_count and center_count. Got"
+                f" dataset={type(self.dataset)}."
             )
         self.window_count = int(self.dataset.window_count)
         self.center_count = int(self.dataset.center_count)
         self.total_samples = int(len(self.dataset))
         if self.window_count <= 0 or self.center_count <= 0:
             raise ValueError(
-                "TemporalWindowBatchSampler requires a non-empty temporal dataset. "
-                f"window_count={self.window_count}, center_count={self.center_count}."
+                "TemporalWindowBatchSampler requires a non-empty temporal"
+                f" dataset. window_count={self.window_count},"
+                f" center_count={self.center_count}."
             )
         expected_total_samples = self.window_count * self.center_count
         if self.total_samples != expected_total_samples:
             raise ValueError(
-                "TemporalWindowBatchSampler requires a dense window-major temporal dataset layout. "
-                f"Expected len(dataset) == window_count * center_count, got len(dataset)={self.total_samples}, "
-                f"window_count={self.window_count}, center_count={self.center_count}."
+                "TemporalWindowBatchSampler requires a dense window-major"
+                " temporal dataset layout. Expected len(dataset) =="
+                " window_count * center_count, got"
+                f" len(dataset)={self.total_samples},"
+                f" window_count={self.window_count},"
+                f" center_count={self.center_count}."
             )
 
     @staticmethod
@@ -113,8 +138,8 @@ class TemporalWindowBatchSampler(BatchSampler):
             return 0, 1
         if rank < 0 or rank >= world_size:
             raise ValueError(
-                f"TemporalWindowBatchSampler received invalid distributed rank/world_size: "
-                f"rank={rank}, world_size={world_size}."
+                "TemporalWindowBatchSampler received invalid distributed"
+                f" rank/world_size: rank={rank}, world_size={world_size}."
             )
         return rank, world_size
 
@@ -164,7 +189,10 @@ class TemporalWindowBatchSampler(BatchSampler):
         for window_slot in window_order:
             window_offset = 0
             while window_offset < self.center_count:
-                take = min(self.batch_size - len(batch), self.center_count - window_offset)
+                take = min(
+                    self.batch_size - len(batch),
+                    self.center_count - window_offset,
+                )
                 batch.extend(
                     self._window_sample_indices(
                         window_slot,
@@ -186,7 +214,11 @@ class TemporalWindowBatchSampler(BatchSampler):
             return None
         if self.mixed_windows_per_batch is None:
             return None
-        resolved = min(self.window_count, self.batch_size, int(self.mixed_windows_per_batch))
+        resolved = min(
+            self.window_count,
+            self.batch_size,
+            int(self.mixed_windows_per_batch),
+        )
         if resolved <= 1:
             return None
         return resolved
@@ -211,8 +243,12 @@ class TemporalWindowBatchSampler(BatchSampler):
             total = math.ceil(len(window_slots) / world_size) * world_size
             sharded_slots = list(window_slots)
             if len(sharded_slots) < total:
-                sharded_slots.extend(sharded_slots[: total - len(sharded_slots)])
-        return [int(window_slot) for window_slot in sharded_slots[rank::world_size]]
+                sharded_slots.extend(
+                    sharded_slots[: total - len(sharded_slots)]
+                )
+        return [
+            int(window_slot) for window_slot in sharded_slots[rank::world_size]
+        ]
 
     def _blockwise_shuffled_window_slots(
         self,
@@ -220,20 +256,28 @@ class TemporalWindowBatchSampler(BatchSampler):
         *,
         generator: torch.Generator,
     ) -> list[int]:
-        ordered_slots = sorted(int(window_slot) for window_slot in window_slots)
+        ordered_slots = sorted(
+            int(window_slot) for window_slot in window_slots
+        )
         block_size = self.shuffle_window_block_size
         if block_size is None or block_size <= 1:
-            permutation = torch.randperm(len(ordered_slots), generator=generator).tolist()
+            permutation = torch.randperm(
+                len(ordered_slots), generator=generator
+            ).tolist()
             return [int(ordered_slots[idx]) for idx in permutation]
 
         blocks = [
             ordered_slots[pos : pos + block_size]
             for pos in range(0, len(ordered_slots), block_size)
         ]
-        block_permutation = torch.randperm(len(blocks), generator=generator).tolist()
+        block_permutation = torch.randperm(
+            len(blocks), generator=generator
+        ).tolist()
         shuffled: list[int] = []
         for block_idx in block_permutation:
-            shuffled.extend(int(window_slot) for window_slot in blocks[block_idx])
+            shuffled.extend(
+                int(window_slot) for window_slot in blocks[block_idx]
+            )
         return shuffled
 
     def _window_sample_indices(
@@ -256,10 +300,16 @@ class TemporalWindowBatchSampler(BatchSampler):
         if not self.shuffle_centers:
             return list(range(base_index + offset, base_index + end))
 
-        cache_key = "__shared__" if self.shared_center_order else int(window_slot)
+        cache_key = (
+            "__shared__" if self.shared_center_order else int(window_slot)
+        )
         center_order = center_order_cache.get(cache_key)
         if center_order is None:
-            salt = 1_000_003 if self.shared_center_order else 1_000_003 + int(window_slot)
+            salt = (
+                1_000_003
+                if self.shared_center_order
+                else 1_000_003 + int(window_slot)
+            )
             center_order = torch.randperm(
                 self.center_count,
                 generator=self._generator(salt=salt),
@@ -277,7 +327,9 @@ class TemporalWindowBatchSampler(BatchSampler):
             yield from self._iter_window_grouped_batches()
             return
 
-        window_queue: deque[int] = deque(int(window_slot) for window_slot in window_order)
+        window_queue: deque[int] = deque(
+            int(window_slot) for window_slot in window_order
+        )
         window_offsets = {int(window_slot): 0 for window_slot in window_order}
         center_order_cache: dict[int, torch.Tensor] = {}
         produced_samples = 0
@@ -293,13 +345,18 @@ class TemporalWindowBatchSampler(BatchSampler):
             safety_rounds = 0
             while len(batch) < target_batch_size:
                 active_windows: list[int] = []
-                while window_queue and len(active_windows) < resolved_mix_windows:
+                while (
+                    window_queue and len(active_windows) < resolved_mix_windows
+                ):
                     active_windows.append(int(window_queue.popleft()))
                 if not active_windows:
                     raise RuntimeError(
-                        "TemporalWindowBatchSampler could not assemble a mixed-window batch "
-                        f"with target_batch_size={target_batch_size}, produced={produced_samples}, "
-                        f"window_count={self.window_count}, center_count={self.center_count}."
+                        "TemporalWindowBatchSampler could not assemble a"
+                        " mixed-window batch with"
+                        f" target_batch_size={target_batch_size},"
+                        f" produced={produced_samples},"
+                        f" window_count={self.window_count},"
+                        f" center_count={self.center_count}."
                     )
 
                 need = target_batch_size - len(batch)
@@ -331,15 +388,18 @@ class TemporalWindowBatchSampler(BatchSampler):
                 safety_rounds += 1
                 if safety_rounds > len(window_order) + 1:
                     raise RuntimeError(
-                        "TemporalWindowBatchSampler exceeded the expected number of refill rounds "
-                        f"while assembling a batch. target_batch_size={target_batch_size}, "
-                        f"current_batch_size={len(batch)}, mix_windows={mix_windows}."
+                        "TemporalWindowBatchSampler exceeded the expected"
+                        " number of refill rounds while assembling a batch."
+                        f" target_batch_size={target_batch_size},"
+                        f" current_batch_size={len(batch)},"
+                        f" mix_windows={mix_windows}."
                     )
 
             if len(batch) != target_batch_size:
                 raise RuntimeError(
-                    "TemporalWindowBatchSampler assembled an unexpected batch size. "
-                    f"expected={target_batch_size}, got={len(batch)}, produced={produced_samples}."
+                    "TemporalWindowBatchSampler assembled an unexpected batch"
+                    f" size. expected={target_batch_size}, got={len(batch)},"
+                    f" produced={produced_samples}."
                 )
 
             produced_samples += len(batch)

@@ -85,7 +85,9 @@ def _repo_path(value: Any) -> Path:
 def _mapping(raw: dict[str, Any], key: str, path: Path) -> dict[str, Any]:
     value = raw.get(key)
     if not isinstance(value, dict):
-        raise TypeError(f"{path}: {key} must be a mapping, got {type(value).__name__}.")
+        raise TypeError(
+            f"{path}: {key} must be a mapping, got {type(value).__name__}."
+        )
     return value
 
 
@@ -113,7 +115,9 @@ def _nonnegative_float(value: Any, context: str, path: Path) -> float:
 
 def _positive_int(value: Any, context: str, path: Path) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-        raise ValueError(f"{path}: {context} must be a positive integer, got {value!r}.")
+        raise ValueError(
+            f"{path}: {context} must be a positive integer, got {value!r}."
+        )
     return value
 
 
@@ -146,16 +150,18 @@ def _branch(
     )
     context = f"temperature_runs[{index}]"
     name = str(raw["name"])
-    if not name or not all(character.isalnum() or character in "_-" for character in name):
+    if not name or not all(
+        character.isalnum() or character in "_-" for character in name
+    ):
         raise ValueError(
-            f"{path}: {context}.name must be a non-empty filesystem-safe identifier, "
-            f"got {name!r}."
+            f"{path}: {context}.name must be a non-empty filesystem-safe"
+            f" identifier, got {name!r}."
         )
     expected_direction = str(raw["expected_direction"])
     if expected_direction not in {"growth", "melting", "unconstrained"}:
         raise ValueError(
-            f"{path}: {context}.expected_direction must be 'growth', 'melting', or "
-            f"'unconstrained', got {expected_direction!r}."
+            f"{path}: {context}.expected_direction must be 'growth',"
+            f" 'melting', or 'unconstrained', got {expected_direction!r}."
         )
     equilibration_steps = _positive_int(
         raw["equilibration_steps"], f"{context}.equilibration_steps", path
@@ -164,37 +170,45 @@ def _branch(
         raw["production_steps"], f"{context}.production_steps", path
     )
     steady_state_start_step = _positive_int(
-        raw["steady_state_start_step"], f"{context}.steady_state_start_step", path
+        raw["steady_state_start_step"],
+        f"{context}.steady_state_start_step",
+        path,
     )
     steady_state_end_step = _positive_int(
         raw["steady_state_end_step"], f"{context}.steady_state_end_step", path
     )
     if steady_state_start_step >= steady_state_end_step:
         raise ValueError(
-            f"{path}: {context}.steady_state_start_step must be below "
-            f"{context}.steady_state_end_step, got {steady_state_start_step} and "
-            f"{steady_state_end_step}."
+            f"{path}: {context}.steady_state_start_step must be below"
+            f" {context}.steady_state_end_step, got"
+            f" {steady_state_start_step} and {steady_state_end_step}."
         )
     if steady_state_end_step > production_steps:
         raise ValueError(
-            f"{path}: {context}.steady_state_end_step={steady_state_end_step} exceeds "
-            f"{context}.production_steps={production_steps}."
+            f"{path}:"
+            f" {context}.steady_state_end_step={steady_state_end_step} exceeds"
+            f" {context}.production_steps={production_steps}."
         )
     minimum_fraction_change = _nonnegative_float(
         raw["minimum_crystalline_fraction_change"],
         f"{context}.minimum_crystalline_fraction_change",
         path,
     )
-    if expected_direction == "unconstrained" and minimum_fraction_change != 0.0:
+    if (
+        expected_direction == "unconstrained"
+        and minimum_fraction_change != 0.0
+    ):
         raise ValueError(
-            f"{path}: {context}.minimum_crystalline_fraction_change must be 0 when "
-            "expected_direction='unconstrained', got "
-            f"{minimum_fraction_change}."
+            f"{path}: {context}.minimum_crystalline_fraction_change must be 0"
+            " when expected_direction='unconstrained', got"
+            f" {minimum_fraction_change}."
         )
     return TransitionBranchConfig(
         name=name,
         expected_direction=expected_direction,
-        temperature_K=_positive_float(raw["temperature_K"], f"{context}.temperature_K", path),
+        temperature_K=_positive_float(
+            raw["temperature_K"], f"{context}.temperature_K", path
+        ),
         equilibration_steps=equilibration_steps,
         production_steps=production_steps,
         steady_state_start_step=steady_state_start_step,
@@ -228,10 +242,13 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
     )
     generator = load_config(_repo_path(raw["source_generator_config"]))
     temperature_runs_raw = raw["temperature_runs"]
-    if not isinstance(temperature_runs_raw, list) or len(temperature_runs_raw) < 2:
+    if (
+        not isinstance(temperature_runs_raw, list)
+        or len(temperature_runs_raw) < 2
+    ):
         raise TypeError(
-            f"{config_path}: temperature_runs must be a list with at least two mappings, "
-            f"got {temperature_runs_raw!r}."
+            f"{config_path}: temperature_runs must be a list with at least two"
+            f" mappings, got {temperature_runs_raw!r}."
         )
     if any(not isinstance(item, dict) for item in temperature_runs_raw):
         raise TypeError(
@@ -244,21 +261,31 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
     names = [branch.name for branch in temperature_runs]
     temperatures = [branch.temperature_K for branch in temperature_runs]
     if len(set(names)) != len(names):
-        raise ValueError(f"{config_path}: temperature_runs names must be unique, got {names}.")
+        raise ValueError(
+            f"{config_path}: temperature_runs names must be unique, got"
+            f" {names}."
+        )
     if len(set(temperatures)) != len(temperatures):
         raise ValueError(
-            f"{config_path}: temperature_runs temperatures must be unique, got {temperatures}."
+            f"{config_path}: temperature_runs temperatures must be unique, got"
+            f" {temperatures}."
         )
     if temperatures != sorted(temperatures):
         raise ValueError(
-            f"{config_path}: temperature_runs must be sorted by temperature_K, got "
-            f"{temperatures}."
+            f"{config_path}: temperature_runs must be sorted by temperature_K,"
+            f" got {temperatures}."
         )
-    constrained_directions = {branch.expected_direction for branch in temperature_runs}
-    if "growth" not in constrained_directions or "melting" not in constrained_directions:
+    constrained_directions = {
+        branch.expected_direction for branch in temperature_runs
+    }
+    if (
+        "growth" not in constrained_directions
+        or "melting" not in constrained_directions
+    ):
         raise ValueError(
-            f"{config_path}: temperature_runs must include at least one expected growth run "
-            "and one expected melting run to verify that the grid brackets a direction change."
+            f"{config_path}: temperature_runs must include at least one"
+            " expected growth run and one expected melting run to verify that"
+            " the grid brackets a direction change."
         )
     highest_growth_temperature = max(
         branch.temperature_K
@@ -272,9 +299,10 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
     )
     if highest_growth_temperature >= lowest_melting_temperature:
         raise ValueError(
-            f"{config_path}: every expected growth temperature must be below every expected "
-            f"melting temperature, got highest growth={highest_growth_temperature} K and "
-            f"lowest melting={lowest_melting_temperature} K."
+            f"{config_path}: every expected growth temperature must be below"
+            " every expected melting temperature, got highest"
+            f" growth={highest_growth_temperature} K and lowest"
+            f" melting={lowest_melting_temperature} K."
         )
     validate_potential_qualification(
         generator,
@@ -282,36 +310,45 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
         pressure_GPa=generator.dynamics.pressure_GPa,
         timestep_fs=generator.dynamics.timestep_fs,
         state_temperatures_K={
-            "interface": tuple(branch.temperature_K for branch in temperature_runs)
+            "interface": tuple(
+                branch.temperature_K for branch in temperature_runs
+            )
         },
         context=f"{config_path}: direct-coexistence temperature grid",
         required_claim="equilibrium_thermodynamics",
     )
     source_frame_step = raw["source_frame_step"]
-    if not isinstance(source_frame_step, int) or isinstance(source_frame_step, bool):
+    if not isinstance(source_frame_step, int) or isinstance(
+        source_frame_step, bool
+    ):
         raise TypeError(
             f"{config_path}: source_frame_step must be an integer, got "
             f"{source_frame_step!r}."
         )
     if source_frame_step < 0:
         raise ValueError(
-            f"{config_path}: source_frame_step must be >= 0, got {source_frame_step}."
+            f"{config_path}: source_frame_step must be >= 0, got"
+            f" {source_frame_step}."
         )
     random_seeds_raw = raw["random_seeds"]
     if not isinstance(random_seeds_raw, list) or len(random_seeds_raw) < 2:
         raise TypeError(
-            f"{config_path}: random_seeds must contain at least two independent replicas so "
-            "front-velocity uncertainty is defined, got "
-            f"{random_seeds_raw!r}."
+            f"{config_path}: random_seeds must contain at least two"
+            " independent replicas so front-velocity uncertainty is defined,"
+            f" got {random_seeds_raw!r}."
         )
-    if any(not isinstance(seed, int) or isinstance(seed, bool) for seed in random_seeds_raw):
+    if any(
+        not isinstance(seed, int) or isinstance(seed, bool)
+        for seed in random_seeds_raw
+    ):
         raise TypeError(
             f"{config_path}: every random_seeds entry must be an integer, got "
             f"{random_seeds_raw!r}."
         )
     if len(set(random_seeds_raw)) != len(random_seeds_raw):
         raise ValueError(
-            f"{config_path}: random_seeds must be unique, got {random_seeds_raw!r}."
+            f"{config_path}: random_seeds must be unique, got"
+            f" {random_seeds_raw!r}."
         )
     sample_interval = _positive_int(
         raw["sample_interval"], "sample_interval", config_path
@@ -324,9 +361,10 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
         ):
             if step % sample_interval:
                 raise ValueError(
-                    f"{config_path}: {branch.name}.{field_name}={step} must be divisible by "
-                    f"sample_interval={sample_interval} so the equilibration boundary and "
-                    "velocity-fit endpoints are stored exactly."
+                    f"{config_path}: {branch.name}.{field_name}={step} must be"
+                    f" divisible by sample_interval={sample_interval} so the"
+                    " equilibration boundary and velocity-fit endpoints are"
+                    " stored exactly."
                 )
     output_raw = _mapping(raw, "output", config_path)
     _reject_unknown(
@@ -365,8 +403,9 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
         )
     if profile_smoothing_bins > profile_bins:
         raise ValueError(
-            f"{config_path}: analysis.profile_smoothing_bins={profile_smoothing_bins} "
-            f"exceeds analysis.profile_bins={profile_bins}."
+            f"{config_path}:"
+            f" analysis.profile_smoothing_bins={profile_smoothing_bins} exceeds"
+            f" analysis.profile_bins={profile_bins}."
         )
     minimum_profile_contrast = _positive_float(
         analysis_raw["minimum_profile_contrast"],
@@ -375,8 +414,8 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
     )
     if minimum_profile_contrast >= 1.0:
         raise ValueError(
-            f"{config_path}: analysis.minimum_profile_contrast must be below 1, got "
-            f"{minimum_profile_contrast}."
+            f"{config_path}: analysis.minimum_profile_contrast must be below"
+            f" 1, got {minimum_profile_contrast}."
         )
     ptm_rmsd_cutoff = _positive_float(
         analysis_raw["ptm_rmsd_cutoff"],
@@ -385,8 +424,8 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
     )
     if ptm_rmsd_cutoff > 1.0:
         raise ValueError(
-            f"{config_path}: analysis.ptm_rmsd_cutoff is a dimensionless normalized RMSD "
-            f"and must be <= 1, got {ptm_rmsd_cutoff}."
+            f"{config_path}: analysis.ptm_rmsd_cutoff is a dimensionless"
+            f" normalized RMSD and must be <= 1, got {ptm_rmsd_cutoff}."
         )
     minimum_velocity_fit_r_squared = _nonnegative_float(
         analysis_raw["minimum_velocity_fit_r_squared"],
@@ -395,8 +434,8 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
     )
     if minimum_velocity_fit_r_squared > 1.0:
         raise ValueError(
-            f"{config_path}: analysis.minimum_velocity_fit_r_squared must be <= 1, got "
-            f"{minimum_velocity_fit_r_squared}."
+            f"{config_path}: analysis.minimum_velocity_fit_r_squared must be"
+            f" <= 1, got {minimum_velocity_fit_r_squared}."
         )
     config = TransitionConfig(
         dataset_name=str(raw["dataset_name"]),
@@ -412,7 +451,9 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
             minimum_profile_contrast=minimum_profile_contrast,
             minimum_velocity_fit_r_squared=minimum_velocity_fit_r_squared,
             rdf_cutoff_A=_positive_float(
-                analysis_raw["rdf_cutoff_A"], "analysis.rdf_cutoff_A", config_path
+                analysis_raw["rdf_cutoff_A"],
+                "analysis.rdf_cutoff_A",
+                config_path,
             ),
             rdf_bins=_positive_int(
                 analysis_raw["rdf_bins"], "analysis.rdf_bins", config_path
@@ -421,7 +462,9 @@ def load_transition_config(path: str | Path) -> TransitionConfig:
         temperature_runs=temperature_runs,
         output=TransitionOutputConfig(
             root_dir=_repo_path(output_raw["root_dir"]),
-            overwrite=_boolean(output_raw["overwrite"], "output.overwrite", config_path),
+            overwrite=_boolean(
+                output_raw["overwrite"], "output.overwrite", config_path
+            ),
             save_extxyz=_boolean(
                 output_raw["save_extxyz"], "output.save_extxyz", config_path
             ),

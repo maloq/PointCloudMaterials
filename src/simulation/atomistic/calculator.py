@@ -17,7 +17,6 @@ from mace import data as mace_data
 from mace.calculators import MACECalculator
 from mace.tools import torch_geometric, torch_tools
 
-
 MACE_TORCH_VERSION = "0.3.16"
 LEGACY_UNCOMPILED_MACE_TORCH_VERSION = "0.3.15"
 SUPPORTED_COMPILE_MODES = {
@@ -101,28 +100,32 @@ class VerletSkinMACECalculator(MACECalculator):
         }
         if installed_mace not in supported_versions:
             raise RuntimeError(
-                "VerletSkinMACECalculator supports mace-torch "
-                f"{MACE_TORCH_VERSION}, plus the explicitly constrained uncompiled legacy "
-                f"version {LEGACY_UNCOMPILED_MACE_TORCH_VERSION}; the active environment "
-                f"contains {installed_mace}. Install requirements.txt in a fresh "
-                "environment rather than running against an unreviewed private API."
+                "VerletSkinMACECalculator supports mace-torch"
+                f" {MACE_TORCH_VERSION}, plus the explicitly constrained"
+                " uncompiled legacy version"
+                f" {LEGACY_UNCOMPILED_MACE_TORCH_VERSION}; the active"
+                f" environment contains {installed_mace}. Install"
+                " requirements.txt in a fresh environment rather than running"
+                " against an unreviewed private API."
             )
         if not isinstance(neighbor_skin_A, (int, float)) or isinstance(
             neighbor_skin_A, bool
         ):
             raise TypeError(
-                f"neighbor_skin_A must be an explicit number, got {neighbor_skin_A!r}."
+                "neighbor_skin_A must be an explicit number, got"
+                f" {neighbor_skin_A!r}."
             )
         if not math.isfinite(neighbor_skin_A) or neighbor_skin_A <= 0.0:
             raise ValueError(
-                f"neighbor_skin_A must be finite and > 0, got {neighbor_skin_A!r}."
+                "neighbor_skin_A must be finite and > 0, got"
+                f" {neighbor_skin_A!r}."
             )
         if not isinstance(md_property_mode, str) or (
             md_property_mode not in SUPPORTED_MD_PROPERTY_MODES
         ):
             raise ValueError(
-                f"md_property_mode={md_property_mode!r} is unsupported; expected one of "
-                f"{sorted(SUPPORTED_MD_PROPERTY_MODES)}."
+                f"md_property_mode={md_property_mode!r} is unsupported;"
+                f" expected one of {sorted(SUPPORTED_MD_PROPERTY_MODES)}."
             )
         if autocast_dtype not in {None, "bfloat16"}:
             raise ValueError(
@@ -137,48 +140,58 @@ class VerletSkinMACECalculator(MACECalculator):
                     "BF16 autocast requires default_dtype='float32', got "
                     f"{configured_default_dtype!r}."
                 )
-            if not isinstance(configured_device, str) or not configured_device.startswith(
-                "cuda"
-            ):
+            if not isinstance(
+                configured_device, str
+            ) or not configured_device.startswith("cuda"):
                 raise ValueError(
                     "BF16 autocast requires a CUDA device, got "
                     f"device={configured_device!r}."
                 )
             if not enable_cueq or enable_oeq:
                 raise ValueError(
-                    "BF16 autocast is implemented only for the CuEq backend: set "
-                    "enable_cueq=true and enable_oeq=false."
+                    "BF16 autocast is implemented only for the CuEq backend:"
+                    " set enable_cueq=true and enable_oeq=false."
                 )
             if compile_mode is not None:
                 raise ValueError(
-                    "BF16 interaction autocast has not been qualified with torch.compile; "
-                    "set compile_mode=null."
+                    "BF16 interaction autocast has not been qualified with"
+                    " torch.compile; set compile_mode=null."
                 )
         if compile_mode is not None and (
             not isinstance(compile_mode, str)
             or compile_mode not in SUPPORTED_COMPILE_MODES
         ):
             raise ValueError(
-                f"compile_mode={compile_mode!r} is unsupported; expected null or one of "
-                f"{sorted(SUPPORTED_COMPILE_MODES)}."
+                f"compile_mode={compile_mode!r} is unsupported; expected null"
+                f" or one of {sorted(SUPPORTED_COMPILE_MODES)}."
             )
-        if not isinstance(pad_num_atoms, int) or isinstance(pad_num_atoms, bool):
+        if not isinstance(pad_num_atoms, int) or isinstance(
+            pad_num_atoms, bool
+        ):
             raise TypeError(
-                f"pad_num_atoms must be a nonnegative integer, got {pad_num_atoms!r}."
+                "pad_num_atoms must be a nonnegative integer, got"
+                f" {pad_num_atoms!r}."
             )
         if pad_num_atoms < 0:
             raise ValueError(
                 f"pad_num_atoms must be >= 0, got {pad_num_atoms}."
             )
-        if not isinstance(pad_num_edges, int) or isinstance(pad_num_edges, bool):
+        if not isinstance(pad_num_edges, int) or isinstance(
+            pad_num_edges, bool
+        ):
             raise TypeError(
-                f"pad_num_edges must be a nonnegative integer, got {pad_num_edges!r}."
+                "pad_num_edges must be a nonnegative integer, got"
+                f" {pad_num_edges!r}."
             )
         if pad_num_edges < 0:
-            raise ValueError(f"pad_num_edges must be >= 0, got {pad_num_edges}.")
+            raise ValueError(
+                f"pad_num_edges must be >= 0, got {pad_num_edges}."
+            )
         if not isinstance(fullgraph, bool):
             raise TypeError(f"fullgraph must be a boolean, got {fullgraph!r}.")
-        if not isinstance(enable_cueq, bool) or not isinstance(enable_oeq, bool):
+        if not isinstance(enable_cueq, bool) or not isinstance(
+            enable_oeq, bool
+        ):
             raise TypeError(
                 "enable_cueq and enable_oeq must be booleans, got "
                 f"enable_cueq={enable_cueq!r}, enable_oeq={enable_oeq!r}."
@@ -189,20 +202,27 @@ class VerletSkinMACECalculator(MACECalculator):
                 f"compile_mode=None, pad_num_atoms={pad_num_atoms}, "
                 f"pad_num_edges={pad_num_edges}."
             )
-        if compile_mode is not None and (pad_num_atoms == 0 or pad_num_edges == 0):
+        if compile_mode is not None and (
+            pad_num_atoms == 0 or pad_num_edges == 0
+        ):
             raise ValueError(
-                "Compiled MACE requires explicit positive fixed-shape budgets for both "
-                f"atoms and edges; got pad_num_atoms={pad_num_atoms}, "
-                f"pad_num_edges={pad_num_edges}. Automatic padding growth is forbidden "
-                "because it causes expensive, difficult-to-audit recompilation."
+                "Compiled MACE requires explicit positive fixed-shape budgets"
+                " for both atoms and edges; got"
+                f" pad_num_atoms={pad_num_atoms},"
+                f" pad_num_edges={pad_num_edges}. Automatic padding growth is"
+                " forbidden because it causes expensive, difficult-to-audit"
+                " recompilation."
             )
         if fullgraph and (enable_cueq or enable_oeq):
             raise ValueError(
-                "mace-torch 0.3.16 compiles accelerated CuEq/OEq kernels with "
-                "fullgraph=False. Set compile_fullgraph=false explicitly instead of "
-                "requesting an option the upstream calculator ignores."
+                "mace-torch 0.3.16 compiles accelerated CuEq/OEq kernels with"
+                " fullgraph=False. Set compile_fullgraph=false explicitly"
+                " instead of requesting an option the upstream calculator"
+                " ignores."
             )
-        legacy_uncompiled = installed_mace == LEGACY_UNCOMPILED_MACE_TORCH_VERSION
+        legacy_uncompiled = (
+            installed_mace == LEGACY_UNCOMPILED_MACE_TORCH_VERSION
+        )
         if legacy_uncompiled and (
             compile_mode is not None
             or enable_oeq
@@ -211,18 +231,25 @@ class VerletSkinMACECalculator(MACECalculator):
             or pad_num_edges != 0
         ):
             raise RuntimeError(
-                f"mace-torch {LEGACY_UNCOMPILED_MACE_TORCH_VERSION} is permitted only for "
-                "the existing uncompiled zero-padding e3nn/CuEq path. Requested settings "
-                f"were compile_mode={compile_mode!r}, enable_oeq={enable_oeq}, "
-                f"pad_num_atoms={pad_num_atoms}, pad_num_edges={pad_num_edges}. Install "
-                f"mace-torch {MACE_TORCH_VERSION} for fixed-shape compilation or OEq/hybrid."
+                f"mace-torch {LEGACY_UNCOMPILED_MACE_TORCH_VERSION} is"
+                " permitted only for the existing uncompiled zero-padding"
+                " e3nn/CuEq path. Requested settings were"
+                f" compile_mode={compile_mode!r}, enable_oeq={enable_oeq},"
+                f" pad_num_atoms={pad_num_atoms},"
+                f" pad_num_edges={pad_num_edges}. Install mace-torch"
+                f" {MACE_TORCH_VERSION} for fixed-shape compilation or"
+                " OEq/hybrid."
             )
         legacy_default_dtype = kwargs.get("default_dtype")
-        if legacy_uncompiled and legacy_default_dtype not in {"float32", "float64"}:
+        if legacy_uncompiled and legacy_default_dtype not in {
+            "float32",
+            "float64",
+        }:
             raise ValueError(
-                f"The reviewed mace-torch {LEGACY_UNCOMPILED_MACE_TORCH_VERSION} path "
-                "requires an explicit default_dtype='float32' or 'float64', got "
-                f"{legacy_default_dtype!r}."
+                "The reviewed mace-torch"
+                f" {LEGACY_UNCOMPILED_MACE_TORCH_VERSION} path requires an"
+                " explicit default_dtype='float32' or 'float64', got"
+                f" {legacy_default_dtype!r}."
             )
 
         self.neighbor_skin_A = float(neighbor_skin_A)
@@ -253,35 +280,43 @@ class VerletSkinMACECalculator(MACECalculator):
                 pad_num_edges=pad_num_edges,
                 **kwargs,
             )
-        if self.autocast_dtype == "bfloat16" and not torch.cuda.is_bf16_supported():
+        if (
+            self.autocast_dtype == "bfloat16"
+            and not torch.cuda.is_bf16_supported()
+        ):
             raise RuntimeError(
-                f"CUDA device {self.device} does not report native BF16 support. "
-                "Refusing to label an emulated or unsupported execution as BF16."
+                f"CUDA device {self.device} does not report native BF16"
+                " support. Refusing to label an emulated or unsupported"
+                " execution as BF16."
             )
         if self.autocast_dtype == "bfloat16":
             for model in self.models:
                 interactions = getattr(model, "interactions", None)
                 if not isinstance(interactions, torch.nn.ModuleList):
                     raise TypeError(
-                        "BF16 interaction autocast requires a MACE model with an explicit "
-                        f"ModuleList of interaction blocks, got {type(interactions).__name__}."
+                        "BF16 interaction autocast requires a MACE model with"
+                        " an explicit ModuleList of interaction blocks, got"
+                        f" {type(interactions).__name__}."
                     )
                 if len(interactions) != 2:
                     raise ValueError(
-                        "The reviewed BF16 policy is specific to the two-interaction "
-                        f"MACE-MPA-0-medium checkpoint, got {len(interactions)} interactions."
+                        "The reviewed BF16 policy is specific to the"
+                        " two-interaction MACE-MPA-0-medium checkpoint, got"
+                        f" {len(interactions)} interactions."
                     )
                 interactions[1] = _BF16InteractionAutocast(interactions[1])
         if self.model_type != "MACE":
             raise TypeError(
-                "VerletSkinMACECalculator supports the repository's energy/force/stress "
-                f"MACE models only, got model_type={self.model_type!r}."
+                "VerletSkinMACECalculator supports the repository's"
+                " energy/force/stress MACE models only, got"
+                f" model_type={self.model_type!r}."
             )
         if self.num_models != 1:
             raise ValueError(
-                "Repository MD uses one checksum-bound MACE Hamiltonian at a time; "
-                f"calculator loaded num_models={self.num_models}. Committee output and "
-                "its additional transfers are intentionally unsupported by the fast path."
+                "Repository MD uses one checksum-bound MACE Hamiltonian at a"
+                f" time; calculator loaded num_models={self.num_models}."
+                " Committee output and its additional transfers are"
+                " intentionally unsupported by the fast path."
             )
 
         self.graph_rebuild_count = 0
@@ -314,7 +349,10 @@ class VerletSkinMACECalculator(MACECalculator):
     def set_md_property_mode(self, mode: str) -> None:
         """Select the exact property pair used by subsequent MD evaluations."""
 
-        if not isinstance(mode, str) or mode not in SUPPORTED_MD_PROPERTY_MODES:
+        if (
+            not isinstance(mode, str)
+            or mode not in SUPPORTED_MD_PROPERTY_MODES
+        ):
             raise ValueError(
                 f"md_property_mode={mode!r} is unsupported; expected one of "
                 f"{sorted(SUPPORTED_MD_PROPERTY_MODES)}."
@@ -425,7 +463,8 @@ class VerletSkinMACECalculator(MACECalculator):
             raise ValueError("MACE MD received an empty Atoms object.")
         if cell_A.shape != (3, 3):
             raise ValueError(
-                f"MACE MD requires cell shape=(3, 3), got shape={cell_A.shape}."
+                "MACE MD requires cell shape=(3, 3), got"
+                f" shape={cell_A.shape}."
             )
         self.graph_request_count += 1
         current_pbc = np.asarray(atoms.pbc, dtype=bool)
@@ -470,7 +509,8 @@ class VerletSkinMACECalculator(MACECalculator):
         reference_pbc = self._reference_pbc
         if reference_scaled_positions is None or reference_pbc is None:
             raise RuntimeError(
-                "Cannot canonicalize periodic positions without a cached reference graph."
+                "Cannot canonicalize periodic positions without a cached"
+                " reference graph."
             )
         try:
             current_scaled_positions = np.linalg.solve(
@@ -478,7 +518,8 @@ class VerletSkinMACECalculator(MACECalculator):
             ).T
         except np.linalg.LinAlgError as exc:
             raise ValueError(
-                f"Cannot canonicalize positions for singular cell_A={cell_A.tolist()}."
+                "Cannot canonicalize positions for singular"
+                f" cell_A={cell_A.tolist()}."
             ) from exc
         image_offsets = np.zeros_like(current_scaled_positions)
         image_offsets[:, reference_pbc] = np.rint(
@@ -501,16 +542,18 @@ class VerletSkinMACECalculator(MACECalculator):
             deformation = np.linalg.solve(reference_cell_A, cell_A)
         except np.linalg.LinAlgError as exc:
             raise ValueError(
-                "Cannot validate the cached neighbor graph because its reference cell is "
-                f"singular: reference_cell_A={reference_cell_A.tolist()}."
+                "Cannot validate the cached neighbor graph because its"
+                " reference cell is singular:"
+                f" reference_cell_A={reference_cell_A.tolist()}."
             ) from exc
         stretches = np.linalg.svd(deformation, compute_uv=False)
         minimum_stretch = float(stretches[-1])
         if not math.isfinite(minimum_stretch) or minimum_stretch <= 0.0:
             raise ValueError(
-                "Cannot validate the cached neighbor graph for a singular/non-finite cell "
-                f"deformation: singular_values={stretches.tolist()}, "
-                f"cell_A={cell_A.tolist()}."
+                "Cannot validate the cached neighbor graph for a"
+                " singular/non-finite cell deformation:"
+                f" singular_values={stretches.tolist()},"
+                f" cell_A={cell_A.tolist()}."
             )
         canonical_positions_A = self._canonical_positions(positions_A, cell_A)
         affine_reference_positions_A = reference_scaled_positions @ cell_A
@@ -519,14 +562,17 @@ class VerletSkinMACECalculator(MACECalculator):
                 canonical_positions_A - affine_reference_positions_A, axis=1
             ).max()
         )
-        shortest_omitted_distance_A = minimum_stretch * (
-            self.r_max + self.neighbor_skin_A
-        ) - 2.0 * maximum_nonaffine_displacement_A
+        shortest_omitted_distance_A = (
+            minimum_stretch * (self.r_max + self.neighbor_skin_A)
+            - 2.0 * maximum_nonaffine_displacement_A
+        )
         if shortest_omitted_distance_A > self.r_max:
             return canonical_positions_A
         return None
 
-    def _graph_is_valid(self, positions_A: np.ndarray, cell_A: np.ndarray) -> bool:
+    def _graph_is_valid(
+        self, positions_A: np.ndarray, cell_A: np.ndarray
+    ) -> bool:
         """Retain the Boolean cache-validity interface used by diagnostics/tests."""
 
         return (
@@ -546,8 +592,8 @@ class VerletSkinMACECalculator(MACECalculator):
         reference_atomic_numbers = self._reference_atomic_numbers
         if batch is None or reference_atomic_numbers is None:
             raise RuntimeError(
-                "Compiled graph refill requires an initialized batch and fixed "
-                "composition reference."
+                "Compiled graph refill requires an initialized batch and fixed"
+                " composition reference."
             )
         atomic_numbers = np.asarray(atoms.numbers, dtype=np.int64)
         if not np.array_equal(atomic_numbers, reference_atomic_numbers):
@@ -558,11 +604,12 @@ class VerletSkinMACECalculator(MACECalculator):
             else:
                 changed_indices = []
             raise RuntimeError(
-                "Compiled MACE graph buffers cannot be reused after composition or atom "
-                "ordering changes. The repository workload has fixed composition; got "
-                f"reference_shape={reference_atomic_numbers.shape}, "
-                f"current_shape={atomic_numbers.shape}, first_changed_indices="
-                f"{changed_indices}."
+                "Compiled MACE graph buffers cannot be reused after"
+                " composition or atom ordering changes. The repository"
+                " workload has fixed composition; got"
+                f" reference_shape={reference_atomic_numbers.shape},"
+                f" current_shape={atomic_numbers.shape},"
+                f" first_changed_indices={changed_indices}."
             )
 
         edge_index, shifts_A, unit_shifts, _neighbor_cell_A = (
@@ -577,17 +624,19 @@ class VerletSkinMACECalculator(MACECalculator):
         real_edge_count = int(edge_index.shape[1])
         if real_atom_count != self._real_atom_count:
             raise RuntimeError(
-                "Compiled MACE graph refill changed the fixed real atom count: "
-                f"cached={self._real_atom_count}, current={real_atom_count}."
+                "Compiled MACE graph refill changed the fixed real atom"
+                f" count: cached={self._real_atom_count},"
+                f" current={real_atom_count}."
             )
         if real_edge_count >= self.pad_num_edges:
             raise RuntimeError(
-                "Compiled MACE fixed edge budget was exhausted while refilling the "
-                f"r_max+skin graph: real_edge_count={real_edge_count}, "
-                f"pad_num_edges={self.pad_num_edges}, r_max_A={self.r_max}, "
-                f"neighbor_skin_A={self.neighbor_skin_A}. Increase the explicit edge "
-                "budget and restart from the last checkpoint; this calculator will not "
-                "recompile silently."
+                "Compiled MACE fixed edge budget was exhausted while"
+                " refilling the r_max+skin graph:"
+                f" real_edge_count={real_edge_count},"
+                f" pad_num_edges={self.pad_num_edges}, r_max_A={self.r_max},"
+                f" neighbor_skin_A={self.neighbor_skin_A}. Increase the"
+                " explicit edge budget and restart from the last checkpoint;"
+                " this calculator will not recompile silently."
             )
 
         position_tensor = torch.as_tensor(
@@ -602,7 +651,9 @@ class VerletSkinMACECalculator(MACECalculator):
         )
         shift_tensor = torch.as_tensor(shifts_A, dtype=batch["shifts"].dtype)
         volume_tensor = torch.linalg.det(cell_tensor)
-        reciprocal_cell_tensor = 2.0 * torch.pi * torch.linalg.inv(cell_tensor.mT)
+        reciprocal_cell_tensor = (
+            2.0 * torch.pi * torch.linalg.inv(cell_tensor.mT)
+        )
         pbc_tensor = torch.as_tensor(
             np.asarray(atoms.pbc, dtype=bool), dtype=batch["pbc"].dtype
         )
@@ -637,7 +688,8 @@ class VerletSkinMACECalculator(MACECalculator):
             ).T
         except np.linalg.LinAlgError as exc:
             raise ValueError(
-                f"Cannot cache a neighbor graph for singular cell_A={cell_A.tolist()}."
+                "Cannot cache a neighbor graph for singular"
+                f" cell_A={cell_A.tolist()}."
             ) from exc
         self._reference_pbc = np.asarray(atoms.pbc, dtype=bool).copy()
         self._real_edge_count = real_edge_count
@@ -684,18 +736,23 @@ class VerletSkinMACECalculator(MACECalculator):
         if self.use_compile:
             if real_atom_count > self.pad_num_atoms:
                 raise RuntimeError(
-                    "Compiled MACE fixed atom budget was exceeded while rebuilding the "
-                    f"neighbor graph: real_atom_count={real_atom_count}, "
-                    f"pad_num_atoms={self.pad_num_atoms}. Use the exact repository-produced "
-                    "atom count in a dedicated workload config."
+                    "Compiled MACE fixed atom budget was exceeded while"
+                    " rebuilding the neighbor graph:"
+                    f" real_atom_count={real_atom_count},"
+                    f" pad_num_atoms={self.pad_num_atoms}. Use the exact"
+                    " repository-produced atom count in a dedicated workload"
+                    " config."
                 )
             if real_edge_count >= self.pad_num_edges:
                 raise RuntimeError(
-                    "Compiled MACE fixed edge budget was exhausted while rebuilding the "
-                    f"r_max+skin graph: real_edge_count={real_edge_count}, "
-                    f"pad_num_edges={self.pad_num_edges}, r_max_A={self.r_max}, "
-                    f"neighbor_skin_A={self.neighbor_skin_A}. Increase the explicit edge "
-                    "budget and restart; this calculator will not recompile silently."
+                    "Compiled MACE fixed edge budget was exhausted while"
+                    " rebuilding the r_max+skin graph:"
+                    f" real_edge_count={real_edge_count},"
+                    f" pad_num_edges={self.pad_num_edges},"
+                    f" r_max_A={self.r_max},"
+                    f" neighbor_skin_A={self.neighbor_skin_A}. Increase the"
+                    " explicit edge budget and restart; this calculator will"
+                    " not recompile silently."
                 )
             fake_atom_count = self.pad_num_atoms - real_atom_count
             if fake_atom_count == 0:
@@ -719,9 +776,10 @@ class VerletSkinMACECalculator(MACECalculator):
         }
         if mismatched_dtypes:
             raise TypeError(
-                "MACE graph tensors do not match the loaded model dtype; rebuilding/casting "
-                f"inside every MD step is forbidden. model_dtype={model_dtype}, "
-                f"mismatched_tensors={mismatched_dtypes}."
+                "MACE graph tensors do not match the loaded model dtype;"
+                " rebuilding/casting inside every MD step is forbidden."
+                f" model_dtype={model_dtype},"
+                f" mismatched_tensors={mismatched_dtypes}."
             )
         batch["positions"].requires_grad_(True)
         if self.use_compile:
@@ -736,7 +794,8 @@ class VerletSkinMACECalculator(MACECalculator):
             ).T
         except np.linalg.LinAlgError as exc:
             raise ValueError(
-                f"Cannot cache a neighbor graph for singular cell_A={cell_A.tolist()}."
+                "Cannot cache a neighbor graph for singular"
+                f" cell_A={cell_A.tolist()}."
             ) from exc
         self._reference_pbc = np.asarray(atoms.pbc, dtype=bool).copy()
         self._reference_atomic_numbers = np.asarray(
@@ -755,13 +814,14 @@ class VerletSkinMACECalculator(MACECalculator):
         unsupported = requested - SUPPORTED_FAST_PROPERTIES
         if unsupported:
             raise PropertyNotImplementedError(
-                "VerletSkinMACECalculator fast path does not implement requested "
-                f"properties={sorted(unsupported)}; supported properties are "
-                f"{sorted(SUPPORTED_FAST_PROPERTIES)}."
+                "VerletSkinMACECalculator fast path does not implement"
+                f" requested properties={sorted(unsupported)}; supported"
+                f" properties are {sorted(SUPPORTED_FAST_PROPERTIES)}."
             )
         effective = set(requested)
-        if self.md_property_mode == "forces_stress" and requested.intersection(
-            {"forces", "stress"}
+        if (
+            self.md_property_mode == "forces_stress"
+            and requested.intersection({"forces", "stress"})
         ):
             effective.update({"forces", "stress"})
         if requested.intersection({"energy", "free_energy"}):
@@ -830,13 +890,17 @@ class VerletSkinMACECalculator(MACECalculator):
             energy = output.get("energy")
             if energy is None:
                 raise RuntimeError(
-                    "MACE model returned no energy for an energy/force/stress evaluation."
+                    "MACE model returned no energy for an energy/force/stress"
+                    " evaluation."
                 )
             if energy.ndim != 1 or energy.shape[0] < 1:
                 raise RuntimeError(
-                    f"MACE energy output must have shape=(graphs,), got {tuple(energy.shape)}."
+                    "MACE energy output must have shape=(graphs,), got"
+                    f" {tuple(energy.shape)}."
                 )
-            energy_eV = float(energy[0].detach().cpu().item() * energy_conversion)
+            energy_eV = float(
+                energy[0].detach().cpu().item() * energy_conversion
+            )
             results["energy"] = energy_eV
             results["free_energy"] = energy_eV
 
@@ -844,7 +908,8 @@ class VerletSkinMACECalculator(MACECalculator):
             node_energy = output.get("node_energy")
             if node_energy is None:
                 raise RuntimeError(
-                    "MACE model returned no node_energy for a per-atom energy request."
+                    "MACE model returned no node_energy for a per-atom energy"
+                    " request."
                 )
             node_energy = node_energy[: self._real_atom_count]
             total_node_energy = (
@@ -857,9 +922,9 @@ class VerletSkinMACECalculator(MACECalculator):
                 device=batch["node_attrs"].device,
             )
             node_e0 = (
-                model.atomic_energies_fn(batch["node_attrs"][: self._real_atom_count])[
-                    atom_indices, node_heads
-                ]
+                model.atomic_energies_fn(
+                    batch["node_attrs"][: self._real_atom_count]
+                )[atom_indices, node_heads]
                 .detach()
                 .to(dtype=torch.float32)
                 .cpu()
@@ -872,13 +937,16 @@ class VerletSkinMACECalculator(MACECalculator):
         if "forces" in missing:
             forces = output.get("forces")
             if forces is None:
-                raise RuntimeError("MACE model returned no forces for a force request.")
+                raise RuntimeError(
+                    "MACE model returned no forces for a force request."
+                )
             expected_force_shape = (self._real_atom_count, 3)
             real_forces = forces[: self._real_atom_count]
             if tuple(real_forces.shape) != expected_force_shape:
                 raise RuntimeError(
-                    f"MACE force output has real shape={tuple(real_forces.shape)}, "
-                    f"expected={expected_force_shape}."
+                    "MACE force output has real"
+                    f" shape={tuple(real_forces.shape)},"
+                    f" expected={expected_force_shape}."
                 )
             results["forces"] = (
                 real_forces.detach().to(dtype=torch.float32).cpu().numpy()
@@ -888,12 +956,14 @@ class VerletSkinMACECalculator(MACECalculator):
         if "stress" in missing:
             stress = output.get("stress")
             if stress is None:
-                raise RuntimeError("MACE model returned no stress for an NPT stress request.")
+                raise RuntimeError(
+                    "MACE model returned no stress for an NPT stress request."
+                )
             if stress.ndim == 3:
                 stress = stress[0]
             if tuple(stress.shape) != (3, 3):
                 raise RuntimeError(
-                    f"MACE stress output must have real shape=(3, 3), got "
+                    "MACE stress output must have real shape=(3, 3), got "
                     f"shape={tuple(stress.shape)}."
                 )
             stress_matrix = (

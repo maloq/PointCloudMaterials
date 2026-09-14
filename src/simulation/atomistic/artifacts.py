@@ -21,7 +21,6 @@ from .simulation import (
 )
 from .validation import SystemDiagnostics
 
-
 PHASE_NAMES = ("solid_bulk", "liquid_bulk", "interface")
 PHASE_TO_ID = {name: phase_id for phase_id, name in enumerate(PHASE_NAMES)}
 ATOM_DTYPE = np.dtype(
@@ -51,9 +50,14 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def label_bulk(atom_count: int, phase_name: str, grain_id: int) -> EnvironmentLabels:
+def label_bulk(
+    atom_count: int, phase_name: str, grain_id: int
+) -> EnvironmentLabels:
     if phase_name not in PHASE_TO_ID or phase_name == "interface":
-        raise ValueError(f"Bulk phase must be solid_bulk or liquid_bulk, got {phase_name!r}.")
+        raise ValueError(
+            "Bulk phase must be solid_bulk or liquid_bulk, got"
+            f" {phase_name!r}."
+        )
     indices = np.arange(atom_count, dtype=np.int64)
     return EnvironmentLabels(
         phase_names=np.full(atom_count, phase_name, dtype="U16"),
@@ -64,7 +68,9 @@ def label_bulk(atom_count: int, phase_name: str, grain_id: int) -> EnvironmentLa
     )
 
 
-def _periodic_fractional_distance(values: np.ndarray, boundary: float) -> np.ndarray:
+def _periodic_fractional_distance(
+    values: np.ndarray, boundary: float
+) -> np.ndarray:
     delta = np.abs(values - boundary)
     return np.minimum(delta, 1.0 - delta)
 
@@ -86,7 +92,9 @@ def label_interface(
         <= interface_half_width_A
     )
     liquid_origin = (scaled_z >= lower) & (scaled_z < upper)
-    phase_names = np.where(liquid_origin, "liquid_bulk", "solid_bulk").astype("U16")
+    phase_names = np.where(liquid_origin, "liquid_bulk", "solid_bulk").astype(
+        "U16"
+    )
     phase_names[interface_mask] = "interface"
     counts = {
         phase_name: int(np.count_nonzero(phase_names == phase_name))
@@ -95,10 +103,11 @@ def label_interface(
     empty_phases = [name for name, count in counts.items() if count == 0]
     if empty_phases:
         raise ValueError(
-            "Interface geometry produced empty labeled regions. "
-            f"empty_phases={empty_phases}, counts={counts}, cell_height_A={cell_height:.6f}, "
-            f"slab_bounds_fractional={slab_bounds_fractional}, "
-            f"interface_half_width_A={interface_half_width_A}."
+            "Interface geometry produced empty labeled regions."
+            f" empty_phases={empty_phases}, counts={counts},"
+            f" cell_height_A={cell_height:.6f},"
+            f" slab_bounds_fractional={slab_bounds_fractional},"
+            f" interface_half_width_A={interface_half_width_A}."
         )
     grain_ids = np.where(liquid_origin, 1, 0).astype(np.int32)
     return EnvironmentLabels(
@@ -108,14 +117,18 @@ def label_interface(
             0: np.flatnonzero(~liquid_origin).astype(np.int64),
             1: np.flatnonzero(liquid_origin).astype(np.int64),
         },
-        intermediate_atom_indices=np.flatnonzero(interface_mask).astype(np.int64),
+        intermediate_atom_indices=np.flatnonzero(interface_mask).astype(
+            np.int64
+        ),
         slab_bounds_fractional=slab_bounds_fractional,
     )
 
 
 def build_atom_table(atoms: Atoms, labels: EnvironmentLabels) -> np.ndarray:
     table = np.empty(len(atoms), dtype=ATOM_DTYPE)
-    table["position"] = np.asarray(atoms.get_positions(wrap=True), dtype=np.float32)
+    table["position"] = np.asarray(
+        atoms.get_positions(wrap=True), dtype=np.float32
+    )
     table["phase_id"] = np.fromiter(
         (PHASE_TO_ID[str(name)] for name in labels.phase_names),
         dtype=np.int16,
@@ -127,23 +140,31 @@ def build_atom_table(atoms: Atoms, labels: EnvironmentLabels) -> np.ndarray:
     return table
 
 
-def _trace_metadata(trace: ThermodynamicTrace, atom_count: int) -> dict[str, Any]:
+def _trace_metadata(
+    trace: ThermodynamicTrace, atom_count: int
+) -> dict[str, Any]:
     return {
         "step": trace.step.tolist(),
         "temperature_K": trace.temperature_K.tolist(),
         "pressure_GPa": trace.pressure_GPa.tolist(),
         "volume_A3": trace.volume_A3.tolist(),
         "number_density_per_A3": (atom_count / trace.volume_A3).tolist(),
-        "potential_energy_eV_per_atom": trace.potential_energy_eV_per_atom.tolist(),
+        "potential_energy_eV_per_atom": (
+            trace.potential_energy_eV_per_atom.tolist()
+        ),
     }
 
 
-def _phase_statistics(labels: EnvironmentLabels) -> dict[str, dict[str, float | int]]:
+def _phase_statistics(
+    labels: EnvironmentLabels,
+) -> dict[str, dict[str, float | int]]:
     atom_count = len(labels.phase_names)
     return {
         phase_name: {
             "n_atoms": int(np.count_nonzero(labels.phase_names == phase_name)),
-            "fraction": float(np.count_nonzero(labels.phase_names == phase_name) / atom_count),
+            "fraction": float(
+                np.count_nonzero(labels.phase_names == phase_name) / atom_count
+            ),
         }
         for phase_name in PHASE_NAMES
     }
@@ -162,7 +183,11 @@ def _grain_records(labels: EnvironmentLabels) -> list[dict[str, Any]]:
                 "orientation_quaternion": [1.0, 0.0, 0.0, 0.0],
                 "n_atoms": int(len(atom_indices)),
                 "atom_indices": atom_indices.tolist(),
-                "neighbors": [1 - grain_id] if len(labels.grain_atom_indices) == 2 else [],
+                "neighbors": (
+                    [1 - grain_id]
+                    if len(labels.grain_atom_indices) == 2
+                    else []
+                ),
             }
         )
     return records
@@ -180,7 +205,9 @@ def _intermediate_records(labels: EnvironmentLabels) -> list[dict[str, Any]]:
             "atom_indices": labels.intermediate_atom_indices.tolist(),
             "definition": {
                 "kind": "distance_to_prepared_solid_liquid_boundary",
-                "slab_bounds_fractional": list(labels.slab_bounds_fractional or ()),
+                "slab_bounds_fractional": list(
+                    labels.slab_bounds_fractional or ()
+                ),
             },
         }
     ]
@@ -246,19 +273,21 @@ def _write_environment(
             "chemical_symbol": config.system.chemical_symbol,
             "calculator": execution_provenance.calculator.to_dict(),
             "ensemble": (
-                "constant-temperature (Langevin) transient at a volume derived from the "
-                "validated bulk endpoint volumes"
+                "constant-temperature (Langevin) transient at a volume derived"
+                " from the validated bulk endpoint volumes"
                 if name.endswith("solid_liquid_interface")
                 else "isothermal-isobaric (MTK)"
             ),
             "phase_density_policy": (
-                "Bulk density is measured from NPT volume samples. The interface volume is the "
-                "phase-fraction-weighted combination of the replica's solid and liquid endpoint "
-                "volumes. No phase density target is used."
+                "Bulk density is measured from NPT volume samples. The"
+                " interface volume is the phase-fraction-weighted combination"
+                " of the replica's solid and liquid endpoint volumes. No phase"
+                " density target is used."
             ),
             "label_policy": (
-                "Labels encode preparation provenance and distance to the constructed interface; "
-                "they are not produced by CNA, bond-order parameters, or template matching."
+                "Labels encode preparation provenance and distance to the"
+                " constructed interface; they are not produced by CNA,"
+                " bond-order parameters, or template matching."
             ),
         },
         "diagnostics": diagnostics.to_dict(),
@@ -269,11 +298,15 @@ def _write_environment(
     }
     with (directory / "metadata.json").open("w", encoding="utf-8") as handle:
         json.dump(metadata, handle, indent=2)
-    with (directory / "phase_mapping.json").open("w", encoding="utf-8") as handle:
+    with (directory / "phase_mapping.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
         json.dump(
             {
                 "name_to_id": PHASE_TO_ID,
-                "id_to_name": {str(value): key for key, value in PHASE_TO_ID.items()},
+                "id_to_name": {
+                    str(value): key for key, value in PHASE_TO_ID.items()
+                },
             },
             handle,
             indent=2,
@@ -303,12 +336,14 @@ def write_dataset(
     output_root = config.output.root_dir
     if output_root.exists() and not config.output.overwrite:
         raise FileExistsError(
-            f"Output directory already exists: {output_root}. Set output.overwrite=true "
-            "only when replacement is intended."
+            f"Output directory already exists: {output_root}. Set"
+            " output.overwrite=true only when replacement is intended."
         )
     output_root.parent.mkdir(parents=True, exist_ok=True)
     staging_root = Path(
-        tempfile.mkdtemp(prefix=f".{output_root.name}.staging-", dir=output_root.parent)
+        tempfile.mkdtemp(
+            prefix=f".{output_root.name}.staging-", dir=output_root.parent
+        )
     )
     environments = {}
     for replica_name, (random_seed, systems) in replicas.items():
@@ -367,20 +402,26 @@ def write_dataset(
                 execution_provenance.calculator.scientifically_qualified
             ),
             "random_seeds": list(config.random_seeds),
-            "repository_reference_number_densities_per_A3": reference_densities,
+            "repository_reference_number_densities_per_A3": (
+                reference_densities
+            ),
             "scientific_scope": {
                 "supported_claim": (
-                    "Comparison of learned local environments across physically simulated bulk "
-                    "solid, metastable/supercooled liquid, and solid-liquid interfacial contexts."
+                    "Comparison of learned local environments across"
+                    " physically simulated bulk solid, metastable/supercooled"
+                    " liquid, and solid-liquid interfacial contexts."
                 ),
                 "unsupported_claim": (
-                    "Quantitative real-Al thermodynamics or kinetics, equilibrium phase "
-                    "identification from cluster identity alone, or application-specific MLIP "
-                    "accuracy without a qualification report for this exact model SHA and head."
+                    "Quantitative real-Al thermodynamics or kinetics,"
+                    " equilibrium phase identification from cluster identity"
+                    " alone, or application-specific MLIP accuracy without a"
+                    " qualification report for this exact model SHA and head."
                 ),
             },
         }
-        with (staging_root / "manifest.json").open("w", encoding="utf-8") as handle:
+        with (staging_root / "manifest.json").open(
+            "w", encoding="utf-8"
+        ) as handle:
             json.dump(manifest, handle, indent=2)
         if output_root.exists():
             shutil.rmtree(output_root)

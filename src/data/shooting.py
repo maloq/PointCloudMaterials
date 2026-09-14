@@ -11,7 +11,6 @@ import numpy as np
 import torch
 from scipy.spatial import cKDTree
 
-
 _SHOOTING_COLUMNS = ("id", "type", "x", "y", "z", "vx", "vy", "vz")
 
 
@@ -37,7 +36,9 @@ class ShootingCampaignSnapshot:
             "selected_parent_count": len(self.parents),
             "selected_branch_count": len(self.branches),
             "complete_outcome_count_at_snapshot": self.complete_outcome_count,
-            "ignored_incomplete_count_at_snapshot": self.ignored_incomplete_count,
+            "ignored_incomplete_count_at_snapshot": (
+                self.ignored_incomplete_count
+            ),
             "parents": list(self.parents),
             "branches": list(self.branches),
         }
@@ -74,11 +75,15 @@ class PeriodicEnvironmentBatch:
 
 def _load_json(path: Path) -> dict[str, Any]:
     if not path.is_file():
-        raise FileNotFoundError(f"Required shooting metadata file is missing: {path}")
+        raise FileNotFoundError(
+            f"Required shooting metadata file is missing: {path}"
+        )
     with path.open("r", encoding="utf-8") as handle:
         value = json.load(handle)
     if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
+        raise TypeError(
+            f"Expected a JSON object in {path}, got {type(value).__name__}."
+        )
     return value
 
 
@@ -93,21 +98,23 @@ def resolve_shooting_trajectory_path(
     artifact = outcome.get("trajectory_artifact")
     if artifact is None:
         raise RuntimeError(
-            "Complete shooting branch has not been migrated to the required float32 "
-            f"binary format: branch={branch['branch_id']}, outcome={branch_dir / 'outcome.json'}. "
-            f"Run python scripts/convert_trajectory.py shooting --campaign-root {str(root)!r}."
+            "Complete shooting branch has not been migrated to the required"
+            f" float32 binary format: branch={branch['branch_id']},"
+            f" outcome={branch_dir / 'outcome.json'}. Run python"
+            " scripts/convert_trajectory.py shooting --campaign-root"
+            f" {str(root)!r}."
         )
     if not isinstance(artifact, dict):
         raise TypeError(
-            f"trajectory_artifact must be a JSON object in {branch_dir / 'outcome.json'}, "
-            f"got {type(artifact).__name__}."
+            "trajectory_artifact must be a JSON object in"
+            f" {branch_dir / 'outcome.json'}, got {type(artifact).__name__}."
         )
     from src.data.trajectories.shooting import FORMAT_NAME
 
     if artifact.get("format") != FORMAT_NAME:
         raise ValueError(
-            f"Unsupported trajectory artifact format for branch={branch['branch_id']}: "
-            f"{artifact.get('format')!r}."
+            "Unsupported trajectory artifact format for"
+            f" branch={branch['branch_id']}: {artifact.get('format')!r}."
         )
     storage_dtype = str(artifact.get("storage_dtype", "float32"))
     expected_directory_name = f"trajectory_binary_{storage_dtype}"
@@ -119,9 +126,10 @@ def resolve_shooting_trajectory_path(
     )
     if resolved_path.name != expected_directory_name:
         raise ValueError(
-            f"Unexpected repository shooting-binary path for branch={branch['branch_id']}: "
-            f"path={resolved_path}, storage_dtype={storage_dtype!r}, "
-            f"expected_directory_name={expected_directory_name!r}."
+            "Unexpected repository shooting-binary path for"
+            f" branch={branch['branch_id']}: path={resolved_path},"
+            f" storage_dtype={storage_dtype!r},"
+            f" expected_directory_name={expected_directory_name!r}."
         )
     return resolved_path
 
@@ -136,7 +144,8 @@ def validate_complete_shooting_branch(
     outcome_path = root / str(branch["branch_dir"]) / "outcome.json"
     if outcome.get("state") != "complete":
         raise RuntimeError(
-            f"Internal error: non-complete outcome reached strict validation: {outcome_path}."
+            "Internal error: non-complete outcome reached strict validation:"
+            f" {outcome_path}."
         )
     for key in (
         "branch_index",
@@ -154,8 +163,9 @@ def validate_complete_shooting_branch(
     ):
         if outcome.get(key) != branch[key]:
             raise RuntimeError(
-                f"Completed outcome disagrees with manifest for branch={branch_id}, key={key!r}: "
-                f"manifest={branch[key]!r}, outcome={outcome.get(key)!r}, path={outcome_path}."
+                "Completed outcome disagrees with manifest for"
+                f" branch={branch_id}, key={key!r}: manifest={branch[key]!r},"
+                f" outcome={outcome.get(key)!r}, path={outcome_path}."
             )
 
     protocol = manifest["protocol"]
@@ -166,9 +176,10 @@ def validate_complete_shooting_branch(
         or int(outcome["last_timestep"]) != expected_last_timestep
     ):
         raise RuntimeError(
-            f"Completed branch has invalid temporal contract: branch={branch_id}, "
-            f"frames={outcome['frame_count']}, first={outcome['first_timestep']}, "
-            f"last={outcome['last_timestep']}."
+            "Completed branch has invalid temporal contract:"
+            f" branch={branch_id}, frames={outcome['frame_count']},"
+            f" first={outcome['first_timestep']},"
+            f" last={outcome['last_timestep']}."
         )
 
     branch_dir = root / str(branch["branch_dir"])
@@ -178,13 +189,17 @@ def validate_complete_shooting_branch(
         trajectory = branch_dir / "trajectory.lammpstrj"
         if not trajectory.is_file() or trajectory.stat().st_size <= 0:
             raise RuntimeError(
-                f"Completed branch {branch_id} is missing a nonempty artifact: {trajectory}."
+                f"Completed branch {branch_id} is missing a nonempty artifact:"
+                f" {trajectory}."
             )
-        if int(trajectory.stat().st_size) != int(outcome["trajectory_size_bytes"]):
+        if int(trajectory.stat().st_size) != int(
+            outcome["trajectory_size_bytes"]
+        ):
             raise RuntimeError(
-                f"Completed branch artifact size changed after validation: branch={branch_id}, "
-                f"path={trajectory}, outcome_size={outcome['trajectory_size_bytes']}, "
-                f"observed_size={trajectory.stat().st_size}."
+                "Completed branch artifact size changed after validation:"
+                f" branch={branch_id}, path={trajectory},"
+                f" outcome_size={outcome['trajectory_size_bytes']},"
+                f" observed_size={trajectory.stat().st_size}."
             )
     else:
         trajectory = resolve_shooting_trajectory_path(root, branch)
@@ -200,7 +215,9 @@ def validate_complete_shooting_branch(
             int(protocol["sample_interval_steps"]),
             dtype=np.int64,
         )
-        expected_storage_dtype = np.dtype(str(artifact.get("storage_dtype", "float32")))
+        expected_storage_dtype = np.dtype(
+            str(artifact.get("storage_dtype", "float32"))
+        )
         if (
             binary.storage_dtype != expected_storage_dtype
             or binary.atom_count != int(manifest["atom_count"])
@@ -208,29 +225,33 @@ def validate_complete_shooting_branch(
             or not np.array_equal(binary.timesteps, expected_timesteps)
         ):
             raise RuntimeError(
-                f"Completed binary branch violates the campaign trajectory contract: "
-                f"branch={branch_id}, dtype={binary.storage_dtype.name}, "
-                f"expected_dtype={expected_storage_dtype.name}, "
-                f"atoms={binary.atom_count}, frames={binary.frame_count}, "
-                f"first={int(binary.timesteps[0])}, last={int(binary.timesteps[-1])}."
+                "Completed binary branch violates the campaign trajectory"
+                f" contract: branch={branch_id},"
+                f" dtype={binary.storage_dtype.name},"
+                f" expected_dtype={expected_storage_dtype.name},"
+                f" atoms={binary.atom_count}, frames={binary.frame_count},"
+                f" first={int(binary.timesteps[0])},"
+                f" last={int(binary.timesteps[-1])}."
             )
         sizes = binary_directory_sizes(trajectory)
         if sizes["apparent_bytes"] != int(artifact["size_bytes"]):
             raise RuntimeError(
-                f"Completed binary trajectory size changed after migration: branch={branch_id}, "
-                f"outcome_size={artifact['size_bytes']}, "
-                f"observed_size={sizes['apparent_bytes']}, path={trajectory}."
+                "Completed binary trajectory size changed after migration:"
+                f" branch={branch_id}, outcome_size={artifact['size_bytes']},"
+                f" observed_size={sizes['apparent_bytes']}, path={trajectory}."
             )
 
     if not restart.is_file() or restart.stat().st_size <= 0:
         raise RuntimeError(
-            f"Completed branch {branch_id} is missing a nonempty artifact: {restart}."
+            f"Completed branch {branch_id} is missing a nonempty artifact:"
+            f" {restart}."
         )
     if int(restart.stat().st_size) != int(outcome["restart_size_bytes"]):
         raise RuntimeError(
-            f"Completed branch artifact size changed after validation: branch={branch_id}, "
-            f"path={restart}, outcome_size={outcome['restart_size_bytes']}, "
-            f"observed_size={restart.stat().st_size}."
+            "Completed branch artifact size changed after validation:"
+            f" branch={branch_id}, path={restart},"
+            f" outcome_size={outcome['restart_size_bytes']},"
+            f" observed_size={restart.stat().st_size}."
         )
 
 
@@ -242,7 +263,10 @@ def load_shooting_campaign_snapshot(
 ) -> ShootingCampaignSnapshot:
     root = Path(campaign_root).expanduser().resolve()
     manifest = _load_json(root / "manifest.json")
-    if manifest.get("campaign_type") != "position_conditioned_langevin_nvt_shooting":
+    if (
+        manifest.get("campaign_type")
+        != "position_conditioned_langevin_nvt_shooting"
+    ):
         raise ValueError(
             f"Unsupported campaign_type={manifest.get('campaign_type')!r} in "
             f"{root / 'manifest.json'}."
@@ -250,8 +274,8 @@ def load_shooting_campaign_snapshot(
     protocol = manifest["protocol"]
     if tuple(protocol["dump_columns"]) != _SHOOTING_COLUMNS:
         raise ValueError(
-            f"Shooting training requires dump columns {_SHOOTING_COLUMNS}, got "
-            f"{tuple(protocol['dump_columns'])}."
+            f"Shooting training requires dump columns {_SHOOTING_COLUMNS}, got"
+            f" {tuple(protocol['dump_columns'])}."
         )
     minimum = int(minimum_complete_branches_per_parent)
     intended_per_parent = int(manifest["counts"]["branches"]) // int(
@@ -259,8 +283,8 @@ def load_shooting_campaign_snapshot(
     )
     if minimum <= 0 or minimum > intended_per_parent:
         raise ValueError(
-            "minimum_complete_branches_per_parent must be within the manifest ensemble "
-            f"size [1, {intended_per_parent}], got {minimum}."
+            "minimum_complete_branches_per_parent must be within the manifest"
+            f" ensemble size [1, {intended_per_parent}], got {minimum}."
         )
     selected_temperatures = {float(value) for value in temperatures_K}
     if not selected_temperatures:
@@ -296,10 +320,14 @@ def load_shooting_campaign_snapshot(
         selected_parents.append(parent)
         selected_branches.extend(ordered)
     selected_parents.sort(key=lambda item: int(item["parent_index"]))
-    selected_parent_ids = {str(parent["parent_id"]) for parent in selected_parents}
+    selected_parent_ids = {
+        str(parent["parent_id"]) for parent in selected_parents
+    }
     selected_branches = [
         branch
-        for branch in sorted(selected_branches, key=lambda item: int(item["branch_index"]))
+        for branch in sorted(
+            selected_branches, key=lambda item: int(item["branch_index"])
+        )
         if str(branch["parent_id"]) in selected_parent_ids
     ]
     if not selected_parents:
@@ -309,15 +337,17 @@ def load_shooting_campaign_snapshot(
             for branch in branches
         )
         raise RuntimeError(
-            "No shooting parent satisfies the requested complete-branch threshold. "
-            f"temperatures={sorted(selected_temperatures)}, minimum={minimum}, "
-            f"available_complete_branch_counts={dict(counts)}."
+            "No shooting parent satisfies the requested complete-branch"
+            f" threshold. temperatures={sorted(selected_temperatures)},"
+            f" minimum={minimum},"
+            f" available_complete_branch_counts={dict(counts)}."
         )
     splits = {str(parent["source_split"]) for parent in selected_parents}
     if splits != {"train", "validation"}:
         raise RuntimeError(
-            "Shooting training requires selected complete parents in both source splits; "
-            f"got splits={sorted(splits)}, temperatures={sorted(selected_temperatures)}."
+            "Shooting training requires selected complete parents in both"
+            f" source splits; got splits={sorted(splits)},"
+            f" temperatures={sorted(selected_temperatures)}."
         )
     return ShootingCampaignSnapshot(
         root=root,
@@ -336,11 +366,13 @@ def load_shooting_campaigns_snapshot(
     temperatures_K: Sequence[float],
     minimum_complete_branches_per_parent: int,
 ) -> ShootingCampaignSnapshot:
-    roots = tuple(Path(value).expanduser().resolve() for value in campaign_roots)
+    roots = tuple(
+        Path(value).expanduser().resolve() for value in campaign_roots
+    )
     if len(roots) < 2 or len(set(roots)) != len(roots):
         raise ValueError(
-            "data.campaign_roots must contain at least two distinct shooting roots; "
-            f"got {[str(root) for root in roots]}."
+            "data.campaign_roots must contain at least two distinct shooting"
+            f" roots; got {[str(root) for root in roots]}."
         )
     component_snapshots = tuple(
         load_shooting_campaign_snapshot(
@@ -364,7 +396,8 @@ def load_shooting_campaigns_snapshot(
         "data_sha256",
     )
     reference_parents = {
-        str(parent["parent_id"]): parent for parent in reference.manifest["parents"]
+        str(parent["parent_id"]): parent
+        for parent in reference.manifest["parents"]
     }
     for component in component_snapshots[1:]:
         if (
@@ -373,8 +406,9 @@ def load_shooting_campaigns_snapshot(
             or component.manifest["protocol"] != reference.manifest["protocol"]
         ):
             raise RuntimeError(
-                "Shooting campaigns cannot be merged because their atom count or "
-                f"protocol differs: reference={reference.root}, other={component.root}."
+                "Shooting campaigns cannot be merged because their atom count"
+                f" or protocol differs: reference={reference.root},"
+                f" other={component.root}."
             )
         component_parents = {
             str(parent["parent_id"]): parent
@@ -382,18 +416,20 @@ def load_shooting_campaigns_snapshot(
         }
         if component_parents.keys() != reference_parents.keys():
             raise RuntimeError(
-                "Shooting campaigns cannot be merged because their parent catalogs "
-                f"differ: reference={reference.root}, other={component.root}."
+                "Shooting campaigns cannot be merged because their parent"
+                f" catalogs differ: reference={reference.root},"
+                f" other={component.root}."
             )
         for parent_id, reference_parent in reference_parents.items():
             other_parent = component_parents[parent_id]
             for key in parent_comparison_keys:
                 if reference_parent.get(key) != other_parent.get(key):
                     raise RuntimeError(
-                        "Shooting campaigns disagree on parent provenance: "
-                        f"parent={parent_id}, key={key!r}, "
-                        f"reference={reference_parent.get(key)!r}, "
-                        f"other={other_parent.get(key)!r}, root={component.root}."
+                        "Shooting campaigns disagree on parent provenance:"
+                        f" parent={parent_id}, key={key!r},"
+                        f" reference={reference_parent.get(key)!r},"
+                        f" other={other_parent.get(key)!r},"
+                        f" root={component.root}."
                     )
 
     complete_by_parent: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -407,8 +443,8 @@ def load_shooting_campaigns_snapshot(
             )
             if seed_key in seed_keys:
                 raise RuntimeError(
-                    "Shooting campaigns contain a duplicate parent/velocity/thermostat "
-                    f"seed tuple: {seed_key}."
+                    "Shooting campaigns contain a duplicate"
+                    f" parent/velocity/thermostat seed tuple: {seed_key}."
                 )
             seed_keys.add(seed_key)
             merged_branch = dict(branch)
@@ -422,7 +458,8 @@ def load_shooting_campaigns_snapshot(
     minimum = int(minimum_complete_branches_per_parent)
     if minimum <= 0:
         raise ValueError(
-            f"minimum_complete_branches_per_parent must be positive, got {minimum}."
+            "minimum_complete_branches_per_parent must be positive, got"
+            f" {minimum}."
         )
     selected_parent_ids = {
         parent_id
@@ -453,11 +490,12 @@ def load_shooting_campaigns_snapshot(
     )
     if not selected_parents:
         branch_counts = {
-            parent_id: len(branches) for parent_id, branches in complete_by_parent.items()
+            parent_id: len(branches)
+            for parent_id, branches in complete_by_parent.items()
         }
         raise RuntimeError(
-            "No merged shooting parent satisfies the requested total complete-branch "
-            f"threshold={minimum}; counts={branch_counts}."
+            "No merged shooting parent satisfies the requested total"
+            f" complete-branch threshold={minimum}; counts={branch_counts}."
         )
     splits = {str(parent["source_split"]) for parent in selected_parents}
     if splits != {"train", "validation"}:
@@ -475,7 +513,8 @@ def load_shooting_campaigns_snapshot(
             snapshot.complete_outcome_count for snapshot in component_snapshots
         ),
         ignored_incomplete_count=sum(
-            snapshot.ignored_incomplete_count for snapshot in component_snapshots
+            snapshot.ignored_incomplete_count
+            for snapshot in component_snapshots
         ),
     )
 
@@ -516,14 +555,15 @@ def load_fixed_horizon_compatibility_snapshot(
         != (6.0, 12.0, 24.0)
     ):
         raise RuntimeError(
-            f"Fixed-horizon compatibility protocol changed: {root / 'manifest.json'}."
+            "Fixed-horizon compatibility protocol changed:"
+            f" {root / 'manifest.json'}."
         )
-    if (
-        int(summary["parent_count"]) != len(manifest["parents"])
-        or int(summary["branch_count"]) != len(manifest["branches"])
-    ):
+    if int(summary["parent_count"]) != len(manifest["parents"]) or int(
+        summary["branch_count"]
+    ) != len(manifest["branches"]):
         raise RuntimeError(
-            f"Fixed-horizon summary counts disagree with its manifest: root={root}."
+            "Fixed-horizon summary counts disagree with its manifest:"
+            f" root={root}."
         )
 
     selected_temperatures = {float(value) for value in temperatures_K}
@@ -533,9 +573,10 @@ def load_fixed_horizon_compatibility_snapshot(
     minimum = int(minimum_complete_branches_per_parent)
     if not selected_temperatures or minimum <= 0:
         raise ValueError(
-            "Compatibility snapshot requires nonempty temperatures and a positive "
-            f"branch threshold, got temperatures={sorted(selected_temperatures)}, "
-            f"minimum={minimum}."
+            "Compatibility snapshot requires nonempty temperatures and a"
+            " positive branch threshold, got"
+            f" temperatures={sorted(selected_temperatures)},"
+            f" minimum={minimum}."
         )
     manifest_parents = {
         str(parent["parent_id"]): parent for parent in manifest["parents"]
@@ -547,7 +588,8 @@ def load_fixed_horizon_compatibility_snapshot(
         outcome = _load_json(outcome_path)
         if outcome.get("state") != "complete":
             raise RuntimeError(
-                f"Compatibility branch outcome is not complete: {outcome_path}."
+                "Compatibility branch outcome is not complete:"
+                f" {outcome_path}."
             )
         for key in (
             "branch_index",
@@ -574,7 +616,8 @@ def load_fixed_horizon_compatibility_snapshot(
             or int(outcome["last_timestep"]) != 8000
         ):
             raise RuntimeError(
-                f"Compatibility branch temporal contract changed: {outcome_path}."
+                "Compatibility branch temporal contract changed:"
+                f" {outcome_path}."
             )
         complete_count += 1
         if float(branch["temperature_K"]) in selected_temperatures:
@@ -597,20 +640,24 @@ def load_fixed_horizon_compatibility_snapshot(
         for source_branch in sorted(
             branches,
             key=lambda value: (
-                int(value["momentum_index"]), int(value["thermostat_index"])
+                int(value["momentum_index"]),
+                int(value["thermostat_index"]),
             ),
         ):
             branch = dict(source_branch)
             branch["phase"] = str(source_branch["basin_role"])
-            branch["source_velocity_seed"] = int(parent["source_velocity_seed"])
-            branch["shot_index"] = (
-                2 * int(source_branch["momentum_index"])
-                + int(source_branch["thermostat_index"])
+            branch["source_velocity_seed"] = int(
+                parent["source_velocity_seed"]
             )
+            branch["shot_index"] = 2 * int(
+                source_branch["momentum_index"]
+            ) + int(source_branch["thermostat_index"])
             branch["velocity_seed"] = int(source_branch["momentum_seed"])
             selected_branches.append(branch)
     selected_parents.sort(key=lambda value: int(value["parent_index"]))
-    selected_parent_ids = {str(parent["parent_id"]) for parent in selected_parents}
+    selected_parent_ids = {
+        str(parent["parent_id"]) for parent in selected_parents
+    }
     selected_branches = sorted(
         (
             branch
@@ -625,12 +672,15 @@ def load_fixed_horizon_compatibility_snapshot(
             "No fixed-horizon parent satisfies the complete-future threshold: "
             f"minimum={minimum}, counts={counts}."
         )
-    observed_splits = {str(parent["source_split"]) for parent in selected_parents}
+    observed_splits = {
+        str(parent["source_split"]) for parent in selected_parents
+    }
     required_splits = {"optimization", "model_selection", "final_validation"}
     if observed_splits != required_splits:
         raise RuntimeError(
-            "Fixed-horizon training requires all source-run splits: "
-            f"expected={sorted(required_splits)}, observed={sorted(observed_splits)}."
+            "Fixed-horizon training requires all source-run splits:"
+            f" expected={sorted(required_splits)},"
+            f" observed={sorted(observed_splits)}."
         )
     normalized_manifest = dict(manifest)
     normalized_manifest["parents"] = selected_parents
@@ -655,13 +705,20 @@ def load_predictive_shooting_snapshot(
 ) -> ShootingCampaignSnapshot:
     """Route the two repository-owned fixed-duration shooting producers."""
 
-    roots = tuple(Path(value).expanduser().resolve() for value in campaign_roots)
-    if not roots:
-        raise ValueError("Predictive shooting data requires at least one campaign root.")
-    campaign_types = tuple(
-        str(_load_json(root / "manifest.json").get("campaign_type")) for root in roots
+    roots = tuple(
+        Path(value).expanduser().resolve() for value in campaign_roots
     )
-    compatibility_type = "fixed_horizon_compatibility_from_nested_first_passage"
+    if not roots:
+        raise ValueError(
+            "Predictive shooting data requires at least one campaign root."
+        )
+    campaign_types = tuple(
+        str(_load_json(root / "manifest.json").get("campaign_type"))
+        for root in roots
+    )
+    compatibility_type = (
+        "fixed_horizon_compatibility_from_nested_first_passage"
+    )
     if campaign_types == (compatibility_type,):
         return load_fixed_horizon_compatibility_snapshot(
             roots[0],
@@ -672,8 +729,8 @@ def load_predictive_shooting_snapshot(
     if set(campaign_types) == {"position_conditioned_langevin_nvt_shooting"}:
         if basin_roles is not None:
             raise ValueError(
-                "data.basin_roles applies only to the repository nested-shooting "
-                "compatibility producer."
+                "data.basin_roles applies only to the repository"
+                " nested-shooting compatibility producer."
             )
         if len(roots) == 1:
             return load_shooting_campaign_snapshot(
@@ -719,7 +776,8 @@ def build_periodic_environment_batch(
     positions = np.searchsorted(frame.atom_ids, centers_requested)
     if not np.array_equal(frame.atom_ids[positions], centers_requested):
         raise RuntimeError(
-            f"Requested center atom IDs are absent at timestep={frame.timestep}."
+            "Requested center atom IDs are absent at"
+            f" timestep={frame.timestep}."
         )
     frame_points = np.asarray(frame.positions, dtype=np.float32)
     box_lengths = np.asarray(frame.box_lengths, dtype=np.float32)
@@ -743,12 +801,19 @@ def build_periodic_environment_batch(
         minimum_distance_squared = np.sum(offsets64**2, axis=2)
         minimum_distance_squared[~available] = -np.inf
         batch_rows = np.arange(centers.shape[0], dtype=np.int64)
-        selected_slots = np.empty((centers.shape[0], context_count), dtype=np.int64)
+        selected_slots = np.empty(
+            (centers.shape[0], context_count), dtype=np.int64
+        )
         for context_slot in range(context_count):
-            chosen = np.argmax(minimum_distance_squared, axis=1).astype(np.int64)
-            if np.any(~np.isfinite(minimum_distance_squared[batch_rows, chosen])):
+            chosen = np.argmax(minimum_distance_squared, axis=1).astype(
+                np.int64
+            )
+            if np.any(
+                ~np.isfinite(minimum_distance_squared[batch_rows, chosen])
+            ):
                 raise RuntimeError(
-                    f"Spatial-context FPS exhausted candidates at slot={context_slot}."
+                    "Spatial-context FPS exhausted candidates at"
+                    f" slot={context_slot}."
                 )
             selected_slots[:, context_slot] = chosen
             selected_offset = offsets64[batch_rows, chosen]
@@ -771,11 +836,15 @@ def build_periodic_environment_batch(
         context_centers = frame_points[context_indices.reshape(-1)]
         _, context_neighbors = tree.query(context_centers, k=int(num_points))
         context_neighbors = np.asarray(context_neighbors, dtype=np.int64)
-        context_local = frame_points[context_neighbors] - context_centers[:, None, :]
+        context_local = (
+            frame_points[context_neighbors] - context_centers[:, None, :]
+        )
         context_local -= box_lengths[None, None, :] * np.round(
             context_local / box_lengths[None, None, :]
         )
-        context_local = (context_local / float(radius)).astype(np.float32, copy=False)
+        context_local = (context_local / float(radius)).astype(
+            np.float32, copy=False
+        )
         context_points = torch.from_numpy(
             context_local.reshape(
                 centers.shape[0], context_count, int(num_points), 3

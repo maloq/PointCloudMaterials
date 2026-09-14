@@ -2,7 +2,6 @@ import warnings
 
 from omegaconf import OmegaConf
 
-
 _MISSING = object()
 
 
@@ -12,7 +11,9 @@ def _get_config_value(cfg, field: str):
     return getattr(cfg, field, _MISSING)
 
 
-def warn_ignored_config_fields(cfg, fields: tuple[str, ...], *, reason: str) -> None:
+def warn_ignored_config_fields(
+    cfg, fields: tuple[str, ...], *, reason: str
+) -> None:
     configured = []
     for field in fields:
         value = _get_config_value(cfg, field)
@@ -56,13 +57,18 @@ def warn_common_view_sampler_ignored_fields(
         warn_ignored_config_fields(
             cfg,
             (field("jitter_mode"), field("jitter_scale")),
-            reason=f"{field('jitter_std')}={float(jitter_std)} disables jitter.",
+            reason=(
+                f"{field('jitter_std')}={float(jitter_std)} disables jitter."
+            ),
         )
     elif jitter_mode != "physical":
         warn_ignored_config_fields(
             cfg,
             (field("jitter_scale"),),
-            reason=f"{field('jitter_mode')}={jitter_mode!r} uses unit jitter scaling.",
+            reason=(
+                f"{field('jitter_mode')}={jitter_mode!r} uses unit jitter"
+                " scaling."
+            ),
         )
 
     if not bool(neighbor_view):
@@ -73,7 +79,10 @@ def warn_common_view_sampler_ignored_fields(
                 field("neighbor_k"),
                 field("neighbor_max_relative_distance"),
             ),
-            reason=f"{field('neighbor_view')}=false disables neighbor-shifted views.",
+            reason=(
+                f"{field('neighbor_view')}=false disables neighbor-shifted"
+                " views."
+            ),
         )
     elif neighbor_view_mode == "none":
         warn_ignored_config_fields(
@@ -82,22 +91,28 @@ def warn_common_view_sampler_ignored_fields(
                 field("neighbor_k"),
                 field("neighbor_max_relative_distance"),
             ),
-            reason=f"{field('neighbor_view_mode')}='none' disables neighbor shifts.",
+            reason=(
+                f"{field('neighbor_view_mode')}='none' disables neighbor"
+                " shifts."
+            ),
         )
 
     if float(drop_ratio) <= 0.0:
         warn_ignored_config_fields(
             cfg,
             (field("drop_apply_to_both"),),
-            reason=f"{field('drop_ratio')}={float(drop_ratio)} disables point dropping.",
+            reason=(
+                f"{field('drop_ratio')}={float(drop_ratio)} disables point"
+                " dropping."
+            ),
         )
     elif (not bool(neighbor_view)) or neighbor_view_mode == "none":
         warn_ignored_config_fields(
             cfg,
             (field("drop_apply_to_both"),),
             reason=(
-                f"{field('drop_apply_to_both')} only affects neighbor-view dropping, "
-                "but no neighbor view is sampled."
+                f"{field('drop_apply_to_both')} only affects neighbor-view"
+                " dropping, but no neighbor view is sampled."
             ),
         )
 
@@ -111,14 +126,20 @@ def warn_common_view_sampler_ignored_fields(
         warn_ignored_config_fields(
             cfg,
             (field("rotation_deg"),),
-            reason=f"{field('rotation_mode')}='full' ignores the max-angle setting.",
+            reason=(
+                f"{field('rotation_mode')}='full' ignores the max-angle"
+                " setting."
+            ),
         )
 
     if float(strain_std) <= 0.0:
         warn_ignored_config_fields(
             cfg,
             (field("strain_volume_preserve"),),
-            reason=f"{field('strain_std')}={float(strain_std)} disables strain augmentation.",
+            reason=(
+                f"{field('strain_std')}={float(strain_std)} disables strain"
+                " augmentation."
+            ),
         )
 
     if occlusion_mode == "none":
@@ -136,13 +157,18 @@ def warn_common_view_sampler_ignored_fields(
         warn_ignored_config_fields(
             cfg,
             (field("occlusion_cone_deg"),),
-            reason=f"{field('occlusion_mode')}='slab' does not use cone angle.",
+            reason=(
+                f"{field('occlusion_mode')}='slab' does not use cone angle."
+            ),
         )
     elif occlusion_mode == "cone":
         warn_ignored_config_fields(
             cfg,
             (field("occlusion_slab_frac"),),
-            reason=f"{field('occlusion_mode')}='cone' does not use slab thickness.",
+            reason=(
+                f"{field('occlusion_mode')}='cone' does not use slab"
+                " thickness."
+            ),
         )
 
 
@@ -156,11 +182,16 @@ def warn_fixed_invariant_fields(cfg, *, prefix: str) -> None:
             f"{prefix}_invariant_use_third_order",
             f"{prefix}_invariant_eps",
         ),
-        reason="contrastive training now always uses norms(eq_z) when available and falls back to inv_z.",
+        reason=(
+            "contrastive training now always uses norms(eq_z) when available"
+            " and falls back to inv_z."
+        ),
     )
 
 
-def warn_disabled_radial_fields(cfg, *, prefix: str, radial_enabled: bool) -> None:
+def warn_disabled_radial_fields(
+    cfg, *, prefix: str, radial_enabled: bool
+) -> None:
     if bool(radial_enabled):
         return
 
@@ -172,5 +203,7 @@ def warn_disabled_radial_fields(cfg, *, prefix: str, radial_enabled: bool) -> No
             f"{prefix}_radial_m",
             f"{prefix}_radial_eps",
         ),
-        reason=f"{prefix}_radial_enabled=false disables radial regularization.",
+        reason=(
+            f"{prefix}_radial_enabled=false disables radial regularization."
+        ),
     )

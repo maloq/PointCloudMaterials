@@ -17,7 +17,6 @@ from typing import Any
 
 import numpy as np
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
@@ -32,7 +31,6 @@ from src.data.trajectories.shooting import (  # noqa: E402
 from src.data.shooting import (  # noqa: E402
     validate_complete_shooting_branch,
 )
-
 
 _BINARY_DIRNAME = "trajectory_binary_float32"
 _TEXT_FILENAME = "trajectory.lammpstrj"
@@ -49,7 +47,9 @@ def _load_json_object(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         value = json.load(handle)
     if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
+        raise TypeError(
+            f"Expected a JSON object in {path}, got {type(value).__name__}."
+        )
     return value
 
 
@@ -57,7 +57,8 @@ def _write_json_atomic(path: Path, value: dict[str, Any]) -> None:
     temporary = path.parent / f".{path.name}.tmp-{os.getpid()}"
     if temporary.exists():
         raise FileExistsError(
-            f"Refusing to reuse an existing migration metadata temporary file: {temporary}"
+            "Refusing to reuse an existing migration metadata temporary file:"
+            f" {temporary}"
         )
     with temporary.open("w", encoding="utf-8") as handle:
         json.dump(value, handle, indent=2, sort_keys=True)
@@ -93,9 +94,10 @@ def _expected_timesteps(manifest: dict[str, Any]) -> tuple[int, ...]:
     timesteps = tuple(range(0, run_steps + 1, interval))
     if len(timesteps) != int(protocol["expected_frame_count"]):
         raise RuntimeError(
-            f"Campaign timestep contract is inconsistent: run_steps={run_steps}, "
-            f"interval={interval}, generated_frames={len(timesteps)}, "
-            f"expected_frames={protocol['expected_frame_count']}."
+            "Campaign timestep contract is inconsistent:"
+            f" run_steps={run_steps}, interval={interval},"
+            f" generated_frames={len(timesteps)},"
+            f" expected_frames={protocol['expected_frame_count']}."
         )
     return timesteps
 
@@ -110,27 +112,35 @@ def _validate_binary_for_migration(
 ) -> dict[str, str]:
     if binary.storage_dtype != np.dtype("float32"):
         raise RuntimeError(
-            f"Migration requires float32 binary storage, got {binary.storage_dtype.name}: "
-            f"{binary.root}."
+            "Migration requires float32 binary storage, got"
+            f" {binary.storage_dtype.name}: {binary.root}."
         )
-    if binary.atom_count != atom_count or tuple(binary.timesteps.tolist()) != expected_timesteps:
+    if (
+        binary.atom_count != atom_count
+        or tuple(binary.timesteps.tolist()) != expected_timesteps
+    ):
         raise RuntimeError(
-            f"Migrated binary violates the campaign contract: root={binary.root}, "
-            f"expected_atoms={atom_count}, observed_atoms={binary.atom_count}, "
-            f"expected_timesteps=[{expected_timesteps[0]}, {expected_timesteps[-1]}], "
-            f"observed_timesteps=[{int(binary.timesteps[0])}, {int(binary.timesteps[-1])}]."
+            "Migrated binary violates the campaign contract:"
+            f" root={binary.root}, expected_atoms={atom_count},"
+            f" observed_atoms={binary.atom_count},"
+            f" expected_timesteps=[{expected_timesteps[0]},"
+            f" {expected_timesteps[-1]}],"
+            f" observed_timesteps=[{int(binary.timesteps[0])},"
+            f" {int(binary.timesteps[-1])}]."
         )
     if int(binary.manifest["source"]["size_bytes"]) != source_size_bytes:
         raise RuntimeError(
-            f"Binary source size provenance differs from the complete outcome: "
-            f"binary={binary.root}, expected={source_size_bytes}, "
-            f"observed={binary.manifest['source']['size_bytes']}."
+            "Binary source size provenance differs from the complete outcome:"
+            f" binary={binary.root}, expected={source_size_bytes},"
+            f" observed={binary.manifest['source']['size_bytes']}."
         )
-    recorded_source_sha256 = str(binary.manifest["provenance"].get("source_sha256", ""))
+    recorded_source_sha256 = str(
+        binary.manifest["provenance"].get("source_sha256", "")
+    )
     if recorded_source_sha256 != source_sha256:
         raise RuntimeError(
-            f"Binary source SHA-256 provenance mismatch: binary={binary.root}, "
-            f"expected={source_sha256}, observed={recorded_source_sha256}."
+            f"Binary source SHA-256 provenance mismatch: binary={binary.root},"
+            f" expected={source_sha256}, observed={recorded_source_sha256}."
         )
     checksums = binary.verify_checksums()
     source_semantic = binary.manifest["source"]["semantic_float32_sha256"]
@@ -139,22 +149,24 @@ def _validate_binary_for_migration(
         or checksums["velocities"] != source_semantic["velocities"]
     ):
         raise RuntimeError(
-            f"Float32 binary is not semantically identical to the source arrays: {binary.root}."
+            "Float32 binary is not semantically identical to the source"
+            f" arrays: {binary.root}."
         )
     return checksums
 
 
-def _write_branch_outcome(
-    branch_dir: Path, outcome: dict[str, Any]
-) -> None:
+def _write_branch_outcome(branch_dir: Path, outcome: dict[str, Any]) -> None:
     _write_json_atomic(branch_dir / "outcome.json", outcome)
     status_path = branch_dir / "status.json"
     if status_path.is_file():
         status = _load_json_object(status_path)
-        if status.get("state") != "complete" or status.get("branch_id") != outcome["branch_id"]:
+        if (
+            status.get("state") != "complete"
+            or status.get("branch_id") != outcome["branch_id"]
+        ):
             raise RuntimeError(
-                f"Completed branch status disagrees with its outcome before migration: "
-                f"{status_path}."
+                "Completed branch status disagrees with its outcome before"
+                f" migration: {status_path}."
             )
         _write_json_atomic(status_path, outcome)
     _fsync_directory(branch_dir)
@@ -217,19 +229,21 @@ def _migrate_branch(
         if source.is_file():
             if source.stat().st_size != expected_source_size:
                 raise RuntimeError(
-                    f"Residual text source size changed after migration metadata was written: "
-                    f"{source}."
+                    "Residual text source size changed after migration"
+                    f" metadata was written: {source}."
                 )
             if _sha256_file(source) != expected_source_sha256:
                 raise RuntimeError(
-                    f"Residual text source checksum changed after migration metadata was written: "
-                    f"{source}."
+                    "Residual text source checksum changed after migration"
+                    f" metadata was written: {source}."
                 )
             if delete_source:
                 source.unlink()
                 _fsync_directory(branch_dir)
         if delete_source and source.exists():
-            raise RuntimeError(f"Text source still exists after explicit deletion: {source}")
+            raise RuntimeError(
+                f"Text source still exists after explicit deletion: {source}"
+            )
         if not source.exists() and not bool(source_record.get("deleted")):
             updated = dict(outcome)
             updated_artifact = dict(artifact)
@@ -300,13 +314,18 @@ def _migrate_branch(
         source.unlink()
         _fsync_directory(branch_dir)
         if source.exists():
-            raise RuntimeError(f"Text source still exists after explicit deletion: {source}")
+            raise RuntimeError(
+                f"Text source still exists after explicit deletion: {source}"
+            )
         updated["trajectory_artifact"]["source_lammpstrj"]["deleted"] = True
-        updated["trajectory_artifact"]["source_lammpstrj"]["deleted_at"] = _utc_now()
+        updated["trajectory_artifact"]["source_lammpstrj"][
+            "deleted_at"
+        ] = _utc_now()
         _write_branch_outcome(branch_dir, updated)
     validate_complete_shooting_branch(root, manifest, branch, updated)
     print(
-        f"[shooting-conversion] verified campaign={root.name} source_deleted={delete_source} "
+        "[shooting-conversion] verified"
+        f" campaign={root.name} source_deleted={delete_source} "
         f"branch={branch['branch_index']} freed_bytes={(source_size_bytes if delete_source else 0) - sizes['apparent_bytes']}",
         flush=True,
     )
@@ -324,15 +343,27 @@ def _migrate_branch(
 
 
 def _migrate_branch_worker(
-    root: Path, manifest: dict[str, Any], branch: dict[str, Any], delete_source: bool
+    root: Path,
+    manifest: dict[str, Any],
+    branch: dict[str, Any],
+    delete_source: bool,
 ) -> tuple[str, dict[str, Any]]:
-    outcome = _load_json_object(root / str(branch["branch_dir"]) / "outcome.json")
-    return _migrate_branch(root, manifest, branch, outcome, delete_source=delete_source)
+    outcome = _load_json_object(
+        root / str(branch["branch_dir"]) / "outcome.json"
+    )
+    return _migrate_branch(
+        root, manifest, branch, outcome, delete_source=delete_source
+    )
 
 
-def convert_campaign(root: Path, *, workers: int = 1, delete_source: bool = False) -> dict[str, Any]:
+def convert_campaign(
+    root: Path, *, workers: int = 1, delete_source: bool = False
+) -> dict[str, Any]:
     manifest = _load_json_object(root / "manifest.json")
-    if manifest.get("campaign_type") != "position_conditioned_langevin_nvt_shooting":
+    if (
+        manifest.get("campaign_type")
+        != "position_conditioned_langevin_nvt_shooting"
+    ):
         raise ValueError(
             f"Unsupported campaign_type={manifest.get('campaign_type')!r}: "
             f"{root / 'manifest.json'}."
@@ -343,13 +374,18 @@ def convert_campaign(root: Path, *, workers: int = 1, delete_source: bool = Fals
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as error:
             raise RuntimeError(
-                f"Another float32 migration process holds the campaign lock: {lock_path}."
+                "Another float32 migration process holds the campaign lock:"
+                f" {lock_path}."
             ) from error
         lock.seek(0)
         lock.truncate()
         lock.write(
             json.dumps(
-                {"pid": os.getpid(), "hostname": os.uname().nodename, "started_at": _utc_now()}
+                {
+                    "pid": os.getpid(),
+                    "hostname": os.uname().nodename,
+                    "started_at": _utc_now(),
+                }
             )
             + "\n"
         )
@@ -363,12 +399,15 @@ def convert_campaign(root: Path, *, workers: int = 1, delete_source: bool = Fals
             previous = _load_json_object(report_path)
             started_at = str(previous["started_at"])
             prior_entries = {
-                int(entry["branch_index"]): entry for entry in previous["branches"]
+                int(entry["branch_index"]): entry
+                for entry in previous["branches"]
             }
 
         worker_count = int(workers)
         if worker_count <= 0 or worker_count > 8:
-            raise ValueError(f"workers must be within [1, 8], got {worker_count}.")
+            raise ValueError(
+                f"workers must be within [1, 8], got {worker_count}."
+            )
         migrated_now = 0
         already_migrated = 0
         incomplete = 0
@@ -394,13 +433,21 @@ def convert_campaign(root: Path, *, workers: int = 1, delete_source: bool = Fals
             results = []
             process_batch_size = worker_count * 4
             for start in range(0, len(complete_branches), process_batch_size):
-                branch_batch = complete_branches[start : start + process_batch_size]
+                branch_batch = complete_branches[
+                    start : start + process_batch_size
+                ]
                 with concurrent.futures.ProcessPoolExecutor(
                     max_workers=worker_count,
                     mp_context=multiprocessing.get_context("spawn"),
                 ) as executor:
                     futures = [
-                        executor.submit(_migrate_branch_worker, root, manifest, branch, delete_source)
+                        executor.submit(
+                            _migrate_branch_worker,
+                            root,
+                            manifest,
+                            branch,
+                            delete_source,
+                        )
                         for branch in branch_batch
                     ]
                     results.extend(future.result() for future in futures)
@@ -412,7 +459,9 @@ def convert_campaign(root: Path, *, workers: int = 1, delete_source: bool = Fals
                 already_migrated += 1
             prior_entries[int(entry["branch_index"])] = entry
 
-        final_entries = [prior_entries[index] for index in sorted(prior_entries)]
+        final_entries = [
+            prior_entries[index] for index in sorted(prior_entries)
+        ]
         report = {
             "schema_version": 1,
             "state": "complete_for_current_outcomes",
@@ -432,11 +481,17 @@ def convert_campaign(root: Path, *, workers: int = 1, delete_source: bool = Fals
                 int(entry["binary_size_bytes"]) for entry in final_entries
             ),
             "freed_apparent_bytes": sum(
-                (int(entry["source_size_bytes"]) if entry["source_deleted"] else 0)
+                (
+                    int(entry["source_size_bytes"])
+                    if entry["source_deleted"]
+                    else 0
+                )
                 - int(entry["binary_size_bytes"])
                 for entry in final_entries
             ),
-            "all_sources_deleted": all(entry["source_deleted"] for entry in final_entries),
+            "all_sources_deleted": all(
+                entry["source_deleted"] for entry in final_entries
+            ),
             "branches": final_entries,
         }
         _write_json_atomic(report_path, report)
@@ -451,15 +506,21 @@ def convert_campaign(root: Path, *, workers: int = 1, delete_source: bool = Fals
 def _arguments(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Convert strict-complete shooting trajectories to verified float32 binary "
-            "directories. Source dumps are retained unless --delete-source is supplied."
+            "Convert strict-complete shooting trajectories to verified float32"
+            " binary directories. Source dumps are retained unless"
+            " --delete-source is supplied."
         )
     )
-    parser.add_argument("--campaign-root", action="append", required=True, type=Path)
+    parser.add_argument(
+        "--campaign-root", action="append", required=True, type=Path
+    )
     parser.add_argument(
         "--delete-source",
         action="store_true",
-        help="Delete branch-root trajectory.lammpstrj only after binary verification.",
+        help=(
+            "Delete branch-root trajectory.lammpstrj only after binary"
+            " verification."
+        ),
     )
     parser.add_argument("--workers", type=int, default=1)
     return parser.parse_args(argv)
@@ -469,14 +530,23 @@ def main(argv=None) -> None:
     args = _arguments(argv)
     roots = tuple(path.expanduser().resolve() for path in args.campaign_root)
     if len(set(roots)) != len(roots):
-        raise ValueError(f"Duplicate --campaign-root values: {[str(root) for root in roots]}.")
-    reports = [convert_campaign(root, workers=args.workers, delete_source=args.delete_source) for root in roots]
+        raise ValueError(
+            "Duplicate --campaign-root values:"
+            f" {[str(root) for root in roots]}."
+        )
+    reports = [
+        convert_campaign(
+            root, workers=args.workers, delete_source=args.delete_source
+        )
+        for root in roots
+    ]
     print(
         json.dumps(
             {
                 "campaign_count": len(reports),
                 "migrated_complete_branch_count": sum(
-                    report["migrated_complete_branch_count"] for report in reports
+                    report["migrated_complete_branch_count"]
+                    for report in reports
                 ),
                 "incomplete_branch_count": sum(
                     report["incomplete_branch_count"] for report in reports

@@ -34,11 +34,16 @@ from .homogeneous_analysis import (
     write_homogeneous_rdf_visualization,
 )
 from .homogeneous_config import HomogeneousCrystallizationConfig
-from .provenance import ExecutionProvenance, validate_configured_source_manifest
+from .provenance import (
+    ExecutionProvenance,
+    validate_configured_source_manifest,
+)
 from .simulation import ThermodynamicTrace, build_initial_solid, run_npt
-from .transition_analysis import STRUCTURE_NAMES, write_structure_slice_visualization
+from .transition_analysis import (
+    STRUCTURE_NAMES,
+    write_structure_slice_visualization,
+)
 from .validation import SystemDiagnostics, diagnose_system
-
 
 REPLICA_DIRECTORY_FORMAT = "replica_{index:03d}"
 
@@ -71,17 +76,25 @@ class HomogeneousCrystallizationResult:
     survival: HomogeneousSurvivalAnalysis
 
 
-def _load_source_liquid(config: HomogeneousCrystallizationConfig) -> SourceLiquid:
+def _load_source_liquid(
+    config: HomogeneousCrystallizationConfig,
+) -> SourceLiquid:
     source_root = config.source_dataset
     source_dir = source_root / config.source_environment
     manifest_path = source_root / "manifest.json"
     metadata_path = source_dir / "metadata.json"
     atom_table_path = source_dir / "atoms_full.npy"
     trajectory_path = source_dir / "trajectory.npz"
-    for path in (manifest_path, metadata_path, atom_table_path, trajectory_path):
+    for path in (
+        manifest_path,
+        metadata_path,
+        atom_table_path,
+        trajectory_path,
+    ):
         if not path.is_file():
             raise FileNotFoundError(
-                f"Homogeneous crystallization source is missing required file: {path}."
+                "Homogeneous crystallization source is missing required file:"
+                f" {path}."
             )
 
     with manifest_path.open("r", encoding="utf-8") as handle:
@@ -94,12 +107,15 @@ def _load_source_liquid(config: HomogeneousCrystallizationConfig) -> SourceLiqui
 
     atom_table = np.load(atom_table_path, mmap_mode="r")
     liquid_phase_id = PHASE_TO_ID["liquid_bulk"]
-    non_liquid_atoms = np.flatnonzero(atom_table["phase_id"] != liquid_phase_id)
+    non_liquid_atoms = np.flatnonzero(
+        atom_table["phase_id"] != liquid_phase_id
+    )
     if len(non_liquid_atoms):
         raise RuntimeError(
-            f"{atom_table_path}: homogeneous nucleation must start from the repository's "
-            f"bulk-liquid environment, but {len(non_liquid_atoms)} atoms do not have "
-            f"phase_id={liquid_phase_id}."
+            f"{atom_table_path}: homogeneous nucleation must start from the"
+            " repository's bulk-liquid environment, but"
+            f" {len(non_liquid_atoms)} atoms do not have"
+            f" phase_id={liquid_phase_id}."
         )
 
     with metadata_path.open("r", encoding="utf-8") as handle:
@@ -111,9 +127,10 @@ def _load_source_liquid(config: HomogeneousCrystallizationConfig) -> SourceLiqui
     )
     if crystalline_fraction > maximum_source_crystalline_fraction:
         raise RuntimeError(
-            f"{metadata_path}: source crystalline fraction is {crystalline_fraction:.6f}, "
-            "above validation.maximum_liquid_crystalline_fraction="
-            f"{maximum_source_crystalline_fraction:.6f}; this is not a validated liquid."
+            f"{metadata_path}: source crystalline fraction is"
+            f" {crystalline_fraction:.6f}, above"
+            f" validation.maximum_liquid_crystalline_fraction={maximum_source_crystalline_fraction:.6f};"
+            " this is not a validated liquid."
         )
 
     with np.load(trajectory_path) as trajectory:
@@ -122,8 +139,9 @@ def _load_source_liquid(config: HomogeneousCrystallizationConfig) -> SourceLiqui
         )
         if len(matching_frames) != 1:
             raise RuntimeError(
-                f"{trajectory_path}: expected exactly one frame at step "
-                f"{config.source_frame_step}, found indices={matching_frames.tolist()}."
+                f"{trajectory_path}: expected exactly one frame at step"
+                f" {config.source_frame_step}, found"
+                f" indices={matching_frames.tolist()}."
             )
         frame_index = int(matching_frames[0])
         positions_A = np.asarray(
@@ -140,17 +158,18 @@ def _load_source_liquid(config: HomogeneousCrystallizationConfig) -> SourceLiqui
         cell_volume_A3, volume_A3, rtol=1.0e-10, atol=1.0e-6
     ):
         raise RuntimeError(
-            f"{trajectory_path}: source frame step={config.source_frame_step} has an "
-            "inconsistent periodic cell and stored volume: det(cell)="
-            f"{cell_volume_A3:.12f} A^3, volume_A3={volume_A3:.12f}. This indicates a "
-            "stale or corrupted phase-context artifact; regenerate the source dataset."
+            f"{trajectory_path}: source frame"
+            f" step={config.source_frame_step} has an inconsistent periodic"
+            f" cell and stored volume: det(cell)={cell_volume_A3:.12f} A^3,"
+            f" volume_A3={volume_A3:.12f}. This indicates a stale or corrupted"
+            " phase-context artifact; regenerate the source dataset."
         )
 
     expected_atom_count = len(build_initial_solid(config.generator))
     if len(positions_A) != expected_atom_count:
         raise RuntimeError(
-            f"Source liquid contains {len(positions_A)} atoms but its generator "
-            f"configuration declares {expected_atom_count}."
+            f"Source liquid contains {len(positions_A)} atoms but its"
+            f" generator configuration declares {expected_atom_count}."
         )
     numbers = np.full(
         expected_atom_count,
@@ -158,7 +177,9 @@ def _load_source_liquid(config: HomogeneousCrystallizationConfig) -> SourceLiqui
         dtype=np.int32,
     )
     return SourceLiquid(
-        atoms=Atoms(numbers=numbers, positions=positions_A, cell=cell_A, pbc=True),
+        atoms=Atoms(
+            numbers=numbers, positions=positions_A, cell=cell_A, pbc=True
+        ),
         temperature_K=temperature_K,
         pressure_GPa=pressure_GPa,
         volume_A3=volume_A3,
@@ -206,7 +227,9 @@ def _simulate(
     checkpoints: CheckpointStore,
     progress: Callable[[str], None],
 ) -> tuple[Atoms, ThermodynamicTrace, ThermodynamicTrace]:
-    continuous_stage = f"{replica_name}_continuous_equilibration_and_measurement_npt"
+    continuous_stage = (
+        f"{replica_name}_continuous_equilibration_and_measurement_npt"
+    )
     checkpoint = checkpoints.load(continuous_stage)
     if checkpoint is None:
         atoms = source.atoms.copy()
@@ -241,7 +264,8 @@ def _simulate(
         )
     else:
         progress(
-            f"{continuous_stage}: loaded checkpoint from {checkpoints.directory}"
+            f"{continuous_stage}: loaded checkpoint from"
+            f" {checkpoints.directory}"
         )
         atoms = checkpoint.atoms
         atoms.calc = calculator
@@ -251,10 +275,12 @@ def _simulate(
     )
     if len(boundary_frames) != 1:
         raise RuntimeError(
-            f"{continuous_stage}: expected exactly one saved frame at the equilibration/"
-            f"measurement boundary step={config.equilibration_steps}, found indices="
-            f"{boundary_frames.tolist()}. sample_interval={config.sample_interval} must "
-            "divide equilibration_steps exactly."
+            f"{continuous_stage}: expected exactly one saved frame at the"
+            " equilibration/measurement boundary"
+            f" step={config.equilibration_steps}, found"
+            f" indices={boundary_frames.tolist()}."
+            f" sample_interval={config.sample_interval} must divide"
+            " equilibration_steps exactly."
         )
     equilibration_mask = continuous_trace.step <= config.equilibration_steps
     measurement_mask = continuous_trace.step >= config.equilibration_steps
@@ -343,9 +369,10 @@ def _write_run(
     threshold_event = {
         "observed": analysis.nucleation_observed,
         "definition": (
-            "onset of the first run of threshold_persistence_frames consecutive saved "
-            "measurement frames containing at least nucleus_size_threshold_atoms in one "
-            "connected PTM FCC/HCP/BCC cluster"
+            "onset of the first run of threshold_persistence_frames"
+            " consecutive saved measurement frames containing at least"
+            " nucleus_size_threshold_atoms in one connected PTM FCC/HCP/BCC"
+            " cluster"
         ),
         "observable_name": "persistent_crystalline_cluster_threshold_event",
         "ptm_normalized_rmsd_cutoff": analysis.ptm_rmsd_cutoff,
@@ -366,7 +393,9 @@ def _write_run(
         "final_cluster_atoms": int(
             analysis.largest_crystalline_cluster_atoms[-1]
         ),
-        "initial_crystalline_fraction": float(analysis.crystalline_fraction[0]),
+        "initial_crystalline_fraction": float(
+            analysis.crystalline_fraction[0]
+        ),
         "final_crystalline_fraction": float(analysis.crystalline_fraction[-1]),
     }
     if analysis.nucleation_observed:
@@ -391,7 +420,9 @@ def _write_run(
             "ptm_crystalline_fraction": source.crystalline_fraction,
         },
         "physics": {
-            "method": "homogeneous unseeded crystallization from supercooled liquid",
+            "method": (
+                "homogeneous unseeded crystallization from supercooled liquid"
+            ),
             "ensemble": "isothermal-isobaric (MTK)",
             "integrator_continuous_across_measurement_origin": True,
             "target_temperature_equilibration": {
@@ -414,9 +445,10 @@ def _write_run(
             "calculator": execution_provenance.calculator.to_dict(),
             "seeded": False,
             "phase_audit": (
-                "PTM and its connected FCC/HCP/BCC clusters are analysis observables only. "
-                "Per-atom phase_id retains the initial liquid provenance. The persistent "
-                "threshold event is not identified with a committor-derived critical nucleus."
+                "PTM and its connected FCC/HCP/BCC clusters are analysis"
+                " observables only. Per-atom phase_id retains the initial"
+                " liquid provenance. The persistent threshold event is not"
+                " identified with a committor-derived critical nucleus."
             ),
         },
         "threshold_event": threshold_event,
@@ -431,7 +463,9 @@ def _write_run(
     }
     with (directory / "metadata.json").open("w", encoding="utf-8") as handle:
         json.dump(metadata, handle, indent=2)
-    with (directory / "phase_mapping.json").open("w", encoding="utf-8") as handle:
+    with (directory / "phase_mapping.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
         json.dump(
             {
                 "name_to_id": PHASE_TO_ID,
@@ -476,13 +510,16 @@ def _write_overview(path: Path, run_dir: Path, replica_name: str) -> None:
         ("structure slices", "structure_slice.png"),
         ("total RDF", "total_rdf.png"),
     )
-    figure, axes = plt.subplots(1, 3, figsize=(22.0, 6.5), constrained_layout=True)
+    figure, axes = plt.subplots(
+        1, 3, figsize=(22.0, 6.5), constrained_layout=True
+    )
     for axis, (title, filename) in zip(axes, images):
         axis.imshow(plt.imread(run_dir / "visualizations" / filename))
         axis.set_title(title)
         axis.axis("off")
     figure.suptitle(
-        f"MACE homogeneous crystallization from supercooled liquid: {replica_name}"
+        "MACE homogeneous crystallization from supercooled liquid:"
+        f" {replica_name}"
     )
     figure.savefig(path, dpi=160)
     plt.close(figure)
@@ -499,8 +536,9 @@ def _write_dataset(
     output_root = config.output.root_dir
     if output_root.exists() and not config.output.overwrite:
         raise FileExistsError(
-            f"Homogeneous crystallization output already exists: {output_root}. Remove it "
-            "or explicitly set output.overwrite=true."
+            "Homogeneous crystallization output already exists:"
+            f" {output_root}. Remove it or explicitly set"
+            " output.overwrite=true."
         )
     output_root.parent.mkdir(parents=True, exist_ok=True)
     staging_root = Path(
@@ -556,51 +594,57 @@ def _write_dataset(
             ),
             "scientific_scope": {
                 "supported_claim": (
-                    "Replica-level waiting times or right-censoring for a sustained, "
-                    "explicitly configured connected PTM-crystalline cluster threshold "
-                    f"during finite unseeded {config.temperature_K:.0f} K trajectories "
-                    "under the selected MACE Hamiltonian, plus their non-parametric "
-                    "Kaplan-Meier survival curve."
+                    "Replica-level waiting times or right-censoring for a"
+                    " sustained, explicitly configured connected"
+                    " PTM-crystalline cluster threshold during finite"
+                    f" unseeded {config.temperature_K:.0f} K trajectories"
+                    " under the selected MACE Hamiltonian, plus their"
+                    " non-parametric Kaplan-Meier survival curve."
                 ),
                 "unsupported_claim": (
-                    "A homogeneous nucleation rate, critical nucleus size, equilibrium "
-                    "melting temperature, committor, or potential-independent kinetics. "
-                    "The output deliberately does not fit a rate without separate tests of "
-                    "stationarity, model-specific undercooling, and finite-size convergence. "
-                    "Quantitative claims about real aluminium are unsupported while the "
-                    "configured potential remains exploratory and lacks a qualifying "
-                    "solid/liquid/interface validation report."
+                    "A homogeneous nucleation rate, critical nucleus size,"
+                    " equilibrium melting temperature, committor, or"
+                    " potential-independent kinetics. The output deliberately"
+                    " does not fit a rate without separate tests of"
+                    " stationarity, model-specific undercooling, and"
+                    " finite-size convergence. Quantitative claims about real"
+                    " aluminium are unsupported while the configured potential"
+                    " remains exploratory and lacks a qualifying"
+                    " solid/liquid/interface validation report."
                 ),
             },
             "method_references": [
                 {
                     "title": (
-                        "Crystal nucleation and growth dynamics of aluminum via "
-                        "quantum-accurate MD simulations"
+                        "Crystal nucleation and growth dynamics of aluminum"
+                        " via quantum-accurate MD simulations"
                     ),
                     "url": (
                         "https://www.sciencedirect.com/science/article/abs/pii/"
                         "S1359645425005324"
                     ),
                     "relevance": (
-                        "Reports spontaneous Al crystallization at 500-540 K using an ML "
-                        "interatomic potential."
+                        "Reports spontaneous Al crystallization at 500-540 K"
+                        " using an ML interatomic potential."
                     ),
                 },
                 {
                     "title": (
-                        "Molecular simulation of the crystallization of aluminum from the "
-                        "supercooled liquid"
+                        "Molecular simulation of the crystallization of"
+                        " aluminum from the supercooled liquid"
                     ),
                     "url": "https://pubmed.ncbi.nlm.nih.gov/17935411/",
                     "relevance": (
-                        "Reports complete Al crystallization at 1 atm and 15-20% below the "
-                        "model melting temperature using hybrid Monte Carlo."
+                        "Reports complete Al crystallization at 1 atm and"
+                        " 15-20% below the model melting temperature using"
+                        " hybrid Monte Carlo."
                     ),
                 },
             ],
         }
-        with (staging_root / "manifest.json").open("w", encoding="utf-8") as handle:
+        with (staging_root / "manifest.json").open(
+            "w", encoding="utf-8"
+        ) as handle:
             json.dump(manifest, handle, indent=2)
         if output_root.exists():
             shutil.rmtree(output_root)
@@ -619,10 +663,10 @@ def generate_homogeneous_crystallization_dataset(
 ) -> HomogeneousCrystallizationResult:
     if config.output.root_dir.exists() and not config.output.overwrite:
         raise FileExistsError(
-            f"Homogeneous crystallization output already exists: "
-            f"{config.output.root_dir}. Remove it or explicitly set "
-            "output.overwrite=true. This check is performed before loading the source, "
-            "constructing the calculator, or running MD."
+            "Homogeneous crystallization output already exists:"
+            f" {config.output.root_dir}. Remove it or explicitly set"
+            " output.overwrite=true. This check is performed before loading"
+            " the source, constructing the calculator, or running MD."
         )
     homogeneous_temperatures_K = (config.temperature_K,)
     validate_potential_qualification(
@@ -635,7 +679,9 @@ def generate_homogeneous_crystallization_dataset(
             "interface": homogeneous_temperatures_K,
             "nucleus": homogeneous_temperatures_K,
         },
-        context=f"homogeneous crystallization generation {config.dataset_name!r}",
+        context=(
+            f"homogeneous crystallization generation {config.dataset_name!r}"
+        ),
         required_claim="kinetics",
     )
     source = _load_source_liquid(config)
@@ -645,8 +691,10 @@ def generate_homogeneous_crystallization_dataset(
         injected_calculator_identity=injected_calculator_identity,
     )
     progress(
-        f"Generating {config.dataset_name!r}: {len(config.random_seeds)} independent "
-        f"replicas of {len(source.atoms)} atoms at {config.temperature_K:.0f} K; "
+        f"Generating {config.dataset_name!r}:"
+        f" {len(config.random_seeds)} independent "
+        f"replicas of {len(source.atoms)} atoms at"
+        f" {config.temperature_K:.0f} K; "
         f"equilibration={config.equilibration_steps * config.generator.dynamics.timestep_fs / 1000.0:.1f} ps, "
         f"measurement={config.steps * config.generator.dynamics.timestep_fs / 1000.0:.1f} ps"
     )
@@ -687,20 +735,25 @@ def generate_homogeneous_crystallization_dataset(
         maximum_initial_crystalline_fraction = (
             config.generator.validation.maximum_liquid_crystalline_fraction
         )
-        if analysis.crystalline_fraction[0] > maximum_initial_crystalline_fraction:
+        if (
+            analysis.crystalline_fraction[0]
+            > maximum_initial_crystalline_fraction
+        ):
             raise RuntimeError(
-                f"{replica_name}: the measured trajectory does not start from a validated "
-                "metastable liquid after target-temperature equilibration: frame-zero PTM "
-                f"crystalline fraction={analysis.crystalline_fraction[0]:.6f}, maximum="
-                f"{maximum_initial_crystalline_fraction:.6f}."
+                f"{replica_name}: the measured trajectory does not start from"
+                " a validated metastable liquid after target-temperature"
+                " equilibration: frame-zero PTM crystalline"
+                f" fraction={analysis.crystalline_fraction[0]:.6f},"
+                f" maximum={maximum_initial_crystalline_fraction:.6f}."
             )
         if analysis.nucleation_observed and analysis.nucleation_step == 0:
             raise RuntimeError(
-                f"{replica_name}: a persistent threshold-sized crystalline cluster is "
-                "already present in the first measured frame, so its waiting time is "
-                "left-censored and cannot enter the Kaplan-Meier analysis. Use a condition "
-                "that remains metastable through equilibration or shorten the explicitly "
-                "reported equilibration interval."
+                f"{replica_name}: a persistent threshold-sized crystalline"
+                " cluster is already present in the first measured frame, so"
+                " its waiting time is left-censored and cannot enter the"
+                " Kaplan-Meier analysis. Use a condition that remains"
+                " metastable through equilibration or shorten the explicitly"
+                " reported equilibration interval."
             )
         diagnostics = diagnose_system(
             atoms,
@@ -728,7 +781,8 @@ def generate_homogeneous_crystallization_dataset(
         )
         if observation_time_ps is None:
             raise RuntimeError(
-                f"{replica_name}: event is marked observed but has no onset time."
+                f"{replica_name}: event is marked observed but has no onset"
+                " time."
             )
         observations.append(
             ReplicaObservation(
@@ -748,7 +802,10 @@ def generate_homogeneous_crystallization_dataset(
         survival=survival,
         execution_provenance=execution_provenance,
     )
-    progress(f"Wrote homogeneous crystallization dataset to {config.output.root_dir}")
+    progress(
+        "Wrote homogeneous crystallization dataset to"
+        f" {config.output.root_dir}"
+    )
     return HomogeneousCrystallizationResult(
         output_root=config.output.root_dir,
         replicas=replica_results,

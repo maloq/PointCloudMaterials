@@ -16,7 +16,6 @@ from .artifacts import PHASE_NAMES
 from .simulation import ThermodynamicTrace
 from .transition_config import TransitionBranchConfig
 
-
 STRUCTURE_NAMES = ("other", "fcc", "hcp", "bcc", "ico")
 CRYSTALLINE_STRUCTURE_TYPES = np.array([1, 2, 3], dtype=np.int32)
 STRUCTURE_COLORS = (
@@ -88,8 +87,9 @@ def phase_rdf_metadata(
 ) -> dict[str, object]:
     return {
         "definition": (
-            "Total-Al radial distribution around central atoms grouped by their initial "
-            "prepared phase provenance; neighboring atoms may have any phase label."
+            "Total-Al radial distribution around central atoms grouped by"
+            " their initial prepared phase provenance; neighboring atoms may"
+            " have any phase label."
         ),
         "normalization": "whole-cell instantaneous number density",
         "backend": "OVITO compiled partial radial distribution function",
@@ -119,8 +119,8 @@ def _ptm_structure_types(atoms: Atoms, rmsd_cutoff: float) -> np.ndarray:
         from ovito.pipeline import Pipeline, StaticSource
     except ImportError as exc:
         raise ImportError(
-            "Transition analysis requires OVITO Polyhedral Template Matching. Install the "
-            "repository requirements in the pointnet environment."
+            "Transition analysis requires OVITO Polyhedral Template Matching."
+            " Install the repository requirements in the pointnet environment."
         ) from exc
     pipeline = Pipeline(source=StaticSource(data=ase_to_ovito(atoms)))
     modifier = PolyhedralTemplateMatchingModifier()
@@ -154,15 +154,19 @@ def analyze_phase_rdf(
         from ovito.modifiers import CoordinationAnalysisModifier
     except ImportError as exc:
         raise ImportError(
-            "Per-phase RDF analysis requires OVITO's compiled coordination analysis. "
-            "Install the repository requirements in the pointnet environment."
+            "Per-phase RDF analysis requires OVITO's compiled coordination"
+            " analysis. Install the repository requirements in the pointnet"
+            " environment."
         ) from exc
 
     phase_fractions = (
-        np.bincount(prepared_phase_ids, minlength=len(PHASE_NAMES)) / atom_count
+        np.bincount(prepared_phase_ids, minlength=len(PHASE_NAMES))
+        / atom_count
     )
     g_r = np.empty((frame_count, len(PHASE_NAMES), bins), dtype=np.float64)
-    numbers = np.full(atom_count, atomic_numbers[chemical_symbol], dtype=np.int32)
+    numbers = np.full(
+        atom_count, atomic_numbers[chemical_symbol], dtype=np.int32
+    )
     prepared_particle_types = prepared_phase_ids.astype(np.int32) + 1
     phase_pairs = tuple(
         (first, second)
@@ -188,20 +192,24 @@ def analyze_phase_rdf(
     for frame_index, (positions_A, cell_A) in enumerate(
         zip(trace.positions_A, trace.cell_vectors_A)
     ):
-        atoms = Atoms(numbers=numbers, positions=positions_A, cell=cell_A, pbc=True)
+        atoms = Atoms(
+            numbers=numbers, positions=positions_A, cell=cell_A, pbc=True
+        )
         data = ase_to_ovito(atoms)
         phase_property = data.particles_.create_property(
             "Prepared Phase", data=prepared_particle_types
         )
         for phase_id, phase_name in enumerate(PHASE_NAMES, start=1):
-            phase_property.types.append(ParticleType(id=phase_id, name=phase_name))
+            phase_property.types.append(
+                ParticleType(id=phase_id, name=phase_name)
+            )
         data.apply(modifier)
         table = data.tables["coordination-rdf"]
         components = tuple(table.y.component_names)
         if components != expected_components:
             raise RuntimeError(
-                f"{branch_name}: OVITO returned RDF components {components}, expected "
-                f"{expected_components}."
+                f"{branch_name}: OVITO returned RDF components {components},"
+                f" expected {expected_components}."
             )
         table_values = table.xy()
         if distance_A is None:
@@ -209,14 +217,19 @@ def analyze_phase_rdf(
         partial_rdf = table_values[:, 1:].T
         frame_rdf = np.zeros((len(PHASE_NAMES), bins), dtype=np.float64)
         for pair_index, (first, second) in enumerate(phase_pairs):
-            frame_rdf[first] += phase_fractions[second] * partial_rdf[pair_index]
+            frame_rdf[first] += (
+                phase_fractions[second] * partial_rdf[pair_index]
+            )
             if first != second:
-                frame_rdf[second] += phase_fractions[first] * partial_rdf[pair_index]
+                frame_rdf[second] += (
+                    phase_fractions[first] * partial_rdf[pair_index]
+                )
         g_r[frame_index] = frame_rdf
 
     if distance_A is None:
         raise RuntimeError(
-            f"{branch_name}: RDF analysis received an empty thermodynamic trace."
+            f"{branch_name}: RDF analysis received an empty thermodynamic"
+            " trace."
         )
 
     return PhaseRdfAnalysis(
@@ -268,13 +281,17 @@ def _oriented_crossing(
         if next_index == 0:
             second_position += 1.0
         fraction = (threshold - first_value) / slope
-        candidates.append((first_position + fraction * (second_position - first_position)) % 1.0)
+        candidates.append(
+            (first_position + fraction * (second_position - first_position))
+            % 1.0
+        )
     if not candidates:
         direction = "increasing" if orientation > 0 else "decreasing"
         raise RuntimeError(
-            f"{branch_name}: no {direction} PTM-profile crossing of threshold "
-            f"{threshold:.4f} exists at production step {frame_step}. Both phases must remain "
-            "present throughout the fitted coexistence trajectory."
+            f"{branch_name}: no {direction} PTM-profile crossing of threshold"
+            f" {threshold:.4f} exists at production step {frame_step}. Both"
+            " phases must remain present throughout the fitted coexistence"
+            " trajectory."
         )
     candidate_array = np.asarray(candidates, dtype=np.float64)
     candidate_distances = _cyclic_distance(candidate_array, reference)
@@ -282,10 +299,11 @@ def _oriented_crossing(
     maximum_tracking_jump = 2.0 / bin_count
     if candidate_distances[selected_index] > maximum_tracking_jump:
         raise RuntimeError(
-            f"{branch_name}: nearest oriented PTM-profile crossing jumps by "
-            f"{candidate_distances[selected_index]:.5f} fractional cell at production step "
-            f"{frame_step}, exceeding two profile bins ({maximum_tracking_jump:.5f}). The "
-            "original planar front was lost or became ambiguous."
+            f"{branch_name}: nearest oriented PTM-profile crossing jumps by"
+            f" {candidate_distances[selected_index]:.5f} fractional cell at"
+            f" production step {frame_step}, exceeding two profile bins"
+            f" ({maximum_tracking_jump:.5f}). The original planar front was"
+            " lost or became ambiguous."
         )
     return float(candidate_array[selected_index])
 
@@ -341,7 +359,9 @@ def _thermodynamic_stationarity(
     startup_temperature = float(
         np.mean(production_trace.temperature_K[:startup_frame_count])
     )
-    startup_pressure = float(np.mean(production_trace.pressure_GPa[:startup_frame_count]))
+    startup_pressure = float(
+        np.mean(production_trace.pressure_GPa[:startup_frame_count])
+    )
     steady_temperature = production_trace.temperature_K[steady_mask]
     steady_pressure = production_trace.pressure_GPa[steady_mask]
     split = len(steady_temperature) // 2
@@ -404,9 +424,10 @@ def _thermodynamic_stationarity(
     for description, observed_error, maximum_error, unit in checks:
         if observed_error > maximum_error:
             raise RuntimeError(
-                f"{branch_name}: {description} is {observed_error:.6f} {unit}, above the "
-                f"allowed {maximum_error:.6f} {unit}. The selected velocity window is not "
-                "thermodynamically stationary; extend equilibration or move the fit start."
+                f"{branch_name}: {description} is {observed_error:.6f} {unit},"
+                f" above the allowed {maximum_error:.6f} {unit}. The selected"
+                " velocity window is not thermodynamically stationary; extend"
+                " equilibration or move the fit start."
             )
     return ThermodynamicStationarity(
         equilibration_tail_mean_temperature_K=equilibration_temperature,
@@ -443,30 +464,51 @@ def analyze_transition(
         f"{branch.name}: spatial PTM audit of {frame_count} production frames "
         f"({atom_count} atoms/frame)"
     )
-    structure_fractions = np.empty((frame_count, len(STRUCTURE_NAMES)), dtype=np.float64)
+    structure_fractions = np.empty(
+        (frame_count, len(STRUCTURE_NAMES)), dtype=np.float64
+    )
     crystalline_fraction = np.empty(frame_count, dtype=np.float64)
     liquid_slab_fraction = np.empty(frame_count, dtype=np.float64)
     solid_region_fraction = np.empty(frame_count, dtype=np.float64)
-    crystalline_profile = np.empty((frame_count, profile_bins), dtype=np.float64)
-    bin_centers = (np.arange(profile_bins, dtype=np.float64) + 0.5) / profile_bins
-    numbers = np.full(atom_count, atomic_numbers[chemical_symbol], dtype=np.int32)
+    crystalline_profile = np.empty(
+        (frame_count, profile_bins), dtype=np.float64
+    )
+    bin_centers = (
+        np.arange(profile_bins, dtype=np.float64) + 0.5
+    ) / profile_bins
+    numbers = np.full(
+        atom_count, atomic_numbers[chemical_symbol], dtype=np.int32
+    )
     lower, upper = slab_bounds_fractional
 
     for frame_index, (positions_A, cell_A) in enumerate(
         zip(trace.positions_A, trace.cell_vectors_A)
     ):
-        atoms = Atoms(numbers=numbers, positions=positions_A, cell=cell_A, pbc=True)
+        atoms = Atoms(
+            numbers=numbers, positions=positions_A, cell=cell_A, pbc=True
+        )
         structure_types = _ptm_structure_types(atoms, ptm_rmsd_cutoff)
-        counts = np.bincount(structure_types, minlength=len(STRUCTURE_NAMES))[: len(STRUCTURE_NAMES)]
+        counts = np.bincount(structure_types, minlength=len(STRUCTURE_NAMES))[
+            : len(STRUCTURE_NAMES)
+        ]
         structure_fractions[frame_index] = counts / atom_count
         crystalline = np.isin(structure_types, CRYSTALLINE_STRUCTURE_TYPES)
         crystalline_fraction[frame_index] = float(np.mean(crystalline))
 
-        scaled_z = np.linalg.solve(np.asarray(cell_A).T, np.asarray(positions_A).T).T[:, 2] % 1.0
+        scaled_z = (
+            np.linalg.solve(np.asarray(cell_A).T, np.asarray(positions_A).T).T[
+                :, 2
+            ]
+            % 1.0
+        )
         liquid_slab = (scaled_z >= lower) & (scaled_z < upper)
         solid_region = ~liquid_slab
-        liquid_slab_fraction[frame_index] = float(np.mean(crystalline[liquid_slab]))
-        solid_region_fraction[frame_index] = float(np.mean(crystalline[solid_region]))
+        liquid_slab_fraction[frame_index] = float(
+            np.mean(crystalline[liquid_slab])
+        )
+        solid_region_fraction[frame_index] = float(
+            np.mean(crystalline[solid_region])
+        )
 
         bin_indices = np.floor(scaled_z * profile_bins).astype(np.int64)
         bin_counts = np.bincount(bin_indices, minlength=profile_bins)
@@ -483,12 +525,15 @@ def analyze_transition(
         )
         crystalline_profile[frame_index] = crystalline_counts / bin_counts
 
-    smoothed_profile = _cyclic_smooth(crystalline_profile, profile_smoothing_bins)
+    smoothed_profile = _cyclic_smooth(
+        crystalline_profile, profile_smoothing_bins
+    )
     baseline_mask = trace.step < branch.steady_state_start_step
     if not np.any(baseline_mask):
         raise RuntimeError(
-            f"{branch.name}: no post-equilibration baseline frames occur before "
-            f"steady_state_start_step={branch.steady_state_start_step}."
+            f"{branch.name}: no post-equilibration baseline frames occur"
+            " before"
+            f" steady_state_start_step={branch.steady_state_start_step}."
         )
     liquid_width = upper - lower
     solid_width = 1.0 - liquid_width
@@ -496,11 +541,13 @@ def analyze_transition(
         bin_centers <= upper - 0.25 * liquid_width
     )
     solid_center = (upper + 0.5 * solid_width) % 1.0
-    solid_core = _cyclic_distance(bin_centers, solid_center) <= 0.25 * solid_width
+    solid_core = (
+        _cyclic_distance(bin_centers, solid_center) <= 0.25 * solid_width
+    )
     if not np.any(liquid_core) or not np.any(solid_core):
         raise RuntimeError(
-            f"{branch.name}: profile_bins={profile_bins} does not resolve both bulk cores for "
-            f"slab_bounds_fractional={slab_bounds_fractional}."
+            f"{branch.name}: profile_bins={profile_bins} does not resolve both"
+            f" bulk cores for slab_bounds_fractional={slab_bounds_fractional}."
         )
     baseline_profile = np.mean(smoothed_profile[baseline_mask], axis=0)
     liquid_baseline = float(np.mean(baseline_profile[liquid_core]))
@@ -508,15 +555,16 @@ def analyze_transition(
     profile_contrast = solid_baseline - liquid_baseline
     if profile_contrast < minimum_profile_contrast:
         raise RuntimeError(
-            f"{branch.name}: post-equilibration PTM profile contrast is {profile_contrast:.4f} "
-            f"(solid core={solid_baseline:.4f}, liquid core={liquid_baseline:.4f}), below "
-            f"analysis.minimum_profile_contrast={minimum_profile_contrast:.4f}. A spatial "
-            "solid-liquid interface is not resolved."
+            f"{branch.name}: post-equilibration PTM profile contrast is"
+            f" {profile_contrast:.4f} (solid core={solid_baseline:.4f}, liquid"
+            f" core={liquid_baseline:.4f}), below"
+            f" analysis.minimum_profile_contrast={minimum_profile_contrast:.4f}."
+            " A spatial solid-liquid interface is not resolved."
         )
     profile_threshold = 0.5 * (solid_baseline + liquid_baseline)
-    frame_profile_contrast = np.mean(smoothed_profile[:, solid_core], axis=1) - np.mean(
-        smoothed_profile[:, liquid_core], axis=1
-    )
+    frame_profile_contrast = np.mean(
+        smoothed_profile[:, solid_core], axis=1
+    ) - np.mean(smoothed_profile[:, liquid_core], axis=1)
 
     interface_positions = np.empty((frame_count, 2), dtype=np.float64)
     lower_reference, upper_reference = lower, upper
@@ -562,9 +610,9 @@ def analyze_transition(
     steady_frame_count = int(np.count_nonzero(steady_mask))
     if steady_frame_count < 3:
         raise RuntimeError(
-            f"{branch.name}: velocity fit requires at least three saved frames in steps "
-            f"[{branch.steady_state_start_step}, {branch.steady_state_end_step}], found "
-            f"{steady_frame_count}."
+            f"{branch.name}: velocity fit requires at least three saved frames"
+            f" in steps [{branch.steady_state_start_step},"
+            f" {branch.steady_state_end_step}], found {steady_frame_count}."
         )
     low_contrast_fit_frames = np.flatnonzero(
         steady_mask & (frame_profile_contrast < minimum_profile_contrast)
@@ -572,11 +620,12 @@ def analyze_transition(
     if len(low_contrast_fit_frames):
         first_index = int(low_contrast_fit_frames[0])
         raise RuntimeError(
-            f"{branch.name}: PTM solid-core/liquid-core profile contrast falls to "
-            f"{frame_profile_contrast[first_index]:.4f} at fitted production step "
-            f"{int(trace.step[first_index])}, below analysis.minimum_profile_contrast="
-            f"{minimum_profile_contrast:.4f}. A phase was exhausted or the planar interface "
-            "lost spatial resolution; no velocity is reported through that interval."
+            f"{branch.name}: PTM solid-core/liquid-core profile contrast falls"
+            f" to {frame_profile_contrast[first_index]:.4f} at fitted"
+            f" production step {int(trace.step[first_index])}, below"
+            f" analysis.minimum_profile_contrast={minimum_profile_contrast:.4f}."
+            " A phase was exhausted or the planar interface lost spatial"
+            " resolution; no velocity is reported through that interval."
         )
     stationarity = _thermodynamic_stationarity(
         equilibration_trace,
@@ -598,7 +647,8 @@ def analyze_transition(
     )
     individual_fits = tuple(
         _linear_fit(
-            time_ps[steady_mask], signed_interface_advance_A[steady_mask, index]
+            time_ps[steady_mask],
+            signed_interface_advance_A[steady_mask, index],
         )
         for index in range(2)
     )
@@ -612,32 +662,37 @@ def analyze_transition(
     individual_velocities_m_per_s = individual_slopes * 100.0
     if fit_r_squared < minimum_velocity_fit_r_squared:
         raise RuntimeError(
-            f"{branch.name}: spatial interface-advance fit over production steps "
-            f"[{branch.steady_state_start_step}, {branch.steady_state_end_step}] has "
-            f"R^2={fit_r_squared:.4f}, below analysis.minimum_velocity_fit_r_squared="
-            f"{minimum_velocity_fit_r_squared:.4f}. The fronts do not exhibit a resolved "
-            "constant-velocity interval."
+            f"{branch.name}: spatial interface-advance fit over production"
+            f" steps [{branch.steady_state_start_step},"
+            f" {branch.steady_state_end_step}] has R^2={fit_r_squared:.4f},"
+            " below"
+            f" analysis.minimum_velocity_fit_r_squared={minimum_velocity_fit_r_squared:.4f}."
+            " The fronts do not exhibit a resolved constant-velocity"
+            " interval."
         )
     if np.any(individual_fit_r_squared < minimum_velocity_fit_r_squared):
         raise RuntimeError(
-            f"{branch.name}: individual lower/upper interface fits have R^2="
-            f"{individual_fit_r_squared.tolist()}, but both must reach "
-            f"analysis.minimum_velocity_fit_r_squared="
-            f"{minimum_velocity_fit_r_squared:.4f}. The mean would hide unresolved front "
-            "fluctuations."
+            f"{branch.name}: individual lower/upper interface fits have"
+            f" R^2={individual_fit_r_squared.tolist()}, but both must reach"
+            f" analysis.minimum_velocity_fit_r_squared={minimum_velocity_fit_r_squared:.4f}."
+            " The mean would hide unresolved front fluctuations."
         )
     if (
         minimum_velocity_fit_r_squared > 0.0
-        and individual_velocities_m_per_s[0] * individual_velocities_m_per_s[1] <= 0.0
+        and individual_velocities_m_per_s[0] * individual_velocities_m_per_s[1]
+        <= 0.0
     ):
         raise RuntimeError(
-            f"{branch.name}: the two spatial interfaces have opposite or zero fitted "
-            f"velocities {individual_velocities_m_per_s.tolist()} m/s. A mean front velocity "
-            "is ambiguous; extend the stationary production interval."
+            f"{branch.name}: the two spatial interfaces have opposite or zero"
+            f" fitted velocities {individual_velocities_m_per_s.tolist()} m/s."
+            " A mean front velocity is ambiguous; extend the stationary"
+            " production interval."
         )
 
     fraction_change = float(crystalline_fraction[-1] - crystalline_fraction[0])
-    net_advance_A = float(mean_interface_advance_A[-1] - mean_interface_advance_A[0])
+    net_advance_A = float(
+        mean_interface_advance_A[-1] - mean_interface_advance_A[0]
+    )
     if branch.expected_direction == "growth":
         signed_change = fraction_change
         signed_velocity = fitted_velocity_m_per_s
@@ -652,14 +707,19 @@ def analyze_transition(
         and branch.minimum_crystalline_fraction_change > 0.0
         and signed_velocity <= 0.0
     )
-    if signed_change < branch.minimum_crystalline_fraction_change or direction_failed:
+    if (
+        signed_change < branch.minimum_crystalline_fraction_change
+        or direction_failed
+    ):
         raise RuntimeError(
-            f"{branch.name}: expected_direction={branch.expected_direction!r}, but the "
-            f"production trajectory has crystalline-fraction change {fraction_change:+.4f} "
-            f"and fitted spatial interface velocity {fitted_velocity_m_per_s:+.3f} m/s. "
-            f"The direction check requires a fraction change of at least "
-            f"{branch.minimum_crystalline_fraction_change:.4f} and a velocity with the same "
-            "sign. Adjust the temperature bracket or extend the stationary production run."
+            f"{branch.name}: expected_direction={branch.expected_direction!r},"
+            " but the production trajectory has crystalline-fraction change"
+            f" {fraction_change:+.4f} and fitted spatial interface velocity"
+            f" {fitted_velocity_m_per_s:+.3f} m/s. The direction check"
+            " requires a fraction change of at least"
+            f" {branch.minimum_crystalline_fraction_change:.4f} and a velocity"
+            " with the same sign. Adjust the temperature bracket or extend"
+            " the stationary production run."
         )
     return TransitionAnalysis(
         step=trace.step.copy(),
@@ -702,7 +762,9 @@ def write_transition_visualization(
     branch: TransitionBranchConfig,
     pressure_GPa: float,
 ) -> None:
-    figure, axes = plt.subplots(2, 2, figsize=(13.0, 9.0), constrained_layout=True)
+    figure, axes = plt.subplots(
+        2, 2, figsize=(13.0, 9.0), constrained_layout=True
+    )
     axes[0, 0].plot(
         analysis.time_ps,
         analysis.crystalline_fraction,
@@ -721,7 +783,9 @@ def write_transition_visualization(
         color="#2a9d8f",
         label="prepared solid region",
     )
-    axes[0, 0].set(xlabel="time (ps)", ylabel="PTM crystalline fraction", ylim=(0.0, 1.0))
+    axes[0, 0].set(
+        xlabel="time (ps)", ylabel="PTM crystalline fraction", ylim=(0.0, 1.0)
+    )
     axes[0, 0].legend()
 
     axes[0, 1].plot(
@@ -760,9 +824,15 @@ def write_transition_visualization(
 
     temperature_axis = axes[1, 0]
     pressure_axis = temperature_axis.twinx()
-    temperature_axis.plot(analysis.time_ps, trace.temperature_K, color="#f4a261")
-    temperature_axis.axhline(branch.temperature_K, color="#f4a261", linestyle="--")
-    pressure_axis.plot(analysis.time_ps, trace.pressure_GPa, color="#457b9d", alpha=0.8)
+    temperature_axis.plot(
+        analysis.time_ps, trace.temperature_K, color="#f4a261"
+    )
+    temperature_axis.axhline(
+        branch.temperature_K, color="#f4a261", linestyle="--"
+    )
+    pressure_axis.plot(
+        analysis.time_ps, trace.pressure_GPa, color="#457b9d", alpha=0.8
+    )
     pressure_axis.axhline(pressure_GPa, color="#457b9d", linestyle="--")
     temperature_axis.set(xlabel="time (ps)", ylabel="temperature (K)")
     pressure_axis.set_ylabel("pressure (GPa)")
@@ -789,12 +859,15 @@ def write_transition_visualization(
         color="white",
         linewidth=1.2,
     )
-    axes[1, 1].set(xlabel="fractional position along interface normal", ylabel="time (ps)")
+    axes[1, 1].set(
+        xlabel="fractional position along interface normal", ylabel="time (ps)"
+    )
     figure.suptitle(
-        f"{branch.name}: direct solid–liquid coexistence at {branch.temperature_K:.0f} K\n"
-        f"Δcrystalline={analysis.net_crystalline_fraction_change:+.3f}, "
-        f"spatial-fit velocity={analysis.fitted_interface_velocity_m_per_s:+.1f} m/s, "
-        f"R²={analysis.velocity_fit_r_squared:.3f}"
+        f"{branch.name}: direct solid–liquid coexistence at"
+        f" {branch.temperature_K:.0f} K\nΔcrystalline={analysis.net_crystalline_fraction_change:+.3f},"
+        " spatial-fit"
+        f" velocity={analysis.fitted_interface_velocity_m_per_s:+.1f} m/s,"
+        f" R²={analysis.velocity_fit_r_squared:.3f}"
     )
     figure.savefig(path, dpi=180)
     plt.close(figure)
@@ -866,7 +939,9 @@ def write_structure_slice_visualization(
             ylim=(0.0, cell_lengths_A[2]),
             xlabel="x (Å)",
             ylabel="z (Å)",
-            title=f"t={time_ps:.2f} ps, crystalline={crystalline_fraction:.3f}",
+            title=(
+                f"t={time_ps:.2f} ps, crystalline={crystalline_fraction:.3f}"
+            ),
         )
         axis.set_aspect("equal", adjustable="box")
 
@@ -882,8 +957,8 @@ def write_structure_slice_visualization(
     if reference_planes_fractional:
         audit_note += "; dashed lines mark the prepared interfaces"
     figure.suptitle(
-        f"{simulation_name}: central-y structure slices at {temperature_K:.0f} K\n"
-        f"{audit_note}",
+        f"{simulation_name}: central-y structure slices at"
+        f" {temperature_K:.0f} K\n{audit_note}",
         y=0.98,
     )
     figure.subplots_adjust(bottom=0.15, top=0.82, wspace=0.22)
@@ -941,15 +1016,17 @@ def write_phase_rdf_visualization(
         figure.colorbar(heatmap, ax=heatmap_axis, label="g(r)")
 
     figure.suptitle(
-        f"{branch.name}: RDF evolution by initial phase provenance at "
-        f"{branch.temperature_K:.0f} K\n"
-        "Central atoms follow their prepared labels; neighbors include every Al atom"
+        f"{branch.name}: RDF evolution by initial phase provenance at"
+        f" {branch.temperature_K:.0f} K\nCentral atoms follow their prepared"
+        " labels; neighbors include every Al atom"
     )
     figure.savefig(path, dpi=180)
     plt.close(figure)
 
 
-def write_phase_rdf_overview(path: Path, branch_images: dict[str, Path]) -> None:
+def write_phase_rdf_overview(
+    path: Path, branch_images: dict[str, Path]
+) -> None:
     figure, axes = plt.subplots(
         1,
         len(branch_images),
@@ -959,19 +1036,25 @@ def write_phase_rdf_overview(path: Path, branch_images: dict[str, Path]) -> None
     for axis, image_path in zip(np.atleast_1d(axes), branch_images.values()):
         axis.imshow(plt.imread(image_path))
         axis.axis("off")
-    figure.suptitle("MACE direct-coexistence RDF evolution by initial phase provenance")
+    figure.suptitle(
+        "MACE direct-coexistence RDF evolution by initial phase provenance"
+    )
     figure.savefig(path, dpi=160)
     plt.close(figure)
 
 
-def write_structure_slice_overview(path: Path, branch_images: dict[str, Path]) -> None:
+def write_structure_slice_overview(
+    path: Path, branch_images: dict[str, Path]
+) -> None:
     figure, axes = plt.subplots(
         len(branch_images),
         1,
         figsize=(17.0, 6.0 * len(branch_images)),
         constrained_layout=True,
     )
-    for axis, (branch_name, image_path) in zip(np.atleast_1d(axes), branch_images.items()):
+    for axis, (branch_name, image_path) in zip(
+        np.atleast_1d(axes), branch_images.items()
+    ):
         axis.imshow(plt.imread(image_path))
         axis.set_title(branch_name)
         axis.axis("off")

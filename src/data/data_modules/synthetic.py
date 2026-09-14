@@ -38,8 +38,12 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             if self.max_samples > 0:
                 max_train = min(self.max_samples, len(self.train_dataset))
                 max_val = min(self.max_samples, len(self.val_dataset))
-                self.train_dataset = torch.utils.data.Subset(self.train_dataset, range(max_train))
-                self.val_dataset = torch.utils.data.Subset(self.val_dataset, range(max_val))
+                self.train_dataset = torch.utils.data.Subset(
+                    self.train_dataset, range(max_train)
+                )
+                self.val_dataset = torch.utils.data.Subset(
+                    self.val_dataset, range(max_val)
+                )
                 self.train_indices = self.train_indices[:max_train]
                 self.test_dataset = self.val_dataset
             self._datasets_initialized = True
@@ -51,8 +55,8 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         elapsed_time = time.time() - start_time
         if not initialized_now:
             logger.print(
-                f"Reusing existing synthetic dataset split for stage={stage!r} "
-                f"(split_seed={self.split_seed})."
+                "Reusing existing synthetic dataset split for"
+                f" stage={stage!r} (split_seed={self.split_seed})."
             )
         logger.print(f"Synth train dataset size: {len(self.train_dataset)}")
         logger.print(f"Synth val dataset size: {len(self.val_dataset)}")
@@ -77,24 +81,34 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
             scaling_range = aug_cfg.scaling_range
             track_augmentation = aug_cfg.track_augmentation
 
-        auto_cutoff_raw = OmegaConf.select(data_cfg, "auto_cutoff", default=None)
+        auto_cutoff_raw = OmegaConf.select(
+            data_cfg, "auto_cutoff", default=None
+        )
         auto_cutoff_cfg = _to_container(auto_cutoff_raw)
         model_type = OmegaConf.select(self.cfg, "model_type", default=None)
         disable_dataset_aug_for_ssl = bool(
-            OmegaConf.select(self.cfg, "disable_dataset_augmentation_for_ssl", default=True)
+            OmegaConf.select(
+                self.cfg, "disable_dataset_augmentation_for_ssl", default=True
+            )
         )
-        uses_ssl_views = (
-            model_type in {"vicreg", "visreg"}
-            or bool(OmegaConf.select(self.cfg, "vicreg_enabled", default=False))
+        uses_ssl_views = model_type in {"vicreg", "visreg"} or bool(
+            OmegaConf.select(self.cfg, "vicreg_enabled", default=False)
         )
         if uses_ssl_views and disable_dataset_aug_for_ssl:
             has_dataset_aug = any(
-                float(v) != 0.0 for v in (rotation_scale, noise_scale, jitter_scale, scaling_range)
+                float(v) != 0.0
+                for v in (
+                    rotation_scale,
+                    noise_scale,
+                    jitter_scale,
+                    scaling_range,
+                )
             )
             if has_dataset_aug:
                 logger.print(
-                    "Disabling dataset-level geometric augmentation for contrastive SSL; "
-                    "view augmentation is applied in the contrastive loss."
+                    "Disabling dataset-level geometric augmentation for"
+                    " contrastive SSL; view augmentation is applied in the"
+                    " contrastive loss."
                 )
             rotation_scale = 0.0
             noise_scale = 0.0
@@ -133,7 +147,9 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         train_size = int(train_ratio * len(dataset))
         val_size = len(dataset) - train_size
         if train_size <= 0 or val_size <= 0:
-            raise ValueError("Synthetic dataset split resulted in empty train or val set")
+            raise ValueError(
+                "Synthetic dataset split resulted in empty train or val set"
+            )
         train_dataset, val_dataset = _seeded_random_split(
             dataset,
             [train_size, val_size],
@@ -146,10 +162,15 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
     def _resolve_env_dirs(self, synth_dict):
         root = Path(synth_dict["root_dir"])
         if not root.is_dir():
-            raise FileNotFoundError(f"Synthetic root_dir is missing or not a directory: {root}")
+            raise FileNotFoundError(
+                f"Synthetic root_dir is missing or not a directory: {root}"
+            )
         env_dirs = sorted(path for path in root.iterdir() if path.is_dir())
         if not env_dirs:
-            raise ValueError(f"Synthetic root_dir contains no environment directories: {root}")
+            raise ValueError(
+                "Synthetic root_dir contains no environment directories:"
+                f" {root}"
+            )
         return env_dirs
 
     def train_dataloader(self):
@@ -184,9 +205,13 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         )
 
     @staticmethod
-    def _anisotropy_from_points(points: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
+    def _anisotropy_from_points(
+        points: torch.Tensor, eps: float = 1e-8
+    ) -> torch.Tensor:
         if points.dim() != 3 or points.shape[-1] != 3:
-            raise ValueError(f"Expected points of shape (B,N,3), got {tuple(points.shape)}")
+            raise ValueError(
+                f"Expected points of shape (B,N,3), got {tuple(points.shape)}"
+            )
         centered = points - points.mean(dim=1, keepdim=True)
         cov = (centered.transpose(1, 2) @ centered) / float(centered.shape[1])
         eigvals = torch.linalg.eigvalsh(cov.to(dtype=torch.float32))
@@ -206,10 +231,14 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         class_ids = torch.as_tensor(dataset._class_ids, dtype=torch.long)
         chunk_size = 512
         for start in range(0, len(subset_indices), chunk_size):
-            idx_list = subset_indices[start:start + chunk_size]
+            idx_list = subset_indices[start : start + chunk_size]
             idx = torch.as_tensor(idx_list, dtype=torch.long)
-            pts = torch.stack([dataset.samples[index] for index in idx_list], dim=0)
-            anis = self._anisotropy_from_points(pts).to(dtype=torch.float64).cpu()
+            pts = torch.stack(
+                [dataset.samples[index] for index in idx_list], dim=0
+            )
+            anis = (
+                self._anisotropy_from_points(pts).to(dtype=torch.float64).cpu()
+            )
             cls = class_ids.index_select(0, idx)
             for cid in torch.unique(cls):
                 mask = cls == cid
@@ -227,11 +256,15 @@ class SyntheticPointCloudDataModule(pl.LightningDataModule):
         """Log the class name to ID mapping for the dataset."""
         base_dataset = self.dataset
         if not base_dataset._class_to_idx:
-            raise RuntimeError("SyntheticPointCloudDataset produced no class labels.")
+            raise RuntimeError(
+                "SyntheticPointCloudDataset produced no class labels."
+            )
 
         logger.print(f"Dataset domain: {base_dataset.domain}")
         logger.print("Class labels:")
-        for class_name, class_idx in sorted(base_dataset._class_to_idx.items(), key=lambda item: item[1]):
+        for class_name, class_idx in sorted(
+            base_dataset._class_to_idx.items(), key=lambda item: item[1]
+        ):
             logger.print(f"  Class {class_idx}: {class_name}")
 
         self._log_train_anisotropy_by_class(base_dataset, self.train_indices)

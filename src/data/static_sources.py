@@ -9,7 +9,6 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 
-
 class ShardValueSequence(Sequence):
     """Per-sample metadata stored as constants for each source shard."""
 
@@ -40,15 +39,15 @@ class ShardValueSequence(Sequence):
 
 def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
     """Read points from OFF file and return as numpy array.
-    
+
     Optionally caches the file on disk in a faster .npy format.
-    
+
     Args:
         filename: Path to the OFF file.
         verbose: If True, prints additional information.
         cache: If True, will attempt to load a cached npy file if available,
                and will save to cache after parsing.
-        
+
     Returns:
         A numpy array of point coordinates (shape: [N, 3]).
     """
@@ -72,13 +71,13 @@ def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
         for _ in range(n_vertices):
             x, y, z = map(float, f.readline().split())
             points.append([x, y, z])
-            
+
     points = np.array(points)
 
     min_coords = points.min(axis=0)
     max_coords = points.max(axis=0)
     space_size = max_coords - min_coords
-    if verbose: 
+    if verbose:
         logger.print(f"Read {len(points)} points")
         logger.print(f"Size of space: {space_size}")
         logger.print(f"Min coords: {min_coords}")
@@ -106,8 +105,7 @@ def load_points(filepath: str) -> np.ndarray:
         )
     if points.ndim != 2 or points.shape[1] != 3:
         raise ValueError(
-            f"Expected (N, 3) array from {filepath}, "
-            f"got shape {points.shape}"
+            f"Expected (N, 3) array from {filepath}, got shape {points.shape}"
         )
     return points.astype(np.float32, copy=False)
 
@@ -247,8 +245,8 @@ def estimate_source_cutoff_radius(
         kth_distances_all.append(kth_dist)
 
     kth_all = np.concatenate(kth_distances_all).astype(np.float64, copy=False)
-    estimated_radius = (
-        float(np.quantile(kth_all, quantile)) * float(safety_factor)
+    estimated_radius = float(np.quantile(kth_all, quantile)) * float(
+        safety_factor
     )
 
     coverage = float(np.mean(kth_all <= estimated_radius))

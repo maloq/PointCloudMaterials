@@ -30,7 +30,7 @@ class SoapCoordDataset(Dataset):
             self.files = [Path(parquet_paths)]
         else:
             self.files = [Path(p) for p in parquet_paths]
-            
+
         self.num_coord_dims = 3
         self.dtype = dtype
         self.preload = preload
@@ -49,25 +49,20 @@ class SoapCoordDataset(Dataset):
                     )
                 coords_list.append(mat[:, :3])
                 soap_list.append(mat[:, 3:])
-            all_coords = torch.as_tensor(
-                np.vstack(coords_list), dtype=dtype
-            )
-            all_soap   = torch.as_tensor(
-                np.vstack(soap_list), dtype=dtype
-            )
+            all_coords = torch.as_tensor(np.vstack(coords_list), dtype=dtype)
+            all_soap = torch.as_tensor(np.vstack(soap_list), dtype=dtype)
             self.coords = all_coords
-            self.soap   = all_soap
-            self._len   = all_coords.shape[0]
+            self.soap = all_soap
+            self._len = all_coords.shape[0]
         else:
             raise NotImplementedError("Lazy mode not implemented")
-   
 
     def __len__(self) -> int:
         return self._len
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         if not (0 <= idx < self._len):
-            raise IndexError(f"Index {idx} out of range 0..{self._len-1}")
+            raise IndexError(f"Index {idx} out of range 0..{self._len - 1}")
 
         if self.preload:
             return self.soap[idx], self.coords[idx]

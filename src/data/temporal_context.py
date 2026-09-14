@@ -63,32 +63,42 @@ class TemporalBinaryContextDataset(Dataset[dict[str, object]]):
         self.context_center_count = int(context_center_count)
         self.trajectory_cache_size = int(trajectory_cache_size)
         if not self.entries:
-            raise ValueError("Temporal binary context dataset requires at least one run.")
+            raise ValueError(
+                "Temporal binary context dataset requires at least one run."
+            )
         if self.center_atom_ids.ndim != 1 or self.center_atom_ids.size == 0:
-            raise ValueError("center_atom_ids must be a nonempty one-dimensional sequence.")
+            raise ValueError(
+                "center_atom_ids must be a nonempty one-dimensional sequence."
+            )
         if np.unique(self.center_atom_ids).size != self.center_atom_ids.size:
             raise ValueError("center_atom_ids contains duplicates.")
-        if np.any(self.horizons_ps <= 0.0) or np.any(np.diff(self.horizons_ps) <= 0.0):
+        if np.any(self.horizons_ps <= 0.0) or np.any(
+            np.diff(self.horizons_ps) <= 0.0
+        ):
             raise ValueError(
-                f"horizons_ps must be positive and strictly increasing, got "
+                "horizons_ps must be positive and strictly increasing, got "
                 f"{self.horizons_ps.tolist()}."
             )
         if self.anchor_stride_frames <= 0:
             raise ValueError(
-                f"anchor_stride_frames must be positive, got {self.anchor_stride_frames}."
+                "anchor_stride_frames must be positive, got"
+                f" {self.anchor_stride_frames}."
             )
         if self.num_points <= 0 or self.radius <= 0.0:
             raise ValueError(
-                f"num_points and radius must be positive, got {self.num_points}, {self.radius}."
+                "num_points and radius must be positive, got"
+                f" {self.num_points}, {self.radius}."
             )
         if not 0 <= self.context_center_count < self.num_points:
             raise ValueError(
-                "context_center_count must be in [0, num_points), got "
-                f"{self.context_center_count} and num_points={self.num_points}."
+                "context_center_count must be in [0, num_points), got"
+                f" {self.context_center_count} and"
+                f" num_points={self.num_points}."
             )
         if self.trajectory_cache_size <= 0:
             raise ValueError(
-                f"trajectory_cache_size must be positive, got {self.trajectory_cache_size}."
+                "trajectory_cache_size must be positive, got"
+                f" {self.trajectory_cache_size}."
             )
 
         self._lag_frames: list[np.ndarray] = []
@@ -96,37 +106,44 @@ class TemporalBinaryContextDataset(Dataset[dict[str, object]]):
         for run_index, entry in enumerate(self.entries):
             if not entry.trajectory_path.is_dir():
                 raise ValueError(
-                    "Ablation 5 accepts only migrated temporal float32 binaries; "
-                    f"run={entry.run_id}, path={entry.trajectory_path}."
+                    "Ablation 5 accepts only migrated temporal float32"
+                    f" binaries; run={entry.run_id},"
+                    f" path={entry.trajectory_path}."
                 )
-            trajectory = TemporalLAMMPSBinaryTrajectory.load(entry.trajectory_path)
+            trajectory = TemporalLAMMPSBinaryTrajectory.load(
+                entry.trajectory_path
+            )
             if trajectory.atom_count != entry.metadata.atom_count:
                 raise RuntimeError(
-                    f"Binary/catalog atom-count mismatch for run={entry.run_id}: "
-                    f"binary={trajectory.atom_count}, catalog={entry.metadata.atom_count}."
+                    "Binary/catalog atom-count mismatch for"
+                    f" run={entry.run_id}: binary={trajectory.atom_count},"
+                    f" catalog={entry.metadata.atom_count}."
                 )
             interval_ps = float(entry.metadata.sample_interval_ps)
             raw_lags = self.horizons_ps / interval_ps
             lag_frames = np.rint(raw_lags).astype(np.int64)
             if not np.allclose(raw_lags, lag_frames, atol=1.0e-8, rtol=0.0):
                 raise ValueError(
-                    f"Requested horizons do not align with frames for run={entry.run_id}: "
-                    f"horizons_ps={self.horizons_ps.tolist()}, interval_ps={interval_ps}."
+                    "Requested horizons do not align with frames for"
+                    f" run={entry.run_id}:"
+                    f" horizons_ps={self.horizons_ps.tolist()},"
+                    f" interval_ps={interval_ps}."
                 )
             self._lag_frames.append(lag_frames)
             final_anchor = trajectory.frame_count - int(lag_frames[-1])
             if final_anchor <= 0:
                 raise ValueError(
-                    f"Run={entry.run_id} is too short for horizon={self.horizons_ps[-1]} ps."
+                    f"Run={entry.run_id} is too short for"
+                    f" horizon={self.horizons_ps[-1]} ps."
                 )
             records.extend(
                 TemporalBinaryAnchor(run_index=run_index, anchor_frame=anchor)
                 for anchor in range(0, final_anchor, self.anchor_stride_frames)
             )
         self.records = tuple(records)
-        self._trajectory_cache: OrderedDict[int, TemporalLAMMPSBinaryTrajectory] = (
-            OrderedDict()
-        )
+        self._trajectory_cache: OrderedDict[
+            int, TemporalLAMMPSBinaryTrajectory
+        ] = OrderedDict()
         self._descriptor = SteinhardtDescriptorBaseline(
             l_values=[4, 6],
             center_atom_tolerance=1.0e-6,
@@ -176,8 +193,14 @@ class TemporalBinaryContextDataset(Dataset[dict[str, object]]):
         if self.context_center_count == 0:
             token_points = present.points[:, None]
         else:
-            if present.context_points is None or present.context_center_offsets is None:
-                raise RuntimeError("Present environment builder did not return context tokens.")
+            if (
+                present.context_points is None
+                or present.context_center_offsets is None
+            ):
+                raise RuntimeError(
+                    "Present environment builder did not return context"
+                    " tokens."
+                )
             token_points = torch.cat(
                 [present.points[:, None], present.context_points], dim=1
             )
@@ -211,7 +234,9 @@ class TemporalBinaryContextDataset(Dataset[dict[str, object]]):
             "run_index": np.int32(record.run_index),
             "anchor_frame": np.int64(record.anchor_frame),
             "future_frames": np.asarray(future_frames, dtype=np.int64),
-            "anchor_timestep": np.int64(trajectory.timesteps[record.anchor_frame]),
+            "anchor_timestep": np.int64(
+                trajectory.timesteps[record.anchor_frame]
+            ),
             "future_timesteps": np.asarray(future_timesteps, dtype=np.int64),
             "temperature_K": np.float32(entry.metadata.temperature_K),
             "velocity_seed": np.int64(entry.metadata.velocity_seed),
@@ -231,7 +256,8 @@ def make_temporal_binary_context_loader(
 ) -> DataLoader:
     if int(batch_size) <= 0 or int(num_workers) < 0:
         raise ValueError(
-            f"Invalid DataLoader batch_size={batch_size}, num_workers={num_workers}."
+            f"Invalid DataLoader batch_size={batch_size},"
+            f" num_workers={num_workers}."
         )
     return DataLoader(
         dataset,

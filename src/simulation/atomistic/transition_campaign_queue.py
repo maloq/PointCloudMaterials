@@ -49,24 +49,31 @@ def campaign_database_path(config: TransitionCampaignConfig) -> Path:
     return config.output_root / "transition_campaign.sqlite3"
 
 
-def validate_transition_queue_identity(config: TransitionCampaignConfig) -> None:
+def validate_transition_queue_identity(
+    config: TransitionCampaignConfig,
+) -> None:
     database_path = campaign_database_path(config)
     if not database_path.is_file():
         raise FileNotFoundError(
-            f"{database_path}: transition queue must be initialized before a worker starts."
+            f"{database_path}: transition queue must be initialized before a"
+            " worker starts."
         )
     connection = _connect(config)
     try:
         row = connection.execute(
-            "SELECT value_json FROM campaign_metadata WHERE key='campaign_config'"
+            "SELECT value_json FROM campaign_metadata WHERE"
+            " key='campaign_config'"
         ).fetchone()
     finally:
         connection.close()
-    expected = json.dumps(config.to_dict(), sort_keys=True, separators=(",", ":"))
+    expected = json.dumps(
+        config.to_dict(), sort_keys=True, separators=(",", ":")
+    )
     if row is None or row["value_json"] != expected:
         raise RuntimeError(
-            f"{database_path}: worker campaign/source identity differs from the initialized "
-            "queue. Refusing to claim a task from replaced source content."
+            f"{database_path}: worker campaign/source identity differs from"
+            " the initialized queue. Refusing to claim a task from replaced"
+            " source content."
         )
 
 
@@ -81,13 +88,19 @@ def _connect(config: TransitionCampaignConfig) -> sqlite3.Connection:
     return connection
 
 
-def _expected_tasks(config: TransitionCampaignConfig) -> list[tuple[object, ...]]:
+def _expected_tasks(
+    config: TransitionCampaignConfig,
+) -> list[tuple[object, ...]]:
     tasks: list[tuple[object, ...]] = []
     task_index = 0
     for branch_index, branch in enumerate(config.transition.temperature_runs):
-        for replica_index, configured_seed in enumerate(config.transition.random_seeds):
+        for replica_index, configured_seed in enumerate(
+            config.transition.random_seeds
+        ):
             simulation_seed = int(
-                np.random.SeedSequence([configured_seed, branch_index]).generate_state(1)[0]
+                np.random.SeedSequence(
+                    [configured_seed, branch_index]
+                ).generate_state(1)[0]
             )
             tasks.append(
                 (
@@ -117,9 +130,10 @@ def initialize_transition_queue(
         )
         if unexpected:
             raise FileExistsError(
-                f"{config.output_root}: non-campaign output already exists with entries="
-                f"{unexpected}. Select a new transition output root; queued execution "
-                "will not adopt or overwrite ambiguous legacy artifacts."
+                f"{config.output_root}: non-campaign output already exists"
+                f" with entries={unexpected}. Select a new transition output"
+                " root; queued execution will not adopt or overwrite"
+                " ambiguous legacy artifacts."
             )
     config.output_root.mkdir(parents=True, exist_ok=True)
     connection = _connect(config)
@@ -166,7 +180,9 @@ def initialize_transition_queue(
         )
         existing_columns = {
             str(row["name"])
-            for row in connection.execute("PRAGMA table_info(tasks)").fetchall()
+            for row in connection.execute(
+                "PRAGMA table_info(tasks)"
+            ).fetchall()
         }
         for column, declaration in (
             ("md_claim_generation", "INTEGER NOT NULL DEFAULT 0"),
@@ -175,12 +191,15 @@ def initialize_transition_queue(
             ("analysis_claim_token", "TEXT"),
         ):
             if column not in existing_columns:
-                connection.execute(f"ALTER TABLE tasks ADD COLUMN {column} {declaration}")
+                connection.execute(
+                    f"ALTER TABLE tasks ADD COLUMN {column} {declaration}"
+                )
         serialized = json.dumps(
             config.to_dict(), sort_keys=True, separators=(",", ":")
         )
         row = connection.execute(
-            "SELECT value_json FROM campaign_metadata WHERE key='campaign_config'"
+            "SELECT value_json FROM campaign_metadata WHERE"
+            " key='campaign_config'"
         ).fetchone()
         if row is None:
             connection.execute(
@@ -189,50 +208,56 @@ def initialize_transition_queue(
             )
         elif row["value_json"] != serialized:
             raise RuntimeError(
-                f"{campaign_database_path(config)}: persisted campaign configuration "
-                "differs from the requested configuration. Resume with the exact original "
-                "campaign file or choose a new transition output root."
+                f"{campaign_database_path(config)}: persisted campaign"
+                " configuration differs from the requested configuration."
+                " Resume with the exact original campaign file or choose a"
+                " new transition output root."
             )
 
         expected = _expected_tasks(config)
         existing = connection.execute(
-            "SELECT task_index, run_name, branch_index, branch_name, replica_index, "
-            "configured_replica_seed, simulation_seed FROM tasks ORDER BY task_index"
+            "SELECT task_index, run_name, branch_index, branch_name,"
+            " replica_index, configured_replica_seed, simulation_seed FROM"
+            " tasks ORDER BY task_index"
         ).fetchall()
         if not existing:
             connection.executemany(
-                "INSERT INTO tasks(task_index, run_name, branch_index, branch_name, "
-                "replica_index, configured_replica_seed, simulation_seed, md_status, "
-                "analysis_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'queued', 'blocked')",
+                "INSERT INTO tasks(task_index, run_name, branch_index,"
+                " branch_name, replica_index, configured_replica_seed,"
+                " simulation_seed, md_status, analysis_status) VALUES (?, ?,"
+                " ?, ?, ?, ?, ?, 'queued', 'blocked')",
                 expected,
             )
         elif [tuple(row) for row in existing] != expected:
             raise RuntimeError(
-                f"{campaign_database_path(config)}: persisted task assignment differs "
-                "from the configured temperature/replica Cartesian product."
+                f"{campaign_database_path(config)}: persisted task assignment"
+                " differs from the configured temperature/replica Cartesian"
+                " product."
             )
 
         connection.execute(
-            "UPDATE tasks SET md_status='queued', md_worker=NULL, md_claim_token=NULL "
-            "WHERE md_status='running'"
+            "UPDATE tasks SET md_status='queued', md_worker=NULL,"
+            " md_claim_token=NULL WHERE md_status='running'"
         )
         connection.execute(
-            "UPDATE tasks SET analysis_status='pending', analysis_worker=NULL, "
-            "analysis_claim_token=NULL "
-            "WHERE md_status='complete' AND analysis_status='running'"
+            "UPDATE tasks SET analysis_status='pending', analysis_worker=NULL,"
+            " analysis_claim_token=NULL WHERE md_status='complete' AND"
+            " analysis_status='running'"
         )
         if retry_failed:
             connection.execute(
-                "UPDATE tasks SET md_status='queued', analysis_status='blocked', "
-                "md_worker=NULL, md_claim_token=NULL, md_error=NULL, raw_directory=NULL, "
-                "raw_commit_sha256=NULL, analysis_directory=NULL, "
-                "analysis_commit_sha256=NULL WHERE md_status='failed'"
+                "UPDATE tasks SET md_status='queued',"
+                " analysis_status='blocked', md_worker=NULL,"
+                " md_claim_token=NULL, md_error=NULL, raw_directory=NULL,"
+                " raw_commit_sha256=NULL, analysis_directory=NULL,"
+                " analysis_commit_sha256=NULL WHERE md_status='failed'"
             )
             connection.execute(
-                "UPDATE tasks SET analysis_status='pending', analysis_worker=NULL, "
-                "analysis_claim_token=NULL, analysis_error=NULL, analysis_directory=NULL, "
-                "analysis_commit_sha256=NULL WHERE md_status='complete' "
-                "AND analysis_status='failed'"
+                "UPDATE tasks SET analysis_status='pending',"
+                " analysis_worker=NULL, analysis_claim_token=NULL,"
+                " analysis_error=NULL, analysis_directory=NULL,"
+                " analysis_commit_sha256=NULL WHERE md_status='complete' AND"
+                " analysis_status='failed'"
             )
         connection.execute("COMMIT")
     except BaseException:
@@ -276,10 +301,10 @@ def _claim(
             else "md_status='queued'"
         )
         row = connection.execute(
-            "SELECT task_index, run_name, branch_index, branch_name, replica_index, "
-            "configured_replica_seed, simulation_seed, md_claim_generation, "
-            "analysis_claim_generation FROM tasks WHERE "
-            f"{condition} ORDER BY task_index LIMIT 1"
+            "SELECT task_index, run_name, branch_index, branch_name,"
+            " replica_index, configured_replica_seed, simulation_seed,"
+            " md_claim_generation, analysis_claim_generation FROM tasks WHERE"
+            f" {condition} ORDER BY task_index LIMIT 1"
         ).fetchone()
         if row is None:
             connection.execute("COMMIT")
@@ -288,9 +313,10 @@ def _claim(
         if analysis:
             generation = int(row["analysis_claim_generation"]) + 1
             updated = connection.execute(
-                "UPDATE tasks SET analysis_status='running', analysis_worker=?, "
-                "analysis_claim_generation=?, analysis_claim_token=? "
-                "WHERE task_index=? AND analysis_status='pending'",
+                "UPDATE tasks SET analysis_status='running',"
+                " analysis_worker=?, analysis_claim_generation=?,"
+                " analysis_claim_token=? WHERE task_index=? AND"
+                " analysis_status='pending'",
                 (worker_name, generation, claim_token, row["task_index"]),
             ).rowcount
         else:
@@ -304,7 +330,8 @@ def _claim(
         if updated != 1:
             connection.execute("ROLLBACK")
             raise RuntimeError(
-                f"Failed to atomically claim transition task index={row['task_index']}."
+                "Failed to atomically claim transition task"
+                f" index={row['task_index']}."
             )
         connection.execute("COMMIT")
         return _task(
@@ -334,8 +361,12 @@ def claim_analysis_task(
 
 
 def _digest(value: str, *, context: str) -> None:
-    if len(value) != 64 or any(character not in hexdigits for character in value):
-        raise ValueError(f"{context} must be a 64-character SHA-256 digest, got {value!r}.")
+    if len(value) != 64 or any(
+        character not in hexdigits for character in value
+    ):
+        raise ValueError(
+            f"{context} must be a 64-character SHA-256 digest, got {value!r}."
+        )
 
 
 def _validate_claim(task: TransitionCampaignTask, *, role: str) -> None:
@@ -363,9 +394,10 @@ def complete_md_task(
     connection = _connect(config)
     try:
         updated = connection.execute(
-            "UPDATE tasks SET md_status='complete', analysis_status='pending', "
-            "raw_directory=?, raw_commit_sha256=?, md_error=NULL WHERE task_index=? "
-            "AND md_status='running' AND md_claim_generation=? AND md_claim_token=?",
+            "UPDATE tasks SET md_status='complete', analysis_status='pending',"
+            " raw_directory=?, raw_commit_sha256=?, md_error=NULL WHERE"
+            " task_index=? AND md_status='running' AND md_claim_generation=?"
+            " AND md_claim_token=?",
             (
                 str(raw_directory),
                 raw_commit_sha256,
@@ -375,7 +407,9 @@ def complete_md_task(
             ),
         ).rowcount
         if updated != 1:
-            raise RuntimeError(f"{task.run_name}: cannot transition MD to complete.")
+            raise RuntimeError(
+                f"{task.run_name}: cannot transition MD to complete."
+            )
     finally:
         connection.close()
 
@@ -389,15 +423,17 @@ def complete_analysis_task(
 ) -> None:
     _validate_claim(task, role="analysis")
     _digest(
-        analysis_commit_sha256, context=f"{task.run_name} analysis_commit_sha256"
+        analysis_commit_sha256,
+        context=f"{task.run_name} analysis_commit_sha256",
     )
     connection = _connect(config)
     try:
         updated = connection.execute(
-            "UPDATE tasks SET analysis_status='complete', analysis_directory=?, "
-            "analysis_commit_sha256=?, analysis_error=NULL WHERE task_index=? "
-            "AND analysis_status='running' AND analysis_claim_generation=? "
-            "AND analysis_claim_token=?",
+            "UPDATE tasks SET analysis_status='complete',"
+            " analysis_directory=?, analysis_commit_sha256=?,"
+            " analysis_error=NULL WHERE task_index=? AND"
+            " analysis_status='running' AND analysis_claim_generation=? AND"
+            " analysis_claim_token=?",
             (
                 str(analysis_directory),
                 analysis_commit_sha256,
@@ -407,7 +443,9 @@ def complete_analysis_task(
             ),
         ).rowcount
         if updated != 1:
-            raise RuntimeError(f"{task.run_name}: cannot transition analysis to complete.")
+            raise RuntimeError(
+                f"{task.run_name}: cannot transition analysis to complete."
+            )
     finally:
         connection.close()
 
@@ -437,9 +475,10 @@ def fail_task(
             ).rowcount
         else:
             updated = connection.execute(
-                "UPDATE tasks SET md_status='failed', analysis_status='blocked', "
-                "md_error=? WHERE task_index=? AND md_status='running' "
-                "AND md_claim_generation=? AND md_claim_token=?",
+                "UPDATE tasks SET md_status='failed',"
+                " analysis_status='blocked', md_error=? WHERE task_index=? AND"
+                " md_status='running' AND md_claim_generation=? AND"
+                " md_claim_token=?",
                 (
                     error,
                     task.task_index,
@@ -479,7 +518,8 @@ def campaign_row(
         ).fetchone()
         if row is None:
             raise RuntimeError(
-                f"{campaign_database_path(config)}: no task row at index={task_index}."
+                f"{campaign_database_path(config)}: no task row at"
+                f" index={task_index}."
             )
         return dict(row)
     finally:
