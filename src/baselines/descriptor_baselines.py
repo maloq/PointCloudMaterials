@@ -1330,16 +1330,9 @@ def run_descriptor_baseline(cfg, *, output_dir: Path) -> tuple[dict[str, float],
 
     dm = PointCloudDataModule(cfg)
     dm.setup("fit")
-    dm_impl = getattr(dm, "impl", dm)
     train_dataset = getattr(dm, "train_dataset", None)
-    if train_dataset is None:
-        train_dataset = getattr(dm_impl, "train_dataset", None)
     val_dataset = getattr(dm, "val_dataset", None)
-    if val_dataset is None:
-        val_dataset = getattr(dm_impl, "val_dataset", None)
     test_dataset = getattr(dm, "test_dataset", None)
-    if test_dataset is None:
-        test_dataset = getattr(dm_impl, "test_dataset", None)
     if train_dataset is None or val_dataset is None or test_dataset is None:
         raise RuntimeError(
             "PointCloudDataModule did not expose train/val/test datasets after setup('fit')."

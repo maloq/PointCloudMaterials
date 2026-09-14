@@ -1,4 +1,4 @@
-import pytorch_lightning as pl
+"""Select concrete datamodules for ordinary training workflows."""
 
 from src.data_utils.data_kinds import normalize_data_kind
 from src.data_utils.data_modules.static import StaticPointCloudDataModule
@@ -6,35 +6,36 @@ from src.data_utils.data_modules.synthetic import SyntheticPointCloudDataModule
 from src.data_utils.data_modules.temporal_lammps import TemporalLAMMPSDataModule
 
 
-class PointCloudDataModule(pl.LightningDataModule):
-    def __init__(self, cfg):
-        super().__init__()
-        self.cfg = cfg
-        kind = normalize_data_kind(cfg.data.kind)
-        if kind == "synthetic":
-            self.impl = SyntheticPointCloudDataModule(cfg)
-        elif kind == "temporal_lammps":
-            self.impl = TemporalLAMMPSDataModule(cfg)
-        elif kind == "spatiotemporal_binary":
-            from src.data_utils.spatiotemporal_views import SpatiotemporalViewDataModule
-            self.impl = SpatiotemporalViewDataModule(cfg)
-        elif kind == "static":
-            self.impl = StaticPointCloudDataModule(cfg)
-        else:
-            raise ValueError(
-                "Unsupported data.kind. Expected one of "
-                "['static', 'synthetic', 'temporal_lammps', 'spatiotemporal_binary'] "
-                f"got {cfg.data.kind!r}."
-            )
+def create_datamodule(cfg, model_class=None):
+    """Construct one datamodule, honoring the method override before data.kind."""
+    datamodule_class = getattr(model_class, "data_module_class", None)
+    if datamodule_class is not None:
+        return datamodule_class(cfg)
 
-    def setup(self, stage=None):
-        return self.impl.setup(stage)
+    kind = normalize_data_kind(cfg.data.kind)
+    if kind == "synthetic":
+        return SyntheticPointCloudDataModule(cfg)
+    if kind == "temporal_lammps":
+        return TemporalLAMMPSDataModule(cfg)
+    if kind == "spatiotemporal_binary":
+        from src.data_utils.spatiotemporal_views import (
+            SpatiotemporalViewDataModule,
+        )
 
-    def train_dataloader(self):
-        return self.impl.train_dataloader()
+        return SpatiotemporalViewDataModule(cfg)
+    if kind == "relaxed_histories":
+        from src.data_utils.relaxed_histories import RelaxedHistoryDataModule
 
-    def val_dataloader(self):
-        return self.impl.val_dataloader()
+        return RelaxedHistoryDataModule(cfg)
+    if kind == "static":
+        return StaticPointCloudDataModule(cfg)
+    raise ValueError(
+        "Unsupported data.kind. Expected one of "
+        "['static', 'synthetic', 'temporal_lammps', "
+        "'spatiotemporal_binary', 'relaxed_histories'] "
+        f"got {cfg.data.kind!r}."
+    )
 
-    def test_dataloader(self):
-        return self.impl.test_dataloader()
+
+# Descriptor baselines still use this public constructor spelling.
+PointCloudDataModule = create_datamodule

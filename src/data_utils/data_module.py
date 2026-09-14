@@ -1,5 +1,6 @@
 from src.data_utils.data_modules import (
     PointCloudDataModule,
+    create_datamodule,
     RealPointCloudDataModule,
     StaticPointCloudDataModule,
     SynthPointCloudDataModule,
@@ -13,6 +14,7 @@ from src.data_utils.data_modules.temporal_window import TemporalWindowBatchSampl
 
 __all__ = [
     "PointCloudDataModule",
+    "create_datamodule",
     "RealPointCloudDataModule",
     "StaticPointCloudDataModule",
     "SynthPointCloudDataModule",

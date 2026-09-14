@@ -134,3 +134,51 @@ def test_temporal_sampler_epoch_replay():
     assert [len(batch) for batch in second] == [5, 5, 2]
     sampler.sampler.set_epoch(0)
     assert list(sampler) == first
+
+
+@pytest.mark.parametrize("kind,class_name", KINDS)
+def test_public_constructors_return_concrete_datamodule(kind, class_name):
+    from src.data_utils import relaxed_histories, spatiotemporal_views
+    from src.data_utils.data_module import PointCloudDataModule
+
+    classes = {
+        "StaticPointCloudDataModule": registry.StaticPointCloudDataModule,
+        "SyntheticPointCloudDataModule": registry.SyntheticPointCloudDataModule,
+        "TemporalLAMMPSDataModule": registry.TemporalLAMMPSDataModule,
+        "SpatiotemporalViewDataModule": (
+            spatiotemporal_views.SpatiotemporalViewDataModule
+        ),
+        "RelaxedHistoryDataModule": relaxed_histories.RelaxedHistoryDataModule,
+    }
+    cfg = OmegaConf.create({
+        "batch_size": 4, "num_workers": 0, "max_samples": 0,
+        "data": {"kind": kind},
+    })
+    for constructor in (registry.create_datamodule, PointCloudDataModule):
+        dm = constructor(cfg)
+        assert type(dm) is classes[class_name]
+        assert dm.cfg is cfg
+        assert dm.batch_size == 4
+        dm.batch_size = 2
+        assert dm.batch_size == 2
+        assert not hasattr(dm, "impl")
+
+
+def test_override_does_not_require_ordinary_data_config():
+    cfg = OmegaConf.create({})
+    concrete = SimpleNamespace(cfg=cfg)
+    calls = []
+
+    def custom(received):
+        calls.append(received)
+        return concrete
+
+    method = SimpleNamespace(data_module_class=custom)
+    assert registry.create_datamodule(cfg, method) is concrete
+    assert calls == [cfg]
+
+
+def test_selector_reports_unknown_kind():
+    cfg = OmegaConf.create({"data": {"kind": "misspelled"}})
+    with pytest.raises(ValueError, match="got 'misspelled'"):
+        registry.create_datamodule(cfg)

@@ -594,8 +594,6 @@ def _build_supervised_eval_loader(module, split: str) -> DataLoader | None:
         return None
 
     dataset = getattr(datamodule, f"{split}_dataset", None)
-    if dataset is None and hasattr(datamodule, "impl"):
-        dataset = getattr(datamodule.impl, f"{split}_dataset", None)
 
     if dataset is None:
         dataloader_fn = getattr(datamodule, f"{split}_dataloader", None)
@@ -1016,8 +1014,6 @@ def _get_stage_dataset(module, stage: str):
 
     split_name = f"{stage}_dataset"
     dataset = getattr(datamodule, split_name, None)
-    if dataset is None and hasattr(datamodule, "impl"):
-        dataset = getattr(datamodule.impl, split_name, None)
     while dataset is not None and hasattr(dataset, "dataset"):
         inner = getattr(dataset, "dataset")
         if inner is dataset:

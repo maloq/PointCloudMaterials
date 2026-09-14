@@ -20,12 +20,7 @@ import wandb
 
 sys.path.append(os.getcwd())
 from src.utils.logging_config import setup_logging
-from src.data_utils.data_module import (
-    StaticPointCloudDataModule,
-    SyntheticPointCloudDataModule,
-    TemporalLAMMPSDataModule,
-)
-from src.data_utils.data_kinds import normalize_data_kind
+from src.data_utils.data_modules import create_datamodule
 torch.set_float32_matmul_precision('high')
 
 logger = setup_logging()
@@ -490,8 +485,6 @@ def _get_train_batch_capacity(
     dm.setup("fit")
 
     train_dataset = getattr(dm, "train_dataset", None)
-    if train_dataset is None and hasattr(dm, "impl"):
-        train_dataset = getattr(dm.impl, "train_dataset", None)
     if train_dataset is None:
         raise RuntimeError(
             "Training datamodule did not expose train_dataset after setup('fit'). "
@@ -585,29 +578,7 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
     _seed_training_run(cfg)
     wandb_logger = init_wandb(cfg, run_dir)
 
-    datamodule_class = getattr(model_class, "data_module_class", None)
-    if datamodule_class is not None:
-        dm = datamodule_class(cfg)
-    else:
-        data_kind = normalize_data_kind(cfg.data.kind)
-        if data_kind == "synthetic":
-            dm = SyntheticPointCloudDataModule(cfg)
-        elif data_kind == "temporal_lammps":
-            dm = TemporalLAMMPSDataModule(cfg)
-        elif data_kind == "spatiotemporal_binary":
-            from src.data_utils.spatiotemporal_views import SpatiotemporalViewDataModule
-            dm = SpatiotemporalViewDataModule(cfg)
-        elif data_kind == "relaxed_histories":
-            from src.data_utils.relaxed_histories import RelaxedHistoryDataModule
-            dm = RelaxedHistoryDataModule(cfg)
-        elif data_kind == "static":
-            dm = StaticPointCloudDataModule(cfg)
-        else:
-            raise ValueError(
-                "Unsupported data.kind. Expected one of "
-                "['static', 'synthetic', 'temporal_lammps', 'spatiotemporal_binary', 'relaxed_histories'] "
-                f"got {cfg.data.kind!r}."
-            )
+    dm = create_datamodule(cfg, model_class=model_class)
     model = model_class(cfg)
 
     checkpoint_monitor = str(getattr(cfg, "checkpoint_monitor", "val/loss"))
