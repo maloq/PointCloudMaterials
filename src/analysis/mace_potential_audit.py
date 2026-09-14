@@ -20,7 +20,7 @@ from src.data_utils.shooting_binary import ShootingBinaryTrajectory
 from src.data_utils.temporal_campaign import write_json
 from src.models.encoders.mace_denoising import PretrainedMACEDenoisingEncoder
 from src.simulation.relaxation import relax_frame, sha256
-from src.training_methods.mace_denoising import BLOCKS, Predictor, raw_prediction
+from src.training_methods.mace_denoising.train import BLOCKS, Predictor, raw_prediction
 
 
 def paired_statistics(reference, candidate, temperatures, seed):

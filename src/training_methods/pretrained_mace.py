@@ -198,7 +198,7 @@ def main():
     parser.add_argument("--stage",choices=["prepare","preflight","train","analysis","potential-audit","all"],default="all")
     args=parser.parse_args();cfg=json.loads(Path(args.config).read_text())
     if cfg.get("protocol") in ("denoising80", "denoising80_reuse"):
-        from src.training_methods.mace_denoising import run as run_denoising
+        from src.training_methods.mace_denoising.train import run as run_denoising
         run_denoising(cfg, args.stage)
         return
     if cfg.get("protocol") == "temporal80":

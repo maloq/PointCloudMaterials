@@ -5,7 +5,7 @@ import pytest
 import torch
 
 from src.models.encoders.mace_denoising import AtomTemporalFusion, ResidualFrameFusion
-from src.training_methods.mace_denoising import topology_loss, fit_targets, transform_target, raw_prediction
+from src.training_methods.mace_denoising.train import topology_loss, fit_targets, transform_target, raw_prediction
 
 
 @pytest.mark.parametrize('atom', [False, True])
