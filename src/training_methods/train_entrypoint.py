@@ -78,8 +78,9 @@ def _train(
     method_name: str | None = None,
     run_analysis: bool = True,
 ):
-    method = resolve_training_method(cfg, method_name=method_name)
-    model_class = method.load_module_class()
+    model_class, default_analysis = resolve_training_method(
+        cfg, method_name=method_name
+    )
     run_test = bool(getattr(cfg, "run_test_after_training", True))
 
     trainer, model, dm, checkpoint_callbacks = train_model(
@@ -91,7 +92,7 @@ def _train(
     _run_registered_post_training_analysis(
         cfg,
         checkpoint_callbacks=checkpoint_callbacks,
-        enabled_by_default=method.run_post_training_analysis,
+        enabled_by_default=default_analysis,
         requested=run_analysis,
     )
     return trainer, model, dm, checkpoint_callbacks

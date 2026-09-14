@@ -1,29 +1,8 @@
-from __future__ import annotations
+"""Explicit selection for the two maintained Lightning workflows."""
 
-from dataclasses import dataclass
-from importlib import import_module
 from typing import Any
 
 
-@dataclass(frozen=True)
-class TrainingMethodSpec:
-    name: str
-    module_path: str
-    class_name: str
-    run_post_training_analysis: bool = False
-
-    def load_module_class(self):
-        module = import_module(self.module_path)
-        try:
-            return getattr(module, self.class_name)
-        except AttributeError as exc:
-            raise AttributeError(
-                f"Training method {self.name!r} expected class {self.class_name!r} "
-                f"in module {self.module_path!r}, but it was not found."
-            ) from exc
-
-
-_METHODS: dict[str, TrainingMethodSpec] = {}
 _MODEL_TYPE_ALIASES = {
     "vicreg": "contrastive",
     "visreg": "contrastive",
@@ -32,20 +11,6 @@ _MODEL_TYPE_ALIASES = {
     "temporal_ssl": "temporal_ssl",
 }
 
-
-def register_training_method(spec: TrainingMethodSpec) -> TrainingMethodSpec:
-    existing = _METHODS.get(spec.name)
-    if existing is not None and existing != spec:
-        raise ValueError(
-            f"Training method {spec.name!r} is already registered as {existing}; "
-            f"cannot replace it with {spec}."
-        )
-    _METHODS[spec.name] = spec
-    return spec
-
-
-def available_training_methods() -> tuple[str, ...]:
-    return tuple(sorted(_METHODS))
 
 
 def _method_name_from_cfg(cfg: Any) -> str | None:
@@ -67,45 +32,35 @@ def _method_name_from_cfg(cfg: Any) -> str | None:
     return None
 
 
-def resolve_training_method(cfg: Any = None, *, method_name: str | None = None) -> TrainingMethodSpec:
-    resolved_name = str(method_name).strip().lower() if method_name is not None else None
+
+def resolve_training_method(cfg: Any = None, *, method_name: str | None = None):
+    """Return the concrete module class and its default analysis policy."""
+    resolved_name = (
+        str(method_name).strip().lower() if method_name is not None else None
+    )
     if not resolved_name and cfg is not None:
         resolved_name = _method_name_from_cfg(cfg)
+    available = "contrastive, temporal_ssl"
     if not resolved_name:
-        available = ", ".join(available_training_methods())
         raise ValueError(
-            "Could not resolve training method. Set cfg.method.name, cfg.training_method, "
-            f"or cfg.model_type. Registered methods: [{available}]"
+            "Could not resolve training method. Set cfg.method.name, "
+            "cfg.training_method, or cfg.model_type. "
+            f"Registered methods: [{available}]"
         )
-
     resolved_name = _MODEL_TYPE_ALIASES.get(resolved_name, resolved_name)
-    spec = _METHODS.get(resolved_name)
-    if spec is None:
-        available = ", ".join(available_training_methods())
-        raise KeyError(
-            f"Unknown training method {resolved_name!r}. Registered methods: [{available}]"
+    if resolved_name == "contrastive":
+        from src.training_methods.contrastive_learning.vicreg_module import (
+            VICRegModule,
         )
-    return spec
 
+        return VICRegModule, True
+    if resolved_name == "temporal_ssl":
+        from src.training_methods.temporal_ssl.temporal_ssl_module import (
+            TemporalSSLModule,
+        )
 
-register_training_method(
-    TrainingMethodSpec(
-        name="contrastive",
-        module_path="src.training_methods.contrastive_learning.vicreg_module",
-        class_name="VICRegModule",
-        run_post_training_analysis=True,
+        return TemporalSSLModule, False
+    raise KeyError(
+        f"Unknown training method {resolved_name!r}. "
+        f"Registered methods: [{available}]"
     )
-)
-register_training_method(
-    TrainingMethodSpec(
-        name="temporal_ssl",
-        module_path="src.training_methods.temporal_ssl.temporal_ssl_module",
-        class_name="TemporalSSLModule",
-    )
-)
-__all__ = [
-    "TrainingMethodSpec",
-    "available_training_methods",
-    "register_training_method",
-    "resolve_training_method",
-]

@@ -180,8 +180,7 @@ def load_frozen_encoder(
     if int(repeats) <= 0:
         raise ValueError(f"embedding repeats must be > 0, got {repeats}.")
 
-    method = resolve_training_method(cfg)
-    module_class = method.load_module_class()
+    module_class, _ = resolve_training_method(cfg)
     model = load_model_from_checkpoint(
         str(checkpoint),
         cfg,
