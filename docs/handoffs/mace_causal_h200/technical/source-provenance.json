@@ -1,0 +1,7 @@
+{
+  "git_commit": "69500e52921c0cd86e0f5520dd9261c340cbcdad",
+  "working_tree_status": " M configs/README.md\n M configs/datasets.json\n M docs/README.md\n M docs/metrics/contracts.json\n M docs/metrics/mace_data_amount.md\n M docs/research_glossary.md\n M experiments/README.md\n M scripts/README.md\n M src/research/README.md\n M src/research/mace_velocity/__main__.py\n M tests/README.md\n M tests/test_research_layout.py\n?? configs/mace_causal/\n?? docs/handoffs/\n?? docs/mace_causal.md\n?? docs/mace_causal_h200.md\n?? docs/metrics/mace_causal.md\n?? docs/metrics/mace_causal_comparison.md\n?? experiments/mace_causal_20260916/\n?? output/mace_causal/\n?? scripts/benchmark_hardware.py\n?? src/data_utils/causal_history.py\n?? src/hardware_benchmark/\n?? src/models/encoders/mace_causal.py\n?? src/research/mace_causal_comparison.py\n?? src/training_methods/mace_causal/\n?? tests/test_mace_causal.py\n?? tests/test_mace_causal_comparison.py\n",
+  "cache_history_tensor_bytes": 4063767376,
+  "cache_complete_sha256": "d5c4412d7ba93bceca86a36857a52b65781c68580d3a0a6d8b19bc271c5b6686",
+  "note": "Current working files, including uncommitted causal implementation; portable bundle manifest inventories exact transferred bytes."
+}

@@ -27,12 +27,6 @@ the September 15, 2026 coordinate/velocity experiment, not every MACE checkpoint
 | [Maps and assignments](#our-learned-maps-and-state-assignments) | Temporal coordinates, learned physical distance, catalog states and uncertainty |
 | [Evaluation comparisons](#our-evaluation-comparisons) | Within-liquid comparisons, held-out sources, siblings and storage effects |
 
-Protocol status (16 September 2026): the frozen-feature replacement-map
-experiments `mace_local_state`, `mace_local_smooth_v1` and `mace_local_motion_v1`
-were [discarded](discarded_frozen_encoder_maps.md). Their definitions remain here
-to interpret preserved results. Native encoder training and embedding forecasting
-remain active.
-
 ## The local object we describe
 
 ### Local structure
@@ -57,12 +51,6 @@ neighborhood rule is part of the definition: nearest 80 atoms, a radius cutoff,
 and a smoothly weighted region are different environments. Always identify which
 rule an embedding or target uses.
 
-### Local group or patch
-
-The collection of atoms used for a local calculation. A group observable may
-average measurements over several atoms; a center observable measures only the
-central atom. A patch can also include a surrounding [halo](#halo) used for
-computation without including all halo atoms in the final average.
 
 ### Tracked center
 
@@ -86,41 +74,6 @@ smoother and must be declared. The current velocity encoder has no history input
 
 ## Our structural targets
 
-### Local-group physical targets
-
-The 16 structural targets of the velocity run: smoothly weighted means and
-standard deviations of q4, q6, normalized w4/w6, neighbor-averaged q6, q6 bond
-coherence, nearest-shell density, and smooth coordination. They describe the
-inner group, whereas some older experiments use center-only observables. The
-weights match smooth inner pooling; the exact per-atom definitions are in
-[group physics](../src/research/mace_local_state/physics.py) and
-[velocity metrics](metrics/mace_velocity.md).
-
-### PTM RMSD and PTM margin
-
-PTM RMSD is the template-fit mismatch reported by PTM. In our encoder diagnostic,
-the cutoff margin is `0.1 - PTM_RMSD`: a positive margin passes that cutoff and a
-negative one fails. A missing template has an undefined margin. This is distinct
-from a top-two cluster membership margin or a learned classifier score.
-
-### Crystal fraction in elemental simulations
-
-For the Al/Ti crystallization producer, the crystal fraction is the fraction of
-all atoms matching FCC, HCP or BCC local templates in full-system periodic PTM.
-The million-atom Al run uses RMSD cutoff 0.10; its 94% stopping condition requires
-two consecutive qualifying assessments. Reaching its separate 400 ps duration cap
-does not mean this condition was met. PTM Other includes unclassified environments,
-including liquid-like atoms, defects and interfaces; it is not a pure liquid fraction.
-Spatial figures classify the whole box before selecting a display slice. This
-simulation criterion is distinct from learned local-state classes and PTM margin.
-
-### Liquid-like selection
-
-A declared rule for selecting disordered environments in an analysis. Our recent
-stability audit uses group mean qbar6 < 0.30 at both times; the frozen static
-state-discovery study uses PTM Other. These are different proxies and can include
-defects or interfaces. Neither selection establishes a thermodynamic phase or
-proves that all selected neighborhoods have the same local structure.
 
 ### Persistence image and TDA vector
 
@@ -200,44 +153,11 @@ which meaning applies when it could be ambiguous.
 In our earlier VICReg models, the transformation after the raw MACE encoder used
 for the training objective. Raw encoder features and projector features have
 different geometry and can retain different information, so each result must
-identify which was measured. The latest 304-channel velocity embedding does not
-include the old VICReg projector.
+identify which was measured.
 
-### Structure feature block
-
-The 256 coordinate-derived features of `mace_local_phase_space_v1`, standardized
-using training statistics. Velocities do not directly enter this block at inference.
-During joint training, motion losses can still change the shared coordinate
-backbone. Structure-block stability and full-embedding stability are different scores.
-
-### Activity
-
-The 32 learned motion features that are unchanged when velocities reverse. They
-support prediction of quantities such as relative speed squared and squared
-deformation rates. Individual channels are learned mixtures, not individually
-named physical observables. Small numerical sensitivity does not imply that
-activity remains constant over a physical lag.
-
-### Flow
-
-The 16 learned motion features that reverse sign with the velocities. They support
-signed quantities such as expansion/contraction and radial motion. They are
-rotation-invariant scalars, not a global Cartesian flow vector. The activity and
-flow blocks vanish for zero relative motion by construction.
-
-Implementations: [context encoder](../src/models/encoders/mace_context.py) and [velocity encoder](../src/models/encoders/mace_velocity.py).
 
 ## Our stability questions
 
-### Direct temporal regularization
-
-The `mace_local_smooth_v1` experiment directly penalizes squared changes of a
-learned local state, relative to its training within-context variation. It averages
-physical-lag bins and separately includes low-order environments. Covariance
-control and current physical targets discourage collapse and information loss.
-Unlike the older excess-change loss, this term does not stop at the teacher's
-amount of movement. Its training normalization differs from the reported
-fixed-reference normalized RMS jump; see [the metric definitions](metrics/mace_local_smooth.md).
 
 ### Embedding increment and jump
 
@@ -248,18 +168,11 @@ membership changes and numerical effects. Always state the lag, block and scale.
 
 ### Normalized RMS jump
 
-For the velocity stability audit, each increment length is divided by
+For stability audit, each increment length is divided by
 `sqrt(2 * sum(var(training_reference_embeddings)))`, using population variance.
 The reported RMS is the square root of the mean squared normalized lengths.
 Thus 0.10 means one tenth of the training-reference RMS independent-pair distance
-scale, not 10% of atoms moving or 10% prediction error. Each block has its own scale.
-
-### Squared change versus RMS change
-
-RMS means root mean square. A normalized RMS of 0.10 corresponds to normalized
-mean squared change 0.01 under the same definition. Percentage reductions in these
-two quantities differ. The older frozen-map temporal metric also uses a different
-variance denominator, so taking a square root alone does not make it comparable.
+scale.
 
 ### Temporal smoothness
 
@@ -282,171 +195,26 @@ structural variation and interfaces. Adjacent groups overlap, which itself creat
 correlation. A useful spatial-coherence assessment must consider overlap, physical
 observables, label frequencies and assignment coverage.
 
-### Neighbor membership and neighbor-ID retention
 
-Membership says which atom identities enter the local calculation. In the original
-80-atom diagnostic, retention is the common IDs among the 79 noncentral neighbors
-divided by 79. It differs from similarity of their positions and from agreement
-between cluster memberships.
+The separate [causal native MACE protocol](mace_causal.md) sends same-atom history
+messages between spatial MACE layers, before its final pooling. Future observations
+are supervision only. A separately trained repeated-anchor control receives the
+current frame at every historical offset, retaining the same architecture.
 
-### Boundary crossing and controlled substitution
+### State sufficiency diagnostic
 
-A boundary crossing occurs when a small geometric motion changes inclusion in a
-hard nearest-neighbor or radius selection. A controlled substitution exchanges
-selected atom identities while holding other coordinates fixed. These tests
-isolate particular support effects; substitutions are diagnostic inputs, not
-necessarily physically realized trajectories.
+In the causal MACE protocol, compare matched physical predictors given frozen z
+and either the original observed atomic history or one constant training history.
+Only z varies in the constant-history control. Better held-out future prediction
+with real history indicates information available in the inputs but discarded by
+z. No improvement does not establish that z is a complete or Markovian state.
+These diagnostic predictors do not replace the exported encoder.
 
-### Atom-matched geometric displacement
+### Finite-horizon local transition risk
 
-A displacement calculated for the same atom IDs at both times, with periodic
-geometry and the chosen reference frame handled consistently. Matching row
-positions in two independently sorted neighbor lists can compare different atoms
-and produce a false estimate of motion.
-
-### Low-dimensional local motion
-
-Our proposed requirement that short-time embedding changes near similar local
-states follow a few shared directions. Those directions can rotate along a
-curved manifold. This differs from forcing the entire state description into
-very few coordinates or fitting a separate curve to each atom track. We must
-check the directions on independent groups and retain structural information.
-The original velocity model has no motion-direction constraint. The separate
-`mace_local_motion_v1` frozen-state experiment implements a shared current-state
-basis and assesses directions on held-out source groups; implementation is not
-evidence that a physical manifold has been learned.
-
-### Local motion basis
-
-In `mace_local_motion_v1`, a shared small network takes the current local state
-and returns four or eight orthonormal directions. The same function applies to
-all tracked groups and receives no future frames or source identity. We measure
-how much of a subsequent observed increment lies in those directions. This is
-a representation constraint and diagnostic, not a forecast of that increment.
-A separate evaluation fits directions only from nearby training preparations.
-
-### Temporal bending penalty
-
-Our sequence experiment penalizes changes between consecutive embedding
-velocities, using the actual interval durations. Its time-adjusted bend equals
-`z_next - 2*z_current + z_previous` at equal cadence and vanishes for constant
-velocity even at uneven cadence. It is a finite-lag smoothness constraint; it
-must not be interpreted as requiring physically stochastic motion to have zero
-acceleration. See [exact calculation](metrics/mace_local_motion.md).
-
-### Information retention and smoothness tradeoff
-
-Information retention asks what physical quantities remain recoverable from an
-embedding on held-out data. Teacher-feature matching is only one preservation
-strategy. A tradeoff curve shows how errors change as smoothness is strengthened.
-If useful topology survives only in a fast auxiliary branch, that does not prove
-the main smooth state retains it.
-
-Definitions: [velocity stability](metrics/mace_velocity.md) and [context smoothness](metrics/mace_context_smoothness.md). Proposed motion constraints: [smooth-manifold review](../experiments/mace_velocity_20260915/LITERATURE_REVIEW_SMOOTH_MANIFOLD.md).
-
-## Our learned maps and state assignments
-
-### Short-time temporal coordinates
-
-Coordinates learned to emphasize relationships between local observations separated
-by a short physical lag. Our completed frozen comparison uses regularized temporal
-canonical correlation analysis (TCCA), which matches correlated directions in
-current/previous feature sets. Its deployed output needs one snapshot. The method
-does not itself fit a future-event label or prove smooth temporal curvature.
-
-### Learned physical distance
-
-A distance between embeddings whose transformation is fitted to chosen physical
-descriptors. Our frozen experiment fits a linear map to ten local-group statistics,
-then uses Euclidean distances after the map. Similarity therefore reflects those
-targets. It is not distance in Å, a unique physical law, or automatically sensitive
-to physical quantities excluded from fitting.
-
-### Physical-neighbor recall and rank imbalance
-
-Physical-neighbor recall measures agreement between nearest groups in representation
-space and nearest groups under the chosen descriptor distance. The frozen protocol
-compares top-eight lists. Rank imbalance instead measures how poorly the closest
-representation neighbor ranks in physical space. These concern similarity between
-groups, not retention of atom identities inside a patch.
-
-### State discovery and state catalog
-
-State discovery searches for recurring regions or patterns in the representation.
-A catalog is the set discovered on a fitting population. Applying a fixed catalog
-to later frames can assign known states or reject observations, but does not
-discover a new state absent from the fitted catalog.
-
-### Assignment uncertainty
-
-In our frozen-state protocol, insufficient support for any catalog state is
-reported as unassigned mass; ambiguity among supported states is described by
-conditional membership entropy and a top-two membership margin. These are not
-calibrated phase probabilities. Report assignment coverage alongside agreement:
-rejecting nearly everything or assigning one label cannot establish useful
-spatial or temporal coherence. See [state metrics](metrics/mace_local_state.md).
-
-Exact map and assignment definitions: [frozen local-state metrics](metrics/mace_local_state.md).
-
-## Our evaluation comparisons
-
-### Native-encoder training
-
-Our direct experiment changes the MACE message-passing weights that produce the
-pooled local embedding. Physical readouts and a direction predictor are auxiliary
-training heads; their outputs do not replace that embedding. This differs from
-fitting a new map on frozen encoder features. In the current coordinate/velocity
-architecture, the 256 structural channels depend on coordinates and the additional
-48 motion channels also use relative velocities. See [exact protocol](metrics/mace_data_amount.md).
-
-### Independent-source learning curve
-
-Our data-amount study varies the number of independently prepared training
-trajectories, keeping tracked groups/frames per trajectory and held-out sources
-fixed. Shared preparation descendants do not count as independent sources. Nested
-temperature-balanced subsets share a small normalization core. Every fit starts
-from the same original pretrained MACE, so this measures additional local-state
-training needs conditional on that pretraining. See [data-amount metrics](metrics/mace_data_amount.md).
-
-### Matched-update comparison
-
-Our primary data-amount comparison gives every encoder the same number of
-optimizer updates and clouds per update. Smaller datasets are revisited more
-often. Scores use the final common update; separately saved validation-selected
-checkpoints can come from earlier updates. This tests quality under a fixed short
-compute budget, not quality after every data size has fully converged.
-
-### Within-context and within-liquid evaluation
-
-Within-context evaluation measures variation among local groups in the same
-source/frame condition; some scores subtract context means. Within-liquid
-evaluation restricts the population to a declared liquid-like selection and may
-recompute its reference spread. These tests expose local differences that strong
-global temperature or liquid/crystal separation can otherwise obscure.
-
-### Source-held-out evaluation
-
-Our comparisons with complete preparation lineages reserved for evaluation.
-Related shooting descendants stay together, so holding out frames or files is
-insufficient if their preparation is shared with training. A source-held-out
-cohort that has already guided research decisions provides development evidence;
-a confirmatory claim needs an untouched independent population.
-
-### Sibling divergence
-
-Differences between shooting branches after a shared starting configuration.
-Our diagnostic distinguishes branches with the same momenta but different
-thermostat streams from branches with different momenta. This measures unresolved
-physical evolution under the branch protocol. It differs from repeated encoder
-inference on identical inputs, and siblings from one parent are not independent
-preparations.
-
-### Storage round trip and high-precision comparison
-
-A round trip casts or saves a value to the storage format and reads it back for
-comparison. It measures loss relative to the starting values. If those values were
-already quantized to the same format, a tiny additional difference cannot establish
-that the original storage loss was tiny. A high-precision reference must contain
-independent retained precision.
-
-Exact sampling and intervention definitions: [encoder diagnostics](metrics/mace_encoder_diagnostics.md) and [velocity metrics](metrics/mace_velocity.md).
+The causal MACE hazard head predicts the first confirmed sustained crystalline
+episode of the tracked center within the retained observation segment, conditional
+on remaining event-free through earlier time bins. It uses the same local PTM
+assay and explicitly handles right censoring and confirmation follow-up. This is
+neither whole-system nucleation probability nor a committor between specified
+competing basins. See [exact event rules](metrics/mace_causal.md).

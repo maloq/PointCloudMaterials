@@ -1,0 +1,100 @@
+{
+  "protocol": "mace_causal_physical_state_v1",
+  "output": "output/mace_causal/h100-packed-width16-seed20260916",
+  "cache": "${dataset:mace-causal-physical-20260916}",
+  "sequence_cache": "${storage:cache}/mace-local-motion-sequences-20260916",
+  "source_ids": null,
+  "seed": 20260916,
+  "cpu_threads": 2,
+  "history_offsets_ps": [
+    -2.25,
+    -1.5,
+    -0.75,
+    0.0
+  ],
+  "future_lags_ps": [
+    0.75,
+    3.0,
+    9.0
+  ],
+  "additional_followup_ps": 6.75,
+  "encoder": {
+    "channels": 16,
+    "output_dim": 128,
+    "num_layers": 2,
+    "cutoff_A": 5.0,
+    "atomic_numbers": [
+      13
+    ],
+    "correlation": 2,
+    "num_bessel": 6,
+    "radial_width": 32,
+    "avg_num_neighbors": 12.0,
+    "history_duration_ps": 2.25,
+    "velocity_scale_A_per_ps": 4.0,
+    "scales_A": [
+      [
+        0.0,
+        3.0
+      ],
+      [
+        5.0,
+        7.0
+      ],
+      [
+        7.0,
+        9.0
+      ]
+    ]
+  },
+  "heads": {
+    "hidden": 96,
+    "probabilistic": false
+  },
+  "events": {
+    "enabled": true,
+    "bin_edges_ps": [
+      0.75,
+      3.0,
+      9.0
+    ],
+    "persistence_frames": 2,
+    "ptm_rmsd_cutoff": 0.1,
+    "maximum_false_alarm_rate": 0.05
+  },
+  "loss": {
+    "future_weight": 1.0,
+    "delta_weight": 0.25,
+    "path_weight": 0.1,
+    "hazard_weight": 0.1
+  },
+  "training": {
+    "steps": 5000,
+    "batch_sources": 8,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "gradient_clip": 5.0,
+    "validation_every": 250,
+    "log_every": 50
+  },
+  "smoothness": {
+    "weight": 0.01,
+    "lag_ps": 0.75,
+    "jump_threshold": 0.1,
+    "relative_tolerance": 0.05,
+    "absolute_tolerance": 0.005,
+    "reference_checkpoint": "output/mace_causal/h100-packed-width16-seed20260916-D/technical/best.pt"
+  },
+  "bootstrap_draws": 500,
+  "probes": {
+    "steps": 2000,
+    "hidden": 96,
+    "learning_rate": 0.001,
+    "validation_every": 100
+  },
+  "runtime": {
+    "encoding": "packed",
+    "residency": "device",
+    "batch_size": 8
+  }
+}

@@ -1,5 +1,9 @@
 # Project documentation
 
+- [Synthetic storage, LAMMPS CPU and GPU hardware benchmarks](hardware_benchmark.md)
+
+- [Causal native MACE: atom-level geometry, motion and history](mace_causal.md)
+
 - [Research glossary: terms specific to our local-state methods and comparisons](research_glossary.md)
 - [Discarded frozen-state smoothness experiment](mace_local_smooth.md)
 - [Current research and retained checkpoints](research_retention.md)
@@ -20,3 +24,7 @@ Operational changes, simulation campaigns and dataset inventories belong in this
 - [Discarded frozen-map consecutive-motion experiment](mace_local_motion.md)
 
 - [Native MACE data-amount study](mace_data_amount.md): actual encoder training across independent-source counts on the allocated H100.
+
+- [H200 causal MACE experiment and portable handoff](mace_causal_h200.md)
+
+- [Causal MACE GPU execution and expanded-data handoff](mace_causal_runtime.md).

@@ -492,6 +492,14 @@
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z"
       ]
+    },
+    "mace-causal-physical-20260916": {
+      "root": "cache",
+      "path": "mace-causal-physical-20260916",
+      "kind": "training_cache",
+      "state": "complete",
+      "dependencies": [],
+      "aliases": []
     }
   }
 }

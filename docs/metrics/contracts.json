@@ -189,13 +189,86 @@
       "src/models/encoders/mace_velocity.py": "d5ec76fcddb379aa1bb1d9e7783535613bc24341672c0c62630fc70785b585cc",
       "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
       "src/models/encoders/pretrained_mace.py": "c41391cf2402c26aafc68bdca5533acc3f999a09da9a4bf783cbb26630b91fc3",
-      "src/research/mace_velocity/__main__.py": "7f7f27509e7779ff872e2e4dc02ae567d16fb2dbd9ffc795e5478f29c320ee03",
+      "src/research/mace_velocity/__main__.py": "926cc0432d3c9dc1a1d2e7fb4ebe0c190ca2b35994f25da39b937cea33cc74ef",
       "src/models/encoders/mace_bf16.py": "879abf5bfc58b95f8dcb98acdc738a57ebaca6309e90e29e8ce176862398d778",
       "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
       "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
       "src/research/mace_velocity/motion.py": "95fe065847437d9d197a5a0e77e67383fce9b73bb05638b17102486713c67d5c",
       "src/research/mace_velocity/sequence_data.py": "3f2bc8f2f2307d861c8f9165fc218adc7c271de8c170428917e8b57712d3ebaa",
-      "docs/metrics/mace_data_amount.md": "2838bd6059a26ec0d01b5e8a95c4cc2f03bae2c23f87c56abfb8b305310c2fac"
+      "docs/metrics/mace_data_amount.md": "d78b2de63e5f6b137b69669bebbf5e252e91f59dd09be08543264220ac3969a1"
+    }
+  },
+  "mace_causal": {
+    "files": {
+      "docs/metrics/mace_causal.md": "690141d355be4e95ee38b73c66ef488f9f724e681971be6db593edf4bdb82ba7",
+      "src/data_utils/causal_history.py": "33ca5c5e2a126469f43c9d64b5fd4282110caabcc749dfbf24cf2336be84bee6",
+      "src/models/encoders/mace_causal.py": "a83200537c3e4f0953a6e102be5392d3584d3fd9f5cc316cbe5bab700372db20",
+      "src/training_methods/mace_causal/data.py": "0ac3f59fdaf9cc63e86c87ac18974f276e8401f2a821b22a28b5faa0c966c975",
+      "src/training_methods/mace_causal/objective.py": "1174400f9404a114a769d6212d94fb03142fce1ba1bc7b52f6c22205bfcefbf7",
+      "src/training_methods/mace_causal/evaluate.py": "1e71be20fab27d20475e028928410961d8daada985bfd8da02d8d03a67ae7942",
+      "src/training_methods/mace_causal/__init__.py": "6c93c95915508880a00ac79feb26e7513f9bd0b48f327a08aeb16a3f280581ed",
+      "src/training_methods/mace_causal/train.py": "dad9a56d5b8acf219f7cd9f82107bc05f0a302f6fd92347f50e59fbf4c6d162d",
+      "src/research/mace_velocity/__main__.py": "926cc0432d3c9dc1a1d2e7fb4ebe0c190ca2b35994f25da39b937cea33cc74ef",
+      "src/research/mace_velocity/sequence_data.py": "3f2bc8f2f2307d861c8f9165fc218adc7c271de8c170428917e8b57712d3ebaa",
+      "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96",
+      "src/research/mace_velocity/data.py": "7e2d9db9c6504f2d1e71728a15cbfe6389425a366a7f8dfc4ca48454b43bba34",
+      "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/research/smooth_temporal_encoder/prepare.py": "6f3975ab75f83fd5561ddfdf5c64557ff9790a5577d4223a226f2e0c4565746a",
+      "src/training_methods/mace_causal/probes.py": "78dcff76caae0c17f2e8e1f89d09c19e9b5869f19a100dac791c295982e4f30b",
+      "src/training_methods/mace_causal/events.py": "c659bbce104f8169283195cfd1c635f052d8a3e3d1d6a0834f0180607cd95789",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+      "src/models/encoders/mace_causal_batch.py": "bb58f96df181d70cc57ae95b59d111fd2f1d8336c58094144d71f49b62720c6a",
+      "src/training_methods/mace_causal/runtime.py": "8d7e66cd412692dbd34d6bea9b414a07a06ccc204b832c53dcbccb2cae1f2520"
+    }
+  },
+  "mace_causal_comparison": {
+    "files": {
+      "docs/metrics/mace_causal_comparison.md": "5e87776773540886cb56c6a6ce6a639a92f52bf00c166fe2718aadcc9c933b2b",
+      "src/research/mace_causal_comparison.py": "e27b2b39745bc85d02d536f1a618593294f3abb8f069bb08d0e27a8e9835e1f0",
+      "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96"
+    }
+  },
+  "hardware_benchmark": {
+    "files": {
+      "docs/metrics/hardware_benchmark.md": "2120aa884b2bd8a92c757ffc715f51c3889795bae4538901d651a9932b72a581",
+      "src/hardware_benchmark/common.py": "fd160084995358e858977257a4c0d6a95f75ef8cb775ef28221127b97ade80d5",
+      "src/hardware_benchmark/storage.py": "813356005b035b0d78d9b9c6b0c348a2f4535fff29c8cd7731df1f112fc81265",
+      "src/hardware_benchmark/cpu.py": "ce6df04a0590990540572fc6301fea1cec0f77e9f1c5c5320d5500d781a2bc5f",
+      "src/hardware_benchmark/gpu.py": "e6b75df9b6af9e3ba67af4f14a161c2ec79e848e6b1f7418efd22d4b01b427ed",
+      "src/hardware_benchmark/cli.py": "6c17f17218ae4d132420cd954f4efe0659a30395519fbc2c5549983d0bfcb19c",
+      "src/models/encoders/pointnet.py": "2185fcb60b68af7bf2958fa8b638c4366fa8f60e940887673dbe528472f4bd66",
+      "src/models/encoders/atomic_graph.py": "f82443a36ee47220de08173b9fd730dbb4b63bc656a3256862806778922713d7",
+      "src/training_methods/shared/vicreg.py": "947b10c82042afc06b51fb651aa0b56ac27350e70bf5b2c120d513b90d66ab63",
+      "src/training_methods/embedding_forecast/model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c"
+    }
+  },
+  "mace_causal_runtime": {
+    "files": {
+      "docs/metrics/mace_causal.md": "690141d355be4e95ee38b73c66ef488f9f724e681971be6db593edf4bdb82ba7",
+      "src/data_utils/causal_history.py": "33ca5c5e2a126469f43c9d64b5fd4282110caabcc749dfbf24cf2336be84bee6",
+      "src/models/encoders/mace_causal.py": "a83200537c3e4f0953a6e102be5392d3584d3fd9f5cc316cbe5bab700372db20",
+      "src/training_methods/mace_causal/data.py": "0ac3f59fdaf9cc63e86c87ac18974f276e8401f2a821b22a28b5faa0c966c975",
+      "src/training_methods/mace_causal/objective.py": "1174400f9404a114a769d6212d94fb03142fce1ba1bc7b52f6c22205bfcefbf7",
+      "src/training_methods/mace_causal/evaluate.py": "1e71be20fab27d20475e028928410961d8daada985bfd8da02d8d03a67ae7942",
+      "src/training_methods/mace_causal/__init__.py": "6c93c95915508880a00ac79feb26e7513f9bd0b48f327a08aeb16a3f280581ed",
+      "src/training_methods/mace_causal/train.py": "dad9a56d5b8acf219f7cd9f82107bc05f0a302f6fd92347f50e59fbf4c6d162d",
+      "src/research/mace_velocity/__main__.py": "926cc0432d3c9dc1a1d2e7fb4ebe0c190ca2b35994f25da39b937cea33cc74ef",
+      "src/research/mace_velocity/sequence_data.py": "3f2bc8f2f2307d861c8f9165fc218adc7c271de8c170428917e8b57712d3ebaa",
+      "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96",
+      "src/research/mace_velocity/data.py": "7e2d9db9c6504f2d1e71728a15cbfe6389425a366a7f8dfc4ca48454b43bba34",
+      "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/research/smooth_temporal_encoder/prepare.py": "6f3975ab75f83fd5561ddfdf5c64557ff9790a5577d4223a226f2e0c4565746a",
+      "src/training_methods/mace_causal/probes.py": "78dcff76caae0c17f2e8e1f89d09c19e9b5869f19a100dac791c295982e4f30b",
+      "src/training_methods/mace_causal/events.py": "c659bbce104f8169283195cfd1c635f052d8a3e3d1d6a0834f0180607cd95789",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+      "src/models/encoders/mace_causal_batch.py": "bb58f96df181d70cc57ae95b59d111fd2f1d8336c58094144d71f49b62720c6a",
+      "src/training_methods/mace_causal/runtime.py": "8d7e66cd412692dbd34d6bea9b414a07a06ccc204b832c53dcbccb2cae1f2520",
+      "src/training_methods/mace_causal/benchmark.py": "1e0f82e753168c4a1bc327c27b38aed26b36691ec0a4f9c58a2e3be38a345004",
+      "docs/metrics/mace_causal_runtime.md": "2ebc07516b0d9d4c6b2d3a33bcddea7c938219f607583ed2d2772cfbeac384d7"
     }
   }
 }

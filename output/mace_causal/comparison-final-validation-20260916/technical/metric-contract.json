@@ -1,0 +1,9 @@
+{
+  "family": "mace_causal_comparison",
+  "exported_at": "2026-09-16T19:03:00.470717+00:00",
+  "files": {
+    "docs/metrics/mace_causal_comparison.md": "76c2b9058b96d970c4ce709a7958fdd37bd7c23167b904ce49d7912aa42b20d5",
+    "src/research/mace_causal_comparison.py": "712d239ecbb25970d37a131352985c358f6acf091d25d7c48b03270a512c16b4",
+    "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96"
+  }
+}

@@ -61,4 +61,16 @@ physical readouts to distinguish missing information from a poor cluster metric.
 Pure motion calculations and verified trajectory IO used by native encoder
 training live in `mace_velocity/motion.py` and `mace_velocity/sequence_data.py`.
 
+The `mace_velocity` entry point also forwards `causal-prepare` and `causal-train`
+to `src/training_methods/mace_causal/`. This distinct native tensor architecture
+interleaves atom-level spatial/temporal messages before its one pooling stage.
+
 `mace_velocity/data_amount*.py` implements the distinct native end-to-end encoder learning curve; use existing module stages `data-prepare`, `data-smoke`, `data-study`. See [protocol](../../experiments/mace_data_amount_20260916/README.md).
+
+`mace_causal_comparison.py` collects completed native causal-state ablations and
+frozen probes, verifies physical target pairing, and exports whole-source paired
+intervals and plots. Recipe: `configs/mace_causal/comparison.json`.
+
+Causal runtime benchmarking uses the existing `mace_velocity causal-benchmark`
+dispatch to `training_methods/mace_causal/benchmark.py`; packing is implemented in
+`models/encoders/mace_causal_batch.py`, with residency and batching in `runtime.py`.

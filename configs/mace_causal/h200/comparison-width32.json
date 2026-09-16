@@ -1,0 +1,33 @@
+{
+  "output": "output/mace_causal/h200-width32-comparison",
+  "recipes": [
+    "configs/mace_causal/h200/width32-seed20260916.json",
+    "configs/mace_causal/h200/width32-seed20260917.json",
+    "configs/mace_causal/h200/width32-seed20260918.json"
+  ],
+  "variants": [
+    "C",
+    "D",
+    "repeated_anchor"
+  ],
+  "readouts": [
+    "joint",
+    "linear",
+    "nonlinear"
+  ],
+  "comparison_pairs": [
+    [
+      "D",
+      "C"
+    ],
+    [
+      "D",
+      "repeated_anchor"
+    ]
+  ],
+  "bootstrap_draws": 2000,
+  "seed": 20260916,
+  "diagnostic_variants": [
+    "D"
+  ]
+}

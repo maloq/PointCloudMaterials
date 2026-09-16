@@ -25,6 +25,9 @@ and output location through the existing config/CLI. Do not copy a runner.
 
 ## Supporting configs
 
+- `benchmarks/hardware.json`: dataset-free storage, LAMMPS CPU and GPU training
+  workloads; [commands and comparison protocol](../docs/hardware_benchmark.md).
+
 - `analysis/`: all seven analysis templates are preserved. Pass the intended
   checkpoint explicitly; historical checkpoint defaults have not been rewritten.
   `mace_encoder_diagnostics.json` and `mace_encoder_readout.json` configure the
@@ -101,8 +104,26 @@ joint features, inner/center/projector ablations and archived GeoFrame V2 labels
 on matched static Al centers. It runs no encoder training.
 # Local phase-space encoder
 
+[`mace_causal/pilot.json`](mace_causal/pilot.json) selects the distinct causal native
+tensor MACE architecture, fixed physical future targets, and matched A–E/history
+controls. See [workflow](../docs/mace_causal.md).
+
 `analysis/mace_velocity.json` trains the coordinate/velocity MACE extension and
 its matched coordinates-only control. See [the protocol](../experiments/mace_velocity_20260915/README.md)
 and [run instructions](../docs/mace_velocity.md).
 
 The native end-to-end MACE data-size pilot uses [analysis/mace_data_amount.json](analysis/mace_data_amount.json); see [protocol](../experiments/mace_data_amount_20260916/README.md).
+
+The two `mace_causal/pilot-seed*.json` recipes repeat the causal pilot budget with
+independent initializations. `mace_causal/comparison.json` pairs completed fits and
+probes on held-out physical targets with whole-source uncertainty intervals.
+
+The three `mace_causal/pilot-gaussian-seed*.json` recipes repeat D with a diagonal
+Gaussian future head under the same update budget, retaining MSE/NLL/coverage.
+
+`mace_causal/h200/` defines the separate longer-budget C/D/repeated-anchor study
+at tensor widths 16 and 32. See [H200 handoff](../docs/mace_causal_h200.md).
+
+`mace_causal/runtime-benchmark.json` measures actual-graph FP32 throughput;
+`mace_causal/h100-packed/` uses resident, packed batches for the longer matched
+C/D/repeated-anchor cohort. H200 recipes use the same runtime.

@@ -1,5 +1,17 @@
 # Tests
 
+`test_hardware_benchmark.py` verifies synthetic storage integrity and cleanup,
+LAMMPS timing/shape validation, immutable exports and failure reports, and real
+PointNet/MACE/forecast optimizer steps without datasets or checkpoints. CPU model
+tests validate correctness; the GPU command itself requires CUDA.
+
+`test_mace_causal.py` checks native tensor MACE gradients, O(3)/boost/ID invariance,
+exact periodic ancestor pruning, observed-only attention, smooth spatial/age
+boundaries, physical lag matching, train-only scaling, event confirmation and
+censoring, validation-only alarms, exact optimizer resume, strict encoder reload,
+and frozen readout/history-sufficiency probes. A small real-data GPU smoke is
+recorded with the [causal workflow](../docs/mace_causal.md).
+
 Run the suite from the repository root in `pointnet`:
 
 ```bash
@@ -151,3 +163,11 @@ The multiscale command regression uses `fixtures/shooting_multiscale.yaml`; its
 mocked workflow no longer depends on an archived experiment directory. Simulation
 inventory tests distinguish unavailable collections and recorded failed attempts
 from completed records, without following duplicate symlinks.
+
+`test_mace_causal_comparison.py` checks exact physical-target pairing, equal
+producer-block weighting, and seed averaging before paired source bootstrap.
+
+Causal MACE tests cover disjoint packing with unequal atom counts and periodic
+cells, outputs/parameter gradients for A/B/C/D/repeated-anchor, target residency,
+constant-branch reuse, strict resume and all frozen probes. Comparison tests also
+check the predeclared subset of expensive history-access diagnostics.

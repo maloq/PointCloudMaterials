@@ -1,0 +1,9 @@
+metric,value
+cpu.trials,1
+cpu.seconds_median,0.00194042
+cpu.seconds_min,0.00194042
+cpu.seconds_max,0.00194042
+cpu.units_per_trial,3
+cpu.steps_per_second,1546.0570391976994
+cpu.atom_steps_per_second,395790.60203461105
+cpu.process_wall_seconds,0.5676160799339414

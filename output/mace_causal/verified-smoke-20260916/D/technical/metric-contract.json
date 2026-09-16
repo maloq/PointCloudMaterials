@@ -1,0 +1,23 @@
+{
+  "family": "mace_causal",
+  "exported_at": "2026-09-16T18:30:57.320766+00:00",
+  "files": {
+    "docs/metrics/mace_causal.md": "d4cd5c5ed9b3a499e5bf8d7a0e2352c5e902891413bc00cc17dbd3146369068c",
+    "src/data_utils/causal_history.py": "33ca5c5e2a126469f43c9d64b5fd4282110caabcc749dfbf24cf2336be84bee6",
+    "src/models/encoders/mace_causal.py": "217591b3fa456e4ee8c858ecd69d043228867873920717e175244f332745f531",
+    "src/training_methods/mace_causal/data.py": "8027f654e9578162ec2dfc7e4cef3f87626b11e28450e5805fa96afe08d5c19b",
+    "src/training_methods/mace_causal/objective.py": "1174400f9404a114a769d6212d94fb03142fce1ba1bc7b52f6c22205bfcefbf7",
+    "src/training_methods/mace_causal/evaluate.py": "eaca76f3fc1547621b49f07f2420dc4ef4db519e1ea5c95358879d2288de7910",
+    "src/training_methods/mace_causal/__init__.py": "6c93c95915508880a00ac79feb26e7513f9bd0b48f327a08aeb16a3f280581ed",
+    "src/training_methods/mace_causal/train.py": "59807e487edb235eed56c5310920a49400b34f3ee20e0f54f8041f8abb4dfe39",
+    "src/research/mace_velocity/__main__.py": "b4a22e857ae582e4af3c34c5571ce4363ec284c9a7688d85bb69851575601802",
+    "src/research/mace_velocity/sequence_data.py": "3f2bc8f2f2307d861c8f9165fc218adc7c271de8c170428917e8b57712d3ebaa",
+    "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96",
+    "src/research/mace_velocity/data.py": "7e2d9db9c6504f2d1e71728a15cbfe6389425a366a7f8dfc4ca48454b43bba34",
+    "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+    "src/research/smooth_temporal_encoder/prepare.py": "6f3975ab75f83fd5561ddfdf5c64557ff9790a5577d4223a226f2e0c4565746a",
+    "src/training_methods/mace_causal/probes.py": "0d2c7b4ef8b831f6b1511212bd78b25782f40029d16f0dc8584da8cc9cdcd26f",
+    "src/training_methods/mace_causal/events.py": "c659bbce104f8169283195cfd1c635f052d8a3e3d1d6a0834f0180607cd95789"
+  }
+}

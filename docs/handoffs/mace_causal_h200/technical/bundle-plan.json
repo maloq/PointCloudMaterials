@@ -1,0 +1,11 @@
+{
+  "datasets": [
+    "mace-causal-physical-20260916"
+  ],
+  "files": [
+    "AGENTS.md",
+    ".gitignore",
+    "tests",
+    "experiments/mace_causal_20260916"
+  ]
+}

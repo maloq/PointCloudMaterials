@@ -1,0 +1,47 @@
+{
+  "output": "output/mace_causal/pilot-comparison-20260916",
+  "recipes": [
+    "configs/mace_causal/pilot.json",
+    "configs/mace_causal/pilot-seed20260917.json",
+    "configs/mace_causal/pilot-seed20260918.json"
+  ],
+  "variants": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "repeated_anchor",
+    "E"
+  ],
+  "readouts": [
+    "joint",
+    "linear",
+    "nonlinear",
+    "state_constant",
+    "state_history"
+  ],
+  "comparison_pairs": [
+    [
+      "B",
+      "A"
+    ],
+    [
+      "C",
+      "B"
+    ],
+    [
+      "D",
+      "C"
+    ],
+    [
+      "D",
+      "repeated_anchor"
+    ],
+    [
+      "E",
+      "D"
+    ]
+  ],
+  "bootstrap_draws": 2000,
+  "seed": 20260916
+}

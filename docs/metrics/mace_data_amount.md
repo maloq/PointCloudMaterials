@@ -1,5 +1,8 @@
 # Native MACE training-data amount
 
+The shared CLI now also dispatches the separate causal-state protocol. Its new
+stages do not change these data-amount calculations or historical exports.
+
 Maintenance note (16 September 2026): shared motion math and trajectory IO moved
 from the discarded frozen-map package into `mace_velocity/motion.py` and
 `mace_velocity/sequence_data.py`, with identical function bodies. Calculations,
@@ -121,3 +124,6 @@ Previously inspected held-out sources are development evidence. This short study
 does not establish convergence, all-material transfer, phase classification,
 cluster spatial coherence or a new blind generalization result. Learning-curve
 plots update after each completed fit; a partial table is not a completed sweep.
+
+The shared CLI additionally dispatches causal runtime benchmarking and selected
+causal probe modes. Data-amount calculations and commands are unchanged.

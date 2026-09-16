@@ -8,6 +8,7 @@ and [the output layout](../docs/research_layout.md).
 
 | Command | Workflows / implementation |
 | --- | --- |
+| `benchmark_hardware.py {storage,cpu,gpu,all}` | Synthetic storage, LAMMPS CPU and actual-model GPU benchmarks; `src/hardware_benchmark/`; [usage](../docs/hardware_benchmark.md). No datasets/checkpoints required. |
 | `experiment_registry.py build` | Refresh the searchable experiment, simulation and ideas dashboard; `src/experiment_runner/registry.py` |
 | `experiment_registry.py storage` | Human-readable size report and large-file CSV; `src/experiment_runner/storage.py` |
 | `experiment_registry.py clean [--root output/RUN]` | Preview removable inference caches; add `--apply --inactive` only for inactive runs. Metadata and reconstruction evidence are preserved. |
@@ -34,6 +35,12 @@ and [the output layout](../docs/research_layout.md).
 | `plot_homogeneous_checkpoint.py`, `render_shooting_dynamics_gifs.py` | Simulation visualization. |
 
 Current training and analysis use existing module entry points:
+
+`python -m src.research.mace_velocity causal-prepare --config configs/mace_causal/pilot.json`
+prepares identity-preserving physical history/future examples.
+`causal-train --config configs/mace_causal/pilot.json --variant D --device cuda:0`
+trains the native tensor MACE state; variants A–E and `repeated_anchor` share
+data and training controls. See [workflow](../docs/mace_causal.md).
 
 Frozen-feature replacement-embedding workflows were [discarded](../docs/discarded_frozen_encoder_maps.md)
 on 16 September 2026. Their source snapshot, recipes and results remain available
@@ -220,3 +227,13 @@ for the separate local phase-space protocol (`inventory`, `prepare`, `verify`,
 `teacher`, `train`, `evaluate`). The maintained conversion dispatcher adds
 `python scripts/convert_trajectory.py paired-velocity --positions P --velocities V --output O --atoms N`
 for atom/time-matched legacy dumps. See [the run instructions](../docs/mace_velocity.md).
+
+`python -m src.research.mace_causal_comparison --config configs/mace_causal/comparison.json`
+collects the completed matched-seed pilot into paired physical-error tables and
+plots; it verifies source/center/anchor/target identity across every readout.
+
+`python -m src.research.mace_velocity causal-benchmark --config configs/mace_causal/runtime-benchmark.json --device cuda:0`
+measures original versus packed/resident execution on verified histories.
+`causal-probe --probe-modes linear nonlinear` selects cheap frozen readouts;
+`--probe-modes state_constant state_history` selects the matched history-access pair.
+See [execution and data handoff](../docs/mace_causal_runtime.md).

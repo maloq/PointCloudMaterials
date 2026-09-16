@@ -1,0 +1,72 @@
+{
+  "train": {
+    "sources": 90,
+    "windows": 1080,
+    "low_order_windows": 373,
+    "low_order_sources": 35,
+    "at_risk_windows": 459,
+    "event_windows": 22,
+    "event_centers": 10,
+    "event_sources": 10,
+    "anchor_times_ps": [
+      299.25,
+      300.0,
+      300.75
+    ],
+    "temperatures_K": [
+      400.0,
+      450.0,
+      500.0,
+      510.0,
+      520.0
+    ]
+  },
+  "val": {
+    "sources": 30,
+    "windows": 360,
+    "low_order_windows": 105,
+    "low_order_sources": 10,
+    "at_risk_windows": 150,
+    "event_windows": 12,
+    "event_centers": 6,
+    "event_sources": 5,
+    "anchor_times_ps": [
+      299.25,
+      300.0,
+      300.75
+    ],
+    "temperatures_K": [
+      400.0,
+      450.0,
+      500.0,
+      510.0,
+      520.0
+    ]
+  },
+  "test": {
+    "sources": 30,
+    "windows": 360,
+    "low_order_windows": 190,
+    "low_order_sources": 17,
+    "at_risk_windows": 221,
+    "event_windows": 2,
+    "event_centers": 1,
+    "event_sources": 1,
+    "anchor_times_ps": [
+      299.25,
+      300.0,
+      300.75
+    ],
+    "temperatures_K": [
+      400.0,
+      450.0,
+      500.0,
+      510.0,
+      520.0
+    ]
+  },
+  "identity": {
+    "cache_sha256": "d5c4412d7ba93bceca86a36857a52b65781c68580d3a0a6d8b19bc271c5b6686",
+    "plan_sha256": "24acb9748f52424233d05a43f37362fdadcf7fd44e5ba691f1008b85017cb2b3"
+  }
+}

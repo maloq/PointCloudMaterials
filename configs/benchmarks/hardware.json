@@ -1,0 +1,40 @@
+{
+  "storage": {
+    "size_gib": 1.0,
+    "block_mib": 8,
+    "points": 80,
+    "batch_size": 512,
+    "batches": 128,
+    "repeats": 3,
+    "seed": 1729
+  },
+  "cpu": {
+    "cells": 20,
+    "warmup": 100,
+    "steps": 500,
+    "repeats": 3,
+    "mpi_ranks": 1,
+    "threads": 1,
+    "seed": 1729,
+    "timeout_seconds": 1800
+  },
+  "gpu": {
+    "workloads": ["pointnet", "mace", "forecast"],
+    "points": 80,
+    "pointnet_batch": 128,
+    "mace_batch": 16,
+    "forecast_batch": 512,
+    "mace_channels": 64,
+    "mace_accelerated": false,
+    "history_steps": 16,
+    "future_steps": 16,
+    "embedding_dim": 256,
+    "forecast_width": 256,
+    "warmup": 10,
+    "steps": 30,
+    "repeats": 3,
+    "seed": 1729,
+    "host_threads": 4,
+    "matmul_precision": "highest"
+  }
+}
