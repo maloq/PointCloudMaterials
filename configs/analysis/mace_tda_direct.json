@@ -1,0 +1,14 @@
+{
+  "output": "${storage:analysis}/mace_tda_ridge_audit/direct-20260914",
+  "cache": "${dataset:mace-meam}",
+  "initialization_recipe": "configs/analysis/mace_tda_initialization.json",
+  "seed": 20260914,
+  "neighbors": 10,
+  "global_pairs": 100000,
+  "encoders": [
+    {"name": "random-20260910", "method": "random", "seed": 20260910},
+    {"name": "random-20260911", "method": "random", "seed": 20260911},
+    {"name": "random-20260912", "method": "random", "seed": 20260912},
+    {"name": "mlip-None", "method": "mlip", "seed": null}
+  ]
+}

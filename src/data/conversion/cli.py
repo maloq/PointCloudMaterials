@@ -16,6 +16,7 @@ COMMANDS = {
     "temporal": "src.data.conversion.temporal",
     "export-shooting": "src.data.conversion.shooting_export",
     "export-npz-dump": "src.data.conversion.npz_dump",
+    "paired-velocity": "src.data.conversion.paired_velocity",
     "audit-shooting": "src.data.conversion.audit_shooting",
     "audit-temporal": "src.data.conversion.audit_temporal",
 }

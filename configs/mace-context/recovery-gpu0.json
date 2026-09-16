@@ -1,0 +1,18 @@
+{
+  "node": "node57",
+  "allocation": 992489,
+  "deadline_utc": "2026-09-14T23:20:00+00:00",
+  "cwd": "${storage:repo}",
+  "output": "${storage:analysis}/mace_context_recovery/forecast-seed20260910-20260914/technical/lanes/gpu0",
+  "steps": [
+    {
+      "name": "train-dual-ssl",
+      "dependencies": [],
+      "source": "${storage:repo}",
+      "module": "src.research.mace_context.run",
+      "arguments": ["--config", "${storage:repo}/configs/analysis/mace_context_recovery.json", "--stage", "recovery-train", "--variant", "dual_ssl", "--device", "cuda:0"],
+      "minimum_remaining_seconds": 5400,
+      "completion": [{"path": "${storage:analysis}/mace_context_recovery/forecast-seed20260910-20260914/technical/train-dual_ssl/status.json", "success_state": "complete", "pending_states": []}]
+    }
+  ]
+}

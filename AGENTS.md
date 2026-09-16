@@ -4,6 +4,11 @@
 - Research correctness comes first: fail loudly with useful context. Trace values
   to their repository producer; use its actual types, shapes and fields. Avoid
   silent fallbacks, generic compatibility code and unnecessary defensive checks.
+- Use the [research glossary](docs/research_glossary.md) when explaining methods
+  and results: link relevant entries and briefly explain unfamiliar terms. Add
+  or update terms central to our research and their protocol-specific
+  meanings if asked to clarify; omit general textbook entries such as PCA/UMAP. Preserve distinctions
+  between protocols and their exact metric definitions.
 - Read [scripts/README.md](scripts/README.md) before adding a command. Reuse existing
   workflows and config/CLI arguments for run variations. Keep entry points thin;
   implementation belongs in `src/`. Preserve distinct scientific protocols.

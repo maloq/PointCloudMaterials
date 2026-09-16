@@ -1,0 +1,4 @@
+{
+  "extraction_config": "configs/analysis/mace_encoder_diagnostics.json",
+  "forecast_checkpoint": "output/embedding_forecast/context-pilot-20260913/technical/fits/direct_history12ps-seed20260913/technical/best.pt"
+}

@@ -36,6 +36,12 @@ Using the five-frame mean encoder as the target would instead forecast overlappi
 history summaries and artificially smooth short-horizon changes. That is a
 different target protocol and is deliberately outside this comparison.
 
+September 14 audit clarification: the quoted 0.032914/0.032813 comparison used
+128D projector features, whereas forecasts use 256D encoder features. The
+[fresh six-checkpoint audit](../mace_tda_ridge_audit_20260914/README.md) reproduced
+those scores and separately measured encoder ridge errors 0.034454/0.034450.
+Neither comparison establishes the best encoder for crystallization forecasting.
+
 ## Data and precise targets
 
 Reuse the 30 independent Al MEAM melt sources already selected by

@@ -470,6 +470,28 @@
       "path": "projects/PointCloudMaterials-retention-20260913",
       "kind": "research_archive",
       "dependencies": []
+    },
+    "al_520K_remaining24_20260913T204114Z": {
+      "root": "archive",
+      "path": "simulations/al_520K_remaining24_20260913T204114Z",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_520K_remaining24_20260913T204114Z"
+      ]
+    },
+    "al_meam_1m_450K_400ps_with_melt_20260913T205405Z": {
+      "root": "archive",
+      "path": "simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z"
+      ]
     }
   }
 }

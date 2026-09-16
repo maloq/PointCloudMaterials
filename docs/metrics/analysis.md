@@ -26,6 +26,16 @@ change. Spatial/temporal figures retain their stage-specific metadata and origin
 technical reports. Historical exports attach current definitions but do not claim
 the old run was recomputed with current code.
 
+For `mace_context_recovery_static_v1`, clustering uses 512 raw invariant channels
+(256 smooth-inner, 256 tracked-center), followed by the configured clustering
+preprocessing. Full-frame node reuse is checked against complete individual halos.
+Its diagnostic `direct_halo_relative_squared_error` is the sum of squared feature
+differences divided by the sum of squared direct-reference features, over six
+selected centers and all channels. It measures numerical agreement, not physical
+prediction accuracy. Zr distance scaling, fixed Al element identity and interior
+boundary selection are specified in `docs/mace_context_static.md`; cross-material
+cluster numbers are not aligned labels.
+
 The following section defines every current relaxed-topology score used in the
 standard MACE comparisons.
 # Relaxed topology metrics — 2026-09-12
@@ -66,3 +76,47 @@ The source manifest, checkpoint hash, target scaling and exact counts are retain
 technical files. Historical values exported again are not recomputed by table export.
 
 Topology comparison CSVs include both bounds of each source-bootstrap interval; the complete comparison JSON is under `technical/metrics.json`.
+
+## Static context clustering diagnosis
+
+`mace_context_clusters` uses the existing six-nearest-center, directed spatial
+graph separately in each snapshot. Label agreement is the same-label edge
+fraction; chance agreement is the dot product of the two endpoint label
+frequency distributions. Adjusted agreement is `(observed-chance)/(1-chance)`;
+it is undefined when chance is one. PTM Other restricts both endpoints to
+OVITO Structure Type zero at RMSD cutoff 0.1; this is not ground-truth liquid.
+Continuous neighbor/random variation uses per-channel population standard
+deviations within the same frame and region, replacing exactly zero scales by
+one. Its numerator is mean squared standardized spatial-neighbor difference;
+the denominator substitutes a random center from that region. Lower indicates
+greater coherence, not necessarily greater structural information.
+
+Physical explained variance is the cluster-size-weighted variance of cluster
+means divided by total observable variance on the fixed sampled centers. It is
+descriptive eta-squared, not held-out prediction accuracy. q4/q6, w4/w6, qbar6,
+bond coherence, nearest-12 density and smooth coordination use the exact
+`src/analysis/liquid_structure.py` producer, in Angstrom coordinates, with the
+3.7 A coordination radius. Physical samples coincide with clustering fit samples.
+
+The center contribution to spatial increment energy uses raw row-normalized
+features, scales channels by their within-frame standard deviations, and reports
+the center block's squared-difference sum divided by the combined block sum.
+This is an explanatory diagnostic before PCA, not a decomposition of the final
+clustering objective. Saved temporal arrays use 0.75 ps cadence on the earlier
+six-source test cohort. Change/variance divides temporal mean squared change
+by mean training-coordinate variance; crossing/0.75 ps divides the squared
+1e-4 A controlled crossing response by natural single-step temporal variation.
+The projector uses saved BatchNorm running statistics. No model is trained.
+
+Ablations fit 6,000 selected centers per frame and label all analyzed centers.
+Archived GeoFrame label comparisons align the exact center coordinates; their
+original fits used all original centers, so they are descriptive references.
+No future-state or source-held-out clustering validity is claimed by this audit.
+
+The follow-up physical probe fits float64 SVD ridge models on PTM-Other centers with x < 85 A,
+selects a separate ridge alpha per observable using 125 < x < 145 A, and evaluates
+x > 185 A. The 40 A gaps exceed twice the 17 A embedding support. Feature/target
+scales use training rows only. Test R² is one minus prediction MSE divided by
+test variance separately within each frame and slab. Frames/trajectory are shared
+between these spatial splits: this is not independent-source or kinetic testing.
+The backbone is frozen; only readouts are fitted.

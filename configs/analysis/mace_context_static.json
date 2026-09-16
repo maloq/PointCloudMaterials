@@ -1,0 +1,17 @@
+{
+  "output": "output/mace_context_static/dual-physics-epoch12-20260915",
+  "checkpoint": "${storage:analysis}/mace_context_recovery/forecast-seed20260910-20260914/technical/train-dual_physics/best.pt",
+  "checkpoint_sha256": "d7a67a4274d0a2921c1674fb450c4c9e3a6a4f7b48640762f99d2537f9f32df1",
+  "initial_checkpoint": "output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+  "cpu_threads": 6,
+  "verification": {
+    "Al": {
+      "source": "datasets/Al/inherent_configurations_off/166ps.npy",
+      "analysis_config": "configs/analysis/static_mace_context_al.yaml"
+    },
+    "Zr": {
+      "source": "datasets/Zr/inherent_configurations/160ps.npy",
+      "analysis_config": "configs/analysis/static_mace_context_zr.yaml"
+    }
+  }
+}

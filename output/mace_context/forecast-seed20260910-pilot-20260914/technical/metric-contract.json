@@ -1,0 +1,17 @@
+{
+  "family": "mace_context",
+  "exported_at": "2026-09-14T18:36:07.155195+00:00",
+  "files": {
+    "docs/metrics/mace_context.md": "d1b3c65c293d7dd708dac25e33b6836037c7f7063573abfab29473c9a5fa0c22",
+    "src/models/encoders/mace_context.py": "4d4cd19fe78b2a991a2336a7e8940635939a66a1c32065b92377afed824ec0b6",
+    "src/research/mace_context/data.py": "aaeea772355ebd6e273dd9fef2c110078d070da00f38e514ecfeb5aef1f63652",
+    "src/research/mace_context/engine.py": "8471ee30a4be27cddbd4aa5f55f205ee8bd7bb5c8d4fbf5194213b211e953629",
+    "src/research/mace_context/evaluate.py": "63584ba8238b9b7927d8ed7319b655fdbaa860834d089c69b12f88b2e325bffb",
+    "src/research/mace_context/train.py": "c888210bebf6de399435961d2e4fba51c311828e169311c712509e67bbe724e6",
+    "src/research/mace_context/verify.py": "764b2351aa205d91996f1b5aaf829a13fb048abf9dd4af81bba5d6ac204554a1",
+    "src/research/mace_tda_ridge_audit/math.py": "a261a33fa0c211570d3510bc5ab2da30cec9f0afb31b3f3b655a2c64b55bfb32",
+    "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+    "src/research/mace_context/labels.py": "5d11b57691ad1bbfec5378ef43b1703fa80f7ce31f5d7003536884297ec04631",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12"
+  }
+}

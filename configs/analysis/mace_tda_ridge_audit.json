@@ -1,0 +1,47 @@
+{
+  "output": "${storage:analysis}/mace_tda_ridge_audit/single-frame-20260914",
+  "cache": "${dataset:mace-meam}",
+  "device": "cuda:1",
+  "batch_size": 128,
+  "cpu_threads": 4,
+  "seed": 20260914,
+  "bootstrap_draws": 4000,
+  "runs": [
+    {
+      "name": "anchor-vicreg-seed20260910",
+      "method": "vicreg",
+      "seed": 20260910,
+      "report": "${storage:output}/mace/anchor-vicreg-seed20260910/technical/metrics.json"
+    },
+    {
+      "name": "anchor-vicreg-seed20260911",
+      "method": "vicreg",
+      "seed": 20260911,
+      "report": "${storage:output}/mace/anchor-vicreg-seed20260911/technical/metrics.json"
+    },
+    {
+      "name": "anchor-vicreg-seed20260912",
+      "method": "vicreg",
+      "seed": 20260912,
+      "report": "${storage:output}/mace/anchor-vicreg-seed20260912/technical/metrics.json"
+    },
+    {
+      "name": "anchor-blocks-seed20260910",
+      "method": "tda",
+      "seed": 20260910,
+      "report": "${storage:output}/mace/anchor-blocks-seed20260910/technical/metrics.json"
+    },
+    {
+      "name": "anchor-blocks-seed20260911",
+      "method": "tda",
+      "seed": 20260911,
+      "report": "${storage:output}/mace/anchor-blocks-seed20260911/technical/metrics.json"
+    },
+    {
+      "name": "anchor-blocks-seed20260912",
+      "method": "tda",
+      "seed": 20260912,
+      "report": "${storage:output}/mace/anchor-blocks-seed20260912/technical/metrics.json"
+    }
+  ]
+}

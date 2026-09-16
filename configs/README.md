@@ -4,6 +4,10 @@ Keep active recipes and their dependencies here. Simulation recipes belong only 
 `simulation/`; keep analysis templates in `analysis/`. Run-specific research plans
 stay with their scientific record in `experiments/`.
 
+[`analysis/mace_local_state.json`](analysis/mace_local_state.json) runs the frozen
+local-group representation comparison and uncertain state discovery; see the
+[scientific protocol](../experiments/mace_local_state_20260915/README.md).
+
 ## Training and encoder construction
 
 | Config name (without `.yaml`) | Why it stays |
@@ -23,6 +27,14 @@ and output location through the existing config/CLI. Do not copy a runner.
 
 - `analysis/`: all seven analysis templates are preserved. Pass the intended
   checkpoint explicitly; historical checkpoint defaults have not been rewritten.
+  `mace_encoder_diagnostics.json` and `mace_encoder_readout.json` configure the
+  frozen forecast-encoder stability and source-held-out TDA assay.
+  `mace_tda_initialization.json` adds frozen MLIP and random-weight controls to the
+  same 256D encoder assay, including validation-selected ridge regularization.
+  `mace_tda_direct.json` compares these frozen embeddings directly with TDA
+  distances and neighbors, without fitting a readout or feature scaling.
+  `mace_tda_ridge_audit.json` retests the six single-frame VICReg/TDA checkpoints
+  with independent ridge calculations and supervision checks.
 - `embedding_forecast/`: staged GPU validation and replacement allocation recipes
   for the active history/spatial/mixture study, plus matched interim-analysis cohorts;
   [execution evidence](../docs/forecast_performance.md) and [scientific findings](../experiments/forecast_spatial_mixture_20260913/INTERIM_RESULTS.md).
@@ -71,3 +83,35 @@ Fifteen old simulation configs needed by regression tests moved to
 `tests/fixtures/simulation/`, with internal fixture paths updated. Two GeoFrame
 regression fixtures preserve their fully composed training settings. These fixtures
 are test inputs, not a second set of maintained run recipes.
+
+The [MACE context pilot](analysis/mace_context.json) selects complete message context, smooth inner pooling and tracked-center readouts with matched VICReg continuation.
+The [context recovery recipe](analysis/mace_context_recovery.json) compares cached
+linear/nonlinear readouts and inner/center fusion, then a shared encoder trained
+with or without physical-target gradients. Its detached node57 plans live in
+`mace-context/recovery-gpu0.json` and `mace-context/recovery-gpu1.json`.
+
+The joint checkpoint's [static export/verification recipe](analysis/mace_context_static.json)
+and [Al](analysis/static_mace_context_al.yaml) / [Zr](analysis/static_mace_context_zr.yaml)
+analysis recipes use complete message context with the standard static pipeline.
+See [the protocol](../docs/mace_context_static.md) for Zr geometry scaling and
+interior sampling. Detached node51 plans are in `mace-context/static-node51-gpu*.json`.
+
+[Liquid-cluster diagnosis](analysis/mace_context_clusters.json) compares saved
+joint features, inner/center/projector ablations and archived GeoFrame V2 labels
+on matched static Al centers. It runs no encoder training.
+# Local phase-space encoder
+
+`analysis/mace_local_smooth.json` selects the separate frozen nonlinear-state
+comparison with direct temporal regularization. Use the maintained local-state
+entry point's `smooth-*` stages; see [the experiment](../experiments/mace_local_smooth_20260915/README.md).
+
+`analysis/mace_velocity.json` trains the coordinate/velocity MACE extension and
+its matched coordinates-only control. See [the protocol](../experiments/mace_velocity_20260915/README.md)
+and [run instructions](../docs/mace_velocity.md).
+
+`analysis/mace_local_smooth_capacity.json` extends the frozen-state comparison to
+32/64 dimensions, weaker temporal weights and 2,000 epochs, with a separate output.
+
+`analysis/mace_local_motion.json` selects consecutive motion constraints; `mace_local_motion_smoke.json` verifies the same workflow on named sources. See [workflow](../docs/mace_local_motion.md).
+
+The native end-to-end MACE data-size pilot uses [analysis/mace_data_amount.json](analysis/mace_data_amount.json); see [protocol](../experiments/mace_data_amount_20260916/README.md).

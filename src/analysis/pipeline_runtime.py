@@ -376,7 +376,11 @@ def _collect_main_inference_cache(
             raise RuntimeError(
                 "Internal error: model must be loaded before gathering inference batches."
             )
-        if str(getattr(cfg, "model_type", "")).strip().lower() == "temporal_motif_field":
+        if str(cfg.model_type).strip().lower() == 'mace_context_encoder':
+            from .mace_context_adapter import collect_context_inference
+            cache = collect_context_inference(model, dataloader, cfg, out_dir,
+                max_batches=max_batches_latent, max_samples=max_samples_total)
+        elif str(getattr(cfg, "model_type", "")).strip().lower() == "temporal_motif_field":
             cache = collect_tmf_inference_cache(
                 model,
                 dataloader,
@@ -488,6 +492,8 @@ def load_vicreg_model(
             f"got {type(cfg)!r}."
         )
     device = f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu"
+    if str(cfg.model_type).strip().lower() == 'mace_context_encoder' and device.startswith('cuda:'):
+        torch.cuda.set_device(cuda_device)
     model = load_model_from_checkpoint(
         checkpoint_path,
         cfg,
@@ -500,6 +506,9 @@ def load_vicreg_model(
 
 def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
+    if model_type == 'mace_context_encoder':
+        from .mace_context_adapter import MACEContextAnalysis
+        return MACEContextAnalysis
     if model_type == "pretrained_mace_encoder":
         from .pretrained_mace_adapter import PretrainedMACEAnalysis
         return PretrainedMACEAnalysis
@@ -521,7 +530,7 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
         "Expected one of ['vicreg', 'visreg', 'temporal_vicreg', "
-        "'density_encoder', 'pretrained_mace_encoder'], "
+        "'density_encoder', 'pretrained_mace_encoder', 'mace_context_encoder'], "
         f"got {model_type!r}."
     )
 

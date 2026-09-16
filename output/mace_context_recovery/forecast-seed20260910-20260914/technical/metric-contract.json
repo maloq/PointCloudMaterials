@@ -1,0 +1,17 @@
+{
+  "family": "mace_context_recovery",
+  "exported_at": "2026-09-14T20:56:18.535059+00:00",
+  "files": {
+    "docs/metrics/mace_context_recovery.md": "d07819aeec7582a8913aded69409856ee3447813f6d115c8d1942ce264e2e0f1",
+    "src/research/mace_context/recovery_readouts.py": "9368e025f750aa884678920d9b0fecd9529e66cb52cbf48a2e5263e2382385f2",
+    "src/research/mace_context/recovery_data.py": "cb9be8f6e7bc9c2aff8ec5ddc5165436ac8d8be971de5a108586b33f2f16bd9f",
+    "src/research/mace_context/run.py": "ff6baa9423d00a1ff2d3dd4aaa4d63b336de5fcc761d2123d96f02419416bf30",
+    "src/research/mace_tda_ridge_audit/math.py": "a261a33fa0c211570d3510bc5ab2da30cec9f0afb31b3f3b655a2c64b55bfb32",
+    "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+    "src/research/mace_context/recovery_train.py": "c9bdfb9397158674ef97642b349a53d6813c9e6665c54b7c3f87d7f989c28481",
+    "src/models/encoders/mace_context.py": "9a5e906c6d34c1b5874a41e9ffa82545df8a69b0eaec09aed5ae1fd9b7136d44",
+    "src/research/mace_context/engine.py": "8471ee30a4be27cddbd4aa5f55f205ee8bd7bb5c8d4fbf5194213b211e953629",
+    "src/research/mace_context/data.py": "aaeea772355ebd6e273dd9fef2c110078d070da00f38e514ecfeb5aef1f63652",
+    "src/training_methods/shared/vicreg.py": "947b10c82042afc06b51fb651aa0b56ac27350e70bf5b2c120d513b90d66ab63"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "protocol": "mace_native_data_amount_v1",
+  "output": "${storage:archive}/analysis/mace_data_amount/independent-sources-20260916",
+  "cache": "${storage:cache}/mace-native-data-amount-20260916",
+  "sequence_cache": "${storage:cache}/mace-local-motion-sequences-20260916",
+  "foundation_checkpoint": "output/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+  "foundation_sha256": "d5773bf9440e96d6eb8c598f84bd0e6369fcfa432f626a87f890e07da3c651c9",
+  "training_sources": [
+    10,
+    25,
+    45,
+    90
+  ],
+  "seeds": [
+    20260916,
+    20260917
+  ],
+  "core_seed": 20260918,
+  "candidate_radius_A": 18.0,
+  "inner_radius_A": 5.0,
+  "outer_radius_A": 7.0,
+  "velocity_scale_A_per_ps": 4.0,
+  "cpu_threads": 4,
+  "micro_batch_size": 8,
+  "batch_sources": 2,
+  "steps": 1800,
+  "warmup_steps": 200,
+  "ramp_steps": 200,
+  "validation_every": 300,
+  "backbone_learning_rate": 2e-05,
+  "head_learning_rate": 0.001,
+  "motion_weight": 1.0,
+  "temporal_weight": 0.03,
+  "direction_weight": 0.1,
+  "curvature_weight": 0.03,
+  "variance_weight": 0.01,
+  "direction_rank": 8,
+  "low_order_threshold": 0.3,
+  "bootstrap_draws": 500,
+  "runtime": {
+    "node": "node53",
+    "gpu_job_id": 991900,
+    "maximum_seconds": 6900
+  }
+}

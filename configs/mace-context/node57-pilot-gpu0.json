@@ -1,0 +1,105 @@
+{
+  "node": "node57",
+  "allocation": 992489,
+  "deadline_utc": "2026-09-14T23:15:00+00:00",
+  "cwd": "${storage:repo}",
+  "output": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/lanes/gpu0",
+  "steps": [
+    {
+      "name": "frozen-mean80",
+      "dependencies": [],
+      "source": "${storage:repo}",
+      "module": "src.research.mace_context.run",
+      "arguments": [
+        "--config",
+        "${storage:repo}/configs/analysis/mace_context.json",
+        "--stage",
+        "frozen",
+        "--mode",
+        "mean80",
+        "--device",
+        "cuda:0"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/technical/frozen-mean80/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "frozen-halo_center",
+      "dependencies": [],
+      "source": "${storage:repo}",
+      "module": "src.research.mace_context.run",
+      "arguments": [
+        "--config",
+        "${storage:repo}/configs/analysis/mace_context.json",
+        "--stage",
+        "frozen",
+        "--mode",
+        "halo_center",
+        "--device",
+        "cuda:0"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/technical/frozen-halo_center/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-halo_center",
+      "dependencies": [],
+      "source": "${storage:repo}",
+      "module": "src.research.mace_context.run",
+      "arguments": [
+        "--config",
+        "${storage:repo}/configs/analysis/mace_context.json",
+        "--stage",
+        "train",
+        "--mode",
+        "halo_center",
+        "--device",
+        "cuda:0"
+      ],
+      "minimum_remaining_seconds": 5400,
+      "completion": [
+        {
+          "path": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/technical/train-halo_center/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-mean80",
+      "dependencies": [],
+      "source": "${storage:repo}",
+      "module": "src.research.mace_context.run",
+      "arguments": [
+        "--config",
+        "${storage:repo}/configs/analysis/mace_context.json",
+        "--stage",
+        "train",
+        "--mode",
+        "mean80",
+        "--device",
+        "cuda:0"
+      ],
+      "minimum_remaining_seconds": 5400,
+      "completion": [
+        {
+          "path": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/technical/train-mean80/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    }
+  ]
+}

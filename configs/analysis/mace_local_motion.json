@@ -1,0 +1,66 @@
+{
+  "protocol": "mace_local_motion_v1",
+  "output": "${storage:archive}/analysis/mace_local_motion/sequences-20260916",
+  "local_output": "output/mace_local_motion/sequences-20260916",
+  "cache": "${storage:cache}/mace-local-motion-sequences-20260916",
+  "source_config": "configs/analysis/mace_velocity.json",
+  "paired_features_cache": "${storage:cache}/mace-local-smooth-velocity-20260915",
+  "checkpoint": "${storage:analysis}/mace_velocity/all-velocity-20260915/technical/coordinates_velocity/best.pt",
+  "devices": [
+    "cuda:0",
+    "cuda:1"
+  ],
+  "cpu_threads": 4,
+  "label_workers_per_lane": 8,
+  "micro_batch_size": 12,
+  "sequence_frames": 9,
+  "centers_per_source": 4,
+  "candidate_radius_A": 18.0,
+  "smoke_source_ids": [],
+  "precision_sources_per_lane": 4,
+  "seed": 20260916,
+  "seeds": [
+    20260916,
+    20260917
+  ],
+  "dimensions": [
+    32,
+    64
+  ],
+  "ranks": [
+    4,
+    8
+  ],
+  "temporal_weights": [
+    0.03
+  ],
+  "direction_weight": 0.1,
+  "curvature_weight": 0.03,
+  "covariance_weight": 0.01,
+  "basis_neighbor_weight": 0.01,
+  "epochs": 600,
+  "warmup_epochs": 100,
+  "ramp_epochs": 100,
+  "validation_every": 25,
+  "learning_rate": 0.001,
+  "maximum_training_lag_ps": 0.8,
+  "evaluation_lag_ps": 0.75,
+  "low_order_threshold": 0.3,
+  "target_jump": 0.1,
+  "retention_allowance": 0.1,
+  "direction_samples": 1024,
+  "local_basis_samples": 128,
+  "local_basis_neighbors": 32,
+  "local_basis_minimum_groups": 16,
+  "bootstrap_draws": 500,
+  "probe_alphas": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "runtime": {
+    "node": "node51",
+    "job_id": 994149,
+    "stop_unix": 1789562692.0
+  }
+}

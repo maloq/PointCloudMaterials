@@ -1,0 +1,65 @@
+{
+  "node": "node57",
+  "allocation": 992489,
+  "deadline_utc": "2026-09-14T23:15:00+00:00",
+  "cwd": "${storage:repo}",
+  "output": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/lanes/gpu1",
+  "steps": [
+    {
+      "name": "frozen-halo_mean80",
+      "dependencies": [
+        {
+          "path": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/technical/frozen-halo_inner/status.json",
+          "success_state": "complete",
+          "pending_states": [
+            "running"
+          ]
+        }
+      ],
+      "source": "${storage:repo}",
+      "module": "src.research.mace_context.run",
+      "arguments": [
+        "--config",
+        "${storage:repo}/configs/analysis/mace_context.json",
+        "--stage",
+        "frozen",
+        "--mode",
+        "halo_mean80",
+        "--device",
+        "cuda:1"
+      ],
+      "minimum_remaining_seconds": 600,
+      "completion": [
+        {
+          "path": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/technical/frozen-halo_mean80/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    },
+    {
+      "name": "train-halo_inner",
+      "dependencies": [],
+      "source": "${storage:repo}",
+      "module": "src.research.mace_context.run",
+      "arguments": [
+        "--config",
+        "${storage:repo}/configs/analysis/mace_context.json",
+        "--stage",
+        "train",
+        "--mode",
+        "halo_inner",
+        "--device",
+        "cuda:1"
+      ],
+      "minimum_remaining_seconds": 5400,
+      "completion": [
+        {
+          "path": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914/technical/train-halo_inner/status.json",
+          "success_state": "complete",
+          "pending_states": []
+        }
+      ]
+    }
+  ]
+}

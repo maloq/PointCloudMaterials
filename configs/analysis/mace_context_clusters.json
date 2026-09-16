@@ -1,0 +1,88 @@
+{
+  "output": "${storage:analysis}/mace_context_clusters/diagnosis-20260915",
+  "probe_output": "${storage:analysis}/mace_context_clusters/diagnosis-20260915/physical-probe-float64",
+  "analysis": "output/mace_context_static/dual-physics-epoch12-al-20260915",
+  "sample_cache": "datasets/cache/static_al_context_interior_20260915",
+  "static_source": "datasets/Al/inherent_configurations_off",
+  "joint_checkpoint": "${storage:analysis}/mace_context_recovery/forecast-seed20260910-20260914/technical/train-dual_physics/best.pt",
+  "initial_config": "output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/.hydra/config.yaml",
+  "temporal_features": "${storage:analysis}/mace_context_recovery/forecast-seed20260910-20260914/technical/train-dual_physics/features.npz",
+  "probes": "${storage:analysis}/mace_encoder_diagnostics/forecast-seed20260910-20260914/technical/probes.npz",
+  "seed": 20260915,
+  "cpu_threads": 6,
+  "fit_per_frame": 6000,
+  "references": {
+    "gf_original": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_v2_spatiotemporal_analysis_20260905/full_static_Al/baseline",
+    "gf_vicreg_best": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_v2_spatiotemporal_analysis_20260905/full_static_Al/vicreg_best",
+    "gf_visreg_best": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/geoframe_v2_spatiotemporal_analysis_20260905/full_static_Al/visreg_best"
+  },
+  "variants": {
+    "dual_standard": {
+      "features": "dual",
+      "pca_max_components": 64,
+      "pca_variance": 0.99,
+      "method": "spherical_kmeans",
+      "l2_normalize": true
+    },
+    "inner_standard": {
+      "features": "inner",
+      "pca_max_components": 64,
+      "pca_variance": 0.99,
+      "method": "spherical_kmeans",
+      "l2_normalize": true
+    },
+    "center_standard": {
+      "features": "center",
+      "pca_max_components": 64,
+      "pca_variance": 0.99,
+      "method": "spherical_kmeans",
+      "l2_normalize": true
+    },
+    "projector_standard": {
+      "features": "projector",
+      "pca_max_components": 64,
+      "pca_variance": 0.99,
+      "method": "spherical_kmeans",
+      "l2_normalize": true
+    },
+    "dual_pca8": {
+      "features": "dual",
+      "pca_max_components": 8,
+      "pca_variance": 1.0,
+      "method": "spherical_kmeans",
+      "l2_normalize": true
+    },
+    "inner_pca8": {
+      "features": "inner",
+      "pca_max_components": 8,
+      "pca_variance": 1.0,
+      "method": "spherical_kmeans",
+      "l2_normalize": true
+    },
+    "dual_euclidean": {
+      "features": "dual",
+      "pca_max_components": 64,
+      "pca_variance": 0.99,
+      "method": "kmeans",
+      "l2_normalize": false
+    },
+    "inner_euclidean": {
+      "features": "inner",
+      "pca_max_components": 64,
+      "pca_variance": 0.99,
+      "method": "kmeans",
+      "l2_normalize": false
+    }
+  },
+  "probe_alphas": [
+    1e-06,
+    0.0001,
+    0.01,
+    0.1,
+    1,
+    10,
+    100,
+    1000,
+    10000
+  ]
+}

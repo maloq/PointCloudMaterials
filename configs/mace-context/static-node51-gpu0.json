@@ -1,0 +1,28 @@
+{
+  "node": "node51",
+  "allocation": 993281,
+  "deadline_utc": "2026-09-15T16:35:00+00:00",
+  "cwd": "${storage:repo}",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/mace_context_static/dual-physics-epoch12-20260915/technical/lanes/gpu0",
+  "steps": [
+    {
+      "name": "static-al",
+      "dependencies": [],
+      "source": "${storage:repo}",
+      "module": "src.experiment_runner.registry",
+      "arguments": [
+        "run",
+        "--spec",
+        "/home/infres/vmorozov/PointCloudMaterials/output/mace_context_static/dual-physics-epoch12-20260915/technical/run-al.json"
+      ],
+      "minimum_remaining_seconds": 7200,
+      "completion": [
+        {
+          "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_context_static/dual-physics-epoch12-al-20260915/technical/tracked-analysis/execution/run_record.json",
+          "success_state": "command_succeeded",
+          "pending_states": []
+        }
+      ]
+    }
+  ]
+}

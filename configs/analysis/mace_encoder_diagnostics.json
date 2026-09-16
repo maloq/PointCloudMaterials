@@ -1,0 +1,20 @@
+{
+  "output": "${storage:analysis}/mace_encoder_diagnostics/forecast-seed20260910-20260914",
+  "checkpoint": "output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+  "sources_config": "experiments/mace_al_denoising_20260910/training_fire.json",
+  "training_cache": "${dataset:mace-meam}",
+  "forecast_cache": "${dataset:embedding-forecast-full-20260911}",
+  "sibling_campaign": "${dataset:al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904}",
+  "device": "cuda:0",
+  "seed": 20260914,
+  "batch_size": 64,
+  "probe_centers_per_context": 64,
+  "temporal_centers_per_source": 8,
+  "temporal_frames": 17,
+  "temporal_lags_steps": [1, 2, 4, 8, 12, 16],
+  "sibling_centers": 16,
+  "sibling_frames": [0, 1, 2, 5, 10, 20, 30, 40, 50],
+  "ptm_rmsd_cutoff": 0.1,
+  "ridge_alphas": [0.1, 1, 10, 100, 1000],
+  "bootstrap_draws": 4000
+}

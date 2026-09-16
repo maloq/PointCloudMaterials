@@ -33,13 +33,19 @@
   },
   "analysis": {
     "files": {
-      "docs/metrics/analysis.md": "30f993b03c3bb080245cadbb980b2d287636323eea585790ca6a89e41ce38140",
+      "docs/metrics/analysis.md": "aa93747f8dd8ecaf33dc97a5b895e9186a1738c76844141412a6c24e5818b459",
       "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
       "src/analysis/topology.py": "c1c61cc47b278530000f2614c149d61c5b854477a1cba590a85eb8c75383d840",
       "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
       "src/analysis/clustering.py": "22204ce9baa49fdc039ef91b84e399f67c11ac401dfc05532842c74014839b4b",
       "src/vis_tools/latent_analysis_vis.py": "15138e427cf6af7d5840623ceb4874c8ff4f7ea58d105ea602074ead3a15c79f",
-      "src/analysis/latent_vis.py": "954682cd6ef37d873c5323435ba7bb9f626f1a70a75cfa55c33071aedd4bc39d"
+      "src/analysis/latent_vis.py": "954682cd6ef37d873c5323435ba7bb9f626f1a70a75cfa55c33071aedd4bc39d",
+      "src/analysis/mace_context_adapter.py": "3d91a17c206655b8989281bc99da94458b90c16cafa1981966d84c53fed5504b",
+      "src/research/mace_context/static.py": "df25751b9945bb834757e055e021c0b42a3cc3ef628ecbeeb28c45adcc7eef6c",
+      "docs/mace_context_static.md": "296d7c3c49d224df7831214bb6e4515c5fc3d082e5437c1e88e4106ec5813951",
+      "src/research/mace_context/cluster_diagnosis.py": "e9323e7ce1cda8f46aa86fe284dc846e1c24db0e732435d44eb8713307caaea2",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/research/mace_context/cluster_probe.py": "0b428b6602812ee60c7e385128ac2e98675f8adf72a99d9a0426ea5d195942c4"
     }
   },
   "forecast_context": {
@@ -79,6 +85,166 @@
       "src/research/forecast_spatial_mixture/summary.py": "6f6c4f1507be289e0309fdbda31697c035b270834b7291065f1c7ef0436f1cc0",
       "src/training_methods/embedding_forecast/spatial_attention.py": "18cc9684ae5e23fb4c1739c9a75f7cb1cdb91dd7f34dfb2844fc12493ea80f9f",
       "src/training_methods/embedding_forecast/attention_data.py": "ffd80321a7289eb904d35642615467141c383a44331b261957dce58c0f0486ee"
+    }
+  },
+  "mace_encoder_diagnostics": {
+    "files": {
+      "docs/metrics/mace_encoder_diagnostics.md": "c347a5aa7a7af0b2803b7f239e6a549c153ead6a0930fd51c116a5fa149a42f7",
+      "src/research/mace_encoder_diagnostics/analyze.py": "1c35d72b912d2839c2bc32ef9cf2eca3d34d64dde2090f2859fcee39a2d7e96c",
+      "src/research/mace_encoder_diagnostics/extract.py": "ebcc1968d94eda14e6cca74962cf52f03efdc920e82f96e98cb3c53461a3336d",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+      "src/research/mace_encoder_diagnostics/verify.py": "c5b3e9ee61f3f67d3c7054af23ac3613ef086aaaccc64d2d9f8b7298f862b41b"
+    }
+  },
+  "mace_tda_ridge_audit": {
+    "files": {
+      "docs/metrics/mace_tda_ridge_audit.md": "46dffc753089054793797b4c0aebabd726fc8996ffbd4e40cdc75f2b0408d558",
+      "src/research/mace_tda_ridge_audit/math.py": "a261a33fa0c211570d3510bc5ab2da30cec9f0afb31b3f3b655a2c64b55bfb32",
+      "src/research/mace_tda_ridge_audit/run.py": "68cb1d7477ea06149ae63034498615a6d6c8efef32f84b8deed814fc39bc7a85",
+      "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+      "src/data/relaxed_histories.py": "7d3130694471b595b0cd778322a957ec757551df657a68f53701c17cd23082c9",
+      "src/training_methods/contrastive_learning/vicreg_module.py": "537aa7c92832652797564971540e67ac2dbb7d90ed2bdab1f17dfa0b070a6a7f",
+      "src/training_methods/shared/base_ssl_module.py": "79f1b028a5cad5edad1aa5715fdc47893b9b3d45e4668c8b89dc6be59a2eba4b",
+      "src/utils/model_utils.py": "0dbfcdcabcf0abb57452cff0399ddf54bb3f75403896f0eb74bc1d226a41a6d1",
+      "src/research/mace_tda_ridge_audit/initialization.py": "fed4a6899607f19c664e0f7e0478401ed231159e2b3c716b7faf528f32e13124",
+      "src/models/encoders/pretrained_mace.py": "c41391cf2402c26aafc68bdca5533acc3f999a09da9a4bf783cbb26630b91fc3",
+      "src/models/encoders/mace_bf16.py": "879abf5bfc58b95f8dcb98acdc738a57ebaca6309e90e29e8ce176862398d778",
+      "src/research/mace_tda_ridge_audit/direct.py": "2e9a55705ba76631bf609a3bae0bde41d715feb0933b477aa1addfdb53ec0753",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12"
+    }
+  },
+  "mace_context": {
+    "files": {
+      "docs/metrics/mace_context.md": "6e7d7b565bd107cf80ce4defd4b7c72b366be9bc45f25ca2a026d417fcf58ca6",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/research/mace_context/data.py": "aaeea772355ebd6e273dd9fef2c110078d070da00f38e514ecfeb5aef1f63652",
+      "src/research/mace_context/engine.py": "8471ee30a4be27cddbd4aa5f55f205ee8bd7bb5c8d4fbf5194213b211e953629",
+      "src/research/mace_context/evaluate.py": "63584ba8238b9b7927d8ed7319b655fdbaa860834d089c69b12f88b2e325bffb",
+      "src/research/mace_context/train.py": "c888210bebf6de399435961d2e4fba51c311828e169311c712509e67bbe724e6",
+      "src/research/mace_context/verify.py": "764b2351aa205d91996f1b5aaf829a13fb048abf9dd4af81bba5d6ac204554a1",
+      "src/research/mace_tda_ridge_audit/math.py": "a261a33fa0c211570d3510bc5ab2da30cec9f0afb31b3f3b655a2c64b55bfb32",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+      "src/research/mace_context/labels.py": "5d11b57691ad1bbfec5378ef43b1703fa80f7ce31f5d7003536884297ec04631",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12"
+    }
+  },
+  "mace_context_smoothness": {
+    "files": {
+      "docs/metrics/mace_context.md": "6e7d7b565bd107cf80ce4defd4b7c72b366be9bc45f25ca2a026d417fcf58ca6",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/research/mace_context/data.py": "aaeea772355ebd6e273dd9fef2c110078d070da00f38e514ecfeb5aef1f63652",
+      "src/research/mace_context/engine.py": "8471ee30a4be27cddbd4aa5f55f205ee8bd7bb5c8d4fbf5194213b211e953629",
+      "src/research/mace_context/evaluate.py": "63584ba8238b9b7927d8ed7319b655fdbaa860834d089c69b12f88b2e325bffb",
+      "src/research/mace_context/train.py": "c888210bebf6de399435961d2e4fba51c311828e169311c712509e67bbe724e6",
+      "src/research/mace_context/verify.py": "764b2351aa205d91996f1b5aaf829a13fb048abf9dd4af81bba5d6ac204554a1",
+      "src/research/mace_tda_ridge_audit/math.py": "a261a33fa0c211570d3510bc5ab2da30cec9f0afb31b3f3b655a2c64b55bfb32",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+      "src/research/mace_context/labels.py": "5d11b57691ad1bbfec5378ef43b1703fa80f7ce31f5d7003536884297ec04631",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "docs/metrics/mace_context_smoothness.md": "2d13765a3e118ea8a143b26c2e94f3d13238e829c6ca8bff2ad44a7f2c9b9b80",
+      "src/research/mace_context/smoothness.py": "fe885be7cf7372bf11a928c49320146af5afcee9b2176e1646bbd91e44fe31d3",
+      "src/research/mace_context/run.py": "ff803072768079842242c9b842a2b43724386bb12f892a21087a1898b89bcf30",
+      "src/research/mace_encoder_diagnostics/extract.py": "ebcc1968d94eda14e6cca74962cf52f03efdc920e82f96e98cb3c53461a3336d"
+    }
+  },
+  "mace_context_recovery": {
+    "files": {
+      "docs/metrics/mace_context_recovery.md": "ebbd7fec8e1ac13e57105f25376365457a956bad06286ae65e2ccc939cdf9202",
+      "src/research/mace_context/recovery_readouts.py": "9368e025f750aa884678920d9b0fecd9529e66cb52cbf48a2e5263e2382385f2",
+      "src/research/mace_context/recovery_data.py": "cb9be8f6e7bc9c2aff8ec5ddc5165436ac8d8be971de5a108586b33f2f16bd9f",
+      "src/research/mace_context/run.py": "ff803072768079842242c9b842a2b43724386bb12f892a21087a1898b89bcf30",
+      "src/research/mace_tda_ridge_audit/math.py": "a261a33fa0c211570d3510bc5ab2da30cec9f0afb31b3f3b655a2c64b55bfb32",
+      "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+      "src/research/mace_context/recovery_train.py": "c9bdfb9397158674ef97642b349a53d6813c9e6665c54b7c3f87d7f989c28481",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/research/mace_context/engine.py": "8471ee30a4be27cddbd4aa5f55f205ee8bd7bb5c8d4fbf5194213b211e953629",
+      "src/research/mace_context/data.py": "aaeea772355ebd6e273dd9fef2c110078d070da00f38e514ecfeb5aef1f63652",
+      "src/training_methods/shared/vicreg.py": "947b10c82042afc06b51fb651aa0b56ac27350e70bf5b2c120d513b90d66ab63"
+    }
+  },
+  "mace_local_state": {
+    "files": {
+      "docs/metrics/mace_local_state.md": "9e8a76497284c6fa244c88540c4ed82d9d7c08c9c894f9f63a292d3a2885fc6e",
+      "src/research/mace_local_state/__init__.py": "35639bd4efa40014f2eefc2f90e845a30d67a8c0acc8eeff9e227e78e9e1198e",
+      "src/research/mace_local_state/compare.py": "a2a0eee6a67772d2d4b8dac3d706218f8d88b2a34d79d24421a4da5b8d82b803",
+      "src/research/mace_local_state/data.py": "0f22499382bc12a25ac5b943bc6b4c0fe8f7066d4cbd7f0c263756990a3a5355",
+      "src/research/mace_local_state/methods.py": "6c4fa31a07eebdea7eb7cfb2897ec08be6e0aa37c4f7d5d3d1e358fa91fa5f6a",
+      "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+      "src/research/mace_local_state/run.py": "8f2586ce1b2d15484107078a279c89b07fd417b4d928d04a0a227d60434eefaf",
+      "src/research/mace_local_state/static.py": "862e683c5e4441c8883cef18dc3c9e300a603d63b0768b1ff0ebe1f96c184a12",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/temporal_vamp/linear_vamp.py": "c7dc57b1fa93a510b73d284c73042c6e527f8b7eebc9bd1383598bcc182e89ab"
+    }
+  },
+  "mace_velocity": {
+    "files": {
+      "docs/metrics/mace_velocity.md": "5e1a72b823e67a6b857884358ce739b4b4a617785522e9896f4477c2903789a1",
+      "src/models/encoders/mace_velocity.py": "d5ec76fcddb379aa1bb1d9e7783535613bc24341672c0c62630fc70785b585cc",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96",
+      "src/research/mace_velocity/evaluate.py": "4ab9ca0fa29c623890c821bf014de6f7df2928b060edf13aadab24cfb3ec3362",
+      "src/research/mace_velocity/data.py": "7e2d9db9c6504f2d1e71728a15cbfe6389425a366a7f8dfc4ca48454b43bba34",
+      "src/research/mace_velocity/inventory.py": "f9122fffc380e489b50b8e114771909dcf19cd4677d22b2267014065c6dc907d",
+      "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/data/conversion/paired_velocity.py": "452276edd871e1dec86ada56c896ef3a36cf208a622f9e8a9e5d6ac2ebf071e4"
+    }
+  },
+  "mace_local_smooth": {
+    "files": {
+      "docs/metrics/mace_local_smooth.md": "594eb5b5faced05db66e141c67a8038817fa851f8144a4bbd3425ab7cb30d8cd",
+      "src/research/mace_local_state/smooth.py": "11336a3dd0aed4e7c9394e9f10203622ff46f93c20a5cb3da599f8a568f0502f",
+      "src/research/mace_local_state/smooth_data.py": "552dccfd35fb667342d8f31d83840f6866a5b9b7aa20ba95b40e6aac1c80dd0d",
+      "src/research/mace_local_state/run.py": "8f2586ce1b2d15484107078a279c89b07fd417b4d928d04a0a227d60434eefaf",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/models/encoders/mace_velocity.py": "d5ec76fcddb379aa1bb1d9e7783535613bc24341672c0c62630fc70785b585cc",
+      "src/research/mace_velocity/data.py": "7e2d9db9c6504f2d1e71728a15cbfe6389425a366a7f8dfc4ca48454b43bba34",
+      "src/research/mace_velocity/inference.py": "b77c83cfcbb9da58bf921ed0d58c9d68fd2e4345908b04bb9a935019f73f4690",
+      "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96",
+      "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12"
+    }
+  },
+  "mace_local_motion": {
+    "files": {
+      "docs/metrics/mace_local_motion.md": "80545cbb18c78a286b3302d8984ff119697e6dbfa5f01f75060e8cbaaa31f457",
+      "src/research/mace_local_state/run.py": "8f2586ce1b2d15484107078a279c89b07fd417b4d928d04a0a227d60434eefaf",
+      "src/research/mace_local_state/smooth.py": "11336a3dd0aed4e7c9394e9f10203622ff46f93c20a5cb3da599f8a568f0502f",
+      "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+      "src/research/mace_velocity/data.py": "7e2d9db9c6504f2d1e71728a15cbfe6389425a366a7f8dfc4ca48454b43bba34",
+      "src/research/mace_velocity/inference.py": "b77c83cfcbb9da58bf921ed0d58c9d68fd2e4345908b04bb9a935019f73f4690",
+      "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/models/encoders/mace_velocity.py": "d5ec76fcddb379aa1bb1d9e7783535613bc24341672c0c62630fc70785b585cc",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+      "src/research/mace_local_state/motion_evaluate.py": "729e929c837f9b314e5763d3277d82ae5bd7b6961f6188fe8ed7d52d5d28af47",
+      "src/research/mace_local_state/motion.py": "2072da6abef25b4a3afc29ebc9881c81a549a24dbefb258514a581e3bbcbd111",
+      "src/research/mace_local_state/motion_train.py": "9ae5838dc14f3a15ffafd2e8fded1f659b2b5b8423944638b839d89917494c06",
+      "src/research/mace_local_state/motion_workflow.py": "21dd34172c56b15ef0e192731e15b085bac69244079d105f52bf6e4234eec831",
+      "src/research/mace_local_state/motion_data.py": "c543bc69086bc8ae1f0ad7d69e6319471669edc6a342452de2e3fd3397692991"
+    }
+  },
+  "mace_data_amount": {
+    "files": {
+      "src/research/mace_velocity/data_amount.py": "5db7fa24f5abec4108dc9c01f4346997b915c26c520e1049ed623dcf20d1360a",
+      "src/research/mace_velocity/data_amount_data.py": "7dfdc9e762a56843094a56cc5c81c36baed4e61a0a661b83a9ffe67d71e6b265",
+      "src/research/mace_velocity/data_amount_model.py": "676423ab6a7c86175c4b4a8e93f256c0dd6370609ad422a1f0170e6d4e75a248",
+      "src/research/mace_velocity/data_amount_eval.py": "a0407bd4d98672004906643b38d091d0c653749fbafeb1cabeba86fb54bf5438",
+      "src/research/mace_velocity/train.py": "d3b987ca7dda0fa830639aedbdefcc5a272b41d3e6b4e61a654b29d5af184d96",
+      "src/research/mace_velocity/data.py": "7e2d9db9c6504f2d1e71728a15cbfe6389425a366a7f8dfc4ca48454b43bba34",
+      "src/research/mace_local_state/motion.py": "2072da6abef25b4a3afc29ebc9881c81a549a24dbefb258514a581e3bbcbd111",
+      "src/research/mace_local_state/motion_data.py": "c543bc69086bc8ae1f0ad7d69e6319471669edc6a342452de2e3fd3397692991",
+      "src/models/encoders/mace_velocity.py": "d5ec76fcddb379aa1bb1d9e7783535613bc24341672c0c62630fc70785b585cc",
+      "src/models/encoders/mace_context.py": "ee556bcc906a6aa7f10511dc09a0d9072b6f7d9e81985869c3926d948e4aca4a",
+      "src/models/encoders/pretrained_mace.py": "c41391cf2402c26aafc68bdca5533acc3f999a09da9a4bf783cbb26630b91fc3",
+      "src/research/mace_velocity/__main__.py": "7f7f27509e7779ff872e2e4dc02ae567d16fb2dbd9ffc795e5478f29c320ee03",
+      "src/models/encoders/mace_bf16.py": "879abf5bfc58b95f8dcb98acdc738a57ebaca6309e90e29e8ce176862398d778",
+      "src/research/mace_local_state/physics.py": "d34656ab7cc5906e2ea5d2b533eeb4a6059e636d8df786e9d61e6ce69ab85712",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12"
     }
   }
 }

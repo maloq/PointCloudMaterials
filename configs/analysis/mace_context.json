@@ -1,0 +1,58 @@
+{
+  "output": "${storage:analysis}/mace_context/forecast-seed20260910-pilot-20260914",
+  "local_output": "output/mace_context/forecast-seed20260910-pilot-20260914",
+  "cache": "${storage:cache}/mace-context-pilot-20260914",
+  "training_cache": "${dataset:mace-meam}",
+  "diagnostics": "${storage:analysis}/mace_encoder_diagnostics/forecast-seed20260910-20260914",
+  "sources_config": "experiments/mace_al_denoising_20260910/training_fire.json",
+  "checkpoint": "output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_l40s_20260910_172945/default/anchor_vicreg__rep01/mace_vicreg_relaxed_l40s_default_anchor_vicreg__rep01-epoch=02.ckpt",
+  "seed": 20260914,
+  "candidate_radius_A": 18.0,
+  "inner_radius_A": 5.0,
+  "outer_radius_A": 7.0,
+  "micro_batch_size": 8,
+  "batch_size": 256,
+  "epochs": 8,
+  "learning_rate": 0.0001,
+  "cpu_threads": 6,
+  "ridge_alphas": [
+    1e-14,
+    1e-13,
+    1e-12,
+    1e-11,
+    1e-10,
+    1e-09,
+    1e-08,
+    1e-07,
+    1e-06,
+    1e-05,
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1,
+    10,
+    100,
+    1000
+  ],
+  "bootstrap_draws": 4000,
+  "temporal_lags_steps": [
+    1,
+    2,
+    4,
+    8,
+    12,
+    16
+  ],
+  "modes": [
+    "mean80",
+    "halo_mean80",
+    "halo_inner",
+    "halo_center"
+  ],
+  "training_modes": [
+    "mean80",
+    "halo_inner",
+    "halo_center"
+  ]
+}

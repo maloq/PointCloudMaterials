@@ -35,12 +35,36 @@ and [the output layout](../docs/research_layout.md).
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.mace_local_state.run --config configs/analysis/mace_local_state.json --stage all`
+compares frozen short-time coordinates and learned local-group physical distances,
+then discovers density states with uncertainty. Stages `prepare`, `fit`, `evaluate`
+and `static` preserve their distinct source-held-out and spatial protocols. See the
+[local-state experiment](../experiments/mace_local_state_20260915/README.md).
+
+The same entry point with `--config configs/analysis/mace_local_smooth.json`
+uses `smooth-prepare`, `smooth-fit`, `smooth-evaluate`, or `smooth-all` for the
+separate nonlinear physical-state/direct-temporal-regularization comparison.
+See [run instructions](../docs/mace_local_smooth.md).
+
 ```bash
 python -m src.training_methods.contrastive_learning.train_contrastive --config-name vicreg_mace_relaxed
 python -m src.analysis.pipeline configs/analysis/static_topology.yaml --checkpoint CHECKPOINT --output-dir output/QUESTION/RUN
 python -m src.training_methods.embedding_forecast --config CONFIG.json --stage train
 python -m src.data.topology_views --config-name vicreg_mace_relaxed
 ```
+
+Joint MACE context checkpoints use the existing `src.research.mace_context.run`
+stages `static-export` and `static-verify`, followed by `src.analysis.pipeline`
+with `configs/analysis/static_mace_context_al.yaml` or `static_mace_context_zr.yaml`.
+See [static context analysis](../docs/mace_context_static.md).
+
+`python -m src.research.mace_context.cluster_diagnosis --config
+configs/analysis/mace_context_clusters.json` runs saved-feature clustering
+ablations and a matched GeoFrame V2 comparison. See the
+[liquid-cluster diagnosis](../experiments/mace_context_clusters_20260915/README.md).
+The follow-up `python -m src.research.mace_context.cluster_probe --config
+configs/analysis/mace_context_clusters.json` tests frozen features with spatially
+separated physical readouts using the same diagnostic samples.
 
 The MACE preparation command is
 `python -m src.research.spatiotemporal.prepare_spatiotemporal_vicreg_views --config CONFIG`.
@@ -128,6 +152,34 @@ with retained `local_directory` paths for the [short-history extension](../exper
 Recorded older protocols live in [src/research](../src/research/README.md); their
 configuration and findings stay with the dated experiment record.
 
+The frozen forecast encoder assay runs with
+`python -m src.research.mace_encoder_diagnostics.extract --config
+configs/analysis/mace_encoder_diagnostics.json --stage all`, followed by
+`python -m src.research.mace_encoder_diagnostics.analyze --config
+configs/analysis/mace_encoder_readout.json`. It tests input invariance, geometric
+and membership changes, storage precision, TDA generalization and physical time
+dependence using retained checkpoints and trajectories. See the
+[scientific protocol](../experiments/mace_encoder_diagnostics_20260914/README.md).
+`python -m src.research.mace_encoder_diagnostics.verify --config
+configs/analysis/mace_encoder_diagnostics.json` checks producer labels, replays
+stored forecast embeddings and validates sibling velocities and timelines.
+
+`python -m src.research.mace_tda_ridge_audit.run --config
+configs/analysis/mace_tda_ridge_audit.json` re-encodes the original six single-frame
+VICReg/TDA checkpoints, checks the training loss with target interventions, and
+compares repository and independent ridge calculations for projector and encoder
+features. `--stage summarize` rebuilds its tables and paired plot. See the
+[audit protocol](../experiments/mace_tda_ridge_audit_20260914/README.md).
+
+The same entry point with `--config configs/analysis/mace_tda_initialization.json
+--stage initialization` compares frozen original MLIP and three random MACE
+encoders with the audited trained encoder features. It retains the original ridge
+protocol and adds a validation-only regularization sensitivity analysis.
+With `--config configs/analysis/mace_tda_direct.json --stage direct`, it compares
+verified random/MLIP embedding distances and top-10 neighborhoods directly with
+the three TDA blocks on held-out structures. This stage fits no readout or scaling;
+it reports both global and within-frame geometry, including shuffled controls.
+
 The September 13 queue audit found no remaining simulation controllers. The old
 spatiotemporal experiment-path forwarder was retired; use the maintained preparation
 module above. Historical simulation specialization/queue code is now under
@@ -153,3 +205,26 @@ evidence and never treats outcome records as counts of independent simulations.
 
 Source ownership and retained historical import/command paths are documented in
 [the source refactor record](../docs/src_refactor.md#completion-pass-starting-at-d119fd2).
+
+`python -m src.research.mace_context.run --config configs/analysis/mace_context.json --stage STAGE` runs the [complete-context MACE pilot](../experiments/mace_context_20260914/README.md). Stages are `prepare`, `verify`, `frozen`, `train`, `labels`, `summarize`, and `smoothness`; extraction/training require an explicit `--mode`. Existing allocation plans can run these commands on assigned GPUs. The CPU-only `smoothness` stage reuses all seven completed feature extractions and writes a separate run suffixed `-smoothness`, with temporal normalization checks, paired source intervals and boundary curves.
+
+The [information-recovery follow-up](../experiments/mace_context_recovery_20260914/README.md)
+uses the same module with `--config configs/analysis/mace_context_recovery.json`
+and stages `recovery-readouts`, `recovery-verify`, `recovery-train --variant
+dual_ssl|dual_physics`, and `recovery-summarize`. Cached readouts compare linear
+and nonlinear decoders and inner/center fusion. The distinct joint experiment
+trains a shared backbone with or without encoder gradients from physical targets.
+# Coordinate/velocity local-state research
+
+The same `src.research.mace_velocity` entry point has `data-prepare`, `data-smoke`
+and `data-study` stages for the distinct **end-to-end native encoder** training-data
+comparison, using `configs/analysis/mace_data_amount.json`. This updates MACE itself;
+it does not train a map on frozen features. See [run instructions](../docs/mace_data_amount.md).
+
+Use `python -m src.research.mace_velocity STAGE --config configs/analysis/mace_velocity.json`
+for the separate local phase-space protocol (`inventory`, `prepare`, `verify`,
+`teacher`, `train`, `evaluate`). The maintained conversion dispatcher adds
+`python scripts/convert_trajectory.py paired-velocity --positions P --velocities V --output O --atoms N`
+for atom/time-matched legacy dumps. See [the run instructions](../docs/mace_velocity.md).
+
+The local-state module also runs `motion-all`/`motion-evaluate` with `configs/analysis/mace_local_motion.json`; GPU worker stages are `motion-prepare --lane N` and `motion-fit --lane N`. See [consecutive motion workflow](../docs/mace_local_motion.md).

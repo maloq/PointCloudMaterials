@@ -10,6 +10,12 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
+| [Direct local-state smoothness](mace_local_smooth_20260915/README.md) | Nonlinear compact-state sweep with current physics, direct temporal penalties and within-low-order information/stability evaluation; first sweep failed the retention gate, longer capacity comparison submitted |
+| [Frozen local-group states](mace_local_state_20260915/README.md) | [Completed comparison](mace_local_state_20260915/RESULTS.md): learned physical distance improves smoothness/group information but loses instantaneous topology; tested density discovery does not resolve liquid states |
+| [MACE liquid-cluster diagnosis](mace_context_clusters_20260915/README.md) | Matched GeoFrame V2 comparison, eight saved-feature ablations, physical readouts, and a [literature review](mace_context_clusters_20260915/LITERATURE_REVIEW.md) on coherent liquid representations |
+| [Static Al/Zr joint MACE](mace_context_static_20260915/README.md) | Full standard static analysis with exact shared inner/center checkpoint weights and complete message context; Zr geometry transfer |
+| [VICReg / TDA ridge audit](mace_tda_ridge_audit_20260914/README.md) | Fresh six-checkpoint inference, independent ridge reproduction, supervision checks, projector-versus-encoder comparison, frozen MLIP/random controls, and direct embedding geometry |
+| [Forecast MACE diagnostics](mace_encoder_diagnostics_20260914/README.md) | Exact target encoder: invariance, geometry/membership changes, storage precision, physical time dependence, siblings and source-held-out TDA readouts |
 | [Embedding forecast](embedding_forecast_20260911/README.md) | Direct versus autoregressive trajectories, completed pilot and enlarged fits; exact continuation and target-encoder provenance |
 | [Observed history](forecast_context_20260913/README.md) | [24 completed fits](forecast_context_20260913/RESULTS.md), matched 0–24 ps history comparison |
 | [Local crystallization](forecast_crystallization_20260913/README.md) | [Completed physical assay](forecast_crystallization_20260913/RESULTS.md), transition/timing readouts and [next questions](forecast_crystallization_20260913/NEXT_EXPERIMENTS.md) |
@@ -25,3 +31,19 @@ live in [configs/experiment_registry.json](../configs/experiment_registry.json).
 See [registry documentation](../docs/output_registry.md) and [result conventions](../docs/research_layout.md).
 Scientific implementation is in [src/research](../src/research/README.md) and the
 maintained [training/analysis commands](../scripts/README.md).
+
+- [Complete context and center-node MACE pilot](mace_context_20260914/README.md): controlled membership crossings, held-out TDA readouts and matched VICReg continuation.
+- [Recovering local structure in continuous MACE embeddings](mace_context_recovery_20260914/README.md): nonlinear readouts, combined center/inner features and matched training with physical supervision.
+# Local coordinate/velocity state
+
+[mace_velocity_20260915](mace_velocity_20260915/README.md) preserves the smooth
+MACE structural representation and learns separate activity and directed-motion
+channels from measured velocities, with an explicit coordinates-only ablation.
+Both variants completed; structural stability remains near the original teacher.
+The [smooth-manifold literature review](mace_velocity_20260915/LITERATURE_REVIEW_SMOOTH_MANIFOLD.md)
+proposes direct temporal objectives, local motion constraints, and short observed
+history while testing preservation of bond order and instantaneous topology.
+
+[Consecutive local-state motion](mace_local_motion_20260916/README.md): shared local directions and weak bending penalties with physical retention; 20 tests and full smoke workflow passed; full 44-fit comparison launched.
+
+- [Native encoder training-data amount](mace_data_amount_20260916/README.md): matched-update independent-source learning curves with motion constraints.

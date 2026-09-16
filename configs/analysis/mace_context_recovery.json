@@ -1,0 +1,31 @@
+{
+  "output": "${storage:analysis}/mace_context_recovery/forecast-seed20260910-20260914",
+  "local_output": "output/mace_context_recovery/forecast-seed20260910-20260914",
+  "pilot_config": "configs/analysis/mace_context.json",
+  "seed": 20260914,
+  "cpu_threads": 6,
+  "bootstrap_draws": 4000,
+  "readout": {
+    "states": ["frozen", "trained"],
+    "modes": ["mean80", "halo_inner", "halo_center", "fusion"],
+    "hidden_width": 128,
+    "seeds": [20260914, 20260915],
+    "weight_decays": [0.0001, 0.01],
+    "learning_rate": 0.001,
+    "max_epochs": 400,
+    "validation_interval": 10,
+    "patience_epochs": 60
+  },
+  "joint": {
+    "variants": ["dual_ssl", "dual_physics"],
+    "epochs": 12,
+    "batch_size": 256,
+    "micro_batch_size": 8,
+    "learning_rate": 0.0001,
+    "head_learning_rate": 0.001,
+    "head_hidden_width": 128,
+    "head_warmup_epochs": 200,
+    "physics_weight": 10.0,
+    "deadline_utc": "2026-09-14T23:20:00+00:00"
+  }
+}

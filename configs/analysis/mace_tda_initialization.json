@@ -1,0 +1,31 @@
+{
+  "output": "${storage:analysis}/mace_tda_ridge_audit/initialization-matched-20260914",
+  "cache": "${dataset:mace-meam}",
+  "reference_recipe": "configs/analysis/mace_tda_ridge_audit.json",
+  "pretrained_checkpoint": "${storage:output}/pretrained_mace_spatiotemporal_20260906/mace_mp_0b2_small.model",
+  "device": "cuda:1",
+  "batch_size": 128,
+  "cpu_threads": 4,
+  "seed": 20260914,
+  "random_seeds": [
+    20260910,
+    20260911,
+    20260912
+  ],
+  "bootstrap_draws": 4000,
+  "ridge_alphas": [
+    1e-09,
+    1e-08,
+    1e-07,
+    1e-06,
+    1e-05,
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0
+  ]
+}

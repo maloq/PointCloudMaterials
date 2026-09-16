@@ -1,4 +1,5 @@
 from pathlib import Path
+from contextlib import nullcontext
 from typing import TypeVar
 
 import torch
@@ -31,10 +32,16 @@ def load_model_from_checkpoint(
     if not checkpoint.is_file():
         raise FileNotFoundError(f"Checkpoint does not exist: {checkpoint}")
 
-    model = module(cfg)
-    payload = torch.load(checkpoint, map_location=device, weights_only=False)
-    state_dict = payload["state_dict"]
-    model.load_state_dict(state_dict, strict=True)
-    model.to(device)
+    target = torch.device(device)
+    # MACE's accelerated constructor allocates on the current CUDA device.
+    # Construct on the destination and stage saved tensors through CPU, avoiding
+    # a CUDA:0 -> CUDA:1 copy when a caller selects a non-default device.
+    context = torch.cuda.device(target) if target.type == "cuda" else nullcontext()
+    with context:
+        model = module(cfg)
+        payload = torch.load(checkpoint, map_location="cpu", weights_only=False)
+        state_dict = payload["state_dict"]
+        model.load_state_dict(state_dict, strict=True)
+        model.to(target)
     model.eval()
     return model
