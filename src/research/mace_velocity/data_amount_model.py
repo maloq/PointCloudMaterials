@@ -8,7 +8,7 @@ from torch import nn
 from src.experiment_runner.registry import sha256
 from src.models.encoders.pretrained_mace import PretrainedMACEEncoder
 from src.models.encoders.mace_velocity import MACEVelocityEncoder
-from src.research.mace_local_state.motion import orthogonal_basis, projection_residual, time_differences
+from .motion import orthogonal_basis, projection_residual, time_differences
 from .train import GROUPS, Heads, encode
 
 

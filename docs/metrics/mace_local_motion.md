@@ -1,5 +1,9 @@
 # Consecutive local-state motion: stage B
 
+**Historical protocol, discarded 16 September 2026.** The implementation is no
+longer active. Definitions below and original run exports remain as evidence;
+see [retained source and results](../discarded_frozen_encoder_maps.md).
+
 Protocol `mace_local_motion_v1`. Frozen current coordinate/velocity MACE features
 feed a snapshot state map using only the coordinate-derived first 256 channels.
 No history input, future prediction, relaxed-TDA target or MACE fine-tuning is

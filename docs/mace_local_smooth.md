@@ -1,29 +1,19 @@
-# Running the frozen local-state smoothness sweep
+# Discarded frozen local-state smoothness sweep
 
-Use `python -m src.research.mace_local_state.run --config
-configs/analysis/mace_local_smooth.json --stage smooth-all` in `pointnet`.
-The `smooth-prepare`, `smooth-fit`, and `smooth-evaluate` stages are separate.
-The older affine comparison's stages and config remain distinct.
+This frozen-feature map workflow was discarded on 16 September 2026. Its active
+code and recipes were removed; see the [retirement record](discarded_frozen_encoder_maps.md)
+for scope, exact source and reproduction details. Embedding forecasting and native
+encoder training remain active.
 
-The run is `output/mace_local_smooth/velocity-frozen-20260915/`, linked to the
-configured analysis root. Frozen feature pieces and checksums use the IDS cache.
-Producer metadata is read literally; only recipe paths use the config resolver.
+The first run is `output/mace_local_smooth/velocity-frozen-20260915/`, linked to
+WORK analysis. Its 32 fits and evaluation completed; no candidate passed the
+information gate. See [findings](../experiments/mace_local_smooth_20260915/RESULTS.md).
 
-Check `technical/prepare-status.json`, `technical/fit-status.json`, and
-`technical/evaluation-status.json`. Per-variant directories retain `best.pt`,
-completed-epoch `last.pt`, histories and evaluation arrays. `tables/comparison.csv`
-and `plots/smoothness_information.png` are written after the sweep completes.
-Keep the cache, checkpoint provenance and exact config for resumption.
+The capacity follow-up is `output/mace_local_smooth/velocity-frozen-capacity-20260915/`.
+Its 22 fits are saved; final evaluation completion was not established. This is no
+longer an active submission. Exact submission commands and batch scripts remain
+under each run's `technical/` directory.
 
-A detached process still needs a valid allocation. Longer work needs a batch job
-or another authorized allocation; launch records/logs go under `technical/`.
-
-Scientific scope: [experiment](../experiments/mace_local_smooth_20260915/README.md).
-Terms: [normalized RMS jump](research_glossary.md#normalized-rms-jump) and
-[information retention](research_glossary.md#information-retention-and-smoothness-tradeoff).
-
-The first sweep is complete; see [findings](../experiments/mace_local_smooth_20260915/RESULTS.md).
-The longer follow-up uses `configs/analysis/mace_local_smooth_capacity.json` with
-`--stage smooth-all`, submitted detached as job 994010. Its output is
-`output/mace_local_smooth/velocity-frozen-capacity-20260915/`; the exact submission
-command and batch script are retained in its `technical/` directory.
+Both outputs, IDS feature caches, checkpoints, optimizer states and immutable
+provenance remain in place. Historical recipes are retained with the
+[scientific record](../experiments/mace_local_smooth_20260915/README.md).

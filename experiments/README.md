@@ -10,8 +10,8 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
-| [Direct local-state smoothness](mace_local_smooth_20260915/README.md) | Nonlinear compact-state sweep with current physics, direct temporal penalties and within-low-order information/stability evaluation; first sweep failed the retention gate, longer capacity comparison submitted |
-| [Frozen local-group states](mace_local_state_20260915/README.md) | [Completed comparison](mace_local_state_20260915/RESULTS.md): learned physical distance improves smoothness/group information but loses instantaneous topology; tested density discovery does not resolve liquid states |
+| [Direct local-state smoothness](mace_local_smooth_20260915/README.md) | **Discarded** frozen-map approach; first sweep failed the retention gate; capacity fits retained without an established final evaluation |
+| [Frozen local-group states](mace_local_state_20260915/README.md) | **Discarded** approach; [completed comparison](mace_local_state_20260915/RESULTS.md): learned physical distance improves smoothness/group information but loses instantaneous topology; tested density discovery does not resolve liquid states |
 | [MACE liquid-cluster diagnosis](mace_context_clusters_20260915/README.md) | Matched GeoFrame V2 comparison, eight saved-feature ablations, physical readouts, and a [literature review](mace_context_clusters_20260915/LITERATURE_REVIEW.md) on coherent liquid representations |
 | [Static Al/Zr joint MACE](mace_context_static_20260915/README.md) | Full standard static analysis with exact shared inner/center checkpoint weights and complete message context; Zr geometry transfer |
 | [VICReg / TDA ridge audit](mace_tda_ridge_audit_20260914/README.md) | Fresh six-checkpoint inference, independent ridge reproduction, supervision checks, projector-versus-encoder comparison, frozen MLIP/random controls, and direct embedding geometry |
@@ -44,6 +44,6 @@ The [smooth-manifold literature review](mace_velocity_20260915/LITERATURE_REVIEW
 proposes direct temporal objectives, local motion constraints, and short observed
 history while testing preservation of bond order and instantaneous topology.
 
-[Consecutive local-state motion](mace_local_motion_20260916/README.md): shared local directions and weak bending penalties with physical retention; 20 tests and full smoke workflow passed; full 44-fit comparison launched.
+[Consecutive local-state motion](mace_local_motion_20260916/README.md): **Discarded** frozen-map approach. All 44 fits and evaluation completed; none passed the information gate or joint 0.10 jump requirement. Results retained.
 
 - [Native encoder training-data amount](mace_data_amount_20260916/README.md): matched-update independent-source learning curves with motion constraints.

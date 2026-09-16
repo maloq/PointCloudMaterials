@@ -27,6 +27,12 @@ the September 15, 2026 coordinate/velocity experiment, not every MACE checkpoint
 | [Maps and assignments](#our-learned-maps-and-state-assignments) | Temporal coordinates, learned physical distance, catalog states and uncertainty |
 | [Evaluation comparisons](#our-evaluation-comparisons) | Within-liquid comparisons, held-out sources, siblings and storage effects |
 
+Protocol status (16 September 2026): the frozen-feature replacement-map
+experiments `mace_local_state`, `mace_local_smooth_v1` and `mace_local_motion_v1`
+were [discarded](discarded_frozen_encoder_maps.md). Their definitions remain here
+to interpret preserved results. Native encoder training and embedding forecasting
+remain active.
+
 ## The local object we describe
 
 ### Local structure

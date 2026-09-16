@@ -205,7 +205,13 @@ retention budget rather than quietly redefining the target.
 
 ## Staged experiments and acceptance criteria
 
-First run cheap frozen-backbone heads, then fine-tune only the candidates that
+**Status, 16 September 2026:** the frozen-feature replacement-map versions of
+stages A/B were tested and [discarded](../../docs/discarded_frozen_encoder_maps.md).
+Their results remain available. The native encoder study trains MACE directly;
+the remaining stages below are historical proposals, not scheduled runs.
+
+
+The original proposal was to run cheap frozen-backbone heads, then fine-tune only candidates that
 improve the validation tradeoff. This tests the design before expensive joint
 training. Exact recipes belong in `configs/` when implemented; this review does
 not create speculative runnable commands or launch jobs.

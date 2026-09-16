@@ -21,8 +21,7 @@ for a dataset/seed/output-path change that an existing command can express.
 | Package | Record |
 | --- | --- |
 | `mace_velocity` | [Local coordinate/velocity encoder](../../experiments/mace_velocity_20260915/README.md): smooth structure, time-even activity and time-odd motion, source-isolated holdouts and velocity interventions; no forecasting objective |
-| `mace_local_state` | [Frozen local-group states](../../experiments/mace_local_state_20260915/README.md): short-time canonical coordinates, learned group-physics distance and uncertain density discovery; no forecasting objective |
-| `mace_local_state/smooth*` | [Direct temporal training](../../experiments/mace_local_smooth_20260915/README.md): nonlinear physical-state maps of frozen velocity-checkpoint features, direct within-context slowness and matched information tests |
+| `mace_local_state/physics.py` | Shared local-group physical observables used by native encoder training; frozen-map workflows [discarded](../../docs/discarded_frozen_encoder_maps.md) |
 | `mace_tda_ridge_audit` | [mace_tda_ridge_audit_20260914](../../experiments/mace_tda_ridge_audit_20260914/README.md); fresh six-checkpoint inference, topology-loss interventions and independent ridge calculations in projector and encoder spaces; frozen MLIP/random initialization controls and direct comparisons without a readout |
 | `forecast_spatial_mixture` | [forecast_spatial_mixture_20260913](../../experiments/forecast_spatial_mixture_20260913/README.md); matched point/distribution readouts, paired transitions, learned [individual-neighbor attention](../../experiments/forecast_spatial_attention_20260914/README.md), and measured structure / embedding future-path visualization |
 | `forecast_crystallization` | [forecast_crystallization_20260913](../../experiments/forecast_crystallization_20260913/README.md); local PTM state, transition timing and frozen-forecast evaluation |
@@ -59,6 +58,7 @@ center alignment with archived GeoFrame V2 results.
 `mace_context/cluster_probe.py` follows with spatially separated frozen-feature
 physical readouts to distinguish missing information from a poor cluster metric.
 
-`mace_local_state/motion*` implements the distinct [consecutive local-motion protocol](../../experiments/mace_local_motion_20260916/README.md), with actual cadence, shared current-state directions, and within-condition physical retention.
+Pure motion calculations and verified trajectory IO used by native encoder
+training live in `mace_velocity/motion.py` and `mace_velocity/sequence_data.py`.
 
 `mace_velocity/data_amount*.py` implements the distinct native end-to-end encoder learning curve; use existing module stages `data-prepare`, `data-smoke`, `data-study`. See [protocol](../../experiments/mace_data_amount_20260916/README.md).

@@ -1,5 +1,9 @@
 # Frozen local-group representations and uncertain states
 
+**Historical protocol, discarded 16 September 2026.** The implementation is no
+longer active. Definitions below and original run exports remain as evidence;
+see [retained source and results](../discarded_frozen_encoder_maps.md).
+
 The scientific object is a local group of atoms, optionally observed at two
 adjacent times spanning 0.75 ps. No forecast, committor, remaining lifetime,
 crystallization time or global process coordinate is fitted or selected here.

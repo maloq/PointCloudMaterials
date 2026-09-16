@@ -1,5 +1,10 @@
 # Direct temporal training of an informative local state
 
+**Discarded approach (16 September 2026):** replacement-embedding training on
+frozen encoder features is no longer pursued. Scientific results and exact recipes
+are retained. Embedding forecasting and native encoder training remain active.
+See [scope and historical reproduction](../../docs/discarded_frozen_encoder_maps.md).
+
 Question: can a nonlinear state map reduce the current encoder's temporal jumps
 while retaining current local bond order and instantaneous topology?
 
@@ -30,11 +35,11 @@ This snapshot stage does not train curvature, shared local motion directions,
 history processing, or MACE weights. Later stages need consecutive observations.
 A compact bottleneck is not evidence of a low-dimensional temporal manifold.
 
-Recipe: [mace_local_smooth.json](../../configs/analysis/mace_local_smooth.json).
+Recipe: [mace_local_smooth.json](configs/mace_local_smooth.json).
 Calculations: [metric definitions](../../docs/metrics/mace_local_smooth.md).
 Output: `output/mace_local_smooth/velocity-frozen-20260915/`.
 
-Reproduction, in conda `pointnet`, from the repository root:
+Historical reproduction in conda `pointnet` from the archived source root:
 
 ```bash
 python -m src.research.mace_local_state.run --config configs/analysis/mace_local_smooth.json --stage smooth-prepare
@@ -44,5 +49,6 @@ python -m src.research.mace_local_state.run --config configs/analysis/mace_local
 
 `smooth-all` performs all three stages. Preparation resumes verified source units;
 fitting resumes completed saved epochs with identical identities. See [completed findings](RESULTS.md): no candidate passed the information gate.
-A longer 32/64D comparison with weaker temporal weights is submitted separately
-using [the capacity recipe](../../configs/analysis/mace_local_smooth_capacity.json).
+The longer 32/64D comparison using [the capacity recipe](configs/mace_local_smooth_capacity.json)
+retains 22 completed fits; final evaluation completion was not established. It is
+no longer an active submission.

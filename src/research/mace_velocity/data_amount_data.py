@@ -6,7 +6,7 @@ import time
 import numpy as np
 
 from src.experiment_runner.registry import sha256, write_json
-from src.research.mace_local_state.motion_data import atomic_npz, read_sequence
+from .sequence_data import atomic_npz, read_sequence
 from .data import local_clouds
 from .inventory import read
 

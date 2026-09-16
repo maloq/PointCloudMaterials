@@ -1,5 +1,10 @@
 # Completed consecutive-motion comparison
 
+**Discarded approach (16 September 2026):** replacement-embedding training on
+frozen encoder features is no longer pursued. Scientific results and exact recipes
+are retained. Embedding forecasting and native encoder training remain active.
+See [scope and historical reproduction](../../docs/discarded_frozen_encoder_maps.md).
+
 The 44 fits and evaluation completed in 1,701.6 seconds. Of 40 learned-map
 candidates, **none passed the validation information-retention gate**, and none
 met the requirement that both overall and low-order original-pair RMS jumps be

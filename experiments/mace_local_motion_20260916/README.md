@@ -1,5 +1,10 @@
 # Organized and smooth local-state motion
 
+**Discarded approach (16 September 2026):** replacement-embedding training on
+frozen encoder features is no longer pursued. Scientific results and exact recipes
+are retained. Embedding forecasting and native encoder training remain active.
+See [scope and historical reproduction](../../docs/discarded_frozen_encoder_maps.md).
+
 **Completed:** all 44 fits and evaluation finished. No candidate passed the
 validation information gate or the joint 0.10 jump requirement. See
 [results and explained comparison](RESULTS.md). This is the frozen-feature
@@ -38,12 +43,12 @@ sampling and physical readout quality cannot establish transition timing or
 spatially meaningful clusters; those remain subsequent assessments. History
 inputs and MACE fine-tuning are later, conditional stages, not part of this launch.
 
-Recipe: [mace_local_motion.json](../../configs/analysis/mace_local_motion.json).
-Smoke: [mace_local_motion_smoke.json](../../configs/analysis/mace_local_motion_smoke.json).
+Recipe: [mace_local_motion.json](configs/mace_local_motion.json).
+Smoke: [mace_local_motion_smoke.json](configs/mace_local_motion_smoke.json).
 Definitions: [metric documentation](../../docs/metrics/mace_local_motion.md).
-Run instructions: [workflow](../../docs/mace_local_motion.md).
+Historical execution record: [workflow](../../docs/mace_local_motion.md).
 
-Reproduction: `python -m src.research.mace_local_state.run --config
+Historical reproduction using archived source: `python -m src.research.mace_local_state.run --config
 configs/analysis/mace_local_motion.json --stage motion-all` in a matching allocated
 runtime. Completed findings are recorded in [RESULTS.md](RESULTS.md); implementation
 alone is not evidence of improvement.

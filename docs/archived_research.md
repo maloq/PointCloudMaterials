@@ -31,3 +31,7 @@ see the [current configuration index](../configs/README.md).
 Archived WandB log links that formerly pointed into the live checkout now point
 to their retained archive files; [the link audit](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/archive-log-links.json)
 preserves original targets. No trajectory, checkpoint or frozen source bytes changed.
+
+The [September 16 frozen-map retirement](discarded_frozen_encoder_maps.md) removes
+replacement-embedding training over frozen encoders while preserving all results,
+exact source/recipes, native encoder training and embedding forecasting.

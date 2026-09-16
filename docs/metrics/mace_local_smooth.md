@@ -1,5 +1,9 @@
 # Direct temporal regularization of frozen local-state features
 
+**Historical protocol, discarded 16 September 2026.** The implementation is no
+longer active. Definitions below and original run exports remain as evidence;
+see [retained source and results](../discarded_frozen_encoder_maps.md).
+
 Protocol `mace_local_smooth_v1`, stage A of the smooth-manifold research proposal.
 This compares snapshot nonlinear maps of the completed velocity checkpoint's
 256-dimensional structural block. MACE is frozen; velocity information is not

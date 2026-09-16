@@ -61,7 +61,7 @@ def test_cleanup_rejects_redirected_storage(tmp_path):
 
 
 def test_metric_documents_match_implementation_and_travel_with_table(tmp_path):
-    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'forecast_context', 'forecast_crystallization', 'forecast_spatial_mixture', 'aggregation', 'mace_encoder_diagnostics', 'mace_tda_ridge_audit', 'mace_context', 'mace_context_smoothness', 'mace_context_recovery', 'mace_local_state', 'mace_velocity', 'mace_local_smooth', 'mace_local_motion', 'mace_data_amount'}
+    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'forecast_context', 'forecast_crystallization', 'forecast_spatial_mixture', 'aggregation', 'mace_encoder_diagnostics', 'mace_tda_ridge_audit', 'mace_context', 'mace_context_smoothness', 'mace_context_recovery', 'mace_velocity', 'mace_data_amount'}
     path = write_metric_table({'test': {'balanced_mse': 0.125, 'undefined': None, 'ci95': [0.1, 0.2]}},
                               tmp_path, family='topology')
     with path.open() as stream:

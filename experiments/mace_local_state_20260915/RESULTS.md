@@ -1,5 +1,10 @@
 # Frozen local-state comparison: results
 
+**Discarded approach (16 September 2026):** replacement-embedding training on
+frozen encoder features is no longer pursued. Scientific results and exact recipes
+are retained. Embedding forecasting and native encoder training remain active.
+See [scope and historical reproduction](../../docs/discarded_frozen_encoder_maps.md).
+
 The run completed successfully. Learning a distance from local-group physics
 improved the organization of the frozen features, but did not produce the desired
 coherent liquid states. The physical map loses substantial instantaneous topology;

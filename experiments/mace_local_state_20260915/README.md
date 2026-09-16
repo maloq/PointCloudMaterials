@@ -1,5 +1,10 @@
 # Frozen features for informative, smooth local-group states
 
+**Discarded approach (16 September 2026):** replacement-embedding training on
+frozen encoder features is no longer pursued. Scientific results and exact recipes
+are retained. Embedding forecasting and native encoder training remain active.
+See [scope and historical reproduction](../../docs/discarded_frozen_encoder_maps.md).
+
 Question: can short-time canonical coordinates or a learned group-physics
 distance organize the existing frozen MACE features into informative, smooth
 local states with honest uncertainty?
@@ -30,7 +35,9 @@ is unconstrained; lack of supported discrete states is a valid result.
 Definitions, exact scaling, selection and uncertainty caveats:
 [metric protocol](../../docs/metrics/mace_local_state.md).
 Rationale: [literature review](../mace_context_clusters_20260915/LITERATURE_REVIEW.md).
-Recipe: [mace_local_state.json](../../configs/analysis/mace_local_state.json).
+Recipe: [mace_local_state.json](configs/mace_local_state.json).
+
+Historical command (requires the archived source and original recipe paths):
 
 ```bash
 conda run -n pointnet python -m src.research.mace_local_state.run --config configs/analysis/mace_local_state.json --stage all

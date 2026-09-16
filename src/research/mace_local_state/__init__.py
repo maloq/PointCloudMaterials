@@ -1,1 +1,1 @@
-"""Frozen local-group representations, short-time coordinates and uncertain states."""
+"""Shared local-group physical observables; frozen embedding-map workflows retired."""

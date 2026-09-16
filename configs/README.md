@@ -4,9 +4,9 @@ Keep active recipes and their dependencies here. Simulation recipes belong only 
 `simulation/`; keep analysis templates in `analysis/`. Run-specific research plans
 stay with their scientific record in `experiments/`.
 
-[`analysis/mace_local_state.json`](analysis/mace_local_state.json) runs the frozen
-local-group representation comparison and uncertain state discovery; see the
-[scientific protocol](../experiments/mace_local_state_20260915/README.md).
+Frozen-feature replacement-embedding recipes were [discarded](../docs/discarded_frozen_encoder_maps.md).
+Exact historical copies remain with the dated scientific records; they are no
+longer active recipes. Forecasting recipes are unchanged.
 
 ## Training and encoder construction
 
@@ -101,17 +101,8 @@ joint features, inner/center/projector ablations and archived GeoFrame V2 labels
 on matched static Al centers. It runs no encoder training.
 # Local phase-space encoder
 
-`analysis/mace_local_smooth.json` selects the separate frozen nonlinear-state
-comparison with direct temporal regularization. Use the maintained local-state
-entry point's `smooth-*` stages; see [the experiment](../experiments/mace_local_smooth_20260915/README.md).
-
 `analysis/mace_velocity.json` trains the coordinate/velocity MACE extension and
 its matched coordinates-only control. See [the protocol](../experiments/mace_velocity_20260915/README.md)
 and [run instructions](../docs/mace_velocity.md).
-
-`analysis/mace_local_smooth_capacity.json` extends the frozen-state comparison to
-32/64 dimensions, weaker temporal weights and 2,000 epochs, with a separate output.
-
-`analysis/mace_local_motion.json` selects consecutive motion constraints; `mace_local_motion_smoke.json` verifies the same workflow on named sources. See [workflow](../docs/mace_local_motion.md).
 
 The native end-to-end MACE data-size pilot uses [analysis/mace_data_amount.json](analysis/mace_data_amount.json); see [protocol](../experiments/mace_data_amount_20260916/README.md).

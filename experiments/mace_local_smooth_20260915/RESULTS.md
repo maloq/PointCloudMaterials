@@ -1,5 +1,10 @@
 # First frozen-state sweep: completed findings
 
+**Discarded approach (16 September 2026):** replacement-embedding training on
+frozen encoder features is no longer pursued. Scientific results and exact recipes
+are retained. Embedding forecasting and native encoder training remain active.
+See [scope and historical reproduction](../../docs/discarded_frozen_encoder_maps.md).
+
 **No compact candidate passed the information-retention gate on validation. No candidate reached a 0.10 normalized RMS jump.** The current encoder has not been replaced.
 
 The sweep fitted 30 compact nonlinear maps plus two uncompressed references. Each used 300 full-batch epochs; compact maps were newly initialized, while reference readouts started from the existing trained head. The selected physics-only models all reached the last epoch, so this is not evidence that compression fundamentally cannot work.
@@ -21,13 +26,13 @@ These illustrative variants are chosen from validation: the 32D physics-only mod
 | 8D, temporal weight 10 | validation | 0.185 | 0.413 | 3.97× |
 | 8D, temporal weight 10 | development_test | 0.227 | 0.766 | 3.93× |
 
-## Interpretation and next experiment
+## Interpretation and historical follow-up
 
 Strong temporal penalties can make the overall score look better without stable, informative disordered-state coordinates. The weight-3 example improves validation disordered jump from 0.700 to 0.373, but its development-test value is 0.717 versus 0.742 for the reference, with a 3.72× worst physical error. The largest test jumps also become worse for several penalized models. This generalization gap deserves source-level follow-up; these data do not establish an irreducible physical limit.
 
-The next controlled sweep uses 32/64 coordinates, weaker penalties 0/0.03/0.1/0.3/1, and 2,000 epochs with two seeds. All variants and the reference receive the longer budget. The hidden map has width 64 at its narrowest hidden layer, so 64 is a meaningful larger-state control. This separates optimization/compression problems from strong smoothing before adding trajectory curvature or history. Submitted detached as Slurm job **994010** with the existing implementation and a separate output directory.
+The capacity follow-up used 32/64 coordinates, weaker penalties 0/0.03/0.1/0.3/1, and 2,000 epochs with two seeds. All variants and the reference received the longer budget. The hidden map has width 64 at its narrowest hidden layer, so 64 is a meaningful larger-state control. It tested optimization/compression problems versus strong smoothing. Submitted as Slurm job **994010**, it retains 22 completed fits; final evaluation completion was not established. This discarded workflow is no longer an active submission.
 
-Recipe: [capacity comparison](../../configs/analysis/mace_local_smooth_capacity.json). Output: `output/mace_local_smooth/velocity-frozen-capacity-20260915/`.
+Recipe: [capacity comparison](configs/mace_local_smooth_capacity.json). Output: `output/mace_local_smooth/velocity-frozen-capacity-20260915/`.
 
 ## Evidence and limits
 

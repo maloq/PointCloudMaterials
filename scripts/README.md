@@ -35,16 +35,10 @@ and [the output layout](../docs/research_layout.md).
 
 Current training and analysis use existing module entry points:
 
-`python -m src.research.mace_local_state.run --config configs/analysis/mace_local_state.json --stage all`
-compares frozen short-time coordinates and learned local-group physical distances,
-then discovers density states with uncertainty. Stages `prepare`, `fit`, `evaluate`
-and `static` preserve their distinct source-held-out and spatial protocols. See the
-[local-state experiment](../experiments/mace_local_state_20260915/README.md).
-
-The same entry point with `--config configs/analysis/mace_local_smooth.json`
-uses `smooth-prepare`, `smooth-fit`, `smooth-evaluate`, or `smooth-all` for the
-separate nonlinear physical-state/direct-temporal-regularization comparison.
-See [run instructions](../docs/mace_local_smooth.md).
+Frozen-feature replacement-embedding workflows were [discarded](../docs/discarded_frozen_encoder_maps.md)
+on 16 September 2026. Their source snapshot, recipes and results remain available
+for historical reproduction. Embedding forecasting and native encoder training
+remain active.
 
 ```bash
 python -m src.training_methods.contrastive_learning.train_contrastive --config-name vicreg_mace_relaxed
@@ -226,5 +220,3 @@ for the separate local phase-space protocol (`inventory`, `prepare`, `verify`,
 `teacher`, `train`, `evaluate`). The maintained conversion dispatcher adds
 `python scripts/convert_trajectory.py paired-velocity --positions P --velocities V --output O --atoms N`
 for atom/time-matched legacy dumps. See [the run instructions](../docs/mace_velocity.md).
-
-The local-state module also runs `motion-all`/`motion-evaluate` with `configs/analysis/mace_local_motion.json`; GPU worker stages are `motion-prepare --lane N` and `motion-fit --lane N`. See [consecutive motion workflow](../docs/mace_local_motion.md).

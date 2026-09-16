@@ -6,7 +6,7 @@ import numpy as np
 import torch
 
 from src.experiment_runner.metric_docs import snapshot_metric_docs
-from src.research.mace_local_state.motion import projection_residual, time_differences
+from .motion import projection_residual, time_differences
 from .data_amount_data import batch
 from .data_amount_model import normalized_targets, objective
 from .train import GROUPS, encode

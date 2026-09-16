@@ -1,5 +1,11 @@
 # Native MACE training-data amount
 
+Maintenance note (16 September 2026): shared motion math and trajectory IO moved
+from the discarded frozen-map package into `mace_velocity/motion.py` and
+`mace_velocity/sequence_data.py`, with identical function bodies. Calculations,
+model architecture and historical run exports are unchanged. Exact old source is
+preserved in the [retirement archive](../discarded_frozen_encoder_maps.md).
+
 Protocol `mace_native_data_amount_v1` trains MACE message-passing parameters and
 the coordinate/velocity encoder end to end. No fitted map follows the pooled
 embedding. Original MLIP pretraining is common to all runs; these are conditional

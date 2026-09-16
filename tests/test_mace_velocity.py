@@ -5,6 +5,7 @@ import torch
 from src.models.encoders.mace_context import make_context_graph
 from src.models.encoders.mace_velocity import velocity_moments, weighted_pool
 from src.research.mace_velocity.data import motion_observables
+from src.research.mace_local_state.physics import group_observables
 
 
 def sample():
@@ -72,3 +73,17 @@ def test_paired_dump_conversion_matches_ids_and_times(tmp_path):
     np.testing.assert_array_equal(result.positions[:,0,0],[1,1])
     np.testing.assert_array_equal(result.velocities[:,0,0],[1,2])
     assert paths[0].exists() and paths[1].exists()
+
+
+def test_group_physics_rotation_and_atom_permutation_invariance():
+    rng = np.random.default_rng(8)
+    grid = np.stack(np.meshgrid(*[np.arange(-6, 7)*2.5]*3), -1).reshape(-1, 3)
+    x = grid+rng.normal(scale=.04, size=grid.shape)
+    center = np.argmin(np.linalg.norm(x, axis=1))
+    x = x-x[center]
+    ids = np.flatnonzero(np.linalg.norm(x, axis=1) < 18)
+    x = x[np.r_[center, ids[ids != center]]]
+    rotation, _ = np.linalg.qr(rng.normal(size=(3, 3)))
+    permutation = np.r_[0, rng.permutation(np.arange(1, len(x)))]
+    expected = group_observables(x)
+    np.testing.assert_allclose(group_observables(x[permutation]@rotation), expected, rtol=1e-5, atol=1e-7)
