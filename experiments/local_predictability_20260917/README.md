@@ -1,6 +1,11 @@
 # Local crystallization predictability and information retention
 
-Status: **planned, not run**. The latest user constraints are one training seed
+Status: **local descriptor, native onset, observability, physical-backbone and
+topology studies complete**. See the [consolidated results](../../output/local_predictability/research-summary-20260917/RESULTS.md).
+H200 training is reported complete with nearly identical validation future MSE;
+[reported values](h200_reported_results.json) are included in the report addendum.
+Final H200 test comparisons have not yet been received locally.
+The user constraints were one training seed
 (20260919), one local H100 and one remote H200 working concurrently, and a maximum
 16-hour window. The [supplied scientific plan](PLANNING_INPUT.md) motivates this
 study; its suggestion to add seeds is superseded. The [active recipe](../../configs/local_predictability/two_gpu_16h.json)

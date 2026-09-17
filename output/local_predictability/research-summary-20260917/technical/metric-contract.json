@@ -1,0 +1,11 @@
+{
+  "family": "local_predictability_summary",
+  "exported_at": "2026-09-17T19:03:52.543352+00:00",
+  "files": {
+    "docs/metrics/local_predictability_summary.md": "0a52c87f08accb2bbfa1343c2f03fce5702e0c8d02017bb138f347c5011d3ebd",
+    "src/research/local_predictability/report.py": "8a64a6123bb5938177dcec88f10c144f7c38fab18debf0cfaee8cef0be445606",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/local_predictability/baselines.py": "208b8c61b82e1115affaf6d80bd091d79106a9867324a64ac41c138418c72432",
+    "configs/analysis/local_predictability_report.json": "46933dcc0d8bd6e34c77a6cf8d8cb072a04ef5d0ed88448c1559cf969ebbc4b9"
+  }
+}

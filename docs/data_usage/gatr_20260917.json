@@ -1,0 +1,686 @@
+{
+  "observed_at": "2026-09-17T18:32:35.450189+00:00",
+  "scope": "Current H100 physical snapshot and onset GATr fits; directory/manifest/log audit, not a rehash of all archived arrays. H200 not contacted.",
+  "cohort": "output/local_predictability/h100-20260917/technical/cohort.json",
+  "cohort_sha256": "b1b9c1f85b1c5802533df3fdcd54adc70bc7643adecea95377a24fa81b6bea58",
+  "used_datasets": {
+    "al_520K_remaining24_20260913T204114Z": 24,
+    "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902": 90,
+    "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903": 36
+  },
+  "folds": {
+    "train": {
+      "sources": 90,
+      "physical_windows": 23040,
+      "onset_windows": 11738
+    },
+    "selection": {
+      "sources": 15,
+      "physical_windows": 3840,
+      "onset_windows": 2220
+    },
+    "calibration": {
+      "sources": 15,
+      "physical_windows": 3840,
+      "onset_windows": 1774
+    },
+    "test": {
+      "sources": 30,
+      "physical_windows": 7680,
+      "onset_windows": 4691
+    }
+  },
+  "training_log_coverage": {
+    "physical_gatr": {
+      "log": "output/local_predictability/h100-backbone-v2-20260917/technical/axial_gatr/physical_means/snapshot/training.jsonl",
+      "log_sha256": "7dfa32d545df10a91c919d5cfc9a614325bd79bd6befc112e0db33664ee3a793",
+      "updates": 2048,
+      "draws": 16384,
+      "unique_windows": 11758,
+      "eligible_windows": 23040,
+      "not_sampled_for_gradients": 11282
+    },
+    "onset_parent": {
+      "log": "output/local_predictability/h100-gatr-onset-parent-20260917/technical/axial_gatr/onset/snapshot/training.jsonl",
+      "log_sha256": "ecc1a926e221d8a5e6c4e99c4848436f67f9977c48d4b463331955a2fa950e4a",
+      "updates": 4096,
+      "draws": 32768,
+      "unique_windows": 10346,
+      "eligible_windows": 11738,
+      "not_sampled_for_gradients": 1392
+    },
+    "onset_snapshot": {
+      "log": "output/local_predictability/h100-gatr-onset-controls-20260917/technical/axial_gatr/onset/snapshot/training.jsonl",
+      "log_sha256": "5b927f6c90667817f92aebc070c62d47adf26f26c54e8611b1276664ebfe68ed",
+      "updates": 4096,
+      "draws": 32768,
+      "unique_windows": 10346,
+      "eligible_windows": 11738,
+      "not_sampled_for_gradients": 1392
+    },
+    "onset_history12": {
+      "log": "output/local_predictability/h100-gatr-onset-controls-20260917/technical/axial_gatr/onset/history12/training.jsonl",
+      "log_sha256": "be200357958ee28a0d070af0cb282f881388176854790097c3bee30c6cd94673",
+      "updates": 4096,
+      "draws": 32768,
+      "unique_windows": 10346,
+      "eligible_windows": 11738,
+      "not_sampled_for_gradients": 1392
+    },
+    "onset_repeat12": {
+      "log": "output/local_predictability/h100-gatr-onset-controls-20260917/technical/axial_gatr/onset/repeat12/training.jsonl",
+      "log_sha256": "8369d47f45c2e47f6a55301150d0ba736b23c6d6fbfaedaa203d5ec60a63967d",
+      "updates": 4096,
+      "draws": 32768,
+      "unique_windows": 10346,
+      "eligible_windows": 11738,
+      "not_sampled_for_gradients": 1392
+    }
+  },
+  "onset_sampling_streams_identical": true,
+  "anchors_ps": [
+    48.0,
+    78.0,
+    108.0,
+    138.0,
+    168.0,
+    198.0,
+    228.0,
+    258.0,
+    288.0,
+    318.0,
+    348.0,
+    378.0,
+    408.0,
+    438.0,
+    468.0,
+    498.0
+  ],
+  "native_centers_per_source": 16,
+  "center_pool_per_source": 64,
+  "available_frames_per_source": 801,
+  "dense_three_ps_train_windows": 217440,
+  "completed_unused_precision_sources": [
+    {
+      "id": "memory-al-precision-20260917-source000-T500",
+      "state": "complete",
+      "split": "train",
+      "lineage": "independent_melt_860878647",
+      "frames": 2561,
+      "atoms": 70304,
+      "cadence_ps": 0.075,
+      "duration_ps": 192.0,
+      "float32_reference_exists": true
+    },
+    {
+      "id": "memory-al-precision-20260917-source001-T500",
+      "state": "complete",
+      "split": "train",
+      "lineage": "independent_melt_407215734",
+      "frames": 2561,
+      "atoms": 70304,
+      "cadence_ps": 0.075,
+      "duration_ps": 192.0,
+      "float32_reference_exists": true
+    },
+    {
+      "id": "memory-al-precision-20260917-source002-T500",
+      "state": "complete",
+      "split": "train",
+      "lineage": "independent_melt_746219836",
+      "frames": 2561,
+      "atoms": 70304,
+      "cadence_ps": 0.075,
+      "duration_ps": 192.0,
+      "float32_reference_exists": true
+    }
+  ],
+  "registry_entries_outside_cohort": [
+    {
+      "id": "Al",
+      "kind": "dataset",
+      "path": "/work/PERSO/vmorozov/datasets/Al",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "Al50Ni50",
+      "kind": "dataset",
+      "path": "/work/PERSO/vmorozov/datasets/Al50Ni50",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "Mg",
+      "kind": "dataset",
+      "path": "/work/PERSO/vmorozov/datasets/Mg",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "Ta",
+      "kind": "dataset",
+      "path": "/work/PERSO/vmorozov/datasets/Ta",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "Zr",
+      "kind": "dataset",
+      "path": "/work/PERSO/vmorozov/datasets/Zr",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "potentials",
+      "kind": "potentials",
+      "path": "/work/PERSO/vmorozov/datasets/potentials",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "zr_al_mg_initial_6x24ps",
+      "kind": "dataset",
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_unseeded_2nn_meam_70304_12temps_390-500K_600ps_1ps_positions_velocities_6seeds_20260830",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_homogeneous_unseeded_2nn_meam_70304_12temps_390-500K_600ps_1ps_positions_velocities_6seeds_20260830",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_independent_sources_recovery_20260909T203221Z",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_independent_sources_recovery_20260909T203221Z",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_crystallization_100k_450K_20260911",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_crystallization_100k_450K_20260911",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_nested_shooting_pilot_70304_400-500K_20260902",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "interrupted_attempts",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "local_overnight_lamedell11_20260905",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "local_overnight_lamedell11_20260905.startup_attempt_010736",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905.startup_attempt_010736",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "nested_shooting_prepare_logs",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/nested_shooting_prepare_logs",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "nonshooting_float32_migration_20260901",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/nonshooting_float32_migration_20260901",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "restart_boundary_audit_20260905",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "shooting_float32_migration_20260901",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/shooting_float32_migration_20260901",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "ta_initial_model_1m_24ps_npt_20260905",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "ti_ta_crystallization_20260907",
+      "kind": "simulation",
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "mace-full",
+      "kind": "cache",
+      "path": "/home/ids/vmorozov/training-cache/mace-full",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "mace-meam",
+      "kind": "cache",
+      "path": "/home/ids/vmorozov/training-cache/mace-meam",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "temporal",
+      "kind": "cache",
+      "path": "/home/ids/vmorozov/training-cache/temporal",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "embedding-forecast-full-20260911",
+      "kind": "cache",
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "potential-ti-kavousi2019",
+      "kind": "potential",
+      "path": "/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "potential-ta-zhong2014",
+      "kind": "potential",
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "portability-smoke-forecast",
+      "kind": "test_fixture",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/portability/storage-20260913/technical/smoke-cache",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "portability-ti-smoke-20260913",
+      "kind": "test_fixture",
+      "path": "/store/PERSO/vmorozov/simulations/portability-ti-smoke-20260913",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": ".al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": ".al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": ".al_phase_context_70304x1.generation-5016671fb856",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1.generation-5016671fb856",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": ".al_phase_context_70304x1_seed_12346.generation-559b40e8ef01",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1_seed_12346.generation-559b40e8ef01",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_campaign_70304_mpa_bf16_comparison_20260724",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_comparison_20260724",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_liquid_source_70304_mpa_seed12345_500K",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12345_500K",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_liquid_source_70304_mpa_seed12346_500K",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_mpa_70304_bf16_validation_20260724",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_mpa_70304_bf16_validation_20260724",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_phase_context_70304x1",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_phase_context_70304x1_seed_12346",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1_seed_12346",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "polycrystalline_balanced_geometries",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "polycrystalline_balanced_geometries_v2",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries_v2",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "research-records-20260913",
+      "kind": "research_archive",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "al_meam_1m_450K_400ps_with_melt_20260913T205405Z",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "mace-causal-physical-20260916",
+      "kind": "training_cache",
+      "path": "/home/ids/vmorozov/training-cache/mace-causal-physical-20260916",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "predictive-memory-al-r17-20260917",
+      "kind": "training_cache",
+      "path": "/home/ids/vmorozov/training-cache/predictive-memory-al-r17-20260917",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "memory-al-precision-20260917-source000-T500",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source000-T500",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "memory-al-precision-20260917-source001-T500",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source001-T500",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "memory-al-precision-20260917-source002-T500",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source002-T500",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "memory-al-precision-20260917-source003-T500-failed",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source003-T500-failed",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    },
+    {
+      "id": "memory-al-precision-20260917-source004-T500-failed",
+      "kind": "simulation",
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source004-T500-failed",
+      "path_exists": true,
+      "note": "Outside current cohort; presence alone does not establish completed, unique or compatible research data."
+    }
+  ]
+}

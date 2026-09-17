@@ -383,5 +383,14 @@
       "src/research/backbone_tda/probes.py": "4d2e657da2af16584c645e577bb2f12ba674834cc1cbf2784be0ed9536e42ec9",
       "src/research/backbone_tda/run.py": "0b46c7cc9f26a75102d6060d4eec8675107d008b402893d1036431f88876038a"
     }
+  },
+  "local_predictability_summary": {
+    "files": {
+      "docs/metrics/local_predictability_summary.md": "08799b2bb0c19b3ea04bf37abe8304f6144069ca60064879a9e4feb85ce321b3",
+      "src/research/local_predictability/report.py": "ffce210d9d0ab264350ee6b2287a7318501f3487d548e0eb423209f0974fd068",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/local_predictability/baselines.py": "208b8c61b82e1115affaf6d80bd091d79106a9867324a64ac41c138418c72432",
+      "configs/analysis/local_predictability_report.json": "30f7961d3620f1d86d908781dfc599bf016ee3d00e8d4553fca529ff710725d3"
+    }
   }
 }

@@ -1,5 +1,9 @@
 # Backbone v2 execution
 
+The [September 17 training/data audit](data_usage/gatr_20260917.md) records exact
+losses, sampled-window coverage and data outside the current cohort.
+Current physical/onset GATr runs do not use VICReg.
+
 Use conda `pointnet`. The [scientific protocol](../experiments/local_predictability_20260917/BACKBONE_V2.md)
 and [configuration](../configs/local_predictability/backbone_v2/rtx6000_screen.json)
 define the matched screen. Existing v1 modules and receipt checks are unchanged.

@@ -1,0 +1,13 @@
+{
+  "provenance": "User-supplied H200 update received on 2026-09-17 after the consolidated report. No raw H200 validation predictions, final test comparisons or numerical interval endpoints were supplied.",
+  "training_status": "complete_reported",
+  "test_comparison_status": "pending_reported",
+  "metric": "Validation future MSE, as reported. Exact validation subset, selected checkpoint and reduction were not supplied; do not pool with local test metrics.",
+  "validation_future_mse": {
+    "snapshot": 0.75121,
+    "history12": 0.75060,
+    "repeat12": 0.75114
+  },
+  "reported_interpretation": "Real history improves validation future MSE by about 0.08% against snapshot. Final test comparisons remain pending.",
+  "uncertainty": "No confidence intervals supplied; rounded validation point estimates only."
+}

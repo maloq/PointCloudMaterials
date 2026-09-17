@@ -54,9 +54,11 @@ rule an embedding or target uses.
 
 ### Tracked center
 
-The same atom, identified by its persistent atom ID, followed across frames. The
-center is the first atom in our local encoder inputs. Tracking the center does
-not freeze the identities of its neighbors: those may enter or leave the region.
+The same atom, identified by its persistent atom ID, followed across frames.
+Some earlier local encoders place the center first. The native history producer
+sorts the union of observed atom IDs, so the center is not necessarily at index
+zero; GATr verifies the unique observed zero-displacement atom. Tracking the
+center does not freeze its neighbors' identities: they may enter or leave the region.
 
 ### Temporal pair and temporal neighbor
 
@@ -154,6 +156,29 @@ In our earlier VICReg models, the transformation after the raw MACE encoder used
 for the training objective. Raw encoder features and projector features have
 different geometry and can retain different information, so each result must
 identify which was measured.
+
+### VICReg in the earlier encoder protocols
+
+The earlier VICReg trainer matches representations of two declared views,
+penalizes insufficient per-channel variation across a batch, and penalizes
+off-diagonal covariance. View construction and whether the loss acts on encoder
+or projector features are part of that protocol. It is not a synonym for any
+training that uses coordinates without manually annotated labels.
+
+The September 17 backbone-v2 GATr/MACE physical screen does **not** use VICReg.
+It trains on computed present and future physical targets. Its separate onset
+models use event/survival likelihood only; its TDA probes freeze the physical
+encoder. See the [current training/data audit](data_usage/gatr_20260917.md).
+
+### Physical packet in the native predictability protocol
+
+The fixed 128-channel target calculated from neighbors around a tracked center:
+radial structure, pair distances, angular structure, speed, radial velocity and
+mixed geometric/motion moments, on a smooth 5–7 Angstrom support. It is distinct
+from the 144-channel persistence-image TDA vector and from PTM phase labels.
+Backbone-v2 predicts the current packet and six future packets using train-only
+channel normalization. A packet is a target, not the raw atom input or exported
+embedding. See [metric definitions](metrics/local_predictability_backbone_v2.md).
 
 
 ## Our stability questions

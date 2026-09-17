@@ -1,5 +1,19 @@
 # H100 + H200: one-seed, 16-hour predictability queue
 
+## H200 reported export resumption, 17 September
+
+User-supplied remote update, received after the consolidated report: all H200
+training is complete. Exports had stopped at an open-file limit; the remote
+worker raised the limit, verified that all 150 sources open, and resumed exports
+and evaluation detached without retraining. The reported remaining estimate was
+2–3 hours at that update. This is a remote status report, not a locally verified
+process status or a new completion-time estimate.
+
+Validation values are recorded in the
+[scientific report addendum](../output/local_predictability/research-summary-20260917/RESULTS.md#6-latest-h200-physical-study-training-complete-validation-nearly-tied).
+Final paired test results remain pending. No local job was restarted for this
+documentation update.
+
 ## Detached continuation and diagnostics, 17 September
 
 The original H100 process stopped at snapshot evaluation with `EMFILE`: 150

@@ -1,0 +1,10 @@
+study,path,state
+descriptors,output/local_predictability/h100-20260917,complete
+native,output/local_predictability/h100-native-onset-20260917,complete
+readouts,output/local_predictability/rtx-native-readouts-20260917,complete
+packet_observability,output/local_predictability/rtx-observability-20260917,complete
+raw_observability,output/local_predictability/rtx-raw-observability-20260917,complete
+h100_physical,output/local_predictability/h100-backbone-v2-20260917,complete
+rtx_physical,output/local_predictability/rtx-backbone-v2-20260917,complete
+comparison,output/local_predictability/h100-backbone-comparison-20260917,complete
+topology,output/local_predictability/tda-backbone-v2-20260917,complete

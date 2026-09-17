@@ -1,0 +1,33 @@
+{
+  "plan": "configs/local_predictability/two_gpu_16h.json",
+  "runs": {
+    "descriptors": "output/local_predictability/h100-20260917",
+    "native": "output/local_predictability/h100-native-onset-20260917",
+    "readouts": "output/local_predictability/rtx-native-readouts-20260917",
+    "packet_observability": "output/local_predictability/rtx-observability-20260917",
+    "raw_observability": "output/local_predictability/rtx-raw-observability-20260917",
+    "h100_physical": "output/local_predictability/h100-backbone-v2-20260917",
+    "rtx_physical": "output/local_predictability/rtx-backbone-v2-20260917",
+    "gatr_onset": "output/local_predictability/h100-gatr-onset-controls-20260917",
+    "comparison": "output/local_predictability/h100-backbone-comparison-20260917",
+    "topology": "output/local_predictability/tda-backbone-v2-20260917",
+    "legacy": "output/local_predictability/legacy-reproduction-20260917"
+  },
+  "h200_report": "experiments/predictive_memory_20260917/h200_reported_results.json",
+  "h200_native_report": "experiments/local_predictability_20260917/h200_reported_results.json",
+  "previous_report": "output/predictive_memory/research-summary-20260917-stopped/RESULTS.md",
+  "supporting_artifacts": [
+    "output/predictive_memory/research-summary-20260917/RESULTS.md",
+    "output/local_predictability/h100-20260917/tables/coverage.csv",
+    "output/local_predictability/legacy-reproduction-20260917/tables/local-onset.csv",
+    "output/local_predictability/legacy-reproduction-20260917/tables/fixed-lead.csv",
+    "output/local_predictability/legacy-reproduction-20260917/tables/METRICS.md",
+    "output/local_predictability/tda-backbone-v2-20260917/technical/metrics.json",
+    "output/local_predictability/tda-backbone-v2-20260917/RESULTS.md",
+    "output/local_predictability/h100-backbone-v2-20260917/tables/mace_physical_means_snapshot_test.csv",
+    "output/local_predictability/h100-backbone-v2-20260917/tables/axial_gatr_physical_means_snapshot_test.csv",
+    "output/local_predictability/shared-20260917/technical/exchange/H200_FIT_GATE.md",
+    "output/local_predictability/shared-20260917/technical/exchange/H200_NATIVE_STATUS.md",
+    "docs/local_predictability_16h.md"
+  ]
+}

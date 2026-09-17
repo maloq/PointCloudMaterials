@@ -6,6 +6,13 @@ belongs in `src/`. Run-specific settings belong in configuration, not copied run
 See [workflow details](../docs/workflows.md), [experiment records](../experiments/README.md)
 and [the output layout](../docs/research_layout.md).
 
+`python -m src.research.local_predictability.report --config
+configs/analysis/local_predictability_report.json --output output/local_predictability/NEW-SUMMARY`
+collects completed H100/RTX results and scores deferred observability/readout
+predictions on CPU. It verifies paired rows, exports source intervals and figures,
+and refuses to overwrite an existing report. It does not fit models. See the
+[summary metric definitions](../docs/metrics/local_predictability_summary.md).
+
 | Command | Workflows / implementation |
 | --- | --- |
 | `benchmark_hardware.py [storage,cpu,gpu,all]` | Defaults to all; prints/saves a standard results table. Optional `--cpu-ranks 1 8 24` runs a CPU sweep. Synthetic inputs; `src/hardware_benchmark/`; [usage](../docs/hardware_benchmark.md). |
